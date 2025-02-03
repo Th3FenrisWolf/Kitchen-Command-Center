@@ -1,0 +1,56 @@
+@layer base {
+  body {
+    font-family: 'Hazelnut';
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-onyx);
+  }
+  
+  h1,
+  h2 {
+    font-family: 'APCasual';
+    letter-spacing: 1px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }  
+}
+
+@font-face {
+  font-family: 'Aima';
+  src: url('../styles/fonts/AimaDisplayRegular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'APCasualItalic';
+  src: url('../styles/fonts/AmericanPurposeCasualItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'APCasual';
+  src: url('../styles/fonts/AmericanPurposeCasualRegular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'HazelnutBold';
+  src: url('../styles/fonts/HazelnutMilkTeaBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'HazelnutBoldItalic';
+  src: url('../styles/fonts/HazelnutMilkTeaBoldItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'HazelnutItalic';
+  src: url('../styles/fonts/HazelnutMilkTeaItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Hazelnut';
+  src: url('../styles/fonts/HazelnutMilkTeaRegular.ttf') format('truetype');
+}
