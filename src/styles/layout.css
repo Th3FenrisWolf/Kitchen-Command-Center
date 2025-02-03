@@ -1,0 +1,42 @@
+/*
+  Sources:
+    https://www.youtube.com/watch?v=c13gpBrnGEw
+    https://ryanmulligan.dev/blog/layout-breakouts/
+
+  Usage:
+    Add the `.content-grid` class to the parent element of the content you want to layout.
+    Add the `.breakout` class to any element you want to pop out of the layout.
+    Add the `.full-width` class to any element you want to span the full width of the container.
+    Inside of `.full-width` containers you will also need to add `.content-grid` if you need gutters.
+*/
+
+.content-grid {
+  @apply grid;
+
+  --padding-inline: --spacing(4);
+  --content-max-width: 80rem;
+  --breakout-max-width: 100rem;
+
+  --full-width-size: minmax(var(--padding-inline), 1fr);
+  --content-size: min(100% - var(--padding-inline) * 2, var(--content-max-width));
+  --breakout-size: minmax(0, calc((var(--breakout-max-width) - var(--content-max-width)) / 2));
+
+  grid-template-columns:
+    [full-width-start] var(--full-width-size)
+    [breakout-start] var(--breakout-size)
+    [content-start] var(--content-size) [content-end]
+    var(--breakout-size) [breakout-end]
+    var(--full-width-size) [full-width-end];
+}
+
+.content-grid > :not(.breakout, .full-width) {
+  grid-column: content;
+}
+
+.content-grid > .breakout {
+  grid-column: breakout;
+}
+
+.content-grid > .full-width {
+  grid-column: full-width;
+}

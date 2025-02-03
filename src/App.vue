@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import AppHeader from '~/components/AppHeader.vue'
+import AppFooter from '~/components/AppFooter.vue'
+</script>
+
+<template>
+  <AppHeader class="content-grid" />
+
+  <main role="main" class="content-grid bg-bone">
+    <RouterView />
+  </main>
+
+  <AppFooter class="content-grid" />
+</template>
+
+<style>
+@import 'tailwindcss';
+@import './styles/layout.css';
+@import './styles/tailwind-config.css';
+@import './styles/typography.css';
+
+section {
+  margin-block: 1rem;
+
+  &:first-of-type {
+    margin-block-start: 2rem;
+  }
+
+  &:last-of-type {
+    margin-block-end: 2rem;
+  }
+}
+
+/* TODO: Needs some work */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bone);
+}
+
+::-webkit-scrollbar-thumb {
+  background-clip: content-box;
+  background-color: var(--color-bone);
+  border: 2px solid transparent;
+  border-radius: 10px;
+}
+
+main:hover ::-webkit-scrollbar-thumb {
+  background-color: #a8bbbf;
+}
+</style>
