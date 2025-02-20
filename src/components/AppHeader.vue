@@ -3,8 +3,8 @@ import MenuItem from '~/components/MenuItem.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
 const routes = router.getRoutes()
+
 const mainNav = routes.filter((route) => route.meta.mainNav)
 const utilityNav = routes.filter((route) => route.meta.utilityNav)
 </script>
@@ -33,14 +33,3 @@ const utilityNav = routes.filter((route) => route.meta.utilityNav)
     </nav>
   </header>
 </template>
-
-<style scoped>
-.login:has(.btn-login:focus-visible) {
-  outline: 2px solid var(--color-bone);
-  outline-offset: -2px;
-}
-
-.btn-login:focus-visible {
-  outline: none;
-}
-</style>

@@ -11,8 +11,6 @@
 */
 
 .content-grid {
-  @apply grid;
-
   --padding-inline: --spacing(4);
   --content-max-width: 80rem;
   --breakout-max-width: 100rem;
@@ -21,6 +19,7 @@
   --content-size: min(100% - var(--padding-inline) * 2, var(--content-max-width));
   --breakout-size: minmax(0, calc((var(--breakout-max-width) - var(--content-max-width)) / 2));
 
+  display: grid;
   grid-template-columns:
     [full-width-start] var(--full-width-size)
     [breakout-start] var(--breakout-size)
