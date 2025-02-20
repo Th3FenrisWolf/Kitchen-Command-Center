@@ -31,23 +31,7 @@ section {
   }
 }
 
-/* TODO: Needs some work */
 ::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-bone);
-}
-
-::-webkit-scrollbar-thumb {
-  background-clip: content-box;
-  background-color: var(--color-bone);
-  border: 2px solid transparent;
-  border-radius: 10px;
-}
-
-main:hover ::-webkit-scrollbar-thumb {
-  background-color: #a8bbbf;
+  display: none;
 }
 </style>
