@@ -8,7 +8,7 @@ const { route } = defineProps<{
 
 <template>
   <RouterLink
-    class="menu-item btn-no-style relative flex h-full items-center bg-transparent no-underline"
+    class="menu-item btn-no-style relative flex h-full items-center overflow-hidden bg-transparent no-underline"
     :to="route.path"
   >
     <span class="relative z-20 flex h-full w-full items-center px-4">
