@@ -6,16 +6,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'Dashboard',
+      meta: { mainNav: true },
       component: () => import('~/views/DashboardView.vue'),
     },
     {
       path: '/about',
       name: 'About',
+      meta: { mainNav: true },
       component: () => import('~/views/AboutView.vue'),
     },
     {
       path: '/login',
       name: 'Login',
+      meta: { utilityNav: true },
       component: () => import('~/views/LoginView.vue'),
     },
   ],
