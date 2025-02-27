@@ -5,7 +5,7 @@
   "singleQuote": true,
   "printWidth": 100,
   "trailingComma": "all",
-  "tailwindFunctions": ["clsx"],
+  "tailwindFunctions": ["cx"],
   "tailwindStylesheet": "./src/App.vue",
   "cssDeclarationSorterKeepOverrides": false,
   "cssDeclarationSorterOrder": "alphabetical",
