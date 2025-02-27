@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import clsx from 'clsx'
+import cx from '~/utilities/cx'
 
 const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
 </script>
@@ -11,7 +11,7 @@ const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
     </RouterLink>
     <div
       :class="
-        clsx(
+        cx(
           'absolute bottom-0 left-1/2 right-0 h-1 w-0 rounded-full transition-all group-hover/fill-up-link:left-0 group-hover/fill-up-link:w-full peer-focus:left-0 peer-focus:w-full',
           color,
         )
