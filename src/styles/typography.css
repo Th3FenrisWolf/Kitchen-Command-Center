@@ -28,29 +28,29 @@
 
 @font-face {
   font-family: 'Aima';
-  src: url('../styles/fonts/AimaDisplayRegular.ttf') format('truetype');
+  src: url('../../public/fonts/AimaDisplayRegular.ttf') format('truetype');
 }
 @font-face {
   font-family: 'APCasualItalic';
-  src: url('../styles/fonts/AmericanPurposeCasualItalic.ttf') format('truetype');
+  src: url('../../public/fonts/AmericanPurposeCasualItalic.ttf') format('truetype');
 }
 @font-face {
   font-family: 'APCasual';
-  src: url('../styles/fonts/AmericanPurposeCasualRegular.ttf') format('truetype');
+  src: url('../../public/fonts/AmericanPurposeCasualRegular.ttf') format('truetype');
 }
 @font-face {
   font-family: 'HazelnutBold';
-  src: url('../styles/fonts/HazelnutMilkTeaBold.ttf') format('truetype');
+  src: url('../../public/fonts/HazelnutMilkTeaBold.ttf') format('truetype');
 }
 @font-face {
   font-family: 'HazelnutBoldItalic';
-  src: url('../styles/fonts/HazelnutMilkTeaBoldItalic.ttf') format('truetype');
+  src: url('../../public/fonts/HazelnutMilkTeaBoldItalic.ttf') format('truetype');
 }
 @font-face {
   font-family: 'HazelnutItalic';
-  src: url('../styles/fonts/HazelnutMilkTeaItalic.ttf') format('truetype');
+  src: url('../../public/fonts/HazelnutMilkTeaItalic.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Hazelnut';
-  src: url('../styles/fonts/HazelnutMilkTeaRegular.ttf') format('truetype');
+  src: url('../../public/fonts/HazelnutMilkTeaRegular.ttf') format('truetype');
 }
