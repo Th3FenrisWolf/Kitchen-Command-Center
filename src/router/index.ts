@@ -10,6 +10,12 @@ const router = createRouter({
       component: () => import('~/views/DashboardView.vue'),
     },
     {
+      path: '/recipes',
+      name: 'Recipes',
+      meta: { mainNav: true },
+      component: () => import('~/views/RecipeSearch.vue'),
+    },
+    {
       path: '/about',
       name: 'About',
       meta: { mainNav: true },
