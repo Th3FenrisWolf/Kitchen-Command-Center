@@ -1,17 +1,22 @@
 declare global {
   interface String {
-    equals(str: string, comparison: StringComparison): boolean
+    equals(str?: string, comparison?: StringComparison): boolean
   }
 }
 
 String.prototype.equals = function (
-  str: string,
+  str?: string,
   comparison: StringComparison = StringComparison.Ordinal,
 ): boolean {
-  if (comparison === StringComparison.Ordinal) {
-    return this === str
+  if (typeof this !== 'string' || typeof str !== 'string') {
+    return false
   }
-  return this.toLowerCase() === str.toLowerCase()
+
+  if (comparison === StringComparison.IgnoreCase) {
+    return this.toLowerCase() === str.toLowerCase()
+  }
+
+  return this === str
 }
 
 export enum StringComparison {

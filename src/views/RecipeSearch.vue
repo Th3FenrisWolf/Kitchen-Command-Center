@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import qs from 'qs'
+import { parseQueryString } from '~/utilities/query-functions'
 import SmallHeader from '~/components/SmallHeader.vue'
 import RecipeFacet from '~/components/RecipeFacet.vue'
 
-const proteins = ['Beef', 'Chicken', 'Pork', 'Fish']
-const filters = qs.parse(window.location.search.slice(1))
+interface RecipeSearchParams {
+  protein: string
+}
 
-console.log(filters)
+const proteins = ['Beef', 'Chicken', 'Pork', 'Fish']
+const filters = parseQueryString<RecipeSearchParams>()
 </script>
 
 <template>
@@ -16,7 +18,7 @@ console.log(filters)
 
   <section>
     <aside>
-      <RecipeFacet title="Protein" :options="proteins" :selected="filters.protein as string" />
+      <RecipeFacet title="Protein" :options="proteins" :selected="filters.protein" />
     </aside>
   </section>
 </template>

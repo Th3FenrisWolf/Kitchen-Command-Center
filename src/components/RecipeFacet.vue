@@ -4,7 +4,7 @@ import { IgnoreCase } from '~/utilities/string.extensions'
 const { title, options, selected } = defineProps<{
   title: string
   options: string[]
-  selected: string
+  selected?: string
 }>()
 </script>
 
