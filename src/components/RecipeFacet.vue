@@ -9,7 +9,7 @@ const { title, options, selected } = defineProps<{
 </script>
 
 <template>
-  <p>{{ title }}</p>
+  <p class="underline underline-offset-4">{{ title }}</p>
   <ul>
     <li v-for="option in options" :key="option">
       <a href="#" :class="{ 'text-blue-500': option.equals(selected, IgnoreCase) }">

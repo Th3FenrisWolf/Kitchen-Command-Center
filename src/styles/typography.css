@@ -26,6 +26,7 @@
   }  
 }
 
+// TODO: Hazelnut font is swapping colon and semicolon
 @font-face {
   font-family: 'Aima';
   src: url('/fonts/AimaDisplayRegular.ttf') format('truetype');

@@ -21,7 +21,7 @@ import '~/utilities/string.extensions'
 @import './styles/tailwind-config.css';
 @import './styles/typography.css';
 
-section {
+section:not([class*='no-margin']) {
   margin-block: 1rem;
 
   &:first-of-type {
