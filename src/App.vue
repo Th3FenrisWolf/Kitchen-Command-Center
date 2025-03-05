@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
 import AppFooter from '~/components/AppFooter.vue'
+
+import '~/utilities/string.extensions'
 </script>
 
 <template>
@@ -19,7 +21,7 @@ import AppFooter from '~/components/AppFooter.vue'
 @import './styles/tailwind-config.css';
 @import './styles/typography.css';
 
-section {
+section:not([class*='no-margin']) {
   margin-block: 1rem;
 
   &:first-of-type {
