@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MenuItem from '~/components/MenuItem.vue'
 import { useRouter } from 'vue-router'
+import { signOut } from '~/utilities/auth'
 
 const router = useRouter()
 const routes = router.getRoutes()
@@ -32,4 +33,5 @@ const utilityNav = routes.filter((route) => route.meta.utilityNav)
       </ul>
     </nav>
   </header>
+  <button @click="signOut">Sign Out</button>
 </template>
