@@ -1,10 +1,16 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut as signOutUser,
+  updateCurrentUser,
+  signOut as signOutFirebase,
+  setPersistence,
+  browserSessionPersistence,
+  onAuthStateChanged,
+  type User,
 } from 'firebase/auth'
 import { FirebaseError } from 'firebase/app'
 import { auth } from './firebase'
+import useUserStore from '~/store/user'
 
 export const signUp = async (email: string, password: string) => {
   try {
@@ -32,9 +38,22 @@ export const signIn = async (email: string, password: string) => {
   }
 }
 
+export const updateUser = async (user: User) => {
+  try {
+    await updateCurrentUser(auth, user)
+    console.log('User updated:', user)
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      console.error('Error updating user:', error.message)
+    } else {
+      console.error('Error updating user:', error)
+    }
+  }
+}
+
 export const signOut = async () => {
   try {
-    await signOutUser(auth)
+    await signOutFirebase(auth)
     console.log('User signed out')
   } catch (error) {
     if (error instanceof FirebaseError) {
@@ -44,3 +63,11 @@ export const signOut = async () => {
     }
   }
 }
+
+setPersistence(auth, browserSessionPersistence)
+
+onAuthStateChanged(auth, (user) => {
+  const { setUser, clearUser } = useUserStore()
+  if (user) setUser(user)
+  else clearUser()
+})

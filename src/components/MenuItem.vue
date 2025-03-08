@@ -2,12 +2,13 @@
 import type { RouteRecordNormalized } from 'vue-router'
 
 const { route } = defineProps<{
-  route: RouteRecordNormalized
+  route: RouteRecordNormalized | undefined
 }>()
 </script>
 
 <template>
   <RouterLink
+    v-if="route"
     class="menu-item btn-no-style relative flex h-full items-center overflow-hidden bg-transparent no-underline"
     :to="route.path"
   >

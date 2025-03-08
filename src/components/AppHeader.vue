@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import MenuItem from '~/components/MenuItem.vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { signOut } from '~/utilities/auth'
+import useUserStore from '~/store/user'
+
+const userStore = useUserStore()
+const { isAuthenticated } = storeToRefs(userStore)
 
 const router = useRouter()
 const routes = router.getRoutes()
 
 const mainNav = routes.filter((route) => route.meta.mainNav)
-const utilityNav = routes.filter((route) => route.meta.utilityNav)
+const userNav = routes.filter((route) => route.meta.userNav)
 </script>
 
 <template>
@@ -26,12 +31,10 @@ const utilityNav = routes.filter((route) => route.meta.utilityNav)
         </li>
       </ul>
 
-      <ul class="ml-auto flex">
-        <li v-for="route in utilityNav" :key="route.name">
-          <MenuItem :route />
-        </li>
-      </ul>
+      <MenuItem
+        class="ml-auto"
+        :route="userNav.find((item) => item.meta.whenAuthenticated === isAuthenticated)"
+      />
     </nav>
   </header>
-  <button @click="signOut">Sign Out</button>
 </template>

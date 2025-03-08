@@ -11,7 +11,7 @@ const router = createRouter({
     },
     {
       path: '/recipes',
-      name: 'RecipeSearch',
+      name: 'Recipes',
       meta: { mainNav: true },
       component: () => import('~/views/RecipeSearch.vue'),
     },
@@ -30,8 +30,14 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
-      meta: { utilityNav: true },
+      meta: { userNav: true, whenAuthenticated: false },
       component: () => import('~/views/LoginView.vue'),
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      meta: { userNav: true, whenAuthenticated: true },
+      component: () => import('~/views/ProfileView.vue'),
     },
   ],
 })
