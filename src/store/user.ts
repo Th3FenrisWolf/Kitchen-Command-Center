@@ -20,10 +20,4 @@ export const useUserStore = defineStore('user', () => {
   return { user, setUser, clearUser, isAuthenticated }
 })
 
-// * ref(): state property
-// * computed(): getter
-// * function(): action
-// * const { count, doubleCount } = storeToRefs(store)
-// * const { increment } = store
-
 export default useUserStore
