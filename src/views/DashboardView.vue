@@ -54,7 +54,7 @@ const dessertCards = [
     <h1 class="text-6xl">Welcome to the Dashboard!</h1>
   </section>
 
-  <section class="grid gap-x-12 lg:grid-cols-2">
+  <section class="grid gap-8 lg:grid-cols-2">
     <Card v-for="protein in proteinCards" :key="protein.title" :dark="protein.theme === 'dark'">
       <div>
         <h2 class="text-heading">{{ protein.title }}</h2>
@@ -75,7 +75,7 @@ const dessertCards = [
 
   <section class="breakout bg-base text-bone rounded-3xl p-8 text-center">
     <p class="text-heading">How About Something Sweeter?</p>
-    <div class="grid gap-x-6 lg:grid-cols-4">
+    <div class="grid gap-6 lg:grid-cols-4">
       <Card v-for="dessert in dessertCards" :key="dessert.title">
         <div>
           <h2 class="text-heading">{{ dessert.title }}</h2>
