@@ -21,6 +21,12 @@ import '~/utilities/string.extensions'
 @import './styles/tailwind-config.css';
 @import './styles/typography.css';
 
+#app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+}
+
 section:not([class*='no-margin']) {
   margin-block: 1rem;
 
