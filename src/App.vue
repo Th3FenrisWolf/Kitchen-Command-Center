@@ -8,7 +8,7 @@ import '~/utilities/string.extensions'
 <template>
   <AppHeader class="content-grid" />
 
-  <main role="main" class="content-grid bg-bone">
+  <main role="main" class="content-grid bg-bone auto-rows-min">
     <RouterView />
   </main>
 
@@ -21,7 +21,7 @@ import '~/utilities/string.extensions'
 @import './styles/tailwind-config.css';
 @import './styles/typography.css';
 
-#app {
+body {
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100dvh;

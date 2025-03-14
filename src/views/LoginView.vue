@@ -3,6 +3,9 @@ import { ref, computed, watch } from 'vue'
 import cx from '~/utilities/cx'
 import { signIn, signUp } from '~/utilities/auth'
 import router from '~/router'
+import { parseQueryString } from '~/utilities/query-functions'
+
+const { returnUrl } = parseQueryString<{ returnUrl: string }>()
 
 const swap = ref(false)
 const isSignIn = ref(true)
@@ -13,7 +16,7 @@ watch(swap, () => {
   setTimeout(() => {
     clearForm()
     isSignIn.value = !isSignIn.value
-  }, 150)
+  }, 250)
 })
 
 const email = ref('')
@@ -40,28 +43,30 @@ const handleSubmit = async () => {
   const response = await sendForm(isSignIn.value ? signIn : signUp)
   clearForm()
   if (response) {
-    router.push({ name: 'Dashboard' })
+    router.push({ path: returnUrl ?? '/' })
   }
 }
 </script>
 
 <template>
-  <div class="h-full w-full place-items-center content-center">
+  <section
+    class="no-margin fixed left-[50dvw] top-[50dvh] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center content-center"
+  >
     <div class="shadow-primary relative flex w-3/4 overflow-hidden rounded-3xl">
       <div
         :class="
           cx(
-            'ease-normal relative left-[0%] flex basis-[60%] flex-col gap-4 p-12 text-center transition-all duration-300',
+            'ease-normal relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
             swap && 'left-[40%]',
           )
         "
       >
-        <h1>{{ signText }}</h1>
+        <h2 class="text-heading">{{ signText }}</h2>
 
         <p
           :class="
             cx(
-              'text-maroon ease-normal overflow-hidden transition-all duration-300',
+              'text-maroon ease-normal overflow-hidden transition-all duration-500',
               formError ? 'h-8' : 'h-0',
             )
           "
@@ -84,7 +89,7 @@ const handleSubmit = async () => {
             required
             type="password"
             v-model="password"
-            autocomplete="current-password"
+            :autocomplete="!isSignIn ? 'new-password' : 'current-password'"
             placeholder="Password"
           />
 
@@ -100,20 +105,43 @@ const handleSubmit = async () => {
       <div
         :class="
           cx(
-            'bg-base ease-normal relative right-[0%] basis-[40%] justify-items-center p-12 transition-all duration-300',
+            'bg-base ease-normal relative right-[0%] basis-[40%] justify-items-center overflow-hidden p-12 text-center transition-all duration-500',
             swap && 'right-[60%]',
           )
         "
       >
-        <h2 class="text-heading text-bone">Test</h2>
-        <button
-          class="bg-bone text-onyx w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
-          @click="swap = !swap"
-          type="button"
+        <div
+          :class="
+            cx(
+              'ease-normal relative flex h-full w-[400%] justify-between transition-all duration-500',
+              swap ? 'left-[150%]' : 'left-[-150%]',
+            )
+          "
         >
-          Switch
-        </button>
+          <div class="text-bone grid h-max w-1/4 gap-8 self-center" :aria-hidden="isSignIn">
+            <h3 class="text-heading font-[APCasual]">Have an Account?</h3>
+            <p>Sign in to continue commanding your kitchen</p>
+            <button
+              class="bg-bone text-onyx w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+              @click="swap = !swap"
+              type="button"
+            >
+              Sign In
+            </button>
+          </div>
+          <div class="text-bone grid h-max w-1/4 gap-8 self-center" :aria-hidden="swap">
+            <h3 class="text-heading font-[APCasual]">New Here?</h3>
+            <p>Create an account to unlock the full potential of Kitchen Command Center</p>
+            <button
+              class="bg-bone text-onyx w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+              @click="swap = !swap"
+              type="button"
+            >
+              Sign Up
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
