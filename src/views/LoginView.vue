@@ -4,6 +4,7 @@ import cx from '~/utilities/cx'
 import { signIn, signUp } from '~/utilities/auth'
 import router from '~/router'
 import { parseQueryString } from '~/utilities/query-functions'
+import InputField from '~/components/shared/InputField.vue'
 
 const { returnUrl } = parseQueryString<{ returnUrl: string }>()
 
@@ -50,7 +51,7 @@ const handleSubmit = async () => {
 
 <template>
   <section
-    class="no-margin fixed left-[50dvw] top-[50dvh] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center content-center"
+    class="no-margin fixed left-[50dvw] top-[50dvh] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center"
   >
     <div class="shadow-primary relative flex w-3/4 overflow-hidden rounded-3xl">
       <div
@@ -75,8 +76,7 @@ const handleSubmit = async () => {
         </p>
 
         <form class="grid grow-0 gap-8" @submit.prevent="handleSubmit">
-          <input
-            class="bg-bone-dark placeholder:text-onyx-light rounded-2xl px-4 py-2"
+          <InputField
             required
             type="email"
             v-model="email"
@@ -84,8 +84,7 @@ const handleSubmit = async () => {
             placeholder="Email"
           />
 
-          <input
-            class="bg-bone-dark placeholder:text-onyx-light rounded-2xl px-4 py-2"
+          <InputField
             required
             type="password"
             v-model="password"

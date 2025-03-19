@@ -51,13 +51,10 @@ export const getRecipe = async (recipeId: string): Promise<Recipe | null> => {
 export const getAllRecipes = async (): Promise<Recipe[]> => {
   try {
     const querySnapshot = await getDocs(collection(db, 'recipes'))
-    const recipes: Recipe[] = querySnapshot.docs.map((doc) => ({
+    return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     })) as Recipe[]
-
-    console.log('All Recipes:', recipes)
-    return recipes
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error fetching recipes:', error.message)

@@ -42,7 +42,7 @@ export const signIn = async (email: string, password: string) => {
 
 export const updateUser = async (user: User) => {
   try {
-    await updateCurrentUser(auth, user)
+    await updateCurrentUser(auth, user) // this is not the method to update user data
     return { success: true, message: 'User updated successfully' }
   } catch (error) {
     if (error instanceof FirebaseError) {
