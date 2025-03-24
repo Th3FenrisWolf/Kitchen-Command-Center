@@ -16,7 +16,7 @@ const model = defineModel<string>({
 
 <template>
   <input
-    class="bg-bone-dark placeholder:text-onyx-light rounded-2xl px-4 py-2"
+    class="bg-bone-dark placeholder:text-onyx-light h-12 rounded-2xl px-4 py-2"
     v-model="model"
     :required
     :readonly
