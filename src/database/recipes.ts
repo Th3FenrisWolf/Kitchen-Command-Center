@@ -1,21 +1,12 @@
 import { doc, getDoc, getDocs, addDoc, collection } from 'firebase/firestore'
 import { FirebaseError } from 'firebase/app'
 import { db } from '~/utilities/firebase'
-import type { Recipe } from '~/types/recipe'
+import type { DBRecipe } from '~/types/recipe'
 
-export const addRecipe = async (
-  title: string,
-  description: string,
-  ingredients: string,
-  userId: string,
-) => {
+export const addRecipe = async (recipe: DBRecipe) => {
   try {
-    const docRef = await addDoc(collection(db, 'recipes'), {
-      title,
-      description,
-      ingredients,
-      createdBy: userId,
-    })
+    delete recipe.id
+    const docRef = await addDoc(collection(db, 'recipes'), recipe)
     console.log('Recipe added with ID:', docRef.id)
   } catch (error: unknown) {
     if (error instanceof FirebaseError) {
@@ -26,14 +17,14 @@ export const addRecipe = async (
   }
 }
 
-export const getRecipe = async (recipeId: string): Promise<Recipe | null> => {
+export const getRecipe = async (recipeId: string): Promise<DBRecipe | null> => {
   try {
     const recipeRef = doc(db, 'recipes', recipeId)
     const recipeSnap = await getDoc(recipeRef)
 
     if (recipeSnap.exists()) {
       console.log('Recipe found:', recipeSnap.data())
-      return recipeSnap.data() as Recipe // Type casting to Recipe
+      return recipeSnap.data() as DBRecipe
     } else {
       console.log('No such recipe!')
       return null
@@ -48,13 +39,13 @@ export const getRecipe = async (recipeId: string): Promise<Recipe | null> => {
   }
 }
 
-export const getAllRecipes = async (): Promise<Recipe[]> => {
+export const getAllRecipes = async (): Promise<DBRecipe[]> => {
   try {
     const querySnapshot = await getDocs(collection(db, 'recipes'))
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as Recipe[]
+    })) as DBRecipe[]
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error fetching recipes:', error.message)
