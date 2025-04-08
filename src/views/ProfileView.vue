@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { updateProfile } from 'firebase/auth'
 import { ref } from 'vue'
 import InputField from '~/components/shared/InputField.vue'
@@ -15,7 +16,7 @@ const memberSince = ref(user?.metadata.creationTime ?? '')
 const email = ref(user?.email ?? '')
 const fakePassword = '********************'
 
-const updateUserProfile = async () => {
+const updateUsername = async () => {
   if (!user) return
 
   updateProfile(user, {
@@ -40,9 +41,15 @@ const handleSignOut = async () => {
         height="300"
         width="400"
       />
-      <label class="grid gap-2">
+      <label class="relative grid gap-2">
         <span>Display Name:</span>
         <InputField :readonly="!isEdit" v-model="displayName" />
+        <FontAwesomeIcon
+          size="lg"
+          :icon="['fas', 'square-pen']"
+          class="color-base absolute bottom-6 right-3 z-10 translate-y-1/2"
+          @click="() => (isEdit ? updateUsername() : (isEdit = true))"
+        />
       </label>
       <label class="grid gap-2">
         <span>Member Since:</span>
@@ -50,10 +57,10 @@ const handleSignOut = async () => {
       </label>
       <button
         type="button"
-        class="bg-base text-bone mt-4 w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
-        @click="() => (isEdit ? updateUserProfile() : (isEdit = true))"
+        class="bg-base text-bone w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+        @click="handleSignOut"
       >
-        {{ isEdit ? 'Save' : 'Edit Profile' }}
+        Sign Out
       </button>
     </div>
     <div class="shadow-primary place-content-center rounded-3xl p-8">
@@ -69,14 +76,5 @@ const handleSignOut = async () => {
       </div>
     </div>
     <div class="shadow-primary grid gap-4 rounded-3xl p-8">test</div>
-  </section>
-  <section class="flex justify-center">
-    <button
-      type="button"
-      class="bg-base text-bone w-max cursor-pointer rounded-2xl px-4 py-2"
-      @click="handleSignOut"
-    >
-      Sign Out
-    </button>
   </section>
 </template>
