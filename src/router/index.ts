@@ -13,7 +13,7 @@ const router = createRouter({
       path: '/recipes',
       name: 'Recipes',
       meta: { mainNav: true },
-      component: () => import('~/views/RecipeSearch.vue'),
+      component: () => import('~/views/RecipeSearchView.vue'),
     },
     {
       path: '/recipes/create',
@@ -23,8 +23,8 @@ const router = createRouter({
     {
       path: '/recipes/:id',
       name: 'RecipeDetail',
-      props: (route) => ({ id: Number(route.params.id) }),
-      component: () => import('~/views/RecipeDetail.vue'),
+      props: (route) => ({ id: route.params.id }),
+      component: () => import('~/views/RecipeDetailView.vue'),
     },
     {
       path: '/about',
