@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import InputField from '~/components/shared/InputField.vue'
@@ -118,7 +119,7 @@ const handleSubmit = () => {
               class="bg-base disabled:bg-overlay-100 ease-normal h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
               @click="ingredientList.splice(index, 1)"
             >
-              <FontAwesomeIcon :icon="['fas', 'trash']" />
+              <FontAwesomeIcon :icon="faTrash" />
             </button>
           </div>
         </div>
@@ -164,7 +165,7 @@ const handleSubmit = () => {
               class="bg-base disabled:bg-overlay-100 ease-normal h-12 max-w-12 basis-1/12 cursor-pointer self-center rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
               @click="instructionList.splice(index, 1)"
             >
-              <FontAwesomeIcon :icon="['fas', 'trash']" />
+              <FontAwesomeIcon :icon="faTrash" />
             </button>
           </div>
         </div>

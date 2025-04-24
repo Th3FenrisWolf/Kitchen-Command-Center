@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { faSquareCheck, faSquarePen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faSquareCheck, faSquarePen } from '@fortawesome/free-solid-svg-icons'
 import { updateProfile } from 'firebase/auth'
 import { ref } from 'vue'
 import InputField from '~/components/shared/InputField.vue'
