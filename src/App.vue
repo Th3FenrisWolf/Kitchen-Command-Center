@@ -8,7 +8,7 @@ import '~/utilities/string.extensions'
 <template>
   <AppHeader class="content-grid" />
 
-  <main role="main" class="content-grid bg-bone">
+  <main role="main" class="content-grid bg-bone auto-rows-min">
     <RouterView />
   </main>
 
@@ -20,6 +20,12 @@ import '~/utilities/string.extensions'
 @import './styles/layout.css';
 @import './styles/tailwind-config.css';
 @import './styles/typography.css';
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+}
 
 section:not([class*='no-margin']) {
   margin-block: 1rem;

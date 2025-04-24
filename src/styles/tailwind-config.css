@@ -30,7 +30,9 @@
   --color-mantle: hsl(231, 19%, 20%);
   --color-crust: hsl(229, 20%, 17%);
 
+  --color-bone-dark: hsl(44, 15%, 85%);
   --color-bone: hsl(44, 48%, 95%);
+  --color-onyx-light: hsl(120, 4%, 38%);
   --color-onyx: hsl(120, 4%, 22%);
 
   --text-heading: 2.5rem;
