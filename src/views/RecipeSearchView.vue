@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import SmallHero from '~/components/SmallHero.vue'
 import RecipeFacet from '~/components/RecipeFacet.vue'
 import { parseQueryString } from '~/utilities/query-functions'
 import cx from '~/utilities/cx'
 import { getAllRecipes } from '~/database/recipes'
-import type { Recipe } from '~/types/recipe'
+import { mapFromDBRecipe, type Recipe } from '~/types/recipe'
 
 interface RecipeSearchParams {
   protein: string
@@ -14,9 +14,9 @@ interface RecipeSearchParams {
 const proteins = ['Beef', 'Chicken', 'Pork', 'Fish']
 const filters = parseQueryString<RecipeSearchParams>()
 
-const recipes = ref<Recipe[]>([])
-onMounted(async () => {
-  recipes.value = await getAllRecipes()
+const recipes = ref<(Recipe | null)[]>([])
+onBeforeMount(async () => {
+  recipes.value = await getAllRecipes().then((dbRecipes) => dbRecipes.map(mapFromDBRecipe))
 })
 </script>
 
@@ -37,7 +37,7 @@ onMounted(async () => {
 
     <div class="lg: col-span-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
       <RouterLink
-        v-for="recipe in recipes ?? []"
+        v-for="recipe in recipes.filter((x) => !!x)"
         :to="`/recipes/${recipe.id}`"
         :key="recipe.title"
         :class="
