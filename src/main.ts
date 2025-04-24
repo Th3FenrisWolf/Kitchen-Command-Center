@@ -12,5 +12,6 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-await initializeFirebase()
-app.mount('body')
+initializeFirebase().then(() => {
+  app.mount('body')
+})
