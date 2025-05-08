@@ -6,6 +6,7 @@ const { dark = false } = defineProps<{ dark?: boolean }>()
 
 <template>
   <section
+    id="small-hero"
     :class="
       cx(
         'no-margin full-width content-grid pb-8 pt-12',

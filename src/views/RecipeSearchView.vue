@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue'
 import SmallHero from '~/components/SmallHero.vue'
-import RecipeFacet from '~/components/RecipeFacet.vue'
-import { parseQueryString } from '~/utilities/query-functions'
+import RecipeFacets from '~/components/RecipeFacets.vue'
 import cx from '~/utilities/cx'
 import { getAllRecipes } from '~/database/recipes'
 import { mapFromDBRecipe, type Recipe } from '~/types/recipe'
-
-interface RecipeSearchParams {
-  protein: string
-}
-
-const proteins = ['Beef', 'Chicken', 'Pork', 'Fish']
-const filters = parseQueryString<RecipeSearchParams>()
 
 const recipes = ref<(Recipe | null)[]>([])
 onBeforeMount(async () => {
@@ -30,10 +22,8 @@ onBeforeMount(async () => {
     </template>
   </SmallHero>
 
-  <section class="grid grid-cols-1 gap-4 lg:grid-cols-4">
-    <aside class="bg-base text-bone rounded-3xl p-4">
-      <RecipeFacet title="Protein" :options="proteins" :selected="filters.protein" />
-    </aside>
+  <section id="recipe-section" class="relative grid grid-cols-1 gap-4 lg:grid-cols-4">
+    <RecipeFacets />
 
     <div class="lg: col-span-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
       <RouterLink
@@ -56,7 +46,7 @@ onBeforeMount(async () => {
           :src="recipe.image"
           :alt="recipe.title"
         /> -->
-        <span>{{ recipe.description }}</span>
+        <span>{{ recipe.description.slice(0, 200) }}...</span>
       </RouterLink>
     </div>
   </section>
