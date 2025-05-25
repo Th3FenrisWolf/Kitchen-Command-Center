@@ -29,7 +29,7 @@ const { dark = false } = defineProps<CardProps>()
   <div
     :class="
       cx(
-        'shadow-primary group/card ease-normal flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all duration-300',
+        'shadow-primary group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all duration-300',
         'focus-within:shadow-primary-raised hover:shadow-primary-raised',
         dark ? 'bg-base text-bone' : 'bg-bone text-onyx',
       )
@@ -38,7 +38,7 @@ const { dark = false } = defineProps<CardProps>()
     <div
       :class="
         cx(
-          'ease-normal relative top-1 transition-all duration-300',
+          'relative top-1 transition-all duration-300',
           'group-focus-within/card:top-0 group-hover/card:top-0',
           'group-focus-within/card:duration-100 group-hover/card:duration-100',
         )
@@ -50,7 +50,7 @@ const { dark = false } = defineProps<CardProps>()
     <div
       :class="
         cx(
-          'ease-normal h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
+          'h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
           'focus-within:h-full group-hover/card:h-full',
           dark ? 'bg-bone text-onyx' : 'bg-base text-bone',
         )

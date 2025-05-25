@@ -57,7 +57,7 @@ const handleSubmit = async () => {
       <div
         :class="
           cx(
-            'ease-normal relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
+            'relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
             swap && 'left-[40%]',
           )
         "
@@ -66,10 +66,7 @@ const handleSubmit = async () => {
 
         <p
           :class="
-            cx(
-              'text-maroon ease-normal overflow-hidden transition-all duration-500',
-              formError ? 'h-8' : 'h-0',
-            )
+            cx('text-maroon overflow-hidden transition-all duration-500', formError ? 'h-8' : 'h-0')
           "
         >
           {{ formError }}
@@ -104,7 +101,7 @@ const handleSubmit = async () => {
       <div
         :class="
           cx(
-            'bg-base ease-normal relative right-[0%] basis-[40%] justify-items-center overflow-hidden p-12 text-center transition-all duration-500',
+            'bg-base relative right-[0%] basis-[40%] justify-items-center overflow-hidden p-12 text-center transition-all duration-500',
             swap && 'right-[60%]',
           )
         "
@@ -112,7 +109,7 @@ const handleSubmit = async () => {
         <div
           :class="
             cx(
-              'ease-normal relative flex h-full w-[400%] justify-between transition-all duration-500',
+              'relative flex h-full w-[400%] justify-between transition-all duration-500',
               swap ? 'left-[150%]' : 'left-[-150%]',
             )
           "

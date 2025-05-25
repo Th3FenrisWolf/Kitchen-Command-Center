@@ -15,9 +15,7 @@ const { route } = defineProps<{
     <span class="relative z-20 flex h-full w-full items-center px-4">
       {{ route.name }}
     </span>
-    <span
-      class="background bg-crust ease-normal absolute bottom-0 left-0 z-10 h-0 w-full transition-all"
-    />
+    <span class="background bg-crust absolute bottom-0 left-0 z-10 h-0 w-full transition-all" />
   </RouterLink>
 </template>
 
