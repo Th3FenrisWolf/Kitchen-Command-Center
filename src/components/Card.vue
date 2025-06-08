@@ -2,27 +2,66 @@
 /**
  * A card component that supports functionality for expanding via hover
  *
- * @param {boolean} [dark=false] - Wether the Card will be dark theme
+ * @param {string} [cardColor='bg-base'] - The color of the card background
+ * @param {string} [cardTextColor='text-bone'] - The color of the card text
+ * @param {string} [drawerColor=null] - The color of the card drawer background, if null, the cardTextColor will be used
+ * @param {string} [drawerTextColor=null] - The color of the card drawer text, if null, the cardColor will be used
  *
  * @slot default — Main content of the card
  * @slot drawer — Content to show when the card is expanded
  */
+
+import type { BackgroundColor, TextColor } from '~/types/design-system'
+
 export default {
   name: 'Card',
 }
 
 export interface CardProps {
-  /** Wether the Card will be dark theme
-   * @default false
+  /**
+   * The color of the card background
+   * @default 'bg-base'
    */
-  dark?: boolean
+  cardColor?: BackgroundColor
+
+  /**
+   * The color of the card text
+   * @default 'text-bone'
+   */
+  cardTextColor?: TextColor
+
+  /**
+   * The color of the card drawer background
+   * @default cardTextColor
+   */
+  drawerColor?: BackgroundColor | null
+
+  /**
+   * The color of the card drawer text
+   * @default cardColor
+   */
+  drawerTextColor?: TextColor | null
 }
 </script>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import cx from '~/utilities/cx'
 
-const { dark = false } = defineProps<CardProps>()
+const {
+  cardColor = 'bg-base',
+  cardTextColor = 'text-bone',
+  drawerColor = null,
+  drawerTextColor = null,
+} = defineProps<CardProps>()
+
+const resolvedDrawerColor = computed(() => {
+  return drawerColor ?? cardTextColor
+})
+
+const resolvedDrawerTextColor = computed(() => {
+  return drawerTextColor ?? cardColor
+})
 </script>
 
 <template>
@@ -31,7 +70,8 @@ const { dark = false } = defineProps<CardProps>()
       cx(
         'shadow-primary group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all duration-300',
         'focus-within:shadow-primary-raised hover:shadow-primary-raised',
-        dark ? 'bg-base text-bone' : 'bg-bone text-onyx',
+        cardColor,
+        cardTextColor,
       )
     "
   >
@@ -52,7 +92,8 @@ const { dark = false } = defineProps<CardProps>()
         cx(
           'h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
           'focus-within:h-full group-hover/card:h-full',
-          dark ? 'bg-bone text-onyx' : 'bg-base text-bone',
+          resolvedDrawerColor,
+          resolvedDrawerTextColor,
         )
       "
     >
