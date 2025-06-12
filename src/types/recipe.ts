@@ -4,6 +4,7 @@ export interface Ingredient {
   name: string
   quantity?: number
   unit: string
+  isEyeballed: boolean
 }
 
 export interface Instruction {

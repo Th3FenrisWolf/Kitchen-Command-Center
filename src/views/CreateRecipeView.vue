@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import InputField from '~/components/shared/InputField.vue'
@@ -15,7 +15,7 @@ const { user } = storeToRefs(userStore)
 
 const title = ref('')
 const description = ref('')
-const ingredientList = ref<Ingredient[]>([{ name: '', unit: '' }])
+const ingredientList = ref<Ingredient[]>([{ name: '', unit: '', isEyeballed: false }])
 const instructionList = ref<Instruction[]>([{ text: '' }])
 
 const handleSubmit = () => {
@@ -36,7 +36,7 @@ const handleSubmit = () => {
   addRecipe(mapToDBRecipe(recipe))
   title.value = ''
   description.value = ''
-  ingredientList.value = [{ name: '', unit: '' }]
+  ingredientList.value = [{ name: '', unit: '', isEyeballed: false }]
   instructionList.value = [{ text: '' }]
   console.log('Recipe added successfully!')
 }
@@ -93,6 +93,15 @@ const handleSubmit = () => {
               type="text"
             />
 
+            <button
+              aria-label="Eyeball Ingredient"
+              type="button"
+              class="bg-base disabled:bg-overlay-100 ease-normal h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl p-2 text-white"
+              @click="ingredient.isEyeballed = !ingredient.isEyeballed"
+            >
+              <FontAwesomeIcon :icon="ingredient.isEyeballed ? faEye : faEyeSlash" />
+            </button>
+
             <InputField
               class="shrink basis-1/4"
               v-model="ingredient.quantity"
@@ -127,7 +136,7 @@ const handleSubmit = () => {
         <button
           type="button"
           class="bg-base text-bone mt-4 cursor-pointer rounded-3xl px-4 py-2 text-xl"
-          @click="ingredientList.push({ name: '', unit: '' })"
+          @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })"
         >
           Add Ingredient
         </button>

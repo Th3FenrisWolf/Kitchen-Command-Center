@@ -23,7 +23,8 @@ onMounted(async () => {
     <h3>Ingredients:</h3>
     <ul>
       <li v-for="(ingredient, index) in recipe?.ingredients ?? []" :key="index">
-        {{ ingredient.name }} ({{ ingredient.unit }})
+        {{ ingredient.quantity }} {{ ingredient.unit }} {{ ingredient.name }}
+        <span v-if="ingredient.isEyeballed"> (Eyeballed)</span>
       </li>
     </ul>
     <h3>Instructions:</h3>
