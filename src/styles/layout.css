@@ -39,3 +39,8 @@
 .content-grid > .full-width {
   grid-column: full-width;
 }
+
+.content-grid > .thin {
+  max-width: 60rem;
+  margin-inline: auto;
+}

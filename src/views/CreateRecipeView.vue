@@ -125,7 +125,7 @@ const handleSubmit = () => {
               aria-label="Remove ingredient"
               type="button"
               :disabled="ingredientList.length <= 1"
-              class="bg-base disabled:bg-overlay-100 ease-normal h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
+              class="bg-base disabled:bg-overlay-100 h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
               @click="ingredientList.splice(index, 1)"
             >
               <FontAwesomeIcon :icon="faTrash" />
@@ -171,7 +171,7 @@ const handleSubmit = () => {
               aria-label="Remove step"
               type="button"
               :disabled="instructionList.length <= 1"
-              class="bg-base disabled:bg-overlay-100 ease-normal h-12 max-w-12 basis-1/12 cursor-pointer self-center rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
+              class="bg-base disabled:bg-overlay-100 h-12 max-w-12 basis-1/12 cursor-pointer self-center rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
               @click="instructionList.splice(index, 1)"
             >
               <FontAwesomeIcon :icon="faTrash" />
