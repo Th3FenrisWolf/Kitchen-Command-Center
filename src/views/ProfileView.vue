@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSquareCheck, faSquarePen } from '@fortawesome/free-solid-svg-icons'
 import { updateProfile } from 'firebase/auth'
@@ -84,4 +84,4 @@ const handleSignOut = async () => {
     </div>
     <div class="shadow-primary grid gap-4 rounded-3xl p-8">Content TBD</div>
   </section>
-</template>
+</template> -->

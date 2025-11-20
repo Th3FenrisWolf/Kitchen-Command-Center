@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import cx from '~/utilities/cx'
-import { signIn, signUp } from '~/utilities/auth'
 import router from '~/router'
 import { parseQueryString } from '~/utilities/query-functions'
 import InputField from '~/components/shared/InputField.vue'
@@ -40,12 +39,12 @@ const sendForm = async (
 }
 
 const handleSubmit = async () => {
-  formError.value = null
-  const response = await sendForm(isSignIn.value ? signIn : signUp)
-  clearForm()
-  if (response) {
-    router.push({ path: returnUrl ?? '/' })
-  }
+  // formError.value = null
+  // const response = await sendForm(isSignIn.value ? signIn : signUp)
+  // clearForm()
+  // if (response) {
+  //   router.push({ path: returnUrl ?? '/' })
+  // }
 }
 </script>
 

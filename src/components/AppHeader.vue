@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import MenuItem from '~/components/MenuItem.vue'
 import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { signOut } from '~/utilities/auth'
-import useUserStore from '~/store/user'
-
-const userStore = useUserStore()
-const { isAuthenticated } = storeToRefs(userStore)
 
 const router = useRouter()
 const routes = router.getRoutes()
@@ -33,7 +27,7 @@ const userNav = routes.filter((route) => route.meta.userNav)
 
       <MenuItem
         class="ml-auto"
-        :route="userNav.find((item) => item.meta.whenAuthenticated === isAuthenticated)"
+        :route="userNav.find((item) => item.meta.whenAuthenticated === false)"
       />
     </nav>
   </header>
