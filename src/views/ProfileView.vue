@@ -1,40 +1,40 @@
-<!-- <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faSquareCheck, faSquarePen } from '@fortawesome/free-solid-svg-icons'
-import { updateProfile } from 'firebase/auth'
-import { ref } from 'vue'
-import InputField from '~/components/shared/InputField.vue'
-import router from '~/router'
-import useUserStore from '~/store/user'
-import { signOut } from '~/utilities/auth'
-import { cx } from '~/utilities/cx'
+<script setup lang="ts">
+// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+// import { faSquareCheck, faSquarePen } from '@fortawesome/free-solid-svg-icons'
+// import { updateProfile } from 'firebase/auth'
+// import { ref } from 'vue'
+// import InputField from '~/components/shared/InputField.vue'
+// import router from '~/router'
+// import useUserStore from '~/store/user'
+// import { signOut } from '~/utilities/auth'
+// import { cx } from '~/utilities/cx'
 
-const { user, isAuthenticated } = useUserStore()
-if (!isAuthenticated) router.push({ name: 'Login' })
+// const { user, isAuthenticated } = useUserStore()
+// if (!isAuthenticated) router.push({ name: 'Login' })
 
-const isEdit = ref(false)
-const displayName = ref(user?.displayName ?? '')
-const memberSince = ref(user?.metadata.creationTime ?? '')
-const email = ref(user?.email ?? '')
-const fakePassword = '********************'
+// const isEdit = ref(false)
+// const displayName = ref(user?.displayName ?? '')
+// const memberSince = ref(user?.metadata.creationTime ?? '')
+// const email = ref(user?.email ?? '')
+// const fakePassword = '********************'
 
-const updateUsername = async () => {
-  isEdit.value = false
-  if (!user) return
+// const updateUsername = async () => {
+//   isEdit.value = false
+//   if (!user) return
 
-  updateProfile(user, {
-    displayName: displayName.value,
-  })
-}
+//   updateProfile(user, {
+//     displayName: displayName.value,
+//   })
+// }
 
-const handleSignOut = async () => {
-  await signOut()
-  router.push({ name: 'Dashboard' })
-}
+// const handleSignOut = async () => {
+//   await signOut()
+//   router.push({ name: 'Dashboard' })
+// }
 </script>
 
 <template>
-  <section class="grid grid-cols-2 grid-rows-2 gap-8">
+  <!-- <section class="grid grid-cols-2 grid-rows-2 gap-8">
     <div class="shadow-primary row-span-2 grid gap-4 rounded-3xl p-8">
       <img
         class="w-full rounded-2xl object-cover"
@@ -83,5 +83,5 @@ const handleSignOut = async () => {
       </div>
     </div>
     <div class="shadow-primary grid gap-4 rounded-3xl p-8">Content TBD</div>
-  </section>
-</template> -->
+  </section> -->
+</template>
