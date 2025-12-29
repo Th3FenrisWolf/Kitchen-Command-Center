@@ -1,0 +1,14 @@
+@model KitchenCommandCenter.Web.Features.Widgets.Accordion.AccordionWidgetViewModel
+
+<section class="@Model.Properties?.GetMarginClasses()">
+    @if (!Model.Items.Any())
+    {
+        <strong>@WidgetConstants.ConfigHeading</strong>
+        <p>@WidgetConstants.ConfigSubHeading</p>
+    }
+
+    @foreach (var item in Model?.Items)
+    {
+        <partial name="~/Features/Widgets/Accordion/_AccordionItem.cshtml" model="@item" />
+    }
+</section>

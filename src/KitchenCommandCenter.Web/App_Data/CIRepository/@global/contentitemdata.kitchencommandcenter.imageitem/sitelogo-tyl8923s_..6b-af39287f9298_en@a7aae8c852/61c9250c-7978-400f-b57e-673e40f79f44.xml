@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.imageitem>
+  <ContentItemDataCommonDataID>
+    <GUID>ce67eae6-6913-48d4-936b-af39287f9298</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SiteLogo-tyl8923s</CodeName>
+      <GUID>bcf2de6e-f42f-49ef-9a5e-691f56706e2c</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>61c9250c-7978-400f-b57e-673e40f79f44</ContentItemDataGUID>
+  <ImageAltText>Logo</ImageAltText>
+  <ImageAsset>
+    <![CDATA[{"Original":{"Identifier":"9a056faa-5e14-40ef-8264-b86c2e3ad58e","Name":"screenshot.png","Extension":".png","Size":2780542,"Width":3840,"Height":2160,"LastModified":"2025-11-20T02:20:38.137321Z"},"OptimizationParameters":{"OutputExtension":"webp","Quality":50,"WidthLimit":null,"HeightLimit":null},"Variants":{},"FocalPoint":{"X":1641,"Y":1076},"Identifier":"b77a89b8-f53b-4324-8d43-5f80375a80ab","Name":"screenshot.webp","Extension":".webp","Size":801806,"Width":3840,"Height":2160,"LastModified":"2025-11-20T02:20:53.6618034Z"}]]>
+  </ImageAsset>
+</contentitemdata.kitchencommandcenter.imageitem>

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "kentico.xperience.dbmanager": {
+      "version": "30.11.3",
+      "commands": [
+        "kentico-xperience-dbmanager"
+      ]
+    }
+  }
+}

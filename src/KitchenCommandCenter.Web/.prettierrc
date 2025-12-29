@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/prettierrc",
+  "semi": false,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "printWidth": 100,
+  "trailingComma": "all",
+  "tailwindFunctions": ["cx"],
+  "tailwindStylesheet": "./Features/styles/tailwind-config.css",
+  "cssDeclarationSorterKeepOverrides": false,
+  "cssDeclarationSorterOrder": "alphabetical",
+  "plugins": ["prettier-plugin-css-order", "prettier-plugin-tailwindcss"]
+}

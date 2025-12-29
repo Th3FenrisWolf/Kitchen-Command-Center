@@ -1,0 +1,25 @@
+@using KitchenCommandCenter.Web.Features.Pages.PageBuilder
+@using KitchenCommandCenter.Web.Features.Widgets.Hero;
+
+@model PageBuilderViewModel
+
+@{
+    var defaultAreaOptions = new EditableAreaOptions
+            {
+                AllowWidgetOutputCache = true,
+                WidgetOutputCacheExpiresSliding = TimeSpan.FromMinutes(2),
+            };
+
+    var heroAreaOptions = new EditableAreaOptions
+            {
+                AllowWidgetOutputCache = true,
+                WidgetOutputCacheExpiresSliding = TimeSpan.FromMinutes(2),
+                AllowedWidgets = new[] { HeroWidgetProperties.IDENTIFIER },
+            };
+}
+
+<editable-area area-identifier="hero" area-options="@heroAreaOptions" />
+
+@await Component.InvokeAsync("Breadcrumbs", Model)
+
+<editable-area area-identifier="page-builder-widgets" area-options="@defaultAreaOptions" />

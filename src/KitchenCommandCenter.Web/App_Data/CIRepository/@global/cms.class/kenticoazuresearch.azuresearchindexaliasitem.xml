@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassDisplayName>AzureSearch Index Item</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="AzureSearchIndexAliasItemId" columntype="integer" enabled="true" guid="10926f29-a165-4b72-a546-d8e6dc6f54a8" isPK="true" />
+      <field column="AzureSearchIndexAliasItemGuid" columnprecision="0" columntype="guid" enabled="true" guid="b31b5867-b17f-4328-97a8-d22651f5c597" visible="true" />
+      <field column="AzureSearchIndexAliasItemIndexAliasName" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="35cfbfc5-64e5-4b58-821d-77eec80d8766" visible="true" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>b3928cbe-8e46-4d16-bb04-0a9c77b73d61</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KenticoAzureSearch.AzureSearchIndexAliasItem</ClassName>
+  <ClassResourceID>
+    <CodeName>CMS.Integration.AzureSearch</CodeName>
+    <GUID>fe77ec85-de47-4005-be7e-36d1bd694dd5</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KenticoAzureSearch_AzureSearchIndexAliasItem</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

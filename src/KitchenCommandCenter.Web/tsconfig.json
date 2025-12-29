@@ -1,0 +1,19 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["Features/**/*", "Features/**/*.vue"],
+  "exclude": ["Features/**/__tests__/*"],
+  "compilerOptions": {
+    "verbatimModuleSyntax": true,
+    "composite": true,
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "~/*": ["Features/*"]
+    }
+  },
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

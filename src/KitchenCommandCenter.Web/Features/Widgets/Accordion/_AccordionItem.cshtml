@@ -1,0 +1,13 @@
+@model KitchenCommandCenter.Web.Features.Widgets.Accordion.AccordionItem
+
+<section data-toggle-group>
+    <div class="border-b border-primary-200">
+        <button class="peer accordion-item" aria-expanded="@Model.IsDefaultOpen.ToString().ToLower()">
+            <span class="text-xl font-bold text-primary-600">@Model.Heading</span>
+            <i class="fa-solid @(Model.IsDefaultOpen ? "fa-chevron-up" : "fa-chevron-down") text-primary-600"></i>
+        </button>
+        <div class="hidden peer-aria-[expanded=true]:block prose border-l-4 border-primary-200 pl-3 p-4" data-body>
+            @Html.Raw(Model.Body)
+        </div>
+    </div>
+</section>

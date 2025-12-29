@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Utility Navigation</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="bd331c30-24c8-4024-bb42-a374850ea987" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="5393100c-644d-4a55-91d7-8b66451bfcc3" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="59885bbc-37d9-47c8-aca6-98485d84d23c" isunique="true" system="true" />
+      <field allowempty="true" column="UtilityLoginLink" columnprecision="0" columntype="contentitemreference" enabled="true" guid="7daf2e29-f59e-49f2-8724-5af92b1904e2" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Login Link</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field allowempty="true" column="UtilitySearchLink" columnprecision="0" columntype="contentitemreference" enabled="true" guid="4854cc16-caa4-4767-afdf-f118bc0e4e84" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Search Link</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field allowempty="true" column="UtilityLinks" columnprecision="0" columntype="contentitemreference" enabled="true" guid="163149a1-c75c-43ff-8c0d-3f023a19b449" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[The first 3 links will be displayed to the right, and any more will overflow to the left]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Links</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>80125149-0726-49c2-a10a-2acce7077781</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-gauge</ClassIconClass>
+  <ClassName>KitchenCommandCenter.UtilityNavigation</ClassName>
+  <ClassShortName>KitchenCommandCenterUtilityNavigation</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_UtilityNavigation</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
+</cms.contenttype>

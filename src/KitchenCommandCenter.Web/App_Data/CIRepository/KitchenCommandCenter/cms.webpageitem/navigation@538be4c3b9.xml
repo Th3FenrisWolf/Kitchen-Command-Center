@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>Navigation-fnbvsa9d</CodeName>
+    <GUID>bd532fe0-747f-4c20-a3f8-53abb92c8585</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>454185f3-bc5e-441b-b75e-03d98e4f41cd</WebPageItemGUID>
+  <WebPageItemName>Navigation-fnbvsa9d</WebPageItemName>
+  <WebPageItemOrder>4</WebPageItemOrder>
+  <WebPageItemTreePath>/Navigation</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KitchenCommandCenter</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

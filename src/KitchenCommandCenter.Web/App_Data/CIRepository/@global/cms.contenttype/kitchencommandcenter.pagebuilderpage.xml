@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Page Builder Page</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="ec93777c-ba9d-497a-bb47-81c49d980364" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="78917b4c-0e34-4cd0-b0db-b0c13bd1c868" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="ccf1ca98-e9fd-475b-8a29-7a9d4ea11414" isunique="true" system="true" />
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
+        <properties />
+      </schema>
+      <schema guid="06a36232-7196-4749-b464-45ba1b9159f6" name="06a36232-7196-4749-b464-45ba1b9159f6">
+        <properties />
+      </schema>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>67c3eb80-5652-4a1c-a90c-7a9b33714c34</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-collapse-scheme</ClassIconClass>
+  <ClassName>KitchenCommandCenter.PageBuilderPage</ClassName>
+  <ClassShortName>KitchenCommandCenterPageBuilderPage</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_PageBuilderPage</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+</cms.contenttype>

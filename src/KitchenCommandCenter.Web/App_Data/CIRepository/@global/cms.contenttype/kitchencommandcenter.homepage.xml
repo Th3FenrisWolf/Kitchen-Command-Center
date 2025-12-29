@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Home Page</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="4ccb5f3d-e656-420a-93be-83db135968ae" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="2c162e6c-8584-4518-af86-e29189362636" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="7d40b433-ced7-4e6a-8901-19ec8376f003" isunique="true" system="true" />
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
+        <properties />
+      </schema>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>20c4d8a8-688f-40ef-b80d-198c0ec8b08e</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-home</ClassIconClass>
+  <ClassName>KitchenCommandCenter.HomePage</ClassName>
+  <ClassShortName>KitchenCommandCenterHomePage</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_HomePage</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+</cms.contenttype>

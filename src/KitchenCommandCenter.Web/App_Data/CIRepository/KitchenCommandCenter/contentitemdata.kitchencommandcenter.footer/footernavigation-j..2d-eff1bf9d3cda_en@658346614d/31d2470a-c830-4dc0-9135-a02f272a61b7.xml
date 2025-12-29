@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.footer>
+  <ContentItemDataCommonDataID>
+    <GUID>830b990f-85ae-4935-ad2d-eff1bf9d3cda</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>FooterNavigation-jw3cve13</CodeName>
+      <GUID>f9eb1b68-e6ce-4859-97bf-199d26cd49cd</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>31d2470a-c830-4dc0-9135-a02f272a61b7</ContentItemDataGUID>
+  <FooterLegalText>Change Me</FooterLegalText>
+</contentitemdata.kitchencommandcenter.footer>

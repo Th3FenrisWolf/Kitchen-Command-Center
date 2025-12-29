@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassDisplayName>Content item common data</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemCommonDataID" columntype="integer" enabled="true" guid="dcc7d6bf-4c35-4414-9ed7-76f89bf9960d" isPK="true" system="true" />
+      <field column="ContentItemCommonDataGUID" columnprecision="0" columntype="guid" enabled="true" guid="8faf5ded-4735-4a11-a8ba-da6e5cfe71b5" system="true" />
+      <field column="ContentItemCommonDataContentItemID" columnprecision="0" columntype="integer" enabled="true" guid="91fc5540-0504-4301-a196-d9cc050499f6" refobjtype="cms.contentitem" reftype="Required" system="true">
+        <properties>
+          <defaultvalue>0</defaultvalue>
+        </properties>
+      </field>
+      <field column="ContentItemCommonDataContentLanguageID" columnprecision="0" columntype="integer" enabled="true" guid="66a47fdf-75d6-4bd6-b99d-f37a816b8676" refobjtype="cms.contentlanguage" reftype="Required" system="true" />
+      <field column="ContentItemCommonDataVersionStatus" columnprecision="0" columntype="integer" enabled="true" guid="a26f89d5-5e71-4e55-97e9-0f121c2ec231" system="true" />
+      <field column="ContentItemCommonDataIsLatest" columnprecision="0" columntype="boolean" enabled="true" guid="8fda7834-4aeb-4f2d-9ba9-cb3861e56b62" system="true" />
+      <field allowempty="true" column="ContentItemCommonDataVisualBuilderWidgets" columnprecision="0" columntype="longtext" enabled="true" guid="b67cbb13-d340-42bf-bb5b-e479bf31f509" system="true" />
+      <field allowempty="true" column="ContentItemCommonDataVisualBuilderTemplateConfiguration" columnprecision="0" columntype="longtext" enabled="true" guid="0d5a573b-759a-4dd7-a86b-be2ef2f5bac4" system="true" />
+      <field allowempty="true" column="ContentItemCommonDataFirstPublishedWhen" columnprecision="7" columntype="datetime" enabled="true" guid="1318327e-9a4c-47e7-be2e-3da0fe99c15e" system="true" />
+      <field allowempty="true" column="ContentItemCommonDataLastPublishedWhen" columnprecision="7" columntype="datetime" enabled="true" guid="169ce320-e362-4b70-b4dd-cc055082c254" system="true" />
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="Navigation_Metadata">
+        <properties>
+          <fieldcaption>Navigation/Metadata</fieldcaption>
+        </properties>
+      </schema>
+      <field allowempty="true" column="IncludeInNavigation" columnprecision="0" columntype="boolean" enabled="true" guid="e8940121-7f2d-4744-8ad0-3cf140c90f12" visible="true">
+        <properties>
+          <defaultvalue>True</defaultvalue>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Include in Navigation</fieldcaption>
+          <fielddescription>
+            <![CDATA[If selected, the current position of this page in the content tree will be used to include it in the site navigation]]>
+          </fielddescription>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.Checkbox</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="NavigationLabel" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="64541ce9-14f9-466f-87f4-5c28a218f5e0" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[The text to be displayed in the navigation menu for this element]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Navigation Label</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="ShowBreadcrumbs" columnprecision="0" columntype="boolean" enabled="true" guid="bd94a82e-9abf-4453-b20d-3c588caa4963" visible="true">
+        <properties>
+          <defaultvalue>True</defaultvalue>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Show Breadcrumbs</fieldcaption>
+          <fielddescription>
+            <![CDATA[If selected, breadcrumbs will be displayed for this page]]>
+          </fielddescription>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.Checkbox</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="MetadataTitle" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="d7855746-b8f8-4133-a1a9-6410bfa26c98" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[The title used for the Page Title in the browser tab, as well as The Open Graph title to be displayed when sharing a link for the current page]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Metadata Title</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="MetadataDescription" columnprecision="0" columntype="longtext" enabled="true" guid="af39805d-55a4-4d0a-ae98-62baabcb3bea" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[The Open Graph description to be displayed when sharing a link for the current page]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Metadata Description</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>1</MinRowsNumber>
+        </settings>
+      </field>
+      <field allowempty="true" column="MetadataImage" columnprecision="0" columntype="contentitemreference" enabled="true" guid="f3a96086-adf7-4633-b352-933b82ae4851" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[The Open Graph image to be displayed when sharing a link for the current page]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Metadata Image</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field allowempty="true" column="MetadataKeywords" columnprecision="0" columntype="longtext" enabled="true" guid="2f65fab4-3912-4c55-b931-aa6546340b79" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Metadata Keywords</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>1</MinRowsNumber>
+        </settings>
+      </field>
+      <field allowempty="true" column="MetadataPublishDate" columnprecision="7" columntype="datetime" enabled="true" guid="a4c3da7d-e45c-4389-b96b-bfa58d130b48" visible="true">
+        <properties>
+          <explanationtext>{$base.forms.datetimeinput.explanation$}</explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Metadata Publish Date</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.DateTimeInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="TwitterCard" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="b6cdf5ae-0af6-40e9-a4b6-4869401a4f58" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Twitter Card</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.DropDownSelector</controlname>
+          <Options>
+<![CDATA[
+summary;Summary
+summary_large_image;Summary (Large Image)
+app;App
+player;Player
+]]>
+          </Options>
+          <OptionsValueSeparator>;</OptionsValueSeparator>
+        </settings>
+      </field>
+      <field allowempty="true" column="TwitterSite" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="e26771f3-9703-42fa-a04e-95d329bd0c09" visible="true">
+        <properties>
+          <explanationtext>@username for the website used in the card footer</explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Twitter Site</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="TwitterCreator" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="19b7b2da-bc4e-4de3-a236-21f0703717e2" visible="true">
+        <properties>
+          <explanationtext>@username for the content creator / author</explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Twitter Creator</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="TwitterImage" columnprecision="0" columntype="contentitemreference" enabled="true" guid="0dd25831-3897-4dbf-9c44-6394c86dd666" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Image to be used with the configured Twitter Card. OpenGraph image will be used if one isn't configured here]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Twitter Image</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <schema guid="06a36232-7196-4749-b464-45ba1b9159f6" name="AzureSearchMetadata">
+        <properties>
+          <fieldcaption>AzureSearch Metadata</fieldcaption>
+        </properties>
+      </schema>
+      <field allowempty="true" column="ExcludeFromSearch" columnprecision="0" columntype="boolean" enabled="true" guid="862f8494-b307-4eef-a711-2efa7b543bef" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[This does not affect external search such as Google or Bing]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Exclude from Internal Search</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.Checkbox</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="SearchTitle" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="606ecdd2-58f3-444e-96dd-d4e9d848ecc9" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Title used in search results. If blank Page Tile will be used]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Search Title</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="SearchDescription" columnprecision="0" columnsize="500" columntype="text" enabled="true" guid="8736f571-9385-4d79-9621-866d14d3882b" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Description to be used in search results. If blank Metadata Description will be used]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Search Description</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>3</MinRowsNumber>
+        </settings>
+      </field>
+      <field allowempty="true" column="SearchThumbnailImage" columnprecision="0" columntype="contentitemreference" enabled="true" guid="0cf5b095-46b2-46c0-a5e7-ec3b9cc13b3b" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Thumbnail image used for search results. If empty Metadata Image will be used]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Search Thumbnail Image</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field allowempty="true" column="SearchSortDate" columnprecision="7" columntype="datetime" enabled="true" guid="fbba3557-cc8b-4ca9-9f26-76a93de379dc" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Enter a date: MM/DD/YYYY hh:mm AM/PM if empty the MetadataPublishDate will be used]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Search Sort Date</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.DateTimeInput</controlname>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>a6581fb3-892a-45b4-981a-012ce4b50b43</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>CMS.ContentItemCommonData</ClassName>
+  <ClassResourceID>
+    <CodeName>CMS.ContentEngine</CodeName>
+    <GUID>eb76ebd1-752f-4969-a5b6-1fb984cae224</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>CMS_ContentItemCommonData</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

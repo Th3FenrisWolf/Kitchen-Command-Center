@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Search Results Page</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="7e683721-cf88-4116-93b1-dfb737a223c9" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="b62633ca-c868-4d75-9933-9340ef1e5ee4" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="bd4e9406-a08c-406d-a08a-cef09109b3a5" isunique="true" system="true" />
+      <field column="SearchIndexName" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="ccf650d3-a1f1-41c5-a692-f56886b90b0c" visible="true">
+        <properties>
+          <explanationtext>Codename of the search index</explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Search Index Name</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field column="DefaultPageSize" columnprecision="0" columntype="integer" enabled="true" guid="511ae4f5-7576-44e6-940d-954ded96efce" visible="true">
+        <properties>
+          <defaultvalue>9</defaultvalue>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Page Size</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="Filter" columnprecision="0" columnsize="500" columntype="text" enabled="true" guid="f502219a-d197-4faf-8f01-562cf17fa6ae" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[OData filter to apply to search request. see <a href="https://learn.microsoft.com/en-us/azure/search/search-query-odata-filter">OData filter reference</a>]]>
+          </explanationtext>
+          <explanationtextashtml>True</explanationtextashtml>
+          <fieldcaption>Filter</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>3</MinRowsNumber>
+        </settings>
+      </field>
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
+        <properties />
+      </schema>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>4102512f-e093-421d-9a71-06960888d9df</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-magnifier</ClassIconClass>
+  <ClassName>KitchenCommandCenter.SearchResultsPage</ClassName>
+  <ClassShortName>KitchenCommandCenterSearchResultsPage</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_SearchResultsPage</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+</cms.contenttype>

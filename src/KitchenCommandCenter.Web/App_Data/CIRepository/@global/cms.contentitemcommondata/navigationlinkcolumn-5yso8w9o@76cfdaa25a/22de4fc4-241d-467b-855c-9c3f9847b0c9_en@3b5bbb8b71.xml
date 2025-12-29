@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>NavigationLinkColumn-5yso8w9o</CodeName>
+    <GUID>6ccea9d8-4cb0-4fea-9ad7-70a22f20f035</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2025-11-20 02:17:46Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>22de4fc4-241d-467b-855c-9c3f9847b0c9</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2025-11-20 02:17:46Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>4bd0bf1d-dd7c-47c7-b504-babb26da96a0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>d23f5694-f4f0-47a4-be92-c5908c20531e</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>22de4fc4-241d-467b-855c-9c3f9847b0c9</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>NavigationColumnLink-xdvknyem</CodeName>
+        <GUID>82cf0b0d-0a52-4517-bcbb-4d74fc5afd2f</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>

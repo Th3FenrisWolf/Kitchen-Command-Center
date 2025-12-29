@@ -1,0 +1,51 @@
+@using KitchenCommandCenter.Web.Features.Widgets.Hero
+
+@model ComponentViewModel<HeroWidgetProperties>
+
+@{
+    var textColor = Model.Properties.BackgroundColor == "bg-gray-200" ? "text-primary-800" : "text-white";
+}
+
+<div class="@Model.Properties.GetMarginClasses() z-0 hero @Model.Properties.BackgroundColor relative @(Model.Properties.SplitLayout == "textFirst" ? "flex-col-reverse" : "flex-col")">
+    @if (Model.Properties.Layout == "Split")
+    {
+        @if (Model.Properties.BackgroundImage?.Any() ?? false)
+        {
+            <div class="relative w-full row-start-1 col-span-2 h-52 lg:h-full @(Model.Properties.SplitLayout == "textFirst" ? "col-start-3" : "col-start-1")">
+                <bzs-image class="absolute w-full h-full object-cover" item="@Model.Properties.BackgroundImage.FirstOrDefault()" />
+            </div>
+        }
+        <div class="py-8 px-4 lg:pr-24 lg:py-16 @Model.Properties.TextAlignment @(Model.Properties.SplitLayout == "textFirst" ? "col-start-2 col-end-3 lg:pl-4" : "col-start-3 col-end-4 lg:pl-16")">
+            <div class="inline-block not-prose @textColor @Model.Properties.TextAlignment">
+                @if (Context.Kentico().PageBuilder().EditMode)
+                {
+                    Html.Kentico().RichTextEditor(nameof(Model.Properties.Heading));
+                }
+                else
+                {
+                    @Html.Raw(Html.Kentico().ResolveRichText(Model.Properties.Heading))
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.Properties.Layout == "Full")
+    {
+        @if (Model.Properties.BackgroundImage?.Any() ?? false)
+        {
+            <bzs-image class="absolute -z-10 w-full h-full object-cover" item="@Model.Properties.BackgroundImage.FirstOrDefault()" />
+        }
+        <div class="container py-10 px-4 lg:py-16 col-span-full mx-auto @Model.Properties.TextAlignment @(Model.Properties.TextWidth == "Full" ? "" : "max-w-[636px]")">
+            <div class="inline-block not-prose @textColor @Model.Properties.TextAlignment">
+                @if (Context.Kentico().PageBuilder().EditMode)
+                {
+                    Html.Kentico().RichTextEditor(nameof(Model.Properties.Heading));
+                }
+                else
+                {
+                    @Html.Raw(Html.Kentico().ResolveRichText(Model.Properties.Heading))
+                }
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,25 @@
+@using KitchenCommandCenter.Web.Features.Widgets.Video;
+
+@model ComponentViewModel<VideoWidgetProperties>
+
+@{
+    var rootDomain = $"{Context.Request.Scheme}://{Context.Request.Host}";
+}
+
+<div class="relative @Model.Properties.GetMarginClasses()">
+    <bzs-image item="@Model.Properties.ThumbnailImage.FirstOrDefault()" />
+    <button id="open-modal" class="play-icon"><img src="@(rootDomain)/assets/play.svg" alt="Play Icon for video" /></button>
+</div>
+
+<div class="video-modal-wrapper p-4">
+    <div class="container mx-auto h-full">
+        <div class="text-end">
+            <button id="close-modal" class="text-white mb-4">
+                <i class="fa-solid fa-close text-3xl text-white"></i>
+            </button>
+        </div>
+        <div class="video mx-auto">
+            <iframe src="https://www.youtube.com/embed/@Model.Properties.YouTubeVideoCode" class="h-full w-full"></iframe>
+        </div>
+    </div>
+</div>

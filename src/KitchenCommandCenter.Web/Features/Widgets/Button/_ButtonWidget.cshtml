@@ -1,0 +1,22 @@
+@using KitchenCommandCenter.Web.Features.Widgets.Button;
+@using Kentico.Content.Web.Mvc;
+
+@model ComponentViewModel<ButtonWidgetProperties>
+
+@{
+    var isEditMode = Context.Kentico().PageBuilder().EditMode;
+    var buttonStyles = $"{Model.Properties.Variant} {Model.Properties.Size}".ToLower();
+}
+
+<div class="flex @Model.Properties.Alignment @Model.Properties.GetMarginClasses()">
+    <bzs-button-link href="@Model.Properties.ButtonUrl" target="@Model.Properties.ButtonTarget" class="@buttonStyles @(isEditMode ? "cursor-text" : "cursor-pointer")">
+        @if (isEditMode)
+        {
+            Html.Kentico().RichTextEditor(nameof(Model.Properties.ButtonText));
+        }
+        else
+        {
+            @Html.Raw(Html.Kentico().ResolveRichText(@Model.Properties.ButtonText))
+        }
+    </bzs-button-link>
+</div>

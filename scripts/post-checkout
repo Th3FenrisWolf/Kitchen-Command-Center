@@ -1,0 +1,12 @@
+#!/bin/bash
+
+PREV_HEAD=$1
+NEW_HEAD=$2
+BRANCH_OR_FILE=$3
+
+# 0 = file | 1 = branch
+if [ $PREV_HEAD != $NEW_HEAD ] && [ $BRANCH_OR_FILE -eq 1 ]
+then
+  cd ./src/src/KitchenCommandCenter.Web
+  dotnet run --kxp-ci-restore
+fi

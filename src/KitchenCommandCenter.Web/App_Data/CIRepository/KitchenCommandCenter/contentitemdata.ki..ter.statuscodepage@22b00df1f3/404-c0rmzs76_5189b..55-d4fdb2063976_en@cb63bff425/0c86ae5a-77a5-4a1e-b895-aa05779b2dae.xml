@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.statuscodepage>
+  <ContentItemDataCommonDataID>
+    <GUID>5189bfb5-bdba-421c-b555-d4fdb2063976</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>404-c0rmzs76</CodeName>
+      <GUID>23b7b440-da47-4b35-96d4-b2db4670b1bb</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>0c86ae5a-77a5-4a1e-b895-aa05779b2dae</ContentItemDataGUID>
+  <StatusCode>404</StatusCode>
+  <StatusCodeBody>
+    <![CDATA[<p>Page Not Found</p>]]>
+  </StatusCodeBody>
+  <StatusCodeHeading>404</StatusCodeHeading>
+</contentitemdata.kitchencommandcenter.statuscodepage>

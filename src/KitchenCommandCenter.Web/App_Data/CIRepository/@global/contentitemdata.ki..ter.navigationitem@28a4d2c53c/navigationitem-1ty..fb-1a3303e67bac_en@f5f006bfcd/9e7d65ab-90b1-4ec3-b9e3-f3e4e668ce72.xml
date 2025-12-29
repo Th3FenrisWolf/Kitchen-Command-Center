@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.navigationitem>
+  <ContentItemDataCommonDataID>
+    <GUID>19e1b8e3-be62-443c-bdfb-1a3303e67bac</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>NavigationItem-1tytcryx</CodeName>
+      <GUID>90e5a410-8da8-4c50-86e9-f59a2f78b3d2</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>9e7d65ab-90b1-4ec3-b9e3-f3e4e668ce72</ContentItemDataGUID>
+  <NavigationItemColumns>
+    <![CDATA[[{"Identifier":"6ccea9d8-4cb0-4fea-9ad7-70a22f20f035"}]]]>
+  </NavigationItemColumns>
+  <NavigationItemOverviewLink>
+    <![CDATA[[{"Identifier":"19503f21-99ba-426a-a35e-4fd0aa165a1e"}]]]>
+  </NavigationItemOverviewLink>
+  <NavigationItemTitle>Navigation Item</NavigationItemTitle>
+</contentitemdata.kitchencommandcenter.navigationitem>

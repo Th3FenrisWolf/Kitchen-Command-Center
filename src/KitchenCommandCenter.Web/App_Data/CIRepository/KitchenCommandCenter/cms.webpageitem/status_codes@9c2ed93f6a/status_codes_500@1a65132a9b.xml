@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>500-ksodmwo0</CodeName>
+    <GUID>0b595228-63ef-4fc4-9bec-45660b3d583e</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>ed506d26-f541-45f6-b46d-88d9a60ec8a4</WebPageItemGUID>
+  <WebPageItemName>500-ksodmwo0</WebPageItemName>
+  <WebPageItemOrder>2</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>StatusCodes-4bxxq6lj</CodeName>
+    <GUID>bb2bb59b-7229-4983-aaab-2fca2bf33b9c</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>/Status_Codes/500</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KitchenCommandCenter</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

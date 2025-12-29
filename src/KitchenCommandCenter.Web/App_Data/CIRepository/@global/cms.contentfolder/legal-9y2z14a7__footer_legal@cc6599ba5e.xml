@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentfolder>
+  <ContentFolderCreatedByUserID>
+    <CodeName>administrator</CodeName>
+    <GUID>6415b8ce-8072-4bcd-8e48-9d7178b826b7</GUID>
+    <ObjectType>cms.user</ObjectType>
+  </ContentFolderCreatedByUserID>
+  <ContentFolderCreatedWhen>2024-10-28 20:06:23Z</ContentFolderCreatedWhen>
+  <ContentFolderDisplayName>Legal</ContentFolderDisplayName>
+  <ContentFolderGUID>31bbd51c-9548-4837-ba84-6af1b72d2939</ContentFolderGUID>
+  <ContentFolderModifiedByUserID>
+    <CodeName>administrator</CodeName>
+    <GUID>6415b8ce-8072-4bcd-8e48-9d7178b826b7</GUID>
+    <ObjectType>cms.user</ObjectType>
+  </ContentFolderModifiedByUserID>
+  <ContentFolderName>Legal-9y2z14a7</ContentFolderName>
+  <ContentFolderParentFolderID>
+    <CodeName>Footer-hxomtp5r</CodeName>
+    <GUID>d15315a0-fda5-4c53-a473-7bfefbb485bf</GUID>
+    <ObjectType>cms.contentfolder</ObjectType>
+  </ContentFolderParentFolderID>
+  <ContentFolderTreePath>/Footer/Legal</ContentFolderTreePath>
+  <ContentFolderWorkspaceID>
+    <CodeName>KenticoDefault</CodeName>
+    <GUID>43f674d6-540d-4f91-8c19-608b5bddb2f2</GUID>
+    <ObjectType>cms.workspace</ObjectType>
+  </ContentFolderWorkspaceID>
+</cms.contentfolder>

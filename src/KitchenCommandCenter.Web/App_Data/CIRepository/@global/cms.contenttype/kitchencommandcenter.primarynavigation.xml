@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Primary Navigation</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="9fa12575-61a3-47b8-b38e-54ed93ba9377" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="980a5603-5972-4b8d-b323-b4b9c754b407" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="05c13249-8422-4f55-9eb8-293e606c0135" isunique="true" system="true" />
+      <field allowempty="true" column="NavigationItems" columnprecision="0" columntype="contentitemreference" enabled="true" guid="2b93c31d-08fc-47e5-973b-6c1f0b189c3e" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Navigation Items</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["d34520b2-b981-4005-9de7-4fd37878c777"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>a0be8e56-63b0-4de4-bd57-e4e8f7a8f256</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-menu</ClassIconClass>
+  <ClassName>KitchenCommandCenter.PrimaryNavigation</ClassName>
+  <ClassShortName>KitchenCommandCenterPrimaryNavigation</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_PrimaryNavigation</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
+</cms.contenttype>

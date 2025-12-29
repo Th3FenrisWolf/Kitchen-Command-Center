@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Reusable</ClassContentTypeType>
+  <ClassDisplayName>Link Column</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="7a93ed02-b0a9-45b6-af5a-a2f26e7baadd" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="abf4a31b-c3b4-4d56-ab0b-6273a9688511" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="f094d0e1-69ed-4a23-8fa4-75d851b1bb90" isunique="true" system="true" />
+      <field column="ColumnHeading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="f8575ee1-09e1-4125-a550-8cb63ab72034" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Header</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="ColumnLinks" columnprecision="0" columntype="contentitemreference" enabled="true" guid="4bd0bf1d-dd7c-47c7-b504-babb26da96a0" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Links</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>7b6ed693-3835-4e27-a11e-87e1c14ad7e0</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-rectangle-v</ClassIconClass>
+  <ClassName>KitchenCommandCenter.LinkColumn</ClassName>
+  <ClassShortName>KitchenCommandCenterLinkColumn</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_LinkColumn</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
+</cms.contenttype>

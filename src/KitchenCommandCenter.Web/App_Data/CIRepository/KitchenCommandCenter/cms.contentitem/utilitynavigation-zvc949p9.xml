@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitem>
+  <ContentItemChannelID>
+    <CodeName>KitchenCommandCenter</CodeName>
+    <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+    <ObjectType>cms.channel</ObjectType>
+  </ContentItemChannelID>
+  <ContentItemContentTypeID>
+    <CodeName>KitchenCommandCenter.UtilityNavigation</CodeName>
+    <GUID>80125149-0726-49c2-a10a-2acce7077781</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </ContentItemContentTypeID>
+  <ContentItemGUID>9efc4536-fc4a-4327-b358-3e68d7d1f612</ContentItemGUID>
+  <ContentItemIsReusable>False</ContentItemIsReusable>
+  <ContentItemIsSecured>False</ContentItemIsSecured>
+  <ContentItemName>UtilityNavigation-zvc949p9</ContentItemName>
+</cms.contentitem>

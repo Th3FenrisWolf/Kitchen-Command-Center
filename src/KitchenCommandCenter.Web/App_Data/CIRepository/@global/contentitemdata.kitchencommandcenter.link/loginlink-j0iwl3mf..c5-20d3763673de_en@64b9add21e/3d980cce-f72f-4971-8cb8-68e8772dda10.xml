@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.link>
+  <ContentItemDataCommonDataID>
+    <GUID>3fe1e6e9-4a4c-4de9-8cc5-20d3763673de</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>LoginLink-j0iwl3mf</CodeName>
+      <GUID>600cb305-4a37-468a-8a6a-7d95315d09f9</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>3d980cce-f72f-4971-8cb8-68e8772dda10</ContentItemDataGUID>
+  <LinkDisplayText>Login</LinkDisplayText>
+  <LinkPage>
+    <![CDATA[[{"Identifier":"72105566-b709-4ba4-bdf5-c04c63790dd1"}]]]>
+  </LinkPage>
+  <LinkTarget>_self</LinkTarget>
+  <LinkType>page</LinkType>
+</contentitemdata.kitchencommandcenter.link>

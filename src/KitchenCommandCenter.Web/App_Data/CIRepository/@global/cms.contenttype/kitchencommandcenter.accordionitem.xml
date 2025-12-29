@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Reusable</ClassContentTypeType>
+  <ClassDisplayName>Accordion Item</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="cb3b089b-2e01-4658-b50f-0bc418cd4fb5" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="d2aded2b-4cee-4905-9bec-4e8df7e508d2" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="d9c237fa-ebe2-4ec1-a703-2df83af63c06" isunique="true" system="true" />
+      <field column="Heading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="056ed4fa-ff97-4c5d-9806-effebbb5a054" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Heading</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field column="Body" columnprecision="0" columnsize="1000" columntype="text" enabled="true" guid="5213be2e-d330-4a0a-9b01-374066c5148c" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Body</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.RichTextEditor</controlname>
+        </settings>
+      </field>
+      <field column="IsDefaultOpen" columnprecision="0" columntype="boolean" enabled="true" guid="4a4a33c1-8b49-4378-8721-9e66bccfbd5d" visible="true">
+        <properties>
+          <defaultvalue>False</defaultvalue>
+          <explanationtext>
+            <![CDATA[If selected, the accordion item will be open on initial page load]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Open by Default?</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.Checkbox</controlname>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>669246e2-db38-4854-b83d-3d6cbbafa8ca</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-accordion</ClassIconClass>
+  <ClassName>KitchenCommandCenter.AccordionItem</ClassName>
+  <ClassShortName>KitchenCommandCenterAccordionItem</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_AccordionItem</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
+</cms.contenttype>

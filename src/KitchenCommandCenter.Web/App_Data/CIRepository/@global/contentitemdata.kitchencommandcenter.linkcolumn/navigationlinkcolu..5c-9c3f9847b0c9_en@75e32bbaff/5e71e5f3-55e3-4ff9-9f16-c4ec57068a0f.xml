@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.linkcolumn>
+  <ColumnHeading>Link Column</ColumnHeading>
+  <ColumnLinks>
+    <![CDATA[[{"Identifier":"82cf0b0d-0a52-4517-bcbb-4d74fc5afd2f"}]]]>
+  </ColumnLinks>
+  <ContentItemDataCommonDataID>
+    <GUID>22de4fc4-241d-467b-855c-9c3f9847b0c9</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>NavigationLinkColumn-5yso8w9o</CodeName>
+      <GUID>6ccea9d8-4cb0-4fea-9ad7-70a22f20f035</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>5e71e5f3-55e3-4ff9-9f16-c4ec57068a0f</ContentItemDataGUID>
+</contentitemdata.kitchencommandcenter.linkcolumn>

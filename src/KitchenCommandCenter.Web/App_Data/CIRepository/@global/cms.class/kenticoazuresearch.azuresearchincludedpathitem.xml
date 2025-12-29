@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassDisplayName>AzureSearch Path Item</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="AzureSearchIncludedPathItemId" columntype="integer" enabled="true" guid="8076f7ab-2e8f-47cf-823c-28e028c7ce6f" isPK="true" />
+      <field column="AzureSearchIncludedPathItemGuid" columnprecision="0" columntype="guid" enabled="true" guid="98567f5b-86b7-46a6-995b-84bb7baf728f" visible="true" />
+      <field column="AzureSearchIncludedPathItemAliasPath" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="f170e6c3-6ad4-42d8-a5c9-c03b3b0c49aa" visible="true" />
+      <field column="AzureSearchIncludedPathItemIndexItemId" columnprecision="0" columntype="integer" enabled="true" guid="ab10371a-2e96-4b82-ba47-018efc91106e" refobjtype="kenticoazuresearch.azuresearchindexitem" reftype="Required" visible="true" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>c8ffece0-9645-4c03-8581-0a29d1f7d7a6</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KenticoAzureSearch.AzureSearchIncludedPathItem</ClassName>
+  <ClassResourceID>
+    <CodeName>CMS.Integration.AzureSearch</CodeName>
+    <GUID>fe77ec85-de47-4005-be7e-36d1bd694dd5</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KenticoAzureSearch_AzureSearchIncludedPathItem</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.sitesettings>
+  <ContentItemDataCommonDataID>
+    <GUID>aa7fdd1d-0ebe-4760-b056-154a2907d28a</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>GlobalSiteSettings-x8ymxctf</CodeName>
+      <GUID>8099fea5-0d1c-419a-b16f-7332bac4adec</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>57e156d9-0a33-46b2-8682-8ae415af4adb</ContentItemDataGUID>
+  <SiteLogo>
+    <![CDATA[[{"Identifier":"bcf2de6e-f42f-49ef-9a5e-691f56706e2c"}]]]>
+  </SiteLogo>
+</contentitemdata.kitchencommandcenter.sitesettings>

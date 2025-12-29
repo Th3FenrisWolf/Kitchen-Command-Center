@@ -1,0 +1,57 @@
+@layer base {
+  body {
+    color: var(--color-onyx);
+    font-family: 'Hazelnut';
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  h1,
+  h2 {
+    font-family: 'APCasual';
+    letter-spacing: 1px;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+}
+
+/* TODO: Hazelnut font is swapping colon and semicolon */
+@font-face {
+  font-family: 'Aima';
+  src: url('/fonts/AimaDisplayRegular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'APCasualItalic';
+  src: url('/fonts/AmericanPurposeCasualItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'APCasual';
+  src: url('/fonts/AmericanPurposeCasualRegular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'HazelnutBold';
+  src: url('/fonts/HazelnutMilkTeaBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'HazelnutBoldItalic';
+  src: url('/fonts/HazelnutMilkTeaBoldItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'HazelnutItalic';
+  src: url('/fonts/HazelnutMilkTeaItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Hazelnut';
+  src: url('/fonts/HazelnutMilkTeaRegular.ttf') format('truetype');
+}

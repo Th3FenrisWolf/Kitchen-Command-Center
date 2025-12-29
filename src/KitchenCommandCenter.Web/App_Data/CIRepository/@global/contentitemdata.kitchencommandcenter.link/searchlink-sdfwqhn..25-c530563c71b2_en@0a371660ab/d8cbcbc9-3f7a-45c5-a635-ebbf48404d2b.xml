@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.link>
+  <ContentItemDataCommonDataID>
+    <GUID>66b942b7-e166-4b14-a125-c530563c71b2</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SearchLink-sdfwqhnq</CodeName>
+      <GUID>4b231130-84fe-4d42-b86c-3fa56a8c76f9</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d8cbcbc9-3f7a-45c5-a635-ebbf48404d2b</ContentItemDataGUID>
+  <LinkDisplayText>Search</LinkDisplayText>
+  <LinkTarget>_self</LinkTarget>
+  <LinkType>page</LinkType>
+</contentitemdata.kitchencommandcenter.link>

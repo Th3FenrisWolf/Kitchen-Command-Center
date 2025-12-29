@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.link>
+  <ContentItemDataCommonDataID>
+    <GUID>6c74da23-a0d6-42fd-a574-4541d6883644</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>NavigationOverviewLink-m2fia5gn</CodeName>
+      <GUID>19503f21-99ba-426a-a35e-4fd0aa165a1e</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>5b759797-67dd-4f18-9b3a-cb8e1f802f6d</ContentItemDataGUID>
+  <LinkPage>
+    <![CDATA[[{"Identifier":"72105566-b709-4ba4-bdf5-c04c63790dd1"}]]]>
+  </LinkPage>
+  <LinkTarget>_self</LinkTarget>
+  <LinkType>page</LinkType>
+</contentitemdata.kitchencommandcenter.link>

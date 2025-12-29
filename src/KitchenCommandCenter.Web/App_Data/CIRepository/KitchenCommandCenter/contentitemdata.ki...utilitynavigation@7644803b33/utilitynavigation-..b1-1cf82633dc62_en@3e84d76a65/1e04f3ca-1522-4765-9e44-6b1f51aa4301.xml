@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.utilitynavigation>
+  <ContentItemDataCommonDataID>
+    <GUID>67d451ab-c1b3-437a-8bb1-1cf82633dc62</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>UtilityNavigation-zvc949p9</CodeName>
+      <GUID>9efc4536-fc4a-4327-b358-3e68d7d1f612</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>1e04f3ca-1522-4765-9e44-6b1f51aa4301</ContentItemDataGUID>
+  <UtilityLinks>
+    <![CDATA[[{"Identifier":"82cf0b0d-0a52-4517-bcbb-4d74fc5afd2f"},{"Identifier":"19503f21-99ba-426a-a35e-4fd0aa165a1e"}]]]>
+  </UtilityLinks>
+  <UtilityLoginLink>
+    <![CDATA[[{"Identifier":"600cb305-4a37-468a-8a6a-7d95315d09f9"}]]]>
+  </UtilityLoginLink>
+  <UtilitySearchLink>
+    <![CDATA[[{"Identifier":"4b231130-84fe-4d42-b86c-3fa56a8c76f9"}]]]>
+  </UtilitySearchLink>
+</contentitemdata.kitchencommandcenter.utilitynavigation>

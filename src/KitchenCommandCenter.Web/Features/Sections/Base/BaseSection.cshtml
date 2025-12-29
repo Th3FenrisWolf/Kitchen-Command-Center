@@ -1,0 +1,17 @@
+﻿@using KitchenCommandCenter.Web.Features.Sections.Base;
+
+@model BaseSectionViewModel
+
+@{
+    var isContainer = Model.ContentWidth == "Container";
+}
+
+<div data-section-guid="@Model.SectionGuid" class="@Model.BackgroundColor">
+    <div class="variable-section-wrapper">
+        <div class="variable-section px-4 pb-@Model.PaddingBottom pt-@Model.PaddingTop @(isContainer ? "container mx-auto" : "w-full")">
+            <div>
+                <widget-zone />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassDisplayName>AzureSearch Indexed Language Item</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="AzureSearchIndexLanguageItemID" columntype="integer" enabled="true" guid="bc46efd8-4d28-418a-8080-0ae29e47b9ae" isPK="true" />
+      <field column="AzureSearchIndexLanguageItemName" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="99a84413-71cd-4ae8-bb2f-b5dbf41ba1c6" visible="true" />
+      <field column="AzureSearchIndexLanguageItemGuid" columnprecision="0" columntype="guid" enabled="true" guid="9b81c4d0-68be-46e3-a5cb-56ee02463d64" visible="true" />
+      <field column="AzureSearchIndexLanguageItemIndexItemId" columnprecision="0" columntype="integer" enabled="true" guid="6a06c400-317a-4ae5-b466-b8d68f4944ee" refobjtype="kenticoazuresearch.azuresearchindexitem" reftype="Required" visible="true" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>54ab73ea-5262-4eec-97b7-b0256e3165ff</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KenticoAzureSearch.AzureSearchIndexLanguageItem</ClassName>
+  <ClassResourceID>
+    <CodeName>CMS.Integration.AzureSearch</CodeName>
+    <GUID>fe77ec85-de47-4005-be7e-36d1bd694dd5</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KenticoAzureSearch_AzureSearchIndexLanguageItem</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

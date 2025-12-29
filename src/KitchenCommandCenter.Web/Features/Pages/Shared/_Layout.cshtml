@@ -1,0 +1,39 @@
+@using KitchenCommandCenter.Web.Features.Components.Footer
+@using KitchenCommandCenter.Web.Features.Components.Header
+
+@model BasePageViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+
+@* <environment include="Production">
+  @section Styles {
+    <link rel="stylesheet" asp-href-include="~/assets/index-*.css" />
+  }
+  @section Scripts {
+    <script asp-src-include="~/assets/index-*.js"></script>
+  }
+</environment> *@
+
+<head>
+  <partial name="~/Features/Pages/Shared/Partials/_Metadata.cshtml" />
+
+  @RenderSection("Styles", false)
+  <page-builder-styles />
+</head>
+
+<body>
+  @await Component.InvokeAsync(typeof(HeaderViewComponent))
+
+  <main role="main" class="content-grid auto-rows-min bg-bone">
+    @RenderBody()
+  </main>
+
+  @await Component.InvokeAsync(typeof(FooterViewComponent))
+
+  @RenderSection("Scripts", false)
+
+  <page-builder-scripts />
+</body>
+
+</html>

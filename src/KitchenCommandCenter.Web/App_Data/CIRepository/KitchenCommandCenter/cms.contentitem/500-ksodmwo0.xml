@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitem>
+  <ContentItemChannelID>
+    <CodeName>KitchenCommandCenter</CodeName>
+    <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+    <ObjectType>cms.channel</ObjectType>
+  </ContentItemChannelID>
+  <ContentItemContentTypeID>
+    <CodeName>KitchenCommandCenter.StatusCodePage</CodeName>
+    <GUID>0a492309-5ae6-45e6-a9c9-0427a2a7537d</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </ContentItemContentTypeID>
+  <ContentItemGUID>0b595228-63ef-4fc4-9bec-45660b3d583e</ContentItemGUID>
+  <ContentItemIsReusable>False</ContentItemIsReusable>
+  <ContentItemIsSecured>False</ContentItemIsSecured>
+  <ContentItemName>500-ksodmwo0</ContentItemName>
+</cms.contentitem>

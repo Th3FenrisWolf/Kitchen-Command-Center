@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Footer</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="14feae26-6d4a-4dd7-9de9-8dbfaacf27f8" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="a2c7cda2-9f11-4fe5-b0f3-e42f7ab8529d" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="054374c0-1b80-4cb2-a214-adc56968f847" isunique="true" system="true" />
+      <field allowempty="true" column="FooterLogo" columnprecision="0" columntype="contentitemreference" enabled="true" guid="6afaeb17-5fc2-4871-b448-cb66445c173d" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Logo</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <MinimumItems>1</MinimumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field allowempty="true" column="FooterColumns" columnprecision="0" columntype="contentitemreference" enabled="true" guid="8d7b4fd5-cd92-485e-8e67-818db0d899f5" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Columns</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["7b6ed693-3835-4e27-a11e-87e1c14ad7e0"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field column="FooterLegalText" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="072432e7-df1e-4fb9-9728-20466a95d380" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Legal Text</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="FooterLegalLinks" columnprecision="0" columntype="contentitemreference" enabled="true" guid="2a72a288-b61b-4be4-9f6e-80ff15ec2278" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Legal Links</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>7f2755b5-1329-4bd3-9729-fab565e7a3ee</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-l-logotype-menu-col-footer</ClassIconClass>
+  <ClassName>KitchenCommandCenter.Footer</ClassName>
+  <ClassShortName>KitchenCommandCenterFooter</ClassShortName>
+  <ClassTableName>KitchenCommandCenter_Footer</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
+</cms.contenttype>

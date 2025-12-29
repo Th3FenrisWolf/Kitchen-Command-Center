@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitem>
+  <ContentItemChannelID>
+    <CodeName>KitchenCommandCenter</CodeName>
+    <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+    <ObjectType>cms.channel</ObjectType>
+  </ContentItemChannelID>
+  <ContentItemContentTypeID>
+    <CodeName>KitchenCommandCenter.Footer</CodeName>
+    <GUID>7f2755b5-1329-4bd3-9729-fab565e7a3ee</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </ContentItemContentTypeID>
+  <ContentItemGUID>f9eb1b68-e6ce-4859-97bf-199d26cd49cd</ContentItemGUID>
+  <ContentItemIsReusable>False</ContentItemIsReusable>
+  <ContentItemIsSecured>False</ContentItemIsSecured>
+  <ContentItemName>FooterNavigation-jw3cve13</ContentItemName>
+</cms.contentitem>

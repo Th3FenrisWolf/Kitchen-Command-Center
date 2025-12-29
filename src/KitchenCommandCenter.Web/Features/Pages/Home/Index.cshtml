@@ -1,0 +1,17 @@
+@using KitchenCommandCenter.Web.Features.Pages.Home
+
+@model HomeViewModel
+
+@{
+  var entry = $"/Features/Pages/Home/main.ts";
+}
+
+@section Styles {
+  <link rel="stylesheet" vite-href="@entry" asp-append-version="true" />
+}
+
+@section Scripts {
+  <script type="module" vite-src="@entry" asp-append-version="true"></script>
+}
+
+<div id="app"></div>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassDisplayName>AzureSearch Index Item</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="AzureSearchIndexItemId" columntype="integer" enabled="true" guid="deb0092b-09e1-4faa-9439-770cf8cbe099" isPK="true" />
+      <field column="AzureSearchIndexItemGuid" columnprecision="0" columntype="guid" enabled="true" guid="2874b725-af35-40d4-a142-3154d6769bcc" visible="true" />
+      <field column="AzureSearchIndexItemIndexName" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="1f435dc2-9082-4890-8c3a-e840100faebe" visible="true" />
+      <field column="AzureSearchIndexItemChannelName" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="9ff125c5-91e7-4d40-9b27-9b8bea98790c" visible="true" />
+      <field column="AzureSearchIndexItemStrategyName" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="3341197e-9fe5-4fad-9dee-dfea09735b5f" visible="true" />
+      <field allowempty="true" column="AzureSearchIndexItemRebuildHook" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="9a2e8343-4e78-4a06-b2a7-79c71b07cbda" visible="true" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>75367251-c195-4408-9008-1a706ac1c36e</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KenticoAzureSearch.AzureSearchIndexItem</ClassName>
+  <ClassResourceID>
+    <CodeName>CMS.Integration.AzureSearch</CodeName>
+    <GUID>fe77ec85-de47-4005-be7e-36d1bd694dd5</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KenticoAzureSearch_AzureSearchIndexItem</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

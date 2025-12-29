@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>NavigationItem-1tytcryx</CodeName>
+    <GUID>90e5a410-8da8-4c50-86e9-f59a2f78b3d2</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2025-11-20 02:17:46Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>19e1b8e3-be62-443c-bdfb-1a3303e67bac</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2025-11-20 02:17:46Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>aa7040de-f4cd-4e08-81bf-9656cd1d6dbb</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>a4827a4a-4d5b-4363-ba0f-07786af5fbec</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>19e1b8e3-be62-443c-bdfb-1a3303e67bac</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>NavigationLinkColumn-5yso8w9o</CodeName>
+        <GUID>6ccea9d8-4cb0-4fea-9ad7-70a22f20f035</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>25c78705-c7d4-4d0d-908a-b48fbd9ad427</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>bc2481c6-92b7-4256-9233-66b5325497b8</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>19e1b8e3-be62-443c-bdfb-1a3303e67bac</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>NavigationOverviewLink-m2fia5gn</CodeName>
+        <GUID>19503f21-99ba-426a-a35e-4fd0aa165a1e</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>
