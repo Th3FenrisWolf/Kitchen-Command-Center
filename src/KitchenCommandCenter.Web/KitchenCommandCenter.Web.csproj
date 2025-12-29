@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BizStream.XbK.FeatureFlags\BizStream.XbK.FeatureFlags.csproj" />
     <ProjectReference Include="..\KitchenCommandCenter.Admin\KitchenCommandCenter.Admin.csproj" />
     <ProjectReference Include="..\KitchenCommandCenter.Core\KitchenCommandCenter.Core.csproj" />
   </ItemGroup>

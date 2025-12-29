@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import EditableArea from '~/vue-components/shared/EditableArea.vue'
 import Card from '~/vue-components/Card.vue'
 import Stacker from '~/vue-components/Stacker.vue'
 import UnderlineLink from '~/vue-components/shared/UnderlineLink.vue'
@@ -102,8 +101,6 @@ const stackerCards = [
   <section class="text-center">
     <h1 class="text-6xl">Welcome to the Dashboard!</h1>
   </section>
-
-  <EditableArea />
 
   <section class="grid gap-8 lg:grid-cols-2">
     <Card

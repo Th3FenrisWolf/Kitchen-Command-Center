@@ -1,5 +1,5 @@
 @using KitchenCommandCenter.Web.Features.Components.Footer
-@using KitchenCommandCenter.Web.Features.Components.Header
+@* @using KitchenCommandCenter.Web.Features.Components.Header *@
 
 @model BasePageViewModel
 
@@ -23,7 +23,7 @@
 </head>
 
 <body>
-  @await Component.InvokeAsync(typeof(HeaderViewComponent))
+  @* @await Component.InvokeAsync(typeof(HeaderViewComponent)) *@
 
   <main role="main" class="content-grid auto-rows-min bg-bone">
     @RenderBody()

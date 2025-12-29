@@ -1,4 +1,3 @@
-using BizStream.XbK.FeatureFlags;
 using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Kentico.PageBuilder.Web.Mvc;
@@ -16,11 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<ICacheService, CacheService>();
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
-builder.Services.AddViteServices();
+builder.Services.AddViteServices(options =>
+{
+    options.Server.AutoRun = true;
+    options.Server.PackageManager = "yarn";
+});
 
 builder.Services.AddAutoMapper(typeof(Program));
-
-builder.Services.AddXbkFeatureFlags(builder.Configuration, typeof(Program).Assembly);
 
 // Enable desired Kentico Xperience features
 builder.Services.AddKentico(features =>
