@@ -19,18 +19,6 @@ public enum SectionBackgroundColorOptions
 {
     [TailwindBackgroundColor(TailwindColor.White)]
     White,
-
-    [TailwindBackgroundColor(TailwindColor.Neutral, TailwindShade.OneHundred)]
-    LightGray,
-
-    [TailwindBackgroundColor(TailwindColor.Neutral, TailwindShade.TwoHundred)]
-    Gray,
-
-    [TailwindBackgroundColor(TailwindColor.Primary, TailwindShade.EightHundred)]
-    Navy,
-
-    [TailwindBackgroundColor(TailwindColor.Primary, TailwindShade.SevenHundred)]
-    DarkBlue,
 }
 
 public class BaseSectionProperties : ISectionProperties
@@ -42,7 +30,7 @@ public class BaseSectionProperties : ISectionProperties
         DataProviderType = typeof(EnumDropDownOptionsProvider<SectionBackgroundColorOptions>)
     )]
     public string BackgroundColor { get; set; } =
-        SectionBackgroundColorOptions.LightGray.GetTailwindStyle();
+        SectionBackgroundColorOptions.White.GetTailwindStyle();
 
     [RequiredValidationRule]
     [DropDownComponent(Order = 30, Label = "Content Width", Options = "Container\nFull Width")]

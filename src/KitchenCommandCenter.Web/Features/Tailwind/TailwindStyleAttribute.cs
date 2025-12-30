@@ -7,8 +7,6 @@ public enum TailwindColor
     None = 0,
     Black,
     White,
-    Primary,
-    Neutral,
     Gray,
 }
 

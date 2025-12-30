@@ -1,17 +1,12 @@
-@import 'tailwindcss';
+/* Only scan specific file types in Features directory */
+@import 'tailwindcss' source(none);
+@source '../**/*.cshtml';
+@source '../**/*.vue';
+@source '../**/*.css';
 
-@source '../../**/*.cshtml';
-@source '../../**/*.vue';
-@source '../../**/*.css';
-
-/* Safelist dynamically generated classes - Variable section padding/margin */
-@source inline('{pb,pt,mb,mt}-{0..24}');
-
-/* Safelist background colors */
-@source inline('bg-{gray,primary,neutral}-{50,{100..900..100}}');
-
-/* Safelist justify and height classes */
-@source inline('justify-{start,end,center,between,around,evenly} h-{1..96}');
+/* Safelist dynamically generated classes */
+@source inline('{pb,pt,mb,mt}-{0,4,8,12}');
+@source inline('bg-{base,mantle,crust,surface{,-100,-200}}');
 
 @theme {
   --color-rosewater: hsl(10, 57%, 88%);
