@@ -1,8 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "[csharp]": {
-    "editor.defaultFormatter": "ms-dotnettools.csharp"
-  },
   "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
   "omnisharp.enableEditorConfigSupport": true,
   "tailwindCSS.experimental.configFile": "src/KitchenCommandCenter.Web/Features/styles/tailwind-config.css",

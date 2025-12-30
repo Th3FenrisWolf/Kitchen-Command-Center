@@ -14,4 +14,14 @@
   <script type="module" vite-src="@entry" asp-append-version="true"></script>
 }
 
-<div id="app"></div>
+@if (Context.Kentico().PageBuilder().EditMode)
+{
+  <div id="app"></div>
+  <editable-area area-identifier="page-builder-widgets" area-options="@Html.GetAreaOptions()" />
+}
+else
+{
+  <div id="app">
+    <editable-area area-identifier="page-builder-widgets" area-options="@Html.GetAreaOptions()" />
+  </div>
+}

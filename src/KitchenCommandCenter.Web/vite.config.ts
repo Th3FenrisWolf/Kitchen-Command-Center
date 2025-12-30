@@ -16,6 +16,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '~': fileURLToPath(new URL('./Features', import.meta.url)),
+      vue: 'vue/dist/vue.esm-bundler.js', // Use runtime compiler build
     },
   },
 })
@@ -26,10 +27,42 @@ export default defineConfig({
 function AutoEndpoints(): Plugin {
   const main = `import '~/styles/main.css'
 
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import App from '{app}'
+import { registerGlobalComponents } from '~/vue-components/register-global-components'
 
-createApp(App).mount('#app')
+// Read existing HTML from #app before mounting
+const appElement = document.getElementById('app')
+const existingHTML = appElement ? appElement.innerHTML.trim() : ''
+
+// Create a wrapper component that includes both App.vue and compiled existing HTML
+const RootComponent = {
+  components: { App },
+  setup() {
+    // If there's existing HTML, create a component from it
+    let ExistingContent = null
+    if (existingHTML) {
+      ExistingContent = {
+        template: existingHTML
+      }
+    }
+    
+    return () => {
+      const children = [h(App)]
+      if (ExistingContent) {
+        children.push(h(ExistingContent))
+      }
+      return h('div', children)
+    }
+  }
+}
+
+const app = createApp(RootComponent)
+
+// Register all global components from Vue files
+registerGlobalComponents(app)
+
+app.mount('#app')
 `
 
   return {
