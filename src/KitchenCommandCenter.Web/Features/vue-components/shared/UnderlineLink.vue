@@ -6,9 +6,9 @@ const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
 
 <template>
   <div class="group/fill-up-link relative my-1 inline-block">
-    <RouterLink :to="linkTo" class="peer focus:outline-0">
+    <a :href="linkTo" class="peer focus:outline-0">
       <slot />
-    </RouterLink>
+    </a>
     <div
       :class="
         cx(

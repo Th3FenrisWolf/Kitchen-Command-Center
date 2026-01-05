@@ -1,98 +1,69 @@
 <script setup lang="ts">
-import Card from '~/vue-components/Card.vue'
+import Card from '~/Widgets/Card/Card.vue'
 import Stacker from '~/vue-components/Stacker.vue'
 import UnderlineLink from '~/vue-components/shared/UnderlineLink.vue'
 import type { BackgroundColor } from '~/types/design-system'
 
-const proteinCards: Array<{
-  title: string
-  quipText: string
-  description: string
-  cardColor: BackgroundColor
-}> = [
+type Card = {
+  backgroundColor: BackgroundColor
+  heading: string
+  subheading: string
+  body?: string
+}
+
+const dessertCards: Card[] = [
   {
-    title: 'Beef',
-    quipText: 'Bold · Juicy · Satisfying',
-    description: 'Sizzle, sear, or slow-cook — bring out the bold flavors of beef!',
-    cardColor: 'bg-maroon',
+    heading: 'Cakes',
+    subheading: 'Rich',
+    backgroundColor: 'bg-maroon',
   },
   {
-    title: 'Chicken',
-    quipText: 'Versatile · Tasty · Essential',
-    description: 'Grill, roast, or fry — turn this staple into something amazing!',
-    cardColor: 'bg-yellow',
+    heading: 'Cookies',
+    subheading: 'Addictive',
+    backgroundColor: 'bg-yellow',
   },
   {
-    title: 'Pork',
-    quipText: 'Savory · Tender · Irresistible',
-    description: 'Chops, bacon, or pulled — discover the best of pork!',
-    cardColor: 'bg-peach',
+    heading: 'Pies',
+    subheading: 'Comforting',
+    backgroundColor: 'bg-peach',
   },
   {
-    title: 'Fish',
-    quipText: 'Delicate · Fresh · Delicious',
-    description: 'Light, crispy, or tender — find fresh fish favorites!',
-    cardColor: 'bg-teal',
+    heading: 'Ice Cream',
+    subheading: 'Dreamy',
+    backgroundColor: 'bg-teal',
   },
 ]
 
-const dessertCards: Array<{
-  title: string
-  quipText: string
-  cardColor: BackgroundColor
-}> = [
+const stackerCards: Card[] = [
   {
-    title: 'Cakes',
-    quipText: 'Rich',
-    cardColor: 'bg-maroon',
+    heading: 'Vodka',
+    subheading: 'Clean and pure distillation',
+    backgroundColor: 'bg-lavender',
   },
   {
-    title: 'Cookies',
-    quipText: 'Addictive',
-    cardColor: 'bg-yellow',
+    heading: 'Tequila',
+    subheading: 'Blue agave essence',
+    backgroundColor: 'bg-sky',
   },
   {
-    title: 'Pies',
-    quipText: 'Comforting',
-    cardColor: 'bg-peach',
+    heading: 'Gin',
+    subheading: 'Juniper-forward botanical blend',
+    backgroundColor: 'bg-green',
   },
   {
-    title: 'Ice Cream',
-    quipText: 'Dreamy',
-    cardColor: 'bg-teal',
-  },
-]
-
-const stackerCards = [
-  {
-    title: 'Vodka',
-    description: 'Clean and pure distillation',
-    color: 'bg-lavender',
+    heading: 'Whiskey',
+    subheading: 'Oak-aged grain elixir',
+    backgroundColor: 'bg-peach',
   },
   {
-    title: 'Tequila',
-    description: 'Blue agave essence',
-    color: 'bg-sky',
+    heading: 'Rum',
+    subheading: 'Sweet, tropical cane delight',
+    backgroundColor: 'bg-maroon',
   },
   {
-    title: 'Gin',
-    description: 'Juniper-forward botanical blend',
-    color: 'bg-green',
-  },
-  {
-    title: 'Whiskey',
-    description: 'Oak-aged grain elixir',
-    color: 'bg-peach',
-  },
-  {
-    title: 'Rum',
-    description: 'Sweet, tropical cane delight',
-    color: 'bg-maroon',
-  },
-  {
-    title: 'Wine',
-    description: 'Fermented grape nectar',
-    color: 'bg-red',
+    heading: 'Wine',
+    subheading: 'Fermented grape nectar',
+    backgroundColor: 'bg-red',
   },
 ]
 </script>
@@ -102,41 +73,20 @@ const stackerCards = [
     <h1 class="text-6xl">Welcome to the Dashboard!</h1>
   </section>
 
-  <section class="grid gap-8 lg:grid-cols-2">
-    <Card
-      v-for="protein in proteinCards"
-      :key="protein.title"
-      :card-color="protein.cardColor"
-      card-text-color="text-onyx"
-      drawer-color="bg-bone"
-      drawer-text-color="text-onyx"
-    >
-      <div>
-        <h2 class="text-heading">{{ protein.title }}</h2>
-        <h3>{{ protein.quipText }}</h3>
-      </div>
-
-      <template #drawer>
-        <p class="text-balance">{{ protein.description }}</p>
-        <UnderlineLink color="bg-onyx" linkTo="/recipes?protein=beef">View Recipes</UnderlineLink>
-      </template>
-    </Card>
-  </section>
-
   <section class="breakout rounded-3xl bg-base p-8 text-center text-bone">
     <p class="mb-4 text-heading">How About Something Sweeter?</p>
     <div class="grid gap-6 lg:grid-cols-4">
       <Card
         v-for="dessert in dessertCards"
-        :key="dessert.title"
-        :card-color="dessert.cardColor"
+        :key="dessert.heading"
+        :card-color="dessert.backgroundColor"
         card-text-color="text-onyx"
         drawer-color="bg-bone"
         drawer-text-color="text-onyx"
       >
         <div>
-          <h2 class="text-heading">{{ dessert.title }}</h2>
-          <h3>{{ dessert.quipText }}</h3>
+          <h2 class="text-heading">{{ dessert.heading }}</h2>
+          <h3>{{ dessert.subheading }}</h3>
         </div>
 
         <template #drawer>

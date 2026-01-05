@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { cx } from '~/utilities/cx'
-
+import type { BackgroundColor } from '~/types/design-system'
 import { onMounted, ref } from 'vue'
 
 const containerRef = ref<HTMLElement>()
 
 onMounted(() => {
   const observer = new IntersectionObserver(
-    ([e]) => e.target.nextElementSibling?.classList.toggle('stuck', e.boundingClientRect.top < 0),
+    ([e]) => e?.target.nextElementSibling?.classList.toggle('stuck', e.boundingClientRect.top < 0),
     { threshold: [1] },
   )
 
@@ -20,9 +20,9 @@ onMounted(() => {
 
 const props = defineProps<{
   cards: {
-    title: string
-    description: string
-    color: string
+    heading: string
+    subheading: string
+    backgroundColor: BackgroundColor
   }[]
 }>()
 </script>
@@ -31,7 +31,7 @@ const props = defineProps<{
   <div ref="containerRef" class="grid items-center gap-8">
     <div
       v-for="(card, index) in props.cards"
-      :key="card.title"
+      :key="card.heading"
       data-card
       :class="cx('sticky', index === props.cards.length - 1 && 'last')"
       :style="`top: ${32 * (index + 1)}px`"
@@ -40,13 +40,13 @@ const props = defineProps<{
       <div
         :class="
           cx(
-            'shadow-primary [&.stuck]:shadow-light aspect-square origin-top rounded-3xl p-8 text-center transition-all duration-100 [&.stuck]:scale-95 [&:is(.last_*)]:scale-100',
-            card.color,
+            'aspect-square origin-top rounded-3xl p-8 text-center shadow-primary transition-all duration-100 [&.stuck]:scale-95 [&.stuck]:shadow-light [&:is(.last_*)]:scale-100',
+            card.backgroundColor,
           )
         "
       >
-        <h2 class="text-heading">{{ card.title }}</h2>
-        <p class="text-balance">{{ card.description }}</p>
+        <h2 class="text-heading">{{ card.heading }}</h2>
+        <p class="text-balance">{{ card.subheading }}</p>
       </div>
     </div>
   </div>
