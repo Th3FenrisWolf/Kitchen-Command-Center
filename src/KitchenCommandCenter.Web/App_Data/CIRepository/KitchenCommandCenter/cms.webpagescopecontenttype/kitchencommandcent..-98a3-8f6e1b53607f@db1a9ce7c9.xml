@@ -28,13 +28,6 @@
         <ObjectType>cms.contenttype</ObjectType>
       </WebPageScopeContentTypeContentTypeID>
     </Binding>
-    <Binding id="cms.contenttype_KitchenCommandCenter.SearchResultsPage">
-      <WebPageScopeContentTypeContentTypeID>
-        <CodeName>KitchenCommandCenter.SearchResultsPage</CodeName>
-        <GUID>4102512f-e093-421d-9a71-06960888d9df</GUID>
-        <ObjectType>cms.contenttype</ObjectType>
-      </WebPageScopeContentTypeContentTypeID>
-    </Binding>
     <Binding id="cms.contenttype_KitchenCommandCenter.SiteSettings">
       <WebPageScopeContentTypeContentTypeID>
         <CodeName>KitchenCommandCenter.SiteSettings</CodeName>

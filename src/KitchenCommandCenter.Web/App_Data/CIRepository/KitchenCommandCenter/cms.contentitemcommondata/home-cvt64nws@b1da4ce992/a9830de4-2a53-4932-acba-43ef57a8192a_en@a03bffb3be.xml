@@ -13,8 +13,73 @@
   <ContentItemCommonDataFirstPublishedWhen>2025-11-20 02:05:36Z</ContentItemCommonDataFirstPublishedWhen>
   <ContentItemCommonDataGUID>a9830de4-2a53-4932-acba-43ef57a8192a</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2025-11-20 02:05:36Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-01-05 02:43:50Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemCommonDataVisualBuilderTemplateConfiguration />
+  <ContentItemCommonDataVisualBuilderWidgets>
+    <![CDATA[{"editableAreas":[{"identifier":"page-builder-widgets","sections":[{"identifier":"0cb6b2fe-ce56-4907-9e45-5015f6b2ea54","type":"KitchenCommandCenter.BaseSection","properties":{"backgroundColor":"bg-white","contentWidth":"Container","paddingTop":"Large","paddingBottom":"Large"},"zones":[{"identifier":"10eb51e7-6f97-49e4-8da3-786afbc86173","widgets":[{"identifier":"f85e3d65-b532-4145-a4e7-c2ee6927b0a5","type":"KitchenCommandCenter.Web.CardWidget","variants":[{"identifier":"6bdfe256-00a4-4205-815b-3f80f16ef727","properties":{"cards":[{"identifier":"45ee0e44-9664-4820-aba3-7511559a4d0e"},{"identifier":"8af696bc-e04f-4003-9164-22de993f0cf4"},{"identifier":"a7a6d3a9-d39c-4031-97aa-b77eed40090d"},{"identifier":"6c9770db-88db-4ba6-bba8-1235418b691f"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"cards":"3471b34b-cc60-4694-a4ad-d5ca797f46d0","marginTop":"0e8d6486-5e83-4d86-bdf6-efed48d40af0","marginBottom":"425c4c53-02da-4fd3-8616-d4c787bf13a1"}}]}]}],"fieldIdentifiers":{"backgroundColor":"8f71b5a3-9f60-4c00-80ba-47c267d78274","contentWidth":"6aaed313-57db-442a-aeb2-00a415fb9a99","paddingTop":"d50fe29b-db4f-41c6-a61e-46b2aa6b7149","paddingBottom":"d4072adf-6cd4-4550-adf1-81023b3052d9"}}]}]}]]>
+  </ContentItemCommonDataVisualBuilderWidgets>
   <IncludeInNavigation>True</IncludeInNavigation>
+  <MetadataDescription />
+  <MetadataKeywords />
+  <MetadataTitle />
+  <NavigationLabel />
   <ShowBreadcrumbs>True</ShowBreadcrumbs>
+  <TwitterCard />
+  <TwitterCreator />
+  <TwitterSite />
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>fc9208f8-9d7a-486f-bed3-1ecb0a062604</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>PorkHighlights-pyvz0mwj</CodeName>
+        <GUID>a7a6d3a9-d39c-4031-97aa-b77eed40090d</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>e99b3823-2924-4bbd-b79d-39bf9073b31f</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>BeefHighlights-xcbxpas6</CodeName>
+        <GUID>45ee0e44-9664-4820-aba3-7511559a4d0e</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>45a15158-3849-41b6-b74e-767eea434548</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>ChickenHighlights-b1qk4rus</CodeName>
+        <GUID>8af696bc-e04f-4003-9164-22de993f0cf4</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>8d10b457-0a0f-41a6-b782-b0ce1f566f71</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>FishHighlights-f6aptfyy</CodeName>
+        <GUID>6c9770db-88db-4ba6-bba8-1235418b691f</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
 </cms.contentitemcommondata>

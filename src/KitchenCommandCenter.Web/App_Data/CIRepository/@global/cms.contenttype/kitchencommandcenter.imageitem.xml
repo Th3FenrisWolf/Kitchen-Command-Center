@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <cms.contenttype>
   <ClassContentTypeType>Reusable</ClassContentTypeType>
-  <ClassDisplayName>Image</ClassDisplayName>
+  <ClassDisplayName>Image Item</ClassDisplayName>
   <ClassFormDefinition>
     <form>
       <field column="ContentItemDataID" columntype="integer" enabled="true" guid="f12db10a-aea8-493c-8325-3602daf5951f" isPK="true" />
       <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="2ab64712-808b-4b82-82ad-3e9183a3096f" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
       <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="8c681bca-4444-49c2-9a6f-a032b93c0413" isunique="true" system="true" />
-      <field allowempty="true" column="ImageAsset" columnprecision="0" columntype="contentitemasset" enabled="true" guid="3571d6da-e0ca-404f-ac44-f170a5e108b1" visible="true">
+      <field allowempty="true" column="Asset" columnprecision="0" columntype="contentitemasset" enabled="true" guid="3571d6da-e0ca-404f-ac44-f170a5e108b1" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Asset</fieldcaption>
@@ -32,11 +32,12 @@
           </ValidationRuleConfiguration>
         </validationrulesdata>
       </field>
-      <field column="ImageAltText" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="b8b6579d-b49f-47d2-91a6-6d66124eed0c" visible="true">
+      <field column="AltText" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="b8b6579d-b49f-47d2-91a6-6d66124eed0c" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Alt Text</fieldcaption>
           <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeintranslation>True</includeintranslation>
         </properties>
         <settings>
           <controlname>Kentico.Administration.TextInput</controlname>

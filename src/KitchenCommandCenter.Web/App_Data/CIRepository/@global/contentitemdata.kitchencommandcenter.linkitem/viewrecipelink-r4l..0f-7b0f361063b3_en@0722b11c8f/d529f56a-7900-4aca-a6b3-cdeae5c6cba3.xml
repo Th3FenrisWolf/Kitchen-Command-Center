@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.linkitem>
+  <ContentItemDataCommonDataID>
+    <GUID>3872dc2e-67c6-48d0-930f-7b0f361063b3</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ViewRecipeLink-r4l2p7w1</CodeName>
+      <GUID>c1d32116-25fd-4ada-87cd-43784dd4f517</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d529f56a-7900-4aca-a6b3-cdeae5c6cba3</ContentItemDataGUID>
+  <DisplayText>View Recipes</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"72105566-b709-4ba4-bdf5-c04c63790dd1"}]]]>
+  </Page>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kitchencommandcenter.linkitem>

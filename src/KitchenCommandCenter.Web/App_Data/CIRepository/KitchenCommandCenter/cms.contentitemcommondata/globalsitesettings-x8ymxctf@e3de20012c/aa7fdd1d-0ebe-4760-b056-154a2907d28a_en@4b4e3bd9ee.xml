@@ -15,19 +15,4 @@
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
   <ContentItemCommonDataLastPublishedWhen>2025-11-20 02:21:16Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
-  <ContentItemReferences>
-    <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>5b3583b4-7d1e-485b-b232-846f5c4099f6</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>6e4a62d9-cf14-44a3-814f-27e80670339a</ContentItemReferenceGUID>
-      <ContentItemReferenceSourceCommonDataID>
-        <GUID>aa7fdd1d-0ebe-4760-b056-154a2907d28a</GUID>
-        <ObjectType>cms.contentitemcommondata</ObjectType>
-      </ContentItemReferenceSourceCommonDataID>
-      <ContentItemReferenceTargetItemID>
-        <CodeName>SiteLogo-tyl8923s</CodeName>
-        <GUID>bcf2de6e-f42f-49ef-9a5e-691f56706e2c</GUID>
-        <ObjectType>cms.contentitem</ObjectType>
-      </ContentItemReferenceTargetItemID>
-    </cms.contentitemreference>
-  </ContentItemReferences>
 </cms.contentitemcommondata>

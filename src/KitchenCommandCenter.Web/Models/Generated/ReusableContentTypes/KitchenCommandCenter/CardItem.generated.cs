@@ -16,15 +16,15 @@ using CMS.ContentEngine;
 namespace KitchenCommandCenter
 {
 	/// <summary>
-	/// Represents a content item of type <see cref="ImageItem"/>.
+	/// Represents a content item of type <see cref="CardItem"/>.
 	/// </summary>
 	[RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
-	public partial class ImageItem : IContentItemFieldsSource
+	public partial class CardItem : IContentItemFieldsSource
 	{
 		/// <summary>
 		/// Code name of the content type.
 		/// </summary>
-		public const string CONTENT_TYPE_NAME = "KitchenCommandCenter.ImageItem";
+		public const string CONTENT_TYPE_NAME = "KitchenCommandCenter.CardItem";
 
 
 		/// <summary>
@@ -35,14 +35,32 @@ namespace KitchenCommandCenter
 
 
 		/// <summary>
-		/// Asset.
+		/// BackgroundColor.
 		/// </summary>
-		public ContentItemAsset Asset { get; set; }
+		public string BackgroundColor { get; set; }
 
 
 		/// <summary>
-		/// AltText.
+		/// Heading.
 		/// </summary>
-		public string AltText { get; set; }
+		public string Heading { get; set; }
+
+
+		/// <summary>
+		/// SubHeading.
+		/// </summary>
+		public string SubHeading { get; set; }
+
+
+		/// <summary>
+		/// Body.
+		/// </summary>
+		public string Body { get; set; }
+
+
+		/// <summary>
+		/// Link.
+		/// </summary>
+		public IEnumerable<LinkItem> Link { get; set; }
 	}
 }

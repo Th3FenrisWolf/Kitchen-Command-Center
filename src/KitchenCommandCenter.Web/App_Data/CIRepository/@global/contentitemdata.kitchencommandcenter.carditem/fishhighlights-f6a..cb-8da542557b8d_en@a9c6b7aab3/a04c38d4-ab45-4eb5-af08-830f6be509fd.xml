@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.carditem>
+  <BackgroundColor>bg-teal</BackgroundColor>
+  <Body>
+    <![CDATA[Light, crispy, or tender — find fresh fish favorites!]]>
+  </Body>
+  <ContentItemDataCommonDataID>
+    <GUID>e2785460-7825-473d-b2cb-8da542557b8d</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>FishHighlights-f6aptfyy</CodeName>
+      <GUID>6c9770db-88db-4ba6-bba8-1235418b691f</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>a04c38d4-ab45-4eb5-af08-830f6be509fd</ContentItemDataGUID>
+  <Heading>Fish</Heading>
+  <Link>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </Link>
+  <SubHeading>
+    <![CDATA[Delicate · Fresh · Delicious]]>
+  </SubHeading>
+</contentitemdata.kitchencommandcenter.carditem>
