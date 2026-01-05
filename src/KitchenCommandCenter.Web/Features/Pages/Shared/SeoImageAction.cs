@@ -11,8 +11,8 @@ public class SeoImageAction : IMappingAction<INavigation_Metadata, BasePageViewM
         ResolutionContext context
     )
     {
-        var defaultImageInfo = source.MetadataImage.FirstOrDefault()?.ImageAsset;
-        var twitterImageInfo = source.TwitterImage.FirstOrDefault()?.ImageAsset;
+        var defaultImageInfo = source.MetadataImage.FirstOrDefault()?.Asset;
+        var twitterImageInfo = source.TwitterImage.FirstOrDefault()?.Asset;
 
         destination.ImagePath = defaultImageInfo?.Url;
         destination.ImageWidth = defaultImageInfo?.Metadata.Width ?? 0;

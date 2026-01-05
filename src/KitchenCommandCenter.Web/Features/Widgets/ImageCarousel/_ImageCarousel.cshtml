@@ -18,7 +18,7 @@ else
                 @foreach (var item in Model.Items)
                 {
                     <div class="swiper-slide">
-                        <img class="m-auto max-h-[300px] h-full @(Model.CropImages ? "object-cover" : "object-contain") p-10" src="@item.ImageAsset.Url" alt="@item.ImageAltText" />
+                        <img class="m-auto max-h-[300px] h-full @(Model.CropImages ? "object-cover" : "object-contain") p-10" src="@item.Asset.Url" alt="@item.AltText" />
                     </div>
                 }
             </div>

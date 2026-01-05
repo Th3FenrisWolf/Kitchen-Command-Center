@@ -31,7 +31,7 @@ public class SiteLogoViewComponent(
 
         var viewModel = new SiteLogoViewModel
         {
-            Logo = siteSettings.SiteLogo.FirstOrDefault()?.ImageAsset.Url,
+            Logo = siteSettings.SiteLogo.FirstOrDefault()?.Asset.Url,
         };
 
         return View("~/Features/Components/SiteLogo/Default.cshtml", viewModel);

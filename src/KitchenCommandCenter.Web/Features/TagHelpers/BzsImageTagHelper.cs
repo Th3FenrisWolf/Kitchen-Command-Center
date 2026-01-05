@@ -46,7 +46,7 @@ public class BzsImageTagHelper(ICacheService cacheService) : TagHelper
             return;
         }
 
-        output.Attributes.SetAttribute("src", itemData.ImageAsset?.Url);
-        output.Attributes.SetAttribute("alt", itemData.ImageAltText);
+        output.Attributes.SetAttribute("src", itemData.Asset?.Url);
+        output.Attributes.SetAttribute("alt", itemData.AltText);
     }
 }
