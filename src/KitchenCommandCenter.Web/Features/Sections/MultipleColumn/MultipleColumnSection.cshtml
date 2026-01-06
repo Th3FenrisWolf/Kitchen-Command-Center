@@ -3,13 +3,14 @@
 @model MultipleColumnSectionViewModel
 
 @{
-    var isContainer = Model.ContentWidth == "Container";
+    // var isContainer = Model.ContentWidth == "Container";
+    // @(isContainer ? "container mx-auto" : "w-full")
     var sectionClass = $"lg:{Model.SectionClass}";
 }
 
 <div data-section-guid="@Model.SectionGuid" class="@Model.BackgroundColor">
     <div class="variable-section-wrapper">
-        <div class="variable-section px-4 pb-@Model.PaddingBottom pt-@Model.PaddingTop @sectionClass @Model.ContentAlignment @(isContainer ? "container mx-auto" : "w-full")">
+        <div class="variable-section pb-@Model.PaddingBottom pt-@Model.PaddingTop @sectionClass @Model.ContentAlignment">
             @for (var j = 0; j < Model.ColumnCount; j++)
             {
                 <div>

@@ -2,21 +2,7 @@
 
 @model ErrorViewModel
 
-@{
-  var entry = $"/Features/Pages/Error/main.ts";
-}
-
-@section Styles {
-  <link rel="stylesheet" vite-href="@entry" asp-append-version="true" />
-}
-
-@section Scripts {
-  <script type="module" vite-src="@entry" asp-append-version="true"></script>
-}
-
 <section class="flex flex-col items-center my-10">
     <h1 class="mb-5">@Model.Heading</h1>
     @Html.Raw(Model.Body)
 </section>
-
-<div id="app"></div>

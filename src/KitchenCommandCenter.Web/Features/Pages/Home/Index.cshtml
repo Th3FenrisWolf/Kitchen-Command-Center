@@ -2,26 +2,4 @@
 
 @model HomeViewModel
 
-@{
-  var entry = $"/Features/Pages/Home/main.ts";
-}
-
-@section Styles {
-  <link rel="stylesheet" vite-href="@entry" asp-append-version="true" />
-}
-
-@section Scripts {
-  <script type="module" vite-src="@entry" asp-append-version="true"></script>
-}
-
-@if (Context.Kentico().PageBuilder().EditMode)
-{
-  <div id="app"></div>
-  <editable-area area-identifier="page-builder-widgets" area-options="@Html.GetAreaOptions()" />
-}
-else
-{
-  <div id="app">
-    <editable-area area-identifier="page-builder-widgets" area-options="@Html.GetAreaOptions()" />
-  </div>
-}
+<editable-area area-identifier="page-builder-widgets" area-options="@Html.GetAreaOptions()" />

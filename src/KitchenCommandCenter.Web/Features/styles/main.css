@@ -7,19 +7,3 @@ body {
   grid-template-rows: auto 1fr auto;
   min-height: 100dvh;
 }
-
-section:not([class*='no-margin']) {
-  margin-block: 1rem;
-
-  &:first-of-type {
-    margin-block-start: 2rem;
-  }
-
-  &:last-of-type {
-    margin-block-end: 2rem;
-  }
-}
-
-::-webkit-scrollbar {
-  display: none;
-}

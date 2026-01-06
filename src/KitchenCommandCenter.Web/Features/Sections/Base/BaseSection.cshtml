@@ -3,12 +3,13 @@
 @model BaseSectionViewModel
 
 @{
-    var isContainer = Model.ContentWidth == "Container";
+    // var isContainer = Model.ContentWidth == "Container";
+    // @(isContainer ? "container mx-auto" : "w-full")
 }
 
 <div data-section-guid="@Model.SectionGuid" class="@Model.BackgroundColor">
     <div class="variable-section-wrapper">
-        <div class="variable-section px-4 pb-@Model.PaddingBottom pt-@Model.PaddingTop @(isContainer ? "container mx-auto" : "w-full")">
+        <div class="variable-section pb-@Model.PaddingBottom pt-@Model.PaddingTop">
             <div>
                 <widget-zone />
             </div>

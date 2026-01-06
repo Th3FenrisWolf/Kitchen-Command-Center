@@ -35,7 +35,7 @@
         {
             <bzs-image class="absolute -z-10 w-full h-full object-cover" item="@Model.Properties.BackgroundImage.FirstOrDefault()" />
         }
-        <div class="container py-10 px-4 lg:py-16 col-span-full mx-auto @Model.Properties.TextAlignment @(Model.Properties.TextWidth == "Full" ? "" : "max-w-[636px]")">
+        <div class="py-10 lg:py-16 col-span-full @Model.Properties.TextAlignment @(Model.Properties.TextWidth == "Full" ? "" : "max-w-[636px]")">
             <div class="inline-block not-prose @textColor @Model.Properties.TextAlignment">
                 @if (Context.Kentico().PageBuilder().EditMode)
                 {
