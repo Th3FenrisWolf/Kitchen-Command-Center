@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IgnoreCase } from '~/utilities/string.extensions'
+import { IgnoreCase } from '~/Utilities/StringExtensions'
 
 const { title, options, selected } = defineProps<{
   title: string

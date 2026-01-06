@@ -1,6 +1,6 @@
-@import './tailwind-config.css';
-@import './layout.css';
-@import './typography.css';
+@import './TailwindConfig.css';
+@import './Layout.css';
+@import './Typography.css';
 
 body {
   display: grid;

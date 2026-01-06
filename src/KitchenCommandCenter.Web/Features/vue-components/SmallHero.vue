@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import cx from '~/utilities/cx'
+import cx from '~/Utilities/CX'
 
 const { dark = false } = defineProps<{ dark?: boolean }>()
 </script>
@@ -8,7 +8,7 @@ const { dark = false } = defineProps<{ dark?: boolean }>()
   <section
     :class="
       cx(
-        'no-margin full-width content-grid pb-8 pt-12',
+        'no-margin full-width content-grid pt-12 pb-8',
         dark ? 'bg-base text-bone' : 'bg-bone text-onyx',
       )
     "

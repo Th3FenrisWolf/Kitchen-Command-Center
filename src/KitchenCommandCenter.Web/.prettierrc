@@ -6,7 +6,7 @@
   "printWidth": 100,
   "trailingComma": "all",
   "tailwindFunctions": ["cx"],
-  "tailwindStylesheet": "./Features/styles/tailwind-config.css",
+  "tailwindStylesheet": "./Features/Styles/TailwindConfig.css",
   "cssDeclarationSorterKeepOverrides": false,
   "cssDeclarationSorterOrder": "alphabetical",
   "plugins": ["prettier-plugin-css-order", "prettier-plugin-tailwindcss"]

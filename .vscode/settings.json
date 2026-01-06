@@ -2,7 +2,7 @@
   "editor.formatOnSave": true,
   "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
   "omnisharp.enableEditorConfigSupport": true,
-  "tailwindCSS.experimental.configFile": "src/KitchenCommandCenter.Web/Features/styles/tailwind-config.css",
+  "tailwindCSS.experimental.configFile": "src/KitchenCommandCenter.Web/Features/Styles/TailwindConfig.css",
   "cSpell.words": [
     "bychannel",
     "byid",

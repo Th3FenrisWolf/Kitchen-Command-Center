@@ -46,7 +46,7 @@ export interface CardProps {
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import cx from '~/utilities/cx'
+import cx from '~/Utilities/CX'
 
 const {
   cardColor = 'bg-base',
@@ -68,7 +68,7 @@ const resolvedDrawerTextColor = computed(() => {
   <div
     :class="
       cx(
-        'shadow-primary group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all duration-300',
+        'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center shadow-primary transition-all duration-300',
         'focus-within:shadow-primary-raised hover:shadow-primary-raised',
         cardColor,
         cardTextColor,
@@ -91,7 +91,7 @@ const resolvedDrawerTextColor = computed(() => {
       :class="
         cx(
           'h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
-          'focus-within:h-full group-hover/card:h-full',
+          'group-hover/card:h-full focus-within:h-full',
           resolvedDrawerColor,
           resolvedDrawerTextColor,
         )

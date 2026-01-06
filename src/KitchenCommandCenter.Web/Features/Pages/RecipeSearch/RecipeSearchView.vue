@@ -2,8 +2,8 @@
 import { ref, onBeforeMount } from 'vue'
 import SmallHero from '~/components/SmallHero.vue'
 import RecipeFacet from '~/components/RecipeFacet.vue'
-import { parseQueryString } from '~/utilities/query-functions'
-import cx from '~/utilities/cx'
+import { parseQueryString } from '~/Utilities/QueryFunctions'
+import cx from '~/Utilities/CX'
 import type { Recipe } from '~/types/recipe'
 
 interface RecipeSearchParams {
@@ -23,14 +23,14 @@ onBeforeMount(async () => {
   <SmallHero dark>
     <template #title>Search Recipes</template>
     <template #actionButton>
-      <RouterLink to="/recipes/create" class="bg-bone text-onyx rounded-3xl px-4 py-2 text-xl">
+      <RouterLink to="/recipes/create" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
         Create Recipe
       </RouterLink>
     </template>
   </SmallHero>
 
   <section class="grid grid-cols-1 gap-4 lg:grid-cols-4">
-    <aside class="bg-base text-bone rounded-3xl p-4">
+    <aside class="rounded-3xl bg-base p-4 text-bone">
       <RecipeFacet title="Protein" :options="proteins" :selected="filters.protein" />
     </aside>
 
@@ -41,7 +41,7 @@ onBeforeMount(async () => {
         :key="recipe.title"
         :class="
           cx(
-            'bg-bone text-onyx shadow-primary group/card grid min-h-48 content-center gap-2 rounded-3xl p-4 text-center transition-all duration-300',
+            'group/card grid min-h-48 content-center gap-2 rounded-3xl bg-bone p-4 text-center text-onyx shadow-primary transition-all duration-300',
             'focus-within:shadow-primary-raised hover:shadow-primary-raised',
           )
         "

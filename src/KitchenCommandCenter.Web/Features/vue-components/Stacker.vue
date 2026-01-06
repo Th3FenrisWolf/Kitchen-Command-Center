@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cx } from '~/utilities/cx'
+import { cx } from '~/Utilities/CX'
 import type { BackgroundColor } from '~/types/design-system'
 import { onMounted, ref } from 'vue'
 

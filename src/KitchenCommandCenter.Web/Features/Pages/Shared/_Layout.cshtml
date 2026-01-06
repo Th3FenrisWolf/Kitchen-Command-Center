@@ -1,16 +1,12 @@
 @model BasePageViewModel
 
-@{
-  var entry = "/Features/main.ts";
-}
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/_Metadata.cshtml" />
 
-  <link rel="stylesheet" vite-href="@entry" asp-append-version="true" />
+  <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
   <page-builder-styles />
 </head>
 
@@ -19,7 +15,7 @@
     @RenderBody()
   </div>
 
-  <script type="module" vite-src="@entry" asp-append-version="true"></script>
+  <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>
   <page-builder-scripts />
 </body>
 

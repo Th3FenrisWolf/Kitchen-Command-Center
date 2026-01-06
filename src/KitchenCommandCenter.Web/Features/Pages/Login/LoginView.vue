@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import cx from '~/utilities/cx'
+import cx from '~/Utilities/CX'
 import router from '~/router'
-import { parseQueryString } from '~/utilities/query-functions'
+import { parseQueryString } from '~/Utilities/QueryFunctions'
 import InputField from '~/components/shared/InputField.vue'
 
 const { returnUrl } = parseQueryString<{ returnUrl: string }>()
@@ -50,9 +50,9 @@ const handleSubmit = async () => {
 
 <template>
   <section
-    class="no-margin fixed left-[50dvw] top-[50dvh] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center"
+    class="no-margin fixed top-[50dvh] left-[50dvw] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center"
   >
-    <div class="shadow-primary relative flex w-3/4 overflow-hidden rounded-3xl">
+    <div class="relative flex w-3/4 overflow-hidden rounded-3xl shadow-primary">
       <div
         :class="
           cx(
@@ -65,7 +65,7 @@ const handleSubmit = async () => {
 
         <p
           :class="
-            cx('text-maroon overflow-hidden transition-all duration-500', formError ? 'h-8' : 'h-0')
+            cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')
           "
         >
           {{ formError }}
@@ -89,7 +89,7 @@ const handleSubmit = async () => {
           />
 
           <button
-            class="bg-base text-bone w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+            class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone"
             type="submit"
           >
             {{ signText }}
@@ -100,7 +100,7 @@ const handleSubmit = async () => {
       <div
         :class="
           cx(
-            'bg-base relative right-[0%] basis-[40%] justify-items-center overflow-hidden p-12 text-center transition-all duration-500',
+            'relative right-[0%] basis-[40%] justify-items-center overflow-hidden bg-base p-12 text-center transition-all duration-500',
             swap && 'right-[60%]',
           )
         "
@@ -113,22 +113,22 @@ const handleSubmit = async () => {
             )
           "
         >
-          <div class="text-bone grid h-max w-1/4 gap-8 self-center" :aria-hidden="isSignIn">
-            <h3 class="text-heading font-[APCasual]">Have an Account?</h3>
+          <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
+            <h3 class="font-[APCasual] text-heading">Have an Account?</h3>
             <p>Sign in to continue commanding your kitchen</p>
             <button
-              class="bg-bone text-onyx w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+              class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
               Sign In
             </button>
           </div>
-          <div class="text-bone grid h-max w-1/4 gap-8 self-center" :aria-hidden="swap">
-            <h3 class="text-heading font-[APCasual]">New Here?</h3>
+          <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="swap">
+            <h3 class="font-[APCasual] text-heading">New Here?</h3>
             <p>Create an account to unlock the full potential of Kitchen Command Center</p>
             <button
-              class="bg-bone text-onyx w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+              class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >

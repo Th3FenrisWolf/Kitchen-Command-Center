@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import cx from '~/utilities/cx'
+import cx from '~/Utilities/CX'
 
 const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
 </script>
@@ -12,7 +12,7 @@ const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
     <div
       :class="
         cx(
-          'absolute bottom-0 left-1/2 right-0 h-1 w-0 rounded-full transition-all group-hover/fill-up-link:left-0 group-hover/fill-up-link:w-full peer-focus:left-0 peer-focus:w-full',
+          'absolute right-0 bottom-0 left-1/2 h-1 w-0 rounded-full transition-all group-hover/fill-up-link:left-0 group-hover/fill-up-link:w-full peer-focus:left-0 peer-focus:w-full',
           color,
         )
       "
