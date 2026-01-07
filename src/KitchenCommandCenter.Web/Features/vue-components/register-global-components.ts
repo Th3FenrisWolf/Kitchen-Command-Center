@@ -4,18 +4,22 @@ import UnderlineLink from './shared/UnderlineLink.vue'
 import Card from '~/Widgets/Card/Card.vue'
 
 // Register all global components here
-// Import your Vue components and add them to this object
-const globalComponents = {
-  test: Test,
-  underlinelink: UnderlineLink,
-  card: Card,
+// Components are registered with both PascalCase and lowercase names
+// because HTML parsers lowercase custom element tags, but Vue templates use PascalCase
+const globalComponents: Record<string, object> = {
+  Test,
+  UnderlineLink,
+  Card,
   // Add more components here:
-  // myComponent: MyComponent,
-  // anotherComponent: AnotherComponent,
+  // MyComponent,
+  // AnotherComponent,
 }
 
 export function registerGlobalComponents(app: App) {
   Object.entries(globalComponents).forEach(([name, component]) => {
+    // Register with PascalCase (for Vue templates)
     app.component(name, component)
+    // Register with lowercase (for HTML-parsed templates from SSR)
+    app.component(name.toLowerCase(), component)
   })
 }

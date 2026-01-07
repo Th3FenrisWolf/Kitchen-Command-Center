@@ -1,3 +1,5 @@
+using System;
+using System.Net.Http;
 using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Kentico.PageBuilder.Web.Mvc;
@@ -5,9 +7,12 @@ using Kentico.Web.Mvc;
 using KitchenCommandCenter;
 using KitchenCommandCenter.Web.Features.Cache;
 using KitchenCommandCenter.Web.Features.Sitemap;
+using KitchenCommandCenter.Web.Features.Ssr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Polly;
+using Polly.Extensions.Http;
 using RobotsTxt;
 using Vite.AspNetCore;
 
@@ -20,6 +25,36 @@ builder.Services.AddViteServices(options =>
     options.Server.AutoRun = true;
     options.Server.PackageManager = "yarn";
 });
+
+// Vue SSR service with resilience policies
+var ssrBaseUrl = builder.Configuration["VueSsr:BaseUrl"] ?? "http://localhost:3001";
+
+builder.Services.AddHttpClient("VueSsr", client =>
+{
+    client.BaseAddress = new Uri(ssrBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(10);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddPolicyHandler(GetCircuitBreakerPolicy())
+.AddPolicyHandler(GetRetryPolicy());
+
+builder.Services.AddScoped<VueSsrService>();
+
+// Circuit breaker: break after 5 failures for 30 seconds
+static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
+    HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(
+            handledEventsAllowedBeforeBreaking: 5,
+            durationOfBreak: TimeSpan.FromSeconds(30));
+
+// Retry policy: retry 2 times with exponential backoff
+static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
+    HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(
+            retryCount: 2,
+            sleepDurationProvider: retryAttempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryAttempt)));
 
 builder.Services.AddAutoMapper(typeof(Program));
 

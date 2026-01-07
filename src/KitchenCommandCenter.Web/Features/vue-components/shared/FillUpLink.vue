@@ -4,8 +4,8 @@ const { linkTo } = defineProps<{ linkTo: string }>()
 
 <template>
   <div class="my-1">
-    <RouterLink :to="linkTo">
+    <a :href="linkTo">
       <slot />
-    </RouterLink>
+    </a>
   </div>
 </template>

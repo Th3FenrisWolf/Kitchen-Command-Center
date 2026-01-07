@@ -5,16 +5,16 @@ const { route } = defineProps<{
 </script>
 
 <template>
-  <RouterLink
+  <a
     v-if="route"
     class="menu-item btn-no-style relative flex h-full items-center overflow-hidden bg-transparent no-underline"
-    :to="route.path"
+    :href="route.path"
   >
     <span class="relative z-20 flex h-full w-full items-center px-4">
       {{ route.name }}
     </span>
     <span class="background absolute bottom-0 left-0 z-10 h-0 w-full bg-crust transition-all" />
-  </RouterLink>
+  </a>
 </template>
 
 <style scoped>
@@ -25,7 +25,7 @@ const { route } = defineProps<{
   }
 
   &:hover .background,
-  &.router-link-active .background {
+  &:has([aria-current='page']) .background {
     height: 100%;
   }
 }

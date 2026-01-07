@@ -38,13 +38,13 @@ const userNav = [
 
 <template>
   <header class="content-grid bg-base text-bone">
-    <nav class="flex size-full h-16 gap-8">
-      <RouterLink
+    <nav class="flex size-full h-16 gap-8 items-center">
+      <a
         class="btn-no-style focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
-        to="/"
+        href="/"
       >
         Insert Logo Here
-      </RouterLink>
+      </a>
 
       <ul class="flex">
         <li v-for="route in mainNav" :key="route.name">

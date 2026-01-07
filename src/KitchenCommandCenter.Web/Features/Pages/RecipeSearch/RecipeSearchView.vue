@@ -23,9 +23,9 @@ onBeforeMount(async () => {
   <SmallHero dark>
     <template #title>Search Recipes</template>
     <template #actionButton>
-      <RouterLink to="/recipes/create" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+      <a href="/recipes/create" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
         Create Recipe
-      </RouterLink>
+      </a>
     </template>
   </SmallHero>
 
@@ -35,9 +35,9 @@ onBeforeMount(async () => {
     </aside>
 
     <div class="lg: col-span-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
-      <RouterLink
+      <a
         v-for="recipe in recipes.filter((x) => !!x)"
-        :to="`/recipes/${recipe.id}`"
+        :href="`/recipes/${recipe.id}`"
         :key="recipe.title"
         :class="
           cx(
@@ -56,7 +56,7 @@ onBeforeMount(async () => {
           :alt="recipe.title"
         /> -->
         <span>{{ recipe.description }}</span>
-      </RouterLink>
+      </a>
     </div>
   </section>
 </template>

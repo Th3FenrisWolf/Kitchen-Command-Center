@@ -11,6 +11,6 @@ defineProps<{ serverContent: string }>()
   <main role="main" class="content-grid auto-rows-min bg-bone">
     <component :is="{ template: serverContent }" />
   </main>
-  
+
   <Footer />
 </template>

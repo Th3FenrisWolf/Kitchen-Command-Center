@@ -18,9 +18,12 @@ export default defineConfig({
   },
   plugins: [vue(), vueDevTools(), tailwindcss()],
   resolve: {
-    alias: {
-      '~': fileURLToPath(new URL('./Features', import.meta.url)),
-      vue: 'vue/dist/vue.esm-bundler.js', // Use runtime compiler build
-    },
+    alias: [
+      // Features path alias
+      { find: '~', replacement: fileURLToPath(new URL('./Features', import.meta.url)) },
+      // Use runtime compiler build for dynamic template strings
+      // Exact match to avoid catching vue/* subpaths
+      { find: /^vue$/, replacement: 'vue/dist/vue.esm-bundler.js' },
+    ],
   },
 })

@@ -1,19 +1,31 @@
 import '~/Styles/Main.css'
 
-import { createApp, h } from 'vue'
+import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/vue-components/register-global-components'
 
-const serverContent = document.getElementById('server-content')
-if (serverContent) serverContent.remove()
+// Get the server content from the script tag (stored as JSON to prevent XSS)
+const serverContentEl = document.getElementById('server-content')
+let serverContent = ''
 
-const RootComponent = {
-  components: { App },
-  setup() {
-    return () => h(App, { serverContent: serverContent?.innerHTML.trim() ?? '' })
-  },
+if (serverContentEl?.textContent) {
+  try {
+    // Parse the JSON-encoded server content
+    serverContent = JSON.parse(serverContentEl.textContent)
+  } catch (e) {
+    console.error('Failed to parse server content:', e)
+  }
 }
 
-const app = createApp(RootComponent)
+// Create SSR app for hydration (reuses existing DOM instead of replacing it)
+const app = createSSRApp({
+  setup() {
+    return () => h(App, { serverContent })
+  },
+})
+
 registerGlobalComponents(app)
-app.mount(document.body)
+
+// Hydrate the SSR-rendered HTML in #app
+// This attaches event listeners without re-rendering the DOM
+app.mount('#app')
