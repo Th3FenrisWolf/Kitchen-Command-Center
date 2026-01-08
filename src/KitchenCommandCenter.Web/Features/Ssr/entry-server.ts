@@ -1,6 +1,6 @@
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
-import { registerGlobalComponents } from '~/vue-components/register-global-components'
+import { registerGlobalComponents } from '~/register-global-components'
 
 export interface SSRContext {
   serverContent: string

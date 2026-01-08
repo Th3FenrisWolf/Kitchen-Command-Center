@@ -54,12 +54,12 @@ onUnmounted(stopResize)
       :required
       :readonly
       :placeholder
-      class="bg-bone-dark placeholder:text-onyx-light h-full w-full resize-none rounded-2xl px-4 py-2"
+      class="h-full w-full resize-none rounded-2xl bg-bone-dark px-4 py-2 placeholder:text-onyx-light"
     />
     <FontAwesomeIcon
       size="xs"
       :icon="faGripLines"
-      class="color-base rotate-135 absolute bottom-1 right-1 cursor-ns-resize"
+      class="color-base absolute right-1 bottom-1 rotate-135 cursor-ns-resize"
       @mousedown="startResize"
     />
   </div>

@@ -488,3 +488,4 @@ $RECYCLE.BIN/
 
 # Generated static UI files
 **/wwwroot/assets
+**/wwwroot/ssr

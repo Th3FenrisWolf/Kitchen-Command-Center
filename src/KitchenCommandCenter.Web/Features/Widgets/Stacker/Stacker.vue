@@ -40,7 +40,7 @@ const props = defineProps<{
       <div
         :class="
           cx(
-            'aspect-square origin-top rounded-3xl p-8 text-center shadow-primary transition-all duration-100 [&.stuck]:scale-95 [&.stuck]:shadow-light [&:is(.last_*)]:scale-100',
+            'aspect-square origin-top rounded-3xl p-8 text-center shadow-primary transition-all duration-100 [&.stuck]:scale-95 [&.stuck]:shadow-light [.last_*]:scale-100',
             card.backgroundColor,
           )
         "

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import express from 'express'
 import compression from 'compression'
 import { randomUUID } from 'crypto'
@@ -31,7 +33,7 @@ async function createServer() {
   // Import the SSR bundle
   let createApp
   try {
-    const ssrModule = await import('./dist/entry-server.js')
+    const ssrModule = await import('../../wwwroot/ssr/entry-server.js')
     createApp = ssrModule.createApp
     log.info('✓ SSR bundle loaded successfully')
   } catch (err) {
@@ -41,7 +43,7 @@ async function createServer() {
   }
 
   // Root endpoint - helpful info
-  server.get('/', (req, res) => {
+  server.get('/', (_, res) => {
     res.send(`
       <html>
         <head><title>Vue SSR Service</title></head>
@@ -61,7 +63,7 @@ async function createServer() {
   })
 
   // Health check endpoint
-  server.get('/health', (req, res) => {
+  server.get('/health', (_, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() })
   })
 
@@ -99,7 +101,7 @@ async function createServer() {
   })
 
   // Error handling middleware for malformed JSON and other errors
-  server.use((err, req, res, next) => {
+  server.use((err, req, res) => {
     if (err instanceof SyntaxError && 'body' in err) {
       log.error(`[${req.id}] Invalid JSON in request body`)
       return res.status(400).json({ error: 'Invalid JSON in request body' })
@@ -123,9 +125,9 @@ async function createServer() {
     `)
   })
 
-  // Graceful shutdown handling
+  // Process shutdown handling
   const shutdown = (signal) => {
-    console.log(`\n${signal} received. Shutting down gracefully...`)
+    console.log(`\n${signal} received. Shutting down.`)
 
     serverInstance.close((err) => {
       if (err) {
@@ -136,7 +138,7 @@ async function createServer() {
       process.exit(0)
     })
 
-    // Force exit after 10 seconds if graceful shutdown fails
+    // Force exit after 10 seconds if process shutdown fails
     setTimeout(() => {
       log.error('Could not close connections in time, forcefully shutting down')
       process.exit(1)

@@ -2,13 +2,11 @@
 
 @model ComponentViewModel<ImageWidgetProperties>
 
-@* <div class="@Model.Properties.GetMarginClasses()">
+<div class="@Model.Properties.GetMarginClasses()">
     @if (!(Model.Properties.Image?.Any() ?? false))
     {
         <strong>@WidgetConstants.ConfigHeading</strong>
         <p>@WidgetConstants.ConfigSubHeading</p>
     }
     <bzs-image item="@Model.Properties.Image?.FirstOrDefault()" />
-</div> *@
-
-<test name="John"></test>
+</div>

@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import cx from '~/Utilities/CX'
 
 const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
-
-// Normalize URLs: convert ASP.NET ~/path format to /path for consistency
-// This prevents hydration mismatches between SSR and client
-const normalizedHref = computed(() => {
-  if (linkTo?.startsWith('~/')) {
-    return linkTo.slice(1) // Remove the ~ prefix, keep the /
-  }
-  return linkTo
-})
 </script>
 
 <template>
   <div class="group/fill-up-link relative my-1 inline-block">
-    <a :href="normalizedHref" class="peer focus:outline-0">
+    <AppLink :href="linkTo" class="peer focus:outline-0">
       <slot />
-    </a>
+    </AppLink>
     <div
       :class="
         cx(

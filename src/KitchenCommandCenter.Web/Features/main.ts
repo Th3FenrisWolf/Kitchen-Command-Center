@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
+
 import '~/Styles/Main.css'
 
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
-import { registerGlobalComponents } from '~/vue-components/register-global-components'
+import { registerGlobalComponents } from '~/register-global-components'
 
 // Get the server content from the script tag (stored as JSON to prevent XSS)
 const serverContentEl = document.getElementById('server-content')
