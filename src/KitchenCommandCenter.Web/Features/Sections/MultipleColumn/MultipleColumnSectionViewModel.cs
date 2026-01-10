@@ -6,5 +6,4 @@ public class MultipleColumnSectionViewModel : BaseSectionViewModel
 {
     public int ColumnCount { get; set; }
     public string SectionClass { get; set; }
-    public string ContentAlignment { get; set; }
 }

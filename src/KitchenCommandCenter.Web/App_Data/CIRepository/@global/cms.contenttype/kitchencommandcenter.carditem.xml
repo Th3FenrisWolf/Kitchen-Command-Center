@@ -48,7 +48,7 @@ bg-lavender;Lavender
           <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
       </field>
-      <field column="SubHeading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="15cb5b10-3d3e-418a-a5cf-33e95310a7d7" visible="true">
+      <field allowempty="true" column="SubHeading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="15cb5b10-3d3e-418a-a5cf-33e95310a7d7" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Sub-Heading</fieldcaption>

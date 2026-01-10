@@ -3,16 +3,30 @@
 @model BaseSectionViewModel
 
 @{
-    // var isContainer = Model.ContentWidth == "Container";
-    // @(isContainer ? "container mx-auto" : "w-full")
+  var containerClass = Model.ContentWidth switch {
+    "Thin" => "thin",
+    "Breakout" => "breakout",
+    "Full Width" => "full-width",
+    _ => string.Empty,
+  };
 }
 
-<div data-section-guid="@Model.SectionGuid" class="@Model.BackgroundColor">
-    <div class="variable-section-wrapper">
-        <div class="variable-section pb-@Model.PaddingBottom pt-@Model.PaddingTop">
-            <div>
-                <widget-zone />
-            </div>
-        </div>
-    </div>
-</div>
+<section
+  data-section-guid="@Model.SectionGuid"
+  class="@Html.Clsx(
+    "base-section rounded-4xl",
+    containerClass,
+    Model.BackgroundColor,
+    Model.TextColor,
+    $"pb-{Model.PaddingBottom}",
+    $"pt-{Model.PaddingTop}",
+    $"px-{Model.HorizontalPadding}"
+  )"
+>
+  @if (!string.IsNullOrEmpty(Model.Heading))
+  {
+    <p class="mb-8 text-center text-heading">@Model.Heading</p>
+  }
+
+  <widget-zone />
+</section>

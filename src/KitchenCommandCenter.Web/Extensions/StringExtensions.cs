@@ -88,4 +88,6 @@ public static class StringExtensions
 
         return input.Substring(0, maxLength) + "...";
     }
+
+    public static string StripTilde(this string input) => input?.TrimStart('~') ?? string.Empty;
 }

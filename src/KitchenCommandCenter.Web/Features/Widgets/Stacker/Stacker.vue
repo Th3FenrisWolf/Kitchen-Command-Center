@@ -21,7 +21,7 @@ onMounted(() => {
 const props = defineProps<{
   cards: {
     heading: string
-    subheading: string
+    subHeading: string
     backgroundColor: BackgroundColor
   }[]
 }>()
@@ -46,7 +46,7 @@ const props = defineProps<{
         "
       >
         <h2 class="text-heading">{{ card.heading }}</h2>
-        <p class="text-balance">{{ card.subheading }}</p>
+        <p class="text-balance">{{ card.subHeading }}</p>
       </div>
     </div>
   </div>

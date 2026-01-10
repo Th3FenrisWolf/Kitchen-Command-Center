@@ -26,11 +26,13 @@ public class MultipleColumnSectionViewComponent : ViewComponent
         {
             SectionClass = columnStyleClass,
             ColumnCount = columnCount,
+            Heading = componentViewModel.Properties.Heading,
             BackgroundColor = componentViewModel.Properties.BackgroundColor,
-            ContentAlignment = componentViewModel.Properties.ContentAlignment,
+            TextColor = componentViewModel.Properties.TextColor,
             ContentWidth = componentViewModel.Properties.ContentWidth,
             PaddingTop = componentViewModel.Properties.GetPaddingTop(),
             PaddingBottom = componentViewModel.Properties.GetPaddingBottom(),
+            HorizontalPadding = componentViewModel.Properties.GetHorizontalPadding(),
         };
 
         return View("~/Features/Sections/MultipleColumn/MultipleColumnSection.cshtml", viewModel);

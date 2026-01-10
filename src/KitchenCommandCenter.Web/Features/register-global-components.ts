@@ -2,6 +2,7 @@ import type { App } from 'vue'
 import AppLink from '~/Components/Links/AppLink.vue'
 import UnderlineLink from '~/Components/Links/UnderlineLink.vue'
 import Card from '~/Widgets/Card/Card.vue'
+import Stacker from '~/Widgets/Stacker/Stacker.vue'
 
 // Register all global components here
 // Components are registered with both PascalCase and lowercase names
@@ -10,6 +11,7 @@ const globalComponents: Record<string, object> = {
   AppLink,
   UnderlineLink,
   Card,
+  Stacker,
 }
 
 export function registerGlobalComponents(app: App) {

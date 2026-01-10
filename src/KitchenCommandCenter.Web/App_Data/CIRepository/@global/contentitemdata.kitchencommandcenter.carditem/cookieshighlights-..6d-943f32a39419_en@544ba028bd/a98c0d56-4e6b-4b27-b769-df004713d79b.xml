@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.carditem>
+  <BackgroundColor>bg-yellow</BackgroundColor>
+  <ContentItemDataCommonDataID>
+    <GUID>ef9a68fd-8aa5-41af-826d-943f32a39419</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CookiesHighlights-s5r4utpf</CodeName>
+      <GUID>e73bab70-24ff-47d8-a82e-8ed29a4eed52</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>a98c0d56-4e6b-4b27-b769-df004713d79b</ContentItemDataGUID>
+  <Heading>Cookies</Heading>
+  <Link>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </Link>
+  <SubHeading>Addictive</SubHeading>
+</contentitemdata.kitchencommandcenter.carditem>

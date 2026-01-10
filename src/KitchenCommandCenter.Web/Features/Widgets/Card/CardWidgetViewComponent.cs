@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
     viewComponentType: typeof(CardWidgetViewComponent),
     name: "Card",
     propertiesType: typeof(CardWidgetProperties),
-    IconClass = "icon-card",
+    IconClass = "icon-square",
     AllowCache = true
 )]
 
@@ -25,23 +25,23 @@ public class CardWidgetViewComponent(
 
     public async Task<IViewComponentResult> InvokeAsync(CardWidgetProperties properties)
     {
-        var cardGuids = properties.Cards?.Select(card => card.Identifier);
+        var cardGuid = properties.Card?.FirstOrDefault()?.Identifier;
 
-        if (cardGuids?.Any() is not true)
+        if (cardGuid is null)
         {
             return View("~/Features/Widgets/Card/CardWidget.cshtml", new CardWidgetViewModel());
         }
 
-        var cards = (await contentRetriever.RetrieveContent<CardItem>(
+        var card = (await contentRetriever.RetrieveContent<CardItem>(
             new RetrieveContentParameters { LinkedItemsMaxLevel = 2 },
             query => query.Where(where => where
-                .WhereIn(nameof(IContentQueryDataContainer.ContentItemGUID), cardGuids)),
-            new($"{nameof(CardWidgetViewComponent)}|{nameof(InvokeAsync)}|{string.Join(',', cardGuids)}")
-        )).OrderBy(item => cardGuids.ToList().IndexOf(item.SystemFields.ContentItemGUID));
+                .WhereEquals(nameof(IContentQueryDataContainer.ContentItemGUID), cardGuid)),
+            new($"{nameof(CardWidgetViewComponent)}|{nameof(InvokeAsync)}|{cardGuid}")
+        )).FirstOrDefault();
 
         var viewModel = new CardWidgetViewModel
         {
-            Cards = cards,
+            Card = card,
             Properties = properties,
         };
 

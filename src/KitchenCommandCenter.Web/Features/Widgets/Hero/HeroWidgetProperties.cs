@@ -30,14 +30,14 @@ public enum HeroTextAlignmentOptions
 
 public enum HeroBackgroundColorOptions
 {
-    [TailwindBackgroundColor(TailwindColor.Gray, TailwindShade.TwoHundred)]
-    LightGray,
+    [TailwindBackgroundColor(TailwindColor.Surface)]
+    Surface,
 
-    [TailwindBackgroundColor(TailwindColor.Gray, TailwindShade.FiveHundred)]
-    Gray,
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.OneHundred)]
+    Surface100,
 
-    [TailwindBackgroundColor(TailwindColor.Gray, TailwindShade.SevenHundred)]
-    DarkGray,
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.TwoHundred)]
+    Surface200,
 }
 
 public class HeroWidgetProperties : BaseWidgetProperties, IWidgetProperties

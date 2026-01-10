@@ -22,10 +22,13 @@ public class BaseSectionViewComponent : ViewComponent
     {
         var viewModel = new BaseSectionViewModel
         {
+            Heading = componentViewModel.Properties.Heading,
             BackgroundColor = componentViewModel.Properties.BackgroundColor,
+            TextColor = componentViewModel.Properties.TextColor,
             ContentWidth = componentViewModel.Properties.ContentWidth,
             PaddingTop = componentViewModel.Properties.GetPaddingTop(),
             PaddingBottom = componentViewModel.Properties.GetPaddingBottom(),
+            HorizontalPadding = componentViewModel.Properties.GetHorizontalPadding(),
         };
 
         return View("~/Features/Sections/Base/BaseSection.cshtml", viewModel);

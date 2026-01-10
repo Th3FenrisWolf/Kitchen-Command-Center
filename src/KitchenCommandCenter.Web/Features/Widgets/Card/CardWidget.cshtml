@@ -1,39 +1,37 @@
-@using KitchenCommandCenter.Web.Features.Widgets.Card;
+@using KitchenCommandCenter.Web.Features.Widgets.Card
 @using KitchenCommandCenter.Web.Models.Common
 
 @model CardWidgetViewModel
 
-@if (Model.Cards.Any())
+@if (Model.Card is not null)
 {
-  <section class="grid gap-8 lg:grid-cols-2 @Model.Properties.GetMarginClasses()">
-    @foreach (var card in Model.Cards)
+  <Card
+    key="@Model.Card.Heading"
+    card-color="@Model.Card.BackgroundColor"
+    card-text-color="text-onyx"
+    drawer-color="bg-bone"
+    drawer-text-color="text-onyx"
+    margin-classes="@Model.Properties.GetMarginClasses()"
+  >
+    <div>
+      <h2 class="text-heading">@Model.Card.Heading</h2>
+      <h3>@Model.Card.SubHeading</h3>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Card.Body) || Model.Card.Link.Any())
     {
-      <Card
-        key="@card.Heading"
-        card-color="@card.BackgroundColor"
-        card-text-color="text-onyx"
-        drawer-color="bg-bone"
-        drawer-text-color="text-onyx"
-      >
-        <div>
-          <h2 class="text-heading">@card.Heading</h2>
-          <h3>@card.SubHeading</h3>
-        </div>
+      <template #drawer>
+        <p class="text-balance">@Model.Card.Body</p>
 
-        @if (!string.IsNullOrEmpty(card.Body))
+        @if (Model.Card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
         {
-          <template #drawer>
-            <p class="text-balance">@card.Body</p>
-
-            @if (card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
-            {
-              <UnderlineLink color="bg-onyx" link-to="@link.Url">@link.DisplayText</UnderlineLink>
-            }
-          </template>
+          <UnderlineLink color="bg-onyx" link-to="@link.Url">
+            @link.DisplayText
+          </UnderlineLink>
         }
-      </Card>
+      </template>
     }
-  </section>
+  </Card>
 }
 else
 {

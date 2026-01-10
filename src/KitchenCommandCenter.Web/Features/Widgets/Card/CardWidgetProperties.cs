@@ -11,7 +11,8 @@ public class CardWidgetProperties : BaseWidgetProperties, IWidgetProperties
     [ContentItemSelectorComponent(
         CardItem.CONTENT_TYPE_NAME,
         Order = 0,
-        Label = "Cards"
+        Label = "Card",
+        MaximumItems = 1
     )]
-    public IEnumerable<ContentItemReference> Cards { get; set; }
+    public IEnumerable<ContentItemReference> Card { get; set; }
 }

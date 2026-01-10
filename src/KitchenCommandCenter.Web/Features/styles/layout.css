@@ -28,6 +28,11 @@
     var(--full-width-size) [full-width-end];
 }
 
+.content-grid > .thin {
+  margin-inline: auto;
+  max-width: 60rem;
+}
+
 .content-grid > :not(.breakout, .full-width) {
   grid-column: content;
 }
@@ -38,9 +43,4 @@
 
 .content-grid > .full-width {
   grid-column: full-width;
-}
-
-.content-grid > .thin {
-  max-width: 60rem;
-  margin-inline: auto;
 }

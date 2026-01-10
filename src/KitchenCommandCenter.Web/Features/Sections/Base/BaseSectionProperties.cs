@@ -7,7 +7,7 @@ using KitchenCommandCenter.Web.Features.Tailwind;
 
 namespace KitchenCommandCenter.Web.Features.Sections.Base;
 
-public enum VerticalSpacing
+public enum Spacing
 {
     None,
     Small,
@@ -17,56 +17,99 @@ public enum VerticalSpacing
 
 public enum SectionBackgroundColorOptions
 {
-    [TailwindBackgroundColor(TailwindColor.White)]
-    White,
+    [TailwindBackgroundColor(TailwindColor.Bone)]
+    Bone,
+    [TailwindBackgroundColor(TailwindColor.Base)]
+    Base,
+    [TailwindBackgroundColor(TailwindColor.Crust)]
+    Crust,
+    [TailwindBackgroundColor(TailwindColor.Surface)]
+    Surface,
+    [TailwindBackgroundColor(TailwindColor.Mantle)]
+    Mantle,
+}
+
+public enum SectionTextColorOptions
+{
+    [TailwindTextColor(TailwindColor.Bone)]
+    Bone,
+    [TailwindTextColor(TailwindColor.Onyx)]
+    Onyx,
 }
 
 public class BaseSectionProperties : ISectionProperties
 {
+    [TextInputComponent(
+        Order = 0,
+        Label = "Heading"
+    )]
+    public string Heading { get; set; }
+
     [RequiredValidationRule]
     [DropDownComponent(
-        Order = 0,
+        Order = 1,
         Label = "Background Color",
         DataProviderType = typeof(EnumDropDownOptionsProvider<SectionBackgroundColorOptions>)
     )]
     public string BackgroundColor { get; set; } =
-        SectionBackgroundColorOptions.White.GetTailwindStyle();
+        SectionBackgroundColorOptions.Bone.GetTailwindStyle();
 
     [RequiredValidationRule]
-    [DropDownComponent(Order = 30, Label = "Content Width", Options = "Container\nFull Width")]
+    [DropDownComponent(
+        Order = 2,
+        Label = "Text Color",
+        DataProviderType = typeof(EnumDropDownOptionsProvider<SectionTextColorOptions>)
+    )]
+    public string TextColor { get; set; } = SectionTextColorOptions.Onyx.GetTailwindStyle();
+
+    [RequiredValidationRule]
+    [DropDownComponent(Order = 3, Label = "Content Width", Options = "Thin\nContainer\nBreakout\nFull Width")]
     public string ContentWidth { get; set; } = "Container";
 
     [RequiredValidationRule]
     [DropDownComponent(
-        Order = 40,
+        Order = 4,
         Label = "Padding Top",
-        DataProviderType = typeof(EnumDropDownOptionsProvider<VerticalSpacing>)
+        DataProviderType = typeof(EnumDropDownOptionsProvider<Spacing>)
     )]
-    public string PaddingTop { get; set; } = VerticalSpacing.Large.ToString();
+    public string PaddingTop { get; set; } = Spacing.Medium.ToString();
 
     [RequiredValidationRule]
     [DropDownComponent(
-        Order = 50,
+        Order = 5,
         Label = "Padding Bottom",
-        DataProviderType = typeof(EnumDropDownOptionsProvider<VerticalSpacing>)
+        DataProviderType = typeof(EnumDropDownOptionsProvider<Spacing>)
     )]
-    public string PaddingBottom { get; set; } = VerticalSpacing.Large.ToString();
+    public string PaddingBottom { get; set; } = Spacing.Medium.ToString();
 
-    public int GetPaddingTop() => GetVerticalSpacing(
-        Enum.TryParse<VerticalSpacing>(PaddingTop, out var result)
+    [RequiredValidationRule]
+    [DropDownComponent(
+        Order = 6,
+        Label = "Horizontal Padding",
+        DataProviderType = typeof(EnumDropDownOptionsProvider<Spacing>)
+    )]
+    public string HorizontalPadding { get; set; } = Spacing.None.ToString();
+
+    public int GetPaddingTop() => GetSpacing(
+        Enum.TryParse<Spacing>(PaddingTop, out var result)
             ? result
-            : VerticalSpacing.Large);
+            : Spacing.Medium);
 
-    public int GetPaddingBottom() => GetVerticalSpacing(
-        Enum.TryParse<VerticalSpacing>(PaddingBottom, out var result)
+    public int GetPaddingBottom() => GetSpacing(
+        Enum.TryParse<Spacing>(PaddingBottom, out var result)
             ? result
-            : VerticalSpacing.Large);
+            : Spacing.Medium);
 
-    public static int GetVerticalSpacing(VerticalSpacing verticalSpacing) => verticalSpacing switch
+    public int GetHorizontalPadding() => GetSpacing(
+        Enum.TryParse<Spacing>(HorizontalPadding, out var result)
+            ? result
+            : Spacing.None);
+
+    public static int GetSpacing(Spacing spacing) => spacing switch
     {
-        VerticalSpacing.Small => 4,
-        VerticalSpacing.Medium => 8,
-        VerticalSpacing.Large => 12,
-        VerticalSpacing.None or _ => 0,
+        Spacing.Small => 4,
+        Spacing.Medium => 8,
+        Spacing.Large => 12,
+        Spacing.None or _ => 0,
     };
 }

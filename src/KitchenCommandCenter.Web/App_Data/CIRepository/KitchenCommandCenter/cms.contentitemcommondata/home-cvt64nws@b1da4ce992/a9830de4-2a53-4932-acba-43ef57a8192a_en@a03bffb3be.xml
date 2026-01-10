@@ -13,11 +13,11 @@
   <ContentItemCommonDataFirstPublishedWhen>2025-11-20 02:05:36Z</ContentItemCommonDataFirstPublishedWhen>
   <ContentItemCommonDataGUID>a9830de4-2a53-4932-acba-43ef57a8192a</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2026-01-05 02:43:50Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-01-10 01:10:49Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
   <ContentItemCommonDataVisualBuilderTemplateConfiguration />
   <ContentItemCommonDataVisualBuilderWidgets>
-    <![CDATA[{"editableAreas":[{"identifier":"page-builder-widgets","sections":[{"identifier":"0cb6b2fe-ce56-4907-9e45-5015f6b2ea54","type":"KitchenCommandCenter.BaseSection","properties":{"backgroundColor":"bg-white","contentWidth":"Container","paddingTop":"Large","paddingBottom":"Large"},"zones":[{"identifier":"10eb51e7-6f97-49e4-8da3-786afbc86173","widgets":[{"identifier":"f85e3d65-b532-4145-a4e7-c2ee6927b0a5","type":"KitchenCommandCenter.Web.CardWidget","variants":[{"identifier":"6bdfe256-00a4-4205-815b-3f80f16ef727","properties":{"cards":[{"identifier":"45ee0e44-9664-4820-aba3-7511559a4d0e"},{"identifier":"8af696bc-e04f-4003-9164-22de993f0cf4"},{"identifier":"a7a6d3a9-d39c-4031-97aa-b77eed40090d"},{"identifier":"6c9770db-88db-4ba6-bba8-1235418b691f"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"cards":"3471b34b-cc60-4694-a4ad-d5ca797f46d0","marginTop":"0e8d6486-5e83-4d86-bdf6-efed48d40af0","marginBottom":"425c4c53-02da-4fd3-8616-d4c787bf13a1"}}]}]}],"fieldIdentifiers":{"backgroundColor":"8f71b5a3-9f60-4c00-80ba-47c267d78274","contentWidth":"6aaed313-57db-442a-aeb2-00a415fb9a99","paddingTop":"d50fe29b-db4f-41c6-a61e-46b2aa6b7149","paddingBottom":"d4072adf-6cd4-4550-adf1-81023b3052d9"}}]}]}]]>
+    <![CDATA[{"editableAreas":[{"identifier":"page-builder-widgets","sections":[{"identifier":"bcd89467-3817-4c84-b440-046950426d25","type":"KitchenCommandCenter.BaseSection","properties":{"heading":null,"backgroundColor":"bg-bone","textColor":"text-onyx","contentWidth":"Container","paddingTop":"Medium","paddingBottom":"None","horizontalPadding":"None"},"zones":[{"identifier":"bb596265-7139-41ed-8dd5-1099a4de4559","widgets":[{"identifier":"18422074-21fa-41c4-928e-78f4987b6e75","type":"Kentico.Widget.RichText","variants":[{"identifier":"6e4eebf9-6574-4e98-aa71-885dbb2d0727","properties":{"content":"<h1 style=\"text-align: center\"><span style=\"font-size: 60px\">Welcome to Kitchen Command Center!</span></h1>"},"fieldIdentifiers":{"content":"3a0a2667-42f9-44cc-a3cf-7e921aa5b713"}}]}]}],"fieldIdentifiers":{"heading":"1434ca1d-fe2f-48d8-acd2-5ccd095ee716","backgroundColor":"68a54758-e475-49c2-a27f-cd075864a9ec","textColor":"6ecc6f8e-3300-4c10-9f49-85472f5b96cc","contentWidth":"eade4700-d9dc-455a-979f-8fa9a1a96829","paddingTop":"b5f1f0ea-c75e-436e-ac4f-26537d1fbb8b","paddingBottom":"ea1ae7ba-b697-43ad-9180-7681fba93192","horizontalPadding":"a6901f18-ec68-4b75-8e91-298ea67e4dd7"}},{"identifier":"0cb6b2fe-ce56-4907-9e45-5015f6b2ea54","type":"KitchenCommandCenter.BaseSection","properties":{"heading":null,"backgroundColor":"bg-bone","textColor":"text-onyx","contentWidth":"Container","paddingTop":"Medium","paddingBottom":"Medium","horizontalPadding":"None"},"zones":[{"identifier":"3bb89047-bee3-4b41-bac3-2da53c0b1027","widgets":[{"identifier":"b0b40ebe-ea8a-4d10-b58c-cff55b67f0b7","type":"KitchenCommandCenter.Web.CardGridWidget","variants":[{"identifier":"f6918635-c703-4ff9-8666-5b6ce287771c","properties":{"cards":[{"identifier":"45ee0e44-9664-4820-aba3-7511559a4d0e"},{"identifier":"8af696bc-e04f-4003-9164-22de993f0cf4"},{"identifier":"a7a6d3a9-d39c-4031-97aa-b77eed40090d"},{"identifier":"6c9770db-88db-4ba6-bba8-1235418b691f"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"cards":"0cbc5f6a-8556-4a48-b172-280291de8682","marginTop":"dbff07f6-b83a-4b3d-bad2-e96fb3883918","marginBottom":"161fbe4b-2149-43c1-8f57-fe6cfb998b5f"}}]}]}],"fieldIdentifiers":{"backgroundColor":"202c3bf9-13e8-4e75-9b7b-4f4788a10165","textColor":"c4fced8b-97d2-43fb-ab46-7345199e816c","contentWidth":"a5b96a18-8ff3-4699-9340-f691df9a3692","paddingTop":"069b23ce-76ab-468a-87df-315f7b9b3151","paddingBottom":"34aa343e-64cb-40f3-b418-f2b532c77e6e","horizontalPadding":"e900d01f-6c68-4a92-a666-0ad3da81bec0","heading":"8c5f7980-87d1-4eaf-9097-b68e33f6a9fb"}},{"identifier":"6ea7e96c-6510-4eec-85e9-f0fe637759fb","type":"KitchenCommandCenter.MultipleColumnSection","properties":{"columnStyle":"FourColumns","heading":"How About Something Sweeter?","backgroundColor":"bg-base","textColor":"text-bone","contentWidth":"Breakout","paddingTop":"Medium","paddingBottom":"Medium","horizontalPadding":"Medium"},"zones":[{"identifier":"40e62490-0683-40eb-98ee-6db108a065f4","widgets":[{"identifier":"f517aa1c-e383-4df0-92df-09c5bbf3997a","type":"KitchenCommandCenter.Web.CardWidget","variants":[{"identifier":"40ee7ec6-e142-4b60-a87d-3eafdae4f814","properties":{"card":[{"identifier":"ecacbc3b-d859-4a8e-b6f5-5435129a4a22"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"card":"614d1586-b48f-4174-8290-249f644b5ddf","marginTop":"10612543-0d0f-430a-b007-fa82ed2f299c","marginBottom":"09ac11c7-ce6b-42ce-a5e0-111e2552f8f6"}}]}]},{"identifier":"77af1d23-6515-4572-aff4-3584bb6ed5bd","widgets":[{"identifier":"2caf3a60-728b-4f84-855a-d1fcdcb04363","type":"KitchenCommandCenter.Web.CardWidget","variants":[{"identifier":"637ea663-7457-4539-80a0-4df7341a60ce","properties":{"card":[{"identifier":"e73bab70-24ff-47d8-a82e-8ed29a4eed52"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"card":"82d68b8b-b31d-40f3-9acd-4afd318cdbe9","marginTop":"e6f8dc5e-47ec-4510-9348-37d8c7d83633","marginBottom":"d88f3f00-137e-4dd2-a45b-af22c6557249"}}]}]},{"identifier":"af96b6f7-f114-442b-84a6-34070f3be9e2","widgets":[{"identifier":"13faa13f-538f-42eb-99bb-605e62a02669","type":"KitchenCommandCenter.Web.CardWidget","variants":[{"identifier":"e3318ca8-5805-47a3-b7a5-8e52696199f7","properties":{"card":[{"identifier":"87a01367-f319-4ce3-8f5a-e4e7c97fa8ce"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"card":"7f54626e-d110-4daf-952a-82d9f9904e65","marginTop":"750914ab-199c-4b1f-bfaf-ab9031a7bc9e","marginBottom":"14a19dbd-bd7b-459f-9af8-aadc7b0c06eb"}}]}]},{"identifier":"d6f28778-461b-4400-b653-8980dec01b93","widgets":[{"identifier":"df75c8e9-a87d-4138-b3f9-0de48179730c","type":"KitchenCommandCenter.Web.CardWidget","variants":[{"identifier":"76da7385-21b1-4cfc-9a6f-59ebffa33279","properties":{"card":[{"identifier":"9a58bd93-7bb4-44e5-af07-d050f5032bb7"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"card":"bf9fe742-0f68-43d8-878b-34baab8a0d26","marginTop":"fcabc9e4-3639-4bec-b502-ac7cfb71a638","marginBottom":"5e9a8db2-2e0a-4b81-95b5-5027c6c0d15e"}}]}]}],"fieldIdentifiers":{"columnStyle":"37c1b64e-ce8a-4c2c-ba31-55b6238640c4","heading":"bb627174-782a-4b00-ac87-b35dc02f7e2e","backgroundColor":"0ac72ad3-22d4-4cde-b4b0-0b78ae34af02","textColor":"29bbff2f-da26-4bfc-87e4-aeb99236301e","contentWidth":"9844e521-0fd2-4418-a6bc-58b8e56c76ec","paddingTop":"0d8a5218-f531-4d37-9932-a09a600f9648","paddingBottom":"33af83b4-3396-455d-be8e-56b4dd0f8a46","horizontalPadding":"2445de3f-5eff-460b-b038-055cf6fa1ccd"}},{"identifier":"c472fbae-58eb-4397-baf6-dee1e69537e8","type":"KitchenCommandCenter.BaseSection","properties":{"heading":null,"backgroundColor":"bg-bone","textColor":"text-onyx","contentWidth":"Thin","paddingTop":"Medium","paddingBottom":"None","horizontalPadding":"None"},"zones":[{"identifier":"3c8ed1e3-0529-434b-a262-bd2199805845","widgets":[{"identifier":"56d689a6-7064-425e-9d35-2d5abea75536","type":"KitchenCommandCenter.Web.StackerWidget","variants":[{"identifier":"7812bf24-5d28-44ef-acdd-04ed43c1943b","properties":{"heading":"Delicious Drinks","body":"<p>The perfect drink can elevate any dining experience, transforming a simple meal into a memorable occasion. Whether it's a crisp white wine paired with seafood, a bold red complementing a hearty steak, or a craft cocktail that brings out subtle flavors in your appetizer, beverages play an essential role in the culinary journey. Even non-alcoholic options like sparkling waters infused with herbs or fresh-pressed juices can enhance and balance the flavors of your dish, creating a harmonious dining experience that engages all&nbsp;your senses.</p>","image":[{"identifier":"37b00751-da47-47aa-9d2d-cdf77184084b"}],"cards":[{"identifier":"56ba7723-4615-4152-90bd-b32a4a39e8f5"},{"identifier":"616bcdff-39ff-41ec-b1a3-6ed5d0191c8c"},{"identifier":"f70a6bb0-13fb-4f45-b33b-3bb6f5609c12"},{"identifier":"1d4001e5-bbb1-4232-8ffa-8beb64a92322"},{"identifier":"007d539b-1579-4046-8350-83d8b291d2c9"},{"identifier":"67695933-48c1-4d3b-8488-7ff2d3c754d1"}],"marginTop":"0","marginBottom":"0"},"fieldIdentifiers":{"cards":"fa380e12-5653-45cd-b0e9-dd56bc50f160","marginTop":"b83ea01d-5b7b-4bcd-a72b-d46029fe2909","marginBottom":"4cb8831f-ede7-429d-91b7-ed551a6f95e7","heading":"fdc09b06-c05c-4813-b950-2d00e038388f","body":"e53ace9e-16a5-480a-98d4-d14957fd1d7d","image":"60158939-c666-42d2-b735-a748644472e5"}}]}]}],"fieldIdentifiers":{"heading":"33aba659-8907-4eb9-aab5-7e147098607b","backgroundColor":"97a0442a-7d43-4aad-90b7-af2acb6d0801","textColor":"50556c4c-9abb-4b42-a920-3fbee4950609","contentWidth":"ce234ef3-3bd9-4652-b34b-ec01d0abe489","paddingTop":"a305f88e-d275-416d-b2eb-35b7e88736a0","paddingBottom":"1ec07e03-70af-4ff7-b0cc-0df7f082433b","horizontalPadding":"fbfd6da6-fc23-46f3-a065-ce68082c6dd2"}},{"identifier":"97da6e7e-7b34-4e79-b571-36e631bbea2c","type":"KitchenCommandCenter.BaseSection","properties":{"heading":null,"backgroundColor":"bg-bone","textColor":"text-onyx","contentWidth":"Container","paddingTop":"Medium","paddingBottom":"Medium","horizontalPadding":"None"},"zones":[{"identifier":"53fd83d7-eae0-43bb-88cd-95e8623cde2a","widgets":[{"identifier":"0d509d34-18e4-422e-8b44-04a619b3be6b","type":"Kentico.Widget.RichText","variants":[{"identifier":"c9916fb5-38af-4903-a626-3a4ab26802c8","properties":{"content":"<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><p><br></p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><p><br></p><p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p><p><br></p><p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p><p><br></p><p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p><p><br></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><p><br></p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><p><br></p><p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p><p><br></p><p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p><p><br></p><p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>"},"fieldIdentifiers":{"content":"1791bbcd-834b-472f-9d43-652b79de564c"}}]}]}],"fieldIdentifiers":{"heading":"e6b45f1a-74d7-49c1-837f-9244a40fbc90","backgroundColor":"9ee8b68d-c502-442c-b479-107c68bbb4a3","textColor":"074e56c5-2143-40c7-a006-7d66d7835864","contentWidth":"a6ffd10c-a017-4130-9398-26c3ab260b18","paddingTop":"c5b7868a-e70f-4b61-b60f-6062a1bb78ac","paddingBottom":"d3c69e06-2d54-4b88-a238-3262baa07546","horizontalPadding":"28266eab-9085-478e-98e1-6aee57bed01b"}}]}]}]]>
   </ContentItemCommonDataVisualBuilderWidgets>
   <IncludeInNavigation>True</IncludeInNavigation>
   <MetadataDescription />
@@ -30,21 +30,21 @@
   <TwitterSite />
   <ContentItemReferences>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>fc9208f8-9d7a-486f-bed3-1ecb0a062604</ContentItemReferenceGUID>
+      <ContentItemReferenceGroupGUID>614d1586-b48f-4174-8290-249f644b5ddf</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>305c57c4-c396-4272-ba69-7136f0c5480b</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>PorkHighlights-pyvz0mwj</CodeName>
-        <GUID>a7a6d3a9-d39c-4031-97aa-b77eed40090d</GUID>
+        <CodeName>CakeHighlights-tu35u6wn</CodeName>
+        <GUID>ecacbc3b-d859-4a8e-b6f5-5435129a4a22</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>e99b3823-2924-4bbd-b79d-39bf9073b31f</ContentItemReferenceGUID>
+      <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>4ca56724-3d89-46bd-9fac-138eaf3ebdac</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -56,8 +56,21 @@
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>45a15158-3849-41b6-b74e-767eea434548</ContentItemReferenceGUID>
+      <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>323293ec-2aac-4c6c-835b-321c09393c1c</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>PorkHighlights-pyvz0mwj</CodeName>
+        <GUID>a7a6d3a9-d39c-4031-97aa-b77eed40090d</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>7695303f-9be4-477e-a64c-b6c43331c32d</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -69,8 +82,8 @@
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>3471b34b-cc60-4694-a4ad-d5ca797f46d0</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>8d10b457-0a0f-41a6-b782-b0ce1f566f71</ContentItemReferenceGUID>
+      <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>94b5eec0-381e-45b9-a819-c32e501cf696</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -78,6 +91,136 @@
       <ContentItemReferenceTargetItemID>
         <CodeName>FishHighlights-f6aptfyy</CodeName>
         <GUID>6c9770db-88db-4ba6-bba8-1235418b691f</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>bf9fe742-0f68-43d8-878b-34baab8a0d26</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>3c5ed7b8-e4ca-419a-8d08-6742c144b246</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>IceCreamHighlights-a7chkvg8</CodeName>
+        <GUID>9a58bd93-7bb4-44e5-af07-d050f5032bb7</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>82d68b8b-b31d-40f3-9acd-4afd318cdbe9</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>7fd3306b-f6d3-41be-8afb-5a4f9dfceed6</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>CookiesHighlights-s5r4utpf</CodeName>
+        <GUID>e73bab70-24ff-47d8-a82e-8ed29a4eed52</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>7f54626e-d110-4daf-952a-82d9f9904e65</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>1c364b0b-f876-4c9d-8f0a-3673a946b831</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>PiesHighlights-7mka7all</CodeName>
+        <GUID>87a01367-f319-4ce3-8f5a-e4e7c97fa8ce</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>60158939-c666-42d2-b735-a748644472e5</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>63df11c0-2bd6-4442-aaa0-04ac5218efce</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>TestImage-5va1ejcp</CodeName>
+        <GUID>37b00751-da47-47aa-9d2d-cdf77184084b</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>391041e8-b88b-4d3c-a6e4-077df0f76082</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>TequilaHighlights-vt130031</CodeName>
+        <GUID>616bcdff-39ff-41ec-b1a3-6ed5d0191c8c</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>798e466a-5b62-493e-88a2-52557187529d</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>RumHighlights-8b4ry0r0</CodeName>
+        <GUID>007d539b-1579-4046-8350-83d8b291d2c9</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>38ba8b9d-9eb5-4e43-b458-7e61cd7e581d</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>WhiskeyHighlights-hdrtg0nz</CodeName>
+        <GUID>1d4001e5-bbb1-4232-8ffa-8beb64a92322</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>b2d11f87-fa92-4118-b603-a66ae5973f15</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>VodkaHighlights-qt9bykil</CodeName>
+        <GUID>56ba7723-4615-4152-90bd-b32a4a39e8f5</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>89980618-f94f-4ffb-b781-b99b4b5a3aed</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>WineHighlights-qo50c0z0</CodeName>
+        <GUID>67695933-48c1-4d3b-8488-7ff2d3c754d1</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>e2d43d0b-608c-4ce1-bbdb-eb926c4e8e5e</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>GinHighlights-hppa6puq</CodeName>
+        <GUID>f70a6bb0-13fb-4f45-b33b-3bb6f5609c12</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>

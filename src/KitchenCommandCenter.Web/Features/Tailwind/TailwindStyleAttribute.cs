@@ -5,9 +5,26 @@ namespace KitchenCommandCenter.Web.Features.Tailwind;
 public enum TailwindColor
 {
     None = 0,
-    Black,
-    White,
-    Gray,
+    Onyx,
+    Bone,
+    Crust,
+    Surface,
+    Mantle,
+    Base,
+    Rosewater,
+    Flamingo,
+    Pink,
+    Mauve,
+    Red,
+    Maroon,
+    Peach,
+    Yellow,
+    Green,
+    Teal,
+    Sky,
+    Sapphire,
+    Blue,
+    Lavender,
 }
 
 public enum TailwindShade

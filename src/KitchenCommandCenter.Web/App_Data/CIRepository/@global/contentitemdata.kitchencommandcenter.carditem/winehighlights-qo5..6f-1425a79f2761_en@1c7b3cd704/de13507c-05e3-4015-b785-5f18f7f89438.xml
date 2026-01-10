@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kitchencommandcenter.carditem>
+  <BackgroundColor>bg-red</BackgroundColor>
+  <ContentItemDataCommonDataID>
+    <GUID>32eb17f1-20ca-4ed4-886f-1425a79f2761</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>WineHighlights-qo50c0z0</CodeName>
+      <GUID>67695933-48c1-4d3b-8488-7ff2d3c754d1</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>de13507c-05e3-4015-b785-5f18f7f89438</ContentItemDataGUID>
+  <Heading>Wine</Heading>
+  <SubHeading>Fermented grape nectar</SubHeading>
+</contentitemdata.kitchencommandcenter.carditem>

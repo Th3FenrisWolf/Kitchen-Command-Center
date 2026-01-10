@@ -46,7 +46,7 @@ const userNav = [
         Insert Logo Here
       </a>
 
-      <ul class="flex">
+      <ul class="flex h-full">
         <li v-for="route in mainNav" :key="route.name">
           <MenuItem :route />
         </li>

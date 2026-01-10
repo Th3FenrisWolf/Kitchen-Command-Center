@@ -6,6 +6,7 @@
  * @param {string} [cardTextColor='text-bone'] - The color of the card text
  * @param {string} [drawerColor=null] - The color of the card drawer background, if null, the cardTextColor will be used
  * @param {string} [drawerTextColor=null] - The color of the card drawer text, if null, the cardColor will be used
+ * @param {string} [marginClasses=''] - The margin classes to apply to the card
  *
  * @slot default — Main content of the card
  * @slot drawer — Content to show when the card is expanded
@@ -41,6 +42,12 @@ export interface CardProps {
    * @default cardColor
    */
   drawerTextColor?: TextColor | null
+
+  /**
+   * The margin classes to apply to the card
+   * @default ''
+   */
+  marginClasses?: string
 }
 </script>
 
@@ -53,6 +60,7 @@ const {
   cardTextColor = 'text-bone',
   drawerColor = null,
   drawerTextColor = null,
+  marginClasses = '',
 } = defineProps<CardProps>()
 
 const resolvedDrawerColor = computed(() => {
@@ -72,6 +80,7 @@ const resolvedDrawerTextColor = computed(() => {
         'focus-within:shadow-primary-raised hover:shadow-primary-raised',
         cardColor,
         cardTextColor,
+        marginClasses,
       )
     "
   >
