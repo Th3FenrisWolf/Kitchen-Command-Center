@@ -4,11 +4,11 @@ VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{56A60E2B-E452-4E2C-A1C3-57418060BF44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KitchenCommandCenter.Web", "src\KitchenCommandCenter.Web\KitchenCommandCenter.Web.csproj", "{1ECDCC7B-F704-425A-B777-8B1CADB97895}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KCC.Web", "src\KCC.Web\KCC.Web.csproj", "{1ECDCC7B-F704-425A-B777-8B1CADB97895}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KitchenCommandCenter.Admin", "src\KitchenCommandCenter.Admin\KitchenCommandCenter.Admin.csproj", "{2D2FFEA2-3E3B-48AD-AC43-6DD7A4362768}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KCC.Admin", "src\KCC.Admin\KCC.Admin.csproj", "{2D2FFEA2-3E3B-48AD-AC43-6DD7A4362768}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KitchenCommandCenter.Core", "src\KitchenCommandCenter.Core\KitchenCommandCenter.Core.csproj", "{2641A9E8-C51D-4F30-B875-708B8B8CD7C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KCC.Core", "src\KCC.Core\KCC.Core.csproj", "{2641A9E8-C51D-4F30-B875-708B8B8CD7C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

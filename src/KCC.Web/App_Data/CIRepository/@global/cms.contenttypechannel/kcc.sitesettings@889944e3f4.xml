@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttypechannel>
+  <Parent>
+    <CodeName>KCC.SiteSettings</CodeName>
+    <GUID>db2eff2b-8398-416a-a7ff-4529490977be</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </Parent>
+  <Bindings>
+    <Binding id="cms.channel_KCC">
+      <ContentTypeChannelChannelID>
+        <CodeName>KCC</CodeName>
+        <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+        <ObjectType>cms.channel</ObjectType>
+      </ContentTypeChannelChannelID>
+    </Binding>
+  </Bindings>
+</cms.contenttypechannel>

@@ -1,0 +1,47 @@
+using System;
+using KCC.Web.Features.Providers;
+using KCC.Web.Features.Sections.Base;
+using Kentico.Forms.Web.Mvc;
+using Kentico.Xperience.Admin.Base.FormAnnotations;
+
+namespace KCC.Web.Features.Sections.MultipleColumn;
+
+public enum ColumnLayout
+{
+    OneColumn,
+    TwoColumns,
+    ThreeColumns,
+    FourColumns,
+    LeftTwoThirds,
+    RightTwoThirds,
+}
+
+public class MultipleColumnSectionProperties : BaseSectionProperties
+{
+    [RequiredValidationRule]
+    [DropDownComponent(
+        Order = 10,
+        Label = "Column Style",
+        DataProviderType = typeof(EnumDropDownOptionsProvider<ColumnLayout>)
+    )]
+    public string ColumnStyle { get; set; } = ColumnLayout.OneColumn.ToString();
+
+    public (string, int) GetColumnStyle() => GetColumnStyleProperties(
+        Enum.TryParse<ColumnLayout>(ColumnStyle, out var result)
+            ? result
+            : ColumnLayout.OneColumn);
+
+    private (string ColumnStyleClass, int ColumnCount) GetColumnStyleProperties(
+        ColumnLayout columnStyle
+    ) =>
+        columnStyle switch
+        {
+            ColumnLayout.OneColumn => ("one-column", 1),
+            ColumnLayout.TwoColumns => ("two-columns", 2),
+            ColumnLayout.ThreeColumns => ("three-columns", 3),
+            ColumnLayout.FourColumns => ("four-columns", 4),
+            ColumnLayout.LeftTwoThirds => ("left-two-thirds", 2),
+            ColumnLayout.RightTwoThirds => ("right-two-thirds", 2),
+            _ => ("even-columns", 1),
+        };
+}

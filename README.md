@@ -4,10 +4,10 @@
 
 ### Development Environment Setup
 
-**Working Directory**: All commands should be run from `./src/KitchenCommandCenter.Web`
+**Working Directory**: All commands should be run from `./src/KCC.Web`
 
 ```bash
-cd src/KitchenCommandCenter.Web
+cd src/KCC.Web
 ```
 
 ### Quick Development Workflow
@@ -65,7 +65,7 @@ This starter follows established patterns and best practices for maintainable, s
 
 ### Vertical Slice Architecture
 
-Features are organized by vertical slices in `src/KitchenCommandCenter.Web/Features/`:
+Features are organized by vertical slices in `src/KCC.Web/Features/`:
 
 ```
 Features/

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.carditem>
+  <BackgroundColor>bg-peach</BackgroundColor>
+  <ContentItemDataCommonDataID>
+    <GUID>c24e0828-6fc1-4527-bdb3-671b764a0474</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>PiesHighlights-7mka7all</CodeName>
+      <GUID>87a01367-f319-4ce3-8f5a-e4e7c97fa8ce</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>2a9978b0-b9ab-478e-8aea-0a72cc947ef4</ContentItemDataGUID>
+  <Heading>Pie</Heading>
+  <Link>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </Link>
+  <SubHeading>Comforting</SubHeading>
+</contentitemdata.kcc.carditem>

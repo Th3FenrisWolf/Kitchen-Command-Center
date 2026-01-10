@@ -1,1 +1,1 @@
-dotnet run -c Release --project ./src/KitchenCommandCenter.Web/KitchenCommandCenter.Web.csproj --no-build --kxp-ci-store
+dotnet run -c Release --project ./src/KCC.Web/KCC.Web.csproj --no-build --kxp-ci-store

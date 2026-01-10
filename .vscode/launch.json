@@ -10,9 +10,9 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/src/KitchenCommandCenter.Web/bin/Debug/net8.0/KitchenCommandCenter.Web.dll",
+      "program": "${workspaceFolder}/src/KCC.Web/bin/Debug/net8.0/KCC.Web.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/KitchenCommandCenter.Web",
+      "cwd": "${workspaceFolder}/src/KCC.Web",
       "stopAtEntry": false,
       "justMyCode": true,
       "env": {

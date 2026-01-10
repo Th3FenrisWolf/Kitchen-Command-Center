@@ -1,0 +1,32 @@
+﻿@using KCC.Web.Features.Sections.Base;
+
+@model BaseSectionViewModel
+
+@{
+  var containerClass = Model.ContentWidth switch {
+    "Thin" => "thin",
+    "Breakout" => "breakout",
+    "Full Width" => "full-width",
+    _ => string.Empty,
+  };
+}
+
+<section
+  data-section-guid="@Model.SectionGuid"
+  class="@Html.Clsx(
+    "base-section rounded-4xl",
+    containerClass,
+    Model.BackgroundColor,
+    Model.TextColor,
+    $"pb-{Model.PaddingBottom}",
+    $"pt-{Model.PaddingTop}",
+    $"px-{Model.HorizontalPadding}"
+  )"
+>
+  @if (!string.IsNullOrEmpty(Model.Heading))
+  {
+    <p class="mb-8 text-center text-heading">@Model.Heading</p>
+  }
+
+  <widget-zone />
+</section>

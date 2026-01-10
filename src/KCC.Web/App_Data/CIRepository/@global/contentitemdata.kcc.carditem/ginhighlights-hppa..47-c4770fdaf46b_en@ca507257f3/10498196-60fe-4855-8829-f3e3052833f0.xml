@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.carditem>
+  <BackgroundColor>bg-green</BackgroundColor>
+  <ContentItemDataCommonDataID>
+    <GUID>4227016f-2565-4ac8-a747-c4770fdaf46b</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>GinHighlights-hppa6puq</CodeName>
+      <GUID>f70a6bb0-13fb-4f45-b33b-3bb6f5609c12</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>10498196-60fe-4855-8829-f3e3052833f0</ContentItemDataGUID>
+  <Heading>Gin</Heading>
+  <SubHeading>Juniper-forward botanical blend</SubHeading>
+</contentitemdata.kcc.carditem>

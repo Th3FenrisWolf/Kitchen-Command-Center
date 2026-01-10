@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitem>
+  <ContentItemChannelID>
+    <CodeName>KCC</CodeName>
+    <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+    <ObjectType>cms.channel</ObjectType>
+  </ContentItemChannelID>
+  <ContentItemContentTypeID>
+    <CodeName>KCC.StatusCodePage</CodeName>
+    <GUID>0a492309-5ae6-45e6-a9c9-0427a2a7537d</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </ContentItemContentTypeID>
+  <ContentItemGUID>23b7b440-da47-4b35-96d4-b2db4670b1bb</ContentItemGUID>
+  <ContentItemIsReusable>False</ContentItemIsReusable>
+  <ContentItemIsSecured>False</ContentItemIsSecured>
+  <ContentItemName>404-c0rmzs76</ContentItemName>
+</cms.contentitem>

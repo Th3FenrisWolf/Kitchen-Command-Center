@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+        <CodeAnalysisRuleSet>..\..\BizStreamStandardRules.ruleset</CodeAnalysisRuleSet>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);AD0001</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningsNotAsErrors>NU1608</WarningsNotAsErrors>
+        <UserSecretsId>85272aa4-641c-4fe4-b1e7-977f7decf9dc</UserSecretsId>
+    </PropertyGroup>
+    <ItemGroup>
+        <AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Automapper" />
+        <PackageReference Include="kentico.xperience.admin" />
+        <PackageReference Include="kentico.xperience.azurestorage" />
+        <PackageReference Include="kentico.xperience.imageprocessing" />
+        <PackageReference Include="kentico.xperience.miniprofiler" />
+        <PackageReference Include="kentico.xperience.webapp" />
+        <PackageReference Include="RobotsTxtCore" />
+        <PackageReference Include="SimpleMvcSitemap" />
+        <PackageReference Include="StyleCop.Analyzers">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Vite.AspNetCore" />
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="assets\**"
+                 CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+    <ItemGroup>
+        <UpToDateCheckBuilt Include="wwwroot/css/site.css"
+                            Set="Css" />
+        <UpToDateCheckBuilt Include="tailwind.config.js"
+                            Set="Css" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
+        <ProjectReference Include="..\KCC.Core\KCC.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="wwwroot\favicon.ico" />
+        <None Include="wwwroot\fonts\AimaDisplayRegular.ttf" />
+        <None Include="wwwroot\fonts\AmericanPurposeCasualItalic.ttf" />
+        <None Include="wwwroot\fonts\AmericanPurposeCasualRegular.ttf" />
+        <None Include="wwwroot\fonts\HazelnutMilkTeaBold.ttf" />
+        <None Include="wwwroot\fonts\HazelnutMilkTeaBoldItalic.ttf" />
+        <None Include="wwwroot\fonts\HazelnutMilkTeaItalic.ttf" />
+        <None Include="wwwroot\fonts\HazelnutMilkTeaRegular.ttf" />
+    </ItemGroup>
+    <Target Name="Tailwind"
+            BeforeTargets="Build"
+            Condition="'$(Configuration)' == 'Release'">
+        <Exec WorkingDirectory="client-ui"
+              Command="yarn" />
+        <Exec WorkingDirectory="client-ui"
+              Command="yarn build" />
+    </Target>
+</Project>

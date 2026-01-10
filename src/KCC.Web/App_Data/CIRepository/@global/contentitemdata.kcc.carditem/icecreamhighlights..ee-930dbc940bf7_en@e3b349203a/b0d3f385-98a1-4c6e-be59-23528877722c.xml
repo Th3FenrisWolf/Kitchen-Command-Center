@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.carditem>
+  <BackgroundColor>bg-teal</BackgroundColor>
+  <ContentItemDataCommonDataID>
+    <GUID>f918ca96-c60b-4b1e-acee-930dbc940bf7</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>IceCreamHighlights-a7chkvg8</CodeName>
+      <GUID>9a58bd93-7bb4-44e5-af07-d050f5032bb7</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>b0d3f385-98a1-4c6e-be59-23528877722c</ContentItemDataGUID>
+  <Heading>Ice Cream</Heading>
+  <Link>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </Link>
+  <SubHeading>Dreamy</SubHeading>
+</contentitemdata.kcc.carditem>

@@ -1,0 +1,40 @@
+@using KCC.Web.Features.Widgets.Card
+@using KCC.Web.Models.Common
+
+@model CardWidgetViewModel
+
+@if (Model.Card is not null)
+{
+  <Card
+    key="@Model.Card.Heading"
+    card-color="@Model.Card.BackgroundColor"
+    card-text-color="text-onyx"
+    drawer-color="bg-bone"
+    drawer-text-color="text-onyx"
+    margin-classes="@Model.Properties.GetMarginClasses()"
+  >
+    <div>
+      <h2 class="text-heading">@Model.Card.Heading</h2>
+      <h3>@Model.Card.SubHeading</h3>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Card.Body) || Model.Card.Link.Any())
+    {
+      <template #drawer>
+        <p class="text-balance">@Model.Card.Body</p>
+
+        @if (Model.Card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
+        {
+          <UnderlineLink color="bg-onyx" link-to="@link.Url">
+            @link.DisplayText
+          </UnderlineLink>
+        }
+      </template>
+    }
+  </Card>
+}
+else
+{
+  <p>@WidgetConstants.ConfigHeading</p>
+  <p>@WidgetConstants.ConfigSubHeading</p>
+}

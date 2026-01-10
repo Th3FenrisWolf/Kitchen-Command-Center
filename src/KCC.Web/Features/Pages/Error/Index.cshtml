@@ -1,0 +1,8 @@
+@using KCC.Web.Features.Pages.Error
+
+@model ErrorViewModel
+
+<section class="flex flex-col items-center my-10">
+    <h1 class="mb-5">@Model.Heading</h1>
+    @Html.Raw(Model.Body)
+</section>

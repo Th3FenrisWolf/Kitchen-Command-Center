@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/KitchenCommandCenter.sln",
+        "${workspaceFolder}/KCC.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/KitchenCommandCenter.sln",
+        "${workspaceFolder}/KCC.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -29,12 +29,7 @@
       "label": "watch",
       "command": "dotnet",
       "type": "process",
-      "args": [
-        "watch",
-        "run",
-        "--project",
-        "${workspaceFolder}/KitchenCommandCenter.sln"
-      ],
+      "args": ["watch", "run", "--project", "${workspaceFolder}/KCC.sln"],
       "problemMatcher": "$msCompile"
     }
   ]
