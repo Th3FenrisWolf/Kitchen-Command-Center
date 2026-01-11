@@ -1,15 +1,23 @@
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
-import { registerGlobalComponents } from '~/register-global-components'
+import { registerGlobalComponents } from '~/GlobalComponents'
+import '~/Utilities/StringExtensions'
 
 export interface SSRContext {
-  serverContent: string
+  headerContent: string
+  bodyContent: string
+  footerContent: string
 }
 
 export function createApp(context: SSRContext) {
   const app = createSSRApp({
     setup() {
-      return () => h(App, { serverContent: context.serverContent })
+      return () =>
+        h(App, {
+          headerContent: context.headerContent,
+          bodyContent: context.bodyContent,
+          footerContent: context.footerContent,
+        })
     },
   })
 

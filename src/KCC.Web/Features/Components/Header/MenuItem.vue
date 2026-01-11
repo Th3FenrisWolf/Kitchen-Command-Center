@@ -1,17 +1,24 @@
 <script setup lang="ts">
-const { route } = defineProps<{
-  route: { name: string; path: string } | undefined
+interface PageLink {
+  displayText: string
+  url: string
+  target: string
+}
+
+const { item } = defineProps<{
+  item: PageLink
 }>()
 </script>
 
 <template>
   <a
-    v-if="route"
+    v-if="item?.url"
     class="menu-item btn-no-style relative flex h-full items-center overflow-hidden bg-transparent no-underline"
-    :href="route.path"
+    :href="item.url.stripTilde()"
+    :target="item.target"
   >
     <span class="relative z-20 flex h-full w-full items-center px-4">
-      {{ route.name }}
+      {{ item.displayText }}
     </span>
     <span class="background absolute bottom-0 left-0 z-10 h-0 w-full bg-crust transition-all" />
   </a>

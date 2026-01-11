@@ -1,8 +1,10 @@
 @using KCC.Web.Features.Ssr
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Hosting
-@model BasePageViewModel
+
 @inject IWebHostEnvironment Env
+
+@model BasePageViewModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,41 +12,28 @@
 <head>
   <partial name="~/Features/Pages/Shared/Partials/_Metadata.cshtml" />
 
-  @{
-    // Always try to load the static CSS file for SSR (works without JS)
-    var assetsPath = System.IO.Path.Combine(Env.WebRootPath, "assets");
-    string cssFileName = null;
-    if (System.IO.Directory.Exists(assetsPath))
-    {
-      var cssFile = System.IO.Directory.GetFiles(assetsPath, "main-*.css").FirstOrDefault();
-      if (cssFile != null)
-      {
-        cssFileName = System.IO.Path.GetFileName(cssFile);
-      }
-    }
-  }
-
-  @if (cssFileName != null)
-  {
-    // Static CSS file - works without JavaScript (for SSR)
-    <link rel="stylesheet" href="/assets/@cssFileName" />
-  }
-
   @if (Env.IsDevelopment())
   {
-    // In dev mode, also load Vite's CSS for HMR (hot reload)
-    <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
+    @* In dev: load static CSS first to prevent FOUC, then Vite handles HMR *@
+    var assetsPath = System.IO.Path.Combine(Env.WebRootPath, "assets");
+    var cssFile = System.IO.Directory.Exists(assetsPath)
+      ? System.IO.Directory.GetFiles(assetsPath, "main-*.css").FirstOrDefault()
+      : null;
+    if (cssFile != null)
+    {
+      <link rel="stylesheet" href="/assets/@System.IO.Path.GetFileName(cssFile)" />
+    }
   }
-  else
-  {
-    // In production, vite-href resolves to the manifest entry
-    <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
-  }
+  <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
   <page-builder-styles />
 </head>
 
 <body>
-  @await Html.RenderVueSsrAsync(RenderBody())
+  @await Html.RenderVueSsrAsync(
+    await Component.InvokeAsync("Header"),
+    RenderBody(),
+    await Component.InvokeAsync("Footer")
+  )
 
   <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>
   <page-builder-scripts />

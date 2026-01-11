@@ -31,21 +31,27 @@ public class VueSsrService
     /// Renders Vue components to HTML using the SSR service.
     /// Falls back to client-side rendering if SSR fails.
     /// </summary>
-    /// <param name="serverContent">The server-rendered page content (from Razor).</param>
+    /// <param name="headerContent">The header content from ViewComponent.</param>
+    /// <param name="bodyContent">The main page body content.</param>
+    /// <param name="footerContent">The footer content from ViewComponent.</param>
     /// <param name="cancellationToken">Cancellation token for the request.</param>
     /// <returns>The fully rendered HTML including Vue components.</returns>
-    public async Task<SsrResult> RenderAsync(string serverContent, CancellationToken cancellationToken = default)
+    public async Task<SsrResult> RenderAsync(
+        string headerContent,
+        string bodyContent,
+        string footerContent,
+        CancellationToken cancellationToken = default)
     {
         if (!this.isEnabled)
         {
-            return SsrResult.ClientSideOnly(serverContent);
+            return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
         }
 
         try
         {
             var response = await this.httpClient.PostAsJsonAsync(
                 "/render",
-                new SsrRequest(serverContent),
+                new SsrRequest(headerContent, bodyContent, footerContent),
                 cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -53,7 +59,7 @@ public class VueSsrService
                 this.logger.LogWarning(
                     "SSR service returned {StatusCode}, falling back to client-side rendering",
                     response.StatusCode);
-                return SsrResult.ClientSideOnly(serverContent);
+                return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
             }
 
             var result = await response.Content.ReadFromJsonAsync<SsrResponse>(cancellationToken);
@@ -61,7 +67,7 @@ public class VueSsrService
             if (result?.Html is null)
             {
                 this.logger.LogWarning("SSR service returned null HTML, falling back to client-side rendering");
-                return SsrResult.ClientSideOnly(serverContent);
+                return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
             }
 
             this.logger.LogDebug("SSR render completed in {RenderTime}ms", result.RenderTime);
@@ -69,22 +75,24 @@ public class VueSsrService
             return new SsrResult(
                 Html: result.Html,
                 WasServerRendered: true,
-                ServerContent: serverContent);
+                HeaderContent: headerContent,
+                BodyContent: bodyContent,
+                FooterContent: footerContent);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             this.logger.LogDebug("SSR request was cancelled");
-            return SsrResult.ClientSideOnly(serverContent);
+            return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
         }
         catch (TaskCanceledException)
         {
             this.logger.LogWarning("SSR service timed out, falling back to client-side rendering");
-            return SsrResult.ClientSideOnly(serverContent);
+            return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
         }
         catch (HttpRequestException ex)
         {
             this.logger.LogWarning(ex, "SSR service unavailable, falling back to client-side rendering");
-            return SsrResult.ClientSideOnly(serverContent);
+            return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
         }
     }
 
@@ -114,9 +122,13 @@ public class VueSsrService
 /// <summary>
 /// Request payload for SSR rendering.
 /// </summary>
-/// <param name="ServerContent">The page content to embed in the Vue app.</param>
+/// <param name="HeaderContent">The header content from ViewComponent.</param>
+/// <param name="BodyContent">The main page body content.</param>
+/// <param name="FooterContent">The footer content from ViewComponent.</param>
 public record SsrRequest(
-    [property: JsonPropertyName("serverContent")] string ServerContent);
+    [property: JsonPropertyName("headerContent")] string HeaderContent,
+    [property: JsonPropertyName("bodyContent")] string BodyContent,
+    [property: JsonPropertyName("footerContent")] string FooterContent);
 
 /// <summary>
 /// Response from the SSR service.
@@ -132,14 +144,28 @@ public record SsrResponse(
 /// </summary>
 /// <param name="Html">The HTML to render (either SSR output or fallback).</param>
 /// <param name="WasServerRendered">Whether the content was server-rendered.</param>
-/// <param name="ServerContent">The original server content for client-side fallback.</param>
-public record SsrResult(string Html, bool WasServerRendered, string ServerContent)
+/// <param name="HeaderContent">The header content for client-side fallback.</param>
+/// <param name="BodyContent">The body content for client-side fallback.</param>
+/// <param name="FooterContent">The footer content for client-side fallback.</param>
+public record SsrResult(
+    string Html,
+    bool WasServerRendered,
+    string HeaderContent,
+    string BodyContent,
+    string FooterContent)
 {
     /// <summary>
     /// Creates a result for client-side only rendering.
     /// </summary>
-    /// <param name="serverContent">The server content to pass to the client.</param>
+    /// <param name="headerContent">The header content to pass to the client.</param>
+    /// <param name="bodyContent">The body content to pass to the client.</param>
+    /// <param name="footerContent">The footer content to pass to the client.</param>
     /// <returns>An SSR result configured for client-side rendering.</returns>
-    public static SsrResult ClientSideOnly(string serverContent) =>
-        new(Html: string.Empty, WasServerRendered: false, ServerContent: serverContent);
+    public static SsrResult ClientSideOnly(string headerContent, string bodyContent, string footerContent) =>
+        new(
+            Html: string.Empty,
+            WasServerRendered: false,
+            HeaderContent: headerContent,
+            BodyContent: bodyContent,
+            FooterContent: footerContent);
 }

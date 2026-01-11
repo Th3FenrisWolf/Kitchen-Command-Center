@@ -13,15 +13,19 @@ namespace KCC.Web.Features.Ssr;
 public static class SsrHtmlHelperExtensions
 {
     /// <summary>
-    /// Renders the page content with Vue SSR.
+    /// Renders the page content with Vue SSR using separate content regions.
     /// If SSR is unavailable, falls back to client-side rendering.
     /// </summary>
     /// <param name="html">The HTML helper.</param>
-    /// <param name="bodyContent">The body content from RenderBody().</param>
+    /// <param name="headerContent">The header content from ViewComponent.</param>
+    /// <param name="bodyContent">The main page body content from RenderBody().</param>
+    /// <param name="footerContent">The footer content from ViewComponent.</param>
     /// <returns>The SSR-rendered HTML wrapped in the app container.</returns>
     public static async Task<IHtmlContent> RenderVueSsrAsync(
         this IHtmlHelper html,
-        IHtmlContent bodyContent)
+        IHtmlContent headerContent,
+        IHtmlContent bodyContent,
+        IHtmlContent footerContent)
     {
         var ssrService = html.ViewContext.HttpContext.RequestServices
             .GetRequiredService<VueSsrService>();
@@ -29,11 +33,13 @@ public static class SsrHtmlHelperExtensions
         // Get cancellation token from request
         var cancellationToken = html.ViewContext.HttpContext.RequestAborted;
 
-        // Capture the body content as a string
-        var serverContent = RenderHtmlContentToString(bodyContent);
+        // Capture each content region as a string
+        var header = RenderHtmlContentToString(headerContent);
+        var body = RenderHtmlContentToString(bodyContent);
+        var footer = RenderHtmlContentToString(footerContent);
 
-        // Call SSR service
-        var result = await ssrService.RenderAsync(serverContent, cancellationToken);
+        // Call SSR service with separate regions
+        var result = await ssrService.RenderAsync(header, body, footer, cancellationToken);
 
         return new SsrHtmlContent(result);
     }
@@ -60,10 +66,18 @@ internal sealed class SsrHtmlContent : IHtmlContent
 
     public void WriteTo(TextWriter writer, HtmlEncoder encoder)
     {
+        // Create the content regions object for client-side hydration
+        var contentRegions = new
+        {
+            headerContent = this.result.HeaderContent,
+            bodyContent = this.result.BodyContent,
+            footerContent = this.result.FooterContent,
+        };
+
         if (this.result.WasServerRendered)
         {
             // SSR succeeded - render the pre-rendered HTML
-            writer.Write("<div id=\"app\">");
+            writer.Write("<div id=\"app\" class=\"bg-bone\">");
             writer.Write(this.result.Html); // Already HTML from SSR, don't encode
             writer.Write("</div>");
 
@@ -71,17 +85,17 @@ internal sealed class SsrHtmlContent : IHtmlContent
             // The client will parse this safely
             writer.Write("<script id=\"server-content\" type=\"application/json\">");
             // Encode the content as JSON string to escape any dangerous characters
-            writer.Write(System.Text.Json.JsonSerializer.Serialize(this.result.ServerContent));
+            writer.Write(System.Text.Json.JsonSerializer.Serialize(contentRegions));
             writer.Write("</script>");
         }
         else
         {
             // SSR failed or disabled - let client render
-            writer.Write("<div id=\"app\"></div>");
+            writer.Write("<div id=\"app\" class=\"bg-bone\"></div>");
 
             // Server content goes in a script tag as JSON to prevent XSS
             writer.Write("<script id=\"server-content\" type=\"application/json\">");
-            writer.Write(System.Text.Json.JsonSerializer.Serialize(this.result.ServerContent));
+            writer.Write(System.Text.Json.JsonSerializer.Serialize(contentRegions));
             writer.Write("</script>");
         }
     }

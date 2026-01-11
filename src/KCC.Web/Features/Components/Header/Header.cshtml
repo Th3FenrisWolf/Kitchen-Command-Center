@@ -1,0 +1,9 @@
+@using KCC.Web.Features.Components.Header
+
+@model HeaderViewModel
+
+<AppHeader
+  :logo="@Html.VueProp(Model.Logo)"
+  :main-nav-items="@Html.VueProp(Model.MainNavItems)"
+  :utility-nav-items="@Html.VueProp(Model.UtilityNavItems)"
+/>

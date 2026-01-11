@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>Header-djoopx0s</CodeName>
+    <GUID>7db589f3-0da6-4b18-9f5c-261edd440004</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>5446588a-a9f7-49f7-a35f-9e5830509272</WebPageItemGUID>
+  <WebPageItemName>Header-djoopx0s</WebPageItemName>
+  <WebPageItemOrder>1</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>Navigation-qg9uvdhc</CodeName>
+    <GUID>ed9ba873-8307-4672-b442-8a5baf113521</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>/Navigation/Header</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

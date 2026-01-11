@@ -72,17 +72,17 @@ async function createServer() {
     const startTime = Date.now()
 
     try {
-      const { serverContent } = req.body
+      const { headerContent, bodyContent, footerContent } = req.body
 
-      if (typeof serverContent !== 'string') {
+      if (typeof headerContent !== 'string' || typeof bodyContent !== 'string' || typeof footerContent !== 'string') {
         return res.status(400).json({
-          error: 'serverContent must be a string',
+          error: 'headerContent, bodyContent, and footerContent must be strings',
         })
       }
 
       log.debug(`[${req.id}] SSR render started`)
 
-      const app = createApp({ serverContent })
+      const app = createApp({ headerContent, bodyContent, footerContent })
       const html = await renderToString(app)
 
       const duration = Date.now() - startTime

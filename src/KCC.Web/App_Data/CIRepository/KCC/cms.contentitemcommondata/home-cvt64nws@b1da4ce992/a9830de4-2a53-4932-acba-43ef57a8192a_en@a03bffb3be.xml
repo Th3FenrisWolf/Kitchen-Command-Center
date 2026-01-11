@@ -13,7 +13,7 @@
   <ContentItemCommonDataFirstPublishedWhen>2025-11-20 02:05:36Z</ContentItemCommonDataFirstPublishedWhen>
   <ContentItemCommonDataGUID>a9830de4-2a53-4932-acba-43ef57a8192a</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2026-01-10 01:10:49Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-01-11 21:54:38Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
   <ContentItemCommonDataVisualBuilderTemplateConfiguration />
   <ContentItemCommonDataVisualBuilderWidgets>
@@ -31,7 +31,7 @@
   <ContentItemReferences>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>614d1586-b48f-4174-8290-249f644b5ddf</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>305c57c4-c396-4272-ba69-7136f0c5480b</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>d784a040-9c72-49dd-ac38-0b12cdeaa922</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -44,20 +44,20 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>4ca56724-3d89-46bd-9fac-138eaf3ebdac</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>47a6ea2a-cded-44d6-ad94-18c9f16f6de6</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>BeefHighlights-xcbxpas6</CodeName>
-        <GUID>45ee0e44-9664-4820-aba3-7511559a4d0e</GUID>
+        <CodeName>FishHighlights-f6aptfyy</CodeName>
+        <GUID>6c9770db-88db-4ba6-bba8-1235418b691f</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>323293ec-2aac-4c6c-835b-321c09393c1c</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>b3575713-25d4-461f-89f7-2fb2698e72b8</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -70,7 +70,20 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>7695303f-9be4-477e-a64c-b6c43331c32d</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>7d43a2b7-106b-40ee-bf4c-4b69fe6d9695</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>BeefHighlights-xcbxpas6</CodeName>
+        <GUID>45ee0e44-9664-4820-aba3-7511559a4d0e</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>d4ae08c1-5ecc-41bb-b053-dec2b213b3d3</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -82,21 +95,8 @@
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>0cbc5f6a-8556-4a48-b172-280291de8682</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>94b5eec0-381e-45b9-a819-c32e501cf696</ContentItemReferenceGUID>
-      <ContentItemReferenceSourceCommonDataID>
-        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
-        <ObjectType>cms.contentitemcommondata</ObjectType>
-      </ContentItemReferenceSourceCommonDataID>
-      <ContentItemReferenceTargetItemID>
-        <CodeName>FishHighlights-f6aptfyy</CodeName>
-        <GUID>6c9770db-88db-4ba6-bba8-1235418b691f</GUID>
-        <ObjectType>cms.contentitem</ObjectType>
-      </ContentItemReferenceTargetItemID>
-    </cms.contentitemreference>
-    <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>bf9fe742-0f68-43d8-878b-34baab8a0d26</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>3c5ed7b8-e4ca-419a-8d08-6742c144b246</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>09a21ed6-1f3a-43f8-ba80-ef5f5f4c225e</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -109,7 +109,7 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>82d68b8b-b31d-40f3-9acd-4afd318cdbe9</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>7fd3306b-f6d3-41be-8afb-5a4f9dfceed6</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>fa9933a9-8268-419c-af8f-c30516f7ac12</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -122,7 +122,7 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>7f54626e-d110-4daf-952a-82d9f9904e65</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>1c364b0b-f876-4c9d-8f0a-3673a946b831</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>759cf69e-55b6-4383-bcee-abc89367d1a1</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -135,7 +135,7 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>60158939-c666-42d2-b735-a748644472e5</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>63df11c0-2bd6-4442-aaa0-04ac5218efce</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>d4822faf-9bf3-4557-8c1d-7a35f5b036d6</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -148,59 +148,7 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>391041e8-b88b-4d3c-a6e4-077df0f76082</ContentItemReferenceGUID>
-      <ContentItemReferenceSourceCommonDataID>
-        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
-        <ObjectType>cms.contentitemcommondata</ObjectType>
-      </ContentItemReferenceSourceCommonDataID>
-      <ContentItemReferenceTargetItemID>
-        <CodeName>TequilaHighlights-vt130031</CodeName>
-        <GUID>616bcdff-39ff-41ec-b1a3-6ed5d0191c8c</GUID>
-        <ObjectType>cms.contentitem</ObjectType>
-      </ContentItemReferenceTargetItemID>
-    </cms.contentitemreference>
-    <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>798e466a-5b62-493e-88a2-52557187529d</ContentItemReferenceGUID>
-      <ContentItemReferenceSourceCommonDataID>
-        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
-        <ObjectType>cms.contentitemcommondata</ObjectType>
-      </ContentItemReferenceSourceCommonDataID>
-      <ContentItemReferenceTargetItemID>
-        <CodeName>RumHighlights-8b4ry0r0</CodeName>
-        <GUID>007d539b-1579-4046-8350-83d8b291d2c9</GUID>
-        <ObjectType>cms.contentitem</ObjectType>
-      </ContentItemReferenceTargetItemID>
-    </cms.contentitemreference>
-    <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>38ba8b9d-9eb5-4e43-b458-7e61cd7e581d</ContentItemReferenceGUID>
-      <ContentItemReferenceSourceCommonDataID>
-        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
-        <ObjectType>cms.contentitemcommondata</ObjectType>
-      </ContentItemReferenceSourceCommonDataID>
-      <ContentItemReferenceTargetItemID>
-        <CodeName>WhiskeyHighlights-hdrtg0nz</CodeName>
-        <GUID>1d4001e5-bbb1-4232-8ffa-8beb64a92322</GUID>
-        <ObjectType>cms.contentitem</ObjectType>
-      </ContentItemReferenceTargetItemID>
-    </cms.contentitemreference>
-    <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>b2d11f87-fa92-4118-b603-a66ae5973f15</ContentItemReferenceGUID>
-      <ContentItemReferenceSourceCommonDataID>
-        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
-        <ObjectType>cms.contentitemcommondata</ObjectType>
-      </ContentItemReferenceSourceCommonDataID>
-      <ContentItemReferenceTargetItemID>
-        <CodeName>VodkaHighlights-qt9bykil</CodeName>
-        <GUID>56ba7723-4615-4152-90bd-b32a4a39e8f5</GUID>
-        <ObjectType>cms.contentitem</ObjectType>
-      </ContentItemReferenceTargetItemID>
-    </cms.contentitemreference>
-    <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>89980618-f94f-4ffb-b781-b99b4b5a3aed</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>e3d95e9e-51cb-48bc-8756-023181ccb1e1</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
@@ -213,7 +161,59 @@
     </cms.contentitemreference>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>e2d43d0b-608c-4ce1-bbdb-eb926c4e8e5e</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>94af91be-fa17-4126-93c4-2701eef9e42e</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>RumHighlights-8b4ry0r0</CodeName>
+        <GUID>007d539b-1579-4046-8350-83d8b291d2c9</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>21f0446b-0718-41a5-a6d7-437998ca556f</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>VodkaHighlights-qt9bykil</CodeName>
+        <GUID>56ba7723-4615-4152-90bd-b32a4a39e8f5</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>dd5b8ecf-165b-4dcc-9adf-663bf16b1722</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>WhiskeyHighlights-hdrtg0nz</CodeName>
+        <GUID>1d4001e5-bbb1-4232-8ffa-8beb64a92322</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>e968fa28-b43b-4d8e-aaad-d300e36e8454</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>TequilaHighlights-vt130031</CodeName>
+        <GUID>616bcdff-39ff-41ec-b1a3-6ed5d0191c8c</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>fa380e12-5653-45cd-b0e9-dd56bc50f160</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>1a7b4c69-2037-4df6-b36a-d5b0c4eced26</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>a9830de4-2a53-4932-acba-43ef57a8192a</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>

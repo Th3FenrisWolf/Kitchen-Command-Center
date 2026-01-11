@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>Recipes-27ce535i</CodeName>
+    <GUID>564aa58a-0bce-47e0-94f8-32daadbcc75b</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-01-11 19:41:38Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>25727209-7396-4035-9093-a10255646e32</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-01-11 19:41:38Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>7ebcf53c-0f65-47ae-b224-e26d4b9a7508</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>25727209-7396-4035-9093-a10255646e32</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>ViewRecipeLink-r4l2p7w1</CodeName>
+        <GUID>c1d32116-25fd-4ada-87cd-43784dd4f517</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>9f9095c7-ba76-4425-9e79-855de3b3b4e6</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>29635c8d-d5ce-48d6-95ac-def5568d2026</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>25727209-7396-4035-9093-a10255646e32</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>ViewRecipeLink-r4l2p7w1</CodeName>
+        <GUID>c1d32116-25fd-4ada-87cd-43784dd4f517</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>

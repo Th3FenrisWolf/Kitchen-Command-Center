@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>b3022596-5dfb-4986-afc3-0ba1b4e27835</TagGUID>
+  <TagMetadata>
+    <![CDATA[{"Translations":{}}]]>
+  </TagMetadata>
+  <TagName>Authenticated</TagName>
+  <TagOrder>2</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>AuthStatus</CodeName>
+    <GUID>f91c8ea5-06bd-44c0-9968-bc1d2edd868d</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Authenticated</TagTitle>
+</cms.tag>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navitem>
+  <ContentItemDataCommonDataID>
+    <GUID>25727209-7396-4035-9093-a10255646e32</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Recipes-27ce535i</CodeName>
+      <GUID>564aa58a-0bce-47e0-94f8-32daadbcc75b</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>1934177b-317e-4d16-b801-1b355bb796f6</ContentItemDataGUID>
+  <Link>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </Link>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"617409a8-4fa3-436e-b0cd-26a6dec93c92"},{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
+  </ShowWhen>
+  <SubLinks>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </SubLinks>
+</contentitemdata.kcc.navitem>

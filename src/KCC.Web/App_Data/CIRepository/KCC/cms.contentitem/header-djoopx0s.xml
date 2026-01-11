@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitem>
+  <ContentItemChannelID>
+    <CodeName>KCC</CodeName>
+    <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+    <ObjectType>cms.channel</ObjectType>
+  </ContentItemChannelID>
+  <ContentItemContentTypeID>
+    <CodeName>KCC.HeaderNavigation</CodeName>
+    <GUID>59edf261-7c15-43fd-84a1-09b799308f7b</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </ContentItemContentTypeID>
+  <ContentItemGUID>7db589f3-0da6-4b18-9f5c-261edd440004</ContentItemGUID>
+  <ContentItemIsReusable>False</ContentItemIsReusable>
+  <ContentItemIsSecured>False</ContentItemIsSecured>
+  <ContentItemName>Header-djoopx0s</ContentItemName>
+</cms.contentitem>
