@@ -1,4 +1,3 @@
-using System.Linq;
 using AutoMapper;
 
 namespace KCC.Web.Features.Pages.Shared;

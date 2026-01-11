@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CMS.ContentEngine;
 using KCC.Web.Features.Widgets.Base;
 using Kentico.PageBuilder.Web.Mvc;

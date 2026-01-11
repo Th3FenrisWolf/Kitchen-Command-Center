@@ -1,5 +1,3 @@
-using System;
-using System.Net.Http;
 using KCC;
 using KCC.Web.Features.Cache;
 using KCC.Web.Features.Sitemap;
@@ -8,9 +6,6 @@ using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Polly;
 using Polly.Extensions.Http;
 using RobotsTxt;

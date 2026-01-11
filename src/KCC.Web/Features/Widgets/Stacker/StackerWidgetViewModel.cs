@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using KCC.Web.Features.Widgets.Base;
 
 namespace KCC.Web.Features.Widgets.Stacker;
