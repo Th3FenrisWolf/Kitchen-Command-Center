@@ -77,7 +77,7 @@ internal sealed class SsrHtmlContent : IHtmlContent
         if (this.result.WasServerRendered)
         {
             // SSR succeeded - render the pre-rendered HTML
-            writer.Write("<div id=\"app\" class=\"bg-bone\">");
+            writer.Write("<div id=\"app\">");
             writer.Write(this.result.Html); // Already HTML from SSR, don't encode
             writer.Write("</div>");
 
@@ -91,7 +91,7 @@ internal sealed class SsrHtmlContent : IHtmlContent
         else
         {
             // SSR failed or disabled - let client render
-            writer.Write("<div id=\"app\" class=\"bg-bone\"></div>");
+            writer.Write("<div id=\"app\"></div>");
 
             // Server content goes in a script tag as JSON to prevent XSS
             writer.Write("<script id=\"server-content\" type=\"application/json\">");

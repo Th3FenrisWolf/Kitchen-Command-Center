@@ -35,9 +35,9 @@ namespace KCC
 
 
 		/// <summary>
-		/// Link.
+		/// DisplayText.
 		/// </summary>
-		public IEnumerable<LinkItem> Link { get; set; }
+		public string DisplayText { get; set; }
 
 
 		/// <summary>

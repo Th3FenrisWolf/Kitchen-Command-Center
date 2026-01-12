@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.linkitem>
+  <ContentItemDataCommonDataID>
+    <GUID>1e11c9c5-a8f3-4a5b-b36b-5874ad9483ce</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CreateRecipeLink-id1r9bxk</CodeName>
+      <GUID>826a7c07-d8db-40e1-818b-49f5f29f6670</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>5b8d3630-9bd8-4234-aa73-20bfdfbbdd84</ContentItemDataGUID>
+  <DisplayText>Create Recipe</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"72105566-b709-4ba4-bdf5-c04c63790dd1"}]]]>
+  </Page>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.linkitem>

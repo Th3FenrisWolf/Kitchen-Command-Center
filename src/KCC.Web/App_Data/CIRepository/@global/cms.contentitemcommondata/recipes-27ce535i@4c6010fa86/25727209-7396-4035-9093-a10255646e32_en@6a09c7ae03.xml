@@ -13,32 +13,45 @@
   <ContentItemCommonDataFirstPublishedWhen>2026-01-11 19:41:38Z</ContentItemCommonDataFirstPublishedWhen>
   <ContentItemCommonDataGUID>25727209-7396-4035-9093-a10255646e32</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2026-01-11 19:41:38Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
   <ContentItemReferences>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>7ebcf53c-0f65-47ae-b224-e26d4b9a7508</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>f2a57442-68ca-4d30-8da6-231de2397e5e</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>25727209-7396-4035-9093-a10255646e32</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>ViewRecipeLink-r4l2p7w1</CodeName>
-        <GUID>c1d32116-25fd-4ada-87cd-43784dd4f517</GUID>
+        <CodeName>FeaturedRecipesLink-hjc3d38c</CodeName>
+        <GUID>6fae3ebf-0b25-4e8f-9d12-8a6c6f7bdd1e</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>9f9095c7-ba76-4425-9e79-855de3b3b4e6</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>29635c8d-d5ce-48d6-95ac-def5568d2026</ContentItemReferenceGUID>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>8d5f97ce-154e-411b-acd8-4b926e75f16c</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>25727209-7396-4035-9093-a10255646e32</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>ViewRecipeLink-r4l2p7w1</CodeName>
-        <GUID>c1d32116-25fd-4ada-87cd-43784dd4f517</GUID>
+        <CodeName>AllRecipesLink-wocqln5j</CodeName>
+        <GUID>b8f006d4-bab5-493a-b1d4-c006b315f1ce</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>f37f71fa-2985-4c2c-a58d-5450633074a8</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>25727209-7396-4035-9093-a10255646e32</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>CreateRecipeLink-id1r9bxk</CodeName>
+        <GUID>826a7c07-d8db-40e1-818b-49f5f29f6670</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>

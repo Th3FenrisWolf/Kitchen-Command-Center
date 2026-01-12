@@ -34,7 +34,7 @@ public class HeaderViewComponent(
 
         return navItems.Select(navItem => new HeaderNavItem
         {
-            Link = navItem.Link.FirstOrDefault()?.MapToPageLink(),
+            DisplayText = navItem.DisplayText,
             SubLinks = navItem.SubLinks.Select(subLink => subLink.MapToPageLink()),
         });
     }

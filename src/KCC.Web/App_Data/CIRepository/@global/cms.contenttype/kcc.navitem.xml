@@ -7,20 +7,15 @@
       <field column="ContentItemDataID" columntype="integer" enabled="true" guid="4f54fe5f-7ca6-4a01-bda0-221b2ebb7145" isPK="true" />
       <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="7d564ab0-8c41-4a5e-aa23-15e8ca3d9ae4" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
       <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="c60c9acb-265c-4458-a030-4edc95197edf" isunique="true" system="true" />
-      <field allowempty="true" column="Link" columnprecision="0" columntype="contentitemreference" enabled="true" guid="9f9095c7-ba76-4425-9e79-855de3b3b4e6" visible="true">
+      <field column="DisplayText" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="9f9095c7-ba76-4425-9e79-855de3b3b4e6" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>Link</fieldcaption>
+          <fieldcaption>Display Text</fieldcaption>
           <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeintranslation>True</includeintranslation>
         </properties>
         <settings>
-          <AllowedContentItemTypeIdentifiers>
-            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
-          </AllowedContentItemTypeIdentifiers>
-          <controlname>Kentico.Administration.ContentItemSelector</controlname>
-          <MaximumItems>1</MaximumItems>
-          <MinimumItems>1</MinimumItems>
-          <SelectionType>contentTypes</SelectionType>
+          <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
         <validationrulesdata>
           <ValidationRuleConfiguration>

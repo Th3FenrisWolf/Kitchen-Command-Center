@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.linkitem>
+  <ContentItemDataCommonDataID>
+    <GUID>25b5559e-12c1-4bde-b457-a26ad186dc4a</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>FeaturedRecipesLink-hjc3d38c</CodeName>
+      <GUID>6fae3ebf-0b25-4e8f-9d12-8a6c6f7bdd1e</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>8fe7f7ba-eb9d-4f06-9a1d-e287bbfc7ccf</ContentItemDataGUID>
+  <DisplayText>Featured Recipes</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"72105566-b709-4ba4-bdf5-c04c63790dd1"}]]]>
+  </Page>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.linkitem>

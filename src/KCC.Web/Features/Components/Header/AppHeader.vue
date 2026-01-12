@@ -24,10 +24,11 @@ interface PageLink {
   target: string
 }
 
-interface HeaderNavItem {
-  link: PageLink
+interface NavItem {
+  displayText: string
   subLinks: PageLink[]
 }
+
 export interface AppHeaderProps {
   /**
    * The logo to display
@@ -36,11 +37,11 @@ export interface AppHeaderProps {
   /**
    * The main navigation items
    */
-  mainNavItems: HeaderNavItem[]
+  mainNavItems: NavItem[]
   /**
    * The utility navigation items
    */
-  utilityNavItems: HeaderNavItem[]
+  utilityNavItems: NavItem[]
 }
 </script>
 
@@ -52,23 +53,23 @@ const { logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
 
 <template>
   <header class="content-grid mt-4">
-    <nav class="flex size-full items-center gap-8 rounded-3xl bg-base px-8 text-bone">
+    <nav class="breakout relative flex size-full items-center gap-8 rounded-3xl bg-base px-8">
       <a
-        class="btn-no-style h-full shrink-0 py-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
+        class="btn-no-style z-20 h-full shrink-0 py-4 text-bone focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
         href="/"
       >
         <img :src="logo.asset.url.stripTilde()" :alt="logo.altText" class="h-16 w-auto" />
       </a>
 
-      <ul class="flex h-full">
-        <li v-for="item in mainNavItems" :key="item.link.displayText">
-          <MenuItem :item="item.link" />
+      <ul class="flex">
+        <li v-for="item in mainNavItems" :key="item.displayText">
+          <MenuItem :item />
         </li>
       </ul>
 
       <ul class="ml-auto flex h-full">
-        <li v-for="item in utilityNavItems" :key="item.link.displayText">
-          <MenuItem :item="item.link" />
+        <li v-for="item in utilityNavItems" :key="item.displayText">
+          <MenuItem :item />
         </li>
       </ul>
     </nav>

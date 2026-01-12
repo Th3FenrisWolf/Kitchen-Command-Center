@@ -1,11 +1,11 @@
 {
-  "Features/Main.ts": {
-    "file": "assets/main-C1qeGYjX.js",
+  "Features/main.ts": {
+    "file": "assets/main-rHmBMqkB.js",
     "name": "main",
-    "src": "Features/Main.ts",
+    "src": "Features/main.ts",
     "isEntry": true,
     "css": [
-      "assets/main-n5QOTNZL.css"
+      "assets/main-DN9j4ZXN.css"
     ]
   }
 }

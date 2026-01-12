@@ -1,27 +1,55 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import cx from '~/Utilities/CX'
+
 interface PageLink {
   displayText: string
   url: string
   target: string
 }
 
-const { item } = defineProps<{
-  item: PageLink
-}>()
-</script>
+interface NavItem {
+  displayText: string
+  subLinks: PageLink[]
+}
 
+const { item } = defineProps<{
+  item: NavItem
+}>()
+
+const showDrawer = ref(false)
+</script>
 <template>
-  <a
-    v-if="item?.url"
-    class="menu-item btn-no-style relative flex h-full items-center overflow-hidden bg-transparent no-underline"
-    :href="item.url.stripTilde()"
-    :target="item.target"
+  <button
+    type="button"
+    @click="showDrawer = !showDrawer"
+    class="menu-item relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-bone px-4 py-2 font-casual text-2xl font-bold uppercase"
   >
-    <span class="relative z-20 flex h-full w-full items-center px-4">
-      {{ item.displayText }}
-    </span>
-    <span class="background absolute bottom-0 left-0 z-10 h-0 w-full bg-crust transition-all" />
-  </a>
+    {{ item.displayText }}
+  </button>
+  <div
+    :class="
+      cx(
+        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-base text-bone transition-all duration-500 ease-in-out',
+        showDrawer ? 'max-h-96' : 'max-h-0',
+      )
+    "
+  >
+    <ul class="flex gap-8 p-8">
+      <li
+        v-for="subLink in item.subLinks"
+        :key="subLink.displayText"
+        class="basis-full rounded-2xl bg-bone text-onyx transition-all duration-300 ease-in-out will-change-transform hover:-translate-y-1 hover:shadow-bone-small"
+      >
+        <a
+          class="block size-full p-4 text-center"
+          :href="subLink.url.stripTilde()"
+          :target="subLink.target"
+          >{{ subLink.displayText }}</a
+        >
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
@@ -29,11 +57,6 @@ const { item } = defineProps<{
   &:focus-visible span {
     outline: 2px solid var(--color-bone);
     outline-offset: -2px;
-  }
-
-  &:hover .background,
-  &:has([aria-current='page']) .background {
-    height: 100%;
   }
 }
 </style>

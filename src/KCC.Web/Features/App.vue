@@ -15,3 +15,9 @@ defineProps<{
 
   <component :is="{ template: footerContent }" />
 </template>
+
+<style>
+html {
+  background-color: var(--color-bone);
+}
+</style>

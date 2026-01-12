@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.linkitem>
+  <ContentItemDataCommonDataID>
+    <GUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>AllRecipesLink-wocqln5j</CodeName>
+      <GUID>b8f006d4-bab5-493a-b1d4-c006b315f1ce</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>29fc61eb-640e-4bee-bd7f-4a7d87ae960e</ContentItemDataGUID>
+  <DisplayText>All Recipes</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"72105566-b709-4ba4-bdf5-c04c63790dd1"}]]]>
+  </Page>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.linkitem>
