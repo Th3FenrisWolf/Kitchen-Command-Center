@@ -14,15 +14,8 @@
 
   @if (Env.IsDevelopment())
   {
-    @* In dev: load static CSS first to prevent FOUC, then Vite handles HMR *@
-    var assetsPath = System.IO.Path.Combine(Env.WebRootPath, "assets");
-    var cssFile = System.IO.Directory.Exists(assetsPath)
-      ? System.IO.Directory.GetFiles(assetsPath, "main-*.css").FirstOrDefault()
-      : null;
-    if (cssFile != null)
-    {
-      <link rel="stylesheet" href="/assets/@System.IO.Path.GetFileName(cssFile)" />
-    }
+    @* In dev: Tailwind CLI watches and outputs CSS here (run yarn dev:css) *@
+    <link rel="stylesheet" href="/assets/main-dev.css" />
   }
   <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
   <page-builder-styles />

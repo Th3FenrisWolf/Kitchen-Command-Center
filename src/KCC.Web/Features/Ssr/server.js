@@ -2,8 +2,15 @@
 
 import express from 'express'
 import compression from 'compression'
+import { createServer as createHttpServer } from 'http'
 import { randomUUID } from 'crypto'
 import { renderToString } from 'vue/server-renderer'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const SSR_BUNDLE_PATH = resolve(__dirname, '../../wwwroot/ssr/entry-server.js')
+const SSR_ENTRY_PATH = resolve(__dirname, 'entry-server.ts')
 
 const PORT = process.env.SSR_PORT || 3001
 const isDev = process.env.NODE_ENV !== 'production'
@@ -15,66 +22,112 @@ const log = {
   debug: (...args) => isDev && console.debug(...args),
 }
 
+let vite = null
+let createApp = null
+let moduleInvalidated = true // Start true to trigger initial load
+
+// Metrics for health check
+const metrics = {
+  startTime: Date.now(),
+  renderCount: 0,
+  renderErrors: 0,
+  lastRenderTime: null,
+}
+
+async function loadModule() {
+  if (isDev && vite) {
+    // In dev, use Vite's ssrLoadModule for proper HMR
+    const ssrModule = await vite.ssrLoadModule(SSR_ENTRY_PATH)
+    createApp = ssrModule.createApp
+    moduleInvalidated = false
+    log.info('SSR module loaded via Vite dev server')
+  } else {
+    // In production, use the pre-built bundle
+    const ssrModule = await import(SSR_BUNDLE_PATH)
+    createApp = ssrModule.createApp
+    log.info('SSR bundle loaded')
+  }
+}
+
 async function createServer() {
-  const server = express()
+  const app = express()
+  const httpServer = createHttpServer(app)
 
-  // Enable compression for responses
-  server.use(compression())
+  // In development, create Vite dev server in middleware mode for SSR
+  if (isDev) {
+    const { createServer: createViteServer } = await import('vite')
+    vite = await createViteServer({
+      server: {
+        middlewareMode: true,
+        hmr: {
+          server: httpServer,
+        },
+      },
+      appType: 'custom',
+    })
+    app.use(vite.middlewares)
 
-  // Parse JSON with size limit
-  server.use(express.json({ limit: '10mb' }))
+    // Listen for HMR updates to invalidate the cached module
+    vite.watcher.on('change', (file) => {
+      if (file.endsWith('.ts') || file.endsWith('.vue') || file.endsWith('.css')) {
+        moduleInvalidated = true
+        log.debug(`File changed: ${file}, SSR module marked for reload`)
+      }
+    })
 
-  // Request ID middleware for tracing
-  server.use((req, res, next) => {
+    log.info('Vite dev server initialized in middleware mode')
+  }
+
+  app.use(compression())
+  app.use(express.json({ limit: '10mb' }))
+
+  app.use((req, res, next) => {
     req.id = randomUUID().slice(0, 8)
     next()
   })
 
-  // Import the SSR bundle
-  let createApp
+  // Load the SSR module
   try {
-    const ssrModule = await import('../../wwwroot/ssr/entry-server.js')
-    createApp = ssrModule.createApp
-    log.info('✓ SSR bundle loaded successfully')
+    await loadModule()
   } catch (err) {
-    log.error('✗ Failed to load SSR bundle. Run "npm run build" first.')
-    log.error(err)
-    process.exit(1)
+    log.error('✗ Failed to load SSR module:', err.message)
+    if (!isDev) {
+      log.error('Run "yarn build:ssr" first.')
+      process.exit(1)
+    }
   }
 
-  // Root endpoint - helpful info
-  server.get('/', (_, res) => {
-    res.send(`
-      <html>
-        <head><title>Vue SSR Service</title></head>
-        <body style="font-family: system-ui; padding: 2rem;">
-          <h1>🚀 Vue SSR Service</h1>
-          <p>This service handles server-side rendering for Vue components.</p>
-          <h2>Endpoints:</h2>
-          <ul>
-            <li><code>GET /health</code> - Health check</li>
-            <li><code>POST /render</code> - Render Vue app to HTML</li>
-          </ul>
-          <p>Status: <strong style="color: green;">Running</strong></p>
-          <p>Environment: <strong>${isDev ? 'Development' : 'Production'}</strong></p>
-        </body>
-      </html>
-    `)
+  app.get('/health', (_, res) => {
+    const memUsage = process.memoryUsage()
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      mode: isDev ? 'development' : 'production',
+      uptime: Math.floor((Date.now() - metrics.startTime) / 1000),
+      memory: {
+        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
+        rss: Math.round(memUsage.rss / 1024 / 1024),
+      },
+      renders: {
+        total: metrics.renderCount,
+        errors: metrics.renderErrors,
+        lastRenderTime: metrics.lastRenderTime,
+      },
+    })
   })
 
-  // Health check endpoint
-  server.get('/health', (_, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() })
-  })
-
-  // SSR render endpoint
-  server.post('/render', async (req, res) => {
+  app.post('/render', async (req, res) => {
     const startTime = Date.now()
 
     try {
       const { headerContent, bodyContent, footerContent } = req.body
 
-      if (typeof headerContent !== 'string' || typeof bodyContent !== 'string' || typeof footerContent !== 'string') {
+      if (
+        typeof headerContent !== 'string' ||
+        typeof bodyContent !== 'string' ||
+        typeof footerContent !== 'string'
+      ) {
         return res.status(400).json({
           error: 'headerContent, bodyContent, and footerContent must be strings',
         })
@@ -82,16 +135,32 @@ async function createServer() {
 
       log.debug(`[${req.id}] SSR render started`)
 
-      const app = createApp({ headerContent, bodyContent, footerContent })
-      const html = await renderToString(app)
+      // In dev mode, only reload when module has been invalidated by file changes
+      if (isDev && vite && moduleInvalidated) {
+        await loadModule()
+      }
+
+      const ssrApp = createApp({ headerContent, bodyContent, footerContent })
+      const html = await renderToString(ssrApp)
 
       const duration = Date.now() - startTime
       log.debug(`[${req.id}] SSR render completed in ${duration}ms`)
+
+      // Update metrics
+      metrics.renderCount++
+      metrics.lastRenderTime = duration
 
       res.json({ html, renderTime: duration })
     } catch (err) {
       const duration = Date.now() - startTime
       log.error(`[${req.id}] SSR render failed after ${duration}ms:`, err.message)
+
+      // Update error metrics
+      metrics.renderErrors++
+
+      if (isDev && vite) {
+        vite.ssrFixStacktrace(err)
+      }
 
       res.status(500).json({
         error: err.message,
@@ -100,22 +169,7 @@ async function createServer() {
     }
   })
 
-  // Error handling middleware for malformed JSON and other errors
-  server.use((err, req, res) => {
-    if (err instanceof SyntaxError && 'body' in err) {
-      log.error(`[${req.id}] Invalid JSON in request body`)
-      return res.status(400).json({ error: 'Invalid JSON in request body' })
-    }
-
-    log.error(`[${req.id}] Unhandled error:`, err.message)
-    res.status(500).json({
-      error: 'Internal server error',
-      message: isDev ? err.message : undefined,
-    })
-  })
-
-  // Start server
-  const serverInstance = server.listen(PORT, () => {
+  httpServer.listen(PORT, () => {
     console.log(`
 ╔══════════════════════════════════════════════╗
 ║   Vue SSR Service                            ║
@@ -125,24 +179,14 @@ async function createServer() {
     `)
   })
 
-  // Process shutdown handling
-  const shutdown = (signal) => {
+  const shutdown = async (signal) => {
     console.log(`\n${signal} received. Shutting down.`)
-
-    serverInstance.close((err) => {
-      if (err) {
-        log.error('Error during shutdown:', err)
-        process.exit(1)
-      }
+    if (vite) await vite.close()
+    httpServer.close(() => {
       console.log('SSR service stopped.')
       process.exit(0)
     })
-
-    // Force exit after 10 seconds if process shutdown fails
-    setTimeout(() => {
-      log.error('Could not close connections in time, forcefully shutting down')
-      process.exit(1)
-    }, 10000)
+    setTimeout(() => process.exit(1), 10000)
   }
 
   process.on('SIGTERM', () => shutdown('SIGTERM'))

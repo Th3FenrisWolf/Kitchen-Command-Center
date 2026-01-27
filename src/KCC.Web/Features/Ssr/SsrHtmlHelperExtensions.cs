@@ -1,9 +1,7 @@
+using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace KCC.Web.Features.Ssr;
 
@@ -33,10 +31,8 @@ public static class SsrHtmlHelperExtensions
         // Get cancellation token from request
         var cancellationToken = html.ViewContext.HttpContext.RequestAborted;
 
-        // Capture each content region as a string
-        var header = RenderHtmlContentToString(headerContent);
-        var body = RenderHtmlContentToString(bodyContent);
-        var footer = RenderHtmlContentToString(footerContent);
+        // Capture each content region as a string, reusing a single StringBuilder
+        var (header, body, footer) = RenderContentRegions(headerContent, bodyContent, footerContent);
 
         // Call SSR service with separate regions
         var result = await ssrService.RenderAsync(header, body, footer, cancellationToken);
@@ -44,11 +40,31 @@ public static class SsrHtmlHelperExtensions
         return new SsrHtmlContent(result);
     }
 
-    private static string RenderHtmlContentToString(IHtmlContent content)
+    private static (string Header, string Body, string Footer) RenderContentRegions(
+        IHtmlContent headerContent,
+        IHtmlContent bodyContent,
+        IHtmlContent footerContent)
     {
-        using var writer = new StringWriter();
-        content.WriteTo(writer, HtmlEncoder.Default);
-        return writer.ToString();
+        // Reuse a single StringBuilder with pre-allocated capacity
+        var sb = new StringBuilder(8192);
+        using var writer = new StringWriter(sb);
+        var encoder = HtmlEncoder.Default;
+
+        // Render header
+        headerContent.WriteTo(writer, encoder);
+        var header = sb.ToString();
+        sb.Clear();
+
+        // Render body
+        bodyContent.WriteTo(writer, encoder);
+        var body = sb.ToString();
+        sb.Clear();
+
+        // Render footer
+        footerContent.WriteTo(writer, encoder);
+        var footer = sb.ToString();
+
+        return (header, body, footer);
     }
 }
 

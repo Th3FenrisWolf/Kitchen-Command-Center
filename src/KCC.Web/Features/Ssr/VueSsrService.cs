@@ -1,4 +1,8 @@
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace KCC.Web.Features.Ssr;
 
@@ -8,23 +12,29 @@ namespace KCC.Web.Features.Ssr;
 public class VueSsrService
 {
     private readonly HttpClient httpClient;
+    private readonly IMemoryCache cache;
     private readonly ILogger<VueSsrService> logger;
     private readonly bool isEnabled;
+    private readonly TimeSpan cacheDuration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VueSsrService"/> class.
     /// </summary>
     /// <param name="httpClientFactory">HTTP client factory.</param>
+    /// <param name="cache">Memory cache for SSR responses.</param>
     /// <param name="configuration">Application configuration.</param>
     /// <param name="logger">Logger instance.</param>
     public VueSsrService(
         IHttpClientFactory httpClientFactory,
+        IMemoryCache cache,
         IConfiguration configuration,
         ILogger<VueSsrService> logger)
     {
         this.httpClient = httpClientFactory.CreateClient("VueSsr");
+        this.cache = cache;
         this.logger = logger;
         this.isEnabled = configuration.GetValue("VueSsr:Enabled", true);
+        this.cacheDuration = TimeSpan.FromSeconds(configuration.GetValue("VueSsr:CacheDurationSeconds", 60));
     }
 
     /// <summary>
@@ -47,30 +57,58 @@ public class VueSsrService
             return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
         }
 
+        // Generate cache key from content hash
+        var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent);
+
+        // Check cache first
+        if (this.cache.TryGetValue(cacheKey, out string cachedHtml) && cachedHtml is not null)
+        {
+            this.logger.LogDebug("SSR cache hit for key {CacheKey}", cacheKey[..16]);
+            return new SsrResult(
+                Html: cachedHtml,
+                WasServerRendered: true,
+                HeaderContent: headerContent,
+                BodyContent: bodyContent,
+                FooterContent: footerContent);
+        }
+
         try
         {
-            var response = await this.httpClient.PostAsJsonAsync(
-                "/render",
-                new SsrRequest(headerContent, bodyContent, footerContent),
-                cancellationToken);
+            // Use Activity.Current for distributed tracing, or generate a new ID
+            var requestId = Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/render");
+            request.Headers.Add("X-Request-Id", requestId);
+            request.Content = JsonContent.Create(new SsrRequest(headerContent, bodyContent, footerContent));
+
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
                 this.logger.LogWarning(
-                    "SSR service returned {StatusCode}, falling back to client-side rendering",
-                    response.StatusCode);
+                    "SSR service returned {StatusCode} for request {RequestId}, falling back to client-side rendering",
+                    response.StatusCode,
+                    requestId);
                 return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
             }
 
             var result = await response.Content.ReadFromJsonAsync<SsrResponse>(cancellationToken);
 
-            if (result?.Html is null)
+            if (result is null || result.Html is null)
             {
-                this.logger.LogWarning("SSR service returned null HTML, falling back to client-side rendering");
+                this.logger.LogWarning(
+                    "SSR service returned null response for request {RequestId}, falling back to client-side rendering",
+                    requestId);
                 return SsrResult.ClientSideOnly(headerContent, bodyContent, footerContent);
             }
 
-            this.logger.LogDebug("SSR render completed in {RenderTime}ms", result.RenderTime);
+            this.logger.LogDebug(
+                "SSR render completed in {RenderTime}ms for request {RequestId}",
+                result.RenderTime,
+                requestId);
+
+            // Cache the successful response
+            this.cache.Set(cacheKey, result.Html, this.cacheDuration);
 
             return new SsrResult(
                 Html: result.Html,
@@ -116,6 +154,16 @@ public class VueSsrService
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// Generates a cache key from the content hash.
+    /// </summary>
+    private static string GenerateCacheKey(string header, string body, string footer)
+    {
+        var combined = $"{header}{body}{footer}";
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(combined));
+        return $"ssr:{Convert.ToHexString(hashBytes)}";
     }
 }
 

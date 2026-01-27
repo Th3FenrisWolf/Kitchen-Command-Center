@@ -23,7 +23,7 @@ const showDrawer = ref(false)
   <button
     type="button"
     @click="showDrawer = !showDrawer"
-    class="menu-item relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-bone px-4 py-2 font-casual text-2xl font-bold uppercase"
+    class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-bone px-4 py-2 font-casual text-2xl font-bold uppercase"
   >
     {{ item.displayText }}
   </button>
@@ -45,18 +45,10 @@ const showDrawer = ref(false)
           class="block size-full p-4 text-center"
           :href="subLink.url.stripTilde()"
           :target="subLink.target"
-          >{{ subLink.displayText }}</a
         >
+          {{ subLink.displayText }}
+        </a>
       </li>
     </ul>
   </div>
 </template>
-
-<style scoped>
-.menu-item {
-  &:focus-visible span {
-    outline: 2px solid var(--color-bone);
-    outline-offset: -2px;
-  }
-}
-</style>

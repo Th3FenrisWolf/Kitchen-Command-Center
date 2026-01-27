@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
           outDir: 'wwwroot',
           emptyOutDir: false, // Preserve fonts and other static files
           manifest: true, // Generate manifest.json for Vite.AspNetCore
+          sourcemap: 'hidden', // Generate source maps for debugging but don't expose in production
           rollupOptions: {
             input: {
               main: resolve(__dirname, 'Features/main.ts'),

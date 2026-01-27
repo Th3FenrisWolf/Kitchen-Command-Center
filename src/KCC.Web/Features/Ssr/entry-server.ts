@@ -3,6 +3,9 @@ import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
 import '~/Utilities/StringExtensions'
 
+// CSS import is required for Tailwind to scan templates during SSR dev mode
+import '~/Styles/Main.css'
+
 export interface SSRContext {
   headerContent: string
   bodyContent: string

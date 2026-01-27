@@ -5,6 +5,10 @@
 /* Sections */
 @import './Sections/MultipleColumnSection.css';
 
+html {
+  background-color: var(--color-bone);
+}
+
 body {
   display: grid;
   grid-template-rows: auto 1fr auto;
