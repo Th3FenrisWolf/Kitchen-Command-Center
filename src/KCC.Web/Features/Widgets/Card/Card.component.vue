@@ -12,7 +12,7 @@
  * @slot drawer — Content to show when the card is expanded
  */
 
-import type { BackgroundColor, TextColor } from '~/types/design-system'
+import type { BackgroundColor, TextColor } from '~/Types/DesignSystem'
 
 export default {
   name: 'Card',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cx } from '~/Utilities/CX'
-import type { BackgroundColor } from '~/types/design-system'
+import type { BackgroundColor } from '~/Types/DesignSystem'
 import { onMounted, ref } from 'vue'
 
 const containerRef = ref<HTMLElement>()

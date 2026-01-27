@@ -46,7 +46,7 @@ public class BreadcrumbsViewComponent(
 
         var viewModel = new BreadcrumbsViewModel { Links = nodes };
 
-        return View("~/Features/Components/Breadcrumbs/Default.cshtml", viewModel);
+        return View("~/Features/Components/Breadcrumbs/Breadcrumbs.cshtml", viewModel);
     }
 
     private static BreadcrumbLink CreateBreadcrumbLink(
