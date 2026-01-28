@@ -1,28 +1,16 @@
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
-import '~/Utilities/StringExtensions'
+import type { ContentRegions } from '~/Types/ContentRegions'
+
 import '~/Styles/Main.css'
+import '~/Utilities/StringExtensions'
 
-export interface SSRContext {
-  headerContent: string
-  bodyContent: string
-  footerContent: string
-}
-
-export function createApp(context: SSRContext) {
+export function createApp(contentRegions: ContentRegions) {
   const app = createSSRApp({
-    setup() {
-      return () =>
-        h(App, {
-          headerContent: context.headerContent,
-          bodyContent: context.bodyContent,
-          footerContent: context.footerContent,
-        })
-    },
+    setup: () => () => h(App, { ...contentRegions }),
   })
 
   registerGlobalComponents(app)
-
   return app
 }

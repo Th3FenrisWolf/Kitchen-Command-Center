@@ -3,6 +3,7 @@
 @using Microsoft.Extensions.Hosting
 
 @inject IWebHostEnvironment Env
+@inject VueSsrService VueSsrService
 
 @model BasePageViewModel
 
@@ -26,10 +27,11 @@
 </head>
 
 <body>
-  @await Html.RenderVueSsrAsync(
+  @await VueSsrService.RenderVueSsrAsync(
     await Component.InvokeAsync("Header"),
     RenderBody(),
-    await Component.InvokeAsync("Footer")
+    await Component.InvokeAsync("Footer"),
+    Context.RequestAborted
   )
 
   <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>

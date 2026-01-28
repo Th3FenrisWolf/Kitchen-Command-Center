@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import express from 'express'
 import compression from 'compression'
 import { createServer as createHttpServer } from 'http'
@@ -17,14 +15,17 @@ const isDev = process.env.NODE_ENV !== 'production'
 
 // Simple logger that respects environment
 const log = {
+  /* eslint-disable no-console */
   info: (...args) => isDev && console.log(...args),
   error: (...args) => console.error(...args),
   debug: (...args) => isDev && console.debug(...args),
+  /* eslint-enable no-console */
 }
 
-let vite = null
-let createApp = null
-let moduleInvalidated = true // Start true to trigger initial load
+// Start true to trigger initial load
+let moduleInvalidated = true
+let createApp
+let vite
 
 // Metrics for health check
 const metrics = {
@@ -170,7 +171,7 @@ async function createServer() {
   })
 
   httpServer.listen(PORT, () => {
-    console.log(`
+    log.info(`
 ╔══════════════════════════════════════════════╗
 ║   Vue SSR Service                            ║
 ║   Running on http://localhost:${PORT}           ║
@@ -180,12 +181,15 @@ async function createServer() {
   })
 
   const shutdown = async (signal) => {
-    console.log(`\n${signal} received. Shutting down.`)
+    log.info(`\n${signal} received. Shutting down.`)
+
     if (vite) await vite.close()
+
     httpServer.close(() => {
-      console.log('SSR service stopped.')
+      log.info('SSR service stopped.')
       process.exit(0)
     })
+
     setTimeout(() => process.exit(1), 10000)
   }
 
