@@ -58,7 +58,14 @@ const { logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
         class="btn-no-style z-20 h-full shrink-0 py-4 text-bone focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
         href="/"
       >
-        <img :src="logo.asset.url.stripTilde()" :alt="logo.altText" class="h-16 w-auto" />
+        <img
+          loading="eager"
+          :src="logo.asset.url.stripTilde()"
+          :alt="logo.altText"
+          class="h-16 w-auto"
+          height="64"
+          width="90"
+        />
       </a>
 
       <ul class="flex">

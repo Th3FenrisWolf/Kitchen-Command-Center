@@ -34,9 +34,9 @@ export default defineConfig(({ mode }) => {
           emptyOutDir: true, // Safe to clear - only contains build output
           minify: 'esbuild',
           rollupOptions: {
-            input: resolve(__dirname, 'Features/Ssr/entry-server.ts'),
+            input: resolve(__dirname, 'Features/Ssr/Server.Entry.ts'),
             output: {
-              entryFileNames: 'entry-server.js',
+              entryFileNames: 'Server.Entry.js',
             },
           },
         }

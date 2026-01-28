@@ -10,7 +10,11 @@
 <html lang="en">
 
 <head>
-  <partial name="~/Features/Pages/Shared/Partials/_Metadata.cshtml" />
+  <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
+
+  @* Preload critical fonts to speed up initial render *@
+  <link rel="preload" href="/fonts/HazelnutMilkTeaRegular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/AmericanPurposeCasualRegular.woff2" as="font" type="font/woff2" crossorigin />
 
   @if (Env.IsDevelopment())
   {

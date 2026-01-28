@@ -1,17 +1,15 @@
 <script setup lang="ts">
-defineProps<{
-  headerContent: string
-  bodyContent: string
-  footerContent: string
-}>()
+import type { ContentRegions } from '~/Types/ContentRegions'
+
+const { headerContent, bodyContent, footerContent } = defineProps<ContentRegions>()
 </script>
 
 <template>
-  <component :is="{ template: headerContent }" />
+  <component :is="{ name: 'HeaderContent', template: headerContent }" />
 
   <main role="main" class="content-grid auto-rows-min">
-    <component :is="{ template: bodyContent }" />
+    <component :is="{ name: 'BodyContent', template: bodyContent }" />
   </main>
 
-  <component :is="{ template: footerContent }" />
+  <component :is="{ name: 'FooterContent', template: footerContent }" />
 </template>

@@ -9,8 +9,8 @@ import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const SSR_BUNDLE_PATH = resolve(__dirname, '../../wwwroot/ssr/entry-server.js')
-const SSR_ENTRY_PATH = resolve(__dirname, 'entry-server.ts')
+const SSR_BUNDLE_PATH = resolve(__dirname, '../../wwwroot/ssr/Server.Entry.js')
+const SSR_ENTRY_PATH = resolve(__dirname, 'Server.Entry.ts')
 
 const PORT = process.env.SSR_PORT || 3001
 const isDev = process.env.NODE_ENV !== 'production'
