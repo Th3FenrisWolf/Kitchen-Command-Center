@@ -1,16 +1,13 @@
 using System.Globalization;
-using CMS.ContentEngine;
 using CMS.Websites;
-using CMS.Websites.Routing;
-using KCC.Web.Features.Cache;
 using KCC.Web.Features.Pages.Shared;
+using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Components.Breadcrumbs;
 
 public class BreadcrumbsViewComponent(
-    IWebsiteChannelContext websiteChannelContext,
-    ICacheService cacheService
+    IContentRetriever contentRetriever
 ) : ViewComponent
 {
     public async Task<IViewComponentResult> InvokeAsync(BasePageViewModel sourceViewModel)
@@ -68,79 +65,49 @@ public class BreadcrumbsViewComponent(
 
     // TODO: Refactor the two methods below here, since they mostly use the same code.
     // Easily should be able to pull out the query and data retrieval and use it in both
-    private async Task<IWebPageFieldsSource> GetCurrentPage(int webPageItemId)
+    private async Task<IWebPageFieldsSource> GetCurrentPage(int pageId)
     {
-        var query = new ContentItemQueryBuilder()
-            .ForContentTypes(config => config.ForWebsite(websiteChannelContext.WebsiteChannelName))
-            .Parameters(globalParams =>
-                globalParams
-                    .Where(query =>
-                        query.WhereEquals(
-                            nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
-                            webPageItemId
-                        )
-                    )
-                    .Columns(
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID),
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageUrlPath),
-                        nameof(INavigation_Metadata.NavigationLabel),
-                        nameof(INavigation_Metadata.MetadataTitle)
-                    )
-                    .TopN(1)
-            );
+        var pages = await contentRetriever.RetrieveAllPages<IWebPageFieldsSource>(
+            new(),
+            query => query
+                .Where(where => where
+                    .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId)
+                )
+                .TopN(1)
+                .Columns(
+                    nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
+                    nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID),
+                    nameof(IWebPageFieldsSource.SystemFields.WebPageUrlPath),
+                    nameof(INavigation_Metadata.NavigationLabel),
+                    nameof(INavigation_Metadata.MetadataTitle)
+                ),
+            new($"{nameof(BreadcrumbsViewComponent)}|{nameof(InvokeAsync)}|{pageId}")
+        );
 
-        var currentPage = (
-            await cacheService.Get<IWebPageFieldsSource>(
-                query,
-                [
-                    nameof(BreadcrumbsViewComponent),
-                    nameof(InvokeAsync),
-                    webPageItemId.ToString(CultureInfo.InvariantCulture),
-                ],
-                (_) => [$"webpageitem|bychannel|{websiteChannelContext.WebsiteChannelName}|all"]
-            )
-        ).FirstOrDefault();
-
-        return currentPage;
+        return pages.FirstOrDefault();
     }
 
     // TODO: Figure out a solution that works with folders. Currently, this breaks due to folders not
     // being able to be resolved from the same method as web page items
     private async Task<BreadcrumbLink> GetParent(int parentId)
     {
-        var query = new ContentItemQueryBuilder()
-            .ForContentTypes(config => config.ForWebsite(websiteChannelContext.WebsiteChannelName))
-            .Parameters(globalParams =>
-                globalParams
-                    .Where(query =>
-                        query.WhereEquals(
-                            nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
-                            parentId
-                        )
-                    )
-                    .Columns(
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID),
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageUrlPath),
-                        nameof(INavigation_Metadata.NavigationLabel),
-                        nameof(INavigation_Metadata.MetadataTitle)
-                    )
-                    .TopN(1)
-            );
+        var pages = await contentRetriever.RetrieveAllPages<IWebPageFieldsSource>(
+            new(),
+            query => query
+                .Where(where => where
+                    .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), parentId)
+                )
+                .TopN(1)
+                .Columns(
+                    nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
+                    nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID),
+                    nameof(IWebPageFieldsSource.SystemFields.WebPageUrlPath),
+                    nameof(INavigation_Metadata.NavigationLabel),
+                    nameof(INavigation_Metadata.MetadataTitle)
+                ),
+            new($"{nameof(BreadcrumbsViewComponent)}|{nameof(GetParent)}|{parentId}")
+        );
 
-        var parent = (
-            await cacheService.Get<IWebPageFieldsSource>(
-                query,
-                [
-                    nameof(BreadcrumbsViewComponent),
-                    nameof(GetParent),
-                    parentId.ToString(CultureInfo.InvariantCulture),
-                ],
-                (_) => [$"webpageitem|bychannel|{websiteChannelContext.WebsiteChannelName}|all"]
-            )
-        ).FirstOrDefault();
-
-        return CreateBreadcrumbLink(parent);
+        return CreateBreadcrumbLink(pages.FirstOrDefault());
     }
 }

@@ -1,17 +1,13 @@
 using System.Globalization;
 using AutoMapper;
-using CMS.ContentEngine;
-using CMS.Websites;
-using CMS.Websites.Routing;
-using KCC.Web.Features.Cache;
+using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Pages.Error;
 
 [Route("Error")]
 public class ErrorController(
-    IWebsiteChannelContext websiteChannelContext,
-    ICacheService cacheService,
+    IContentRetriever contentRetriever,
     IMapper mapper
 ) : Controller
 {
@@ -25,23 +21,15 @@ public class ErrorController(
     [Route("{statusCode}")]
     public async Task<IActionResult> HandleStatusCode(string statusCode)
     {
-        var query = new ContentItemQueryBuilder().ForContentType(
-            StatusCodePage.CONTENT_TYPE_NAME,
-            config =>
-                config
-                    .ForWebsite(websiteChannelContext.WebsiteChannelName)
-                    .Where(query =>
-                        query.WhereEquals(nameof(StatusCodePage.StatusCode), statusCode)
-                    )
-                    .TopN(1)
-        );
-
-        var page = (
-            await cacheService.Get<StatusCodePage>(
-                query,
-                [nameof(ErrorController), nameof(HandleStatusCode), statusCode]
-            )
-        ).FirstOrDefault();
+        var page = (await contentRetriever.RetrievePages<StatusCodePage>(
+            new(),
+            query => query
+                .Where(where => where
+                    .WhereEquals(nameof(StatusCodePage.StatusCode), statusCode)
+                )
+                .TopN(1),
+            new($"{nameof(ErrorController)}|{nameof(HandleStatusCode)}|{statusCode}")
+        )).FirstOrDefault();
 
         var viewModel = mapper.Map<ErrorViewModel>(page);
 

@@ -1,10 +1,6 @@
-using System.Globalization;
 using AutoMapper;
-using CMS.ContentEngine;
 using CMS.Websites;
-using CMS.Websites.Routing;
 using KCC;
-using KCC.Web.Features.Cache;
 using KCC.Web.Features.Pages.PageBuilder;
 using KCC.Web.Models.Constants;
 using Kentico.Content.Web.Mvc;
@@ -20,9 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace KCC.Web.Features.Pages.PageBuilder;
 
 public class PageBuilderController(
-    IWebsiteChannelContext websiteChannelContext,
     IWebPageDataContextRetriever webPageDataContextRetriever,
-    ICacheService cacheService,
+    IContentRetriever contentRetriever,
     IMapper mapper
 ) : Controller
 {
@@ -30,34 +25,15 @@ public class PageBuilderController(
     {
         var pageId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
 
-        var query = new ContentItemQueryBuilder()
-            .ForContentTypes(config =>
-                config
-                    .ForWebsite(websiteChannelContext.WebsiteChannelName)
-                    .OfContentType(PageBuilderPage.CONTENT_TYPE_NAME)
-                    .WithLinkedItems(1)
-            )
-            .Parameters(param =>
-                param
-                    .Where(query =>
-                        query.WhereEquals(
-                            nameof(IWebPageFieldsSource.SystemFields.WebPageItemID),
-                            pageId
-                        )
-                    )
-                    .TopN(1)
-            );
-
-        var page = (
-            await cacheService.Get<PageBuilderPage>(
-                query,
-                [
-                    nameof(PageBuilderController),
-                    nameof(Index),
-                    pageId.ToString(CultureInfo.InvariantCulture),
-                ]
-            )
-        ).FirstOrDefault();
+        var page = (await contentRetriever.RetrievePages<PageBuilderPage>(
+            new() { LinkedItemsMaxLevel = 1 },
+            query => query
+                .Where(where => where
+                    .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId)
+                )
+                .TopN(1),
+            new($"{nameof(PageBuilderController)}|{nameof(Index)}|{pageId}")
+        )).FirstOrDefault();
 
         var viewModel = mapper.Map<PageBuilderViewModel>(page);
 

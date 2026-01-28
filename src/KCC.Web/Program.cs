@@ -1,5 +1,4 @@
 using KCC;
-using KCC.Web.Features.Cache;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
 using Kentico.Activities.Web.Mvc;
@@ -14,7 +13,7 @@ using Vite.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
-builder.Services.AddTransient<ICacheService, CacheService>();
+builder.Services.AddScoped<VueSsrService>();
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddViteServices(options =>
 {
@@ -34,8 +33,6 @@ builder.Services.AddHttpClient("VueSsr", client =>
 })
 .AddPolicyHandler(GetCircuitBreakerPolicy())
 .AddPolicyHandler(GetRetryPolicy());
-
-builder.Services.AddScoped<VueSsrService>();
 
 // Circuit breaker: break after 5 failures for 30 seconds
 static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>

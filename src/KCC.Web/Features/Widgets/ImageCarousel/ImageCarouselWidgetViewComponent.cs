@@ -1,6 +1,6 @@
 using CMS.ContentEngine;
-using KCC.Web.Features.Cache;
 using KCC.Web.Features.Widgets.ImageCarousel;
+using Kentico.Content.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +17,7 @@ namespace KCC.Web.Features.Widgets.ImageCarousel;
 
 public class ImageCarouselViewComponent(
     IPageBuilderComponentPropertiesRetriever componentPropertiesRetriever,
-    ICacheService cacheService
+    IContentRetriever contentRetriever
 ) : ViewComponent
 {
     public const string IDENTIFIER = "KCC.Web.ImageCarousel";
@@ -52,28 +52,19 @@ public class ImageCarouselViewComponent(
             return [];
         }
 
-        var itemGuids = contentItems.Select(item => item.Identifier);
+        var itemGuids = contentItems.Select(item => item.Identifier).ToList();
 
-        var itemsQuery = new ContentItemQueryBuilder().ForContentType(
-            ImageItem.CONTENT_TYPE_NAME,
-            config =>
-                config.Where(where =>
-                    where.WhereIn(
-                        nameof(IContentItemFieldsSource.SystemFields.ContentItemGUID),
-                        itemGuids.ToList()
-                    )
-                )
+        var items = await contentRetriever.RetrieveContent<ImageItem>(
+            new() { LinkedItemsMaxLevel = 1 },
+            query => query
+                .Where(where => where
+                    .WhereIn(nameof(IContentItemFieldsSource.SystemFields.ContentItemGUID), itemGuids)
+                ),
+            new(
+                $"{nameof(ImageCarouselViewComponent)}|{nameof(GetCarouselItems)}|{string.Join("|", itemGuids)}"
+            )
         );
 
-        return (
-            await cacheService.Get<ImageItem>(
-                itemsQuery,
-                [
-                    nameof(ImageCarouselViewComponent),
-                    nameof(GetCarouselItems),
-                    .. itemGuids.Select(item => item.ToString()),
-                ]
-            )
-        ).OrderBy(item => Array.IndexOf([.. itemGuids], item.SystemFields.ContentItemGUID));
+        return items.OrderBy(item => itemGuids.IndexOf(item.SystemFields.ContentItemGUID));
     }
 }
