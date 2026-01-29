@@ -1,0 +1,10 @@
+@using KCC.Web.Features.Pages.Login
+
+@model LoginViewModel
+
+<LoginView
+  return-url="@Model.ReturnUrl"
+  email="@Model.Email"
+  password="@Model.Password"
+  :remember-me="@Model.RememberMe"
+/>

@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import cx from '~/Utilities/CX'
-import router from '~/router'
-import { parseQueryString } from '~/Utilities/QueryFunctions'
-import InputField from '~/components/shared/InputField.vue'
+// import { parseQueryString } from '~/Utilities/QueryFunctions'
+import InputField from '~/Components/Forms/InputField.vue'
 
-const { returnUrl } = parseQueryString<{ returnUrl: string }>()
+const props = defineProps<{
+  returnUrl?: string
+  defaultEmail?: string
+  defaultPassword?: string
+  defaultRememberMe?: boolean
+}>()
 
 const swap = ref(false)
 const isSignIn = ref(true)
@@ -19,8 +23,9 @@ watch(swap, () => {
   }, 250)
 })
 
-const email = ref('')
-const password = ref('')
+const email = ref(props.defaultEmail ?? '')
+const password = ref(props.defaultPassword ?? '')
+const rememberMe = ref(props.defaultRememberMe ?? false)
 const formError = ref<string | null>(null)
 
 const clearForm = () => {
@@ -49,9 +54,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <section
-    class="no-margin fixed top-[50dvh] left-[50dvw] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center"
-  >
+  <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
     <div class="relative flex w-3/4 overflow-hidden rounded-3xl shadow-primary">
       <div
         :class="
@@ -63,22 +66,12 @@ const handleSubmit = async () => {
       >
         <h2 class="text-heading">{{ signText }}</h2>
 
-        <p
-          :class="
-            cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')
-          "
-        >
+        <p :class="cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')">
           {{ formError }}
         </p>
 
         <form class="grid grow-0 gap-8" @submit.prevent="handleSubmit">
-          <InputField
-            required
-            type="email"
-            v-model="email"
-            autocomplete="email"
-            placeholder="Email"
-          />
+          <InputField required type="email" v-model="email" autocomplete="email" placeholder="Email" />
 
           <InputField
             required
@@ -88,10 +81,7 @@ const handleSubmit = async () => {
             placeholder="Password"
           />
 
-          <button
-            class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone"
-            type="submit"
-          >
+          <button class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone" type="submit">
             {{ signText }}
           </button>
         </form>
@@ -100,7 +90,7 @@ const handleSubmit = async () => {
       <div
         :class="
           cx(
-            'relative right-[0%] basis-[40%] justify-items-center overflow-hidden bg-base p-12 text-center transition-all duration-500',
+            'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-base p-12 text-center transition-all duration-500',
             swap && 'right-[60%]',
           )
         "
