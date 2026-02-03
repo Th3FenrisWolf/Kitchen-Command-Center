@@ -3,8 +3,11 @@ import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
 import type { ContentRegions } from '~/Types/ContentRegions'
 
-import '~/Styles/Main.css'
 import '~/Utilities/StringExtensions'
+
+if (process.env.NODE_ENV === 'production') {
+  import('~/Styles/Main.css')
+}
 
 // Get the server content from the script tag (stored as JSON to prevent XSS)
 const serverContentEl = document.getElementById('server-content')

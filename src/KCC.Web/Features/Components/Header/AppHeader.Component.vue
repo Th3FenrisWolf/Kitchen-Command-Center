@@ -74,7 +74,7 @@ const { logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
         </li>
       </ul>
 
-      <ul class="ml-auto flex h-full">
+      <ul class="ml-auto flex">
         <li v-for="item in utilityNavItems" :key="item.displayText">
           <MenuItem :item />
         </li>

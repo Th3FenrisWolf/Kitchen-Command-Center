@@ -1,10 +1,13 @@
 using KCC;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
+using KCC.Web.Models.Common;
 using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
+using Kentico.Membership;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Polly;
 using Polly.Extensions.Http;
 using RobotsTxt;
@@ -77,6 +80,20 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddAuthentication();
+builder
+    .Services.AddIdentity<KCCApplicationUser, NoOpApplicationRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddUserStore<ApplicationUserStore<KCCApplicationUser>>()
+    .AddRoleStore<NoOpApplicationRoleStore>()
+    .AddUserManager<UserManager<KCCApplicationUser>>()
+    .AddSignInManager<SignInManager<KCCApplicationUser>>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
 

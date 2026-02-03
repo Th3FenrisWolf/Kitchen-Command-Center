@@ -1,15 +1,34 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import cx from '~/Utilities/CX'
-import router from '~/router'
-import { parseQueryString } from '~/Utilities/QueryFunctions'
-import InputField from '~/components/shared/InputField.vue'
+// import { parseQueryString } from '~/Utilities/QueryFunctions'
+import InputField from '~/Components/Forms/InputField.vue'
 
-const { returnUrl } = parseQueryString<{ returnUrl: string }>()
+const props = defineProps<{
+  returnUrl?: string
+  defaultUserName?: string
+  defaultPassword?: string
+  defaultRememberMe?: boolean
+  antiforgeryToken?: string
+}>()
 
 const swap = ref(false)
 const isSignIn = ref(true)
 const signText = computed(() => (isSignIn.value ? 'Sign In' : 'Sign Up'))
+
+const userName = ref(props.defaultUserName ?? '')
+const email = ref('')
+const password = ref(props.defaultPassword ?? '')
+const passwordConfirmation = ref('')
+const rememberMe = ref(props.defaultRememberMe ?? false)
+const formError = ref<string | null>(null)
+
+const clearForm = () => {
+  userName.value = ''
+  email.value = ''
+  password.value = ''
+  passwordConfirmation.value = ''
+}
 
 watch(swap, () => {
   formError.value = null
@@ -18,40 +37,10 @@ watch(swap, () => {
     isSignIn.value = !isSignIn.value
   }, 250)
 })
-
-const email = ref('')
-const password = ref('')
-const formError = ref<string | null>(null)
-
-const clearForm = () => {
-  email.value = ''
-  password.value = ''
-}
-
-const sendForm = async (
-  action: (arg0: string, arg1: string) => Promise<{ success: boolean; message: string }>,
-): Promise<boolean> => {
-  const response = await action(email.value, password.value)
-  if (!response.success) {
-    formError.value = response.message
-  }
-  return response.success
-}
-
-const handleSubmit = async () => {
-  // formError.value = null
-  // const response = await sendForm(isSignIn.value ? signIn : signUp)
-  // clearForm()
-  // if (response) {
-  //   router.push({ path: returnUrl ?? '/' })
-  // }
-}
 </script>
 
 <template>
-  <section
-    class="no-margin fixed top-[50dvh] left-[50dvw] w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center"
-  >
+  <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
     <div class="relative flex w-3/4 overflow-hidden rounded-3xl shadow-primary">
       <div
         :class="
@@ -63,21 +52,31 @@ const handleSubmit = async () => {
       >
         <h2 class="text-heading">{{ signText }}</h2>
 
-        <p
-          :class="
-            cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')
-          "
-        >
+        <p :class="cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')">
           {{ formError }}
         </p>
 
-        <form class="grid grow-0 gap-8" @submit.prevent="handleSubmit">
+        <form :action="isSignIn ? '/Account/Login' : '/Account/Register'" method="post" class="grid grow-0 gap-8">
+          <input type="hidden" name="__RequestVerificationToken" :value="props.antiforgeryToken" />
+          <input type="hidden" name="ReturnUrl" :value="props.returnUrl" />
+
           <InputField
+            required
+            type="text"
+            v-model="userName"
+            autocomplete="username"
+            placeholder="Username"
+            name="UserName"
+          />
+
+          <InputField
+            v-if="!isSignIn"
             required
             type="email"
             v-model="email"
             autocomplete="email"
             placeholder="Email"
+            name="Email"
           />
 
           <InputField
@@ -86,12 +85,25 @@ const handleSubmit = async () => {
             v-model="password"
             :autocomplete="!isSignIn ? 'new-password' : 'current-password'"
             placeholder="Password"
+            name="Password"
           />
 
-          <button
-            class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone"
-            type="submit"
-          >
+          <InputField
+            v-if="!isSignIn"
+            required
+            type="password"
+            v-model="passwordConfirmation"
+            autocomplete="new-password"
+            placeholder="Confirm Password"
+            name="PasswordConfirmation"
+          />
+
+          <label v-if="isSignIn" class="flex items-center gap-2 justify-self-center">
+            <input type="checkbox" v-model="rememberMe" name="RememberMe" value="true" />
+            <span>Remember me</span>
+          </label>
+
+          <button class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone" type="submit">
             {{ signText }}
           </button>
         </form>
@@ -100,7 +112,7 @@ const handleSubmit = async () => {
       <div
         :class="
           cx(
-            'relative right-[0%] basis-[40%] justify-items-center overflow-hidden bg-base p-12 text-center transition-all duration-500',
+            'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-base p-12 text-center transition-all duration-500',
             swap && 'right-[60%]',
           )
         "

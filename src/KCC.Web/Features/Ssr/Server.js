@@ -124,11 +124,7 @@ async function createServer() {
     try {
       const { headerContent, bodyContent, footerContent } = req.body
 
-      if (
-        typeof headerContent !== 'string' ||
-        typeof bodyContent !== 'string' ||
-        typeof footerContent !== 'string'
-      ) {
+      if (typeof headerContent !== 'string' || typeof bodyContent !== 'string' || typeof footerContent !== 'string') {
         return res.status(400).json({
           error: 'headerContent, bodyContent, and footerContent must be strings',
         })

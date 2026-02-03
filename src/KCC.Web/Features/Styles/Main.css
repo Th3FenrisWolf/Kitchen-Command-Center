@@ -9,7 +9,7 @@ html {
   background-color: var(--color-bone);
 }
 
-body {
+#app {
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100dvh;
