@@ -4,6 +4,7 @@
   "omnisharp.enableEditorConfigSupport": true,
   "tailwindCSS.experimental.configFile": "src/KCC.Web/Features/Styles/TailwindConfig.css",
   "cSpell.words": [
+    "antiforgery",
     "bychannel",
     "byid",
     "kentico",

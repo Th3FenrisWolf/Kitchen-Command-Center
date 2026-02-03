@@ -9,11 +9,10 @@ public class LoginViewModel : BasePageViewModel
     public string ReturnUrl { get; set; }
 
     // Login form fields
-    [DataType(DataType.EmailAddress)]
-    [Required(ErrorMessage = "Enter your email")]
-    [EmailAddress(ErrorMessage = "Enter a valid email address")]
-    [DisplayName("Email*")]
-    public string Email { get; set; }
+    [DataType(DataType.Text)]
+    [Required(ErrorMessage = "Enter a username")]
+    [DisplayName("Username")]
+    public string UserName { get; set; }
 
     [DataType(DataType.Password)]
     [Required(ErrorMessage = "Enter your password")]

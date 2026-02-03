@@ -6,14 +6,29 @@ import InputField from '~/Components/Forms/InputField.vue'
 
 const props = defineProps<{
   returnUrl?: string
-  defaultEmail?: string
+  defaultUserName?: string
   defaultPassword?: string
   defaultRememberMe?: boolean
+  antiforgeryToken?: string
 }>()
 
 const swap = ref(false)
 const isSignIn = ref(true)
 const signText = computed(() => (isSignIn.value ? 'Sign In' : 'Sign Up'))
+
+const userName = ref(props.defaultUserName ?? '')
+const email = ref('')
+const password = ref(props.defaultPassword ?? '')
+const passwordConfirmation = ref('')
+const rememberMe = ref(props.defaultRememberMe ?? false)
+const formError = ref<string | null>(null)
+
+const clearForm = () => {
+  userName.value = ''
+  email.value = ''
+  password.value = ''
+  passwordConfirmation.value = ''
+}
 
 watch(swap, () => {
   formError.value = null
@@ -22,35 +37,6 @@ watch(swap, () => {
     isSignIn.value = !isSignIn.value
   }, 250)
 })
-
-const email = ref(props.defaultEmail ?? '')
-const password = ref(props.defaultPassword ?? '')
-const rememberMe = ref(props.defaultRememberMe ?? false)
-const formError = ref<string | null>(null)
-
-const clearForm = () => {
-  email.value = ''
-  password.value = ''
-}
-
-const sendForm = async (
-  action: (arg0: string, arg1: string) => Promise<{ success: boolean; message: string }>,
-): Promise<boolean> => {
-  const response = await action(email.value, password.value)
-  if (!response.success) {
-    formError.value = response.message
-  }
-  return response.success
-}
-
-const handleSubmit = async () => {
-  // formError.value = null
-  // const response = await sendForm(isSignIn.value ? signIn : signUp)
-  // clearForm()
-  // if (response) {
-  //   router.push({ path: returnUrl ?? '/' })
-  // }
-}
 </script>
 
 <template>
@@ -70,8 +56,28 @@ const handleSubmit = async () => {
           {{ formError }}
         </p>
 
-        <form class="grid grow-0 gap-8" @submit.prevent="handleSubmit">
-          <InputField required type="email" v-model="email" autocomplete="email" placeholder="Email" />
+        <form :action="isSignIn ? '/Account/Login' : '/Account/Register'" method="post" class="grid grow-0 gap-8">
+          <input type="hidden" name="__RequestVerificationToken" :value="props.antiforgeryToken" />
+          <input type="hidden" name="ReturnUrl" :value="props.returnUrl" />
+
+          <InputField
+            required
+            type="text"
+            v-model="userName"
+            autocomplete="username"
+            placeholder="Username"
+            name="UserName"
+          />
+
+          <InputField
+            v-if="!isSignIn"
+            required
+            type="email"
+            v-model="email"
+            autocomplete="email"
+            placeholder="Email"
+            name="Email"
+          />
 
           <InputField
             required
@@ -79,7 +85,23 @@ const handleSubmit = async () => {
             v-model="password"
             :autocomplete="!isSignIn ? 'new-password' : 'current-password'"
             placeholder="Password"
+            name="Password"
           />
+
+          <InputField
+            v-if="!isSignIn"
+            required
+            type="password"
+            v-model="passwordConfirmation"
+            autocomplete="new-password"
+            placeholder="Confirm Password"
+            name="PasswordConfirmation"
+          />
+
+          <label v-if="isSignIn" class="flex items-center gap-2 justify-self-center">
+            <input type="checkbox" v-model="rememberMe" name="RememberMe" value="true" />
+            <span>Remember me</span>
+          </label>
 
           <button class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone" type="submit">
             {{ signText }}
