@@ -1,12 +1,10 @@
-using System.Linq;
-using System.Threading.Tasks;
 using CMS.ContentEngine;
-using KCC.Web.Features.Cache;
+using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace KCC.Web.Features.TagHelpers;
 
-public class BzsImageTagHelper(ICacheService cacheService) : TagHelper
+public class BzsImageTagHelper(IContentRetriever contentRetriever) : TagHelper
 {
     public ContentItemReference Item { get; set; }
 
@@ -19,27 +17,22 @@ public class BzsImageTagHelper(ICacheService cacheService) : TagHelper
             return;
         }
 
-        var query = new ContentItemQueryBuilder()
-            .ForContentTypes(config =>
-                config.OfContentType(ImageItem.CONTENT_TYPE_NAME).WithContentTypeFields()
-            )
-            .Parameters(param =>
-                param
-                    .TopN(1)
-                    .Where(where =>
-                        where.WhereEquals(
-                            nameof(ImageItem.SystemFields.ContentItemGUID),
-                            Item.Identifier
-                        )
+        var items = await contentRetriever.RetrieveContent<ImageItem>(
+            new() { LinkedItemsMaxLevel = 1 },
+            query => query
+                .TopN(1)
+                .Where(where =>
+                    where.WhereEquals(
+                        nameof(ImageItem.SystemFields.ContentItemGUID),
+                        Item.Identifier
                     )
-            );
-
-        var itemData = (
-            await cacheService.Get<ImageItem>(
-                query,
-                [nameof(BzsImageTagHelper), nameof(ProcessAsync), Item.Identifier.ToString()]
+                ),
+            new(
+                $"{nameof(BzsImageTagHelper)}|{nameof(ProcessAsync)}|{Item.Identifier}"
             )
-        ).FirstOrDefault();
+        );
+
+        var itemData = items.FirstOrDefault();
 
         if (itemData == null)
         {

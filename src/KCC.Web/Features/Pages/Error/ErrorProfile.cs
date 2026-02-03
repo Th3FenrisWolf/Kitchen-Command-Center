@@ -1,5 +1,4 @@
 using AutoMapper;
-using KCC;
 
 namespace KCC.Web.Features.Pages.Error;
 

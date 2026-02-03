@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>617409a8-4fa3-436e-b0cd-26a6dec93c92</TagGUID>
+  <TagMetadata>
+    <![CDATA[{"Translations":{}}]]>
+  </TagMetadata>
+  <TagName>Unauthenticated</TagName>
+  <TagOrder>1</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>AuthStatus</CodeName>
+    <GUID>f91c8ea5-06bd-44c0-9968-bc1d2edd868d</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Unauthenticated</TagTitle>
+</cms.tag>

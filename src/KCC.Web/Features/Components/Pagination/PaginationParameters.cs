@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KCC.Web.Features.Components.Pagination;
+﻿namespace KCC.Web.Features.Components.Pagination;
 
 public class PaginationParameters
 {

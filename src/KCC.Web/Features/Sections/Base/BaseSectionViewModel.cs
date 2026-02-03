@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KCC.Web.Features.Sections.Base;
+﻿namespace KCC.Web.Features.Sections.Base;
 
 public class BaseSectionViewModel
 {

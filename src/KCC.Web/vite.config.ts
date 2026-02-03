@@ -1,10 +1,25 @@
 import { fileURLToPath, URL } from 'node:url'
+import { existsSync, rmSync } from 'node:fs'
 
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
+
+// Clean only the Vite assets folder before build, preserving fonts and other static files
+function cleanAssetsPlugin(): Plugin {
+  return {
+    name: 'clean-assets',
+    apply: 'build', // Only run during production builds, not dev server
+    buildStart() {
+      const assetsDir = resolve(__dirname, 'wwwroot/assets')
+      if (existsSync(assetsDir)) {
+        rmSync(assetsDir, { recursive: true })
+      }
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -19,9 +34,9 @@ export default defineConfig(({ mode }) => {
           emptyOutDir: true, // Safe to clear - only contains build output
           minify: 'esbuild',
           rollupOptions: {
-            input: resolve(__dirname, 'Features/Ssr/entry-server.ts'),
+            input: resolve(__dirname, 'Features/Ssr/Server.Entry.ts'),
             output: {
-              entryFileNames: 'entry-server.js',
+              entryFileNames: 'Server.Entry.js',
             },
           },
         }
@@ -29,6 +44,8 @@ export default defineConfig(({ mode }) => {
           // Client build configuration
           outDir: 'wwwroot',
           emptyOutDir: false, // Preserve fonts and other static files
+          manifest: true, // Generate manifest.json for Vite.AspNetCore
+          sourcemap: 'hidden', // Generate source maps for debugging but don't expose in production
           rollupOptions: {
             input: {
               main: resolve(__dirname, 'Features/main.ts'),
@@ -36,6 +53,8 @@ export default defineConfig(({ mode }) => {
           },
         },
     plugins: [
+      // Clean old Vite assets before client build (not needed for SSR)
+      ...(!isSSR ? [cleanAssetsPlugin()] : []),
       vue(),
       // Only include devtools for client dev mode
       ...(!isSSR ? [vueDevTools()] : []),

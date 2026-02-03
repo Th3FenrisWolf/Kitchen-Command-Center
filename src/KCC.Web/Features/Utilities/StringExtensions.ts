@@ -1,7 +1,12 @@
 declare global {
   interface String {
+    stripTilde(): string
     equals(str?: string, comparison?: StringComparison): boolean
   }
+}
+
+String.prototype.stripTilde = function () {
+  return this.replace(/^~/, '')
 }
 
 String.prototype.equals = function (

@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import AppHeader from '~/Components/Header/AppHeader.vue'
-import Footer from '~/Components/Footer/Footer.vue'
+import type { ContentRegions } from '~/Types/ContentRegions'
 
-defineProps<{ serverContent: string }>()
+const { headerContent, bodyContent, footerContent } = defineProps<ContentRegions>()
 </script>
 
 <template>
-  <AppHeader />
+  <component :is="{ name: 'HeaderContent', template: headerContent }" />
 
-  <main role="main" class="content-grid auto-rows-min bg-bone">
-    <component :is="{ template: serverContent }" />
+  <main role="main" class="content-grid auto-rows-min">
+    <component :is="{ name: 'BodyContent', template: bodyContent }" />
   </main>
 
-  <Footer />
+  <component :is="{ name: 'FooterContent', template: footerContent }" />
 </template>

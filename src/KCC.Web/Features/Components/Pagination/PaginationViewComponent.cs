@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Components.Pagination;

@@ -27,31 +27,53 @@
 }
 
 /* TODO: Hazelnut font is swapping colon and semicolon */
+
+/* Display fonts - loaded on demand */
 @font-face {
   font-family: 'Aima';
-  src: url('/fonts/AimaDisplayRegular.ttf') format('truetype');
+  src: url('/fonts/AimaDisplayRegular.woff2') format('woff2');
+  font-display: swap;
 }
+
+/* Heading font - preloaded */
 @font-face {
-  font-family: 'APCasualItalic';
-  src: url('/fonts/AmericanPurposeCasualItalic.ttf') format('truetype');
+  font-family: 'APCasual';
+  src: url('/fonts/AmericanPurposeCasualRegular.woff2') format('woff2');
+  font-display: swap;
 }
 @font-face {
   font-family: 'APCasual';
-  src: url('/fonts/AmericanPurposeCasualRegular.ttf') format('truetype');
+  src: url('/fonts/AmericanPurposeCasualItalic.woff2') format('woff2');
+  font-style: italic;
+  font-display: swap;
 }
+
+/* Body font - preloaded (primary font) */
 @font-face {
-  font-family: 'HazelnutBold';
-  src: url('/fonts/HazelnutMilkTeaBold.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'HazelnutBoldItalic';
-  src: url('/fonts/HazelnutMilkTeaBoldItalic.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'HazelnutItalic';
-  src: url('/fonts/HazelnutMilkTeaItalic.ttf') format('truetype');
+  font-family: 'Hazelnut';
+  src: url('/fonts/HazelnutMilkTeaRegular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'Hazelnut';
-  src: url('/fonts/HazelnutMilkTeaRegular.ttf') format('truetype');
+  src: url('/fonts/HazelnutMilkTeaBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hazelnut';
+  src: url('/fonts/HazelnutMilkTeaItalic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hazelnut';
+  src: url('/fonts/HazelnutMilkTeaBoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
 }

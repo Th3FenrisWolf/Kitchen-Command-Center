@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.headernavigation>
+  <ContentItemDataCommonDataID>
+    <GUID>79098bf0-47b6-43fe-af5d-8bee834f6ea7</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Header-djoopx0s</CodeName>
+      <GUID>7db589f3-0da6-4b18-9f5c-261edd440004</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>383e50e2-3632-47b4-8b5f-5c1103486467</ContentItemDataGUID>
+  <Logo>
+    <![CDATA[[{"Identifier":"f67d70e7-a891-4e11-a308-620ade181341"}]]]>
+  </Logo>
+  <MainNavItems>
+    <![CDATA[[{"Identifier":"564aa58a-0bce-47e0-94f8-32daadbcc75b"}]]]>
+  </MainNavItems>
+</contentitemdata.kcc.headernavigation>

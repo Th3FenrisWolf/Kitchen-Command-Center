@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.imageitem>
+  <AltText>Kitchen Command Center</AltText>
+  <Asset>
+    <![CDATA[{"Original":{"Identifier":"c09e9362-e827-47c7-b610-4d27648b5b9f","Name":"KCC-Bone.png","Extension":".png","Size":143182,"Width":1932,"Height":1368,"LastModified":"2026-01-11T21:53:57.5611432Z"},"OptimizationParameters":{"OutputExtension":"webp","Quality":90,"WidthLimit":null,"HeightLimit":null},"Variants":{},"FocalPoint":{"X":813,"Y":681},"Identifier":"af13c859-c867-4cf0-b9d5-487cd473af4b","Name":"KCC-Bone.webp","Extension":".webp","Size":75458,"Width":1932,"Height":1368,"LastModified":"2026-01-11T21:53:57.8799774Z"}]]>
+  </Asset>
+  <ContentItemDataCommonDataID>
+    <GUID>1d48db61-906c-43b5-baf3-556d9fba52da</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>LogoInverse-kah2zz6m</CodeName>
+      <GUID>f67d70e7-a891-4e11-a308-620ade181341</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>14f61907-8cf4-41c3-84d8-6cebc00695ef</ContentItemDataGUID>
+</contentitemdata.kcc.imageitem>

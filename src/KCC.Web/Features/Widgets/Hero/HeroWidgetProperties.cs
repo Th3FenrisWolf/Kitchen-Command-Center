@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CMS.ContentEngine;
 using KCC.Web.Features.Providers;
 using KCC.Web.Features.Tailwind;

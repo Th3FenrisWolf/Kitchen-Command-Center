@@ -1,5 +1,3 @@
-using System;
-
 namespace KCC.Web.Features.Tailwind;
 
 public enum TailwindColor

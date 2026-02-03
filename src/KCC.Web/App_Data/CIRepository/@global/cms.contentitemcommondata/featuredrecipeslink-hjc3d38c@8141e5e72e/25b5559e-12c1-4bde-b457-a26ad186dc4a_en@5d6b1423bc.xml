@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>FeaturedRecipesLink-hjc3d38c</CodeName>
+    <GUID>6fae3ebf-0b25-4e8f-9d12-8a6c6f7bdd1e</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>25b5559e-12c1-4bde-b457-a26ad186dc4a</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>cc6c6dfb-3a7e-45d0-8a8e-0b479d2ccb1b</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>3474b51f-8ce4-4a9d-9f7e-7ab624888eb1</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>25b5559e-12c1-4bde-b457-a26ad186dc4a</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>Home-cvt64nws</CodeName>
+        <GUID>72105566-b709-4ba4-bdf5-c04c63790dd1</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.imageitem>
+  <AltText>Kitchen Command Center</AltText>
+  <Asset>
+    <![CDATA[{"Original":{"Identifier":"636a4462-454a-4b1b-b42e-a94a39e3f54c","Name":"KCC-Base.png","Extension":".png","Size":164004,"Width":1932,"Height":1368,"LastModified":"2026-01-11T21:49:37.2860625Z"},"OptimizationParameters":{"OutputExtension":"webp","Quality":90,"WidthLimit":null,"HeightLimit":null},"Variants":{},"FocalPoint":{"X":846,"Y":681},"Identifier":"5e05004d-2c7e-4443-a576-498df0796cc6","Name":"KCC-Base.webp","Extension":".webp","Size":75520,"Width":1932,"Height":1368,"LastModified":"2026-01-11T21:49:37.7742619Z"}]]>
+  </Asset>
+  <ContentItemDataCommonDataID>
+    <GUID>bf81d34e-3e48-474e-b517-e86c625438a1</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Logo-9bd7tcfl</CodeName>
+      <GUID>3e10d95b-9184-4f95-bdb8-d19d142c77aa</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>522d3eb5-9730-4d2c-ac15-9b9467dfb8df</ContentItemDataGUID>
+</contentitemdata.kcc.imageitem>

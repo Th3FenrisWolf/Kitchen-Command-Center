@@ -1,4 +1,3 @@
-using System;
 using KCC.Web.Features.Tailwind;
 
 namespace KCC.Web.Extensions;
