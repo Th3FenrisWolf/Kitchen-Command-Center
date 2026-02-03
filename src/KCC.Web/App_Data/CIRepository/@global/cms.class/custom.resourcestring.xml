@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassCodeGenerationSettings>
+    <Data>
+      <CodeNameColumn>Key</CodeNameColumn>
+      <DisplayNameColumn>Value</DisplayNameColumn>
+      <ObjectType>Custom.ResourceString</ObjectType>
+      <UseGuidHashtable>False</UseGuidHashtable>
+      <UseIdHashtable>False</UseIdHashtable>
+      <UseNameHashtable>False</UseNameHashtable>
+    </Data>
+  </ClassCodeGenerationSettings>
+  <ClassDisplayName>ResourceString</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ResourceStringID" columntype="integer" enabled="true" guid="391faafd-7ae1-4b45-a079-21da82606f40" isPK="true" />
+      <field column="Key" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="255ae712-fd12-41a6-b568-cc9e0124db12" />
+      <field column="Value" columnprecision="0" columntype="longtext" enabled="true" guid="f8cebf72-6e1f-4d30-b9c9-8e61d90831ed" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>7643ab5b-3a3b-44f4-93f8-6c63474ec391</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>Custom.ResourceString</ClassName>
+  <ClassResourceID>
+    <CodeName>ResourceStrings</CodeName>
+    <GUID>ec006c73-63db-4686-9ac1-3fe2987841e9</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>Custom_ResourceString</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

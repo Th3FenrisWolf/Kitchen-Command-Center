@@ -1,0 +1,21 @@
+@using KCC.Web.Features.Widgets.Stacker
+@using System.Text.Json
+
+@model StackerWidgetViewModel
+
+<div class="grid items-start gap-8 lg:grid-cols-2">
+  <div class="grid gap-4 lg:sticky lg:top-8">
+    <h2 class="text-heading">@Model.Heading</h2>
+
+    <div class="text-pretty">
+      @Html.Raw(Html.Kentico().ResolveRichText(Model.Body))
+    </div>
+
+    @if (Model.Image is not null)
+    {
+      <img class="w-full rounded-3xl" src="@Model.Image.Asset.Url.StripTilde()" alt="@Model.Image.AltText" />
+    }
+  </div>
+
+  <Stacker :cards="@Html.VueProp(Model.Cards)" />
+</div>

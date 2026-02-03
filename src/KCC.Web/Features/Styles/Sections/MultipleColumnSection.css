@@ -1,0 +1,107 @@
+@layer components {
+  .multiple-column-section {
+    --grid-layout-gap: theme('spacing.8');
+    --min-column-width: 100px;
+    --column-count: 1;
+    --gap-count: calc(var(--column-count) - 1);
+    --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
+    --max-column-width: calc((100% - var(--total-gap-width)) / var(--column-count));
+
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(var(--min-column-width), var(--max-column-width)), 1fr)
+    );
+    grid-gap: var(--grid-layout-gap);
+
+    &.left-two-thirds {
+      grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(
+          var(--min-column-width),
+          1fr
+        );
+    }
+
+    &.right-two-thirds {
+      grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(
+          var(--min-column-width),
+          2fr
+        );
+    }
+
+    /* Column Styles */
+    &.one-column {
+      --column-count: 1;
+    }
+
+    &.two-columns {
+      --column-count: 2;
+    }
+
+    &.three-columns {
+      --column-count: 3;
+    }
+
+    &.four-columns {
+      --column-count: 4;
+    }
+  }
+}
+
+@layer utilities {
+  .left-two-thirds {
+    grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(var(--min-column-width), 1fr);
+  }
+
+  .right-two-thirds {
+    grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(var(--min-column-width), 2fr);
+  }
+
+  .one-column {
+    --column-count: 1;
+  }
+
+  .two-columns {
+    --column-count: 2;
+  }
+
+  .three-columns {
+    --column-count: 3;
+  }
+
+  .four-columns {
+    --column-count: 4;
+  }
+
+  /* Responsive variants for lg breakpoint */
+  @media (width >= theme(--breakpoint-lg)) {
+    .lg\:left-two-thirds {
+      grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(
+          var(--min-column-width),
+          1fr
+        );
+    }
+
+    .lg\:right-two-thirds {
+      grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(
+          var(--min-column-width),
+          2fr
+        );
+    }
+
+    .lg\:one-column {
+      --column-count: 1;
+    }
+
+    .lg\:two-columns {
+      --column-count: 2;
+    }
+
+    .lg\:three-columns {
+      --column-count: 3;
+    }
+
+    .lg\:four-columns {
+      --column-count: 4;
+    }
+  }
+}

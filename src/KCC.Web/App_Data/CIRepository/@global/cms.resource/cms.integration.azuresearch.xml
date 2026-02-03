@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.resource>
+  <ResourceDescription>Kentico AzureSearch custom data</ResourceDescription>
+  <ResourceDisplayName>Kentico Integration - AzureSearch</ResourceDisplayName>
+  <ResourceGUID>fe77ec85-de47-4005-be7e-36d1bd694dd5</ResourceGUID>
+  <ResourceIsInDevelopment>False</ResourceIsInDevelopment>
+  <ResourceName>CMS.Integration.AzureSearch</ResourceName>
+</cms.resource>

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.channel>
+  <ChannelDisplayName>Kitchen Command Center</ChannelDisplayName>
+  <ChannelGUID>c5ac4825-e084-4e36-9912-b3f8387360ba</ChannelGUID>
+  <ChannelName>KCC</ChannelName>
+  <ChannelSize>Standard</ChannelSize>
+  <ChannelType>Website</ChannelType>
+</cms.channel>

@@ -1,0 +1,15 @@
+{
+  "editor.formatOnSave": true,
+  "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
+  "omnisharp.enableEditorConfigSupport": true,
+  "tailwindCSS.experimental.configFile": "src/KCC.Web/Features/Styles/TailwindConfig.css",
+  "cSpell.words": [
+    "bychannel",
+    "byid",
+    "kentico",
+    "tailwindcss",
+    "vite",
+    "webpageitem",
+    "xperience"
+  ]
+}

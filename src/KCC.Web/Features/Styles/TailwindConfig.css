@@ -1,0 +1,74 @@
+/* Only scan specific file types in Features directory */
+@import 'tailwindcss' source(none);
+@source '../**/*.cshtml';
+@source '../**/*.vue';
+@source '../**/*.css';
+
+/* prettier-ignore-start */
+/* Safelist dynamically generated classes */
+@source inline('{pb,pt,px,mb,mt}-{0,4,8,12}');
+@source inline('bg-{base,mantle,crust,surface{,-100,-200}}');
+@source inline('bg-{rosewater,flamingo,pink,mauve,red,maroon,peach,yellow,green,teal,sky,sapphire,blue,lavender}');
+/* prettier-ignore-end */
+
+@theme {
+  --color-rosewater: hsl(10, 57%, 88%);
+  --color-flamingo: hsl(0, 59%, 84%);
+  --color-pink: hsl(316, 73%, 84%);
+  --color-mauve: hsl(277, 59%, 76%);
+  --color-red: hsl(359, 68%, 71%);
+  --color-maroon: hsl(358, 66%, 76%);
+  --color-peach: hsl(20, 79%, 70%);
+  --color-yellow: hsl(40, 62%, 73%);
+  --color-green: hsl(96, 44%, 68%);
+  --color-teal: hsl(172, 39%, 65%);
+  --color-sky: hsl(189, 48%, 73%);
+  --color-sapphire: hsl(199, 55%, 69%);
+  --color-blue: hsl(222, 74%, 74%);
+  --color-lavender: hsl(239, 66%, 84%);
+
+  --color-text: hsl(227, 70%, 87%);
+  --color-subtext-100: hsl(227, 44%, 80%);
+  --color-subtext: hsl(228, 29%, 73%);
+
+  --color-overlay-200: hsl(228, 22%, 66%);
+  --color-overlay-100: hsl(227, 17%, 58%);
+  --color-overlay: hsl(229, 13%, 52%);
+
+  --color-surface-200: hsl(228, 13%, 44%);
+  --color-surface-100: hsl(227, 15%, 37%);
+  --color-surface: hsl(230, 16%, 30%);
+
+  --color-base: hsl(229, 19%, 23%);
+  --color-mantle: hsl(231, 19%, 20%);
+  --color-crust: hsl(229, 20%, 17%);
+
+  --color-bone-dark: hsl(44, 15%, 85%);
+  --color-bone: hsl(44, 48%, 95%);
+  --color-onyx-light: hsl(120, 4%, 38%);
+  --color-onyx: hsl(120, 4%, 22%);
+
+  --text-heading: 2.5rem;
+
+  --shadow-light: 0 0 24px 0 rgba(0, 0, 0, 0.1);
+  --shadow-primary: 0 0 24px 0 rgba(0, 0, 0, 0.25);
+  --shadow-primary-raised: 0 0 24px 0 rgba(0, 0, 0, 0.25), 8px 16px 16px rgba(0, 0, 0, 0.25);
+  --shadow-bone-small: 0 0 4px 1px var(--color-bone);
+}
+
+@layer components {
+  .btn-no-style {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    outline: none;
+    padding: 0;
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}

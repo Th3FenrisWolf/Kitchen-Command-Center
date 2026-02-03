@@ -1,0 +1,43 @@
+@using KCC.Web.Features.Sections.MultipleColumn;
+
+@model MultipleColumnSectionViewModel
+
+@{
+  var sectionClass = $"lg:{Model.SectionClass}";
+  var containerClass = Model.ContentWidth switch {
+    "Thin" => "thin",
+    "Breakout" => "breakout",
+    "Full Width" => "full-width",
+    _ => string.Empty,
+  };
+}
+
+<section
+  data-section-guid="@Model.SectionGuid"
+  class="@Html.Clsx(
+    "rounded-4xl",
+    containerClass,
+    Model.BackgroundColor,
+    Model.TextColor,
+    $"pb-{Model.PaddingBottom}",
+    $"pt-{Model.PaddingTop}",
+    $"px-{Model.HorizontalPadding}"
+  )"
+>
+  @if (!string.IsNullOrEmpty(Model.Heading))
+  {
+    <p class="mb-8 text-center text-heading">@Model.Heading</p>
+  }
+
+  <div
+    class="@Html.Clsx(
+      "multiple-column-section rounded-4xl",
+      sectionClass
+    )"
+  >
+    @for (var j = 0; j < Model.ColumnCount; j++)
+    {
+      <widget-zone />
+    }
+  </div>
+</section>

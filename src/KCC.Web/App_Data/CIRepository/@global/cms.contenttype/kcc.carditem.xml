@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Reusable</ClassContentTypeType>
+  <ClassDisplayName>Card Item</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="9e516bfb-b3c7-4e8b-a70c-32d72eb2ea13" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="53c1ec31-60ae-443e-b6dc-2be2548766a4" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="46c448c4-a4d0-4a82-8690-1bdd4edeefb1" isunique="true" system="true" />
+      <field column="BackgroundColor" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="3e878508-f61e-4565-81ae-6163e0631992" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Background Color</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeintranslation>True</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.DropDownSelector</controlname>
+          <Options>
+<![CDATA[
+bg-rosewater;Rosewater
+bg-flamingo;Flamingo
+bg-pink;Pink
+bg-mauve;Mauve
+bg-red;Red
+bg-maroon;Maroon
+bg-peach;Peach
+bg-yellow;Yellow
+bg-green;Green
+bg-teal;Teal
+bg-sky;Sky
+bg-sapphire;Sapphire
+bg-blue;Blue
+bg-lavender;Lavender
+]]>
+          </Options>
+          <OptionsValueSeparator>;</OptionsValueSeparator>
+        </settings>
+      </field>
+      <field column="Heading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="7da046ff-aa73-4578-9779-7f3545ba3ff8" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Heading</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeintranslation>True</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="SubHeading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="15cb5b10-3d3e-418a-a5cf-33e95310a7d7" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Sub-Heading</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeintranslation>True</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="Body" columnprecision="0" columnsize="500" columntype="text" enabled="true" guid="5463ac7a-8d4e-4615-a495-79ce5014daab" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Body</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeintranslation>True</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>3</MinRowsNumber>
+        </settings>
+      </field>
+      <field allowempty="true" column="Link" columnprecision="0" columntype="contentitemreference" enabled="true" guid="4dcf2263-d587-4bff-a15e-5b456911688f" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Link</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <MinimumItems>0</MinimumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>01a11bd6-7a99-4773-96e3-3f945ddc5f9a</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-binder</ClassIconClass>
+  <ClassName>KCC.CardItem</ClassName>
+  <ClassShortName>KCCCardItem</ClassShortName>
+  <ClassTableName>KCC_CardItem</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
+</cms.contenttype>

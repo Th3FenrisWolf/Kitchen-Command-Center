@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.alternativeform>
+  <FormClassID>
+    <CodeName>Custom.ResourceString</CodeName>
+    <GUID>7643ab5b-3a3b-44f4-93f8-6c63474ec391</GUID>
+    <ObjectType>cms.class</ObjectType>
+  </FormClassID>
+  <FormDefinition>
+    <form>
+      <field column="ResourceStringID" guid="391faafd-7ae1-4b45-a079-21da82606f40" enabled="" />
+      <field column="Key" enabled="true" guid="255ae712-fd12-41a6-b568-cc9e0124db12" visible="true">
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Key</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+      </field>
+      <field column="Value" enabled="true" guid="b2b34484-0e2b-47f0-a4f4-910ed707d277" visible="true">
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>3</MinRowsNumber>
+        </settings>
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Value</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+      </field>
+    </form>
+  </FormDefinition>
+  <FormDisplayName>Create</FormDisplayName>
+  <FormGUID>584de212-d791-4e2e-964f-7bab79f75d41</FormGUID>
+  <FormIsCustom>True</FormIsCustom>
+  <FormName>create</FormName>
+</cms.alternativeform>

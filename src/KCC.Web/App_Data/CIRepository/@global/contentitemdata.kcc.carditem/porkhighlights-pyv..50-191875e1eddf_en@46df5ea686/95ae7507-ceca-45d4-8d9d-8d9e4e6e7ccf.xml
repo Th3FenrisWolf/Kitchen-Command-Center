@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.carditem>
+  <BackgroundColor>bg-peach</BackgroundColor>
+  <Body>
+    <![CDATA[Chops, bacon, or pulled — discover the best of pork!]]>
+  </Body>
+  <ContentItemDataCommonDataID>
+    <GUID>56b4430a-57b2-458d-8b50-191875e1eddf</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>PorkHighlights-pyvz0mwj</CodeName>
+      <GUID>a7a6d3a9-d39c-4031-97aa-b77eed40090d</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>95ae7507-ceca-45d4-8d9d-8d9e4e6e7ccf</ContentItemDataGUID>
+  <Heading>Pork</Heading>
+  <Link>
+    <![CDATA[[{"Identifier":"c1d32116-25fd-4ada-87cd-43784dd4f517"}]]]>
+  </Link>
+  <SubHeading>
+    <![CDATA[Savory · Tender · Irresistible]]>
+  </SubHeading>
+</contentitemdata.kcc.carditem>
