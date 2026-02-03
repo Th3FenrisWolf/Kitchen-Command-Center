@@ -1,9 +1,21 @@
 @using KCC.Web.Features.Components.Header
+@using KCC.Web.Models.Common
 
 @model HeaderViewModel
 
 <AppHeader
   :logo="@Html.VueProp(Model.Logo)"
   :main-nav-items="@Html.VueProp(Model.MainNavItems)"
-  :utility-nav-items="@Html.VueProp(Model.UtilityNavItems)"
+  :utility-nav-items="@Html.VueProp(Model.UtilityNavItems.Append(new()
+  {
+    DisplayText = "Login",
+    SubLinks = new[]
+    {
+      new PageLink
+      {
+        DisplayText = "Login",
+        Url = "/Account/Login",
+      },
+    },
+  }))"
 />

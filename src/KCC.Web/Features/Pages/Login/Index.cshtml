@@ -1,0 +1,13 @@
+@using KCC.Web.Features.Pages.Login
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@model LoginViewModel
+
+<LoginView
+  return-url="@Model.ReturnUrl"
+  default-user-name="@Model.UserName"
+  default-password="@Model.Password"
+  :default-remember-me="@Model.RememberMe.ToString().ToLower()"
+  antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
+/>
