@@ -1,13 +1,8 @@
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
-using CMS.ContentEngine;
-using CMS.Websites;
-using CMS.Websites.Routing;
 using KCC;
-using KCC.Web.Features.Cache;
 using KCC.Web.Features.Pages.Home;
 using KCC.Web.Models.Constants;
+using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,25 +15,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace KCC.Web.Features.Pages.Home;
 
 public class HomeController(
-    IWebsiteChannelContext websiteChannelContext,
-    ICacheService cacheService,
+    IContentRetriever contentRetriever,
     IMapper mapper
 ) : Controller
 {
     public async Task<IActionResult> Index()
     {
-        var query = new ContentItemQueryBuilder()
-            .ForContentTypes(config =>
-                config
-                    .ForWebsite(websiteChannelContext.WebsiteChannelName)
-                    .OfContentType(HomePage.CONTENT_TYPE_NAME)
-                    .WithLinkedItems(1)
-            )
-            .Parameters(param => param.TopN(1));
-
-        var page = (
-            await cacheService.Get<HomePage>(query, [nameof(HomeController), nameof(Index)])
-        ).FirstOrDefault();
+        var page = (await contentRetriever.RetrievePages<HomePage>(
+            new(),
+            query => query.TopN(1),
+            new($"{nameof(HomeController)}|{nameof(Index)}")
+        )).FirstOrDefault();
 
         var viewModel = mapper.Map<HomeViewModel>(page);
 

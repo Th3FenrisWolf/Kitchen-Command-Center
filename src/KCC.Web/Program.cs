@@ -1,16 +1,10 @@
-using System;
-using System.Net.Http;
 using KCC;
-using KCC.Web.Features.Cache;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
 using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Polly;
 using Polly.Extensions.Http;
 using RobotsTxt;
@@ -18,12 +12,14 @@ using Vite.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddTransient<ICacheService, CacheService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<VueSsrService>();
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddViteServices(options =>
 {
     options.Server.AutoRun = true;
     options.Server.PackageManager = "yarn";
+    options.Server.ScriptName = "dev:all";
 });
 
 // Vue SSR service with resilience policies
@@ -38,8 +34,6 @@ builder.Services.AddHttpClient("VueSsr", client =>
 .AddPolicyHandler(GetCircuitBreakerPolicy())
 .AddPolicyHandler(GetRetryPolicy());
 
-builder.Services.AddScoped<VueSsrService>();
-
 // Circuit breaker: break after 5 failures for 30 seconds
 static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
     HttpPolicyExtensions
@@ -48,13 +42,14 @@ static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
             handledEventsAllowedBeforeBreaking: 5,
             durationOfBreak: TimeSpan.FromSeconds(30));
 
-// Retry policy: retry 2 times with exponential backoff
+// Retry policy: retry 2 times with exponential backoff + jitter to prevent thundering herd
 static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
     HttpPolicyExtensions
         .HandleTransientHttpError()
         .WaitAndRetryAsync(
             retryCount: 2,
-            sleepDurationProvider: retryAttempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryAttempt)));
+            sleepDurationProvider: retryAttempt =>
+                TimeSpan.FromMilliseconds((100 * Math.Pow(2, retryAttempt)) + Random.Shared.Next(-20, 20)));
 
 builder.Services.AddAutoMapper(typeof(Program));
 

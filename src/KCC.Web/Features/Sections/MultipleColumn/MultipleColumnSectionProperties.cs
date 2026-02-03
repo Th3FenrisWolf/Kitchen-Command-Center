@@ -1,4 +1,3 @@
-using System;
 using KCC.Web.Features.Providers;
 using KCC.Web.Features.Sections.Base;
 using Kentico.Forms.Web.Mvc;

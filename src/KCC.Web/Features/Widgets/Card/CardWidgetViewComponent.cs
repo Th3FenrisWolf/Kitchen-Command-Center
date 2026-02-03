@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using CMS.ContentEngine;
 using KCC.Web.Features.Widgets.Card;
 using Kentico.Content.Web.Mvc;

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace KCC.Web.Features.Components.Breadcrumbs;
 
 public class BreadcrumbsViewModel

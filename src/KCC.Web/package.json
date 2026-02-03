@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:css": "tailwindcss -i ./Features/Styles/Main.css -o ./wwwroot/assets/main-dev.css --watch",
+    "dev:all": "concurrently -k -n \"VITE,SSR,CSS\" -c \"cyan,green,magenta\" \"yarn dev\" \"yarn ssr:dev\" \"yarn dev:css\"",
     "build": "vite build",
     "build:ssr": "vite build --mode ssr",
     "build:all": "vite build && vite build --mode ssr",
     "preview": "vite preview",
-    "ssr:dev": "node --watch Features/Ssr/server.js",
+    "ssr:dev": "node Features/Ssr/server.js",
     "ssr:serve": "cross-env NODE_ENV=production node Features/Ssr/server.js",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
@@ -26,6 +28,7 @@
     "vue": "^3.5.24"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
     "@tailwindcss/postcss": "^4.1.17",
     "@tailwindcss/vite": "^4.1.17",
     "@tsconfig/node24": "^24.0.3",
@@ -37,6 +40,7 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/tsconfig": "^0.8.1",
+    "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.39.1",
     "eslint-plugin-vue": "^10.5.1",
