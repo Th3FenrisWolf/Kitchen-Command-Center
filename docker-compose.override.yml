@@ -1,0 +1,19 @@
+# Development overrides - automatically loaded by docker compose
+# Use: docker compose up
+services:
+  web:
+    build:
+      target: runtime
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      # Mount appsettings for live config changes during dev
+      - ./src/KCC.Web/appsettings.Development.json:/app/appsettings.Development.json:ro
+
+  ssr:
+    # In dev, you might want to see logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
