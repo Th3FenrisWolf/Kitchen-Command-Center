@@ -54,12 +54,4 @@
         <None Include="wwwroot\fonts\HazelnutMilkTeaItalic.ttf" />
         <None Include="wwwroot\fonts\HazelnutMilkTeaRegular.ttf" />
     </ItemGroup>
-    <Target Name="Tailwind"
-            BeforeTargets="Build"
-            Condition="'$(Configuration)' == 'Release'">
-        <Exec WorkingDirectory="client-ui"
-              Command="yarn" />
-        <Exec WorkingDirectory="client-ui"
-              Command="yarn build" />
-    </Target>
 </Project>
