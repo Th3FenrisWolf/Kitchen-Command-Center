@@ -42,7 +42,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
-        <ProjectReference Include="..\KCC.Core\KCC.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Include="wwwroot\favicon.ico" />

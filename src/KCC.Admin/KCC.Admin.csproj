@@ -12,6 +12,6 @@
         <PackageReference Include="Kentico.Xperience.Admin" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\KCC.Core\KCC.Core.csproj" />
+        <PackageReference Include="Kentico.Xperience.Core" />
     </ItemGroup>
 </Project>
