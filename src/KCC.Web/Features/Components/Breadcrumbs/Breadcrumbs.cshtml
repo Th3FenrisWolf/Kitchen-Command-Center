@@ -1,21 +1,21 @@
 @using KCC.Web.Features.Components.Breadcrumbs
 @model BreadcrumbsViewModel
 
-<div data-ktc-search-exclude>
-  @foreach (var link in Model.Links)
+<div class="py-4" data-ktc-search-exclude>
+  @foreach (var link in Model.Links.OfType<BreadcrumbLink>())
   {
     if (link != Model.Links.First())
     {
-      <span class="px-2">/</span>
+      <span class="px-1">/</span>
     }
 
-    @if (link.Url != string.Empty)
+    @if (string.IsNullOrEmpty(link.Url))
     {
-      <a href="@link.Url" class="underline">@link.LinkText</a>
+      <span>@link.LinkText</span>
     }
     else
     {
-      <span class="text-gray-500">@link.LinkText</span>
+      <a href="@link.Url" class="underline">@link.LinkText</a>
     }
   }
 </div>
