@@ -1,4 +1,4 @@
-namespace KCC.Web.Models.Common;
+namespace KCC.Web.Features.Models.Common;
 
 public record SsrResult
 {

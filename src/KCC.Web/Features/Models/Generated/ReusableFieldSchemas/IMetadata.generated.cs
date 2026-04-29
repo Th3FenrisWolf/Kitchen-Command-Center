@@ -15,32 +15,32 @@ using System.Collections.Generic;
 namespace KCC
 {
 	/// <summary>
-	/// Defines a contract for content types with the <see cref="INavigation_Metadata"/> reusable schema assigned.
+	/// Defines a contract for content types with the <see cref="IMetadata"/> reusable schema assigned.
 	/// </summary>
-	public interface INavigation_Metadata
+	public interface IMetadata
 	{
 		/// <summary>
 		/// Code name of the reusable field schema.
 		/// </summary>
-		public const string REUSABLE_FIELD_SCHEMA_NAME = "Navigation_Metadata";
+		public const string REUSABLE_FIELD_SCHEMA_NAME = "Metadata";
 
 
 		/// <summary>
-		/// IncludeInNavigation.
+		/// ExcludeFromSitemap.
 		/// </summary>
-		public bool IncludeInNavigation { get; set; }
-
-
-		/// <summary>
-		/// NavigationLabel.
-		/// </summary>
-		public string NavigationLabel { get; set; }
+		public bool ExcludeFromSitemap { get; set; }
 
 
 		/// <summary>
 		/// ShowBreadcrumbs.
 		/// </summary>
 		public bool ShowBreadcrumbs { get; set; }
+
+
+		/// <summary>
+		/// BreadcrumbLabel.
+		/// </summary>
+		public string BreadcrumbLabel { get; set; }
 
 
 		/// <summary>

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
-using KCC.Web.Models.Common;
+using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Memory;
 

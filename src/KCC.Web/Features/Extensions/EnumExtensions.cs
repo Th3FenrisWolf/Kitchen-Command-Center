@@ -1,6 +1,6 @@
 using KCC.Web.Features.Tailwind;
 
-namespace KCC.Web.Extensions;
+namespace KCC.Web.Features.Extensions;
 
 public static class EnumExtensions
 {

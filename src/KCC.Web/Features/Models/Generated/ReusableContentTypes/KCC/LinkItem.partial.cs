@@ -1,5 +1,5 @@
 using CMS.Websites;
-using KCC.Web.Models.Common;
+using KCC.Web.Features.Models.Common;
 
 namespace KCC;
 

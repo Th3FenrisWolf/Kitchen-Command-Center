@@ -1,5 +1,5 @@
 using CMS.Core;
-using KCC.Web.Models.Common;
+using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;

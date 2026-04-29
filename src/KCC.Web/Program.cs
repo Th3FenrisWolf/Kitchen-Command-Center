@@ -1,77 +1,35 @@
 using KCC;
+using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
-using KCC.Web.Models.Common;
 using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Kentico.Membership;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Polly;
-using Polly.Extensions.Http;
 using RobotsTxt;
-using Vite.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
-builder.Services.AddScoped<VueSsrService>();
-builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
-builder.Services.AddViteServices(options =>
-{
-    options.Server.AutoRun = true;
-    options.Server.PackageManager = "yarn";
-    options.Server.ScriptName = "dev:all";
-});
+builder.Services.AddVueSsr(builder.Configuration);
 
-// Vue SSR service with resilience policies
-var ssrBaseUrl = builder.Configuration["VueSsr:BaseUrl"] ?? "http://localhost:3001";
-
-builder.Services.AddHttpClient("VueSsr", client =>
-{
-    client.BaseAddress = new Uri(ssrBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10);
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-})
-.AddPolicyHandler(GetCircuitBreakerPolicy())
-.AddPolicyHandler(GetRetryPolicy());
-
-// Circuit breaker: break after 5 failures for 30 seconds
-static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
-    HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .CircuitBreakerAsync(
-            handledEventsAllowedBeforeBreaking: 5,
-            durationOfBreak: TimeSpan.FromSeconds(30));
-
-// Retry policy: retry 2 times with exponential backoff + jitter to prevent thundering herd
-static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
-    HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .WaitAndRetryAsync(
-            retryCount: 2,
-            sleepDurationProvider: retryAttempt =>
-                TimeSpan.FromMilliseconds((100 * Math.Pow(2, retryAttempt)) + Random.Shared.Next(-20, 20)));
-
-builder.Services.AddAutoMapper(typeof(Program));
-
-// Enable desired Kentico Xperience features
 builder.Services.AddKentico(features =>
 {
+    features.UseWebPageRouting();
+    features.UseActivityTracking();
     features.UsePageBuilder(
-        new PageBuilderOptions
+        new()
         {
             RegisterDefaultSection = false,
             DefaultSectionIdentifier = "KCC.BaseSection",
-            ContentTypeNames = [HomePage.CONTENT_TYPE_NAME, PageBuilderPage.CONTENT_TYPE_NAME],
+            ContentTypeNames = [
+                HomePage.CONTENT_TYPE_NAME,
+                PageBuilderPage.CONTENT_TYPE_NAME
+            ],
         }
     );
-    features.UseWebPageRouting();
-    features.UseActivityTracking();
-
-    // features.UseEmailStatisticsLogging();
-    // features.UseEmailMarketing();
 });
 
 if (builder.Environment.IsDevelopment())
@@ -80,51 +38,40 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddAuthentication();
-builder
-    .Services.AddIdentity<KCCApplicationUser, NoOpApplicationRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.User.RequireUniqueEmail = true;
-        options.Password.RequiredLength = 8;
-    })
-    .AddUserStore<ApplicationUserStore<KCCApplicationUser>>()
-    .AddRoleStore<NoOpApplicationRoleStore>()
-    .AddUserManager<UserManager<KCCApplicationUser>>()
-    .AddSignInManager<SignInManager<KCCApplicationUser>>()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<KCCApplicationUser, NoOpApplicationRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 8;
+})
+.AddUserStore<ApplicationUserStore<KCCApplicationUser>>()
+.AddRoleStore<NoOpApplicationRoleStore>()
+.AddUserManager<UserManager<KCCApplicationUser>>()
+.AddSignInManager<SignInManager<KCCApplicationUser>>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 
 var app = builder.Build();
+
 app.InitKentico();
 
 app.UseStaticFiles();
-
 app.UseCookiePolicy();
 
 app.UseAuthentication();
 
 app.UseKentico();
-
-// Response-post-processor: syncs raw URLs inside the SSR server-content JSON
-// to match the decorated URLs Kentico emits in preview-mode HTML, eliminating
-// Vue hydration warnings. Runs after UseKentico so PageBuilderMode is available.
-// No-op outside of preview requests.
-app.UseMiddleware<PreviewJsonUrlSyncMiddleware>();
+app.UseVueSsr();
 
 app.UseRobotsTxt();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseMiniProfiler();
-    app.UseWebSockets();
-
-    if (app.Configuration["ASPNETCORE_VITE"]?.ToLower() == "true")
-    {
-        app.UseViteDevelopmentServer(true);
-    }
 }
 else
 {
@@ -134,7 +81,6 @@ else
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.Kentico().MapRoutes();
-
 app.MapControllerRoute(name: "error", pattern: "error/{0}");
 
 app.Run();

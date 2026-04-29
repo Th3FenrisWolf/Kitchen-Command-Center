@@ -2,7 +2,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Html;
 
-namespace KCC.Web.Models.Common;
+namespace KCC.Web.Features.Models.Common;
 
 public class SsrHtmlContent(SsrResult result) : IHtmlContent
 {

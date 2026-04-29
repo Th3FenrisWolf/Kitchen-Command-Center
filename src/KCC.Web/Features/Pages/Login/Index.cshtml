@@ -8,6 +8,6 @@
   return-url="@Model.ReturnUrl"
   default-user-name="@Model.UserName"
   default-password="@Model.Password"
-  :default-remember-me="@Model.RememberMe.ToString().ToLower()"
+  :default-remember-me="@Model.RememberMe"
   antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
 />

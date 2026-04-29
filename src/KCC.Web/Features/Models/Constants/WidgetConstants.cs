@@ -1,4 +1,4 @@
-namespace KCC.Web.Models.Constants;
+namespace KCC.Web.Features.Models.Constants;
 
 public class WidgetConstants
 {

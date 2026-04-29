@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using CMS.Membership;
 using Kentico.Membership;
 
-namespace KCC.Web.Models.Common;
+namespace KCC.Web.Features.Models.Common;
 
 public class KCCApplicationUser : ApplicationUser
 {

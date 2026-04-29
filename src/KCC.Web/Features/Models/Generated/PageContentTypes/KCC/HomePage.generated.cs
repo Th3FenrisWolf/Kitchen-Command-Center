@@ -20,7 +20,7 @@ namespace KCC
 	/// Represents a page of type <see cref="HomePage"/>.
 	/// </summary>
 	[RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
-	public partial class HomePage : IWebPageFieldsSource, INavigation_Metadata
+	public partial class HomePage : IWebPageFieldsSource, IMetadata
 	{
 		/// <summary>
 		/// Code name of the content type.
@@ -36,21 +36,21 @@ namespace KCC
 
 
 		/// <summary>
-		/// IncludeInNavigation.
+		/// ExcludeFromSitemap.
 		/// </summary>
-		public bool IncludeInNavigation { get; set; }
-
-
-		/// <summary>
-		/// NavigationLabel.
-		/// </summary>
-		public string NavigationLabel { get; set; }
+		public bool ExcludeFromSitemap { get; set; }
 
 
 		/// <summary>
 		/// ShowBreadcrumbs.
 		/// </summary>
 		public bool ShowBreadcrumbs { get; set; }
+
+
+		/// <summary>
+		/// BreadcrumbLabel.
+		/// </summary>
+		public string BreadcrumbLabel { get; set; }
 
 
 		/// <summary>

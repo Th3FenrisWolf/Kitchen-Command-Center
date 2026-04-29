@@ -1,6 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using KCC.Web.Models.Common;
+using KCC.Web.Features.Models.Common;
 using Kentico.Content.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
@@ -219,11 +219,11 @@ public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
         // to the browser:
         //   \u0022       - SsrHtmlContent's default encoder form of " around
         //                  URL string values inside the server-content JSON.
-        //   &quot;       - VueProp's HTML-encoded " around URL values inside
-        //                  HTML attributes (VueProp uses UnsafeRelaxedJsonEscaping
+        //   &quot;       - Vue.Prop's HTML-encoded " around URL values inside
+        //                  HTML attributes (Vue.Prop uses UnsafeRelaxedJsonEscaping
         //                  to keep the raw JSON, then HTML-encodes " to &quot;).
         //   \u0026quot;  - Default-encoder form of &quot;, produced when a
-        //                  VueProp-rendered fragment (containing &quot;) is
+        //                  Vue.Prop-rendered fragment (containing &quot;) is
         //                  re-serialized through SsrHtmlContent as part of
         //                  HeaderContent / BodyContent / FooterContent.
         // The relaxed-encoder \" form never appears in either emission path,

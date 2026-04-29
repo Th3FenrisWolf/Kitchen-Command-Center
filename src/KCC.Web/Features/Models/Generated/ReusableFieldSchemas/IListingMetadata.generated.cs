@@ -15,38 +15,44 @@ using System.Collections.Generic;
 namespace KCC
 {
 	/// <summary>
-	/// Defines a contract for content types with the <see cref="IAzureSearchMetadata"/> reusable schema assigned.
+	/// Defines a contract for content types with the <see cref="IListingMetadata"/> reusable schema assigned.
 	/// </summary>
-	public interface IAzureSearchMetadata
+	public interface IListingMetadata
 	{
 		/// <summary>
 		/// Code name of the reusable field schema.
 		/// </summary>
-		public const string REUSABLE_FIELD_SCHEMA_NAME = "AzureSearchMetadata";
+		public const string REUSABLE_FIELD_SCHEMA_NAME = "ListingMetadata";
+
+
+		/// <summary>
+		/// ListingHeading.
+		/// </summary>
+		public string ListingHeading { get; set; }
+
+
+		/// <summary>
+		/// ListingImage.
+		/// </summary>
+		public IEnumerable<ImageItem> ListingImage { get; set; }
+
+
+		/// <summary>
+		/// ListingSubHeading.
+		/// </summary>
+		public string ListingSubHeading { get; set; }
+
+
+		/// <summary>
+		/// ListingBody.
+		/// </summary>
+		public string ListingBody { get; set; }
 
 
 		/// <summary>
 		/// ExcludeFromSearch.
 		/// </summary>
 		public bool ExcludeFromSearch { get; set; }
-
-
-		/// <summary>
-		/// SearchTitle.
-		/// </summary>
-		public string SearchTitle { get; set; }
-
-
-		/// <summary>
-		/// SearchDescription.
-		/// </summary>
-		public string SearchDescription { get; set; }
-
-
-		/// <summary>
-		/// SearchThumbnailImage.
-		/// </summary>
-		public IEnumerable<ImageItem> SearchThumbnailImage { get; set; }
 
 
 		/// <summary>

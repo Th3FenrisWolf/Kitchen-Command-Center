@@ -20,7 +20,7 @@ namespace KCC
 	/// Represents a page of type <see cref="PageBuilderPage"/>.
 	/// </summary>
 	[RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
-	public partial class PageBuilderPage : IWebPageFieldsSource, INavigation_Metadata, IAzureSearchMetadata
+	public partial class PageBuilderPage : IWebPageFieldsSource, IMetadata, IListingMetadata
 	{
 		/// <summary>
 		/// Code name of the content type.
@@ -36,21 +36,21 @@ namespace KCC
 
 
 		/// <summary>
-		/// IncludeInNavigation.
+		/// ExcludeFromSitemap.
 		/// </summary>
-		public bool IncludeInNavigation { get; set; }
-
-
-		/// <summary>
-		/// NavigationLabel.
-		/// </summary>
-		public string NavigationLabel { get; set; }
+		public bool ExcludeFromSitemap { get; set; }
 
 
 		/// <summary>
 		/// ShowBreadcrumbs.
 		/// </summary>
 		public bool ShowBreadcrumbs { get; set; }
+
+
+		/// <summary>
+		/// BreadcrumbLabel.
+		/// </summary>
+		public string BreadcrumbLabel { get; set; }
 
 
 		/// <summary>
@@ -108,27 +108,33 @@ namespace KCC
 
 
 		/// <summary>
+		/// ListingHeading.
+		/// </summary>
+		public string ListingHeading { get; set; }
+
+
+		/// <summary>
+		/// ListingImage.
+		/// </summary>
+		public IEnumerable<ImageItem> ListingImage { get; set; }
+
+
+		/// <summary>
+		/// ListingSubHeading.
+		/// </summary>
+		public string ListingSubHeading { get; set; }
+
+
+		/// <summary>
+		/// ListingBody.
+		/// </summary>
+		public string ListingBody { get; set; }
+
+
+		/// <summary>
 		/// ExcludeFromSearch.
 		/// </summary>
 		public bool ExcludeFromSearch { get; set; }
-
-
-		/// <summary>
-		/// SearchTitle.
-		/// </summary>
-		public string SearchTitle { get; set; }
-
-
-		/// <summary>
-		/// SearchDescription.
-		/// </summary>
-		public string SearchDescription { get; set; }
-
-
-		/// <summary>
-		/// SearchThumbnailImage.
-		/// </summary>
-		public IEnumerable<ImageItem> SearchThumbnailImage { get; set; }
 
 
 		/// <summary>
