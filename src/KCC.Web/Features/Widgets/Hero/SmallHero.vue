@@ -5,14 +5,7 @@ const { dark = false } = defineProps<{ dark?: boolean }>()
 </script>
 
 <template>
-  <section
-    :class="
-      cx(
-        'no-margin full-width content-grid pt-12 pb-8',
-        dark ? 'bg-base text-bone' : 'bg-bone text-onyx',
-      )
-    "
-  >
+  <section :class="cx('no-margin full-width content-grid pt-12 pb-8', dark ? 'bg-base text-bone' : 'bg-bone text-onyx')">
     <div class="content">
       <p class="eyebrow">
         <slot name="eyebrow"></slot>

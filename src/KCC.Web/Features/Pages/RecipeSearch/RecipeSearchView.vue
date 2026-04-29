@@ -23,9 +23,7 @@ onBeforeMount(async () => {
   <SmallHero dark>
     <template #title>Search Recipes</template>
     <template #actionButton>
-      <a href="/recipes/create" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
-        Create Recipe
-      </a>
+      <a href="/recipes/create" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx"> Create Recipe </a>
     </template>
   </SmallHero>
 
