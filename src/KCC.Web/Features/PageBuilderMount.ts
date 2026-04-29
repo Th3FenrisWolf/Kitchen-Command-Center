@@ -26,14 +26,6 @@ import { registerGlobalComponents, registeredTagNames } from '~/GlobalComponents
 
 const MOUNT_SELECTOR = '[data-vue-mount]'
 
-// Vue component tag names that may appear as raw HTML tags in Kentico's
-// widget injections. When a marker's subtree contains any of these, we know
-// it still needs Vue rendering (either a fresh Kentico injection or Kentico
-// replaced a previously-rendered widget with source cshtml output). If none
-// are present, the marker has already been rendered by the main Vue app
-// (via SSR + hydration) and we should leave it alone.
-// Derived from the global component registry so new components are picked
-// up automatically.
 const RAW_VUE_TAGS = registeredTagNames
 
 // CSS selector union for needsRendering's O(1) `querySelector` check.
@@ -45,21 +37,12 @@ const RAW_VUE_TAG_SELECTOR = RAW_VUE_TAGS.size > 0 ? [...RAW_VUE_TAGS].join(',')
 const mountedApps = new WeakMap<Element, App>()
 
 function mountMarker(marker: Element): void {
-  // If we already own this element, we're being asked to re-mount because
-  // Kentico replaced its content with raw Vue tags. Unmount the old app first
-  // so its teardown runs before we compile the new template.
   const existing = mountedApps.get(marker)
   if (existing) {
     existing.unmount()
     mountedApps.delete(marker)
   }
 
-  // Use outerHTML so the marker tag itself is part of the template. This lets
-  // Vue resolve component tag markers (like <Card>) to their component class.
-  // Invariant: the marker lives inside Kentico's ktc-widget-body-wrapper,
-  // which does not inject Kentico chrome (drag handles, edit UI) into the
-  // marker's descendants. If that invariant ever breaks, Vue will try to
-  // compile unknown Kentico elements and warn.
   const template = marker.outerHTML
   if (!template.trim()) return
 
@@ -103,59 +86,51 @@ function unmountMarker(marker: Element): void {
 function findMarkers(root: Element): Element[] {
   const found: Element[] = []
   if (root.matches(MOUNT_SELECTOR)) found.push(root)
+
   found.push(...root.querySelectorAll(MOUNT_SELECTOR))
+
   return found
 }
 
 function needsRendering(marker: Element): boolean {
   // Marker is itself a Vue tag (e.g. <Card data-vue-mount>).
   if (RAW_VUE_TAGS.has(marker.tagName.toLowerCase())) return true
+
   // Marker contains raw Vue tags anywhere in its subtree (e.g. Kentico reset
   // a CardGridWidget's innerHTML to source cshtml).
   return marker.querySelector(RAW_VUE_TAG_SELECTOR) !== null
 }
 
-// Evaluate a marker and take the appropriate action. Idempotent:
-//   - Needs rendering + not mounted: mount.
-//   - Needs rendering + already mounted: unmount + re-mount (Kentico reset).
-//   - No raw tags + mounted by us: leave alone (it's our rendered output).
-//   - No raw tags + not mounted: SSR-owned; leave alone.
 function evaluateMarker(marker: Element): void {
-  const isOurs = mountedApps.has(marker)
   const hasRawTags = needsRendering(marker)
 
-  if (hasRawTags) {
-    mountMarker(marker)
-  } else if (!isOurs) {
-    // SSR-rendered marker, not ours. Nothing to do.
-  }
+  if (hasRawTags) mountMarker(marker)
 }
 
 function processAddedNode(node: Node): void {
   if (node.nodeType !== Node.ELEMENT_NODE) return
+
   for (const marker of findMarkers(node as Element)) {
     evaluateMarker(marker)
   }
 }
 
-// Called for every element in MutationRecord.removedNodes, including the
-// subtree-wide removal pattern (parent.innerHTML = '...'). findMarkers walks
-// the removed node's subtree, so a Vue app whose root element was detached
-// is always unmounted — no WeakMap-GC leak path.
 function processRemovedNode(node: Node): void {
   if (node.nodeType !== Node.ELEMENT_NODE) return
+
   for (const marker of findMarkers(node as Element)) {
     unmountMarker(marker)
   }
 }
 
+// Kentico sometimes replaces a widget's content via `.innerHTML = ...` on a
+// parent element. That reports as a childList mutation on the parent and no
+// top-level element in addedNodes matches our marker selector. Re-scan the
+// target itself so already-claimed markers get re-evaluated when their
+// contents change.
 function processMutationTarget(target: Node): void {
-  // Kentico sometimes replaces a widget's content via `.innerHTML = ...` on a
-  // parent element. That reports as a childList mutation on the parent and no
-  // top-level element in addedNodes matches our marker selector. Re-scan the
-  // target itself so already-claimed markers get re-evaluated when their
-  // contents change.
   if (target.nodeType !== Node.ELEMENT_NODE) return
+
   for (const marker of findMarkers(target as Element)) {
     evaluateMarker(marker)
   }
@@ -169,35 +144,28 @@ function observeArea(area: Element): void {
     for (const mutation of mutations) {
       mutation.addedNodes.forEach(processAddedNode)
       mutation.removedNodes.forEach(processRemovedNode)
+
       if (mutation.type === 'childList' && mutation.target) {
         processMutationTarget(mutation.target)
       }
     }
   })
+
   observer.observe(area, { childList: true, subtree: true })
 }
 
 function initialize(): void {
   const areas = document.querySelectorAll<HTMLElement>('[data-kentico-editable-area-id]')
+
   if (areas.length > 0) {
-    // Edit mode: attach to Kentico's declared editable zones so the observer
-    // scope matches where Kentico actually injects widgets.
     areas.forEach(observeArea)
     return
   }
 
-  // ReadOnly / preview mode: Kentico doesn't mark editable areas, but the
-  // page may still contain raw Vue tags from cshtml that didn't reach SSR
-  // (e.g., inline widget preview). Observe the whole body so any such tags
-  // get compiled.
+  // ReadOnly / preview mode: fallback to observe entire body
   observeArea(document.body)
 }
 
-// This script is loaded as type="module" (see Layout.cshtml), which defers
-// execution until after the document is parsed, so readyState is at least
-// 'interactive' when we reach this line. The 'loading' branch is defensive
-// only — kept in case the script ever gets loaded synchronously (<script>
-// without type="module") by future changes.
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initialize)
 } else {

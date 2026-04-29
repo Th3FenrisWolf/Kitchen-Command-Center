@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="BizStream Standard Rules" Description="These are the rules that define the BizStream reccomended standard coding styles." ToolsVersion="15.0">
+<RuleSet Name="Kitchen Command Center Standard Rules" Description="These are the rules that define the Kitchen Command Center reccomended standard coding styles." ToolsVersion="15.0">
   <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
-    <Name Resource="BizStreamStandardRules_Name" />
+    <Name Resource="KCCStandardRules_Name" />
     <Description Resource="MinimumRecommendedRules_Description" />
   </Localization>
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
@@ -81,6 +81,7 @@
     <Rule Id="SA1133" Action="None" />
     <Rule Id="SA1200" Action="None" />
     <Rule Id="SA1204" Action="None" />
+    <Rule Id="SA1313" Action="None" />
     <Rule Id="SA1402" Action="None" />
     <Rule Id="SA1413" Action="None" />
     <Rule Id="SA1502" Action="None" />

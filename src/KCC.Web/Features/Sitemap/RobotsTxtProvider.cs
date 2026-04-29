@@ -17,21 +17,18 @@ public class RobotsTxtProvider(
 
     private string GetContent()
     {
+        var shouldDenyAll = configuration.GetValue("RobotsTxtDenyAll", true);
+
         var request = httpContextAccessor.HttpContext.Request;
         var rootDomain = $"{request.Scheme}://{request.Host.Value}";
 
         var builder = new RobotsTxtOptionsBuilder();
         builder = builder.AddSitemap($"{rootDomain}/sitemap.xml");
 
-        var shouldDenyAll = configuration.GetValue<bool>("RobotsTxtDenyAll");
-
-        return shouldDenyAll
-            ? builder.DenyAll().Build().ToString()
-            : builder
-                .AddSection(section =>
-                    section.AddUserAgent("*").Disallow("/Admin").Disallow("/error")
-                )
-                .Build()
-                .ToString();
+        return (shouldDenyAll ? builder.DenyAll() : builder.AddSection(section => section
+            .AddUserAgent("*")
+            .Disallow("/admin")
+            .Disallow("/error")
+        )).Build().ToString();
     }
 }
