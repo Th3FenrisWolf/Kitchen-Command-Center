@@ -1,21 +1,21 @@
 import type { App, Component } from 'vue'
 
-// Auto-discover global components using Vite's glob import
-// Only files matching *.Component.vue are registered globally
+// Auto-discover global components using Vite's glob import.
+// Only files matching *.Component.vue are registered globally.
 const componentModules = import.meta.glob<{ default: Component }>('./**/*.Component.vue', {
   eager: true,
 })
 
-// Extract component name from file path
-// e.g., './Components/Header/AppHeader.component.vue' -> 'AppHeader'
+// Extract component name from file path.
+// e.g., './Components/Header/AppHeader.Component.vue' -> 'AppHeader'
 function getComponentName(path: string): string | null {
   const match = path.match(/\/([^/]+)\.Component\.vue$/)
   return match?.[1] ?? null
 }
 
-// Register all global components
+// Register all global components.
 // Components are registered with both PascalCase and lowercase names
-// because HTML parsers lowercase custom element tags, but Vue templates use PascalCase
+// because HTML parsers lowercase custom element tags, but Vue templates use PascalCase.
 export const registerGlobalComponents = (app: App) =>
   Object.entries(componentModules).forEach(([path, module]) => {
     const name = getComponentName(path)
@@ -24,3 +24,16 @@ export const registerGlobalComponents = (app: App) =>
     app.component(name, module.default)
     app.component(name.toLowerCase(), module.default)
   })
+
+// Lowercase tag names for every registered global component.
+// Useful for detecting raw Vue component tags in HTML: the browser lowercases
+// custom element tag names (so <Card> in source HTML becomes `<card>` with
+// `tagName === 'CARD'`, and `.toLowerCase()` gives 'card'). XHTML/SVG
+// documents do not apply this lowercasing, but we render HTML.
+// Computed once at module load from the glob. Set for O(1) membership checks.
+export const registeredTagNames: ReadonlySet<string> = new Set(
+  Object.keys(componentModules)
+    .map(getComponentName)
+    .filter((name): name is string => name !== null)
+    .map((name) => name.toLowerCase()),
+)
