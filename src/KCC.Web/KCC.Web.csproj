@@ -44,6 +44,9 @@
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <InternalsVisibleTo Include="KCC.Web.Tests" />
+    </ItemGroup>
+    <ItemGroup>
         <None Include="wwwroot\favicon.ico" />
         <None Include="wwwroot\fonts\AimaDisplayRegular.ttf" />
         <None Include="wwwroot\fonts\AmericanPurposeCasualItalic.ttf" />
