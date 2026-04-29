@@ -41,11 +41,7 @@ const showDrawer = ref(false)
         :key="subLink.displayText"
         class="basis-full rounded-2xl bg-bone text-onyx transition-all duration-300 ease-in-out will-change-transform hover:-translate-y-1 hover:shadow-bone-small"
       >
-        <a
-          class="block size-full p-4 text-center"
-          :href="subLink.url.stripTilde()"
-          :target="subLink.target"
-        >
+        <a class="block size-full p-4 text-center" :href="subLink.url.stripTilde()" :target="subLink.target">
           {{ subLink.displayText }}
         </a>
       </li>
