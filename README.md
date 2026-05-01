@@ -1,5 +1,16 @@
 # KitchenCommandCenter
 
+A Kentico Xperience application with Vue 3 server-side rendering (SSR).
+
+## Table of Contents
+
+- [Local Development](#local-development)
+- [Architecture](#architecture)
+- [Docker Deployment](#docker-deployment)
+- [Common Commands](#common-commands)
+
+---
+
 ## Local Development
 
 ### Development Environment Setup
@@ -26,7 +37,6 @@ cd src/KCC.Web
 > Note: Regardless of what `AdminPassword` is, it will be overwritten once Kentico CI is restored to be the default admin credentials found in 1pass.
 
 3. **Configure Secrets**:
-
    - Copy connection string and hash salt from `appsettings.json` to `secrets.json`
    - Run: `type secrets.json | dotnet user-secrets set`
    - Remove sensitive values from `appsettings.json`
@@ -37,25 +47,26 @@ cd src/KCC.Web
    dotnet run --kxp-ci-restore
    ```
 
-5. **Build Client Assets**:
+5. **Install Frontend Dependencies** (from `src/KCC.Web`):
 
    ```bash
-   cd client-ui
-   yarn && yarn build
-   cd ..
+   yarn install
    ```
 
 6. **Run the Application**:
 
-   ```bash
-   # With hot reload
-   dotnet watch
+   The application requires three services running concurrently:
+   - ASP.NET Core web server
+   - Vite dev server (for HMR)
+   - Vue SSR service
 
-   # Standard run
-   dotnet run
+   ```bash
+   dotnet watch
    ```
 
-The root URL will be the live site's home page. To access the administration interface, navigate to the `/admin` path. Admin credentials can be found in 1pass to create your own account
+   This automatically runs `yarn dev:all` which starts Vite, SSR, and CSS watchers alongside the .NET app.
+
+The root URL will be the live site's home page. To access the administration interface, navigate to the `/admin` path. Admin credentials can be found in 1pass to create your own account.
 
 ---
 
@@ -112,6 +123,139 @@ Use consistent field names across content types and widgets:
 - **Never Render Empty**: Always show configuration prompts when setup is needed
 - **Use Constants**: Leverage `WidgetConstants.ConfigHeading` and `WidgetConstants.ConfigSubHeading`
 - **Text Editing**: Enable inline editing for all text content where possible
+
+---
+
+## Docker Deployment
+
+The application uses Docker Compose to orchestrate two services:
+
+| Service | Description              | Port            |
+| ------- | ------------------------ | --------------- |
+| `web`   | ASP.NET Core application | 8080 (exposed)  |
+| `ssr`   | Vue SSR Node.js service  | 3001 (internal) |
+
+### Prerequisites
+
+- Docker Desktop or Docker Engine with Compose v2
+- Access to your SQL Server database from the Docker network
+
+### Quick Start
+
+1. **Create environment file**:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configure `.env`** with your database connection:
+
+   ```env
+   CMS_CONNECTION_STRING=Server=host.docker.internal;Database=KitchenCommandCenter;User Id=sa;Password=YourPassword;TrustServerCertificate=True;
+   CMS_HASH_STRING_SALT=your-hash-salt-from-appsettings
+   ```
+
+   > Note: Use `host.docker.internal` to connect to a database running on your host machine.
+
+3. **Build and run**:
+
+   ```bash
+   # Development
+   docker compose up --build
+
+   # Production
+   .\deploy.ps1 up -d --build
+   ```
+
+4. **Access the application** at http://localhost:8080
+
+### Production Deployment
+
+Use the production compose file for hardened settings:
+
+```bash
+# Using the deploy script (recommended)
+.\deploy.ps1 up -d --build
+
+# Or manually
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+Production settings include:
+
+- Automatic restart on failure
+- Memory limits (1GB for web, 512MB for SSR)
+- Log rotation
+- Read-only filesystem
+- Security hardening
+
+### Common Docker Commands
+
+```bash
+# View logs
+.\deploy.ps1 logs -f
+
+# View logs for specific service
+.\deploy.ps1 logs -f web
+
+# Stop all services
+.\deploy.ps1 down
+
+# Restart a service
+.\deploy.ps1 restart web
+
+# Rebuild and restart
+.\deploy.ps1 up -d --build
+
+# Check service health
+.\deploy.ps1 ps
+```
+
+### Architecture Diagram
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    Docker Network                         │
+│                                                          │
+│   ┌─────────────────┐        ┌─────────────────────────┐│
+│   │                 │  HTTP  │                         ││
+│   │  web:8080       │───────▶│  ssr:3001 (internal)    ││
+│   │  (ASP.NET Core) │        │  (Node.js/Express)      ││
+│   │                 │        │                         ││
+│   └────────┬────────┘        └─────────────────────────┘│
+│            │                                             │
+└────────────┼─────────────────────────────────────────────┘
+             │
+             ▼
+        localhost:8080
+```
+
+### Troubleshooting
+
+**SSR service unhealthy**:
+
+```bash
+# Check SSR logs
+.\deploy.ps1 logs ssr
+
+# Restart SSR service
+.\deploy.ps1 restart ssr
+```
+
+**Database connection issues**:
+
+- Ensure SQL Server allows remote connections
+- For local SQL Server, use `host.docker.internal` as the server name
+- Check firewall rules allow connections on port 1433
+
+**Build failures**:
+
+```bash
+# Rebuild without cache
+docker compose build --no-cache
+```
+
+---
 
 ## Common Commands
 
@@ -185,42 +329,39 @@ dotnet run --no-build -- --kxp-cd-restore --repository-path ".\App_Data\CDReposi
 
 ---
 
-# Kitchen Command Center
+## Frontend Development
 
-This template should help get you started developing with Vue 3 in Vite.
+### IDE Setup
 
-## Recommended IDE Setup
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur if installed).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Frontend Commands
 
-## Type Support for `.vue` Imports in TS
+Run from `src/KCC.Web`:
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
+# Install dependencies
 yarn
-```
 
-### Compile and Hot-Reload for Development
+# Development (Vite + SSR + CSS watching)
+yarn dev:all
 
-```sh
-yarn dev
-```
+# Type checking
+yarn type-check
 
-### Type-Check, Compile and Minify for Production
-
-```sh
-yarn build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
+# Linting
 yarn lint
+
+# Build for production (client + SSR bundles)
+yarn build:all
 ```
+
+### Vue SSR
+
+The application uses Vue 3 server-side rendering. The SSR service:
+
+- Runs on port 3001 in development
+- Pre-renders Vue components on the server for better SEO and initial load
+- Falls back gracefully to client-side rendering if SSR is unavailable
+
+See [Vite Configuration Reference](https://vite.dev/config/) for build customization.

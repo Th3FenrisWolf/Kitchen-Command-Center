@@ -1,0 +1,46 @@
+# =============================================================================
+# Vue SSR Service Container
+# =============================================================================
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock* ./
+
+# Install all dependencies (including dev for build)
+RUN yarn install --frozen-lockfile
+
+# Copy source files needed for SSR build
+COPY Features/ ./Features/
+COPY vite.config.ts tsconfig*.json ./
+
+# Build the SSR bundle
+RUN yarn build:ssr
+
+# =============================================================================
+# Production runtime
+# =============================================================================
+FROM node:22-alpine AS runtime
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy package files and install production dependencies only
+COPY package.json yarn.lock* ./
+RUN yarn install --frozen-lockfile --production && yarn cache clean
+
+# Copy the SSR server and built bundle
+COPY Features/Ssr/Server.js ./Features/Ssr/
+COPY --from=builder /app/wwwroot/ssr ./wwwroot/ssr/
+
+# Create non-root user
+RUN adduser -D appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 3001
+
+# Health check
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -q --spider http://localhost:3001/health || exit 1
+
+CMD ["node", "Features/Ssr/Server.js"]

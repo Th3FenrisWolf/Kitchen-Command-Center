@@ -42,7 +42,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
-        <ProjectReference Include="..\KCC.Core\KCC.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Include="wwwroot\favicon.ico" />
@@ -54,12 +53,4 @@
         <None Include="wwwroot\fonts\HazelnutMilkTeaItalic.ttf" />
         <None Include="wwwroot\fonts\HazelnutMilkTeaRegular.ttf" />
     </ItemGroup>
-    <Target Name="Tailwind"
-            BeforeTargets="Build"
-            Condition="'$(Configuration)' == 'Release'">
-        <Exec WorkingDirectory="client-ui"
-              Command="yarn" />
-        <Exec WorkingDirectory="client-ui"
-              Command="yarn build" />
-    </Target>
 </Project>

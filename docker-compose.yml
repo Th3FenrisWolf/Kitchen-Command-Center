@@ -1,0 +1,44 @@
+services:
+  # ASP.NET Core web application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - VueSsr__BaseUrl=http://ssr:3001
+      - VueSsr__Enabled=true
+      # Override these in production with real values
+      - ConnectionStrings__CMSConnectionString=${CMS_CONNECTION_STRING}
+      - CMSHashStringSalt=${CMS_HASH_STRING_SALT}
+    depends_on:
+      ssr:
+        condition: service_healthy
+    # Note: Add health checks to Program.cs for a proper /health endpoint
+    # For now, just check if the server responds
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/", "-o", "/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Vue SSR rendering service
+  ssr:
+    build:
+      context: ./src/KCC.Web
+      dockerfile: Dockerfile.ssr
+    environment:
+      - NODE_ENV=production
+      - SSR_PORT=3001
+    expose:
+      - "3001"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

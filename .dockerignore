@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
+**/publish/
+
+# Node
+**/node_modules/
+
+# Generated assets (will be built in Docker)
+**/wwwroot/assets/
+**/wwwroot/ssr/
+**/wwwroot/.vite/
+
+# Test projects
+**/KCC.UnitTests/
+
+# Documentation
+*.md
+!README.md
+
+# Docker files (prevent recursive copying)
+**/Dockerfile*
+docker-compose*.yml
+
+# Logs
+*.log
+**/logs/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
