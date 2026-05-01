@@ -1,0 +1,155 @@
+.kcc-home__featured-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 534px) {
+  .kcc-home__featured-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kcc-home__title {
+  font-family: "GT Walsheim", sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 56px;
+  margin: 0 0 24px 0;
+  padding: 0;
+  width: min-content;
+  background: var(
+    --gradient-dark-xperience-violet,
+    linear-gradient(135deg, #af00fa, #7f09b7)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0);
+}
+
+.kcc-home-featured-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: var(
+    --gradient-dark-xperience-violet,
+    linear-gradient(135deg, #af00fa, #7f09b7)
+  );
+  color: #f5f3f2;
+  text-decoration: none;
+  min-height: 120px;
+  transition: all 120ms ease;
+}
+.kcc-home-featured-tile:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+.kcc-home-featured-tile__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.kcc-home-featured-tile__icon {
+  display: inline-flex;
+  font-size: 28px;
+  line-height: 1;
+}
+.kcc-home-featured-tile__icon svg {
+  width: 1em;
+  height: 1em;
+}
+.kcc-home-featured-tile__name {
+  font-size: 18px;
+  font-weight: 700;
+}
+.kcc-home-featured-tile__description {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 16px;
+}
+.kcc-home-featured-tile__stats {
+  display: flex;
+  gap: 24px;
+  margin-top: auto;
+}
+.kcc-home-featured-tile__stat-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+.kcc-home-featured-tile__stat-label {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.kcc-home-category {
+  margin-bottom: 24px;
+}
+.kcc-home-category__heading {
+  font-family: "GT Walsheim", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--color-text-default-on-light, #151515);
+  margin: 0 0 12px 0;
+}
+.kcc-home-category__tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .kcc-home-category__tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .kcc-home-tile {
+    width: auto !important;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 534px) {
+  .kcc-home-category__tiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.kcc-home-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100px;
+  height: 100px;
+  padding: 8px;
+  box-sizing: border-box;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--color-tab-text, #393939);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 120ms ease;
+}
+.kcc-home-tile__icon {
+  display: inline-flex;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--color-product, #7f09b7);
+}
+.kcc-home-tile__icon svg {
+  width: 1em;
+  height: 1em;
+}
+.kcc-home-tile:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
