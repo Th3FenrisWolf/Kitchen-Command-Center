@@ -10,7 +10,7 @@ import type { Ingredient, Instruction, Recipe } from '~/types/recipe'
 
 //const userStore = useUserStore()
 //const { user } = storeToRefs(userStore)
-const user = null;;
+const user = null
 
 const title = ref('')
 const description = ref('')
@@ -95,7 +95,7 @@ const handleSubmit = () => {
             <button
               aria-label="Eyeball Ingredient"
               type="button"
-              class="bg-base disabled:bg-overlay-100 ease-normal h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl p-2 text-white"
+              class="ease-normal h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-base p-2 text-white disabled:bg-overlay-100"
               @click="ingredient.isEyeballed = !ingredient.isEyeballed"
             >
               <FontAwesomeIcon :icon="ingredient.isEyeballed ? faEye : faEyeSlash" />
@@ -124,7 +124,7 @@ const handleSubmit = () => {
               aria-label="Remove ingredient"
               type="button"
               :disabled="ingredientList.length <= 1"
-              class="bg-base disabled:bg-overlay-100 h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
+              class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-base p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-overlay-100"
               @click="ingredientList.splice(index, 1)"
             >
               <FontAwesomeIcon :icon="faTrash" />
@@ -134,7 +134,7 @@ const handleSubmit = () => {
 
         <button
           type="button"
-          class="bg-base text-bone mt-4 cursor-pointer rounded-3xl px-4 py-2 text-xl"
+          class="mt-4 cursor-pointer rounded-3xl bg-base px-4 py-2 text-xl text-bone"
           @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })"
         >
           Add Ingredient
@@ -170,7 +170,7 @@ const handleSubmit = () => {
               aria-label="Remove step"
               type="button"
               :disabled="instructionList.length <= 1"
-              class="bg-base disabled:bg-overlay-100 h-12 max-w-12 basis-1/12 cursor-pointer self-center rounded-2xl p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed"
+              class="h-12 max-w-12 basis-1/12 cursor-pointer self-center rounded-2xl bg-base p-2 text-white transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-overlay-100"
               @click="instructionList.splice(index, 1)"
             >
               <FontAwesomeIcon :icon="faTrash" />
@@ -180,16 +180,14 @@ const handleSubmit = () => {
 
         <button
           type="button"
-          class="bg-base text-bone mt-4 cursor-pointer rounded-3xl px-4 py-2 text-xl"
+          class="mt-4 cursor-pointer rounded-3xl bg-base px-4 py-2 text-xl text-bone"
           @click="instructionList.push({ step: NaN, text: '' })"
         >
           Add Instruction
         </button>
       </fieldset>
 
-      <button type="submit" class="bg-base text-bone cursor-pointer rounded-3xl px-4 py-2 text-xl">
-        Create Recipe
-      </button>
+      <button type="submit" class="cursor-pointer rounded-3xl bg-base px-4 py-2 text-xl text-bone">Create Recipe</button>
     </form>
   </section>
 </template>

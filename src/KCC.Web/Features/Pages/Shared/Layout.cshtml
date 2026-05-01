@@ -1,4 +1,5 @@
 @using KCC.Web.Features.Ssr
+@using Kentico.Content.Web.Mvc
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Hosting
 
@@ -26,6 +27,12 @@
   }
 
   <page-builder-styles />
+
+  @if (Context.Kentico().PageBuilder().GetMode() is PageBuilderMode.ReadOnly or PageBuilderMode.Edit)
+  {
+    @* Preload so the browser fetches PageBuilderMount in parallel with HTML parse. *@
+    <link rel="modulepreload" vite-href="/Features/PageBuilderMount.ts" />
+  }
 </head>
 
 <body>
@@ -37,6 +44,15 @@
   )
 
   <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>
+
+  @* Run PageBuilderMount BEFORE <page-builder-scripts /> so our MutationObserver
+     is established before Kentico's scripts mutate the DOM. Minimizes the gap
+     between Kentico replacing a widget with raw cshtml and our Vue mount. *@
+  @if (Context.Kentico().PageBuilder().GetMode() is PageBuilderMode.ReadOnly or PageBuilderMode.Edit)
+  {
+    <script type="module" vite-src="/Features/PageBuilderMount.ts" asp-append-version="true"></script>
+  }
+
   <page-builder-scripts />
 </body>
 

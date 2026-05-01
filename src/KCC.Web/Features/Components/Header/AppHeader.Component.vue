@@ -31,6 +31,11 @@ interface NavItem {
 
 export interface AppHeaderProps {
   /**
+   * URL the logo links to. Pre-resolved via Razor's Url.Content so the server
+   * HTML and hydration JSON both carry the same decorated value in preview.
+   */
+  homeUrl: string
+  /**
    * The logo to display
    */
   logo: ImageItem
@@ -48,7 +53,7 @@ export interface AppHeaderProps {
 <script setup lang="ts">
 import MenuItem from '~/Components/Header/MenuItem.vue'
 
-const { logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
+const { homeUrl, logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
 </script>
 
 <template>
@@ -56,7 +61,7 @@ const { logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
     <nav class="breakout relative flex size-full items-center gap-8 rounded-3xl bg-base px-8">
       <a
         class="btn-no-style z-20 h-full shrink-0 py-4 text-bone focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
-        href="/"
+        :href="homeUrl"
       >
         <img
           loading="eager"

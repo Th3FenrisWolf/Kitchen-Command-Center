@@ -6,6 +6,7 @@
     "verbatimModuleSyntax": true,
     "composite": true,
     "baseUrl": ".",
+    "tsBuildInfoFile": "node_modules/.cache/tsc/main.tsbuildinfo",
     "types": ["node", "vite/client"],
     "paths": {
       "~/*": ["Features/*"]

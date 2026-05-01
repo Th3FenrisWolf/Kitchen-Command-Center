@@ -9,10 +9,7 @@ String.prototype.stripTilde = function () {
   return this.replace(/^~/, '')
 }
 
-String.prototype.equals = function (
-  str?: string,
-  comparison: StringComparison = StringComparison.Ordinal,
-): boolean {
+String.prototype.equals = function (str?: string, comparison: StringComparison = StringComparison.Ordinal): boolean {
   if (typeof this !== 'string' || typeof str !== 'string') {
     return false
   }

@@ -5,6 +5,8 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node"]
+    "types": ["node"],
+    "outDir": "node_modules/.cache/tsc/node",
+    "tsBuildInfoFile": "node_modules/.cache/tsc/node.tsbuildinfo"
   }
 }

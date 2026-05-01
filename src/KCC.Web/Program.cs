@@ -108,6 +108,12 @@ app.UseAuthentication();
 
 app.UseKentico();
 
+// Response-post-processor: syncs raw URLs inside the SSR server-content JSON
+// to match the decorated URLs Kentico emits in preview-mode HTML, eliminating
+// Vue hydration warnings. Runs after UseKentico so PageBuilderMode is available.
+// No-op outside of preview requests.
+app.UseMiddleware<PreviewJsonUrlSyncMiddleware>();
+
 app.UseRobotsTxt();
 
 if (app.Environment.IsDevelopment())

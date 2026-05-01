@@ -48,7 +48,8 @@ export default defineConfig(({ mode }) => {
           sourcemap: 'hidden', // Generate source maps for debugging but don't expose in production
           rollupOptions: {
             input: {
-              main: resolve(__dirname, 'Features/main.ts'),
+              main: resolve(__dirname, 'Features/Main.ts'),
+              pageBuilderMount: resolve(__dirname, 'Features/PageBuilderMount.ts'),
             },
           },
         },
