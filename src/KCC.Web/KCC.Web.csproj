@@ -18,6 +18,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Features\AdminHomePage\admin-home-redirect.js" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="kentico.xperience.admin" />
         <PackageReference Include="kentico.xperience.azurestorage" />
         <PackageReference Include="kentico.xperience.imageprocessing" />

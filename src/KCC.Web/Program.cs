@@ -1,4 +1,5 @@
 using KCC;
+using KCC.Web.Features.AdminHomePage;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
@@ -63,6 +64,8 @@ app.UseStaticFiles();
 app.UseCookiePolicy();
 
 app.UseAuthentication();
+
+app.UseAdminHomePageRedirect();
 
 app.UseKentico();
 app.UseVueSsr();
