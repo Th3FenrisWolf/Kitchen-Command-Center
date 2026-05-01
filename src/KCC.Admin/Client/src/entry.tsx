@@ -1,2 +1,1 @@
-// Empty for now — components added in later tasks.
-export {};
+export * from "./home/HomeTemplate";
