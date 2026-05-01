@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <AdminOrgName>kcc</AdminOrgName>
     </PropertyGroup>
     <ItemGroup>
         <AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute" />
@@ -13,5 +13,10 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Kentico.Xperience.Core" />
+    </ItemGroup>
+    <ItemGroup>
+        <AdminClientPath Include="Client\dist\**">
+            <ProjectName>admin</ProjectName>
+        </AdminClientPath>
     </ItemGroup>
 </Project>

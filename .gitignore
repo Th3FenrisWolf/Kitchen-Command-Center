@@ -498,6 +498,10 @@ $RECYCLE.BIN/
 **/vite.config.d.ts
 **/vite.config.js
 
+# Kentico admin client module build artifacts
+src/KCC.Admin/Client/dist/
+src/KCC.Admin/Client/node_modules/
+
 # Claude Code
 .claude/
 .mcp.json
