@@ -1,8 +1,7 @@
 using KCC.Web.Features.Ssr;
-using KCC.Web.Models.Common;
+using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using Xunit;
@@ -162,7 +161,7 @@ public class InvokeAsyncTests
         }
 
         public int StatusCode { get; set; } = 200;
-        public string? ReasonPhrase { get; set; }
+        public string ReasonPhrase { get; set; }
         public IHeaderDictionary Headers { get; set; }
         public Stream Body { get; set; } = Stream.Null;
         public bool HasStarted => true;

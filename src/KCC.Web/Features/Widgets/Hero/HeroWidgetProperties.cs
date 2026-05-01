@@ -1,9 +1,9 @@
 using CMS.ContentEngine;
+using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Providers;
 using KCC.Web.Features.Tailwind;
 using KCC.Web.Features.Widgets.Base;
 using KCC.Web.Features.Widgets.Hero;
-using KCC.Web.Models.Constants;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Xperience.Admin.Base.FormAnnotations;
 

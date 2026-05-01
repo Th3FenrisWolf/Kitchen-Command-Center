@@ -1,3 +1,5 @@
+using System.Globalization;
+using CMS.ContentEngine;
 using CMS.Websites;
 using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
@@ -15,27 +17,31 @@ public class SitemapController(
         var pages = await GetWebPagesAsync();
 
         var nodes = pages
-            .Select(page => new SitemapNode(page.SystemFields.WebPageUrlPath))
+            .Select(page =>
+                page is HomePage
+                    ? new SitemapNode("/")
+                    : new SitemapNode(page.GetUrl().RelativePath.ToLower(CultureInfo.InvariantCulture)))
             .ToList();
 
         return new SitemapProvider().CreateSitemap(
-            new SitemapModel([new SitemapNode("/"), .. nodes])
+            new SitemapModel(nodes)
         );
     }
 
     private async Task<IEnumerable<IWebPageFieldsSource>> GetWebPagesAsync()
     {
-        // TODO: Add additional cache dependencies
-        // (_) => [$"webpageitem|bychannel|{websiteChannelContext.WebsiteChannelName}|all"]
-        var pages = await contentRetriever.RetrievePagesOfReusableSchemas<IWebPageFieldsSource>(
-            [INavigation_Metadata.REUSABLE_FIELD_SCHEMA_NAME],
+        var sitemapPages = await contentRetriever.RetrievePagesOfReusableSchemas<IWebPageFieldsSource>(
+            [IMetadata.REUSABLE_FIELD_SCHEMA_NAME],
             new(),
             query => query.Where(where =>
-                where.WhereTrue(nameof(INavigation_Metadata.IncludeInNavigation))
+                where
+                    .WhereFalse(nameof(IMetadata.ExcludeFromSitemap))
+                    .Or()
+                    .WhereNull(nameof(IMetadata.ExcludeFromSitemap))
             ),
-            new($"{nameof(SitemapController)}|{nameof(GetWebPagesAsync)}")
+            new RetrievalCacheSettings($"{nameof(IMetadata.ExcludeFromSitemap)}|{nameof(WhereParameters.WhereFalse)}|Or|{nameof(WhereParameters.WhereNull)}")
         );
 
-        return pages;
+        return sitemapPages;
     }
 }

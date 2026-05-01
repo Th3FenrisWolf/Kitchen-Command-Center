@@ -1,4 +1,4 @@
-﻿using KCC.Web.Extensions;
+﻿using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Providers;
 using KCC.Web.Features.Tailwind;
 using Kentico.PageBuilder.Web.Mvc;

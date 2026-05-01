@@ -1,8 +1,8 @@
-using AutoMapper;
 using CMS.Websites;
 using KCC;
+using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.PageBuilder;
-using KCC.Web.Models.Constants;
+using KCC.Web.Features.Pages.Shared;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +17,7 @@ namespace KCC.Web.Features.Pages.PageBuilder;
 
 public class PageBuilderController(
     IWebPageDataContextRetriever webPageDataContextRetriever,
-    IContentRetriever contentRetriever,
-    IMapper mapper
+    IContentRetriever contentRetriever
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -35,7 +34,9 @@ public class PageBuilderController(
             new($"{nameof(PageBuilderController)}|{nameof(Index)}|{pageId}")
         )).FirstOrDefault();
 
-        var viewModel = mapper.Map<PageBuilderViewModel>(page);
+        var viewModel = new PageBuilderViewModel();
+        page.MapMetadata(viewModel);
+        page.MapWebPageFields(viewModel);
 
         return View("~/Features/Pages/PageBuilder/Index.cshtml", viewModel);
     }

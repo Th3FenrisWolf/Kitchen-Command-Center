@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using KCC.Web.Extensions;
+using KCC.Web.Features.Extensions;
 using Kentico.Xperience.Admin.Base.FormAnnotations;
 
 namespace KCC.Web.Features.Providers;

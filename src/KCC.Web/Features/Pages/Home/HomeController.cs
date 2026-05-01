@@ -1,7 +1,7 @@
-using AutoMapper;
 using KCC;
+using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.Home;
-using KCC.Web.Models.Constants;
+using KCC.Web.Features.Pages.Shared;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KCC.Web.Features.Pages.Home;
 
 public class HomeController(
-    IContentRetriever contentRetriever,
-    IMapper mapper
+    IContentRetriever contentRetriever
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -27,7 +26,9 @@ public class HomeController(
             new($"{nameof(HomeController)}|{nameof(Index)}")
         )).FirstOrDefault();
 
-        var viewModel = mapper.Map<HomeViewModel>(page);
+        var viewModel = new HomeViewModel();
+        page.MapMetadata(viewModel);
+        page.MapWebPageFields(viewModel);
 
         return View("~/Features/Pages/Home/Index.cshtml", viewModel);
     }

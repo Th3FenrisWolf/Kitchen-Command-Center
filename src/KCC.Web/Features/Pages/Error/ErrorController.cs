@@ -1,5 +1,4 @@
 using System.Globalization;
-using AutoMapper;
 using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,8 +6,7 @@ namespace KCC.Web.Features.Pages.Error;
 
 [Route("Error")]
 public class ErrorController(
-    IContentRetriever contentRetriever,
-    IMapper mapper
+    IContentRetriever contentRetriever
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -31,7 +29,12 @@ public class ErrorController(
             new($"{nameof(ErrorController)}|{nameof(HandleStatusCode)}|{statusCode}")
         )).FirstOrDefault();
 
-        var viewModel = mapper.Map<ErrorViewModel>(page);
+        var viewModel = new ErrorViewModel
+        {
+            Heading = page.StatusCodeHeading,
+            Body = page.StatusCodeBody,
+            Title = page.StatusCodeHeading,
+        };
 
         return View("~/Features/Pages/Error/Index.cshtml", viewModel);
     }

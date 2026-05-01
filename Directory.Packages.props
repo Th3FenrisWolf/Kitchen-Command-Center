@@ -4,7 +4,6 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Automapper" Version="13.0.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
     <PackageVersion Include="Kentico.Xperience.Admin" Version="30.11.3" />
     <PackageVersion Include="kentico.xperience.azurestorage" Version="30.11.3" />

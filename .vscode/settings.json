@@ -5,9 +5,13 @@
   "tailwindCSS.experimental.configFile": "src/KCC.Web/Features/Styles/TailwindConfig.css",
   "cSpell.words": [
     "antiforgery",
+    "ASPNETCORE",
     "bychannel",
     "byid",
+    "cmsctx",
     "kentico",
+    "modulepreload",
+    "stylesheet",
     "tailwindcss",
     "vite",
     "webpageitem",

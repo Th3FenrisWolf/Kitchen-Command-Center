@@ -1,21 +1,23 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <TargetFramework>net8.0</TargetFramework>
         <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
-        <CodeAnalysisRuleSet>..\..\BizStreamStandardRules.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>..\..\KCCStandardRules.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);AD0001</NoWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsNotAsErrors>NU1608;NU1901;NU1902;NU1903</WarningsNotAsErrors>
         <UserSecretsId>85272aa4-641c-4fe4-b1e7-977f7decf9dc</UserSecretsId>
     </PropertyGroup>
+
     <ItemGroup>
         <AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute" />
     </ItemGroup>
+
     <ItemGroup>
-        <PackageReference Include="Automapper" />
         <PackageReference Include="kentico.xperience.admin" />
         <PackageReference Include="kentico.xperience.azurestorage" />
         <PackageReference Include="kentico.xperience.imageprocessing" />
@@ -30,22 +32,24 @@
         <PackageReference Include="Vite.AspNetCore" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" />
     </ItemGroup>
+
     <ItemGroup>
-        <Content Include="assets\**"
-                 CopyToPublishDirectory="PreserveNewest" />
+        <Content Include="assets\**" CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
+
     <ItemGroup>
-        <UpToDateCheckBuilt Include="wwwroot/css/site.css"
-                            Set="Css" />
-        <UpToDateCheckBuilt Include="tailwind.config.js"
-                            Set="Css" />
+        <UpToDateCheckBuilt Include="wwwroot/css/site.css" Set="Css" />
+        <UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
     </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
     </ItemGroup>
+
     <ItemGroup>
         <InternalsVisibleTo Include="KCC.Web.Tests" />
     </ItemGroup>
+
     <ItemGroup>
         <None Include="wwwroot\favicon.ico" />
         <None Include="wwwroot\fonts\AimaDisplayRegular.ttf" />
@@ -56,4 +60,5 @@
         <None Include="wwwroot\fonts\HazelnutMilkTeaItalic.ttf" />
         <None Include="wwwroot\fonts\HazelnutMilkTeaRegular.ttf" />
     </ItemGroup>
+    
 </Project>

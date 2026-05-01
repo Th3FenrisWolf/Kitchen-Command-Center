@@ -23,6 +23,6 @@ const app = createSSRApp({
 })
 
 // Hydrate the SSR-rendered HTML in #app
-// This attaches event listeners without re-rendering the DOM
+// Attach event listeners without re-rendering the DOM
 registerGlobalComponents(app)
 app.mount('#app')
