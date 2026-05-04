@@ -119,6 +119,11 @@ function processRemovedNode(node: Node): void {
   if (node.nodeType !== Node.ELEMENT_NODE) return
 
   for (const marker of findMarkers(node as Element)) {
+    // Moved-not-removed: still in document. Unmounting would call
+    // render(null, container), which removes vnode.el from its current
+    // parent — the new position — making the widget disappear.
+    if (document.contains(marker)) continue
+
     unmountMarker(marker)
   }
 }

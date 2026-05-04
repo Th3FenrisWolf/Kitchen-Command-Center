@@ -1,5 +1,9 @@
 {
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
+    "source.fixAll.eslint": "explicit"
+  },
   "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
   "omnisharp.enableEditorConfigSupport": true,
   "tailwindCSS.experimental.configFile": "src/KCC.Web/Features/Styles/TailwindConfig.css",

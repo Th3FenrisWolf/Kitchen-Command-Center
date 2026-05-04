@@ -52,7 +52,8 @@ export interface CardProps {
 </script>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
+
 import cx from '~/Utilities/CX'
 
 const {
@@ -62,6 +63,8 @@ const {
   drawerTextColor = null,
   marginClasses = '',
 } = defineProps<CardProps>()
+
+const hasDrawer = !!useSlots().drawer
 
 const resolvedDrawerColor = computed(() => {
   return drawerColor ?? cardTextColor
@@ -77,7 +80,7 @@ const resolvedDrawerTextColor = computed(() => {
     :class="
       cx(
         'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center shadow-primary transition-all duration-300',
-        'focus-within:shadow-primary-raised hover:shadow-primary-raised',
+        hasDrawer && 'focus-within:shadow-primary-raised hover:shadow-primary-raised',
         cardColor,
         cardTextColor,
         marginClasses,
@@ -88,8 +91,8 @@ const resolvedDrawerTextColor = computed(() => {
       :class="
         cx(
           'relative top-1 transition-all duration-300',
-          'group-focus-within/card:top-0 group-hover/card:top-0',
-          'group-focus-within/card:duration-100 group-hover/card:duration-100',
+          hasDrawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
+          hasDrawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
         )
       "
     >
@@ -97,6 +100,7 @@ const resolvedDrawerTextColor = computed(() => {
     </div>
 
     <div
+      v-if="hasDrawer"
       :class="
         cx(
           'h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
