@@ -8,7 +8,7 @@
   <FormDefinition>
     <form>
       <field column="ResourceStringID" guid="391faafd-7ae1-4b45-a079-21da82606f40" enabled="" />
-      <field column="Key" enabled="true" guid="255ae712-fd12-41a6-b568-cc9e0124db12" visible="true">
+      <field column="ResourceStringKey" enabled="true" guid="255ae712-fd12-41a6-b568-cc9e0124db12" visible="true">
         <settings>
           <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
@@ -18,7 +18,7 @@
           <fielddescriptionashtml>False</fielddescriptionashtml>
         </properties>
       </field>
-      <field column="Value" enabled="true" guid="b2b34484-0e2b-47f0-a4f4-910ed707d277" visible="true">
+      <field column="ResourceStringValue" enabled="true" guid="b2b34484-0e2b-47f0-a4f4-910ed707d277" visible="true">
         <settings>
           <controlname>Kentico.Administration.TextArea</controlname>
           <CopyButtonVisible>False</CopyButtonVisible>

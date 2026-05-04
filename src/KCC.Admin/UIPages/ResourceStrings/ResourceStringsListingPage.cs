@@ -25,14 +25,14 @@ public class ResourceStringsListingPage : ListingPage
     {
         await base.ConfigurePage();
 
-        PageConfiguration.HeaderActions.AddLink<ResourceStringsCreatePage>("New String");
+        _ = PageConfiguration.HeaderActions.AddLink<ResourceStringsCreatePage>("New String");
 
-        PageConfiguration.AddEditRowAction<ResourceStringsEditPage>();
+        _ = PageConfiguration.AddEditRowAction<ResourceStringsEditPage>();
 
-        PageConfiguration
-            .ColumnConfigurations.AddColumn(nameof(ResourceStringInfo.Key), "Key")
-            .AddColumn(nameof(ResourceStringInfo.Value), "Value");
+        _ = PageConfiguration
+            .ColumnConfigurations.AddColumn(nameof(ResourceStringInfo.ResourceStringKey), "Key")
+            .AddColumn(nameof(ResourceStringInfo.ResourceStringValue), "Value");
 
-        PageConfiguration.TableActions.AddDeleteAction(nameof(Delete));
+        _ = PageConfiguration.TableActions.AddDeleteAction(nameof(Delete));
     }
 }
