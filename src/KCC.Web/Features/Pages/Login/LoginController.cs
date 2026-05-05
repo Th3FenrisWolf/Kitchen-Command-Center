@@ -1,16 +1,20 @@
 using CMS.Core;
+using KCC.Web.Features.Attributes;
+using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ResourceStrings;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace KCC.Web.Features.Pages.Login;
 
-[Route("Account")]
+[LocalizedRoute("Account")]
 public class LoginController(
     SignInManager<KCCApplicationUser> signInManager,
     UserManager<KCCApplicationUser> userManager,
-    IEventLogService eventLogService
+    IEventLogService eventLogService,
+    IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
     private string[] PasswordErrorCodes =>
@@ -21,21 +25,41 @@ public class LoginController(
         nameof(IdentityErrorDescriber.PasswordRequiresNonAlphanumeric),
     ];
 
+    private Dictionary<string, string> LoginStrings => resourceStrings.GetOrDefault(
+        "Login.SignIn",
+        "Login.SignUp",
+        "Login.UsernamePlaceholder",
+        "Login.EmailPlaceholder",
+        "Login.PasswordPlaceholder",
+        "Login.ConfirmPasswordPlaceholder",
+        "Login.RememberMe",
+        "Login.HaveAccount",
+        "Login.HaveAccountDescription",
+        "Login.NewHere",
+        "Login.NewHereDescription"
+    );
+
     [HttpGet("Login")]
     public IActionResult Login(string returnUrl = null)
     {
         if (User.Identity.IsAuthenticated)
         {
-            return Redirect(returnUrl ?? "/");
+            return Redirect(returnUrl ?? Url.HomePage());
         }
 
-        return View("~/Features/Pages/Login/Index.cshtml", new LoginViewModel { ReturnUrl = returnUrl });
+        return View("~/Features/Pages/Login/Index.cshtml", new LoginViewModel
+        {
+            ReturnUrl = returnUrl,
+            ResourceStrings = LoginStrings,
+        });
     }
 
     [HttpPost("Login")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel viewModel)
     {
+        viewModel.ResourceStrings = LoginStrings;
+
         if (!ModelState.IsValid)
         {
             return View("~/Features/Pages/Login/Index.cshtml", viewModel);
@@ -53,10 +77,10 @@ public class LoginController(
 
         if (signInResult.Succeeded)
         {
-            return Redirect(viewModel.ReturnUrl ?? "/");
+            return Redirect(viewModel.ReturnUrl ?? Url.HomePage());
         }
 
-        ModelState.AddModelError(string.Empty, "We couldn't sign you in using the provided credentials.");
+        ModelState.AddModelError(string.Empty, resourceStrings.GetOrDefault("Login.InvalidCredentialsError"));
 
         return View("~/Features/Pages/Login/Index.cshtml", viewModel);
     }
@@ -66,16 +90,21 @@ public class LoginController(
     {
         if (User.Identity.IsAuthenticated)
         {
-            return Redirect("/");
+            return Redirect(Url.HomePage());
         }
 
-        return View("~/Features/Pages/Login/Index.cshtml", new RegisterViewModel());
+        return View("~/Features/Pages/Login/Index.cshtml", new RegisterViewModel
+        {
+            ResourceStrings = LoginStrings,
+        });
     }
 
     [HttpPost("Register")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel viewModel)
     {
+        viewModel.ResourceStrings = LoginStrings;
+
         if (!ModelState.IsValid)
         {
             return View("~/Features/Pages/Login/Index.cshtml", viewModel);
@@ -95,14 +124,14 @@ public class LoginController(
         catch (Exception ex)
         {
             eventLogService.LogException(nameof(LoginController), "Register", ex);
-            ModelState.AddModelError(string.Empty, "Registration failed.");
+            ModelState.AddModelError(string.Empty, resourceStrings.GetOrDefault("Login.RegistrationFailedError"));
         }
 
         if (registerResult.Succeeded)
         {
             // var newUser = await userManager.FindByIdAsync(user.Id.ToString());
             // return RedirectToAction(nameof(VerificationController.Verification), nameof(Verification), new { user = newUser.MemberGuid });
-            return Redirect("/");
+            return Redirect(Url.HomePage());
         }
 
         foreach (var error in registerResult.Errors)

@@ -1,6 +1,7 @@
 using System.Globalization;
 using CMS.ContentEngine;
 using CMS.Websites;
+using KCC.Web.Features.Attributes;
 using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMvcSitemap;
@@ -11,7 +12,7 @@ public class SitemapController(
     IContentRetriever contentRetriever
 ) : Controller
 {
-    [HttpGet("sitemap.xml")]
+    [LocalizedHttpGet("sitemap.xml")]
     public async Task<IActionResult> Index()
     {
         var pages = await GetWebPagesAsync();

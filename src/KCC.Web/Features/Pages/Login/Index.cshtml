@@ -1,3 +1,4 @@
+@using KCC.Web.Features.Helpers
 @using KCC.Web.Features.Pages.Login
 
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
@@ -10,4 +11,5 @@
   default-password="@Model.Password"
   :default-remember-me="@Model.RememberMe"
   antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
+  :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />

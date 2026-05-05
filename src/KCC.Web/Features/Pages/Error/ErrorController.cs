@@ -1,10 +1,11 @@
 using System.Globalization;
+using KCC.Web.Features.Attributes;
 using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Pages.Error;
 
-[Route("Error")]
+[LocalizedRoute("Error")]
 public class ErrorController(
     IContentRetriever contentRetriever
 ) : Controller
