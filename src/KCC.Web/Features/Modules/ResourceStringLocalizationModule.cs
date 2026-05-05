@@ -3,8 +3,6 @@ using CMS.Core;
 using CMS.DataEngine;
 using KCC.Web.Features.Modules;
 using Kentico.Content.Web.Mvc.Routing;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using ResourceStrings;
 
 [assembly: RegisterModule(typeof(ResourceStringLocalizationModule))]
@@ -22,6 +20,6 @@ public class ResourceStringLocalizationModule() : Module(nameof(ResourceStringLo
             Service.Resolve<IHttpContextAccessor>()
                 ?.HttpContext?.RequestServices
                 .GetService<IPreferredLanguageRetriever>()
-                ?.Get();
+                ?.Get() ?? string.Empty;
     }
 }

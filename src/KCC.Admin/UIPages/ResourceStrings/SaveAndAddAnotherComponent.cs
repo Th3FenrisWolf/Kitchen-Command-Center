@@ -1,5 +1,3 @@
-#nullable enable
-
 using Kentico.Xperience.Admin.Base.Forms;
 
 [assembly: RegisterFormComponent(
