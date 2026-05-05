@@ -30,8 +30,8 @@ public class ResourceStringsListingPage : ListingPage
         _ = PageConfiguration.AddEditRowAction<ResourceStringsEditPage>();
 
         _ = PageConfiguration
-            .ColumnConfigurations.AddColumn(nameof(ResourceStringInfo.ResourceStringKey), "Key")
-            .AddColumn(nameof(ResourceStringInfo.ResourceStringValue), "Value");
+            .ColumnConfigurations.AddColumn(nameof(ResourceStringInfo.ResourceStringKey), "Key", searchable: true)
+            .AddColumn(nameof(ResourceStringInfo.ResourceStringValue), "Value", searchable: true);
 
         _ = PageConfiguration.TableActions.AddDeleteAction(nameof(Delete));
     }

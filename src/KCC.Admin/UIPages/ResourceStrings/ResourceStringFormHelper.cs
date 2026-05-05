@@ -68,6 +68,23 @@ internal static class ResourceStringFormHelper
         }
     }
 
+    public static void AddSaveAndAddAnotherField(ICollection<IFormItem> items, string name, bool showAddAnother = true)
+    {
+        var component = new SaveAndAddAnotherComponent { ShowAddAnother = showAddAnother };
+        var nameProperty = typeof(SaveAndAddAnotherComponent)
+            .GetProperty("Name", BindingFlags.Public | BindingFlags.Instance)!;
+        nameProperty.SetValue(component, name);
+
+        if (items is IList<IFormItem> list)
+        {
+            list.Insert(0, component);
+        }
+        else
+        {
+            items.Add(component);
+        }
+    }
+
     public static void SaveTranslations(
         int resourceStringId,
         IInfoProvider<ContentLanguageInfo> contentLanguageProvider,

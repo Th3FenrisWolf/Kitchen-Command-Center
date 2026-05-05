@@ -25,13 +25,22 @@ public class ResourceStringsEditPage(
     ILocalizationService localizationService)
     : InfoEditPage<ResourceStringInfo>(formComponentMapper, formDataBinder)
 {
+    private const string SaveFieldName = "SaveButton";
+
     [PageParameter(typeof(IntPageModelBinder), typeof(ResourceStringsSectionPage))]
     public override int ObjectId { get; set; }
+
+    public override async Task ConfigurePage()
+    {
+        await base.ConfigurePage();
+        PageConfiguration.SubmitConfiguration.Label = ResourceStringsCreatePage.HiddenSubmitLabel;
+    }
 
     protected override async Task<ICollection<IFormItem>> GetFormItems()
     {
         var items = await base.GetFormItems();
 
+        ResourceStringFormHelper.AddSaveAndAddAnotherField(items, SaveFieldName, showAddAnother: false);
         ResourceStringFormHelper.RelabelValueField(items, contentLanguageProvider);
 
         var infoObject = await GetInfoObject();
