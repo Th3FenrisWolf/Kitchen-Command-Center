@@ -53,6 +53,27 @@
     <script type="module" vite-src="/Features/PageBuilderMount.ts" asp-append-version="true"></script>
   }
 
+  @inject KCC.Web.Features.ResourceStringEditing.IResourceStringEditorAccess ResourceStringEditorAccess
+  @inject CMS.DataEngine.IInfoProvider<CMS.ContentEngine.ContentLanguageInfo> ContentLanguageProvider
+  @if (ResourceStringEditorAccess.CanEdit())
+  {
+    var languages = ContentLanguageProvider.Get()
+        .Columns(nameof(CMS.ContentEngine.ContentLanguageInfo.ContentLanguageName), nameof(CMS.ContentEngine.ContentLanguageInfo.ContentLanguageDisplayName))
+        .ToArray()
+        .Select(l => new
+        {
+            code = l.ContentLanguageName,
+            name = l.ContentLanguageDisplayName,
+        });
+    var editorContext = new
+    {
+        currentLanguage = PreferredLanguageRetriever.Get(),
+        availableLanguages = languages,
+    };
+    <script id="kcc-rs-editor-context" type="application/json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(editorContext))</script>
+    <script type="module" vite-src="/Features/ResourceStringEditing/ResourceStringEditor.ts" asp-append-version="true"></script>
+  }
+
   <page-builder-scripts />
 </body>
 
