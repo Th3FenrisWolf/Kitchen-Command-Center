@@ -1,7 +1,9 @@
 using KCC;
+using KCC.Admin.Models.Retrievers;
 using KCC.Web.Features.AdminHomePage;
 using KCC.Web.Features.Attributes;
 using KCC.Web.Features.Models.Common;
+using KCC.Web.Features.ResourceStringEditing;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
 using Kentico.Activities.Web.Mvc;
@@ -54,6 +56,17 @@ builder.Services.AddIdentity<KCCApplicationUser, NoOpApplicationRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IPageBuilderModeProvider, PageBuilderModeProvider>();
+builder.Services.AddSingleton<IResourceStringEditorAccess, ResourceStringEditorAccess>();
+
+builder.Services.AddScoped<IResourceStringWriteRepository, ResourceStringWriteRepository>();
+builder.Services.AddScoped<IContentLanguageRepository, ContentLanguageRepository>();
+builder.Services.AddScoped<ResourceStringUpsertHandler>(sp => new ResourceStringUpsertHandler(
+    sp.GetRequiredService<IResourceStringWriteRepository>(),
+    sp.GetRequiredService<IContentLanguageRepository>(),
+    defaultLanguage: DefaultLanguageRetriever.GetName()));
 
 builder.Services.AddControllersWithViews(options =>
 {
