@@ -20,12 +20,14 @@ interface ImageItem {
 
 interface PageLink {
   displayText: string
+  displayTextKey?: string
   url: string
   target: string
 }
 
 interface NavItem {
   displayText: string
+  displayTextKey?: string
   subLinks: PageLink[]
 }
 
