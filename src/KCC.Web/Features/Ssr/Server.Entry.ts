@@ -1,6 +1,7 @@
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
+import { vResourceKey } from '~/ResourceStringEditing/vResourceKey'
 import type { ContentRegions } from '~/Types/ContentRegions'
 
 import '~/Styles/Main.css'
@@ -12,5 +13,6 @@ export function createApp(contentRegions: ContentRegions) {
   })
 
   registerGlobalComponents(app)
+  app.directive('resource-key', vResourceKey)
   return app
 }
