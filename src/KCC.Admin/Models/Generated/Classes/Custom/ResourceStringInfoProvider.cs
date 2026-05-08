@@ -11,10 +11,10 @@ public partial class ResourceStringInfoProvider
 {
     public static Func<string> LanguageRetriever { get; set; } = () => "";
 
-    public string GetOrDefault(string key)
-    {
-        var languageName = LanguageRetriever.Invoke();
+    public string GetOrDefault(string key) => GetOrDefault(key, LanguageRetriever.Invoke());
 
+    public string GetOrDefault(string key, string languageName)
+    {
         var cache = Service.Resolve<IProgressiveCache>();
 
         return cache.Load(
@@ -67,6 +67,11 @@ public partial class ResourceStringInfoProvider
             key => key,
             key =>
             {
+                // An empty value at any level is treated as "no value, fall through":
+                // - No resource-string row              -> render the key
+                // - Empty translation                   -> handled in GetTranslationsForStrings
+                //                                          (skipped during chain walk)
+                // - Empty default ResourceStringValue   -> render the key
                 if (!resourceStringsByKey.TryGetValue(key, out var resourceString))
                 {
                     return key;
@@ -77,7 +82,9 @@ public partial class ResourceStringInfoProvider
                     return translation;
                 }
 
-                return resourceString.ResourceStringValue ?? key;
+                return string.IsNullOrEmpty(resourceString.ResourceStringValue)
+                    ? key
+                    : resourceString.ResourceStringValue;
             });
     }
 
@@ -117,6 +124,14 @@ public partial class ResourceStringInfoProvider
 
             foreach (var translation in translations)
             {
+                // Empty translation at this level = no value here, keep walking
+                // the fallback chain. Lets editors clear a translation to mean
+                // "use the parent language" without deleting the row.
+                if (string.IsNullOrEmpty(translation.ResourceStringTranslationValue))
+                {
+                    continue;
+                }
+
                 result[translation.ResourceStringTranslationResourceStringID] = translation.ResourceStringTranslationValue;
             }
 
