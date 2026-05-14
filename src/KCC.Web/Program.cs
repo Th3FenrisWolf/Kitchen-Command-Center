@@ -1,9 +1,8 @@
 using KCC;
-using KCC.Admin.Models.Retrievers;
+using KCC.ResourceStrings;
 using KCC.Web.Features.AdminHomePage;
 using KCC.Web.Features.Attributes;
 using KCC.Web.Features.Models.Common;
-using KCC.Web.Features.ResourceStringEditing;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
 using Kentico.Activities.Web.Mvc;
@@ -43,38 +42,30 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddAuthentication();
-builder.Services.AddIdentity<KCCApplicationUser, NoOpApplicationRole>(options =>
+builder.Services.AddIdentity<KCCApplicationUser, ApplicationRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
     options.User.RequireUniqueEmail = true;
     options.Password.RequiredLength = 8;
 })
 .AddUserStore<ApplicationUserStore<KCCApplicationUser>>()
-.AddRoleStore<NoOpApplicationRoleStore>()
+.AddRoleStore<ApplicationRoleStore<ApplicationRole>>()
 .AddUserManager<UserManager<KCCApplicationUser>>()
 .AddSignInManager<SignInManager<KCCApplicationUser>>()
 .AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<IPageBuilderModeProvider, PageBuilderModeProvider>();
-builder.Services.AddSingleton<IPreviewModeProvider, PreviewModeProvider>();
-builder.Services.AddSingleton<IResourceStringEditorAccess, ResourceStringEditorAccess>();
-
-builder.Services.AddScoped<IResourceStringWriteRepository, ResourceStringWriteRepository>();
-builder.Services.AddScoped<IContentLanguageRepository, ContentLanguageRepository>();
-builder.Services.AddScoped<ResourceStringUpsertHandler>(sp => new ResourceStringUpsertHandler(
-    sp.GetRequiredService<IResourceStringWriteRepository>(),
-    sp.GetRequiredService<IContentLanguageRepository>(),
-    defaultLanguage: DefaultLanguageRetriever.GetName()));
+builder.Services.AddKccResourceStrings();
 
 builder.Services.AddControllersWithViews(options =>
 {
     var localizedRouteConvention = new LocalizedRouteConvention();
     options.Conventions.Add((IControllerModelConvention)localizedRouteConvention);
     options.Conventions.Add((IActionModelConvention)localizedRouteConvention);
-});
+})
+.AddApplicationPart(typeof(ResourceStringServiceExtensions).Assembly);
+
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 
 var app = builder.Build();
@@ -88,8 +79,15 @@ app.UseAuthentication();
 
 app.UseAdminHomePageRedirect();
 
+// Must be registered before UseKentico so that in the response phase it
+// runs after Kentico's virtual-context decorator has rewritten URLs.
+app.UseMiddleware<PreviewJsonUrlSyncMiddleware>();
 app.UseKentico();
 app.UseVueSsr();
+
+// Must be between UseKentico (which calls UseRouting) and the endpoint mappings
+// below so [Authorize] attributes — e.g., on ResourceStringEditorController — fire.
+app.UseAuthorization();
 
 app.UseRobotsTxt();
 

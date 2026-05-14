@@ -3,7 +3,7 @@
 
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
         <CodeAnalysisRuleSet>..\..\KCCStandardRules.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -44,6 +44,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
+        <ProjectReference Include="..\KCC.ResourceStrings\KCC.ResourceStrings.csproj" />
     </ItemGroup>
 
     <ItemGroup>

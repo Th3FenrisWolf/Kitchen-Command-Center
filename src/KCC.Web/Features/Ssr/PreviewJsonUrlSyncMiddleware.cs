@@ -1,10 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
-using Kentico.Content.Web.Mvc;
-using Kentico.PageBuilder.Web.Mvc;
-using Kentico.Web.Mvc;
 
 namespace KCC.Web.Features.Ssr;
 
@@ -29,7 +25,14 @@ public partial class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (!context.IsPreview() && !context.IsPageBuilder())
+        // Gate on the request path rather than Kentico's mode/preview context.
+        // This middleware must be registered BEFORE UseKentico() so that in the
+        // response phase it runs AFTER Kentico's virtual-context decorator has
+        // already rewritten <img src> and <a href> URLs. At that point in the
+        // pipeline Kentico's PageBuilder context is not yet available, so we
+        // use the URL prefix as the gate instead.
+        var path = context.Request.Path.Value;
+        if (path is null || !path.Contains(PreviewPathMarker, StringComparison.OrdinalIgnoreCase))
         {
             await next(context);
             return;
@@ -66,6 +69,12 @@ public partial class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
             }
 
             await buffer.CopyToAsync(originalBody);
+        }
+        catch
+        {
+            buffer.Position = 0;
+            await buffer.CopyToAsync(originalBody);
+            throw;
         }
         finally
         {
@@ -145,6 +154,7 @@ public partial class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
     //   /cmsctx/pm/<...>/~/<path>?<q>&uh=<hash>  ->  <path>?<q>
     //   /cmsctx/pm/<...>/~/<path>?uh=<hash>      ->  <path>
     //   /cmsctx/pm/<...>/-/?uh=<hash>            ->  (empty)
+    //   /cmsctx/pm/<...>/-/uh=<hash>             ->  (empty)
     internal static bool TryExtractRawPath(string decorated, out string rawPath)
     {
         var markerMatch = VirtualContextMarkerRegex().Match(decorated);
@@ -156,13 +166,20 @@ public partial class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
 
         var afterMarker = decorated[(markerMatch.Index + markerMatch.Length)..];
 
+        // Kentico appends uh= as &uh=, ?uh=, or directly after the marker
+        // (no separator) for root/empty-path URLs.
         var ampUh = afterMarker.IndexOf("&uh=", StringComparison.Ordinal);
         var queryUh = afterMarker.IndexOf("?uh=", StringComparison.Ordinal);
-        var uhIdx = (ampUh, queryUh) switch
+        var bareUh = afterMarker.StartsWith("uh=", StringComparison.Ordinal) ? 0 : -1;
+        var uhIdx = (ampUh, queryUh, bareUh) switch
         {
-            (>= 0, >= 0) => Math.Min(ampUh, queryUh),
-            (>= 0, _) => ampUh,
-            (_, >= 0) => queryUh,
+            (>= 0, >= 0, >= 0) => Math.Min(ampUh, Math.Min(queryUh, bareUh)),
+            (>= 0, >= 0, _) => Math.Min(ampUh, queryUh),
+            (>= 0, _, >= 0) => Math.Min(ampUh, bareUh),
+            (_, >= 0, >= 0) => Math.Min(queryUh, bareUh),
+            (>= 0, _, _) => ampUh,
+            (_, >= 0, _) => queryUh,
+            (_, _, >= 0) => bareUh,
             _ => -1,
         };
 

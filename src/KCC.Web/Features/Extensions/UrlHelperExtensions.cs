@@ -1,6 +1,6 @@
 using CMS.Core;
 using CMS.Websites;
-using KCC.Admin.Models.Retrievers;
+using KCC.ResourceStrings;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;

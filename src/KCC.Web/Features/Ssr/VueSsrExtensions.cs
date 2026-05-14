@@ -31,13 +31,12 @@ public static class VueSsrExtensions
         return services;
     }
 
-    // Registers the SSR hydration middleware and, in development, the Vite dev
-    // server. Must run after UseKentico so PageBuilderMode is available to the
-    // PreviewJsonUrlSyncMiddleware.
+    // Registers the Vite development server (dev only). The
+    // PreviewJsonUrlSyncMiddleware is registered separately in Program.cs
+    // before UseKentico so it processes the response AFTER Kentico's
+    // virtual-context decorator has already rewritten URLs.
     public static IApplicationBuilder UseVueSsr(this WebApplication app)
     {
-        app.UseMiddleware<PreviewJsonUrlSyncMiddleware>();
-
         if (app.Environment.IsDevelopment())
         {
             app.UseWebSockets();
