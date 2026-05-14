@@ -5,7 +5,7 @@
  * Home application instead of Kentico's default dashboard.
  */
 
-var TARGET = '/admin/home'
+const TARGET = '/admin/home'
 
 ;(function () {
   document.addEventListener('click', clickEvent, true)
@@ -13,11 +13,11 @@ var TARGET = '/admin/home'
   wrapHistoryMethod('replaceState')
 })()
 
-function clickEvent(event) {
-  var target = event.target
-  if (!target || typeof target.closest !== 'function') return
+function clickEvent(event: MouseEvent) {
+  const target = event.target
+  if (!(target instanceof Element)) return
 
-  var anchor = target.closest('a')
+  const anchor = target.closest('a')
   if (anchor && shouldRedirect(anchor.getAttribute('href'))) {
     event.preventDefault()
     event.stopImmediatePropagation()
@@ -25,21 +25,21 @@ function clickEvent(event) {
   }
 }
 
-function wrapHistoryMethod(name) {
-  var original = history[name]
-  history[name] = function (state, title, url) {
+function wrapHistoryMethod(name: 'pushState' | 'replaceState') {
+  const original = history[name]
+  history[name] = (data, _, url) => {
     if (shouldRedirect(url)) {
       window.location.href = TARGET
       return
     }
-    return original.call(history, state, title, url)
+    original.call(history, data, _, url)
   }
 }
 
-function shouldRedirect(url) {
+function shouldRedirect(url: string | URL | null | undefined) {
   if (!url) return false
   try {
-    var parsed = new URL(url, window.location.origin)
+    const parsed = new URL(url, window.location.origin)
     return parsed.pathname === '/admin' || parsed.pathname === '/admin/'
   } catch {
     return false

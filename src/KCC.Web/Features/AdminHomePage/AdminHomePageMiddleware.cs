@@ -1,5 +1,6 @@
-using System.Reflection;
 using System.Text;
+using CMS.Core;
+using Vite.AspNetCore;
 
 namespace KCC.Web.Features.AdminHomePage;
 
@@ -9,21 +10,17 @@ namespace KCC.Web.Features.AdminHomePage;
 /// <list type="number">
 ///   <item>A 302 redirect from <c>/admin</c> and <c>/admin/</c> to <c>/admin/home</c>.</item>
 ///   <item>An HTML response interceptor for any <c>/admin/*</c> request that injects
-///   a script before <c>&lt;/body&gt;</c>. The script intercepts anchor clicks and
+///   a script tag before <c>&lt;/body&gt;</c>. The script intercepts anchor clicks and
 ///   <c>history.pushState/replaceState</c> calls targeting <c>/admin</c> so the
 ///   admin SPA's home button (which navigates client-side and never hits the
 ///   server) ends up on our Home regardless of which page the user was on.</item>
 /// </list>
-/// Both stages must be registered between authentication and Kentico's own
-/// middleware (<c>app.UseKentico()</c>).
 /// </summary>
 public static class AdminHomePageMiddleware
 {
+    internal const string ScriptSourceKey = "Features/AdminHomePage/admin-home-redirect.ts";
+
     private const string TargetPath = "/admin/home";
-
-    private const string ScriptResourceName = "KCC.Web.Features.AdminHomePage.admin-home-redirect.js";
-
-    private static readonly Lazy<string> RedirectScript = new(LoadRedirectScript);
 
     public static IApplicationBuilder UseAdminHomePageRedirect(this IApplicationBuilder app)
     {
@@ -32,78 +29,76 @@ public static class AdminHomePageMiddleware
         return app;
     }
 
-    private static string LoadRedirectScript()
+    internal static string BuildScriptTag()
     {
-        var assembly = typeof(AdminHomePageMiddleware).Assembly;
-        using var stream = assembly.GetManifestResourceStream(ScriptResourceName)
-            ?? throw new InvalidOperationException(
-                $"Embedded resource '{ScriptResourceName}' not found. Verify it is registered as <EmbeddedResource> in KCC.Web.csproj.");
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-        return $"<script>{reader.ReadToEnd()}</script>";
+        var devServer = Service.Resolve<IViteDevServerStatus>();
+        if (devServer.IsEnabled)
+        {
+            var basePath = string.IsNullOrEmpty(devServer.BasePath)
+                ? string.Empty
+                : devServer.BasePath.TrimEnd('/');
+
+            return $"<script type=\"module\" src=\"{basePath}/{ScriptSourceKey}\"></script>";
+        }
+
+        var manifest = Service.Resolve<IViteManifest>();
+        var chunk = manifest[ScriptSourceKey] ?? throw new InvalidOperationException(
+            $"Vite manifest is missing entry '{ScriptSourceKey}'. Ensure 'yarn build' has run and the entry is registered in vite.config.ts."
+        );
+
+        return $"<script type=\"module\" src=\"/{chunk.File}\"></script>";
     }
 
-    private static void UseAdminLandingRedirect(this IApplicationBuilder app)
+    private static void UseAdminLandingRedirect(this IApplicationBuilder app) => app.UseWhen(
+        context => context.Request.Path.StartsWithSegments("/admin"),
+        branch => branch.Run(context =>
     {
-        app.Use(async (context, next) =>
-        {
-            var path = context.Request.Path.Value.TrimEnd('/');
-            if (string.Equals(path, "/admin", StringComparison.OrdinalIgnoreCase))
-            {
-                context.Response.Redirect(TargetPath, permanent: false);
-                return;
-            }
+        context.Response.Redirect(TargetPath, permanent: false);
+        return Task.CompletedTask;
+    }));
 
+    private static void UseAdminHomePageScriptInjection(this IApplicationBuilder app) => app.UseWhen(
+        context => context.Request.Path.StartsWithSegments("/admin"),
+        branch => branch.Use(async (context, next) =>
+    {
+        var originalBody = context.Response.Body;
+        using var buffer = new MemoryStream();
+        context.Response.Body = buffer;
+
+        try
+        {
             await next();
-        });
-    }
 
-    private static void UseAdminHomePageScriptInjection(this IApplicationBuilder app)
-    {
-        app.Use(async (context, next) =>
-        {
-            if (!context.Request.Path.StartsWithSegments("/admin"))
+            context.Response.Body = originalBody;
+
+            var contentType = context.Response.ContentType;
+            var isHtml = contentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase);
+
+            buffer.Position = 0;
+
+            if (isHtml is true && context.Response.StatusCode is 200)
             {
-                await next();
-                return;
-            }
+                var html = await new StreamReader(buffer, Encoding.UTF8).ReadToEndAsync();
+                const string marker = "</body>";
+                var index = html.LastIndexOf(marker, StringComparison.OrdinalIgnoreCase);
 
-            var originalBody = context.Response.Body;
-            using var buffer = new MemoryStream();
-            context.Response.Body = buffer;
-
-            try
-            {
-                await next();
-
-                context.Response.Body = originalBody;
-
-                var contentType = context.Response.ContentType;
-                var isHtml = contentType is not null
-                    && contentType.Contains("text/html", StringComparison.OrdinalIgnoreCase);
-
-                buffer.Position = 0;
-
-                if (isHtml && context.Response.StatusCode == 200)
+                if (index >= 0)
                 {
-                    var html = await new StreamReader(buffer, Encoding.UTF8).ReadToEndAsync();
-                    const string marker = "</body>";
-                    var idx = html.LastIndexOf(marker, StringComparison.OrdinalIgnoreCase);
-                    if (idx >= 0)
-                    {
-                        var modified = html.Insert(idx, RedirectScript.Value);
-                        var bytes = Encoding.UTF8.GetBytes(modified);
-                        context.Response.ContentLength = bytes.Length;
-                        await context.Response.Body.WriteAsync(bytes);
-                        return;
-                    }
-                }
+                    var modified = html.Insert(index, BuildScriptTag());
+                    var bytes = Encoding.UTF8.GetBytes(modified);
 
-                await buffer.CopyToAsync(context.Response.Body);
+                    context.Response.ContentLength = bytes.Length;
+                    await context.Response.Body.WriteAsync(bytes);
+
+                    return;
+                }
             }
-            finally
-            {
-                context.Response.Body = originalBody;
-            }
-        });
-    }
+
+            await buffer.CopyToAsync(context.Response.Body);
+        }
+        finally
+        {
+            context.Response.Body = originalBody;
+        }
+    }));
 }
