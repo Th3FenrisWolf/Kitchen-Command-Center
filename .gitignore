@@ -490,6 +490,7 @@ $RECYCLE.BIN/
 **/wwwroot/assets
 **/wwwroot/ssr
 **/wwwroot/.vite
+**/wwwroot/PageBuilder
 
 # TypeScript incremental build cache
 *.tsbuildinfo

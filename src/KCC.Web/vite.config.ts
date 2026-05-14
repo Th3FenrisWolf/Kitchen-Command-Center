@@ -1,8 +1,9 @@
 import { fileURLToPath, URL } from 'node:url'
-import { existsSync, rmSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, copyFileSync } from 'node:fs'
 
 import { defineConfig, type Plugin } from 'vite'
-import { resolve } from 'path'
+import { resolve, dirname } from 'path'
+import { build as esbuild } from 'esbuild'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
@@ -17,6 +18,57 @@ function cleanAssetsPlugin(): Plugin {
       const assetsDir = resolve(__dirname, 'wwwroot/assets')
       if (existsSync(assetsDir)) {
         rmSync(assetsDir, { recursive: true })
+      }
+    },
+  }
+}
+
+// Compile inline editor TS/CSS from Features/ to wwwroot/PageBuilder/Admin/
+// where Kentico's <page-builder-scripts /> auto-discovers them.
+const pageBuilderAssets: Record<string, { src: string; dest: string; format?: 'iife' | 'esm' }> = {
+  bentoBoxEditor: {
+    src: 'Features/Sections/BentoBox/bento-box-editor.ts',
+    dest: 'wwwroot/PageBuilder/Admin/InlineEditors/BentoBoxEditor/bento-box-editor.js',
+    format: 'iife',
+  },
+  bentoBoxEditorCss: {
+    src: 'Features/Sections/BentoBox/bento-box-editor.css',
+    dest: 'wwwroot/PageBuilder/Admin/InlineEditors/BentoBoxEditor/bento-box-editor.css',
+  },
+}
+
+function pageBuilderScriptsPlugin(): Plugin {
+  return {
+    name: 'page-builder-scripts',
+    apply: 'build',
+    async closeBundle() {
+      for (const [name, entry] of Object.entries(pageBuilderAssets)) {
+        const srcPath = resolve(__dirname, entry.src)
+        const destPath = resolve(__dirname, entry.dest)
+
+        if (!existsSync(srcPath)) {
+          console.warn(`[page-builder-scripts] Source not found: ${entry.src}`)
+          continue
+        }
+
+        const destDir = dirname(destPath)
+        if (!existsSync(destDir)) {
+          mkdirSync(destDir, { recursive: true })
+        }
+
+        if (entry.src.endsWith('.css')) {
+          copyFileSync(srcPath, destPath)
+          console.log(`[page-builder-scripts] Copied ${name}: ${entry.dest}`)
+        } else {
+          await esbuild({
+            entryPoints: [srcPath],
+            outfile: destPath,
+            bundle: true,
+            format: entry.format ?? 'iife',
+            minify: true,
+          })
+          console.log(`[page-builder-scripts] Built ${name}: ${entry.dest}`)
+        }
       }
     },
   }
@@ -65,7 +117,7 @@ export default defineConfig(({ mode }) => {
         allow: [resolve(__dirname, '..')],
       },
     },
-    plugins: [vue(), tailwindcss(), ...(!isSSR ? [cleanAssetsPlugin(), vueDevTools()] : [])],
+    plugins: [vue(), tailwindcss(), ...(!isSSR ? [cleanAssetsPlugin(), pageBuilderScriptsPlugin(), vueDevTools()] : [])],
     resolve: {
       dedupe: ['vue', '@vue/runtime-dom', '@vue/runtime-core', '@vue/compiler-dom', '@vue/shared'],
       alias: [

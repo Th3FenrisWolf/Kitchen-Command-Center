@@ -4,6 +4,7 @@
 
 /* Sections */
 @import './Sections/MultipleColumnSection.css';
+@import './Sections/BentoBoxSection.css';
 
 html {
   background-color: var(--color-bone);

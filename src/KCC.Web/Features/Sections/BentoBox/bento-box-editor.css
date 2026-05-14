@@ -1,0 +1,140 @@
+.bento-box-editor-wrapper {
+  position: relative;
+}
+
+.bento-box-editor-wrapper .bento-box-cell {
+  outline: 2px dashed rgba(0, 0, 0, 0.15);
+  outline-offset: -1px;
+  border-radius: 4px;
+  transition: outline-color 0.15s;
+}
+
+.bento-box-editor-wrapper .bento-box-cell:hover {
+  outline-color: rgba(0, 102, 204, 0.4);
+}
+
+.bento-box-controls {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.bento-box-btn {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-size: 12px;
+  font-family: system-ui, sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.bento-box-btn:hover:not(:disabled) {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: #fff;
+}
+
+.bento-box-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bento-box-btn--remove-col,
+.bento-box-btn--remove-row {
+  border-color: #d99;
+  color: #933;
+}
+
+.bento-box-btn--remove-col:hover:not(:disabled),
+.bento-box-btn--remove-row:hover:not(:disabled) {
+  background: #c33;
+  border-color: #c33;
+  color: #fff;
+}
+
+/* Per-cell span controls */
+.bento-box-cell {
+  position: relative;
+}
+
+.bento-cell-controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.bento-box-cell:hover .bento-cell-controls {
+  opacity: 1;
+}
+
+.bento-cell-btn {
+  position: absolute;
+  pointer-events: auto;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #0066cc;
+  border-radius: 50%;
+  background: #fff;
+  color: #0066cc;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  z-index: 10;
+  padding: 0;
+}
+
+.bento-cell-btn:hover {
+  background: #0066cc;
+  color: #fff;
+}
+
+.bento-cell-btn--right {
+  right: -11px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.bento-cell-btn--shrink-right {
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-color: #d99;
+  color: #933;
+}
+
+.bento-cell-btn--shrink-right:hover {
+  background: #c33;
+  border-color: #c33;
+  color: #fff;
+}
+
+.bento-cell-btn--down {
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bento-cell-btn--shrink-down {
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-color: #d99;
+  color: #933;
+}
+
+.bento-cell-btn--shrink-down:hover {
+  background: #c33;
+  border-color: #c33;
+  color: #fff;
+}

@@ -1,18 +1,118 @@
-﻿@using KCC.Web.Features.Sections.BentoBox
+@using KCC.Web.Features.Sections.BentoBox
 
 @model BentoBoxSectionViewModel
 
 @{
-    // var isContainer = Model.ContentWidth == "Container";
-    // @(isContainer ? "container mx-auto" : "w-full")
+    var containerClass = Model.ContentWidth switch
+    {
+        "Thin" => "thin",
+        "Breakout" => "breakout",
+        "Full Width" => "full-width",
+        _ => string.Empty,
+    };
 }
 
-<div data-section-guid="@Model.SectionGuid" class="@Model.BackgroundColor">
-    <div class="variable-section-wrapper">
-        <div class="variable-section pb-@Model.PaddingBottom pt-@Model.PaddingTop">
-            <div>
-                <widget-zone />
+<section
+    data-section-guid="@Model.SectionGuid"
+    class="@Html.Clsx(
+        "rounded-4xl",
+        containerClass,
+        Model.BackgroundColor,
+        Model.TextColor,
+        $"pb-{Model.PaddingBottom}",
+        $"pt-{Model.PaddingTop}"
+    )"
+>
+    @if (!string.IsNullOrEmpty(Model.Heading))
+    {
+        <p class="mb-8 text-center text-heading">@Model.Heading</p>
+    }
+
+    @if (Model.IsEditMode)
+    {
+        <div data-bento-box-editor
+             data-page-id="@Model.PageId"
+             data-language="@Model.LanguageName"
+             data-section-type="KCC.BentoBoxSection"
+             data-grid-layout="@Model.GridLayoutJson"
+             class="bento-box-editor-wrapper">
+
+            <div class="bento-box-grid"
+                 style="grid-template-columns: repeat(@Model.Columns, 1fr); grid-template-rows: repeat(@Model.Rows, minmax(120px, auto));">
+                @foreach (var cell in Model.Cells)
+                {
+                    <div class="bento-box-cell"
+                         data-cell="@cell.ZoneName"
+                         style="grid-column: span @cell.ColSpan; grid-row: span @cell.RowSpan;">
+                        @await Html.Kentico().WidgetZoneAsync(cell.ZoneName)
+
+                        <div class="bento-cell-controls">
+                            @if (cell.Column + cell.ColSpan < Model.Columns)
+                            {
+                                <button type="button"
+                                        data-bento-action="expand-right"
+                                        data-cell="@cell.ZoneName"
+                                        class="bento-cell-btn bento-cell-btn--right"
+                                        title="Expand right">&#x25B6;</button>
+                            }
+                            @if (cell.ColSpan > 1)
+                            {
+                                <button type="button"
+                                        data-bento-action="shrink-right"
+                                        data-cell="@cell.ZoneName"
+                                        class="bento-cell-btn bento-cell-btn--shrink-right"
+                                        title="Shrink from right">&#x25C0;</button>
+                            }
+                            @if (cell.Row + cell.RowSpan < Model.Rows)
+                            {
+                                <button type="button"
+                                        data-bento-action="expand-down"
+                                        data-cell="@cell.ZoneName"
+                                        class="bento-cell-btn bento-cell-btn--down"
+                                        title="Expand down">&#x25BC;</button>
+                            }
+                            @if (cell.RowSpan > 1)
+                            {
+                                <button type="button"
+                                        data-bento-action="shrink-down"
+                                        data-cell="@cell.ZoneName"
+                                        class="bento-cell-btn bento-cell-btn--shrink-down"
+                                        title="Shrink from bottom">&#x25B2;</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="bento-box-controls">
+                <button type="button" data-bento-action="add-column" class="bento-box-btn bento-box-btn--add-col"
+                        title="Add column" @(Model.Columns >= 6 ? "disabled" : "")>+ Col</button>
+                @if (Model.Columns > 1)
+                {
+                    <button type="button" data-bento-action="remove-column" class="bento-box-btn bento-box-btn--remove-col"
+                            title="Remove column">− Col</button>
+                }
+                <button type="button" data-bento-action="add-row" class="bento-box-btn bento-box-btn--add-row"
+                        title="Add row" @(Model.Rows >= 6 ? "disabled" : "")>+ Row</button>
+                @if (Model.Rows > 1)
+                {
+                    <button type="button" data-bento-action="remove-row" class="bento-box-btn bento-box-btn--remove-row"
+                            title="Remove row">− Row</button>
+                }
             </div>
         </div>
-    </div>
-</div>
+    }
+    else
+    {
+        <div class="bento-box-grid"
+             style="grid-template-columns: repeat(@Model.Columns, 1fr); grid-template-rows: repeat(@Model.Rows, minmax(120px, auto));">
+            @foreach (var cell in Model.Cells)
+            {
+                <div class="bento-box-cell"
+                     style="grid-column: span @cell.ColSpan; grid-row: span @cell.RowSpan;">
+                    @await Html.Kentico().WidgetZoneAsync(cell.ZoneName)
+                </div>
+            }
+        </div>
+    }
+</section>

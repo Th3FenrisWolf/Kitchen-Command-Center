@@ -1,0 +1,10 @@
+@layer components {
+  .bento-box-grid {
+    display: grid;
+    gap: theme('spacing.4');
+  }
+
+  .bento-box-cell {
+    min-height: 120px;
+  }
+}
