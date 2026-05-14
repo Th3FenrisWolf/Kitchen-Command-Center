@@ -1,44 +1,36 @@
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
-import InputField from '~/components/shared/InputField.vue'
-import TextAreaField from '~/components/shared/TextAreaField.vue'
-import SmallHero from '~/components/SmallHero.vue'
-import type { Ingredient, Instruction, Recipe } from '~/types/recipe'
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+  import { faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+  import { ref } from 'vue'
+  import InputField from '~/Components/Forms/InputField.vue'
+  import TextAreaField from '~/Components/Forms/TextAreaField.vue'
+  import SmallHero from '~/Widgets/Hero/SmallHero.vue'
+  import type { Ingredient, Instruction, Recipe } from '~/Types/Recipe'
 
-//const userStore = useUserStore()
-//const { user } = storeToRefs(userStore)
-const user = null
+  const { userId } = defineProps<{ userId: string }>()
 
-const title = ref('')
-const description = ref('')
-const ingredientList = ref<Ingredient[]>([{ name: '', unit: '', isEyeballed: false }])
-const instructionList = ref<Instruction[]>([{ text: '' }])
+  const title = ref('')
+  const description = ref('')
+  const ingredientList = ref<Ingredient[]>([{ name: '', unit: '', isEyeballed: false }])
+  const instructionList = ref<Instruction[]>([{ text: '' }])
 
-const handleSubmit = () => {
-  if (!user.value) {
-    console.error('User is not logged in')
-    return
+  const handleSubmit = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const recipe: Recipe = {
+      title: title.value.trim(),
+      description: description.value.trim(),
+      ingredients: ingredientList.value,
+      instructions: instructionList.value,
+      createdBy: userId,
+      createdOn: new Date(),
+    }
+
+    // addRecipe(recipe)
+    title.value = ''
+    description.value = ''
+    ingredientList.value = [{ name: '', unit: '', isEyeballed: false }]
+    instructionList.value = [{ text: '' }]
   }
-
-  const recipe: Recipe = {
-    title: title.value.trim(),
-    description: description.value.trim(),
-    ingredients: ingredientList.value,
-    instructions: instructionList.value,
-    createdBy: user.value.uid,
-    createdOn: new Date(),
-  }
-
-  //addRecipe(recipe)
-  title.value = ''
-  description.value = ''
-  ingredientList.value = [{ name: '', unit: '', isEyeballed: false }]
-  instructionList.value = [{ text: '' }]
-  console.log('Recipe added successfully!')
-}
 </script>
 
 <template>
