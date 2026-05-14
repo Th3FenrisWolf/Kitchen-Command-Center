@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { IgnoreCase } from '~/Utilities/StringExtensions'
+  import { IgnoreCase } from '~/Utilities/StringExtensions'
 
-const { title, options, selected } = defineProps<{
-  title: string
-  options: string[]
-  selected?: string
-}>()
+  const { title, options, selected } = defineProps<{
+    title: string
+    options: string[]
+    selected?: string
+  }>()
 </script>
 
 <template>

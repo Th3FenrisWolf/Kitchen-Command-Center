@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { cx } from '~/Utilities/CX'
-import type { BackgroundColor } from '~/Types/DesignSystem'
-import { onMounted, ref } from 'vue'
+  import { cx } from '~/Utilities/CX'
+  import type { BackgroundColor } from '~/Types/DesignSystem'
+  import { onMounted, ref } from 'vue'
 
-const containerRef = ref<HTMLElement>()
+  const containerRef = ref<HTMLElement>()
 
-onMounted(() => {
-  const observer = new IntersectionObserver(
-    ([e]) => e?.target.nextElementSibling?.classList.toggle('stuck', e.boundingClientRect.top < 0),
-    { threshold: [1] },
-  )
+  onMounted(() => {
+    const observer = new IntersectionObserver(
+      ([e]) => e?.target.nextElementSibling?.classList.toggle('stuck', e.boundingClientRect.top < 0),
+      { threshold: [1] },
+    )
 
-  // Find all card elements within the container
-  if (containerRef.value) {
-    const sentinels = containerRef.value.querySelectorAll('[data-sentinel]')
-    sentinels.forEach((sentinel) => observer.observe(sentinel))
-  }
-})
+    // Find all card elements within the container
+    if (containerRef.value) {
+      const sentinels = containerRef.value.querySelectorAll('[data-sentinel]')
+      sentinels.forEach((sentinel) => observer.observe(sentinel))
+    }
+  })
 
-const props = defineProps<{
-  cards: {
-    heading: string
-    subHeading: string
-    backgroundColor: BackgroundColor
-  }[]
-}>()
+  const props = defineProps<{
+    cards: {
+      heading: string
+      subHeading: string
+      backgroundColor: BackgroundColor
+    }[]
+  }>()
 </script>
 
 <template>

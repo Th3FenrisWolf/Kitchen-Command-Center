@@ -1,61 +1,61 @@
 <script lang="ts">
-/**
- * A header component that displays a logo and navigation items
- *
- * @param {ImageItem} logo - The logo to display
- * @param {NavItem[]} mainNavItems - The main navigation items
- * @param {NavItem[]} utilityNavItems - The utility navigation items
- */
+  /**
+   * A header component that displays a logo and navigation items
+   *
+   * @param {ImageItem} logo - The logo to display
+   * @param {NavItem[]} mainNavItems - The main navigation items
+   * @param {NavItem[]} utilityNavItems - The utility navigation items
+   */
 
-export default {
-  name: 'AppHeader',
-}
-
-interface ImageItem {
-  asset: {
-    url: string
+  export default {
+    name: 'AppHeader',
   }
-  altText: string
-}
 
-interface PageLink {
-  displayText: string
-  displayTextKey?: string
-  url: string
-  target: string
-}
+  interface ImageItem {
+    asset: {
+      url: string
+    }
+    altText: string
+  }
 
-interface NavItem {
-  displayText: string
-  displayTextKey?: string
-  subLinks: PageLink[]
-}
+  interface PageLink {
+    displayText: string
+    displayTextKey?: string
+    url: string
+    target: string
+  }
 
-export interface AppHeaderProps {
-  /**
-   * URL the logo links to. Pre-resolved via Razor's Url.Content so the server
-   * HTML and hydration JSON both carry the same decorated value in preview.
-   */
-  homeUrl: string
-  /**
-   * The logo to display
-   */
-  logo: ImageItem
-  /**
-   * The main navigation items
-   */
-  mainNavItems: NavItem[]
-  /**
-   * The utility navigation items
-   */
-  utilityNavItems: NavItem[]
-}
+  interface NavItem {
+    displayText: string
+    displayTextKey?: string
+    subLinks: PageLink[]
+  }
+
+  export interface AppHeaderProps {
+    /**
+     * URL the logo links to. Pre-resolved via Razor's Url.Content so the server
+     * HTML and hydration JSON both carry the same decorated value in preview.
+     */
+    homeUrl: string
+    /**
+     * The logo to display
+     */
+    logo: ImageItem
+    /**
+     * The main navigation items
+     */
+    mainNavItems: NavItem[]
+    /**
+     * The utility navigation items
+     */
+    utilityNavItems: NavItem[]
+  }
 </script>
 
 <script setup lang="ts">
-import MenuItem from '~/Components/Header/MenuItem.vue'
+  import MenuItem from '~/Components/Header/MenuItem.vue'
 
-const { homeUrl, logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
+  const { homeUrl, logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
 </script>
 
 <template>

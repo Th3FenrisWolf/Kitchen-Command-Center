@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import cx from '~/Utilities/CX'
+  import cx from '~/Utilities/CX'
 
-const { dark = false } = defineProps<{ dark?: boolean }>()
+  const { dark = false } = defineProps<{ dark?: boolean }>()
 </script>
 
 <template>

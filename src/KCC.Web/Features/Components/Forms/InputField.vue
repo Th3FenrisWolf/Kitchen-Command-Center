@@ -1,11 +1,11 @@
 <script setup lang="ts">
-defineOptions({
-  inheritAttrs: false,
-})
+  defineOptions({
+    inheritAttrs: false,
+  })
 
-const model = defineModel({
-  required: true,
-})
+  const model = defineModel({
+    required: true,
+  })
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import cx from '~/Utilities/CX'
+  import cx from '~/Utilities/CX'
 
-const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
+  const { color, linkTo } = defineProps<{ color: string; linkTo: string }>()
 </script>
 
 <template>

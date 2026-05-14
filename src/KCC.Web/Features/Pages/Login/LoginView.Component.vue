@@ -1,46 +1,46 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import cx from '~/Utilities/CX'
-// import { parseQueryString } from '~/Utilities/QueryFunctions'
-import InputField from '~/Components/Forms/InputField.vue'
-import { useResourceStrings } from '~/Utilities/UseStrings'
+  import { ref, computed, watch } from 'vue'
+  import cx from '~/Utilities/CX'
+  // import { parseQueryString } from '~/Utilities/QueryFunctions'
+  import InputField from '~/Components/Forms/InputField.vue'
+  import { useResourceStrings } from '~/Utilities/UseStrings'
 
-const props = defineProps<{
-  returnUrl?: string
-  defaultUserName?: string
-  defaultPassword?: string
-  defaultRememberMe?: boolean
-  antiforgeryToken?: string
-  resourceStrings?: Record<string, string>
-}>()
+  const props = defineProps<{
+    returnUrl?: string
+    defaultUserName?: string
+    defaultPassword?: string
+    defaultRememberMe?: boolean
+    antiforgeryToken?: string
+    resourceStrings?: Record<string, string>
+  }>()
 
-const rs = useResourceStrings(props.resourceStrings, 'Login')
+  const rs = useResourceStrings(props.resourceStrings, 'Login')
 
-const swap = ref(false)
-const isSignIn = ref(true)
-const signText = computed(() => (isSignIn.value ? rs('SignIn') : rs('SignUp')))
+  const swap = ref(false)
+  const isSignIn = ref(true)
+  const signText = computed(() => (isSignIn.value ? rs('SignIn') : rs('SignUp')))
 
-const userName = ref(props.defaultUserName ?? '')
-const email = ref('')
-const password = ref(props.defaultPassword ?? '')
-const passwordConfirmation = ref('')
-const rememberMe = ref(props.defaultRememberMe ?? false)
-const formError = ref<string | null>(null)
+  const userName = ref(props.defaultUserName ?? '')
+  const email = ref('')
+  const password = ref(props.defaultPassword ?? '')
+  const passwordConfirmation = ref('')
+  const rememberMe = ref(props.defaultRememberMe ?? false)
+  const formError = ref<string | null>(null)
 
-const clearForm = () => {
-  userName.value = ''
-  email.value = ''
-  password.value = ''
-  passwordConfirmation.value = ''
-}
+  const clearForm = () => {
+    userName.value = ''
+    email.value = ''
+    password.value = ''
+    passwordConfirmation.value = ''
+  }
 
-watch(swap, () => {
-  formError.value = null
-  setTimeout(() => {
-    clearForm()
-    isSignIn.value = !isSignIn.value
-  }, 250)
-})
+  watch(swap, () => {
+    formError.value = null
+    setTimeout(() => {
+      clearForm()
+      isSignIn.value = !isSignIn.value
+    }, 250)
+  })
 </script>
 
 <template>

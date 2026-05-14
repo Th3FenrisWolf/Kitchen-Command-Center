@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+  import { computed } from 'vue'
 
-const { href } = defineProps<{ href: string }>()
+  const { href } = defineProps<{ href: string }>()
 
-// Normalize URLs: convert ASP.NET ~/path format to /path
-const normalizedHref = computed(() => {
-  if (href?.startsWith('~/')) {
-    return href.slice(1) // Remove the ~ prefix, keep the /
-  }
-  return href
-})
+  // Normalize URLs: convert ASP.NET ~/path format to /path
+  const normalizedHref = computed(() => {
+    if (href?.startsWith('~/')) {
+      return href.slice(1) // Remove the ~ prefix, keep the /
+    }
+    return href
+  })
 </script>
 
 <template>
