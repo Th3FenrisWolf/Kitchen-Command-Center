@@ -14,11 +14,13 @@
   :utility-nav-items="@Vue.Prop(Model.UtilityNavItems.Append(new()
   {
     DisplayText = ResourceStringInfoProvider.GetOrDefault("Login.Login"),
+    DisplayTextKey = "Login.Login",
     SubLinks = new[]
     {
       new PageLink
       {
         DisplayText = ResourceStringInfoProvider.GetOrDefault("Login.Login"),
+        DisplayTextKey = "Login.Login",
         Url = Url.LocalizedAction("Login", "Login"),
       },
     },

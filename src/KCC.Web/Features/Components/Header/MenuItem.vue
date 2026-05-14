@@ -4,12 +4,14 @@ import cx from '~/Utilities/CX'
 
 interface PageLink {
   displayText: string
+  displayTextKey?: string
   url: string
   target: string
 }
 
 interface NavItem {
   displayText: string
+  displayTextKey?: string
   subLinks: PageLink[]
 }
 
@@ -25,7 +27,7 @@ const showDrawer = ref(false)
     @click="showDrawer = !showDrawer"
     class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-bone px-4 py-2 font-casual text-2xl font-bold uppercase"
   >
-    {{ item.displayText }}
+    <span v-resource-key="item.displayTextKey">{{ item.displayText }}</span>
   </button>
   <div
     :class="
@@ -42,7 +44,7 @@ const showDrawer = ref(false)
         class="basis-full rounded-2xl bg-bone text-onyx transition-all duration-300 ease-in-out will-change-transform hover:-translate-y-1 hover:shadow-bone-small"
       >
         <a class="block size-full p-4 text-center" :href="subLink.url.stripTilde()" :target="subLink.target">
-          {{ subLink.displayText }}
+          <span v-resource-key="subLink.displayTextKey">{{ subLink.displayText }}</span>
         </a>
       </li>
     </ul>

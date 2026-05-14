@@ -1,5 +1,6 @@
 import { createApp, type App } from 'vue'
 import { registerGlobalComponents, registeredTagNames } from '~/GlobalComponents'
+import { vResourceKey } from '~/ResourceStringEditing/vResourceKey'
 
 // Edit-mode adapter for Kentico Page Builder.
 //
@@ -50,6 +51,7 @@ function mountMarker(marker: Element): void {
 
   const app = createApp({ template })
   registerGlobalComponents(app)
+  app.directive('resource-key', vResourceKey)
   app.mount(container)
 
   const parent = marker.parentNode
