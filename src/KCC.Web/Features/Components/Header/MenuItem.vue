@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import cx from '~/Utilities/CX'
+  import { cx } from '~/Utilities/CX'
 
   interface PageLink {
     displayText: string

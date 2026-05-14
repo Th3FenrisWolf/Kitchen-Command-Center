@@ -17,16 +17,11 @@ public class SitemapController(
     {
         var pages = await GetWebPagesAsync();
 
-        var nodes = pages
-            .Select(page =>
-                page is HomePage
-                    ? new SitemapNode("/")
-                    : new SitemapNode(page.GetUrl().RelativePath.ToLower(CultureInfo.InvariantCulture)))
-            .ToList();
+        var nodes = pages.Select(page => new SitemapNode(page is HomePage ? "/"
+            : page.GetUrl().RelativePath.ToLower(CultureInfo.InvariantCulture))
+        ).ToList();
 
-        return new SitemapProvider().CreateSitemap(
-            new SitemapModel(nodes)
-        );
+        return new SitemapProvider().CreateSitemap(new(nodes));
     }
 
     private async Task<IEnumerable<IWebPageFieldsSource>> GetWebPagesAsync()
@@ -34,13 +29,12 @@ public class SitemapController(
         var sitemapPages = await contentRetriever.RetrievePagesOfReusableSchemas<IWebPageFieldsSource>(
             [IMetadata.REUSABLE_FIELD_SCHEMA_NAME],
             new(),
-            query => query.Where(where =>
-                where
-                    .WhereFalse(nameof(IMetadata.ExcludeFromSitemap))
-                    .Or()
-                    .WhereNull(nameof(IMetadata.ExcludeFromSitemap))
+            query => query.Where(where => where
+                .WhereFalse(nameof(IMetadata.ExcludeFromSitemap))
+                .Or()
+                .WhereNull(nameof(IMetadata.ExcludeFromSitemap))
             ),
-            new RetrievalCacheSettings($"{nameof(IMetadata.ExcludeFromSitemap)}|{nameof(WhereParameters.WhereFalse)}|Or|{nameof(WhereParameters.WhereNull)}")
+            new($"{nameof(IMetadata.ExcludeFromSitemap)}|{nameof(WhereParameters.WhereFalse)}|Or|{nameof(WhereParameters.WhereNull)}")
         );
 
         return sitemapPages;

@@ -54,7 +54,7 @@
 <script setup lang="ts">
   import { computed, useSlots } from 'vue'
 
-  import cx from '~/Utilities/CX'
+  import { cx } from '~/Utilities/CX'
 
   const {
     cardColor = 'bg-base',

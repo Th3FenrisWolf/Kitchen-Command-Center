@@ -22,8 +22,8 @@ public class RobotsTxtProvider(
         var request = httpContextAccessor.HttpContext.Request;
         var rootDomain = $"{request.Scheme}://{request.Host.Value}";
 
-        var builder = new RobotsTxtOptionsBuilder();
-        builder = builder.AddSitemap($"{rootDomain}/sitemap.xml");
+        var builder = new RobotsTxtOptionsBuilder()
+            .AddSitemap($"{rootDomain}/sitemap.xml");
 
         return (shouldDenyAll ? builder.DenyAll() : builder.AddSection(section => section
             .AddUserAgent("*")

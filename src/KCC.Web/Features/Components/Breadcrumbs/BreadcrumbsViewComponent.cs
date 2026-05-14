@@ -1,13 +1,9 @@
-using CMS.Websites;
 using KCC.Web.Features.Pages.Shared;
-using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Components.Breadcrumbs;
 
-public class BreadcrumbsViewComponent(
-    BreadcrumbService breadcrumbService
-) : ViewComponent
+public class BreadcrumbsViewComponent(BreadcrumbService breadcrumbService) : ViewComponent
 {
     public async Task<IViewComponentResult> InvokeAsync(BasePageViewModel sourceViewModel)
     {

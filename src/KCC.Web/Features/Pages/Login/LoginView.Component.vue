@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
-  import cx from '~/Utilities/CX'
+  import { cx } from '~/Utilities/CX'
   // import { parseQueryString } from '~/Utilities/QueryFunctions'
   import InputField from '~/Components/Forms/InputField.vue'
   import { useResourceStrings } from '~/Utilities/UseStrings'

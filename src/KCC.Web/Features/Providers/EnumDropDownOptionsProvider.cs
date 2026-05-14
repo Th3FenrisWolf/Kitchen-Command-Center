@@ -4,7 +4,7 @@ using Kentico.Xperience.Admin.Base.FormAnnotations;
 
 namespace KCC.Web.Features.Providers;
 
-public class EnumDropDownOptionsProvider<T> : IDropDownOptionsProvider
+public partial class EnumDropDownOptionsProvider<T> : IDropDownOptionsProvider
     where T : Enum
 {
     public Task<IEnumerable<DropDownOptionItem>> GetOptionItems()
@@ -16,11 +16,12 @@ public class EnumDropDownOptionsProvider<T> : IDropDownOptionsProvider
                 .Cast<T>()
                 .Select(item => new DropDownOptionItem
                 {
-                    Text = ToTitle(Enum.GetName(type, item)),
+                    Text = TitleCase().Replace(Enum.GetName(type, item), "$1 $2"),
                     Value = item.GetTailwindStyle() ?? item.ToString(),
                 })
         );
     }
 
-    private static string ToTitle(string text) => Regex.Replace(text, "([a-z])([A-Z])", "$1 $2");
+    [GeneratedRegex("([a-z])([A-Z])")]
+    private static partial Regex TitleCase();
 }

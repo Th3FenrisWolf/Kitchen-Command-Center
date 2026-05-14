@@ -3,7 +3,7 @@
   import SmallHero from '~/Widgets/Hero/SmallHero.vue'
   import RecipeFacet from '~/Components/Recipes/RecipeFacet.vue'
   import { parseQueryString } from '~/Utilities/QueryFunctions'
-  import cx from '~/Utilities/CX'
+  import { cx } from '~/Utilities/CX'
   import type { Recipe } from '~/Types/Recipe'
 
   interface RecipeSearchParams {

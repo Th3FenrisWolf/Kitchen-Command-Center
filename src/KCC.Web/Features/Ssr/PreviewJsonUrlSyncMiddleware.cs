@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using Kentico.Content.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
@@ -20,34 +21,15 @@ namespace KCC.Web.Features.Ssr;
 // the same value. We never synthesize a decorated URL ourselves — the per-URL
 // hash depends on Kentico internals — we only propagate decorations Kentico
 // produced.
-public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
+public partial class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
 {
     private const string PreviewPathMarker = "/cmsctx/";
     private const string ScriptCloseTag = "</script>";
     private const string ServerContentScriptTag = SsrHtmlContent.ServerContentScriptOpen;
 
-    // Kentico's path separator between the virtual-context prefix and the raw
-    // URL. Accept both `/~/` (documented) and `/-/` (observed in some builds).
-    private static readonly Regex DecoratedUrlRegex = new(
-        @"/cmsctx/pm/(?:[^""'\s>]+/)+[~\-]/[^""'\s>]+",
-        RegexOptions.Compiled);
-
-    private static readonly Regex VirtualContextMarkerRegex = new(
-        @"/[~\-]/",
-        RegexOptions.Compiled);
-
     public async Task InvokeAsync(HttpContext context)
     {
-        // Buffer only when this request is in preview/edit mode. Two signals:
-        //  1. Virtual-context path prefix (/cmsctx/) — covers resource URLs.
-        //  2. Kentico's PageBuilderMode — covers preview pages served without
-        //     the virtual-context path prefix.
-        // Live traffic matches neither and skips buffering entirely.
-        var hasPreviewPath = context.Request.Path.Value?
-            .Contains(PreviewPathMarker, StringComparison.Ordinal) == true;
-        var isPreviewMode = !hasPreviewPath && IsKenticoPreviewMode(context);
-
-        if (!hasPreviewPath && !isPreviewMode)
+        if (!context.IsPreview() && !context.IsPageBuilder())
         {
             await next(context);
             return;
@@ -59,44 +41,31 @@ public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
 
         try
         {
-            try
-            {
-                await next(context);
-            }
-            catch
-            {
-                // Inner pipeline threw. Flush whatever bytes the inner handler
-                // managed to write (likely nothing; ExceptionHandlerMiddleware
-                // hasn't re-executed yet) to avoid silently dropping a response
-                // body. The outer exception still propagates.
-                buffer.Position = 0;
-                await buffer.CopyToAsync(originalBody);
-                throw;
-            }
+            await next(context);
+
+            var contentType = context.Response.ContentType;
+            var isHtml = contentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase);
 
             buffer.Position = 0;
 
-            // Only rewrite successful HTML responses. Error pages (4xx/5xx) and
-            // non-HTML (JSON/images/redirects) pass through untouched so we
-            // never corrupt the response body the inner pipeline produced.
-            if (context.Response.StatusCode >= 400
-                || !IsHtmlResponse(context.Response))
+            if (isHtml is true && context.Response.StatusCode is 200)
             {
-                await buffer.CopyToAsync(originalBody);
+                var encoding = ResolveEncoding(context.Response);
+                var html = await new StreamReader(buffer, encoding).ReadToEndAsync();
+                var rewritten = SyncServerContentUrls(html);
+                var bytes = encoding.GetBytes(rewritten);
+
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.ContentLength = null;
+                }
+
+                await originalBody.WriteAsync(bytes, context.RequestAborted);
+
                 return;
             }
 
-            var encoding = ResolveEncoding(context.Response);
-            var html = await new StreamReader(buffer, encoding).ReadToEndAsync();
-            var rewritten = SyncServerContentUrls(html);
-            var bytes = encoding.GetBytes(rewritten);
-
-            if (!context.Response.HasStarted)
-            {
-                context.Response.ContentLength = null;
-            }
-
-            await originalBody.WriteAsync(bytes, context.RequestAborted);
+            await buffer.CopyToAsync(originalBody);
         }
         finally
         {
@@ -148,7 +117,7 @@ public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
 
         var scanned = html.Substring(start, length);
 
-        foreach (Match match in DecoratedUrlRegex.Matches(scanned))
+        foreach (var match in DecoratedUrlRegex().Matches(scanned).ToList())
         {
             // In HTML attributes Kentico emits `&amp;uh=<hash>`; the JSON blob
             // carries plain `&`. Normalize so both the map key (for JSON lookup)
@@ -178,7 +147,7 @@ public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
     //   /cmsctx/pm/<...>/-/?uh=<hash>            ->  (empty)
     internal static bool TryExtractRawPath(string decorated, out string rawPath)
     {
-        var markerMatch = VirtualContextMarkerRegex.Match(decorated);
+        var markerMatch = VirtualContextMarkerRegex().Match(decorated);
         if (!markerMatch.Success)
         {
             rawPath = string.Empty;
@@ -239,24 +208,6 @@ public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
         });
     }
 
-    private static bool IsHtmlResponse(HttpResponse response) =>
-        response.ContentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase) == true;
-
-    private static bool IsKenticoPreviewMode(HttpContext context)
-    {
-        try
-        {
-            var mode = context.Kentico().PageBuilder().GetMode();
-            return mode == PageBuilderMode.Edit || mode == PageBuilderMode.ReadOnly;
-        }
-        catch
-        {
-            // Kentico feature accessors throw for requests before the Kentico
-            // middleware runs (static files, early errors). Treat as not-preview.
-            return false;
-        }
-    }
-
     private static Encoding ResolveEncoding(HttpResponse response)
     {
         var contentType = response.ContentType;
@@ -284,4 +235,12 @@ public class PreviewJsonUrlSyncMiddleware(RequestDelegate next)
 
         return Encoding.UTF8;
     }
+
+    // Kentico's path separator between the virtual-context prefix and the raw
+    // URL. Accept both `/~/` (documented) and `/-/` (observed in some builds).
+    [GeneratedRegex(@"/cmsctx/pm/(?:[^""'\s>]+/)+[~\-]/[^""'\s>]+", RegexOptions.Compiled)]
+    private static partial Regex DecoratedUrlRegex();
+
+    [GeneratedRegex(@"/[~\-]/", RegexOptions.Compiled)]
+    private static partial Regex VirtualContextMarkerRegex();
 }
