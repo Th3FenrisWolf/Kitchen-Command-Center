@@ -15,7 +15,7 @@ export default defineConfigWithVueTs(
 
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '**/wwwroot/**'],
   },
 
   prettierConfig,
@@ -28,6 +28,7 @@ export default defineConfigWithVueTs(
       'no-debugger': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
       'vue/multi-word-component-names': 'off',
+      'vue/script-indent': ['error', 2, { baseIndent: 1 }],
     },
   },
 )

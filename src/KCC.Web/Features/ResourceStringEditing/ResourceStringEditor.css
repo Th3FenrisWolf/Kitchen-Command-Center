@@ -1,7 +1,8 @@
+/* In page-builder edit mode (no body class needed) markers are always visible. */
 .kcc-rs-editable {
+  cursor: pointer;
   outline: 1px dashed rgba(0, 0, 0, 0.3);
   outline-offset: 2px;
-  cursor: pointer;
   transition: outline-color 120ms ease;
 }
 
@@ -11,28 +12,53 @@
 
 .kcc-rs-editable.kcc-rs-editing,
 .kcc-rs-editable.kcc-rs-editing:hover {
-  outline-style: solid;
   outline-color: var(--color-product, #7f09b7);
+  outline-style: solid;
+}
+
+/* In preview mode markers are hidden by default; toggled via body class. */
+body.kcc-rs-preview .kcc-rs-editable {
+  cursor: default;
+  outline-color: transparent;
+}
+
+body.kcc-rs-preview.kcc-rs-mode-view .kcc-rs-editable,
+body.kcc-rs-preview.kcc-rs-mode-edit .kcc-rs-editable {
+  cursor: default;
+  outline: 1px dashed rgba(0, 0, 0, 0.3);
+  outline-offset: 2px;
+}
+
+body.kcc-rs-preview.kcc-rs-mode-edit .kcc-rs-editable {
+  cursor: pointer;
+}
+
+body.kcc-rs-preview.kcc-rs-mode-view .kcc-rs-editable:hover {
+  outline-color: rgba(0, 0, 0, 0.3);
+}
+
+body.kcc-rs-preview.kcc-rs-mode-edit .kcc-rs-editable:hover {
+  outline-color: rgba(127, 9, 183, 0.6);
 }
 
 .kcc-rs-pencil {
-  position: absolute;
-  z-index: 10000;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
   background: var(--gradient-dark-xperience-violet, linear-gradient(135deg, #af00fa, #7f09b7));
-  color: #f5f3f2;
   border: none;
   border-radius: 50%;
-  font-size: 17px;
-  line-height: 1;
-  cursor: pointer;
   box-shadow: 0 2px 6px rgba(127, 9, 183, 0.3);
+  color: #f5f3f2;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 17px;
+  height: 32px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
   transition: box-shadow 120ms ease;
+  width: 32px;
+  z-index: 10000;
 }
 
 .kcc-rs-pencil:hover {
@@ -40,41 +66,41 @@
 }
 
 .kcc-rs-popover {
-  position: absolute;
-  z-index: 100000;
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: 16px;
-  min-width: 340px;
-  font-family: "GT Walsheim", system-ui, sans-serif;
-  font-size: 13px;
   color: var(--color-text-default-on-light, #151515);
+  font-family: 'GT Walsheim', system-ui, sans-serif;
+  font-size: 13px;
+  min-width: 340px;
+  padding: 16px;
+  position: absolute;
+  z-index: 100000;
 }
 
 .kcc-rs-popover-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  display: flex;
   gap: 12px;
+  justify-content: space-between;
   margin-bottom: 10px;
 }
 
 .kcc-rs-popover-key {
+  color: var(--color-text-default-on-light, #151515);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
-  color: var(--color-text-default-on-light, #151515);
 }
 
 .kcc-rs-popover-lang {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: var(--color-text-default-on-light, #151515);
   font-family: inherit;
   font-size: 12px;
   padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
-  color: var(--color-text-default-on-light, #151515);
   transition: border-color 120ms ease;
 }
 
@@ -84,29 +110,31 @@
 }
 
 .kcc-rs-popover-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--color-text-default-on-light, #151515);
   font-family: inherit;
   font-size: 13px;
-  color: var(--color-text-default-on-light, #151515);
+  padding: 8px 10px;
   resize: vertical;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+  width: 100%;
 }
 
 .kcc-rs-popover-input:focus {
-  outline: none;
   border-color: var(--color-product, #7f09b7);
   box-shadow: 0 0 0 3px rgba(127, 9, 183, 0.15);
+  outline: none;
 }
 
 .kcc-rs-popover-fallback {
-  font-size: 11px;
   color: var(--color-tab-text, #393939);
-  margin-top: 6px;
+  font-size: 11px;
   font-style: italic;
+  margin-top: 6px;
   opacity: 0.85;
 }
 
@@ -117,27 +145,29 @@
 }
 
 .kcc-rs-popover-actions {
-  margin-top: 14px;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  margin-top: 14px;
 }
 
 .kcc-rs-popover-cancel,
 .kcc-rs-popover-save {
+  border-radius: 6px;
+  cursor: pointer;
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
   padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: box-shadow 120ms ease, background-color 120ms ease;
+  transition:
+    box-shadow 120ms ease,
+    background-color 120ms ease;
 }
 
 .kcc-rs-popover-cancel {
   background: white;
-  color: var(--color-product, #7f09b7);
   border: 1px solid var(--color-product, #7f09b7);
+  color: var(--color-product, #7f09b7);
 }
 
 .kcc-rs-popover-cancel:hover {
@@ -146,9 +176,9 @@
 
 .kcc-rs-popover-save {
   background: var(--gradient-dark-xperience-violet, linear-gradient(135deg, #af00fa, #7f09b7));
-  color: #f5f3f2;
   border: none;
   box-shadow: 0 2px 6px rgba(127, 9, 183, 0.3);
+  color: #f5f3f2;
 }
 
 .kcc-rs-popover-save:hover:not(:disabled) {
@@ -156,7 +186,38 @@
 }
 
 .kcc-rs-popover-save:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
   box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.kcc-rs-mode-fab {
+  align-items: center;
+  background: var(--gradient-dark-xperience-violet, linear-gradient(135deg, #af00fa, #7f09b7));
+  border: none;
+  border-radius: 50%;
+  bottom: 24px;
+  box-shadow: 0 4px 12px rgba(127, 9, 183, 0.35);
+  color: #f5f3f2;
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+  position: fixed;
+  right: 24px;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+  width: 44px;
+  z-index: 100001;
+}
+
+.kcc-rs-mode-fab:hover {
+  box-shadow: 0 6px 20px rgba(127, 9, 183, 0.5);
+  transform: scale(1.08);
+}
+
+.kcc-rs-mode-fab svg {
+  display: block;
 }

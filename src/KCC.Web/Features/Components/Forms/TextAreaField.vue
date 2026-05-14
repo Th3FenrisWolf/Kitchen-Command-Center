@@ -1,49 +1,49 @@
 <script setup lang="ts">
-import { ref, onUnmounted, type TextareaHTMLAttributes } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faGripLines } from '@fortawesome/free-solid-svg-icons'
+  import { ref, onUnmounted, type TextareaHTMLAttributes } from 'vue'
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+  import { faGripLines } from '@fortawesome/free-solid-svg-icons'
 
-const { required, readonly, placeholder } = defineProps<{
-  required?: TextareaHTMLAttributes['required']
-  readonly?: TextareaHTMLAttributes['readonly']
-  placeholder?: TextareaHTMLAttributes['placeholder']
-}>()
+  const { required, readonly, placeholder } = defineProps<{
+    required?: TextareaHTMLAttributes['required']
+    readonly?: TextareaHTMLAttributes['readonly']
+    placeholder?: TextareaHTMLAttributes['placeholder']
+  }>()
 
-const model = defineModel<string>({
-  required: true,
-})
+  const model = defineModel<string>({
+    required: true,
+  })
 
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
-const isResizing = ref(false)
-const height = ref(75)
-const delta = ref(0)
+  const textareaRef = ref<HTMLTextAreaElement | null>(null)
+  const isResizing = ref(false)
+  const height = ref(75)
+  const delta = ref(0)
 
-const startResize = (event: MouseEvent) => {
-  isResizing.value = true
-  delta.value = event.clientY
-  document.body.classList.add('cursor-ns-resize', '[&_*]:cursor-ns-resize', 'select-none')
-  document.addEventListener('mousemove', onResize)
-  document.addEventListener('mouseup', stopResize)
-}
+  const startResize = (event: MouseEvent) => {
+    isResizing.value = true
+    delta.value = event.clientY
+    document.body.classList.add('cursor-ns-resize', '[&_*]:cursor-ns-resize', 'select-none')
+    document.addEventListener('mousemove', onResize)
+    document.addEventListener('mouseup', stopResize)
+  }
 
-const onResize = (event: MouseEvent) => {
-  if (!isResizing.value || !textareaRef.value) return
+  const onResize = (event: MouseEvent) => {
+    if (!isResizing.value || !textareaRef.value) return
 
-  const deltaY = event.clientY - delta.value
+    const deltaY = event.clientY - delta.value
 
-  height.value = Math.max(48, height.value + deltaY)
+    height.value = Math.max(48, height.value + deltaY)
 
-  delta.value = event.clientY
-}
+    delta.value = event.clientY
+  }
 
-const stopResize = () => {
-  isResizing.value = false
-  document.body.classList.remove('cursor-ns-resize', '[&_*]:cursor-ns-resize', 'select-none')
-  document.removeEventListener('mousemove', onResize)
-  document.removeEventListener('mouseup', stopResize)
-}
+  const stopResize = () => {
+    isResizing.value = false
+    document.body.classList.remove('cursor-ns-resize', '[&_*]:cursor-ns-resize', 'select-none')
+    document.removeEventListener('mousemove', onResize)
+    document.removeEventListener('mouseup', stopResize)
+  }
 
-onUnmounted(stopResize)
+  onUnmounted(stopResize)
 </script>
 
 <template>

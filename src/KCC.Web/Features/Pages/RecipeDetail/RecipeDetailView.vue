@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type { Recipe } from '~/types/recipe'
+  import { ref, onMounted } from 'vue'
+  import type { Recipe } from '~/Types/Recipe'
 
-const { id } = defineProps<{
-  id: string
-}>()
+  const { id } = defineProps<{
+    id: string
+  }>()
 
-const recipe = ref<Recipe | null>(null)
+  const recipe = ref<Recipe | null>(null)
 
-onMounted(async () => {
-  //recipe.value = await getRecipe(id)
-})
+  onMounted(async () => {
+    //recipe.value = await getRecipe(id)
+  })
 </script>
 
 <template>

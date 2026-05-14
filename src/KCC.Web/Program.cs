@@ -59,6 +59,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IPageBuilderModeProvider, PageBuilderModeProvider>();
+builder.Services.AddSingleton<IPreviewModeProvider, PreviewModeProvider>();
 builder.Services.AddSingleton<IResourceStringEditorAccess, ResourceStringEditorAccess>();
 
 builder.Services.AddScoped<IResourceStringWriteRepository, ResourceStringWriteRepository>();

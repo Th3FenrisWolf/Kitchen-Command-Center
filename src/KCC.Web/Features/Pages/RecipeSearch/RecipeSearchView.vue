@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
-import SmallHero from '~/components/SmallHero.vue'
-import RecipeFacet from '~/components/RecipeFacet.vue'
-import { parseQueryString } from '~/Utilities/QueryFunctions'
-import cx from '~/Utilities/CX'
-import type { Recipe } from '~/types/recipe'
+  import { ref, onBeforeMount } from 'vue'
+  import SmallHero from '~/Widgets/Hero/SmallHero.vue'
+  import RecipeFacet from '~/Components/Recipes/RecipeFacet.vue'
+  import { parseQueryString } from '~/Utilities/QueryFunctions'
+  import cx from '~/Utilities/CX'
+  import type { Recipe } from '~/Types/Recipe'
 
-interface RecipeSearchParams {
-  protein: string
-}
+  interface RecipeSearchParams {
+    protein: string
+  }
 
-const proteins = ['Beef', 'Chicken', 'Pork', 'Fish']
-const filters = parseQueryString<RecipeSearchParams>()
+  const proteins = ['Beef', 'Chicken', 'Pork', 'Fish']
+  const filters = parseQueryString<RecipeSearchParams>()
 
-const recipes = ref<(Recipe | null)[]>([])
-onBeforeMount(async () => {
-  //recipes.value = await getAllRecipes()
-})
+  const recipes = ref<(Recipe | null)[]>([])
+  onBeforeMount(async () => {
+    //recipes.value = await getAllRecipes()
+  })
 </script>
 
 <template>

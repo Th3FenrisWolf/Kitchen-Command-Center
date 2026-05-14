@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { ContentRegions } from '~/Types/ContentRegions'
+  import type { ContentRegions } from '~/Types/ContentRegions'
 
-const { headerContent, bodyContent, footerContent } = defineProps<ContentRegions>()
+  const { headerContent, bodyContent, footerContent } = defineProps<ContentRegions>()
 </script>
 
 <template>

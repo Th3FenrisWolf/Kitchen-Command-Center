@@ -69,6 +69,7 @@
     {
         currentLanguage = PreferredLanguageRetriever.Get(),
         availableLanguages = languages,
+        isPreviewMode = ResourceStringEditorAccess.IsPreviewMode(),
     };
     <script id="kcc-rs-editor-context" type="application/json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(editorContext))</script>
     <script type="module" vite-src="/Features/ResourceStringEditing/ResourceStringEditor.ts" asp-append-version="true"></script>

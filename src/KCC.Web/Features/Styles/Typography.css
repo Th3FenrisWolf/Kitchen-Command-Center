@@ -30,50 +30,50 @@
 
 /* Display fonts - loaded on demand */
 @font-face {
+  font-display: swap;
   font-family: 'Aima';
   src: url('/fonts/AimaDisplayRegular.woff2') format('woff2');
-  font-display: swap;
 }
 
 /* Heading font - preloaded */
 @font-face {
+  font-display: swap;
   font-family: 'APCasual';
   src: url('/fonts/AmericanPurposeCasualRegular.woff2') format('woff2');
-  font-display: swap;
 }
 @font-face {
-  font-family: 'APCasual';
-  src: url('/fonts/AmericanPurposeCasualItalic.woff2') format('woff2');
-  font-style: italic;
   font-display: swap;
+  font-family: 'APCasual';
+  font-style: italic;
+  src: url('/fonts/AmericanPurposeCasualItalic.woff2') format('woff2');
 }
 
 /* Body font - preloaded (primary font) */
 @font-face {
+  font-display: swap;
   font-family: 'Hazelnut';
+  font-style: normal;
+  font-weight: 400;
   src: url('/fonts/HazelnutMilkTeaRegular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
 }
 @font-face {
+  font-display: swap;
   font-family: 'Hazelnut';
+  font-style: normal;
+  font-weight: 700;
   src: url('/fonts/HazelnutMilkTeaBold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
 }
 @font-face {
+  font-display: swap;
   font-family: 'Hazelnut';
-  src: url('/fonts/HazelnutMilkTeaItalic.woff2') format('woff2');
+  font-style: italic;
   font-weight: 400;
-  font-style: italic;
-  font-display: swap;
+  src: url('/fonts/HazelnutMilkTeaItalic.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Hazelnut';
-  src: url('/fonts/HazelnutMilkTeaBoldItalic.woff2') format('woff2');
-  font-weight: 700;
-  font-style: italic;
   font-display: swap;
+  font-family: 'Hazelnut';
+  font-style: italic;
+  font-weight: 700;
+  src: url('/fonts/HazelnutMilkTeaBoldItalic.woff2') format('woff2');
 }

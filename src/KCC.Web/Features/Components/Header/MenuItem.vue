@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import cx from '~/Utilities/CX'
+  import { ref } from 'vue'
+  import cx from '~/Utilities/CX'
 
-interface PageLink {
-  displayText: string
-  displayTextKey?: string
-  url: string
-  target: string
-}
+  interface PageLink {
+    displayText: string
+    displayTextKey?: string
+    url: string
+    target: string
+  }
 
-interface NavItem {
-  displayText: string
-  displayTextKey?: string
-  subLinks: PageLink[]
-}
+  interface NavItem {
+    displayText: string
+    displayTextKey?: string
+    subLinks: PageLink[]
+  }
 
-const { item } = defineProps<{
-  item: NavItem
-}>()
+  const { item } = defineProps<{
+    item: NavItem
+  }>()
 
-const showDrawer = ref(false)
+  const showDrawer = ref(false)
 </script>
 <template>
   <button

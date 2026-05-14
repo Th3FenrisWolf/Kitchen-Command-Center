@@ -1,36 +1,120 @@
-// Inline resource string editor — loaded only in page builder edit mode.
-// Scans for [data-resource-key] elements, attaches a hover pencil overlay,
-// and (in later tasks) opens a popover and saves edits.
+// Inline resource string editor — loaded in page builder edit and preview modes.
 
 import './ResourceStringEditor.css'
 
 interface ResourceStringEditorContext {
   currentLanguage: string
   availableLanguages: { code: string; name: string }[]
+  isPreviewMode: boolean
 }
 
 function readContext(): ResourceStringEditorContext {
   const el = document.getElementById('kcc-rs-editor-context')
   if (!el?.textContent) {
-    console.warn('[rs-editor] kcc-rs-editor-context script tag missing; popover will fail to load values.')
-    return { currentLanguage: '', availableLanguages: [] }
+    return { currentLanguage: '', availableLanguages: [], isPreviewMode: false }
   }
   try {
     const parsed = JSON.parse(el.textContent)
     return {
       currentLanguage: typeof parsed?.currentLanguage === 'string' ? parsed.currentLanguage : '',
       availableLanguages: Array.isArray(parsed?.availableLanguages) ? parsed.availableLanguages : [],
+      isPreviewMode: parsed?.isPreviewMode === true,
     }
   } catch {
-    console.warn('[rs-editor] kcc-rs-editor-context script tag is not valid JSON; popover will fail to load values.')
-    return { currentLanguage: '', availableLanguages: [] }
+    return { currentLanguage: '', availableLanguages: [], isPreviewMode: false }
   }
 }
 
 const ctx = readContext()
 
+type PreviewMode = 'off' | 'view' | 'edit'
+const MODE_CYCLE: PreviewMode[] = ['off', 'view', 'edit']
+const MODE_STORAGE_KEY = 'kcc-rs-preview-mode'
+
+let currentMode: PreviewMode = 'off'
+
+const MODE_LABELS: Record<PreviewMode, string> = {
+  off: 'Resource strings hidden',
+  view: 'Resource strings visible',
+  edit: 'Resource strings editable',
+}
+
+const SVG_NS = 'http://www.w3.org/2000/svg'
+const MODE_PATHS: Record<PreviewMode, string[]> = {
+  off: [
+    'M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z',
+  ],
+  view: [
+    'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+  ],
+  edit: [
+    'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+  ],
+}
+
+function createModeIcon(mode: PreviewMode): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('width', '20')
+  svg.setAttribute('height', '20')
+  svg.setAttribute('fill', 'currentColor')
+  svg.setAttribute('aria-hidden', 'true')
+  for (const d of MODE_PATHS[mode]) {
+    const path = document.createElementNS(SVG_NS, 'path')
+    path.setAttribute('d', d)
+    svg.appendChild(path)
+  }
+  return svg
+}
+
+function setPreviewMode(mode: PreviewMode): void {
+  currentMode = mode
+  document.body.classList.remove('kcc-rs-mode-view', 'kcc-rs-mode-edit')
+  if (mode === 'view') document.body.classList.add('kcc-rs-mode-view')
+  if (mode === 'edit') document.body.classList.add('kcc-rs-mode-edit')
+
+  hideAllPencils()
+  if (mode !== 'edit') closePopover()
+
+  try {
+    sessionStorage.setItem(MODE_STORAGE_KEY, mode)
+  } catch {
+    /* quota */
+  }
+}
+
 const MARKER_SELECTOR = '[data-resource-key]'
 const PENCIL_CLASS = 'kcc-rs-pencil'
+
+function hideAllPencils(): void {
+  document.querySelectorAll(`.${PENCIL_CLASS}`).forEach((el) => {
+    ;(el as HTMLElement).style.display = 'none'
+  })
+}
+
+function isEditActive(): boolean {
+  return !ctx.isPreviewMode || currentMode === 'edit'
+}
+
+function updateFabIcon(fab: HTMLElement): void {
+  fab.replaceChildren(createModeIcon(currentMode))
+  fab.setAttribute('aria-label', MODE_LABELS[currentMode])
+}
+
+function buildFab(): void {
+  const fab = document.createElement('button')
+  fab.type = 'button'
+  fab.className = 'kcc-rs-mode-fab'
+  updateFabIcon(fab)
+  document.body.appendChild(fab)
+
+  fab.addEventListener('click', () => {
+    const idx = MODE_CYCLE.indexOf(currentMode)
+    const next = MODE_CYCLE[(idx + 1) % MODE_CYCLE.length] ?? 'off'
+    setPreviewMode(next)
+    updateFabIcon(fab)
+  })
+}
 
 interface MarkerState {
   pencil: HTMLElement | null
@@ -54,6 +138,7 @@ function ensurePencil(target: Element): HTMLElement {
   pencil.addEventListener('click', (e) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!isEditActive()) return
     const key = target.getAttribute('data-resource-key')
     if (!key) return
     openPopover(target, key)
@@ -75,6 +160,7 @@ function attachHover(target: Element): void {
   pencil.style.display = 'none'
 
   const show = () => {
+    if (!isEditActive()) return
     positionPencil(target, pencil)
     pencil.style.display = ''
   }
@@ -116,6 +202,18 @@ function cleanupRemovedMarkers(root: Element): void {
 }
 
 function initialize(): void {
+  if (ctx.isPreviewMode) {
+    document.body.classList.add('kcc-rs-preview')
+    let stored: PreviewMode | null = null
+    try {
+      stored = sessionStorage.getItem(MODE_STORAGE_KEY) as PreviewMode | null
+    } catch {
+      /* cross-origin iframe */
+    }
+    setPreviewMode(stored && MODE_CYCLE.includes(stored) ? stored : 'off')
+    buildFab()
+  }
+
   scanAndAttach(document)
 
   const observer = new MutationObserver((mutations) => {
@@ -156,12 +254,6 @@ function initialize(): void {
   })
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initialize)
-} else {
-  initialize()
-}
-
 interface PopoverState {
   el: HTMLElement
   input: HTMLTextAreaElement
@@ -176,6 +268,12 @@ interface PopoverState {
 }
 
 let popover: PopoverState | null = null
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initialize)
+} else {
+  initialize()
+}
 
 function buildPopover(): PopoverState {
   const el = document.createElement('div')
@@ -223,7 +321,9 @@ function buildPopover(): PopoverState {
     state.languageSelect.style.display = 'none'
   }
 
-  state.input.addEventListener('input', () => { state.isDirty = true })
+  state.input.addEventListener('input', () => {
+    state.isDirty = true
+  })
   state.cancelBtn.addEventListener('click', () => closePopover())
   state.languageSelect.addEventListener('change', async () => {
     state.currentLanguage = state.languageSelect.value
@@ -256,7 +356,7 @@ async function loadValue(state: PopoverState): Promise<void> {
       state.errorEl.textContent = `Failed to load (HTTP ${res.status})`
       return
     }
-    const data = await res.json() as {
+    const data = (await res.json()) as {
       key: string
       language: string
       value: string | null
@@ -282,9 +382,7 @@ function openPopover(target: Element, key: string): void {
   // Clear any prior editing state first in case the user opened the popover
   // from a different key without explicitly closing.
   clearEditingMarkers()
-  document
-    .querySelectorAll(`[data-resource-key="${CSS.escape(key)}"]`)
-    .forEach((el) => el.classList.add('kcc-rs-editing'))
+  document.querySelectorAll(`[data-resource-key="${CSS.escape(key)}"]`).forEach((el) => el.classList.add('kcc-rs-editing'))
 
   popover.currentKey = key
   popover.currentLanguage = ctx.currentLanguage
@@ -332,9 +430,7 @@ function closePopover(): void {
 }
 
 function clearEditingMarkers(): void {
-  document
-    .querySelectorAll('.kcc-rs-editing')
-    .forEach((el) => el.classList.remove('kcc-rs-editing'))
+  document.querySelectorAll('.kcc-rs-editing').forEach((el) => el.classList.remove('kcc-rs-editing'))
 }
 
 async function save(state: PopoverState): Promise<void> {
@@ -367,7 +463,7 @@ async function save(state: PopoverState): Promise<void> {
       state.errorEl.textContent = `Save failed (HTTP ${res.status})`
       return
     }
-    const data = await res.json() as { key: string; language: string; value: string }
+    const data = (await res.json()) as { key: string; language: string; value: string }
 
     // Update DOM only if the saved language matches the page language.
     // Known limitation: when a non-default translation is deleted (sent null,
@@ -377,11 +473,9 @@ async function save(state: PopoverState): Promise<void> {
     // another fetch. Acceptable for v1; revisit if the empty-flash bothers
     // editors.
     if (data.language === ctx.currentLanguage) {
-      document
-        .querySelectorAll(`[data-resource-key="${CSS.escape(data.key)}"]`)
-        .forEach((el) => {
-          el.textContent = data.value
-        })
+      document.querySelectorAll(`[data-resource-key="${CSS.escape(data.key)}"]`).forEach((el) => {
+        el.textContent = data.value
+      })
     }
 
     closePopover()

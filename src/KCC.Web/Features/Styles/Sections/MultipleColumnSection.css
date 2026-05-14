@@ -8,24 +8,15 @@
     --max-column-width: calc((100% - var(--total-gap-width)) / var(--column-count));
 
     display: grid;
-    grid-template-columns: repeat(
-      auto-fill,
-      minmax(max(var(--min-column-width), var(--max-column-width)), 1fr)
-    );
+    grid-template-columns: repeat(auto-fill, minmax(max(var(--min-column-width), var(--max-column-width)), 1fr));
     grid-gap: var(--grid-layout-gap);
 
     &.left-two-thirds {
-      grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(
-          var(--min-column-width),
-          1fr
-        );
+      grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(var(--min-column-width), 1fr);
     }
 
     &.right-two-thirds {
-      grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(
-          var(--min-column-width),
-          2fr
-        );
+      grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(var(--min-column-width), 2fr);
     }
 
     /* Column Styles */
@@ -75,17 +66,11 @@
   /* Responsive variants for lg breakpoint */
   @media (width >= theme(--breakpoint-lg)) {
     .lg\:left-two-thirds {
-      grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(
-          var(--min-column-width),
-          1fr
-        );
+      grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(var(--min-column-width), 1fr);
     }
 
     .lg\:right-two-thirds {
-      grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(
-          var(--min-column-width),
-          2fr
-        );
+      grid-template-columns: minmax(var(--min-column-width), 1fr) minmax(var(--min-column-width), 2fr);
     }
 
     .lg\:one-column {
