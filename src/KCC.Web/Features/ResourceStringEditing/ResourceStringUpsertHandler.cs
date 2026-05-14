@@ -4,6 +4,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CMS.ContentEngine;
@@ -21,9 +22,13 @@ public interface IResourceStringWriteRepository
     Task UpsertTranslationAsync(string key, string language, string? value);
 }
 
+public sealed record ContentLanguageOption(string Code, string Name);
+
 public interface IContentLanguageRepository
 {
     Task<bool> ExistsAsync(string code);
+
+    IReadOnlyList<ContentLanguageOption> ListAll();
 }
 
 public sealed class InvalidLanguageException(string language)
@@ -167,4 +172,13 @@ internal sealed class ContentLanguageRepository(IInfoProvider<ContentLanguageInf
             .WhereEquals(nameof(ContentLanguageInfo.ContentLanguageName), code)
             .TopN(1)
             .Any());
+
+    public IReadOnlyList<ContentLanguageOption> ListAll() =>
+        provider.Get()
+            .Columns(
+                nameof(ContentLanguageInfo.ContentLanguageName),
+                nameof(ContentLanguageInfo.ContentLanguageDisplayName))
+            .ToArray()
+            .Select(l => new ContentLanguageOption(l.ContentLanguageName, l.ContentLanguageDisplayName))
+            .ToList();
 }

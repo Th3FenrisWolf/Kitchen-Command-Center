@@ -3,6 +3,7 @@
 // handler relies on (string? translation values where null means "delete").
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -165,5 +166,7 @@ public class ResourceStringUpsertHandlerTests
     private sealed class FakeContentLanguageRepository(params string[] codes) : IContentLanguageRepository
     {
         public Task<bool> ExistsAsync(string code) => Task.FromResult(codes.Contains(code));
+
+        public IReadOnlyList<ContentLanguageOption> ListAll() => Array.Empty<ContentLanguageOption>();
     }
 }
