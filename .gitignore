@@ -501,6 +501,8 @@ $RECYCLE.BIN/
 # Kentico admin client module build artifacts
 src/KCC.Admin/Client/dist/
 src/KCC.Admin/Client/node_modules/
+src/KCC.ResourceStrings/Client/dist/
+src/KCC.ResourceStrings/Client/node_modules/
 
 # Claude Code
 .claude/
