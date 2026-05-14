@@ -8,16 +8,12 @@ namespace KCC;
 /// </summary>
 public partial class LinkItem
 {
-    public PageLink MapToPageLink()
+    public PageLink MapToPageLink() => new()
     {
-        return new PageLink
-        {
-            DisplayText = DisplayText,
-            Target = Target,
-            Url =
-                Type.Equals("page", StringComparison.Ordinal)
-                    ? Page?.FirstOrDefault()?.GetUrl().RelativePath
-                    : Url,
-        };
-    }
+        DisplayText = DisplayText,
+        Target = Target,
+        Url = Type.Equals("page", StringComparison.Ordinal)
+            ? Page?.FirstOrDefault()?.GetUrl().RelativePath
+            : Url,
+    };
 }

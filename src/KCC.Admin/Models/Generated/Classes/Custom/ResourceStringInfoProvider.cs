@@ -3,15 +3,18 @@ using CMS.Core;
 using CMS.DataEngine;
 using CMS.Helpers;
 using KCC.Admin.Models.Retrievers;
+using Kentico.Content.Web.Mvc.Routing;
 using CacheConstants = KCC.Admin.Models.Constants.CacheConstants;
 
 namespace ResourceStrings;
 
 public partial class ResourceStringInfoProvider
 {
-    public static Func<string> LanguageRetriever { get; set; } = () => "";
-
-    public string GetOrDefault(string key) => GetOrDefault(key, LanguageRetriever.Invoke());
+    public string GetOrDefault(string key)
+    {
+        var languageName = Service.Resolve<IPreferredLanguageRetriever>().Get();
+        return GetOrDefault(key, languageName);
+    }
 
     public string GetOrDefault(string key, string languageName)
     {
@@ -34,9 +37,8 @@ public partial class ResourceStringInfoProvider
 
     public Dictionary<string, string> GetOrDefault(params string[] keys)
     {
-        var languageName = LanguageRetriever.Invoke();
-
         var cache = Service.Resolve<IProgressiveCache>();
+        var languageName = Service.Resolve<IPreferredLanguageRetriever>().Get();
 
         return cache.Load(
             cs =>

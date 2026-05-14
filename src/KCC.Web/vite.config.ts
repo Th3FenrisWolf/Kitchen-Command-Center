@@ -53,6 +53,7 @@ export default defineConfig(({ mode }) => {
               main: resolve(__dirname, 'Features/Main.ts'),
               pageBuilderMount: resolve(__dirname, 'Features/PageBuilderMount.ts'),
               resourceStringEditor: resolve(__dirname, 'Features/ResourceStringEditing/ResourceStringEditor.ts'),
+              adminHomeRedirect: resolve(__dirname, 'Features/AdminHomePage/admin-home-redirect.ts'),
             },
           },
         },

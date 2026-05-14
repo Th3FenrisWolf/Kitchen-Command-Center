@@ -4,25 +4,19 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace KCC.Web.Features.Attributes;
 
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public class LocalizedRouteAttribute(string template) : RouteAttribute(template) { }
+
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 public class LocalizedHttpGetAttribute : HttpMethodAttribute
 {
     private static readonly string[] SupportedMethods = ["GET"];
 
     public LocalizedHttpGetAttribute(string template)
-        : base(SupportedMethods, template)
-    {
-    }
+        : base(SupportedMethods, template) { }
 
     public LocalizedHttpGetAttribute()
-        : base(SupportedMethods)
-    {
-    }
-}
-
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class LocalizedRouteAttribute(string template) : RouteAttribute(template)
-{
+        : base(SupportedMethods) { }
 }
 
 public class LocalizedRouteConvention : IControllerModelConvention, IActionModelConvention
@@ -47,22 +41,21 @@ public class LocalizedRouteConvention : IControllerModelConvention, IActionModel
     {
         foreach (var selector in selectors.ToList())
         {
-            if (selector.AttributeRouteModel?.Template is not { } template)
+            if (selector.AttributeRouteModel?.Template is not string template)
             {
                 continue;
             }
 
-            selectors.Add(new SelectorModel(selector)
+            var model = new AttributeRouteModel()
             {
-                AttributeRouteModel = new AttributeRouteModel
-                {
-                    Template = $"{{lang}}/{template}",
-                    Order = selector.AttributeRouteModel.Order,
-                    Name = selector.AttributeRouteModel.Name is { } name
-                        ? $"{name}_lang"
-                        : null
-                }
-            });
+                Template = $"{{lang}}/{template}",
+                Order = selector.AttributeRouteModel.Order,
+                Name = selector.AttributeRouteModel.Name is string name
+                    ? $"Localized_{name}"
+                    : null
+            };
+
+            selectors.Add(new(selector) { AttributeRouteModel = model });
         }
     }
 }

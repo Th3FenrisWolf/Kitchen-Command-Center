@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace KCC.Web.Features.TagHelpers;
 
-public class BzsImageTagHelper(IContentRetriever contentRetriever) : TagHelper
+public class ImageTagHelper(IContentRetriever contentRetriever) : TagHelper
 {
     public ContentItemReference Item { get; set; }
 
@@ -28,7 +28,7 @@ public class BzsImageTagHelper(IContentRetriever contentRetriever) : TagHelper
                     )
                 ),
             new(
-                $"{nameof(BzsImageTagHelper)}|{nameof(ProcessAsync)}|{Item.Identifier}"
+                $"{nameof(ImageTagHelper)}|{nameof(ProcessAsync)}|{Item.Identifier}"
             )
         );
 

@@ -1,25 +1,11 @@
+@using KCC.Web.Features.Components.Breadcrumbs
 @using KCC.Web.Features.Pages.PageBuilder
 @using KCC.Web.Features.Widgets.Hero;
 
 @model PageBuilderViewModel
 
-@{
-    var defaultAreaOptions = new EditableAreaOptions
-            {
-                AllowWidgetOutputCache = true,
-                WidgetOutputCacheExpiresSliding = TimeSpan.FromMinutes(2),
-            };
+<editable-area area-identifier="hero" area-options="@EditableArea.GetAreaOptions([HeroWidgetProperties.IDENTIFIER])" />
 
-    var heroAreaOptions = new EditableAreaOptions
-            {
-                AllowWidgetOutputCache = true,
-                WidgetOutputCacheExpiresSliding = TimeSpan.FromMinutes(2),
-                AllowedWidgets = new[] { HeroWidgetProperties.IDENTIFIER },
-            };
-}
+@await Component.InvokeAsync(typeof(BreadcrumbsViewComponent), Model)
 
-<editable-area area-identifier="hero" area-options="@heroAreaOptions" />
-
-@await Component.InvokeAsync("Breadcrumbs", Model)
-
-<editable-area area-identifier="page-builder-widgets" area-options="@defaultAreaOptions" />
+<editable-area area-identifier="page-builder-widgets" area-options="@EditableArea.DefaultOptions" />

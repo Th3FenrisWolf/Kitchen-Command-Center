@@ -2,20 +2,11 @@
 
 @model BaseSectionViewModel
 
-@{
-  var containerClass = Model.ContentWidth switch {
-    "Thin" => "thin",
-    "Breakout" => "breakout",
-    "Full Width" => "full-width",
-    _ => string.Empty,
-  };
-}
-
 <section
   data-section-guid="@Model.SectionGuid"
   class="@Html.Clsx(
     "base-section rounded-4xl",
-    containerClass,
+    Model.ContainerClass,
     Model.BackgroundColor,
     Model.TextColor,
     $"pb-{Model.PaddingBottom}",

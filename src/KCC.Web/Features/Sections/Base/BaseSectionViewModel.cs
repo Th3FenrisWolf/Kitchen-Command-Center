@@ -10,4 +10,11 @@ public class BaseSectionViewModel
     public int PaddingBottom { get; set; }
     public int PaddingTop { get; set; }
     public int HorizontalPadding { get; set; }
+
+    public string ContainerClass => ContentWidth switch {
+    "Thin" => "thin",
+    "Breakout" => "breakout",
+    "Full Width" => "full-width",
+    _ => string.Empty,
+  };
 }

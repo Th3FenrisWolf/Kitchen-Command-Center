@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace KCC.Web.Features.TagHelpers;
 
-public class BzsButtonLinkTagHelper : TagHelper
+public class ButtonLinkTagHelper : TagHelper
 {
     public string Class { get; set; }
     public string Href { get; set; }

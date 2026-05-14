@@ -30,7 +30,7 @@ public class MultipleColumnSectionProperties : BaseSectionProperties
             ? result
             : ColumnLayout.OneColumn);
 
-    private (string ColumnStyleClass, int ColumnCount) GetColumnStyleProperties(
+    private static (string ColumnStyleClass, int ColumnCount) GetColumnStyleProperties(
         ColumnLayout columnStyle
     ) =>
         columnStyle switch

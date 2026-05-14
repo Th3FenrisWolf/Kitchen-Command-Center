@@ -16,8 +16,9 @@ public class BreadcrumbService(
     private const string HomePageTitle = "Home";
     private const string HomePageUrl = "/";
 
-    private readonly Lazy<IWebPageManager> webPageManager = new(() =>
-        webPageManagerFactory.Create(websiteChannelContext.WebsiteChannelID, userId: SystemUserId));
+    private readonly Lazy<IWebPageManager> webPageManager = new(() => webPageManagerFactory.Create(
+        websiteChannelContext.WebsiteChannelID, userId: SystemUserId
+    ));
 
     public async Task<List<BreadcrumbLink>> BuildBreadcrumbsAsync(int webPageItemId)
     {
@@ -60,7 +61,7 @@ public class BreadcrumbService(
         return items;
     }
 
-    private async Task<BreadcrumbLink> CreateBreadcrumbLink(IWebPageFieldsSource page, bool isCurrentPage) =>
+    private static async Task<BreadcrumbLink> CreateBreadcrumbLink(IWebPageFieldsSource page, bool isCurrentPage) =>
         new
         (
             LinkText: await page.GetBreadcrumbTitle(),
@@ -71,8 +72,7 @@ public class BreadcrumbService(
 
     private async Task<IWebPageFieldsSource> GetWebPage(int id)
     {
-        var builder = new ContentItemQueryBuilder();
-        builder
+        var builder = new ContentItemQueryBuilder()
             .ForContentTypes(query => query
                 .OfReusableSchema(IMetadata.REUSABLE_FIELD_SCHEMA_NAME)
                 .ForWebsite(websiteChannelContext.WebsiteChannelName))
