@@ -1,4 +1,4 @@
-using KCC.Web.Features.ResourceStringEditing;
+using KCC.ResourceStrings.Editing;
 using Kentico.PageBuilder.Web.Mvc;
 using Microsoft.AspNetCore.Http;
 using Xunit;

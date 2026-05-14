@@ -33,19 +33,12 @@ public class InvokeAsyncTests
 
         var middleware = new PreviewJsonUrlSyncMiddleware(ctx =>
         {
-            // Simulate the inner pipeline setting a stale Content-Length
-            // based on the pre-rewrite buffer. Ours is empty, so 0 is fine
-            // as a stand-in — what matters is that the middleware clears it.
             ctx.Response.ContentLength = 42;
             return Task.CompletedTask;
         });
 
         await middleware.InvokeAsync(httpContext);
 
-        // Fix assertion: middleware MUST clear the stale Content-Length
-        // before writing the rewritten body. Without the fix the middleware
-        // either leaves it at 42 or overwrites to bytes.Length (0). The
-        // guard + null-clear path produces null.
         Assert.Null(httpContext.Response.ContentLength);
     }
 
@@ -57,8 +50,6 @@ public class InvokeAsyncTests
         httpContext.Response.ContentType = "text/html";
         httpContext.Response.Body = new MemoryStream();
 
-        // Install a feature that reports HasStarted=true so the middleware's
-        // guard short-circuits the ContentLength assignment.
         var startedFeature = new StartedResponseFeature(httpContext.Response.Headers);
         httpContext.Features.Set<IHttpResponseFeature>(startedFeature);
 
@@ -74,9 +65,6 @@ public class InvokeAsyncTests
         await middleware.InvokeAsync(httpContext);
 
         Assert.True(called);
-        // The guard leaves the stale value alone because HasStarted=true.
-        // This proves the guard is in place; removing the `if (!HasStarted)`
-        // would clear to null and fail this assertion.
         Assert.Equal(42, httpContext.Response.ContentLength);
     }
 
@@ -92,11 +80,6 @@ public class InvokeAsyncTests
 
         var middleware = new PreviewJsonUrlSyncMiddleware(async ctx =>
         {
-            // Simulate the inner pipeline writing some bytes to the response
-            // (which land in the middleware's buffered stream), then failing.
-            // The outer middleware's inner catch must ensure those bytes still
-            // reach originalBody so the client sees what the inner pipeline
-            // had produced before the exception.
             await ctx.Response.Body.WriteAsync(partialPayload);
             throw new InvalidOperationException("boom");
         });
@@ -104,12 +87,8 @@ public class InvokeAsyncTests
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => middleware.InvokeAsync(httpContext));
 
-        // Body restored.
         Assert.Same(originalBody, httpContext.Response.Body);
 
-        // Buffered bytes flushed. Without the inner catch, originalBody is empty
-        // because the `await next(context)` throws before we reach the post-next
-        // flush code — distinguishes the fix from the bug.
         originalBody.Position = 0;
         var flushed = originalBody.ToArray();
         Assert.Equal(partialPayload, flushed);
@@ -124,10 +103,6 @@ public class InvokeAsyncTests
         var originalBody = new MemoryStream();
         httpContext.Response.Body = originalBody;
 
-        // Payload contains a server-content script block with a raw URL that the
-        // rewrite path WOULD decorate if it ran on this response. The HTML before
-        // the JSON blob provides the decoration source so BuildDecorationMap has
-        // something to match.
         var payload = "<html><body><a href=\"/cmsctx/pm/abc/~/home?uh=1234\">home</a></body>\n" +
                       "<script id=\"server-content\" type=\"application/json\">{\"bodyContent\":\"\\u0022~/home\\u0022\"}</script>\n" +
                       "</html>\n";
@@ -144,15 +119,31 @@ public class InvokeAsyncTests
         originalBody.Position = 0;
         var written = Encoding.UTF8.GetString(originalBody.ToArray());
 
-        // Must be byte-for-byte identical to the original payload. Without the
-        // StatusCode >= 400 guard, SyncServerContentUrls would rewrite `\u0022~/home\u0022`
-        // to `\u0022/cmsctx/pm/abc/~/home?uh=1234\u0022`, producing a different string.
         Assert.Equal(payload, written);
     }
 
-    // Minimal IHttpResponseFeature that reports HasStarted=true. Shares the
-    // parent context's header dictionary so ContentType/Headers reads still
-    // return the values set on DefaultHttpContext.
+    [Fact]
+    public async Task InvokeAsync_NonCmsctxPath_SkipsBuffering()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Path = "/home";
+        httpContext.Response.ContentType = "text/html";
+        var originalBody = new MemoryStream();
+        httpContext.Response.Body = originalBody;
+
+        var called = false;
+        var middleware = new PreviewJsonUrlSyncMiddleware(ctx =>
+        {
+            called = true;
+            return Task.CompletedTask;
+        });
+
+        await middleware.InvokeAsync(httpContext);
+
+        Assert.True(called);
+        Assert.Same(originalBody, httpContext.Response.Body);
+    }
+
     private sealed class StartedResponseFeature : IHttpResponseFeature
     {
         public StartedResponseFeature(IHeaderDictionary headers)
@@ -192,8 +183,6 @@ public class ApplyDecorationsTests
     [Fact]
     public void ApplyDecorations_LongerKeyWinsOverPrefixKey()
     {
-        // "~/" would partial-match inside "~/recipes". Boundary + longest-first
-        // ordering should prevent that, so "~/recipes" gets the recipes URL.
         var map = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["~/"] = "/cmsctx/pm/abc/~/root",
@@ -217,17 +206,161 @@ public class ApplyDecorationsTests
     }
 }
 
+public class EndToEndSyncTests
+{
+    private const string CmsCtxPrefix =
+        "/cmsctx/pm/641b5bce-8072-4bcd-8e48-9d7178b826b7/lang/en" +
+        "/wpid/1/c1d/1/c1d/1055/readonly/0/pbmode/edit/h" +
+        "/233c3e3e4c5c9ec3f2d16d6c8289efdbe8ff7213caaa83c4e9bf902a507295";
+
+    [Fact]
+    public void SyncServerContentUrls_RewritesHomeUrl_WithTildeMarker()
+    {
+        var decoratedHome = CmsCtxPrefix + "/~/?uh=abc123";
+        var html = BuildHtml(
+            ssrBody: "<a href=\"" + decoratedHome + "\">Home</a>",
+            headerContent: "<AppHeader home-url=\"~/\" />");
+
+        var result = PreviewJsonUrlSyncMiddleware.SyncServerContentUrls(html);
+
+        Assert.Contains(decoratedHome, result);
+    }
+
+    [Fact]
+    public void SyncServerContentUrls_RewritesHomeUrl_WithDashMarker()
+    {
+        var decoratedHome = CmsCtxPrefix + "/-/?uh=abc123";
+        var html = BuildHtml(
+            ssrBody: "<a href=\"" + decoratedHome + "\">Home</a>",
+            headerContent: "<AppHeader home-url=\"~/\" />");
+
+        var result = PreviewJsonUrlSyncMiddleware.SyncServerContentUrls(html);
+
+        Assert.Contains(decoratedHome, result);
+    }
+
+    [Fact]
+    public void SyncServerContentUrls_RewritesContentAssetUrl_InVueProp()
+    {
+        var rawAssetUrl = "~/getContentAsset/f67d70e7-a891/3571d6da/KCC-Bone.webp?language=en";
+        var decoratedAsset = CmsCtxPrefix +
+            "/~/getContentAsset/f67d70e7-a891/3571d6da/KCC-Bone.webp?language=en&amp;uh=def456";
+
+        var logoJson = "{\"asset\":{\"url\":\"" + rawAssetUrl + "\"}}";
+        var logoPropHtml = logoJson
+            .Replace("&", "&amp;")
+            .Replace("\"", "&quot;");
+        var headerContent = "<AppHeader :logo=\"" + logoPropHtml + "\" />";
+
+        var html = BuildHtml(
+            ssrBody: "<img src=\"" + decoratedAsset + "\" />",
+            headerContent: headerContent);
+
+        var result = PreviewJsonUrlSyncMiddleware.SyncServerContentUrls(html);
+
+        var jsonStart = result.IndexOf(SsrHtmlContent.ServerContentScriptOpen, StringComparison.Ordinal)
+            + SsrHtmlContent.ServerContentScriptOpen.Length;
+        var jsonEnd = result.IndexOf("</script>", jsonStart, StringComparison.Ordinal);
+        var jsonPortion = result[jsonStart..jsonEnd];
+
+        Assert.Contains(CmsCtxPrefix + "/~/getContentAsset/f67d70e7-a891", jsonPortion);
+    }
+
+    [Fact]
+    public void SyncServerContentUrls_RewritesNavItemUrl_InVueProp()
+    {
+        var decoratedRecipes = CmsCtxPrefix + "/~/recipes?uh=ghi789";
+        var navItemsJson = "[{\"displayText\":\"Recipes\",\"url\":\"~/recipes\"}]";
+        var navPropHtml = navItemsJson
+            .Replace("&", "&amp;")
+            .Replace("\"", "&quot;");
+        var headerContent = "<AppHeader :main-nav-items=\"" + navPropHtml + "\" />";
+
+        var html = BuildHtml(
+            ssrBody: "<a href=\"" + decoratedRecipes + "\">Recipes</a>",
+            headerContent: headerContent);
+
+        var result = PreviewJsonUrlSyncMiddleware.SyncServerContentUrls(html);
+
+        Assert.Contains(CmsCtxPrefix + "/~/recipes", result);
+    }
+
+    [Fact]
+    public void BuildDecorationMap_ExtractsRawPath_WhenUhDirectlyAfterMarker()
+    {
+        var html = "<a href=\"" + CmsCtxPrefix + "/-/uh=abc123\">Home</a>";
+
+        var map = PreviewJsonUrlSyncMiddleware.BuildDecorationMap(html, 0, html.Length);
+
+        Assert.True(map.ContainsKey("~/"), "Map should contain '~/' key for root URL");
+        Assert.True(map.ContainsKey("/"), "Map should contain '/' key for root URL");
+    }
+
+    [Fact]
+    public void TryExtractRawPath_HandlesUhDirectlyAfterMarker()
+    {
+        var decorated = CmsCtxPrefix + "/-/uh=abc123";
+
+        var result = PreviewJsonUrlSyncMiddleware.TryExtractRawPath(decorated, out var rawPath);
+
+        Assert.True(result);
+        Assert.Equal(string.Empty, rawPath);
+    }
+
+    [Fact]
+    public void TryExtractRawPath_HandlesQuestionMarkUh()
+    {
+        var decorated = CmsCtxPrefix + "/~/?uh=abc123";
+
+        var result = PreviewJsonUrlSyncMiddleware.TryExtractRawPath(decorated, out var rawPath);
+
+        Assert.True(result);
+        Assert.Equal(string.Empty, rawPath);
+    }
+
+    [Fact]
+    public void TryExtractRawPath_HandlesAmpersandUh()
+    {
+        var decorated = CmsCtxPrefix + "/~/getContentAsset/img.webp?language=en&uh=abc123";
+
+        var result = PreviewJsonUrlSyncMiddleware.TryExtractRawPath(decorated, out var rawPath);
+
+        Assert.True(result);
+        Assert.Equal("getContentAsset/img.webp?language=en", rawPath);
+    }
+
+    [Fact]
+    public void TryExtractRawPath_NoUh_ReturnsFullPathAfterMarker()
+    {
+        var decorated = CmsCtxPrefix + "/~/getContentAsset/img.webp?language=en";
+
+        var result = PreviewJsonUrlSyncMiddleware.TryExtractRawPath(decorated, out var rawPath);
+
+        Assert.True(result);
+        Assert.Equal("getContentAsset/img.webp?language=en", rawPath);
+    }
+
+    private static string BuildHtml(string ssrBody, string headerContent)
+    {
+        var result = new SsrResult
+        {
+            Html = ssrBody,
+            HeaderContent = headerContent,
+            BodyContent = "",
+            FooterContent = "",
+        };
+        var content = new SsrHtmlContent(result);
+        using var writer = new StringWriter();
+        content.WriteTo(writer, HtmlEncoder.Default);
+        return writer.ToString();
+    }
+}
+
 public class ServerContentCouplingTests
 {
     [Fact]
     public void SsrHtmlContent_WriteTo_EmitsSharedScriptTagConstant()
     {
-        // Coupling guard: renders an SsrHtmlContent via IHtmlContent and asserts
-        // the rendered HTML contains the EXACT string the middleware looks for.
-        // If SsrHtmlContent.WriteTo ever emits something different from
-        // ServerContentScriptOpen (e.g., hard-coded literal drifts), this test
-        // catches it. Also confirms the middleware pass-through is a no-op on
-        // SSR output that has no preview URLs.
         var result = new SsrResult
         {
             Html = "<div>body</div>",

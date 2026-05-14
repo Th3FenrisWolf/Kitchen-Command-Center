@@ -1,13 +1,6 @@
-// KCC.Web.Tests does not enable nullable globally; this file opts in so the
-// fake repository can express the semantically meaningful nullability the
-// handler relies on (string? translation values where null means "delete").
 #nullable enable
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using KCC.Web.Features.ResourceStringEditing;
+using KCC.ResourceStrings.Editing;
 using Xunit;
 
 namespace KCC.Web.Tests.Features.ResourceStringEditing;
@@ -18,12 +11,12 @@ public class ResourceStringUpsertHandlerTests
     private readonly FakeContentLanguageRepository _languages = new("en", "es");
 
     [Fact]
-    public async Task UpsertAsync_DefaultLanguage_KeyExists_UpdatesValue()
+    public void Upsert_DefaultLanguage_KeyExists_UpdatesValue()
     {
         _repo.AddString("Login.Login", value: "Log in");
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
-        var result = await sut.UpsertAsync(new ResourceStringUpsertRequest
+        var result = sut.Upsert(new ResourceStringUpsertRequest
         {
             Key = "Login.Login",
             Language = "en",
@@ -35,11 +28,11 @@ public class ResourceStringUpsertHandlerTests
     }
 
     [Fact]
-    public async Task UpsertAsync_DefaultLanguage_KeyMissing_CreatesNewRow()
+    public void Upsert_DefaultLanguage_KeyMissing_CreatesNewRow()
     {
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
-        var result = await sut.UpsertAsync(new ResourceStringUpsertRequest
+        var result = sut.Upsert(new ResourceStringUpsertRequest
         {
             Key = "Login.Login",
             Language = "en",
@@ -51,12 +44,12 @@ public class ResourceStringUpsertHandlerTests
     }
 
     [Fact]
-    public async Task UpsertAsync_NonDefaultLanguage_TranslationExists_UpdatesTranslation()
+    public void Upsert_NonDefaultLanguage_TranslationExists_UpdatesTranslation()
     {
         _repo.AddString("Login.Login", value: "Log in", translations: new() { ["es"] = "Iniciar" });
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
-        var result = await sut.UpsertAsync(new ResourceStringUpsertRequest
+        var result = sut.Upsert(new ResourceStringUpsertRequest
         {
             Key = "Login.Login",
             Language = "es",
@@ -69,11 +62,11 @@ public class ResourceStringUpsertHandlerTests
     }
 
     [Fact]
-    public async Task UpsertAsync_NonDefaultLanguage_BothMissing_CreatesStringAndTranslation()
+    public void Upsert_NonDefaultLanguage_BothMissing_CreatesStringAndTranslation()
     {
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
-        var result = await sut.UpsertAsync(new ResourceStringUpsertRequest
+        var result = sut.Upsert(new ResourceStringUpsertRequest
         {
             Key = "Login.Login",
             Language = "es",
@@ -86,12 +79,12 @@ public class ResourceStringUpsertHandlerTests
     }
 
     [Fact]
-    public async Task UpsertAsync_NonDefaultLanguage_NullValue_DeletesTranslation()
+    public void Upsert_NonDefaultLanguage_NullValue_DeletesTranslation()
     {
         _repo.AddString("Login.Login", value: "Log in", translations: new() { ["es"] = "Iniciar" });
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
-        var result = await sut.UpsertAsync(new ResourceStringUpsertRequest
+        var result = sut.Upsert(new ResourceStringUpsertRequest
         {
             Key = "Login.Login",
             Language = "es",
@@ -103,11 +96,11 @@ public class ResourceStringUpsertHandlerTests
     }
 
     [Fact]
-    public async Task UpsertAsync_UnknownLanguage_Throws()
+    public void Upsert_UnknownLanguage_Throws()
     {
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
-        await Assert.ThrowsAsync<InvalidLanguageException>(() => sut.UpsertAsync(new()
+        Assert.Throws<InvalidLanguageException>(() => sut.Upsert(new()
         {
             Key = "Login.Login",
             Language = "fr",
@@ -139,16 +132,15 @@ public class ResourceStringUpsertHandlerTests
         public string? GetTranslation(string key, string lang) =>
             _translations.TryGetValue((key, lang), out var v) ? v : null;
 
-        public Task UpsertStringAsync(string key, string value)
+        public void UpsertString(string key, string value)
         {
             _values[key] = value;
-            return Task.CompletedTask;
         }
 
-        public Task<bool> StringExistsAsync(string key) =>
-            Task.FromResult(_values.ContainsKey(key));
+        public bool StringExists(string key) =>
+            _values.ContainsKey(key);
 
-        public Task UpsertTranslationAsync(string key, string language, string? value)
+        public void UpsertTranslation(string key, string language, string? value)
         {
             if (value is null)
             {
@@ -158,14 +150,12 @@ public class ResourceStringUpsertHandlerTests
             {
                 _translations[(key, language)] = value;
             }
-
-            return Task.CompletedTask;
         }
     }
 
     private sealed class FakeContentLanguageRepository(params string[] codes) : IContentLanguageRepository
     {
-        public Task<bool> ExistsAsync(string code) => Task.FromResult(codes.Contains(code));
+        public bool Exists(string code) => codes.Contains(code);
 
         public IReadOnlyList<ContentLanguageOption> ListAll() => Array.Empty<ContentLanguageOption>();
     }
