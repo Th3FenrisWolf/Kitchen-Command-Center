@@ -5,11 +5,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace KCC.Web.Features.ResourceStringEditing;
 
-/// <summary>
-/// Reads the current page builder mode for an HTTP context. Exists so that
-/// <see cref="ResourceStringEditorAccess"/> can be unit tested without spinning
-/// up the Kentico feature registry that backs <c>Kentico().PageBuilder().GetMode()</c>.
-/// </summary>
 internal interface IPageBuilderModeProvider
 {
     PageBuilderMode GetMode(HttpContext httpContext);
@@ -21,9 +16,21 @@ internal sealed class PageBuilderModeProvider : IPageBuilderModeProvider
         httpContext.Kentico().PageBuilder().GetMode();
 }
 
+internal interface IPreviewModeProvider
+{
+    bool IsPreview(HttpContext httpContext);
+}
+
+internal sealed class PreviewModeProvider : IPreviewModeProvider
+{
+    public bool IsPreview(HttpContext httpContext) =>
+        httpContext.Kentico().Preview().Enabled;
+}
+
 internal sealed class ResourceStringEditorAccess(
     IHttpContextAccessor httpContextAccessor,
-    IPageBuilderModeProvider pageBuilderModeProvider)
+    IPageBuilderModeProvider pageBuilderModeProvider,
+    IPreviewModeProvider previewModeProvider)
     : IResourceStringEditorAccess
 {
     public bool CanEdit()
@@ -34,6 +41,21 @@ internal sealed class ResourceStringEditorAccess(
             return false;
         }
 
-        return pageBuilderModeProvider.GetMode(httpContext) == PageBuilderMode.Edit;
+        var mode = pageBuilderModeProvider.GetMode(httpContext);
+        return mode is PageBuilderMode.Edit or PageBuilderMode.ReadOnly
+            || previewModeProvider.IsPreview(httpContext);
+    }
+
+    public bool IsPreviewMode()
+    {
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext is null)
+        {
+            return false;
+        }
+
+        var mode = pageBuilderModeProvider.GetMode(httpContext);
+        return mode == PageBuilderMode.ReadOnly
+            || (previewModeProvider.IsPreview(httpContext) && mode != PageBuilderMode.Edit);
     }
 }
