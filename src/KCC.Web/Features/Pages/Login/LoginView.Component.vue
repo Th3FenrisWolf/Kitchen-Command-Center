@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import cx from '~/Utilities/CX'
 // import { parseQueryString } from '~/Utilities/QueryFunctions'
 import InputField from '~/Components/Forms/InputField.vue'
+import { useResourceStrings } from '~/Utilities/UseStrings'
 
 const props = defineProps<{
   returnUrl?: string
@@ -10,11 +11,14 @@ const props = defineProps<{
   defaultPassword?: string
   defaultRememberMe?: boolean
   antiforgeryToken?: string
+  resourceStrings?: Record<string, string>
 }>()
+
+const rs = useResourceStrings(props.resourceStrings, 'Login')
 
 const swap = ref(false)
 const isSignIn = ref(true)
-const signText = computed(() => (isSignIn.value ? 'Sign In' : 'Sign Up'))
+const signText = computed(() => (isSignIn.value ? rs('SignIn') : rs('SignUp')))
 
 const userName = ref(props.defaultUserName ?? '')
 const email = ref('')
@@ -65,7 +69,7 @@ watch(swap, () => {
             type="text"
             v-model="userName"
             autocomplete="username"
-            placeholder="Username"
+            :placeholder="rs('UsernamePlaceholder')"
             name="UserName"
           />
 
@@ -75,7 +79,7 @@ watch(swap, () => {
             type="email"
             v-model="email"
             autocomplete="email"
-            placeholder="Email"
+            :placeholder="rs('EmailPlaceholder')"
             name="Email"
           />
 
@@ -84,7 +88,7 @@ watch(swap, () => {
             type="password"
             v-model="password"
             :autocomplete="!isSignIn ? 'new-password' : 'current-password'"
-            placeholder="Password"
+            :placeholder="rs('PasswordPlaceholder')"
             name="Password"
           />
 
@@ -94,13 +98,13 @@ watch(swap, () => {
             type="password"
             v-model="passwordConfirmation"
             autocomplete="new-password"
-            placeholder="Confirm Password"
+            :placeholder="rs('ConfirmPasswordPlaceholder')"
             name="PasswordConfirmation"
           />
 
           <label v-if="isSignIn" class="flex items-center gap-2 justify-self-center">
             <input type="checkbox" v-model="rememberMe" name="RememberMe" value="true" />
-            <span>Remember me</span>
+            <span>{{ rs('RememberMe') }}</span>
           </label>
 
           <button class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone" type="submit">
@@ -126,25 +130,25 @@ watch(swap, () => {
           "
         >
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
-            <h3 class="font-[APCasual] text-heading">Have an Account?</h3>
-            <p>Sign in to continue commanding your kitchen</p>
+            <h3 class="font-[APCasual] text-heading">{{ rs('HaveAccount') }}</h3>
+            <p>{{ rs('HaveAccountDescription') }}</p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
-              Sign In
+              {{ rs('SignIn') }}
             </button>
           </div>
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="swap">
-            <h3 class="font-[APCasual] text-heading">New Here?</h3>
-            <p>Create an account to unlock the full potential of Kitchen Command Center</p>
+            <h3 class="font-[APCasual] text-heading">{{ rs('NewHere') }}</h3>
+            <p>{{ rs('NewHereDescription') }}</p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
-              Sign Up
+              {{ rs('SignUp') }}
             </button>
           </div>
         </div>

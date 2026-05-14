@@ -1,21 +1,25 @@
 @using KCC.Web.Features.Components.Header
+@using KCC.Web.Features.Extensions
 @using KCC.Web.Features.Models.Common
+@using ResourceStrings
+
+@inject IResourceStringInfoProvider ResourceStringInfoProvider
 
 @model HeaderViewModel
 
 <AppHeader
-  home-url="@Url.Content("~/")"
+  home-url="@Url.HomePage()"
   :logo="@Vue.Prop(Model.Logo)"
   :main-nav-items="@Vue.Prop(Model.MainNavItems)"
   :utility-nav-items="@Vue.Prop(Model.UtilityNavItems.Append(new()
   {
-    DisplayText = "Login",
+    DisplayText = ResourceStringInfoProvider.GetOrDefault("Login.Login"),
     SubLinks = new[]
     {
       new PageLink
       {
-        DisplayText = "Login",
-        Url = "/Account/Login",
+        DisplayText = ResourceStringInfoProvider.GetOrDefault("Login.Login"),
+        Url = Url.LocalizedAction("Login", "Login"),
       },
     },
   }))"

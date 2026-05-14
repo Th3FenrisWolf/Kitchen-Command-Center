@@ -1,5 +1,6 @@
 using KCC;
 using KCC.Web.Features.AdminHomePage;
+using KCC.Web.Features.Attributes;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
@@ -9,6 +10,7 @@ using Kentico.Membership;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using RobotsTxt;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +20,7 @@ builder.Services.AddVueSsr(builder.Configuration);
 
 builder.Services.AddKentico(features =>
 {
-    features.UseWebPageRouting();
+    features.UseWebPageRouting(new() { LanguageNameRouteValuesKey = "lang" });
     features.UseActivityTracking();
     features.UsePageBuilder(
         new()
@@ -53,7 +55,12 @@ builder.Services.AddIdentity<KCCApplicationUser, NoOpApplicationRole>(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var localizedRouteConvention = new LocalizedRouteConvention();
+    options.Conventions.Add((IControllerModelConvention)localizedRouteConvention);
+    options.Conventions.Add((IActionModelConvention)localizedRouteConvention);
+});
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 
 var app = builder.Build();
@@ -84,6 +91,10 @@ else
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.Kentico().MapRoutes();
-app.MapControllerRoute(name: "error", pattern: "error/{0}");
+app.MapControllerRoute(name: "error", pattern: "{lang}/error/{0}");
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{lang}/{controller}/{action}/{id?}");
 
 app.Run();

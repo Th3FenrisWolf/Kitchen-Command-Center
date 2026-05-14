@@ -30,7 +30,7 @@ public class ResourceStringsListingPage : ListingPage
         _ = PageConfiguration.AddEditRowAction<ResourceStringsEditPage>();
 
         _ = PageConfiguration
-            .ColumnConfigurations.AddColumn(nameof(ResourceStringInfo.ResourceStringKey), "Key", searchable: true)
+            .ColumnConfigurations.AddColumn(nameof(ResourceStringInfo.ResourceStringKey), "Key", searchable: true, defaultSortDirection: SortTypeEnum.Asc)
             .AddColumn(nameof(ResourceStringInfo.ResourceStringValue), "Value", searchable: true);
 
         _ = PageConfiguration.TableActions.AddDeleteAction(nameof(Delete));

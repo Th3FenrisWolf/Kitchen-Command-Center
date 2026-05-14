@@ -17,4 +17,6 @@ public class BasePageViewModel
     public string TwitterSite { get; set; }
     public string TwitterCreator { get; set; }
     public string TwitterImagePath { get; set; }
+
+    public Dictionary<string, string> ResourceStrings { get; set; } = [];
 }

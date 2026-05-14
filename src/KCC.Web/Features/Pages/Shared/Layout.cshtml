@@ -2,16 +2,18 @@
 @using KCC.Web.Features.Components.Footer
 @using KCC.Web.Features.Components.Header
 @using Kentico.Content.Web.Mvc
+@using Kentico.Content.Web.Mvc.Routing
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Hosting
 
 @inject IWebHostEnvironment Env
 @inject VueSsrService VueSsrService
+@inject IPreferredLanguageRetriever PreferredLanguageRetriever
 
 @model BasePageViewModel
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@PreferredLanguageRetriever.Get()">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
