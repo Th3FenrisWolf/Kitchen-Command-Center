@@ -1,15 +1,19 @@
-using KCC.Web.Features.ResourceStringEditing;
+using KCC.ResourceStrings.Editing;
 using Kentico.PageBuilder.Web.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Vite.AspNetCore;
 
 namespace KCC.Web.Features.TagHelpers;
 
-internal sealed class PageBuilderMountPreloadTagHelper(
+public sealed class PageBuilderMountPreloadTagHelper(
     IHttpContextAccessor httpContextAccessor,
-    IPageBuilderModeProvider modeProvider)
+    IPageBuilderModeProvider modeProvider,
+    IViteManifest manifest,
+    IViteDevServerStatus devServer)
     : TagHelper
 {
+    private const string EntryKey = "Features/PageBuilderMount.ts";
+
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var httpContext = httpContextAccessor.HttpContext;
@@ -29,7 +33,20 @@ internal sealed class PageBuilderMountPreloadTagHelper(
         output.TagName = "link";
         output.TagMode = TagMode.SelfClosing;
         output.Attributes.SetAttribute("rel", "modulepreload");
-        output.Attributes.SetAttribute("vite-href", "/Features/PageBuilderMount.ts");
-        output.Attributes.SetAttribute("asp-append-version", "true");
+
+        if (devServer.IsEnabled)
+        {
+            var basePath = string.IsNullOrEmpty(devServer.BasePath)
+                ? string.Empty
+                : devServer.BasePath.TrimEnd('/');
+            output.Attributes.SetAttribute("href", $"{basePath}/{EntryKey}");
+        }
+        else
+        {
+            var chunk = manifest[EntryKey]
+                ?? throw new InvalidOperationException(
+                    $"Vite manifest is missing entry '{EntryKey}'.");
+            output.Attributes.SetAttribute("href", $"/{chunk.File}");
+        }
     }
 }

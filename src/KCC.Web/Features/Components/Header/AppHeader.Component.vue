@@ -63,7 +63,7 @@
     <nav class="breakout relative flex size-full items-center gap-8 rounded-3xl bg-base px-8">
       <a
         class="btn-no-style z-20 h-full shrink-0 py-4 text-bone focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
-        :href="homeUrl"
+        :href="homeUrl.stripTilde()"
       >
         <img
           loading="eager"

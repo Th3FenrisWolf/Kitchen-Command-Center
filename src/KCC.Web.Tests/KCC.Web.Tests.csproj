@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
@@ -23,5 +23,6 @@
     <ItemGroup>
         <ProjectReference Include="..\KCC.Web\KCC.Web.csproj" />
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
+        <ProjectReference Include="..\KCC.ResourceStrings\KCC.ResourceStrings.csproj" />
     </ItemGroup>
 </Project>

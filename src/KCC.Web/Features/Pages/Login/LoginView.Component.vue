@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue'
+  import { ref, watch } from 'vue'
   import { cx } from '~/Utilities/CX'
   // import { parseQueryString } from '~/Utilities/QueryFunctions'
   import InputField from '~/Components/Forms/InputField.vue'
@@ -14,11 +14,13 @@
     resourceStrings?: Record<string, string>
   }>()
 
+  // rs() is still used for attribute bindings (placeholders) where a <ResourceString>
+  // component can't be inlined. provide() inside useResourceStrings exposes the
+  // dict to <ResourceString> descendants for text content.
   const rs = useResourceStrings(props.resourceStrings, 'Login')
 
   const swap = ref(false)
   const isSignIn = ref(true)
-  const signText = computed(() => (isSignIn.value ? rs('SignIn') : rs('SignUp')))
 
   const userName = ref(props.defaultUserName ?? '')
   const email = ref('')
@@ -54,7 +56,7 @@
           )
         "
       >
-        <h2 class="text-heading">{{ signText }}</h2>
+        <h2 class="text-heading"><ResourceString :k="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
 
         <p :class="cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')">
           {{ formError }}
@@ -104,11 +106,11 @@
 
           <label v-if="isSignIn" class="flex items-center gap-2 justify-self-center">
             <input type="checkbox" v-model="rememberMe" name="RememberMe" value="true" />
-            <span>{{ rs('RememberMe') }}</span>
+            <ResourceString k="RememberMe" />
           </label>
 
           <button class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone" type="submit">
-            {{ signText }}
+            <ResourceString :k="isSignIn ? 'SignIn' : 'SignUp'" />
           </button>
         </form>
       </div>
@@ -130,25 +132,25 @@
           "
         >
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
-            <h3 class="font-[APCasual] text-heading">{{ rs('HaveAccount') }}</h3>
-            <p>{{ rs('HaveAccountDescription') }}</p>
+            <h3 class="font-[APCasual] text-heading"><ResourceString k="HaveAccount" /></h3>
+            <p><ResourceString k="HaveAccountDescription" /></p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
-              {{ rs('SignIn') }}
+              <ResourceString k="SignIn" />
             </button>
           </div>
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="swap">
-            <h3 class="font-[APCasual] text-heading">{{ rs('NewHere') }}</h3>
-            <p>{{ rs('NewHereDescription') }}</p>
+            <h3 class="font-[APCasual] text-heading"><ResourceString k="NewHere" /></h3>
+            <p><ResourceString k="NewHereDescription" /></p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
-              {{ rs('SignUp') }}
+              <ResourceString k="SignUp" />
             </button>
           </div>
         </div>

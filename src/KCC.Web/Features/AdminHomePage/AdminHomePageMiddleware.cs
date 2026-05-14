@@ -49,13 +49,17 @@ public static class AdminHomePageMiddleware
         return $"<script type=\"module\" src=\"/{chunk.File}\"></script>";
     }
 
-    private static void UseAdminLandingRedirect(this IApplicationBuilder app) => app.UseWhen(
-        context => context.Request.Path.StartsWithSegments("/admin"),
-        branch => branch.Run(context =>
+    private static void UseAdminLandingRedirect(this IApplicationBuilder app) => app.Use(
+        async (context, next) =>
     {
-        context.Response.Redirect(TargetPath, permanent: false);
-        return Task.CompletedTask;
-    }));
+        if (context.Request.Path.Value?.TrimEnd('/').Equals("/admin", StringComparison.OrdinalIgnoreCase) is true)
+        {
+            context.Response.Redirect(TargetPath, permanent: false);
+            return;
+        }
+
+        await next();
+    });
 
     private static void UseAdminHomePageScriptInjection(this IApplicationBuilder app) => app.UseWhen(
         context => context.Request.Path.StartsWithSegments("/admin"),

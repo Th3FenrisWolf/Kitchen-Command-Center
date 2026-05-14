@@ -1,7 +1,5 @@
-using System.IO;
 using System.Text.Encodings.Web;
-using KCC.Web.Features.ResourceStringEditing;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using KCC.ResourceStrings.Editing;
 using Xunit;
 
 namespace KCC.Web.Tests.Features.ResourceStringEditing;

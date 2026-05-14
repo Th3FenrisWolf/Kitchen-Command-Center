@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <AdminOrgName>kcc</AdminOrgName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Kentico.Xperience.Admin" />
+        <PackageReference Include="Kentico.Xperience.Core" />
+        <PackageReference Include="Vite.AspNetCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdminClientPath Include="Client\dist\**">
+            <ProjectName>resource-strings</ProjectName>
+        </AdminClientPath>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="KCC.Web.Tests" />
+    </ItemGroup>
+
+</Project>

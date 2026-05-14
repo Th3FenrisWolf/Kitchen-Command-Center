@@ -6,8 +6,27 @@ namespace KCC.Web.Features.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static bool IsPreview(this HttpContext context) => context.Kentico().Preview().Enabled;
+    public static bool IsPreview(this HttpContext context)
+    {
+        try
+        {
+            return context.Kentico().Preview().Enabled;
+        }
+        catch (NullReferenceException)
+        {
+            return false;
+        }
+    }
 
-    public static bool IsPageBuilder(this HttpContext context) =>
-        context.Kentico().PageBuilder().GetMode() is PageBuilderMode.ReadOnly or PageBuilderMode.Edit;
+    public static bool IsPageBuilder(this HttpContext context)
+    {
+        try
+        {
+            return context.Kentico().PageBuilder().GetMode() is PageBuilderMode.ReadOnly or PageBuilderMode.Edit;
+        }
+        catch (NullReferenceException)
+        {
+            return false;
+        }
+    }
 }

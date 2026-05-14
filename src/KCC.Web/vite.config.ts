@@ -52,11 +52,19 @@ export default defineConfig(({ mode }) => {
             input: {
               main: resolve(__dirname, 'Features/Main.ts'),
               pageBuilderMount: resolve(__dirname, 'Features/PageBuilderMount.ts'),
-              resourceStringEditor: resolve(__dirname, 'Features/ResourceStringEditing/ResourceStringEditor.ts'),
               adminHomeRedirect: resolve(__dirname, 'Features/AdminHomePage/admin-home-redirect.ts'),
+              resourceStringEditor: resolve(
+                __dirname,
+                '../KCC.ResourceStrings/Client/src/resource-strings/ResourceStringEditor.ts',
+              ),
             },
           },
         },
+    server: {
+      fs: {
+        allow: [resolve(__dirname, '..')],
+      },
+    },
     plugins: [vue(), tailwindcss(), ...(!isSSR ? [cleanAssetsPlugin(), vueDevTools()] : [])],
     resolve: {
       dedupe: ['vue', '@vue/runtime-dom', '@vue/runtime-core', '@vue/compiler-dom', '@vue/shared'],

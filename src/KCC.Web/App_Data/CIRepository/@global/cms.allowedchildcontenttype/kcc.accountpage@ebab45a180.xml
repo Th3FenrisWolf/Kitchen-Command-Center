@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.allowedchildcontenttype>
+  <Parent>
+    <CodeName>KCC.AccountPage</CodeName>
+    <GUID>70b01e20-f43b-40da-98fe-abd25fbb5374</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </Parent>
+  <Bindings>
+    <Binding id="cms.contenttype_KCC.LoginPage">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.LoginPage</CodeName>
+        <GUID>edf0b630-d9f6-4ee5-a669-950a50da6d9a</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
+  </Bindings>
+</cms.allowedchildcontenttype>

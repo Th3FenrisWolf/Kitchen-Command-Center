@@ -1,17 +1,29 @@
 using CMS.Core;
+using KCC;
+using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Attributes;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
+using KCC.Web.Features.Models.Constants;
+using KCC.Web.Features.Pages.Login;
+using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ResourceStrings;
+using Polly;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+
+[assembly: RegisterWebPageRoute(
+    LoginPage.CONTENT_TYPE_NAME,
+    typeof(LoginController),
+    ActionName = nameof(LoginController.Login),
+    WebsiteChannelNames = [XperienceConstants.WebsiteChannelName]
+)]
 
 namespace KCC.Web.Features.Pages.Login;
 
-[LocalizedRoute("Account")]
+// [LocalizedRoute("Account")]
 public class LoginController(
-    SignInManager<KCCApplicationUser> signInManager,
+    // SignInManager<KCCApplicationUser> signInManager,
     UserManager<KCCApplicationUser> userManager,
     IEventLogService eventLogService,
     IResourceStringInfoProvider resourceStrings
@@ -39,10 +51,9 @@ public class LoginController(
         "Login.NewHereDescription"
     );
 
-    [HttpGet("Login")]
     public IActionResult Login(string returnUrl = null)
     {
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity.IsAuthenticated && !HttpContext.IsPreview())
         {
             return Redirect(returnUrl ?? Url.HomePage());
         }
@@ -54,36 +65,31 @@ public class LoginController(
         });
     }
 
-    [HttpPost("Login")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel viewModel)
-    {
-        viewModel.ResourceStrings = LoginStrings;
-
-        if (!ModelState.IsValid)
-        {
-            return View("~/Features/Pages/Login/Index.cshtml", viewModel);
-        }
-
-        var signInResult = SignInResult.Failed;
-        try
-        {
-            signInResult = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, lockoutOnFailure: false);
-        }
-        catch (Exception ex)
-        {
-            eventLogService.LogException(nameof(LoginController), nameof(Login), ex);
-        }
-
-        if (signInResult.Succeeded)
-        {
-            return Redirect(viewModel.ReturnUrl ?? Url.HomePage());
-        }
-
-        ModelState.AddModelError(string.Empty, resourceStrings.GetOrDefault("Login.InvalidCredentialsError"));
-
-        return View("~/Features/Pages/Login/Index.cshtml", viewModel);
-    }
+    // [HttpPost("Login")]
+    // [ValidateAntiForgeryToken]
+    // public async Task<IActionResult> Login(LoginViewModel viewModel)
+    // {
+    //     viewModel.ResourceStrings = LoginStrings;
+    //     if (!ModelState.IsValid)
+    //     {
+    //         return View("~/Features/Pages/Login/Index.cshtml", viewModel);
+    //     }
+    //     var signInResult = SignInResult.Failed;
+    //     try
+    //     {
+    //         signInResult = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, lockoutOnFailure: false);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         eventLogService.LogException(nameof(LoginController), nameof(Login), ex);
+    //     }
+    //     if (signInResult.Succeeded)
+    //     {
+    //         return Redirect(viewModel.ReturnUrl ?? Url.HomePage());
+    //     }
+    //     ModelState.AddModelError(string.Empty, resourceStrings.GetOrDefault("Login.InvalidCredentialsError"));
+    //     return View("~/Features/Pages/Login/Index.cshtml", viewModel);
+    // }
 
     [HttpGet("Register")]
     public IActionResult Register()
