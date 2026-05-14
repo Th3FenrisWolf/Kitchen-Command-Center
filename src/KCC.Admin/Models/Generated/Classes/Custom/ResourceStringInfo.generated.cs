@@ -32,8 +32,8 @@ namespace ResourceStrings
             "ResourceStringID",
             null,
             null,
-            "Key",
-            "Value",
+            "ResourceStringKey",
+            "ResourceStringValue",
             null,
             null,
             null
@@ -56,20 +56,20 @@ namespace ResourceStrings
         /// Key.
         /// </summary>
         [DatabaseField]
-        public virtual string Key
+        public virtual string ResourceStringKey
         {
-            get => ValidationHelper.GetString(GetValue(nameof(Key)), String.Empty);
-            set => SetValue(nameof(Key), value);
+            get => ValidationHelper.GetString(GetValue(nameof(ResourceStringKey)), String.Empty);
+            set => SetValue(nameof(ResourceStringKey), value);
         }
 
         /// <summary>
         /// Value.
         /// </summary>
         [DatabaseField]
-        public virtual string Value
+        public virtual string ResourceStringValue
         {
-            get => ValidationHelper.GetString(GetValue(nameof(Value)), String.Empty);
-            set => SetValue(nameof(Value), value);
+            get => ValidationHelper.GetString(GetValue(nameof(ResourceStringValue)), String.Empty);
+            set => SetValue(nameof(ResourceStringValue), value);
         }
 
         /// <summary>

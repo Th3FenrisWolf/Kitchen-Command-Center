@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassDisplayName>ResourceStringTranslation</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ResourceStringTranslationID" columntype="integer" enabled="true" guid="7781757f-da36-4f2f-afa4-c8f60e199bca" isPK="true" />
+      <field column="ResourceStringTranslationResourceStringID" columnprecision="0" columntype="integer" enabled="true" guid="fb780f95-9968-4ed1-8150-f6d5271782d8" refobjtype="custom.resourcestring" reftype="Required" />
+      <field column="ResourceStringTranslationContentLanguageID" columnprecision="0" columntype="integer" enabled="true" guid="f182f7f8-82e9-43b9-a2a5-0e663902ea5e" refobjtype="cms.contentlanguage" reftype="Required" />
+      <field column="ResourceStringTranslationValue" columnprecision="0" columntype="longtext" enabled="true" guid="beec579e-91fa-454f-8b70-c95e83cedbca" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>cabc4db3-b5f1-4fda-9955-fba06c70223e</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>Custom.ResourceStringTranslation</ClassName>
+  <ClassResourceID>
+    <CodeName>ResourceStrings</CodeName>
+    <GUID>ec006c73-63db-4686-9ac1-3fe2987841e9</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>Custom_ResourceStringTranslation</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>
