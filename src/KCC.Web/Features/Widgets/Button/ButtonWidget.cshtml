@@ -9,7 +9,7 @@
 }
 
 <div class="flex @Model.Properties.Alignment @Model.Properties.GetMarginClasses()">
-    <bzs-button-link href="@Model.Properties.ButtonUrl" target="@Model.Properties.ButtonTarget" class="@buttonStyles @(isEditMode ? "cursor-text" : "cursor-pointer")">
+    <button-link href="@Model.Properties.ButtonUrl" target="@Model.Properties.ButtonTarget" class="@buttonStyles @(isEditMode ? "cursor-text" : "cursor-pointer")">
         @if (isEditMode)
         {
             Html.Kentico().RichTextEditor(nameof(Model.Properties.ButtonText));
@@ -18,5 +18,5 @@
         {
             @Html.Raw(Html.Kentico().ResolveRichText(@Model.Properties.ButtonText))
         }
-    </bzs-button-link>
+    </button-link>
 </div>
