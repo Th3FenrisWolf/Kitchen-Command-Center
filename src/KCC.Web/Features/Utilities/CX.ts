@@ -3,5 +3,3 @@ export const cx = (...classNames: unknown[]) =>
     .filter((className) => typeof className === 'string')
     .join(' ')
     .trim()
-
-export default cx

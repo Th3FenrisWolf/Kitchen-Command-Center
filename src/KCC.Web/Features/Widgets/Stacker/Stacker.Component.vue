@@ -11,7 +11,6 @@
       { threshold: [1] },
     )
 
-    // Find all card elements within the container
     if (containerRef.value) {
       const sentinels = containerRef.value.querySelectorAll('[data-sentinel]')
       sentinels.forEach((sentinel) => observer.observe(sentinel))
