@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>Login-48bvz6ne</CodeName>
+    <GUID>05bab81f-19ce-447a-b609-be33536faf70</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-05-13 23:13:54Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>b45d0fc6-dcf9-4493-8631-8fe8f22d343b</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-05-13 23:13:54Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ExcludeFromSitemap>False</ExcludeFromSitemap>
+  <ShowBreadcrumbs>True</ShowBreadcrumbs>
+</cms.contentitemcommondata>

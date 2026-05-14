@@ -17,38 +17,24 @@
       <field allowempty="true" column="ContentItemCommonDataVisualBuilderTemplateConfiguration" columnprecision="0" columntype="longtext" enabled="true" guid="0d5a573b-759a-4dd7-a86b-be2ef2f5bac4" system="true" />
       <field allowempty="true" column="ContentItemCommonDataFirstPublishedWhen" columnprecision="7" columntype="datetime" enabled="true" guid="1318327e-9a4c-47e7-be2e-3da0fe99c15e" system="true" />
       <field allowempty="true" column="ContentItemCommonDataLastPublishedWhen" columnprecision="7" columntype="datetime" enabled="true" guid="169ce320-e362-4b70-b4dd-cc055082c254" system="true" />
-      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="Navigation_Metadata">
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="Metadata">
         <properties>
-          <fieldcaption>Navigation/Metadata</fieldcaption>
+          <fieldcaption>Metadata</fieldcaption>
         </properties>
       </schema>
-      <field allowempty="true" column="IncludeInNavigation" columnprecision="0" columntype="boolean" enabled="true" guid="e8940121-7f2d-4744-8ad0-3cf140c90f12" visible="true">
+      <field allowempty="true" column="ExcludeFromSitemap" columnprecision="0" columntype="boolean" enabled="true" guid="60c013f1-4cb8-4e7b-89e6-26508a941301" visible="true">
         <properties>
-          <defaultvalue>True</defaultvalue>
+          <defaultvalue>False</defaultvalue>
           <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>Include in Navigation</fieldcaption>
+          <fieldcaption>Exclude from Sitemap</fieldcaption>
           <fielddescription>
-            <![CDATA[If selected, the current position of this page in the content tree will be used to include it in the site navigation]]>
+            <![CDATA[If selected, this page will not be included in the XML sitemap]]>
           </fielddescription>
           <fielddescriptionashtml>False</fielddescriptionashtml>
           <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
         </properties>
         <settings>
           <controlname>Kentico.Administration.Checkbox</controlname>
-        </settings>
-      </field>
-      <field allowempty="true" column="NavigationLabel" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="64541ce9-14f9-466f-87f4-5c28a218f5e0" visible="true">
-        <properties>
-          <explanationtext>
-            <![CDATA[The text to be displayed in the navigation menu for this element]]>
-          </explanationtext>
-          <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>Navigation Label</fieldcaption>
-          <fielddescriptionashtml>False</fielddescriptionashtml>
-          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
-        </properties>
-        <settings>
-          <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
       </field>
       <field allowempty="true" column="ShowBreadcrumbs" columnprecision="0" columntype="boolean" enabled="true" guid="bd94a82e-9abf-4453-b20d-3c588caa4963" visible="true">
@@ -64,6 +50,20 @@
         </properties>
         <settings>
           <controlname>Kentico.Administration.Checkbox</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="BreadcrumbLabel" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="638f7490-1c24-47d0-bd22-958f5045773e" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Override the text displayed in the breadcrumb trail for this page. If empty, the page name will be used]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Breadcrumb Label</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>3a6908a4-ba23-46a1-ab7e-7313cca78854</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
       </field>
       <field allowempty="true" column="MetadataTitle" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="d7855746-b8f8-4133-a1a9-6410bfa26c98" visible="true">
@@ -132,7 +132,6 @@
       </field>
       <field allowempty="true" column="MetadataPublishDate" columnprecision="7" columntype="datetime" enabled="true" guid="a4c3da7d-e45c-4389-b96b-bfa58d130b48" visible="true">
         <properties>
-          <explanationtext>{$base.forms.datetimeinput.explanation$}</explanationtext>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Metadata Publish Date</fieldcaption>
           <fielddescriptionashtml>False</fielddescriptionashtml>
@@ -205,11 +204,75 @@ player;Player
           <SelectionType>contentTypes</SelectionType>
         </settings>
       </field>
-      <schema guid="06a36232-7196-4749-b464-45ba1b9159f6" name="AzureSearchMetadata">
+      <schema guid="06a36232-7196-4749-b464-45ba1b9159f6" name="ListingMetadata">
         <properties>
-          <fieldcaption>AzureSearch Metadata</fieldcaption>
+          <fieldcaption>Listing Metadata</fieldcaption>
         </properties>
       </schema>
+      <field allowempty="true" column="ListingHeading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="a52b6d5b-88fa-4ddb-a4fa-f7cc44f819fb" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Heading to be displayed when this page appears in a listing]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Listing Heading</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="ListingImage" columnprecision="0" columntype="contentitemreference" enabled="true" guid="7fb21759-1550-48fe-bc2f-d4fdaedcdc4c" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Image to be displayed when this page appears in a listing]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Listing Image</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
+      <field allowempty="true" column="ListingSubHeading" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="f5f4c640-73db-4b3d-8376-c648fb065a67" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Sub heading to be displayed when this page appears in a listing]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Listing Sub Heading</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="ListingBody" columnprecision="0" columntype="longtext" enabled="true" guid="e64c8187-67d1-42fd-b054-bf720cde0fb1" visible="true">
+        <properties>
+          <explanationtext>
+            <![CDATA[Body text to be displayed when this page appears in a listing]]>
+          </explanationtext>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Listing Body</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextArea</controlname>
+          <CopyButtonVisible>False</CopyButtonVisible>
+          <MaxRowsNumber>5</MaxRowsNumber>
+          <MinRowsNumber>3</MinRowsNumber>
+        </settings>
+      </field>
       <field allowempty="true" column="ExcludeFromSearch" columnprecision="0" columntype="boolean" enabled="true" guid="862f8494-b307-4eef-a711-2efa7b543bef" visible="true">
         <properties>
           <explanationtext>
@@ -222,56 +285,6 @@ player;Player
         </properties>
         <settings>
           <controlname>Kentico.Administration.Checkbox</controlname>
-        </settings>
-      </field>
-      <field allowempty="true" column="SearchTitle" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="606ecdd2-58f3-444e-96dd-d4e9d848ecc9" visible="true">
-        <properties>
-          <explanationtext>
-            <![CDATA[Title used in search results. If blank Page Tile will be used]]>
-          </explanationtext>
-          <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>Search Title</fieldcaption>
-          <fielddescriptionashtml>False</fielddescriptionashtml>
-          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
-        </properties>
-        <settings>
-          <controlname>Kentico.Administration.TextInput</controlname>
-        </settings>
-      </field>
-      <field allowempty="true" column="SearchDescription" columnprecision="0" columnsize="500" columntype="text" enabled="true" guid="8736f571-9385-4d79-9621-866d14d3882b" visible="true">
-        <properties>
-          <explanationtext>
-            <![CDATA[Description to be used in search results. If blank Metadata Description will be used]]>
-          </explanationtext>
-          <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>Search Description</fieldcaption>
-          <fielddescriptionashtml>False</fielddescriptionashtml>
-          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
-        </properties>
-        <settings>
-          <controlname>Kentico.Administration.TextArea</controlname>
-          <CopyButtonVisible>False</CopyButtonVisible>
-          <MaxRowsNumber>5</MaxRowsNumber>
-          <MinRowsNumber>3</MinRowsNumber>
-        </settings>
-      </field>
-      <field allowempty="true" column="SearchThumbnailImage" columnprecision="0" columntype="contentitemreference" enabled="true" guid="0cf5b095-46b2-46c0-a5e7-ec3b9cc13b3b" visible="true">
-        <properties>
-          <explanationtext>
-            <![CDATA[Thumbnail image used for search results. If empty Metadata Image will be used]]>
-          </explanationtext>
-          <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>Search Thumbnail Image</fieldcaption>
-          <fielddescriptionashtml>False</fielddescriptionashtml>
-          <kxp_schema_identifier>06a36232-7196-4749-b464-45ba1b9159f6</kxp_schema_identifier>
-        </properties>
-        <settings>
-          <AllowedContentItemTypeIdentifiers>
-            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
-          </AllowedContentItemTypeIdentifiers>
-          <controlname>Kentico.Administration.ContentItemSelector</controlname>
-          <MaximumItems>1</MaximumItems>
-          <SelectionType>contentTypes</SelectionType>
         </settings>
       </field>
       <field allowempty="true" column="SearchSortDate" columnprecision="7" columntype="datetime" enabled="true" guid="fbba3557-cc8b-4ca9-9f26-76a93de379dc" visible="true">
