@@ -11,18 +11,5 @@
   home-url="@Url.HomePage()"
   :logo="@Vue.Prop(Model.Logo)"
   :main-nav-items="@Vue.Prop(Model.MainNavItems)"
-  :utility-nav-items="@Vue.Prop(Model.UtilityNavItems.Append(new()
-  {
-    DisplayText = ResourceStringInfoProvider.GetOrDefault("Login.Login"),
-    DisplayTextKey = "Login.Login",
-    SubLinks = new[]
-    {
-      new PageLink
-      {
-        DisplayText = ResourceStringInfoProvider.GetOrDefault("Login.Login"),
-        DisplayTextKey = "Login.Login",
-        Url = Url.LocalizedAction("Login", "Login"),
-      },
-    },
-  }))"
+  :utility-nav-items="@Vue.Prop(Model.UtilityNavItems)"
 />

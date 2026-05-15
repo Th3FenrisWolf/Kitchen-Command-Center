@@ -1,7 +1,6 @@
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
-import { vResourceKey } from '~/ResourceStringEditing/vResourceKey'
 import type { ContentRegions } from '~/Types/ContentRegions'
 
 import '~/Utilities/StringExtensions'
@@ -26,5 +25,4 @@ const app = createSSRApp({
 // Hydrate the SSR-rendered HTML in #app
 // Attach event listeners without re-rendering the DOM
 registerGlobalComponents(app)
-app.directive('resource-key', vResourceKey)
 app.mount('#app')

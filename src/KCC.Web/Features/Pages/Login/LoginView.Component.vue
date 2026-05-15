@@ -1,9 +1,8 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue'
   import { cx } from '~/Utilities/CX'
-  // import { parseQueryString } from '~/Utilities/QueryFunctions'
   import InputField from '~/Components/Forms/InputField.vue'
-  import { useResourceStrings } from '~/Utilities/UseStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
 
   const props = defineProps<{
     returnUrl?: string
@@ -14,9 +13,6 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  // rs() is still used for attribute bindings (placeholders) where a <ResourceString>
-  // component can't be inlined. provide() inside useResourceStrings exposes the
-  // dict to <ResourceString> descendants for text content.
   const rs = useResourceStrings(props.resourceStrings, 'Login')
 
   const swap = ref(false)

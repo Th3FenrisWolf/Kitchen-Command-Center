@@ -12,6 +12,5 @@ public class HeaderViewModel
 public class HeaderNavItem
 {
     public string DisplayText { get; set; }
-    public string DisplayTextKey { get; set; }
     public IEnumerable<PageLink> SubLinks { get; set; }
 }

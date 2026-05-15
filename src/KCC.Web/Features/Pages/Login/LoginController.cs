@@ -1,7 +1,6 @@
 using CMS.Core;
 using KCC;
 using KCC.ResourceStrings.Data;
-using KCC.Web.Features.Attributes;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
@@ -9,7 +8,6 @@ using KCC.Web.Features.Pages.Login;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Polly;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 [assembly: RegisterWebPageRoute(
@@ -21,7 +19,6 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace KCC.Web.Features.Pages.Login;
 
-// [LocalizedRoute("Account")]
 public class LoginController(
     // SignInManager<KCCApplicationUser> signInManager,
     UserManager<KCCApplicationUser> userManager,
@@ -37,7 +34,7 @@ public class LoginController(
         nameof(IdentityErrorDescriber.PasswordRequiresNonAlphanumeric),
     ];
 
-    private Dictionary<string, string> LoginStrings => resourceStrings.GetOrDefault(
+    private Dictionary<string, string> LoginStrings => resourceStrings.GetManyOrDefault(
         "Login.SignIn",
         "Login.SignUp",
         "Login.UsernamePlaceholder",

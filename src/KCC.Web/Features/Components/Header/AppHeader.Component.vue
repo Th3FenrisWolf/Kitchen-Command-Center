@@ -20,13 +20,11 @@
 
   interface NavItem {
     displayText: string
-    displayTextKey?: string
     subLinks: PageLink[]
   }
 
   interface PageLink {
     displayText: string
-    displayTextKey?: string
     url: string
     target: string
   }
@@ -75,13 +73,13 @@
         />
       </a>
 
-      <ul class="flex">
+      <ul class="flex gap-4">
         <li v-for="item in mainNavItems" :key="item.displayText">
           <MenuItem :item />
         </li>
       </ul>
 
-      <ul class="ml-auto flex">
+      <ul class="ml-auto flex gap-4">
         <li v-for="item in utilityNavItems" :key="item.displayText">
           <MenuItem :item />
         </li>

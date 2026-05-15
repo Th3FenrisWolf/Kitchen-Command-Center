@@ -4,5 +4,5 @@ public partial interface IResourceStringInfoProvider
 {
     string GetOrDefault(string key);
     string GetOrDefault(string key, string languageName);
-    Dictionary<string, string> GetOrDefault(params string[] keys);
+    Dictionary<string, string> GetManyOrDefault(params string[] keys);
 }

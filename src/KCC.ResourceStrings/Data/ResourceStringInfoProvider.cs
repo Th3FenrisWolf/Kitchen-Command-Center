@@ -34,7 +34,7 @@ public partial class ResourceStringInfoProvider
             new CacheSettings(CacheMinutes, ResourceStringInfo.OBJECT_TYPE, languageName, key));
     }
 
-    public Dictionary<string, string> GetOrDefault(params string[] keys)
+    public Dictionary<string, string> GetManyOrDefault(params string[] keys)
     {
         var cache = Service.Resolve<IProgressiveCache>();
         var languageName = Service.Resolve<IPreferredLanguageRetriever>().Get();

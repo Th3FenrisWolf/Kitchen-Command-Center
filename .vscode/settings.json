@@ -9,10 +9,10 @@
   "tailwindCSS.experimental.configFile": "src/KCC.Web/Features/Styles/TailwindConfig.css",
   "cSpell.words": [
     "antiforgery",
-    "ASPNETCORE",
+    "aspnetcore",
     "bychannel",
     "byid",
-    "Clsx",
+    "clsx",
     "cmsctx",
     "fontawesome",
     "fortawesome",
@@ -22,8 +22,9 @@
     "rgba",
     "stylesheet",
     "tailwindcss",
+    "typeinfo",
     "vite",
-    "Walsheim",
+    "walsheim",
     "webpageitem",
     "xperience"
   ]
