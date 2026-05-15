@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentlanguage>
+  <ContentLanguageCultureFormat>de-DE</ContentLanguageCultureFormat>
+  <ContentLanguageDisplayName>German</ContentLanguageDisplayName>
+  <ContentLanguageFallbackContentLanguageID>
+    <CodeName>es</CodeName>
+    <GUID>ef3c384b-a9ef-42c4-a1dc-21f748137808</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentLanguageFallbackContentLanguageID>
+  <ContentLanguageFlagIconName>xp-flag-germany</ContentLanguageFlagIconName>
+  <ContentLanguageGUID>2584f8c4-f563-4f2f-b337-9da4a38f2dca</ContentLanguageGUID>
+  <ContentLanguageIsDefault>False</ContentLanguageIsDefault>
+  <ContentLanguageName>de</ContentLanguageName>
+</cms.contentlanguage>
