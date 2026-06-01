@@ -18,14 +18,14 @@ public enum SectionBackgroundColorOptions
 {
     [TailwindBackgroundColor(TailwindColor.Bone)]
     Bone,
-    [TailwindBackgroundColor(TailwindColor.Base)]
-    Base,
-    [TailwindBackgroundColor(TailwindColor.Crust)]
-    Crust,
-    [TailwindBackgroundColor(TailwindColor.Surface)]
-    Surface,
-    [TailwindBackgroundColor(TailwindColor.Mantle)]
-    Mantle,
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.FourHundred)]
+    Surface400,
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.FiveHundred)]
+    Surface500,
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.SixHundred)]
+    Surface600,
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.SevenHundred)]
+    Surface700,
 }
 
 public enum SectionTextColorOptions

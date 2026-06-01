@@ -1,3 +1,10 @@
+:root {
+  --kcc-color-product: #7f09b7;
+  --kcc-color-text: #151515;
+  --kcc-color-text-secondary: #393939;
+  --kcc-gradient-brand: linear-gradient(135deg, #af00fa, #7f09b7);
+}
+
 .kcc-home__featured-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -19,10 +26,7 @@
   margin: 0 0 24px 0;
   padding: 0;
   width: min-content;
-  background: var(
-    --gradient-dark-xperience-violet,
-    linear-gradient(135deg, #af00fa, #7f09b7)
-  );
+  background: var(--kcc-gradient-brand);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: rgba(0, 0, 0, 0);
@@ -34,10 +38,7 @@
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background: var(
-    --gradient-dark-xperience-violet,
-    linear-gradient(135deg, #af00fa, #7f09b7)
-  );
+  background: var(--kcc-gradient-brand);
   color: #f5f3f2;
   text-decoration: none;
   min-height: 120px;
@@ -93,7 +94,7 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
-  color: var(--color-text-default-on-light, #151515);
+  color: var(--kcc-color-text);
   margin: 0 0 12px 0;
 }
 .kcc-home-category__tiles {
@@ -133,7 +134,7 @@
   border: 1px solid #ddd;
   border-radius: 6px;
   text-decoration: none;
-  color: var(--color-tab-text, #393939);
+  color: var(--kcc-color-text-secondary);
   font-size: 12px;
   font-weight: 500;
   text-align: center;
@@ -143,7 +144,7 @@
   display: inline-flex;
   font-size: 28px;
   line-height: 1;
-  color: var(--color-product, #7f09b7);
+  color: var(--kcc-color-product);
 }
 .kcc-home-tile__icon svg {
   width: 1em;

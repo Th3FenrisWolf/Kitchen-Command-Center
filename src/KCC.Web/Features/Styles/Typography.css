@@ -28,13 +28,6 @@
 
 /* TODO: Hazelnut font is swapping colon and semicolon */
 
-/* Display fonts - loaded on demand */
-@font-face {
-  font-display: swap;
-  font-family: 'Aima';
-  src: url('/fonts/AimaDisplayRegular.woff2') format('woff2');
-}
-
 /* Heading font - preloaded */
 @font-face {
   font-display: swap;

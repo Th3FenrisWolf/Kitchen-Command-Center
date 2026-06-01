@@ -22,6 +22,7 @@ public class VueSsrService(
         IHtmlContent headerContent,
         IHtmlContent bodyContent,
         IHtmlContent footerContent,
+        bool isPreview = false,
         CancellationToken cancellationToken = default)
     {
         var encoder = HtmlEncoder.Default;
@@ -42,7 +43,7 @@ public class VueSsrService(
         footerContent.WriteTo(writer, encoder);
         var footer = builder.ToString();
 
-        var result = await RenderAsync(header, body, footer, cancellationToken);
+        var result = await RenderAsync(header, body, footer, isPreview, cancellationToken);
 
         return new SsrHtmlContent(result);
     }
@@ -51,13 +52,15 @@ public class VueSsrService(
         string headerContent,
         string bodyContent,
         string footerContent,
+        bool isPreview = false,
         CancellationToken cancellationToken = default)
     {
         var baseResult = new SsrResult
         {
             HeaderContent = headerContent,
             BodyContent = bodyContent,
-            FooterContent = footerContent
+            FooterContent = footerContent,
+            IsPreview = isPreview
         };
 
         if (!IsEnabled)
@@ -81,7 +84,7 @@ public class VueSsrService(
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "/render");
             request.Headers.Add("X-Request-Id", requestId);
-            request.Content = JsonContent.Create(new { headerContent, bodyContent, footerContent });
+            request.Content = JsonContent.Create(new { headerContent, bodyContent, footerContent, isPreview });
 
             var response = await HttpClient.SendAsync(request, cancellationToken);
 

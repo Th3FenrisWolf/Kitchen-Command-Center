@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { computed, inject } from 'vue'
   import { cx } from '~/Utilities/CX'
+  import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
   interface PageLink {
     displayText: string
@@ -13,16 +14,23 @@
     subLinks: PageLink[]
   }
 
-  const { item } = defineProps<{
+  const { item, menuId } = defineProps<{
     item: NavItem
+    menuId: string
   }>()
 
-  const showDrawer = ref(false)
+  const controller = inject(MENU_CONTROLLER_KEY)
+
+  const isOpen = computed(() => controller?.openId.value === menuId)
+
+  const toggle = () => {
+    controller?.setOpen(isOpen.value ? null : menuId)
+  }
 </script>
 <template>
   <button
     type="button"
-    @click="showDrawer = !showDrawer"
+    @click="toggle"
     class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-bone px-4 py-2 font-casual text-2xl font-bold uppercase"
   >
     {{ item.displayText }}
@@ -30,8 +38,8 @@
   <div
     :class="
       cx(
-        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-base text-bone transition-all duration-500 ease-in-out',
-        showDrawer ? 'max-h-96' : 'max-h-0',
+        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-surface-500 text-bone transition-all duration-500 ease-in-out',
+        isOpen ? 'max-h-96' : 'max-h-0',
       )
     "
   >

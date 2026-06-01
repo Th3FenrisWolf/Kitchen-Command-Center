@@ -13,19 +13,19 @@
   <ContentItemCommonDataFirstPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataFirstPublishedWhen>
   <ContentItemCommonDataGUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-05-20 18:38:41Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
   <ContentItemReferences>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>cc6c6dfb-3a7e-45d0-8a8e-0b479d2ccb1b</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>4da3dcc6-bf8b-4d99-a005-cf10dd5e7c52</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>840b85d1-5ed1-4302-8b80-024ad03e7120</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
         <GUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>Home-cvt64nws</CodeName>
-        <GUID>72105566-b709-4ba4-bdf5-c04c63790dd1</GUID>
+        <CodeName>Recipes-rsxx9362</CodeName>
+        <GUID>6cdc6513-01df-403e-bde5-50bf04c1bdf5</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>

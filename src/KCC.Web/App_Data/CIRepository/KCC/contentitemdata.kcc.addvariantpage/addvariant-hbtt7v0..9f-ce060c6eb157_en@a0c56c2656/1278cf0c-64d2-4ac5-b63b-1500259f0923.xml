@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.addvariantpage>
+  <ContentItemDataCommonDataID>
+    <GUID>aa0969dc-8210-4c2b-819f-ce060c6eb157</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>AddVariant-hbtt7v02</CodeName>
+      <GUID>1ac943e5-eecd-47ad-bb07-05e1b40261b6</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>1278cf0c-64d2-4ac5-b63b-1500259f0923</ContentItemDataGUID>
+</contentitemdata.kcc.addvariantpage>

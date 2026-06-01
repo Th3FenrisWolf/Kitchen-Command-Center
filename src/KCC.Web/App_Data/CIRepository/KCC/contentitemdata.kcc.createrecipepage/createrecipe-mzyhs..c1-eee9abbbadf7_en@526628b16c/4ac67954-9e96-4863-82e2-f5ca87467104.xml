@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.createrecipepage>
+  <ContentItemDataCommonDataID>
+    <GUID>a332aaa7-bdaa-4ae1-a9c1-eee9abbbadf7</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CreateRecipe-mzyhs0nc</CodeName>
+      <GUID>68c2b1b1-4ca3-49cd-a984-2fb75e51188c</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>4ac67954-9e96-4863-82e2-f5ca87467104</ContentItemDataGUID>
+</contentitemdata.kcc.createrecipepage>

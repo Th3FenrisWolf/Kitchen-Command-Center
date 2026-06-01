@@ -25,7 +25,9 @@ public static class ResourceStringHtmlExtensions
 
         if (!canEdit)
         {
-            return new HtmlString(encodedValue);
+            return new HtmlString(
+                $"<span>{encodedValue}</span>"
+            );
         }
 
         var encodedKey = encoder.Encode(key);

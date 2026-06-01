@@ -1,0 +1,10 @@
+@using KCC.Web.Features.Helpers
+@using KCC.Web.Features.Pages.RecipeSearch
+
+@model RecipeSearchViewModel
+
+<RecipeSearchView
+  :recipes="@Vue.Prop(Model.Recipes)"
+  create-recipe-url="@Model.CreateRecipeUrl"
+  :resource-strings="@Vue.Prop(Model.ResourceStrings)"
+/>

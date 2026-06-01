@@ -1,3 +1,11 @@
+:root {
+  --kcc-color-product: #7f09b7;
+  --kcc-color-text: #151515;
+  --kcc-color-text-secondary: #393939;
+  --kcc-gradient-brand: linear-gradient(135deg, #af00fa, #7f09b7);
+  --kcc-color-product-ring: 127 9 183; /* #7f09b7 */
+}
+
 /* In page-builder edit mode (no body class needed) markers are always visible. */
 .kcc-rs-editable {
   cursor: pointer;
@@ -7,12 +15,12 @@
 }
 
 .kcc-rs-editable:hover {
-  outline-color: rgba(127, 9, 183, 0.6);
+  outline-color: rgb(var(--kcc-color-product-ring) / 0.6);
 }
 
 .kcc-rs-editable.kcc-rs-editing,
 .kcc-rs-editable.kcc-rs-editing:hover {
-  outline-color: var(--color-product, #7f09b7);
+  outline-color: var(--kcc-color-product);
   outline-style: solid;
 }
 
@@ -38,22 +46,21 @@ body.kcc-rs-preview.kcc-rs-mode-view .kcc-rs-editable:hover {
 }
 
 body.kcc-rs-preview.kcc-rs-mode-edit .kcc-rs-editable:hover {
-  outline-color: rgba(127, 9, 183, 0.6);
+  outline-color: rgb(var(--kcc-color-product-ring) / 0.6);
 }
 
 body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing,
 body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
-  outline-color: var(--color-product, #7f09b7);
+  outline-color: var(--kcc-color-product);
   outline-style: solid;
 }
 
 .kcc-rs-pencil {
   align-items: center;
-  animation: kcc-rs-fade-in 80ms ease;
-  background: var(--gradient-dark-xperience-violet, linear-gradient(135deg, #af00fa, #7f09b7));
+  background: var(--kcc-gradient-brand);
   border: none;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(127, 9, 183, 0.3);
+  box-shadow: 0 2px 6px rgb(var(--kcc-color-product-ring) / 0.3);
   color: #f5f3f2;
   cursor: pointer;
   display: none;
@@ -61,20 +68,16 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
   height: 32px;
   justify-content: center;
   line-height: 1;
+  opacity: 0;
   padding: 0;
   position: absolute;
-  transition: box-shadow 120ms ease;
+  transition: box-shadow 120ms ease, opacity 80ms ease;
   width: 32px;
   z-index: 10000;
 }
 
-@keyframes kcc-rs-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .kcc-rs-pencil:hover {
-  box-shadow: 0 3px 12px rgba(127, 9, 183, 0.45);
+  box-shadow: 0 3px 12px rgb(var(--kcc-color-product-ring) / 0.45);
 }
 
 .kcc-rs-popover {
@@ -82,7 +85,7 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  color: var(--color-text-default-on-light, #151515);
+  color: var(--kcc-color-text);
   font-family: 'GT Walsheim', system-ui, sans-serif;
   font-size: 13px;
   min-width: 340px;
@@ -100,7 +103,7 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 }
 
 .kcc-rs-popover-key {
-  color: var(--color-text-default-on-light, #151515);
+  color: var(--kcc-color-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
 }
@@ -109,7 +112,7 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
   background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
-  color: var(--color-text-default-on-light, #151515);
+  color: var(--kcc-color-text);
   font-family: inherit;
   font-size: 12px;
   padding: 4px 8px;
@@ -118,14 +121,14 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 
 .kcc-rs-popover-lang:hover,
 .kcc-rs-popover-lang:focus {
-  border-color: var(--color-product, #7f09b7);
+  border-color: var(--kcc-color-product);
 }
 
 .kcc-rs-popover-input {
   border: 1px solid #ddd;
   border-radius: 6px;
   box-sizing: border-box;
-  color: var(--color-text-default-on-light, #151515);
+  color: var(--kcc-color-text);
   font-family: inherit;
   font-size: 13px;
   padding: 8px 10px;
@@ -137,13 +140,13 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 }
 
 .kcc-rs-popover-input:focus {
-  border-color: var(--color-product, #7f09b7);
-  box-shadow: 0 0 0 3px rgba(127, 9, 183, 0.15);
+  border-color: var(--kcc-color-product);
+  box-shadow: 0 0 0 3px rgb(var(--kcc-color-product-ring) / 0.15);
   outline: none;
 }
 
 .kcc-rs-popover-fallback {
-  color: var(--color-tab-text, #393939);
+  color: var(--kcc-color-text-secondary);
   font-size: 11px;
   font-style: italic;
   margin-top: 6px;
@@ -178,8 +181,8 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 
 .kcc-rs-popover-cancel {
   background: white;
-  border: 1px solid var(--color-product, #7f09b7);
-  color: var(--color-product, #7f09b7);
+  border: 1px solid var(--kcc-color-product);
+  color: var(--kcc-color-product);
 }
 
 .kcc-rs-popover-cancel:hover {
@@ -187,14 +190,14 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 }
 
 .kcc-rs-popover-save {
-  background: var(--gradient-dark-xperience-violet, linear-gradient(135deg, #af00fa, #7f09b7));
+  background: var(--kcc-gradient-brand);
   border: none;
-  box-shadow: 0 2px 6px rgba(127, 9, 183, 0.3);
+  box-shadow: 0 2px 6px rgb(var(--kcc-color-product-ring) / 0.3);
   color: #f5f3f2;
 }
 
 .kcc-rs-popover-save:hover:not(:disabled) {
-  box-shadow: 0 3px 12px rgba(127, 9, 183, 0.45);
+  box-shadow: 0 3px 12px rgb(var(--kcc-color-product-ring) / 0.45);
 }
 
 .kcc-rs-popover-save:disabled {
@@ -205,11 +208,11 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 
 .kcc-rs-mode-fab {
   align-items: center;
-  background: var(--gradient-dark-xperience-violet, linear-gradient(135deg, #af00fa, #7f09b7));
+  background: var(--kcc-gradient-brand);
   border: none;
   border-radius: 22px;
   bottom: 24px;
-  box-shadow: 0 4px 12px rgba(127, 9, 183, 0.35);
+  box-shadow: 0 4px 12px rgb(var(--kcc-color-product-ring) / 0.35);
   color: #f5f3f2;
   cursor: pointer;
   display: inline-flex;
@@ -229,7 +232,7 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
 }
 
 .kcc-rs-mode-fab:hover {
-  box-shadow: 0 6px 20px rgba(127, 9, 183, 0.5);
+  box-shadow: 0 6px 20px rgb(var(--kcc-color-product-ring) / 0.5);
   gap: 8px;
 }
 

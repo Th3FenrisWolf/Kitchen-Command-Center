@@ -10,6 +10,9 @@ using Kentico.Content.Web.Mvc.Routing;
 using Kentico.Membership;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
+using Kentico.Xperience.ComponentRegistry;
+using Kentico.Xperience.ManagementApi;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using RobotsTxt;
@@ -30,7 +33,7 @@ builder.Services.AddKentico(features =>
             DefaultSectionIdentifier = "KCC.BaseSection",
             ContentTypeNames = [
                 HomePage.CONTENT_TYPE_NAME,
-                PageBuilderPage.CONTENT_TYPE_NAME
+                PageBuilderPage.CONTENT_TYPE_NAME,
             ],
         }
     );
@@ -39,6 +42,18 @@ builder.Services.AddKentico(features =>
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddKenticoMiniProfiler();
+
+    builder.Services.AddKenticoManagementApi(options =>
+    {
+        options.Secret = builder.Configuration["ManagementApi:Secret"];
+    });
+
+    builder.Services.AddComponentRegistry();
+    builder.Services
+        .AddComponentRegistryMcpServices()
+        .AddMcpServer()
+        .WithHttpTransport()
+        .WithComponentRegistryTools();
 }
 
 builder.Services.AddAuthentication();
@@ -102,7 +117,27 @@ else
 
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 
+// Restore the lang route value lost during status code re-execute so that
+// IPreferredLanguageRetriever, content retrieval, and URL generation all
+// resolve the correct language for the original request.
+app.Use(async (context, next) =>
+{
+    var reExecuteFeature = context.Features.Get<IStatusCodeReExecuteFeature>();
+    if (reExecuteFeature?.OriginalPath is string originalPath
+        && !context.Request.RouteValues.ContainsKey("lang"))
+    {
+        var segments = originalPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length > 0 && segments[0].Length == 2)
+        {
+            context.Request.RouteValues["lang"] = segments[0];
+        }
+    }
+
+    await next();
+});
+
 app.Kentico().MapRoutes();
+app.MapControllers();
 app.MapControllerRoute(name: "error", pattern: "{lang}/error/{0}");
 
 app.MapControllerRoute(

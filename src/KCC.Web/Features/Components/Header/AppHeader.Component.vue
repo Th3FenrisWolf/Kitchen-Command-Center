@@ -51,14 +51,40 @@
 </script>
 
 <script setup lang="ts">
+  import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
   import MenuItem from '~/Components/Header/MenuItem.vue'
+  import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
   const { homeUrl, logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
+
+  const navRef = ref<HTMLElement | null>(null)
+  const openId = ref<string | null>(null)
+
+  provide(MENU_CONTROLLER_KEY, {
+    openId,
+    setOpen: (id) => {
+      openId.value = id
+    },
+  })
+
+  const handleDocumentClick = (event: MouseEvent) => {
+    if (navRef.value && !navRef.value.contains(event.target as Node)) {
+      openId.value = null
+    }
+  }
+
+  onMounted(() => {
+    document.addEventListener('click', handleDocumentClick)
+  })
+
+  onBeforeUnmount(() => {
+    document.removeEventListener('click', handleDocumentClick)
+  })
 </script>
 
 <template>
   <header class="content-grid mt-4">
-    <nav class="breakout relative flex size-full items-center gap-8 rounded-3xl bg-base px-8">
+    <nav ref="navRef" class="breakout relative flex size-full items-center gap-8 rounded-3xl bg-surface-500 px-8">
       <a
         class="btn-no-style z-20 h-full shrink-0 py-4 text-bone focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
         :href="homeUrl.stripTilde()"
@@ -74,14 +100,14 @@
       </a>
 
       <ul class="flex gap-4">
-        <li v-for="item in mainNavItems" :key="item.displayText">
-          <MenuItem :item />
+        <li v-for="(item, index) in mainNavItems" :key="item.displayText">
+          <MenuItem :item :menu-id="`main-${index}-${item.displayText}`" />
         </li>
       </ul>
 
       <ul class="ml-auto flex gap-4">
-        <li v-for="item in utilityNavItems" :key="item.displayText">
-          <MenuItem :item />
+        <li v-for="(item, index) in utilityNavItems" :key="item.displayText">
+          <MenuItem :item :menu-id="`utility-${index}-${item.displayText}`" />
         </li>
       </ul>
     </nav>

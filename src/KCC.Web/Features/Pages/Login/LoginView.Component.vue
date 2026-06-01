@@ -17,6 +17,7 @@
 
   const swap = ref(false)
   const isSignIn = ref(true)
+  const isSubmitting = ref(false)
 
   const userName = ref(props.defaultUserName ?? '')
   const email = ref('')
@@ -30,6 +31,7 @@
     email.value = ''
     password.value = ''
     passwordConfirmation.value = ''
+    formError.value = null
   }
 
   watch(swap, () => {
@@ -39,6 +41,45 @@
       isSignIn.value = !isSignIn.value
     }, 250)
   })
+
+  const handleSubmit = async () => {
+    formError.value = null
+
+    if (!isSignIn.value && password.value !== passwordConfirmation.value) {
+      formError.value = 'Passwords do not match.'
+      return
+    }
+
+    isSubmitting.value = true
+    const endpoint = isSignIn.value ? '/api/account/login' : '/api/account/register'
+    const body = isSignIn.value
+      ? { userName: userName.value, password: password.value, rememberMe: rememberMe.value, returnUrl: props.returnUrl }
+      : { userName: userName.value, email: email.value, password: password.value }
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(props.antiforgeryToken ? { RequestVerificationToken: props.antiforgeryToken } : {}),
+        },
+        body: JSON.stringify(body),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        formError.value = data.errors?.join(' ') ?? 'Sign in failed.'
+        return
+      }
+
+      window.location.href = data.redirectUrl ?? '/'
+    } catch {
+      formError.value = 'An unexpected error occurred.'
+    } finally {
+      isSubmitting.value = false
+    }
+  }
 </script>
 
 <template>
@@ -52,16 +93,13 @@
           )
         "
       >
-        <h2 class="text-heading"><ResourceString :k="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
+        <h2 class="text-heading"><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
 
         <p :class="cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')">
           {{ formError }}
         </p>
 
-        <form :action="isSignIn ? '/Account/Login' : '/Account/Register'" method="post" class="grid grow-0 gap-8">
-          <input type="hidden" name="__RequestVerificationToken" :value="props.antiforgeryToken" />
-          <input type="hidden" name="ReturnUrl" :value="props.returnUrl" />
-
+        <form @submit.prevent="handleSubmit" class="grid grow-0 gap-8">
           <InputField
             required
             type="text"
@@ -102,11 +140,15 @@
 
           <label v-if="isSignIn" class="flex items-center gap-2 justify-self-center">
             <input type="checkbox" v-model="rememberMe" name="RememberMe" value="true" />
-            <ResourceString k="RememberMe" />
+            <ResourceString for="RememberMe" />
           </label>
 
-          <button class="w-max cursor-pointer justify-self-center rounded-2xl bg-base px-4 py-2 text-bone" type="submit">
-            <ResourceString :k="isSignIn ? 'SignIn' : 'SignUp'" />
+          <button
+            :disabled="isSubmitting"
+            class="w-max cursor-pointer justify-self-center rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
+            type="submit"
+          >
+            <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
           </button>
         </form>
       </div>
@@ -114,7 +156,7 @@
       <div
         :class="
           cx(
-            'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-base p-12 text-center transition-all duration-500',
+            'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-surface-500 p-12 text-center transition-all duration-500',
             swap && 'right-[60%]',
           )
         "
@@ -128,25 +170,25 @@
           "
         >
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
-            <h3 class="font-[APCasual] text-heading"><ResourceString k="HaveAccount" /></h3>
-            <p><ResourceString k="HaveAccountDescription" /></p>
+            <h3 class="font-casual text-heading"><ResourceString for="HaveAccount" /></h3>
+            <p><ResourceString for="HaveAccountDescription" /></p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
-              <ResourceString k="SignIn" />
+              <ResourceString for="SignIn" />
             </button>
           </div>
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="swap">
-            <h3 class="font-[APCasual] text-heading"><ResourceString k="NewHere" /></h3>
-            <p><ResourceString k="NewHereDescription" /></p>
+            <h3 class="font-casual text-heading"><ResourceString for="NewHere" /></h3>
+            <p><ResourceString for="NewHereDescription" /></p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
               @click="swap = !swap"
               type="button"
             >
-              <ResourceString k="SignUp" />
+              <ResourceString for="SignUp" />
             </button>
           </div>
         </div>

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Create Recipe Page</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="c928b3aa-72dc-424d-9e84-c876fc1b2b4a" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="b8d66d46-7c0a-4d2a-977c-c9a1adce97a0" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="4c46abc7-49f6-4035-af59-8cf4387ab050" isunique="true" system="true" />
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="Metadata">
+        <properties />
+      </schema>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>1ac34be6-2c9c-410e-8a8b-04283dda74e9</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-plus-circle</ClassIconClass>
+  <ClassName>KCC.CreateRecipePage</ClassName>
+  <ClassShortName>KCCCreateRecipePage</ClassShortName>
+  <ClassTableName>KCC_CreateRecipePage</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+</cms.contenttype>

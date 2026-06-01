@@ -68,5 +68,5 @@
   <ClassShortName>KCCHeaderNavigation</ClassShortName>
   <ClassTableName>KCC_HeaderNavigation</ClassTableName>
   <ClassType>Content</ClassType>
-  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+  <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
 </cms.contenttype>

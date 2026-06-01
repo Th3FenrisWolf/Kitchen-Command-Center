@@ -1,4 +1,3 @@
-@using KCC.ResourceStrings.Editing
 @using KCC.Web.Features.Components.Footer
 @using KCC.Web.Features.Components.Header
 @using Kentico.Content.Web.Mvc.Routing
@@ -28,8 +27,8 @@
     <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
   }
 
-  <page-builder-styles />
   <page-builder-mount-preload />
+  <page-builder-styles />
 </head>
 
 <body>
@@ -37,15 +36,14 @@
     await Component.InvokeAsync(typeof(HeaderViewComponent)),
     RenderBody(),
     await Component.InvokeAsync(typeof(FooterViewComponent)),
+    Context.IsPreview() || Context.IsPageBuilder(),
     Context.RequestAborted
   )
 
   <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>
 
   <page-builder-mount-script />
-
-  @await Component.InvokeAsync(typeof(ResourceStringEditorViewComponent))
-
+  <resource-string-editor />
   <page-builder-scripts />
 </body>
 

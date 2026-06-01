@@ -1,0 +1,97 @@
+using CMS.ContentEngine;
+using CMS.Websites;
+using KCC;
+using KCC.Web.Features.Models.Constants;
+using KCC.Web.Features.Pages.RecipeDetail;
+using KCC.Web.Features.Pages.Shared;
+using Kentico.Content.Web.Mvc;
+using Kentico.Content.Web.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
+
+[assembly: RegisterWebPageRoute(
+    Recipe.CONTENT_TYPE_NAME,
+    typeof(RecipeDetailController),
+    WebsiteChannelNames = [XperienceConstants.WebsiteChannelName]
+)]
+
+namespace KCC.Web.Features.Pages.RecipeDetail;
+
+public class RecipeDetailController(
+    IWebPageDataContextRetriever webPageDataContextRetriever,
+    IContentRetriever contentRetriever,
+    ITaxonomyRetriever taxonomyRetriever,
+    IPreferredLanguageRetriever preferredLanguageRetriever
+) : Controller
+{
+    public async Task<IActionResult> Index()
+    {
+        var language = preferredLanguageRetriever.Get();
+        var pageId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
+
+        var recipe = (await contentRetriever.RetrievePages<Recipe>(
+            new() { LinkedItemsMaxLevel = 1 },
+            query => query
+                .Where(where => where
+                    .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId))
+                .TopN(1),
+            new($"{nameof(RecipeDetailController)}|{nameof(Index)}|{pageId}")
+        )).FirstOrDefault();
+
+        if (recipe is null)
+        {
+            return NotFound();
+        }
+
+        var addVariantPage = (await contentRetriever.RetrievePages<AddVariantPage>(
+            new(),
+            query => query.TopN(1),
+            new($"{nameof(RecipeDetailController)}|{nameof(AddVariantPage)}")
+        )).FirstOrDefault();
+
+        var categoryId = recipe.Categories?.FirstOrDefault()?.Identifier ?? Guid.Empty;
+        var resolvedCategory = (await taxonomyRetriever.RetrieveTags([categoryId], language)).FirstOrDefault();
+
+        var viewModel = new RecipeDetailViewModel
+        {
+            RecipeName = recipe.Name,
+            RecipeDescription = recipe.Description,
+            RecipeImagePath = recipe.Image?.FirstOrDefault()?.Asset?.Url,
+            RecipeCategory = resolvedCategory,
+            RecipeGuid = recipe.SystemFields.ContentItemGUID,
+            AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
+            Variants = await RetrieveVariants(pageId, language),
+        };
+
+        recipe.MapMetadata(viewModel);
+        recipe.MapWebPageFields(viewModel);
+
+        return View("~/Features/Pages/RecipeDetail/Index.cshtml", viewModel);
+    }
+
+    private async Task<IEnumerable<VariantSummaryViewModel>> RetrieveVariants(int pageId, string language)
+    {
+        var variants = await contentRetriever.RetrievePages<RecipeVariant>(
+            new() { LinkedItemsMaxLevel = 1 },
+            query => query.Where(where => where
+                .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID), pageId)),
+            new($"{nameof(RecipeDetailController)}|{nameof(RetrieveVariants)}|{pageId}")
+        );
+
+        var tagIds = variants
+            .SelectMany(v => v.Tags?.Select(tag => tag.Identifier) ?? [])
+            .Distinct();
+
+        var resolvedTags = await taxonomyRetriever.RetrieveTags(tagIds, language);
+
+        return variants.Select(variant => new VariantSummaryViewModel
+        {
+            Name = variant.Name,
+            Description = variant.Description,
+            Slug = variant.GetUrl().RelativePath,
+            Image = variant.Images?.FirstOrDefault()?.Asset?.Url,
+            Tags = resolvedTags?.IntersectBy(
+                variant.Tags?.Select(tag => tag.Identifier) ?? [],
+                resolved => resolved.Identifier)
+        });
+    }
+}

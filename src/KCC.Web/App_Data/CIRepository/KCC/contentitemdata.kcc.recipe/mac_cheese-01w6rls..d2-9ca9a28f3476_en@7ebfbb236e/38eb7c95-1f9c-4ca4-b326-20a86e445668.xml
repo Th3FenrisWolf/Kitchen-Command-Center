@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <ContentItemDataCommonDataID>
+    <GUID>475c94f3-4a70-4ffa-90d2-9ca9a28f3476</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Mac_Cheese-01w6rlsp</CodeName>
+      <GUID>68c3933e-6056-482e-b240-7c39e1248042</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>38eb7c95-1f9c-4ca4-b326-20a86e445668</ContentItemDataGUID>
+  <Description>Creamy, cheesy, get your mac here</Description>
+  <Name>
+    <![CDATA[Mac & Cheese]]>
+  </Name>
+</contentitemdata.kcc.recipe>

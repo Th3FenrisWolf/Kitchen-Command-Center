@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.allowedchildcontenttype>
+  <Parent>
+    <CodeName>KCC.RecipeListingPage</CodeName>
+    <GUID>f6c8842d-aee6-4b8b-93b2-fae1fdc873b6</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </Parent>
+  <Bindings>
+    <Binding id="cms.contenttype_KCC.AddVariantPage">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.AddVariantPage</CodeName>
+        <GUID>97d58df3-8ce7-476d-b3c1-fceec779dda6</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
+    <Binding id="cms.contenttype_KCC.CreateRecipePage">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.CreateRecipePage</CodeName>
+        <GUID>1ac34be6-2c9c-410e-8a8b-04283dda74e9</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
+    <Binding id="cms.contenttype_KCC.Recipe">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.Recipe</CodeName>
+        <GUID>33ab2a04-a592-4090-963f-504bc41afb5f</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
+  </Bindings>
+</cms.allowedchildcontenttype>

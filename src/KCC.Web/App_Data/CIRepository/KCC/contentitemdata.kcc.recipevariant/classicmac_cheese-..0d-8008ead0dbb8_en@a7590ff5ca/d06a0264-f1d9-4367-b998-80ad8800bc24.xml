@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <ContentItemDataCommonDataID>
+    <GUID>eb01f9c3-7a36-479e-be0d-8008ead0dbb8</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ClassicMac_Cheese-gsvifh6b</CodeName>
+      <GUID>8b46cb9b-47ac-4030-ade2-0e4df0f4def4</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d06a0264-f1d9-4367-b998-80ad8800bc24</ContentItemDataGUID>
+  <CookTime>20</CookTime>
+  <Description>
+    <![CDATA[Hometown favorite, you're gonna love it!]]>
+  </Description>
+  <Ingredients>[]</Ingredients>
+  <Instructions>[]</Instructions>
+  <Name>
+    <![CDATA[Classic Mac & Cheese]]>
+  </Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>4</ServingNumber>
+</contentitemdata.kcc.recipevariant>

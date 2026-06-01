@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.registrationcompletepage>
+  <ContentItemDataCommonDataID>
+    <GUID>571b496d-5857-4cbd-a59d-13dbdc298231</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>RegistrationComplete-1ktdrx69</CodeName>
+      <GUID>afb2c2a0-dc6e-49d9-a67e-1cc2b9954d9f</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>c977810c-6773-4278-8ed8-cc0671c89638</ContentItemDataGUID>
+</contentitemdata.kcc.registrationcompletepage>
