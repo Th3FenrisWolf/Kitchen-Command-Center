@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>AllRecipesNavLink-d0qhbzht</CodeName>
+    <GUID>c0696ed1-ed13-4939-99da-63547ba68ac6</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-05-28 15:44:49Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>53424f14-bd62-4bd3-8dcd-5a90e7be8a94</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-05-28 15:44:49Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>c4a304a0-7f9b-4749-9b2b-65e8339d3cf0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>c32f3b14-f1a2-402e-9edb-d795467779be</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>53424f14-bd62-4bd3-8dcd-5a90e7be8a94</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>Recipes-rsxx9362</CodeName>
+        <GUID>6cdc6513-01df-403e-bde5-50bf04c1bdf5</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>

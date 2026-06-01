@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navlink>
+  <ContentItemDataCommonDataID>
+    <GUID>8f23bcf8-6a95-4e9d-8c6c-247490b41617</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>LogoutNavLink-xf31ft8s</CodeName>
+      <GUID>88743874-33fc-4553-8037-1ef86c357b4f</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d9375ba7-9309-440e-bf9b-1baaccfe3950</ContentItemDataGUID>
+  <DisplayText>Logout</DisplayText>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
+  </ShowWhen>
+  <Target>_self</Target>
+  <Type>url</Type>
+  <Url>/account/logout</Url>
+</contentitemdata.kcc.navlink>

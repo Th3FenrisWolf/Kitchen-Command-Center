@@ -38,13 +38,43 @@ public class HeaderViewComponent(
         return View("~/Features/Components/Header/Header.cshtml", viewModel);
     }
 
-    private static IEnumerable<NavItem> RetrieveNavItems(IEnumerable<IContentItemFieldsSource> sourceItems, Guid? currentStatusTagId)
+    private static IEnumerable<IContentItemFieldsSource> RetrieveNavItems(IEnumerable<IContentItemFieldsSource> sourceItems, Guid? currentStatusTagId)
     {
-        var navItems = sourceItems.OfType<NavItem>();
-        var navLinks = sourceItems.OfType<LinkItem>();
+        var navItems = sourceItems.OfType<NavItem>().Where(item =>
+        {
+            var showWhen = item.ShowWhen?.ToList();
+            if (showWhen is null || showWhen.Count == 0)
+            {
+                return true;
+            }
 
-        var filteredItems = FilterByAuth(navItems, currentStatusTagId);
-        return filteredItems;
+            if (currentStatusTagId is null)
+            {
+                return false;
+            }
+
+            return showWhen.Any(t => t.Identifier == currentStatusTagId.Value);
+        });
+
+        var navLinks = sourceItems.OfType<NavLink>().Where(item =>
+        {
+            var showWhen = item.ShowWhen?.ToList();
+            if (showWhen is null || showWhen.Count == 0)
+            {
+                return true;
+            }
+
+            if (currentStatusTagId is null)
+            {
+                return false;
+            }
+
+            return showWhen.Any(t => t.Identifier == currentStatusTagId.Value);
+        });
+
+        return sourceItems.Where(item =>
+            (item is NavItem ni && navItems.Contains(ni)) ||
+            (item is NavLink nl && navLinks.Contains(nl)));
     }
 
     private async Task<Guid?> GetCurrentAuthStatusTagId()
@@ -60,41 +90,27 @@ public class HeaderViewComponent(
             ?.Identifier;
     }
 
-    private static IEnumerable<NavItem> FilterByAuth(IEnumerable<NavItem> navItems, Guid? currentStatusTagId)
+    private static IEnumerable<HeaderNavItem> MapPageLinks(IEnumerable<IContentItemFieldsSource> items)
     {
-        if (navItems is null)
+        if (items?.Any() is not true)
         {
             return [];
         }
 
-        return navItems.Where(item =>
+        return items.Select<IContentItemFieldsSource, HeaderNavItem>(item => item switch
         {
-            var showWhen = item.ShowWhen?.ToList();
-            if (showWhen is null || showWhen.Count == 0)
+            NavItem navItem => new HeaderNavItem
             {
-                return true;
-            }
-
-            if (currentStatusTagId is null)
+                DisplayText = navItem.DisplayText,
+                SubLinks = navItem.SubLinks.Select(subLink => subLink.MapToPageLink()),
+            },
+            NavLink navLink => new HeaderNavItem
             {
-                return false;
-            }
-
-            return showWhen.Any(t => t.Identifier == currentStatusTagId.Value);
-        });
-    }
-
-    private static IEnumerable<HeaderNavItem> MapPageLinks(IEnumerable<NavItem> navItems)
-    {
-        if (navItems?.Any() is not true)
-        {
-            return [];
-        }
-
-        return navItems.Select(navItem => new HeaderNavItem
-        {
-            DisplayText = navItem.DisplayText,
-            SubLinks = navItem.SubLinks.Select(subLink => subLink.MapToPageLink()),
-        });
+                DisplayText = navLink.DisplayText,
+                Url = navLink.MapToPageLink().Url,
+                Target = navLink.Target,
+            },
+            _ => null,
+        }).Where(navItem => navItem is not null);
     }
 }

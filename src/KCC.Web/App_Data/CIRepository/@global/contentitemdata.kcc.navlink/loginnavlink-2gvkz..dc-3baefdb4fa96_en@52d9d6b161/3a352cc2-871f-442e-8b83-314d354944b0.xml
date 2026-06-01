@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navlink>
+  <ContentItemDataCommonDataID>
+    <GUID>d6b23cf5-e496-43b4-93dc-3baefdb4fa96</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>LoginNavLink-2gvkzoa9</CodeName>
+      <GUID>df646d25-3f8a-4736-8aa7-0914a5490a75</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>3a352cc2-871f-442e-8b83-314d354944b0</ContentItemDataGUID>
+  <DisplayText>Login</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"05bab81f-19ce-447a-b609-be33536faf70"}]]]>
+  </Page>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"617409a8-4fa3-436e-b0cd-26a6dec93c92"}]]]>
+  </ShowWhen>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.navlink>
