@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navitem>
+  <ContentItemDataCommonDataID>
+    <GUID>26fa60fe-1912-4061-a903-33dd346fa30f</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Logout-4dxppjlm</CodeName>
+      <GUID>2c4c3198-d398-4eb3-9152-19b169f3a7f8</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>636f3b77-22e3-4b8e-a47f-2fb442f4385d</ContentItemDataGUID>
+  <DisplayText>Logout</DisplayText>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
+  </ShowWhen>
+  <SubLinks>
+    <![CDATA[[{"Identifier":"123a9461-58fd-4db8-b34d-1cd93013c73b"}]]]>
+  </SubLinks>
+</contentitemdata.kcc.navitem>

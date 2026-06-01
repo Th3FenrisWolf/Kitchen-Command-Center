@@ -32,9 +32,9 @@ public class ErrorController(
 
         var viewModel = new ErrorViewModel
         {
-            Heading = page.StatusCodeHeading,
-            Body = page.StatusCodeBody,
-            Title = page.StatusCodeHeading,
+            Heading = page?.StatusCodeHeading ?? "Error",
+            Body = page?.StatusCodeBody ?? "An unexpected error occurred.",
+            Title = page?.StatusCodeHeading ?? "Error",
         };
 
         return View("~/Features/Pages/Error/Index.cshtml", viewModel);

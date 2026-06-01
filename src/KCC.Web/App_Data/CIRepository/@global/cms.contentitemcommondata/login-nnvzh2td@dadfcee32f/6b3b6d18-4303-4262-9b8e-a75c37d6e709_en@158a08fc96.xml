@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <cms.contentitemcommondata>
   <ContentItemCommonDataContentItemID>
-    <CodeName>AllRecipesLink-wocqln5j</CodeName>
-    <GUID>b8f006d4-bab5-493a-b1d4-c006b315f1ce</GUID>
+    <CodeName>Login-nnvzh2td</CodeName>
+    <GUID>c759b4fc-b9a1-4223-9149-64670676a38d</GUID>
     <ObjectType>cms.contentitem</ObjectType>
   </ContentItemCommonDataContentItemID>
   <ContentItemCommonDataContentLanguageID>
@@ -10,22 +10,22 @@
     <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
     <ObjectType>cms.contentlanguage</ObjectType>
   </ContentItemCommonDataContentLanguageID>
-  <ContentItemCommonDataFirstPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataFirstPublishedWhen>
-  <ContentItemCommonDataGUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</ContentItemCommonDataGUID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-05-15 20:29:53Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>6b3b6d18-4303-4262-9b8e-a75c37d6e709</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2026-05-20 18:38:41Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-05-15 20:38:28Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
   <ContentItemReferences>
     <cms.contentitemreference>
       <ContentItemReferenceGroupGUID>cc6c6dfb-3a7e-45d0-8a8e-0b479d2ccb1b</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>840b85d1-5ed1-4302-8b80-024ad03e7120</ContentItemReferenceGUID>
+      <ContentItemReferenceGUID>a0f5b3a8-94ea-4f4a-96e8-e98e875517cd</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
-        <GUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</GUID>
+        <GUID>6b3b6d18-4303-4262-9b8e-a75c37d6e709</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>Recipes-rsxx9362</CodeName>
-        <GUID>6cdc6513-01df-403e-bde5-50bf04c1bdf5</GUID>
+        <CodeName>Login-48bvz6ne</CodeName>
+        <GUID>05bab81f-19ce-447a-b609-be33536faf70</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <cms.contentitemcommondata>
   <ContentItemCommonDataContentItemID>
-    <CodeName>AllRecipesLink-wocqln5j</CodeName>
-    <GUID>b8f006d4-bab5-493a-b1d4-c006b315f1ce</GUID>
+    <CodeName>Logout-4dxppjlm</CodeName>
+    <GUID>2c4c3198-d398-4eb3-9152-19b169f3a7f8</GUID>
     <ObjectType>cms.contentitem</ObjectType>
   </ContentItemCommonDataContentItemID>
   <ContentItemCommonDataContentLanguageID>
@@ -10,22 +10,22 @@
     <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
     <ObjectType>cms.contentlanguage</ObjectType>
   </ContentItemCommonDataContentLanguageID>
-  <ContentItemCommonDataFirstPublishedWhen>2026-01-12 02:08:59Z</ContentItemCommonDataFirstPublishedWhen>
-  <ContentItemCommonDataGUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</ContentItemCommonDataGUID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-05-15 20:30:34Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>26fa60fe-1912-4061-a903-33dd346fa30f</ContentItemCommonDataGUID>
   <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
-  <ContentItemCommonDataLastPublishedWhen>2026-05-20 18:38:41Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataLastPublishedWhen>2026-05-15 20:30:34Z</ContentItemCommonDataLastPublishedWhen>
   <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
   <ContentItemReferences>
     <cms.contentitemreference>
-      <ContentItemReferenceGroupGUID>cc6c6dfb-3a7e-45d0-8a8e-0b479d2ccb1b</ContentItemReferenceGroupGUID>
-      <ContentItemReferenceGUID>840b85d1-5ed1-4302-8b80-024ad03e7120</ContentItemReferenceGUID>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>967faf30-bc74-4752-a02e-3868b9756863</ContentItemReferenceGUID>
       <ContentItemReferenceSourceCommonDataID>
-        <GUID>2a308d91-6616-4d9e-bf42-096cb20e85b6</GUID>
+        <GUID>26fa60fe-1912-4061-a903-33dd346fa30f</GUID>
         <ObjectType>cms.contentitemcommondata</ObjectType>
       </ContentItemReferenceSourceCommonDataID>
       <ContentItemReferenceTargetItemID>
-        <CodeName>Recipes-rsxx9362</CodeName>
-        <GUID>6cdc6513-01df-403e-bde5-50bf04c1bdf5</GUID>
+        <CodeName>Logout-unxo329j</CodeName>
+        <GUID>123a9461-58fd-4db8-b34d-1cd93013c73b</GUID>
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>

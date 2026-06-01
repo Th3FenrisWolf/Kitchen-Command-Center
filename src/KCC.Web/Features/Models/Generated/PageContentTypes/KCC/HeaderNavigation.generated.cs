@@ -44,12 +44,12 @@ namespace KCC
 		/// <summary>
 		/// MainNavItems.
 		/// </summary>
-		public IEnumerable<NavItem> MainNavItems { get; set; }
+		public IEnumerable<IContentItemFieldsSource> MainNavItems { get; set; }
 
 
 		/// <summary>
 		/// UtilityNavItems.
 		/// </summary>
-		public IEnumerable<NavItem> UtilityNavItems { get; set; }
+		public IEnumerable<IContentItemFieldsSource> UtilityNavItems { get; set; }
 	}
 }
