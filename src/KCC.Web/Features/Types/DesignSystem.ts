@@ -2,12 +2,12 @@
  * Tailwind background color class strings
  */
 export type BackgroundColor =
-  | 'bg-base'
-  | 'bg-mantle'
-  | 'bg-crust'
-  | 'bg-surface'
-  | 'bg-surface-100'
   | 'bg-surface-200'
+  | 'bg-surface-300'
+  | 'bg-surface-400'
+  | 'bg-surface-500'
+  | 'bg-surface-600'
+  | 'bg-surface-700'
   | 'bg-rosewater'
   | 'bg-flamingo'
   | 'bg-pink'
@@ -31,12 +31,15 @@ export type BackgroundColor =
  * Tailwind text color class strings
  */
 export type TextColor =
-  | 'text-base'
-  | 'text-mantle'
-  | 'text-crust'
-  | 'text-surface'
-  | 'text-surface-100'
   | 'text-surface-200'
+  | 'text-surface-300'
+  | 'text-surface-400'
+  | 'text-surface-500'
+  | 'text-surface-600'
+  | 'text-surface-700'
+  | 'text-overlay-200'
+  | 'text-overlay-300'
+  | 'text-overlay-400'
   | 'text-rosewater'
   | 'text-flamingo'
   | 'text-pink'
@@ -56,5 +59,5 @@ export type TextColor =
   | 'text-onyx'
   | 'text-onyx-light'
   | 'text-text'
-  | 'text-subtext'
-  | 'text-subtext-100'
+  | 'text-subtext-300'
+  | 'text-subtext-400'

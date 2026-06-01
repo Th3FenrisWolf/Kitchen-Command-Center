@@ -2,7 +2,7 @@
   /**
    * A card component that supports functionality for expanding via hover
    *
-   * @param {string} [cardColor='bg-base'] - The color of the card background
+   * @param {string} [cardColor='bg-surface-500'] - The color of the card background
    * @param {string} [cardTextColor='text-bone'] - The color of the card text
    * @param {string} [drawerColor=null] - The color of the card drawer background, if null, the cardTextColor will be used
    * @param {string} [drawerTextColor=null] - The color of the card drawer text, if null, the cardColor will be used
@@ -21,7 +21,7 @@
   export interface CardProps {
     /**
      * The color of the card background
-     * @default 'bg-base'
+     * @default 'bg-surface-500'
      */
     cardColor?: BackgroundColor
 
@@ -57,7 +57,7 @@
   import { cx } from '~/Utilities/CX'
 
   const {
-    cardColor = 'bg-base',
+    cardColor = 'bg-surface-500',
     cardTextColor = 'text-bone',
     drawerColor = null,
     drawerTextColor = null,

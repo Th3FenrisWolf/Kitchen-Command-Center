@@ -65,7 +65,7 @@
       </label>
       <button
         type="button"
-        class="bg-base text-bone w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
+        class="bg-surface-500 text-bone w-max cursor-pointer justify-self-center rounded-2xl px-4 py-2"
         @click="handleSignOut"
       >
         Sign Out

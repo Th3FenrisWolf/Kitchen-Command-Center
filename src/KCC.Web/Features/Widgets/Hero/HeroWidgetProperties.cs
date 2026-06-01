@@ -1,4 +1,5 @@
 using CMS.ContentEngine;
+using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Providers;
 using KCC.Web.Features.Tailwind;
@@ -29,14 +30,14 @@ public enum HeroTextAlignmentOptions
 
 public enum HeroBackgroundColorOptions
 {
-    [TailwindBackgroundColor(TailwindColor.Surface)]
-    Surface,
-
-    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.OneHundred)]
-    Surface100,
-
     [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.TwoHundred)]
     Surface200,
+
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.ThreeHundred)]
+    Surface300,
+
+    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.FourHundred)]
+    Surface400,
 }
 
 public class HeroWidgetProperties : BaseWidgetProperties, IWidgetProperties
@@ -75,7 +76,8 @@ public class HeroWidgetProperties : BaseWidgetProperties, IWidgetProperties
         ExplanationText = "Used behind text for the Split Layout, or as the full background if an image isn't selected",
         DataProviderType = typeof(EnumDropDownOptionsProvider<HeroBackgroundColorOptions>)
     )]
-    public string BackgroundColor { get; set; } = "lightGray";
+    public string BackgroundColor { get; set; } =
+        HeroBackgroundColorOptions.Surface400.GetTailwindStyle();
 
     [ContentItemSelectorComponent(
         ImageItem.CONTENT_TYPE_NAME,

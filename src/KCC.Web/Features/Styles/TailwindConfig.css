@@ -7,7 +7,7 @@
 /* prettier-ignore-start */
 /* Safelist dynamically generated classes */
 @source inline('{pb,pt,px,mb,mt}-{0,4,8,12}');
-@source inline('bg-{base,mantle,crust,surface{,-100,-200}}');
+@source inline('bg-surface-{200,300,400,500,600,700}');
 @source inline('bg-{rosewater,flamingo,pink,mauve,red,maroon,peach,yellow,green,teal,sky,sapphire,blue,lavender}');
 /* prettier-ignore-end */
 
@@ -28,20 +28,19 @@
   --color-lavender: hsl(239, 66%, 84%);
 
   --color-text: hsl(227, 70%, 87%);
-  --color-subtext-100: hsl(227, 44%, 80%);
-  --color-subtext: hsl(228, 29%, 73%);
+  --color-subtext-300: hsl(227, 44%, 80%);
+  --color-subtext-400: hsl(228, 29%, 73%);
 
   --color-overlay-200: hsl(228, 22%, 66%);
-  --color-overlay-100: hsl(227, 17%, 58%);
-  --color-overlay: hsl(229, 13%, 52%);
+  --color-overlay-300: hsl(227, 17%, 58%);
+  --color-overlay-400: hsl(229, 13%, 52%);
 
   --color-surface-200: hsl(228, 13%, 44%);
-  --color-surface-100: hsl(227, 15%, 37%);
-  --color-surface: hsl(230, 16%, 30%);
-
-  --color-base: hsl(229, 19%, 23%);
-  --color-mantle: hsl(231, 19%, 20%);
-  --color-crust: hsl(229, 20%, 17%);
+  --color-surface-300: hsl(227, 15%, 37%);
+  --color-surface-400: hsl(230, 16%, 30%);
+  --color-surface-500: hsl(229, 19%, 23%);
+  --color-surface-600: hsl(231, 19%, 20%);
+  --color-surface-700: hsl(229, 20%, 17%);
 
   --color-bone-dark: hsl(44, 15%, 85%);
   --color-bone: hsl(44, 48%, 95%);
