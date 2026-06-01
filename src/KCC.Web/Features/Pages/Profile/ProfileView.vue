@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-  // import { faSquareCheck, faSquarePen } from '@fortawesome/free-solid-svg-icons'
   // import { updateProfile } from 'firebase/auth'
   // import { ref } from 'vue'
   // import InputField from '~/components/shared/InputField.vue'
@@ -51,12 +49,6 @@
           :readonly="!isEdit"
           v-model="displayName"
           :class="cx(!isEdit && 'cursor-default !outline-none')"
-        />
-        <FontAwesomeIcon
-          size="lg"
-          :icon="isEdit ? faSquareCheck : faSquarePen"
-          class="color-base absolute bottom-6 right-3 z-10 translate-y-1/2 cursor-pointer"
-          @click="() => (isEdit ? updateUsername() : (isEdit = true))"
         />
       </label>
       <label class="grid gap-2">

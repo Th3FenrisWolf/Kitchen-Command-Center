@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-  import { faTrash, faEye, faEyeSlash, faArrowRight, faClose, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
   import { ref, computed } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import InputField from '~/Components/Forms/InputField.vue'
@@ -96,8 +94,8 @@
 
     <template #action-button>
       <AppLink :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
-        <ResourceString for="Cancel" class="mr-2" />
-        <FontAwesomeIcon :icon="faClose" />
+        <ResourceString for="Cancel" />
+        <i class="fa-solid fa-x"></i>
       </AppLink>
     </template>
   </SmallHero>
@@ -162,8 +160,8 @@
         :disabled="!canProceed"
         class="cursor-pointer self-end rounded-3xl bg-surface-500 px-6 py-2 text-xl text-bone disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <ResourceString for="Next" class="mr-2" />
-        <FontAwesomeIcon :icon="faArrowRight" />
+        <ResourceString for="Next" />
+        <i class="fa-solid fa-arrow-right"></i>
       </button>
     </form>
 
@@ -184,7 +182,7 @@
             @click="ingredient.isEyeballed = !ingredient.isEyeballed"
           >
             <ResourceString for="Eyeball" class="sr-only" />
-            <FontAwesomeIcon :icon="ingredient.isEyeballed ? faEye : faEyeSlash" />
+            <i :class="ingredient.isEyeballed ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"></i>
           </button>
 
           <label class="shrink basis-1/6">
@@ -215,7 +213,7 @@
             @click="ingredientList.splice(index, 1)"
           >
             <ResourceString for="Remove" class="sr-only" />
-            <FontAwesomeIcon :icon="faTrash" />
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </div>
@@ -262,7 +260,7 @@
             @click="instructionList.splice(index, 1)"
           >
             <ResourceString for="Remove" class="sr-only" />
-            <FontAwesomeIcon :icon="faTrash" />
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </div>

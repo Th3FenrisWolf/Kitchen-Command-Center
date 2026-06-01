@@ -1,7 +1,5 @@
 <script setup lang="ts">
   import { ref, onUnmounted, type TextareaHTMLAttributes } from 'vue'
-  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-  import { faGripLines } from '@fortawesome/free-solid-svg-icons'
 
   const { required, readonly, placeholder } = defineProps<{
     required?: TextareaHTMLAttributes['required']
@@ -56,11 +54,9 @@
       :placeholder
       class="h-full w-full resize-none rounded-2xl bg-bone-dark px-4 py-2 placeholder:text-onyx-light"
     />
-    <FontAwesomeIcon
-      size="xs"
-      :icon="faGripLines"
-      class="color-base absolute right-1 bottom-1 rotate-135 cursor-ns-resize"
+    <i
+      class="fa-solid fa-grip-lines fa-xs color-base absolute right-1 bottom-1 rotate-135 cursor-ns-resize"
       @mousedown="startResize"
-    />
+    ></i>
   </div>
 </template>
