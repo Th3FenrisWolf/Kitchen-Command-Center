@@ -50,6 +50,18 @@
           <SelectionType>contentTypes</SelectionType>
         </settings>
       </field>
+      <field column="Icon" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="5cfade2b-e02c-4676-b194-a45e17d14d90" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Recipe Icon</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeincontentgeneration>False</includeincontentgeneration>
+          <includeintranslation>False</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>KCC.RecipeIconSelector</controlname>
+        </settings>
+      </field>
       <field allowempty="true" column="Categories" columnprecision="0" columntype="taxonomy" enabled="true" guid="ed8bf010-7fe4-4d68-959a-8d62ce870fec" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>

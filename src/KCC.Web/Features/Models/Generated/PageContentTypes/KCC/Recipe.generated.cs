@@ -54,6 +54,12 @@ namespace KCC
 
 
 		/// <summary>
+		/// Icon.
+		/// </summary>
+		public string Icon { get; set; }
+
+
+		/// <summary>
 		/// Categories.
 		/// </summary>
 		public IEnumerable<TagReference> Categories { get; set; }
