@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipelistingpage>
+  <ContentItemDataCommonDataID>
+    <GUID>dff30b81-7adf-41db-b4fd-e395eedadb02</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Recipes-rsxx9362</CodeName>
+      <GUID>6cdc6513-01df-403e-bde5-50bf04c1bdf5</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>4317cbc0-32f2-4439-a02d-5e0cbd10555e</ContentItemDataGUID>
+</contentitemdata.kcc.recipelistingpage>

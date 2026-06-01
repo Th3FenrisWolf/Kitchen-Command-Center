@@ -1,0 +1,15 @@
+@using KCC.Web.Features.Helpers
+@using KCC.Web.Features.Pages.RecipeDetail
+
+@model RecipeDetailViewModel
+
+<RecipeDetailView
+  recipe-name="@Model.RecipeName"
+  recipe-description="@Model.RecipeDescription"
+  recipe-image-path="@Model.RecipeImagePath"
+  recipe-category="@Model.RecipeCategory"
+  recipe-guid="@Model.RecipeGuid"
+  add-variant-url="@Model.AddVariantUrl"
+  :variants="@Vue.Prop(Model.Variants)"
+  :resource-strings="@Vue.Prop(Model.ResourceStrings)"
+/>
