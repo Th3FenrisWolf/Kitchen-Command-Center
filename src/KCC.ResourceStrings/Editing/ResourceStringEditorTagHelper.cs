@@ -1,20 +1,19 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using Kentico.Content.Web.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Vite.AspNetCore;
 
 namespace KCC.ResourceStrings.Editing;
 
-public sealed record ResourceStringEditorViewModel(string SerializedContext, string ScriptUrl);
-
-public sealed class ResourceStringEditorViewComponent(
+[HtmlTargetElement("resource-string-editor", TagStructure = TagStructure.WithoutEndTag)]
+public sealed class ResourceStringEditorTagHelper(
     IResourceStringEditorAccess editorAccess,
     IPreferredLanguageRetriever preferredLanguage,
     IContentLanguageRepository languageRepository,
     IViteManifest manifest,
     IViteDevServerStatus devServer)
-    : ViewComponent
+    : TagHelper
 {
     private const string EntryKey = "../KCC.ResourceStrings/Client/src/resource-strings/ResourceStringEditor.ts";
 
@@ -24,11 +23,12 @@ public sealed class ResourceStringEditorViewComponent(
         Encoder = JavaScriptEncoder.Default,
     };
 
-    public Task<IViewComponentResult> InvokeAsync()
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         if (!editorAccess.CanEdit())
         {
-            return Task.FromResult<IViewComponentResult>(Content(string.Empty));
+            output.SuppressOutput();
+            return;
         }
 
         var availableLanguages = languageRepository.ListAll()
@@ -41,12 +41,15 @@ public sealed class ResourceStringEditorViewComponent(
             isPreviewMode = editorAccess.IsPreviewMode(),
         };
 
-        var model = new ResourceStringEditorViewModel(
-            JsonSerializer.Serialize(editorContext, s_jsonOptions),
-            ResolveScriptUrl());
+        var serializedContext = JsonSerializer.Serialize(editorContext, s_jsonOptions);
+        var scriptUrl = ResolveScriptUrl();
 
-        return Task.FromResult<IViewComponentResult>(
-            View("/Editing/ResourceStringEditor.cshtml", model));
+        output.TagName = null;
+        output.Content.SetHtmlContent(
+            $"""
+            <script id="kcc-rs-editor-context" type="application/json">{serializedContext}</script>
+            <script type="module" src="{scriptUrl}"></script>
+            """);
     }
 
     private string ResolveScriptUrl()

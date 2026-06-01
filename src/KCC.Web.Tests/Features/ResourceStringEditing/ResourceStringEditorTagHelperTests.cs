@@ -4,54 +4,47 @@ using System.Collections;
 using System.Text.Json;
 using KCC.ResourceStrings.Editing;
 using Kentico.Content.Web.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Vite.AspNetCore;
 using Xunit;
 
 namespace KCC.Web.Tests.Features.ResourceStringEditing;
 
-public class ResourceStringEditorViewComponentTests
+public class ResourceStringEditorTagHelperTests
 {
     private static readonly IViteManifest Manifest = new StubViteManifest();
     private static readonly IViteDevServerStatus DevServerOff = new StubViteDevServerStatus(false);
 
     [Fact]
-    public async Task InvokeAsync_CannotEdit_ReturnsEmptyContent()
+    public void Process_CannotEdit_SuppressesOutput()
     {
-        var sut = new ResourceStringEditorViewComponent(
-            new StubEditorAccess(canEdit: false, isPreview: false),
-            new StubPreferredLanguageRetriever("en"),
-            new StubContentLanguageRepository(),
-            Manifest,
-            DevServerOff);
+        var sut = CreateTagHelper(canEdit: false);
+        var (context, output) = CreateTagHelperArgs();
 
-        var result = await sut.InvokeAsync();
+        sut.Process(context, output);
 
-        var content = Assert.IsType<ContentViewComponentResult>(result);
-        Assert.Equal(string.Empty, content.Content);
+        var html = GetOutputHtml(output);
+        Assert.Empty(html);
     }
 
     [Fact]
-    public async Task InvokeAsync_CanEdit_ReturnsViewResultWithSerializedContext()
+    public void Process_CanEdit_RendersContextScript()
     {
         var languages = new[]
         {
             new ContentLanguageOption("en", "English"),
             new ContentLanguageOption("es", "Spanish"),
         };
-        var sut = new ResourceStringEditorViewComponent(
-            new StubEditorAccess(canEdit: true, isPreview: true),
-            new StubPreferredLanguageRetriever("es"),
-            new StubContentLanguageRepository(languages),
-            Manifest,
-            DevServerOff);
+        var sut = CreateTagHelper(canEdit: true, isPreview: true, currentLanguage: "es", languages: languages);
+        var (context, output) = CreateTagHelperArgs();
 
-        var result = await sut.InvokeAsync();
+        sut.Process(context, output);
 
-        var view = Assert.IsType<ViewViewComponentResult>(result);
-        var model = Assert.IsType<ResourceStringEditorViewModel>(view.ViewData!.Model);
+        var html = GetOutputHtml(output);
+        Assert.Contains("kcc-rs-editor-context", html);
 
-        using var doc = JsonDocument.Parse(model.SerializedContext);
+        var json = ExtractJsonContext(html);
+        using var doc = JsonDocument.Parse(json);
         var root = doc.RootElement;
         Assert.Equal("es", root.GetProperty("currentLanguage").GetString());
         Assert.True(root.GetProperty("isPreviewMode").GetBoolean());
@@ -65,39 +58,72 @@ public class ResourceStringEditorViewComponentTests
     }
 
     [Fact]
-    public async Task InvokeAsync_CanEdit_IsPreviewModeFalse_SerializesFalse()
+    public void Process_CanEdit_IsPreviewModeFalse_SerializesFalse()
     {
-        var sut = new ResourceStringEditorViewComponent(
-            new StubEditorAccess(canEdit: true, isPreview: false),
-            new StubPreferredLanguageRetriever("en"),
-            new StubContentLanguageRepository(),
-            Manifest,
-            DevServerOff);
+        var sut = CreateTagHelper(canEdit: true, isPreview: false);
+        var (context, output) = CreateTagHelperArgs();
 
-        var result = await sut.InvokeAsync();
+        sut.Process(context, output);
 
-        var view = Assert.IsType<ViewViewComponentResult>(result);
-        var model = Assert.IsType<ResourceStringEditorViewModel>(view.ViewData!.Model);
-
-        using var doc = JsonDocument.Parse(model.SerializedContext);
+        var json = ExtractJsonContext(GetOutputHtml(output));
+        using var doc = JsonDocument.Parse(json);
         Assert.False(doc.RootElement.GetProperty("isPreviewMode").GetBoolean());
     }
 
     [Fact]
-    public async Task InvokeAsync_CanEdit_ScriptUrlResolvesFromManifest()
+    public void Process_CanEdit_ScriptUrlResolvesFromManifest()
     {
-        var sut = new ResourceStringEditorViewComponent(
-            new StubEditorAccess(canEdit: true, isPreview: false),
-            new StubPreferredLanguageRetriever("en"),
-            new StubContentLanguageRepository(),
+        var sut = CreateTagHelper(canEdit: true);
+        var (context, output) = CreateTagHelperArgs();
+
+        sut.Process(context, output);
+
+        var html = GetOutputHtml(output);
+        Assert.Contains("src=\"/assets/resourceStringEditor-abc123.js\"", html);
+    }
+
+    private static ResourceStringEditorTagHelper CreateTagHelper(
+        bool canEdit,
+        bool isPreview = false,
+        string currentLanguage = "en",
+        ContentLanguageOption[]? languages = null) =>
+        new(
+            new StubEditorAccess(canEdit, isPreview),
+            new StubPreferredLanguageRetriever(currentLanguage),
+            new StubContentLanguageRepository(languages ?? []),
             Manifest,
             DevServerOff);
 
-        var result = await sut.InvokeAsync();
+    private static (TagHelperContext context, TagHelperOutput output) CreateTagHelperArgs()
+    {
+        var context = new TagHelperContext(
+            "resource-string-editor",
+            new TagHelperAttributeList(),
+            new Dictionary<object, object>(),
+            "test-unique-id");
 
-        var view = Assert.IsType<ViewViewComponentResult>(result);
-        var model = Assert.IsType<ResourceStringEditorViewModel>(view.ViewData!.Model);
-        Assert.Equal("/assets/resourceStringEditor-abc123.js", model.ScriptUrl);
+        var output = new TagHelperOutput(
+            "resource-string-editor",
+            new TagHelperAttributeList(),
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
+
+        return (context, output);
+    }
+
+    private static string GetOutputHtml(TagHelperOutput output)
+    {
+        using var writer = new StringWriter();
+        output.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
+        return writer.ToString();
+    }
+
+    private static string ExtractJsonContext(string html)
+    {
+        const string startMarker = "type=\"application/json\">";
+        const string endMarker = "</script>";
+        var startIndex = html.IndexOf(startMarker, StringComparison.Ordinal) + startMarker.Length;
+        var endIndex = html.IndexOf(endMarker, startIndex, StringComparison.Ordinal);
+        return html[startIndex..endIndex];
     }
 
     private sealed class StubEditorAccess(bool canEdit, bool isPreview) : IResourceStringEditorAccess

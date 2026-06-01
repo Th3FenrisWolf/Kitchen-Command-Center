@@ -225,13 +225,17 @@ function attachHover(target: Element): void {
     if (!isEditActive()) return
     positionPencil(target, pencil)
     pencil.style.display = 'inline-flex'
+    requestAnimationFrame(() => { pencil.style.opacity = '1' })
   }
   const hide = () => {
     setTimeout(() => {
       const isHoveringTarget = target.matches(':hover')
       const isHoveringPencil = pencil.matches(':hover')
       if (!isHoveringTarget && !isHoveringPencil) {
-        pencil.style.display = 'none'
+        pencil.style.opacity = '0'
+        pencil.addEventListener('transitionend', () => {
+          if (pencil.style.opacity === '0') pencil.style.display = 'none'
+        }, { once: true })
       }
     }, 250)
   }
