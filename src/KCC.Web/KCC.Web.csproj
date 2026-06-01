@@ -23,6 +23,10 @@
         <PackageReference Include="kentico.xperience.imageprocessing" />
         <PackageReference Include="kentico.xperience.miniprofiler" />
         <PackageReference Include="kentico.xperience.webapp" />
+        <PackageReference Include="Kentico.Xperience.ManagementApi" />
+        <PackageReference Include="Kentico.Xperience.ComponentRegistry" />
+        <PackageReference Include="Kentico.Xperience.ComponentRegistry.Admin" />
+        <PackageReference Include="Kentico.Xperience.ComponentRegistry.MCP" />
         <PackageReference Include="RobotsTxtCore" />
         <PackageReference Include="SimpleMvcSitemap" />
         <PackageReference Include="StyleCop.Analyzers">
@@ -51,15 +55,6 @@
         <InternalsVisibleTo Include="KCC.Web.Tests" />
     </ItemGroup>
 
-    <ItemGroup>
-        <None Include="wwwroot\favicon.ico" />
-        <None Include="wwwroot\fonts\AimaDisplayRegular.ttf" />
-        <None Include="wwwroot\fonts\AmericanPurposeCasualItalic.ttf" />
-        <None Include="wwwroot\fonts\AmericanPurposeCasualRegular.ttf" />
-        <None Include="wwwroot\fonts\HazelnutMilkTeaBold.ttf" />
-        <None Include="wwwroot\fonts\HazelnutMilkTeaBoldItalic.ttf" />
-        <None Include="wwwroot\fonts\HazelnutMilkTeaItalic.ttf" />
-        <None Include="wwwroot\fonts\HazelnutMilkTeaRegular.ttf" />
-    </ItemGroup>
-    
+
+
 </Project>
