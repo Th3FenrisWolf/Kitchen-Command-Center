@@ -13,5 +13,12 @@
         <ObjectType>cms.contenttype</ObjectType>
       </AllowedChildContentTypeChildID>
     </Binding>
+    <Binding id="cms.contenttype_KCC.RegistrationCompletePage">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.RegistrationCompletePage</CodeName>
+        <GUID>96c00e00-f239-417b-8f82-cb863c3cf5d1</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
   </Bindings>
 </cms.allowedchildcontenttype>

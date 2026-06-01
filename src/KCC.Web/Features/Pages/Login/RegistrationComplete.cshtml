@@ -1,0 +1,13 @@
+@using KCC.Web.Features.Pages.Shared
+
+@model BasePageViewModel
+
+<section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
+    <div class="flex max-w-2xl flex-col items-center gap-6 rounded-3xl bg-bone p-12 text-center text-onyx shadow-primary">
+        <h1 class="text-heading">@Model.ResourceStrings["RegistrationComplete.Heading"]</h1>
+        <p class="text-lg">@Model.ResourceStrings["RegistrationComplete.Body"]</p>
+        <a href="/" class="w-max cursor-pointer rounded-2xl bg-surface-500 px-4 py-2 text-bone">
+            @Model.ResourceStrings["RegistrationComplete.ContinueLink"]
+        </a>
+    </div>
+</section>
