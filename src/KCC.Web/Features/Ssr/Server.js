@@ -122,7 +122,7 @@ async function createServer() {
     const startTime = Date.now()
 
     try {
-      const { headerContent, bodyContent, footerContent } = req.body
+      const { headerContent, bodyContent, footerContent, isPreview } = req.body
 
       if (typeof headerContent !== 'string' || typeof bodyContent !== 'string' || typeof footerContent !== 'string') {
         return res.status(400).json({
@@ -137,7 +137,7 @@ async function createServer() {
         await loadModule()
       }
 
-      const ssrApp = createApp({ headerContent, bodyContent, footerContent })
+      const ssrApp = createApp({ headerContent, bodyContent, footerContent, isPreview: !!isPreview })
       const html = await renderToString(ssrApp)
 
       const duration = Date.now() - startTime

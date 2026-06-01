@@ -33,6 +33,7 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
             headerContent = result.HeaderContent,
             bodyContent = result.BodyContent,
             footerContent = result.FooterContent,
+            isPreview = result.IsPreview,
         }));
 
         writer.Write("</script>");

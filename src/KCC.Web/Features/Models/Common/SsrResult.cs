@@ -6,6 +6,7 @@ public record SsrResult
     public string HeaderContent { get; set; }
     public string BodyContent { get; set; }
     public string FooterContent { get; set; }
+    public bool IsPreview { get; set; }
 }
 
 public class SsrResponse

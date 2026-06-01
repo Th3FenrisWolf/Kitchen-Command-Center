@@ -1,7 +1,7 @@
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
-import type { ContentRegions } from '~/Types/ContentRegions'
+import type { SsrPayload } from '~/Types/ContentRegions'
 
 import '~/Utilities/StringExtensions'
 
@@ -13,8 +13,8 @@ if (process.env.NODE_ENV === 'production') {
 const serverContentEl = document.getElementById('server-content')
 if (!serverContentEl?.textContent) throw new Error('Server content not found')
 
-// Parse the JSON-encoded server content regions
-const contentRegions = JSON.parse(serverContentEl.textContent) as ContentRegions
+// Parse the JSON-encoded server content
+const { isPreview, ...contentRegions } = JSON.parse(serverContentEl.textContent) as SsrPayload
 if (!contentRegions) throw new Error('Failed to parse server content')
 
 // Create SSR app for hydration (reuses existing DOM instead of replacing it)
@@ -25,4 +25,5 @@ const app = createSSRApp({
 // Hydrate the SSR-rendered HTML in #app
 // Attach event listeners without re-rendering the DOM
 registerGlobalComponents(app)
+app.provide('isPreview', isPreview ?? false)
 app.mount('#app')

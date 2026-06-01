@@ -14,6 +14,6 @@ export function useResourceStrings(resourceStrings?: Record<string, string>, pre
 
   return (key: string) => {
     const fullKey = prefix ? `${prefix}.${key}` : key
-    return resourceStrings?.[fullKey] ?? key
+    return resourceStrings?.[fullKey] ?? fullKey
   }
 }

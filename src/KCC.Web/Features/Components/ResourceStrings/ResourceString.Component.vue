@@ -3,19 +3,22 @@
   import { resourceStringsKey } from '~/Components/ResourceStrings/UseStrings'
 
   const props = defineProps<{
-    k: string
+    for: string
+    as?: string
   }>()
-
   const ctx = inject(resourceStringsKey, { strings: {}, prefix: undefined })
 
-  const resolvedKey = computed(() => (ctx.prefix ? `${ctx.prefix}.${props.k}` : props.k))
+  const isPreview = inject('isPreview', false)
 
-  const displayValue = computed(() => {
-    if (!resolvedKey.value) return props.k
-    return ctx.strings[resolvedKey.value] ?? props.k
-  })
+  const resolvedKey = computed(() => (ctx.prefix ? `${ctx.prefix}.${props.for}` : props.for))
+  const resolvedValue = computed(() => ctx.strings[resolvedKey.value] ?? resolvedKey.value)
 </script>
 
 <template>
-  <span :class="resolvedKey ? 'kcc-rs-editable' : undefined" :data-resource-key="resolvedKey">{{ displayValue }}</span>
+  <component :is="props.as || 'span'" v-if="isPreview" class="kcc-rs-editable" :data-resource-key="resolvedKey">
+    {{ resolvedValue }}
+  </component>
+  <component :is="props.as || 'span'" v-else>
+    {{ resolvedValue }}
+  </component>
 </template>
