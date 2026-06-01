@@ -32,7 +32,7 @@
         </properties>
         <settings>
           <AllowedContentItemTypeIdentifiers>
-            <![CDATA[["a5eb232d-f3d6-4947-b5a1-15aca567e05a"]]]>
+            <![CDATA[["d5036f10-d127-4fac-adb4-9cc06797724a"]]]>
           </AllowedContentItemTypeIdentifiers>
           <controlname>Kentico.Administration.ContentItemSelector</controlname>
           <SelectionType>contentTypes</SelectionType>

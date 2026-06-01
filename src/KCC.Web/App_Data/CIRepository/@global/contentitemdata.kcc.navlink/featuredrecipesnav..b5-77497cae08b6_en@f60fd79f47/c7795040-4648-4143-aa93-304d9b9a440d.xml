@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navlink>
+  <ContentItemDataCommonDataID>
+    <GUID>c19ccf53-92b6-477d-b6b5-77497cae08b6</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>FeaturedRecipesNavLink-upnpu3fx</CodeName>
+      <GUID>d5ad1e33-dd86-4512-b59e-056126cef0d8</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>c7795040-4648-4143-aa93-304d9b9a440d</ContentItemDataGUID>
+  <DisplayText>Featured Recipes</DisplayText>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.navlink>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navlink>
+  <ContentItemDataCommonDataID>
+    <GUID>53424f14-bd62-4bd3-8dcd-5a90e7be8a94</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>AllRecipesNavLink-d0qhbzht</CodeName>
+      <GUID>c0696ed1-ed13-4939-99da-63547ba68ac6</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>6f858d62-2166-4253-ac4a-230c3b4ca77f</ContentItemDataGUID>
+  <DisplayText>All Recipes</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"6cdc6513-01df-403e-bde5-50bf04c1bdf5"}]]]>
+  </Page>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.navlink>

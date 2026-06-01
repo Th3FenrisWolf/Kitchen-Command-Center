@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <cms.contenttype>
   <ClassContentTypeType>Reusable</ClassContentTypeType>
-  <ClassDisplayName>Link Item</ClassDisplayName>
+  <ClassDisplayName>Navigation Link</ClassDisplayName>
   <ClassFormDefinition>
     <form>
-      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="5cbd1dcc-e227-4319-8335-2abb06bab4ab" isPK="true" />
-      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="a457c292-5c3c-42af-9e6d-6baaf0faf9e4" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
-      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="15cf06e5-9eb1-4642-bffa-5c5a5dc34af4" isunique="true" system="true" />
-      <field allowempty="true" column="DisplayText" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="0873790c-6460-475e-8043-85b28b950cba" visible="true">
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="b789e4c5-a59f-41b9-a628-9898168a5a59" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="ef41ff34-3264-437b-95f8-3cad7642f245" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="2e62d418-2e60-455d-a35e-cf0a6ed09fef" isunique="true" system="true" />
+      <field allowempty="true" column="DisplayText" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="eda3b71b-68f3-4ec3-a8d3-ecca1fed669f" visible="true">
         <properties>
           <explanationtext>
             <![CDATA[The text to be displayed when this link is added as an element to a page or widget]]>
@@ -21,7 +21,7 @@
           <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
       </field>
-      <field column="Type" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="569c685f-6ca0-4989-8dc8-4256e779955d" visible="true">
+      <field column="Type" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="41ecae9e-c454-4a04-9717-7a5315c9af1b" visible="true">
         <properties>
           <defaultvalue>page</defaultvalue>
           <explanationtextashtml>False</explanationtextashtml>
@@ -41,7 +41,7 @@ url;URL (an external URL)
           <OptionsValueSeparator>;</OptionsValueSeparator>
         </settings>
       </field>
-      <field allowempty="true" column="Page" columnprecision="0" columntype="contentitemreference" enabled="true" guid="cc6c6dfb-3a7e-45d0-8a8e-0b479d2ccb1b" visible="true">
+      <field allowempty="true" column="Page" columnprecision="0" columntype="contentitemreference" enabled="true" guid="c4a304a0-7f9b-4749-9b2b-65e8339d3cf0" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Page</fieldcaption>
@@ -67,7 +67,7 @@ url;URL (an external URL)
           </VisibilityConditionConfiguration>
         </visibilityconditiondata>
       </field>
-      <field allowempty="true" column="Url" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="bde6529f-04d9-41b3-9c39-67c0c0948fc6" visible="true">
+      <field allowempty="true" column="Url" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="eaeab970-e6d8-4a53-b1fb-ef16c939b076" visible="true">
         <properties>
           <explanationtext>
             <![CDATA[The full domain of an external web page (e.g. https://www.google.com)]]>
@@ -91,7 +91,7 @@ url;URL (an external URL)
           </VisibilityConditionConfiguration>
         </visibilityconditiondata>
       </field>
-      <field column="Target" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="a624fc35-b0f7-4654-8287-95ff7445563d" visible="true">
+      <field column="Target" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="d145e7e7-2be5-44ff-abb7-8ac107ec1e65" visible="true">
         <properties>
           <defaultvalue>_self</defaultvalue>
           <explanationtextashtml>False</explanationtextashtml>
@@ -110,14 +110,27 @@ _blank;New Tab
           <OptionsValueSeparator>;</OptionsValueSeparator>
         </settings>
       </field>
+      <field allowempty="true" column="ShowWhen" columnprecision="0" columntype="taxonomy" enabled="true" guid="d3ada6e7-dd4c-4f0b-9098-78b9a48d8adf" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Show When</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TagSelector</controlname>
+          <TaxonomyGroup>
+            <![CDATA[["f91c8ea5-06bd-44c0-9968-bc1d2edd868d"]]]>
+          </TaxonomyGroup>
+        </settings>
+      </field>
     </form>
   </ClassFormDefinition>
-  <ClassGUID>a5eb232d-f3d6-4947-b5a1-15aca567e05a</ClassGUID>
+  <ClassGUID>d5036f10-d127-4fac-adb4-9cc06797724a</ClassGUID>
   <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
   <ClassIconClass>xp-chain</ClassIconClass>
-  <ClassName>KCC.LinkItem</ClassName>
-  <ClassShortName>KCCLinkItem</ClassShortName>
-  <ClassTableName>KCC_Link</ClassTableName>
+  <ClassName>KCC.NavLink</ClassName>
+  <ClassShortName>KCCNavLink</ClassShortName>
+  <ClassTableName>KCC_NavLink</ClassTableName>
   <ClassType>Content</ClassType>
   <ClassWebPageHasUrl>False</ClassWebPageHasUrl>
 </cms.contenttype>

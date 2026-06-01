@@ -12,19 +12,20 @@
 using System;
 using System.Collections.Generic;
 using CMS.ContentEngine;
+using CMS.Websites;
 
 namespace KCC
 {
 	/// <summary>
-	/// Represents a content item of type <see cref="NavItem"/>.
+	/// Represents a content item of type <see cref="NavLink"/>.
 	/// </summary>
 	[RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
-	public partial class NavItem : IContentItemFieldsSource
+	public partial class NavLink : IContentItemFieldsSource
 	{
 		/// <summary>
 		/// Code name of the content type.
 		/// </summary>
-		public const string CONTENT_TYPE_NAME = "KCC.NavItem";
+		public const string CONTENT_TYPE_NAME = "KCC.NavLink";
 
 
 		/// <summary>
@@ -41,9 +42,27 @@ namespace KCC
 
 
 		/// <summary>
-		/// SubLinks.
+		/// Type.
 		/// </summary>
-		public IEnumerable<NavLink> SubLinks { get; set; }
+		public string Type { get; set; }
+
+
+		/// <summary>
+		/// Page.
+		/// </summary>
+		public IEnumerable<IWebPageFieldsSource> Page { get; set; }
+
+
+		/// <summary>
+		/// Url.
+		/// </summary>
+		public string Url { get; set; }
+
+
+		/// <summary>
+		/// Target.
+		/// </summary>
+		public string Target { get; set; }
 
 
 		/// <summary>

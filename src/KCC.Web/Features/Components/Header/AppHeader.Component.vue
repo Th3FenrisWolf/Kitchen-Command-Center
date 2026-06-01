@@ -18,9 +18,16 @@
     altText: string
   }
 
+  /**
+   * A header entry that is either a dropdown group (subLinks set) or a flat link
+   * (url + target set). The two modes are mutually exclusive on the server side
+   * (HeaderNavItem in C# is populated from either a NavItem or a NavLink).
+   */
   interface NavItem {
     displayText: string
-    subLinks: PageLink[]
+    url?: string
+    target?: string
+    subLinks?: PageLink[]
   }
 
   interface PageLink {
