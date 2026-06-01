@@ -3,6 +3,7 @@ using CMS.ContentEngine;
 using CMS.Membership;
 using CMS.Websites;
 using CMS.Websites.Routing;
+using KCC.Admin;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,8 @@ public class RecipeApiController(
     IWebPageManagerFactory webPageManagerFactory,
     IWebsiteChannelContext websiteChannelContext,
     IPreferredLanguageRetriever preferredLanguageRetriever,
-    IUserInfoProvider userInfoProvider
+    IUserInfoProvider userInfoProvider,
+    IRecipeIconService recipeIconService
 ) : ControllerBase
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -52,10 +54,17 @@ public class RecipeApiController(
         string languageName = preferredLanguageRetriever.Get();
         var webPageManager = CreateManager();
 
+        string icon = await recipeIconService.PickAsync(
+            request.RecipeName,
+            request.RecipeDescription,
+            request.FirstVariant.Ingredients.Select(i => i.Name),
+            cancellationToken);
+
         var recipeData = new ContentItemData(new Dictionary<string, object>
         {
             [nameof(KCC.Recipe.Name)] = request.RecipeName,
             [nameof(KCC.Recipe.Description)] = request.RecipeDescription ?? string.Empty,
+            [nameof(KCC.Recipe.Icon)] = icon,
         });
 
         var recipeContentItemParams = new ContentItemParameters(KCC.Recipe.CONTENT_TYPE_NAME, recipeData);
