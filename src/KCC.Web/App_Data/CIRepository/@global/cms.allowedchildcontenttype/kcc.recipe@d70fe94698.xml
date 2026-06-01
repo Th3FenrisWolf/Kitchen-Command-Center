@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.allowedchildcontenttype>
+  <Parent>
+    <CodeName>KCC.Recipe</CodeName>
+    <GUID>33ab2a04-a592-4090-963f-504bc41afb5f</GUID>
+    <ObjectType>cms.contenttype</ObjectType>
+  </Parent>
+  <Bindings>
+    <Binding id="cms.contenttype_KCC.RecipeVariant">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.RecipeVariant</CodeName>
+        <GUID>15f6efcd-a5d3-4cbd-b639-199f8a3f15da</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
+  </Bindings>
+</cms.allowedchildcontenttype>

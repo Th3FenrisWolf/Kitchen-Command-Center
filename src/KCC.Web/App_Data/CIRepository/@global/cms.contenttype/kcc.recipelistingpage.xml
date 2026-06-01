@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Recipe Listing Page</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="20b8cf73-c164-443b-b2d5-97ec7899ae04" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="e622320b-5bb2-4b5c-8d53-069d894cc8ab" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="4cd188b2-83a8-4548-b323-28d319685ca9" isunique="true" system="true" />
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
+        <properties />
+      </schema>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>f6c8842d-aee6-4b8b-93b2-fae1fdc873b6</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-l-header-menu-text</ClassIconClass>
+  <ClassName>KCC.RecipeListingPage</ClassName>
+  <ClassShortName>KCCRecipeListingPage</ClassShortName>
+  <ClassTableName>KCC_RecipeListingPage</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+</cms.contenttype>
