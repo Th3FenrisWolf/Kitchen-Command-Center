@@ -45,7 +45,7 @@ if (builder.Environment.IsDevelopment())
 
     builder.Services.AddKenticoManagementApi(options =>
     {
-        options.Secret = builder.Configuration["ManagementApi:Secret"];
+        options.Secret = builder.Configuration["KenticoManagementApi:Secret"];
     });
 
     builder.Services.AddComponentRegistry();
@@ -72,6 +72,13 @@ builder.Services.AddIdentity<KCCApplicationUser, ApplicationRole>(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddKccResourceStrings();
+
+var anthropicOptions = builder.Configuration
+    .GetSection(KCC.Web.Features.Api.AnthropicOptions.SectionName)
+    .Get<KCC.Web.Features.Api.AnthropicOptions>() ?? new KCC.Web.Features.Api.AnthropicOptions();
+builder.Services.AddSingleton(anthropicOptions);
+builder.Services.AddSingleton(new Anthropic.AnthropicClient(new Anthropic.Core.ClientOptions { ApiKey = anthropicOptions.ApiKey ?? string.Empty }));
+builder.Services.AddSingleton<KCC.Web.Features.Api.IRecipeIconService, KCC.Web.Features.Api.RecipeIconService>();
 
 builder.Services.AddControllersWithViews(options =>
 {
