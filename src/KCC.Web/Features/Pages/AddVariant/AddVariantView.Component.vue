@@ -103,12 +103,13 @@
   </SmallHero>
 
   <section v-if="submitSuccess" class="flex flex-col items-center gap-4 py-12 text-center">
-    <h2 class="font-casual text-4xl"><ResourceString for="VariantSubmitted" /></h2>
-    <p class="text-lg"><ResourceString for="VariantSubmittedMessage" /></p>
-    <a :href="recipeSlug" class="rounded-3xl bg-surface-500 px-6 py-3 text-xl text-bone">
+    <ResourceString for="VariantSubmitted" as="h2" class="font-casual text-4xl" />
+    <ResourceString for="VariantSubmittedMessage" as="p" class="text-lg" />
+
+    <AppLink :href="recipeSlug" class="rounded-3xl bg-surface-500 px-6 py-3 text-xl text-bone">
       <ResourceString for="BackTo" class="mr-1" />
       <span>{{ recipeName }}</span>
-    </a>
+    </AppLink>
   </section>
 
   <section v-else>
