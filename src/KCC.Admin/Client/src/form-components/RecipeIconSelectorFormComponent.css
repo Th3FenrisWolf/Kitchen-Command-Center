@@ -1,0 +1,20 @@
+.kcc-icon-selector__field { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; border: 1px dashed var(--color-input-border); border-radius: 20px; background: var(--color-paper-background); min-width: 100%; }
+.kcc-icon-selector__actions { display: flex; align-items: center; gap: 8px; }
+.kcc-icon-selector__or { color: var(--color-text-default-on-light); font-size: 14px; user-select: none; }
+.kcc-icon-selector__preview-row { display: flex; align-items: center; gap: 8px; }
+.kcc-icon-selector__preview { text-align: center; font-size: 28px; color: #393939; }
+.kcc-icon-selector__value { color: #393939; font-size: 14px; }
+.kcc-icon-selector__empty { color: #999; }
+.kcc-icon-modal { position: fixed; inset: 0; z-index: 4000; display: flex; align-items: center; justify-content: center; }
+.kcc-icon-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.4); }
+.kcc-icon-modal__panel { position: relative; width: 900px; max-width: 92vw; height: 640px; max-height: 88vh; display: flex; flex-direction: column; background: #fff; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.2); }
+.kcc-icon-modal__header { padding: 20px 24px 0; }
+.kcc-icon-modal__header h2 { margin: 0; font-size: 20px; font-weight: 700; }
+.kcc-icon-modal__search { padding: 16px 24px; }
+.kcc-icon-modal__grid { flex: 1; overflow: auto; padding: 8px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px; }
+.kcc-icon-modal__item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 96px; padding: 8px; border: 1px solid #e5e5e5; border-radius: 8px; background: #fff; cursor: pointer; }
+.kcc-icon-modal__item:hover { background: #f5f5f5; }
+.kcc-icon-modal__item--selected { border-color: #2b6cb0; background: #ebf4ff; }
+.kcc-icon-modal__item i { font-size: 24px; color: #393939; }
+.kcc-icon-modal__name { font-size: 11px; line-height: 1.2; text-align: center; word-break: break-word; }
+.kcc-icon-modal__footer { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #eee; }
