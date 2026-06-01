@@ -42,6 +42,9 @@
         :src="recipe.image"
         :alt="recipe.name"
       />
+      <div v-else class="flex h-48 w-full items-center justify-center rounded-2xl bg-bone-dark" aria-hidden="true">
+        <i :class="recipe.icon" class="text-6xl text-onyx-light"></i>
+      </div>
       <span class="font-casual text-3xl">{{ recipe.name }}</span>
       <span>{{ recipe.description }}</span>
       <span v-if="recipe.variantCount > 0" class="text-overlay-400 text-sm">
