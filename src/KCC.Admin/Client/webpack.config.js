@@ -23,7 +23,15 @@ module.exports = (opts, argv) => {
           loader: "babel-loader",
         },
         {
+          // Font Awesome (node_modules) CSS: inject into the DOM and resolve webfont url()s
           test: /\.css$/,
+          include: /node_modules/,
+          use: ["style-loader", "css-loader"],
+        },
+        {
+          // Project CSS: imported as a string and injected via <style> (HomeTemplate pattern)
+          test: /\.css$/,
+          exclude: /node_modules/,
           type: "asset/source",
         },
       ],

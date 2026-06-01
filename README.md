@@ -53,6 +53,8 @@ cd src/KCC.Web
    yarn install
    ```
 
+   > Requires a **Font Awesome Pro** token — set `FONTAWESOME_NPM_AUTH_TOKEN` first (see [Font Awesome Pro](#font-awesome-pro)). The admin client in `src/KCC.Admin/Client` needs `yarn install` with the same token, too.
+
 6. **Run the Application**:
 
    The application requires three services running concurrently:
@@ -67,6 +69,20 @@ cd src/KCC.Web
    This automatically runs `yarn dev:all` which starts Vite, SSR, and CSS watchers alongside the .NET app.
 
 The root URL will be the live site's home page. To access the administration interface, navigate to the `/admin` path. Admin credentials can be found in 1pass to create your own account.
+
+### Font Awesome Pro
+
+This project renders icons with **Font Awesome Pro** (webfont / CSS), installed from Font Awesome's private npm registry. The registry is configured in committed `.npmrc` files (`src/KCC.Web/.npmrc` and `src/KCC.Admin/Client/.npmrc`); the auth token is **not** committed — it is read from the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
+
+Before running `yarn install` in **either** `src/KCC.Web` or `src/KCC.Admin/Client`:
+
+1. Get a token from your Font Awesome account (Account → Tokens).
+2. Set `FONTAWESOME_NPM_AUTH_TOKEN` in your environment:
+   - PowerShell (persists; reopen the terminal afterward): `setx FONTAWESOME_NPM_AUTH_TOKEN "<token>"`
+   - PowerShell (current session only): `$env:FONTAWESOME_NPM_AUTH_TOKEN = "<token>"`
+   - bash / zsh: `export FONTAWESOME_NPM_AUTH_TOKEN=<token>`
+
+The same variable must be set wherever the production frontend is built. Never commit the token or any Font Awesome font files — `node_modules/`, `**/wwwroot/assets`, `**/wwwroot/webfonts`, and `src/KCC.Admin/Client/dist/` are all git-ignored.
 
 ---
 

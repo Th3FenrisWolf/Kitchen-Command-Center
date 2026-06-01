@@ -51,6 +51,7 @@ export default defineConfig(({ mode }) => {
           rollupOptions: {
             input: {
               main: resolve(__dirname, 'Features/Main.ts'),
+              mainCss: resolve(__dirname, 'Features/Styles/Main.css'),
               pageBuilderMount: resolve(__dirname, 'Features/PageBuilderMount.ts'),
               adminHomeRedirect: resolve(__dirname, 'Features/AdminHomePage/admin-home-redirect.ts'),
               resourceStringEditor: resolve(
