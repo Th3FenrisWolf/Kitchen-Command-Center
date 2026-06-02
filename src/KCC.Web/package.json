@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:css": "tailwindcss -i ./Features/Styles/Main.css -o ./wwwroot/assets/main-dev.css --watch",
-    "dev:all": "concurrently -k -n \"VITE,SSR,CSS\" -c \"cyan,green,magenta\" \"yarn dev\" \"yarn ssr:dev\" \"yarn dev:css\"",
+    "dev:all": "concurrently -k -n \"VITE,SSR\" -c \"cyan,green\" \"yarn dev\" \"yarn ssr:dev\"",
     "build": "vite build",
     "build:ssr": "vite build --mode ssr",
     "build:all": "vite build && vite build --mode ssr",
@@ -18,9 +17,7 @@
     "format": "prettier --write Features/"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.1.0",
-    "@fortawesome/free-solid-svg-icons": "^7.1.0",
-    "@fortawesome/vue-fontawesome": "^3.1.2",
+    "@fortawesome/fontawesome-pro": "^7.1.0",
     "compression": "^1.8.0",
     "express": "^4.21.2",
     "qs": "^6.14.0",
@@ -28,7 +25,6 @@
     "vue": "^3.5.24"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.18",
     "@tailwindcss/postcss": "^4.1.17",
     "@tailwindcss/vite": "^4.1.17",
     "@tsconfig/node24": "^24.0.3",

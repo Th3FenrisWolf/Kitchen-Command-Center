@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-  import { faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
   import { ref, computed } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import InputField from '~/Components/Forms/InputField.vue'
@@ -191,7 +189,7 @@
             class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white"
             @click="ingredient.isEyeballed = !ingredient.isEyeballed"
           >
-            <FontAwesomeIcon :icon="ingredient.isEyeballed ? faEye : faEyeSlash" />
+            <i :class="ingredient.isEyeballed ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"></i>
           </button>
           <InputField
             class="shrink basis-1/6"
@@ -214,7 +212,7 @@
             class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
             @click="ingredientList.splice(index, 1)"
           >
-            <FontAwesomeIcon :icon="faTrash" />
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </div>
@@ -252,7 +250,7 @@
             class="h-12 max-w-12 cursor-pointer self-center rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
             @click="instructionList.splice(index, 1)"
           >
-            <FontAwesomeIcon :icon="faTrash" />
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </div>

@@ -88,6 +88,7 @@ public class RecipeSearchController(
                 Name = recipe.Name,
                 Description = recipe.Description,
                 Image = recipe.Image?.FirstOrDefault()?.Asset?.Url,
+                Icon = recipe.Icon,
                 Category = categoryRef is not null && resolvedCategories.TryGetValue(categoryRef.Identifier, out var catName) ? catName : null,
                 Slug = recipe.GetUrl().RelativePath,
                 VariantCount = variants.Count(),

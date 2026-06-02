@@ -38,6 +38,7 @@ export interface RecipeSummary {
   name: string
   description: string
   image?: string
+  icon?: string
   category?: string
   slug: string
   variantCount: number

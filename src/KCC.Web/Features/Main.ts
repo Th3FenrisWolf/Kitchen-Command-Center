@@ -5,10 +5,6 @@ import type { SsrPayload } from '~/Types/ContentRegions'
 
 import '~/Utilities/StringExtensions'
 
-if (process.env.NODE_ENV === 'production') {
-  import('~/Styles/Main.css')
-}
-
 // Get the server content from the script tag (stored as JSON to prevent XSS)
 const serverContentEl = document.getElementById('server-content')
 if (!serverContentEl?.textContent) throw new Error('Server content not found')

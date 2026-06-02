@@ -15,17 +15,7 @@
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
 
-  <link rel="preload" href="/fonts/HazelnutMilkTeaRegular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="/fonts/AmericanPurposeCasualRegular.woff2" as="font" type="font/woff2" crossorigin />
-
-  @if (Env.IsDevelopment())
-  {
-    <link rel="stylesheet" href="/assets/main-dev.css" />
-  }
-  else
-  {
-    <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
-  }
+  <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
 
   <page-builder-mount-preload />
   <page-builder-styles />
