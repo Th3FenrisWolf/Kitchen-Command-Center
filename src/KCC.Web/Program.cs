@@ -2,6 +2,7 @@ using KCC;
 using KCC.ResourceStrings;
 using KCC.Web.Features.AdminHomePage;
 using KCC.Web.Features.Attributes;
+using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
@@ -89,6 +90,7 @@ builder.Services.AddControllersWithViews(options =>
 .AddApplicationPart(typeof(ResourceStringServiceExtensions).Assembly);
 
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
+builder.Services.AddScoped<IAuthorNameResolver, AuthorNameResolver>();
 
 var app = builder.Build();
 

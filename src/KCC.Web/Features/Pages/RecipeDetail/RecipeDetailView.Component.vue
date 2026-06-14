@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { cx } from '~/Utilities/CX'
   import type { RecipeVariantSummary } from '~/Types/Recipe'
-  import { useResourceStrings } from '~/Components/ResourceStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
 
@@ -12,6 +12,7 @@
     recipeCategory?: string
     recipeGuid: string
     addVariantUrl: string
+    startedByName?: string
     variants: RecipeVariantSummary[]
     resourceStrings?: Record<string, string>
   }>()
@@ -36,6 +37,9 @@
     <div class="flex flex-col gap-2">
       <img v-if="recipeImagePath" :src="recipeImagePath" :alt="recipeName" class="h-64 w-full rounded-3xl object-cover" />
       <p class="text-lg">{{ recipeDescription }}</p>
+      <p v-if="startedByName" class="text-sm text-onyx-light">
+        <ResourceString for="StartedBy" /> {{ startedByName }}
+      </p>
       <span v-if="recipeCategory" class="w-fit rounded-full bg-overlay-300 px-3 py-1 text-sm">
         {{ recipeCategory }}
       </span>
@@ -60,6 +64,9 @@
             <i :class="variant.icon" class="text-6xl"></i>
           </div>
           <span class="font-casual text-2xl">{{ variant.name }}</span>
+          <span v-if="variant.authorName" class="text-xs text-onyx-light">
+            <ResourceString for="By" /> {{ variant.authorName }}
+          </span>
           <span class="text-sm">{{ variant.description }}</span>
           <div v-if="variant.tags.length" class="flex flex-wrap gap-1">
             <span v-for="tag in variant.tags" :key="tag" class="rounded-full bg-overlay-300 px-2 py-0.5 text-xs">

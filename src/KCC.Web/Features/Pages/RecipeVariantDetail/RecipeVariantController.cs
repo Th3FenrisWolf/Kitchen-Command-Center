@@ -2,6 +2,8 @@ using CMS.ContentEngine;
 using CMS.Websites;
 using CMS.Websites.Routing;
 using KCC;
+using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeVariantDetail;
 using KCC.Web.Features.Pages.Shared;
@@ -21,7 +23,9 @@ public class RecipeVariantController(
     IWebPageDataContextRetriever webPageDataContextRetriever,
     IContentRetriever contentRetriever,
     ITaxonomyRetriever taxonomyRetriever,
-    IPreferredLanguageRetriever preferredLanguageRetriever
+    IPreferredLanguageRetriever preferredLanguageRetriever,
+    IAuthorNameResolver authorNameResolver,
+    IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -87,6 +91,10 @@ public class RecipeVariantController(
                 Name = s.Name,
                 Slug = s.GetUrl().RelativePath,
             }).ToList(),
+            CreatedByName = await authorNameResolver.Resolve(variant.AuthorMemberGuid),
+            ResourceStrings = resourceStrings.GetManyOrDefault(
+                "VariantDetail.CreatedBy",
+                "VariantDetail.Ingredients"),
         };
         variant.MapMetadata(viewModel);
         variant.MapWebPageFields(viewModel);

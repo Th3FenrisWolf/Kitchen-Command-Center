@@ -4,8 +4,10 @@ using CMS.Membership;
 using CMS.Websites;
 using CMS.Websites.Routing;
 using KCC.Admin;
+using KCC.Web.Features.Models.Common;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Api;
@@ -22,7 +24,8 @@ public class RecipeApiController(
     IWebsiteChannelContext websiteChannelContext,
     IPreferredLanguageRetriever preferredLanguageRetriever,
     IUserInfoProvider userInfoProvider,
-    IRecipeIconService recipeIconService
+    IRecipeIconService recipeIconService,
+    UserManager<KCCApplicationUser> userManager
 ) : ControllerBase
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -51,6 +54,12 @@ public class RecipeApiController(
             return BadRequest(new { error = "First variant name is required." });
         }
 
+        var author = await userManager.GetUserAsync(User);
+        if (author is null)
+        {
+            return Unauthorized();
+        }
+
         string languageName = preferredLanguageRetriever.Get();
         var webPageManager = CreateManager();
 
@@ -60,12 +69,7 @@ public class RecipeApiController(
             request.FirstVariant.Ingredients.Select(i => i.Name),
             cancellationToken);
 
-        var recipeData = new ContentItemData(new Dictionary<string, object>
-        {
-            [nameof(KCC.Recipe.Name)] = request.RecipeName,
-            [nameof(KCC.Recipe.Description)] = request.RecipeDescription ?? string.Empty,
-            [nameof(KCC.Recipe.Icon)] = icon,
-        });
+        var recipeData = new ContentItemData(BuildRecipeData(request, icon, author.MemberGuid));
 
         var recipeContentItemParams = new ContentItemParameters(KCC.Recipe.CONTENT_TYPE_NAME, recipeData);
 
@@ -82,17 +86,7 @@ public class RecipeApiController(
             request.FirstVariant.Ingredients.Select(i => i.Name),
             cancellationToken);
 
-        var variantData = new ContentItemData(new Dictionary<string, object>
-        {
-            [nameof(KCC.RecipeVariant.Name)] = request.FirstVariant.VariantName,
-            [nameof(KCC.RecipeVariant.Description)] = request.FirstVariant.VariantDescription ?? string.Empty,
-            [nameof(KCC.RecipeVariant.Icon)] = variantIcon,
-            [nameof(KCC.RecipeVariant.PrepTime)] = request.FirstVariant.PrepTime ?? 0,
-            [nameof(KCC.RecipeVariant.CookTime)] = request.FirstVariant.CookTime ?? 0,
-            [nameof(KCC.RecipeVariant.ServingNumber)] = request.FirstVariant.Servings ?? 0,
-            [nameof(KCC.RecipeVariant.Ingredients)] = JsonSerializer.Serialize(request.FirstVariant.Ingredients, JsonOptions),
-            [nameof(KCC.RecipeVariant.Instructions)] = JsonSerializer.Serialize(request.FirstVariant.Instructions, JsonOptions),
-        });
+        var variantData = new ContentItemData(BuildVariantData(request.FirstVariant, variantIcon, author.MemberGuid));
 
         var variantContentItemParams = new ContentItemParameters(KCC.RecipeVariant.CONTENT_TYPE_NAME, variantData);
 
@@ -127,6 +121,12 @@ public class RecipeApiController(
             return BadRequest(new { error = "Variant name is required." });
         }
 
+        var author = await userManager.GetUserAsync(User);
+        if (author is null)
+        {
+            return Unauthorized();
+        }
+
         string languageName = preferredLanguageRetriever.Get();
         var webPageManager = CreateManager();
 
@@ -136,17 +136,7 @@ public class RecipeApiController(
             request.Ingredients.Select(i => i.Name),
             cancellationToken);
 
-        var variantData = new ContentItemData(new Dictionary<string, object>
-        {
-            [nameof(RecipeVariant.Name)] = request.VariantName,
-            [nameof(RecipeVariant.Description)] = request.VariantDescription ?? string.Empty,
-            [nameof(RecipeVariant.Icon)] = icon,
-            [nameof(RecipeVariant.PrepTime)] = request.PrepTime ?? 0,
-            [nameof(RecipeVariant.CookTime)] = request.CookTime ?? 0,
-            [nameof(RecipeVariant.ServingNumber)] = request.Servings ?? 0,
-            [nameof(RecipeVariant.Ingredients)] = JsonSerializer.Serialize(request.Ingredients, JsonOptions),
-            [nameof(RecipeVariant.Instructions)] = JsonSerializer.Serialize(request.Instructions, JsonOptions),
-        });
+        var variantData = new ContentItemData(BuildVariantData(request, icon, author.MemberGuid));
 
         var variantContentItemParams = new ContentItemParameters(RecipeVariant.CONTENT_TYPE_NAME, variantData);
 
@@ -162,6 +152,41 @@ public class RecipeApiController(
 
         return Ok(new { variantId });
     }
+
+    /// <summary>
+    /// Builds the content item data for a new recipe page, stamping the authoring member.
+    /// </summary>
+    /// <param name="request">The create recipe request payload.</param>
+    /// <param name="icon">The resolved Font Awesome icon class for the recipe.</param>
+    /// <param name="authorMemberGuid">The GUID of the member creating the recipe.</param>
+    /// <returns>A dictionary of field name/value pairs for use in <see cref="ContentItemData"/>.</returns>
+    public static Dictionary<string, object> BuildRecipeData(CreateRecipeRequest request, string icon, Guid authorMemberGuid) => new()
+    {
+        [nameof(KCC.Recipe.Name)] = request.RecipeName,
+        [nameof(KCC.Recipe.Description)] = request.RecipeDescription ?? string.Empty,
+        [nameof(KCC.Recipe.Icon)] = icon,
+        [nameof(KCC.Recipe.AuthorMemberGuid)] = authorMemberGuid,
+    };
+
+    /// <summary>
+    /// Builds the content item data for a new recipe variant page, stamping the authoring member.
+    /// </summary>
+    /// <param name="request">The create variant request payload.</param>
+    /// <param name="icon">The resolved Font Awesome icon class for the variant.</param>
+    /// <param name="authorMemberGuid">The GUID of the member creating the variant.</param>
+    /// <returns>A dictionary of field name/value pairs for use in <see cref="ContentItemData"/>.</returns>
+    public static Dictionary<string, object> BuildVariantData(CreateVariantRequest request, string icon, Guid authorMemberGuid) => new()
+    {
+        [nameof(RecipeVariant.Name)] = request.VariantName,
+        [nameof(RecipeVariant.Description)] = request.VariantDescription ?? string.Empty,
+        [nameof(RecipeVariant.Icon)] = icon,
+        [nameof(RecipeVariant.PrepTime)] = request.PrepTime ?? 0,
+        [nameof(RecipeVariant.CookTime)] = request.CookTime ?? 0,
+        [nameof(RecipeVariant.ServingNumber)] = request.Servings ?? 0,
+        [nameof(RecipeVariant.Ingredients)] = JsonSerializer.Serialize(request.Ingredients, JsonOptions),
+        [nameof(RecipeVariant.Instructions)] = JsonSerializer.Serialize(request.Instructions, JsonOptions),
+        [nameof(RecipeVariant.AuthorMemberGuid)] = authorMemberGuid,
+    };
 
     private IWebPageManager CreateManager()
     {
