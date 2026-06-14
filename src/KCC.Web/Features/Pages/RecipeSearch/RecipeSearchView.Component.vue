@@ -30,7 +30,7 @@
       :key="recipe.slug"
       :class="
         cx(
-          'group/card grid min-h-48 content-center gap-2 rounded-3xl bg-bone p-4 text-center text-onyx shadow-primary transition-all duration-300',
+          'grid min-h-48 content-start gap-2 rounded-3xl bg-bone p-4 text-center text-onyx shadow-primary transition-all duration-300',
           'focus-within:shadow-primary-raised hover:shadow-primary-raised',
         )
       "
