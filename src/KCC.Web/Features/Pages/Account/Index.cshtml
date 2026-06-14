@@ -1,3 +1,4 @@
+@using KCC.Web.Features.Helpers
 @using KCC.Web.Features.Pages.Account
 @using KCC.Web.Features.Pages.Account.Logout
 @using KCC.Web.Features.Pages.Account.Settings
@@ -10,5 +11,6 @@
   member-since="@Model.MemberSince"
   settings-url="@(Url.ActionFor<AccountSettingsController>(c => c.Index()))"
   logout-url="@(Url.ActionFor<LogoutController>(c => c.Index()))"
+  :recipe-groups="@Vue.Prop(Model.RecipeGroups)"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />
