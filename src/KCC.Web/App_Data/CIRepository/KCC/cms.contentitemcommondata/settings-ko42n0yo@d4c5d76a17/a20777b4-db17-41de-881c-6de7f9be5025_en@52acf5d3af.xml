@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>Settings-ko42n0yo</CodeName>
+    <GUID>cf3eebb1-5799-4ee4-8beb-0a1968d09fcf</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-06-04 00:02:21Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>a20777b4-db17-41de-881c-6de7f9be5025</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-06-04 00:02:21Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ExcludeFromSitemap>False</ExcludeFromSitemap>
+  <ShowBreadcrumbs>True</ShowBreadcrumbs>
+</cms.contentitemcommondata>

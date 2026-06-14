@@ -6,6 +6,13 @@
     <ObjectType>cms.contenttype</ObjectType>
   </Parent>
   <Bindings>
+    <Binding id="cms.contenttype_KCC.AccountSettingsPage">
+      <AllowedChildContentTypeChildID>
+        <CodeName>KCC.AccountSettingsPage</CodeName>
+        <GUID>58be8a10-87eb-4602-a8e4-ddab36f7d2dc</GUID>
+        <ObjectType>cms.contenttype</ObjectType>
+      </AllowedChildContentTypeChildID>
+    </Binding>
     <Binding id="cms.contenttype_KCC.LoginPage">
       <AllowedChildContentTypeChildID>
         <CodeName>KCC.LoginPage</CodeName>

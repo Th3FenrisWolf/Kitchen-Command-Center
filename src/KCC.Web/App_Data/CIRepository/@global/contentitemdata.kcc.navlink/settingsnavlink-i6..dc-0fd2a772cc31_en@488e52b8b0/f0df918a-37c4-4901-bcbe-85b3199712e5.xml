@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navlink>
+  <ContentItemDataCommonDataID>
+    <GUID>222d56d1-ff30-4f60-b0dc-0fd2a772cc31</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SettingsNavLink-i6pq113c</CodeName>
+      <GUID>1cf57c1c-f3b6-4f1d-9c48-b2c8a4211b79</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>f0df918a-37c4-4901-bcbe-85b3199712e5</ContentItemDataGUID>
+  <DisplayText>Settings</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"cf3eebb1-5799-4ee4-8beb-0a1968d09fcf"}]]]>
+  </Page>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
+  </ShowWhen>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.navlink>

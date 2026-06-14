@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <cms.contentitemlanguagemetadata>
   <ContentItemLanguageMetadataContentItemID>
-    <CodeName>LogoutNavLink-xf31ft8s</CodeName>
-    <GUID>88743874-33fc-4553-8037-1ef86c357b4f</GUID>
+    <CodeName>Settings-ko42n0yo</CodeName>
+    <GUID>cf3eebb1-5799-4ee4-8beb-0a1968d09fcf</GUID>
     <ObjectType>cms.contentitem</ObjectType>
   </ContentItemLanguageMetadataContentItemID>
   <ContentItemLanguageMetadataContentLanguageID>
@@ -15,9 +15,9 @@
     <GUID>6415b8ce-8072-4bcd-8e48-9d7178b826b7</GUID>
     <ObjectType>cms.user</ObjectType>
   </ContentItemLanguageMetadataCreatedByUserID>
-  <ContentItemLanguageMetadataCreatedWhen>2026-05-28 15:44:22Z</ContentItemLanguageMetadataCreatedWhen>
-  <ContentItemLanguageMetadataDisplayName>Logout Nav Link</ContentItemLanguageMetadataDisplayName>
-  <ContentItemLanguageMetadataGUID>012ef199-41e4-41f5-8f0b-190ce9e91cb9</ContentItemLanguageMetadataGUID>
+  <ContentItemLanguageMetadataCreatedWhen>2026-06-04 00:02:16Z</ContentItemLanguageMetadataCreatedWhen>
+  <ContentItemLanguageMetadataDisplayName>Settings</ContentItemLanguageMetadataDisplayName>
+  <ContentItemLanguageMetadataGUID>b3a346e2-d633-4a90-b00c-7702b2439ba7</ContentItemLanguageMetadataGUID>
   <ContentItemLanguageMetadataHasImageAsset>False</ContentItemLanguageMetadataHasImageAsset>
   <ContentItemLanguageMetadataLatestVersionStatus>2</ContentItemLanguageMetadataLatestVersionStatus>
   <ContentItemLanguageMetadataModifiedByUserID>
@@ -25,15 +25,4 @@
     <GUID>6415b8ce-8072-4bcd-8e48-9d7178b826b7</GUID>
     <ObjectType>cms.user</ObjectType>
   </ContentItemLanguageMetadataModifiedByUserID>
-  <ContentItemTags>
-    <cms.contentitemtag>
-      <ContentItemTagContentItemLanguageMetadataID>
-        <GUID>012ef199-41e4-41f5-8f0b-190ce9e91cb9</GUID>
-        <ObjectType>cms.contentitemlanguagemetadata</ObjectType>
-      </ContentItemTagContentItemLanguageMetadataID>
-      <ContentItemTagFieldGUID>d3ada6e7-dd4c-4f0b-9098-78b9a48d8adf</ContentItemTagFieldGUID>
-      <ContentItemTagGUID>b14d40af-1b26-4133-9103-3aa5f0164589</ContentItemTagGUID>
-      <ContentItemTagTagGUID>b3022596-5dfb-4986-afc3-0ba1b4e27835</ContentItemTagTagGUID>
-    </cms.contentitemtag>
-  </ContentItemTags>
 </cms.contentitemlanguagemetadata>

@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <cms.webpageitem>
   <WebPageItemContentItemID>
-    <CodeName>RegistrationComplete-1ktdrx69</CodeName>
-    <GUID>afb2c2a0-dc6e-49d9-a67e-1cc2b9954d9f</GUID>
+    <CodeName>Settings-ko42n0yo</CodeName>
+    <GUID>cf3eebb1-5799-4ee4-8beb-0a1968d09fcf</GUID>
     <ObjectType>cms.contentitem</ObjectType>
   </WebPageItemContentItemID>
-  <WebPageItemGUID>f16b38e0-b7a9-4dfd-9f8c-60731d8275aa</WebPageItemGUID>
-  <WebPageItemName>RegistrationComplete-1ktdrx69</WebPageItemName>
-  <WebPageItemOrder>2</WebPageItemOrder>
+  <WebPageItemGUID>0b87f816-ebb1-445d-9a78-f0ac44d0adde</WebPageItemGUID>
+  <WebPageItemName>Settings-ko42n0yo</WebPageItemName>
+  <WebPageItemOrder>1</WebPageItemOrder>
   <WebPageItemParentID>
     <CodeName>Account-0tpixbu8</CodeName>
     <GUID>66db386f-8b94-4cf5-bfee-ab25fd180052</GUID>
     <ObjectType>cms.webpageitem</ObjectType>
   </WebPageItemParentID>
-  <WebPageItemTreePath>/Account/Registration_Complete</WebPageItemTreePath>
+  <WebPageItemTreePath>/Account/Settings</WebPageItemTreePath>
   <WebPageItemWebsiteChannelID>
     <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
     <ObjectType>cms.websitechannel</ObjectType>

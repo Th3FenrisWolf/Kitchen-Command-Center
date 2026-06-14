@@ -1,20 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <contentitemdata.kcc.navlink>
   <ContentItemDataCommonDataID>
-    <GUID>8f23bcf8-6a95-4e9d-8c6c-247490b41617</GUID>
+    <GUID>7f0ceaa0-96e4-47dd-ab51-71ed50850152</GUID>
     <ObjectType>cms.contentitemcommondata</ObjectType>
     <Parent>
-      <CodeName>LogoutNavLink-xf31ft8s</CodeName>
-      <GUID>88743874-33fc-4553-8037-1ef86c357b4f</GUID>
+      <CodeName>ProfileNavLink-baa7vo9c</CodeName>
+      <GUID>0f405874-8a70-47ed-ae33-53d7f56e6bdc</GUID>
       <ObjectType>cms.contentitem</ObjectType>
     </Parent>
   </ContentItemDataCommonDataID>
-  <ContentItemDataGUID>d9375ba7-9309-440e-bf9b-1baaccfe3950</ContentItemDataGUID>
-  <DisplayText>Logout</DisplayText>
+  <ContentItemDataGUID>74678434-3cf6-4e95-9f64-e387fbdb14b9</ContentItemDataGUID>
+  <DisplayText>Profile</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"c6ec9216-1532-48cc-9597-fe2921043ef3"}]]]>
+  </Page>
   <ShowWhen>
     <![CDATA[[{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
   </ShowWhen>
   <Target>_self</Target>
-  <Type>url</Type>
-  <Url>/account/logout</Url>
+  <Type>page</Type>
 </contentitemdata.kcc.navlink>

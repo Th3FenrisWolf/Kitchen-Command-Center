@@ -10,10 +10,10 @@
     <GUID>d5036f10-d127-4fac-adb4-9cc06797724a</GUID>
     <ObjectType>cms.contenttype</ObjectType>
   </ContentItemContentTypeID>
-  <ContentItemGUID>88743874-33fc-4553-8037-1ef86c357b4f</ContentItemGUID>
+  <ContentItemGUID>1cf57c1c-f3b6-4f1d-9c48-b2c8a4211b79</ContentItemGUID>
   <ContentItemIsReusable>True</ContentItemIsReusable>
   <ContentItemIsSecured>False</ContentItemIsSecured>
-  <ContentItemName>LogoutNavLink-xf31ft8s</ContentItemName>
+  <ContentItemName>SettingsNavLink-i6pq113c</ContentItemName>
   <ContentItemWorkspaceID>
     <CodeName>KenticoDefault</CodeName>
     <GUID>43f674d6-540d-4f91-8c19-608b5bddb2f2</GUID>

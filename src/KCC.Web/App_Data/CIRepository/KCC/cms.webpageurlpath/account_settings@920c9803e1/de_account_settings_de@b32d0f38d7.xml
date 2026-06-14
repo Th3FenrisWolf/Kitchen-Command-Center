@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageurlpath>
+  <WebPageUrlPath>de/Account/Settings</WebPageUrlPath>
+  <WebPageUrlPathContentLanguageID>
+    <CodeName>de</CodeName>
+    <GUID>2584f8c4-f563-4f2f-b337-9da4a38f2dca</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </WebPageUrlPathContentLanguageID>
+  <WebPageUrlPathGUID>dae36cc8-a3ba-4976-afb6-fc68f809bd92</WebPageUrlPathGUID>
+  <WebPageUrlPathHash>
+    <![CDATA[168B5CE2E44B978613A2F3BCE48370DEFED76AB18876BBE46DF08B2A86BCC2A8]]>
+  </WebPageUrlPathHash>
+  <WebPageUrlPathIsCanonical>True</WebPageUrlPathIsCanonical>
+  <WebPageUrlPathIsDraft>False</WebPageUrlPathIsDraft>
+  <WebPageUrlPathIsLatest>True</WebPageUrlPathIsLatest>
+  <WebPageUrlPathType>0</WebPageUrlPathType>
+  <WebPageUrlPathWebPageItemID>
+    <CodeName>Settings-ko42n0yo</CodeName>
+    <GUID>0b87f816-ebb1-445d-9a78-f0ac44d0adde</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageUrlPathWebPageItemID>
+  <WebPageUrlPathWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageUrlPathWebsiteChannelID>
+</cms.webpageurlpath>
