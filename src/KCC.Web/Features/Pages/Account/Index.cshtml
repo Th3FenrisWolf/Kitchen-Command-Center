@@ -1,0 +1,12 @@
+@using KCC.Web.Features.Pages.Account
+
+@model AccountViewModel
+
+<AccountView
+  display-name="@Model.DisplayName"
+  initials="@Model.Initials"
+  member-since="@Model.MemberSince"
+  settings-url="/account/settings"
+  logout-url="/account/logout"
+  :resource-strings="@Vue.Prop(Model.ResourceStrings)"
+/>

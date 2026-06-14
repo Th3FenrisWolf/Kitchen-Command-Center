@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <ContentItemDataCommonDataID>
+    <GUID>ac2b0d07-e4c6-4b00-8d49-a6782b9ba4d8</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>EggSkillet-tmkdv39m</CodeName>
+      <GUID>0c3ab587-4654-4c0e-9378-ac01213c0657</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>3efc4e0a-3f2d-40f2-91a8-6a332404435a</ContentItemDataGUID>
+  <Description>
+    <![CDATA[Whenever my family goes to dinners for breakfast on our road trips, I always order the egg skillet. I doesn't matter to me what's in it as long as there are eggs involved. The beauty of this dish is that you can include pretty much anything you like - chopped vegetables, shredded cheese, sausage, or shredded chicken]]>
+  </Description>
+  <Icon>fa-duotone fa-egg-fried</Icon>
+  <Name>Egg Skillet</Name>
+</contentitemdata.kcc.recipe>

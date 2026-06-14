@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>AccountNavItem-ya56vne0</CodeName>
+    <GUID>85806d3e-6cce-45a4-8a64-2125712be3d4</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-06-04 00:10:06Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>16ba65a1-ad64-4e93-9e80-40bedc0e47fc</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-06-04 00:10:06Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>b80325fc-3a68-45f2-9fee-0960d6ce4142</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>16ba65a1-ad64-4e93-9e80-40bedc0e47fc</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>LogoutNavLink-noa60y96</CodeName>
+        <GUID>7b2a5327-b677-498b-8e73-ea48f6142b88</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>9d96f798-f612-439e-a78a-38f23726ad11</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>16ba65a1-ad64-4e93-9e80-40bedc0e47fc</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>ProfileNavLink-baa7vo9c</CodeName>
+        <GUID>0f405874-8a70-47ed-ae33-53d7f56e6bdc</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>a3a435d6-8778-477d-8f9f-2df06c2acf84</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>a507313a-9945-43db-a871-64998bb75f7f</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>16ba65a1-ad64-4e93-9e80-40bedc0e47fc</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>SettingsNavLink-i6pq113c</CodeName>
+        <GUID>1cf57c1c-f3b6-4f1d-9c48-b2c8a4211b79</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>

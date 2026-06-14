@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>HashBrown_Bacon_AndEggSkillet-n9ty4uyo</CodeName>
+    <GUID>124fa64a-407f-4cba-b2d0-016b70eae875</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>94a3221a-1e5e-423d-aeab-dee4e156c771</WebPageItemGUID>
+  <WebPageItemName>HashBrown_Bacon_AndEggSkillet-n9ty4uyo</WebPageItemName>
+  <WebPageItemOrder>1</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>EggSkillet-tmkdv39m</CodeName>
+    <GUID>cea37892-0a0a-4112-9ffe-924396e0fb75</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>
+    <![CDATA[/Recipes/Egg_Skillet/Hash_Brown_Bacon_and_Egg_Skillet]]>
+  </WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

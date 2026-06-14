@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <ContentItemDataCommonDataID>
+    <GUID>50550503-b8b0-4237-bd95-1c012a3e84c5</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>HashBrown_Bacon_AndEggSkillet-n9ty4uyo</CodeName>
+      <GUID>124fa64a-407f-4cba-b2d0-016b70eae875</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>b54bbf62-e073-40e4-914c-caa735235e15</ContentItemDataGUID>
+  <CookTime>25</CookTime>
+  <Description>
+    <![CDATA[The classic combo of hash browns, bacon, and eggs come together in the perfect mix for breakfast. Throw some salsa and a dollop of sour cream on top of each serving for added flavor!]]>
+  </Description>
+  <Icon>fa-duotone fa-pan-frying</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Bacon","quantity":3,"unit":"Slices","isEyeballed":false},{"name":"Vegetable Oil","quantity":2,"unit":"Tablespoons","isEyeballed":false},{"name":"Frozen Hash Browns","quantity":4,"unit":"Cups","isEyeballed":false},{"name":"Yellow Onion","quantity":0.5,"unit":"Cup","isEyeballed":false},{"name":"Eggs","quantity":4,"unit":"Whole","isEyeballed":false},{"name":"Salt","quantity":null,"unit":"","isEyeballed":true},{"name":"Black Pepper","quantity":null,"unit":"","isEyeballed":true},{"name":"Monterey Jack Cheese","quantity":0.5,"unit":"Cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Slice the bacon into 1-inch pieces and dice the yellow onion. Line a plate with paper towels."},{"step":2,"text":"In a cast-iron skillet over medium-low heat, coo, the bacon, stirring occasionally, until crispy (about 7 minutes). Transfer the bacon to the paper towel-lined plate and set aside. Reserve the bacon drippings in the skillet."},{"step":3,"text":"Add 1 tablespoon of vegetable oil to the skillet with the bacon drippings. Raise the heat to medium-high, add the frozen hash browns, and use a spatula to spread the evenly, covering the bottom of the skillet completely. Sprinkle the onions over the hash browns. Cover and cook until the bottom is golden brown and crisp (about 8 minutes)."},{"step":4,"text":"Using a spatula, flip the potatoes over in batches, so the browned side is up. Cover and cook until the bottom is browned (about 5 more minutes)."},{"step":5,"text":"Make 4 wells in the potatoes with the spatula. Crack an egg into each well, being careful not to break the yolk. Season with salt and pepper."},{"step":6,"text":"Sprinkle the cheese over the potatoes, leaving the eggs uncovered. Cover the pan and cook until the cheese is melted and the egg whites are cooked through but the yolks are still runny (about 5 minutes)."}]]]>
+  </Instructions>
+  <Name>Hash Brown, Bacon, and Egg Skillet</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>4</ServingNumber>
+</contentitemdata.kcc.recipevariant>

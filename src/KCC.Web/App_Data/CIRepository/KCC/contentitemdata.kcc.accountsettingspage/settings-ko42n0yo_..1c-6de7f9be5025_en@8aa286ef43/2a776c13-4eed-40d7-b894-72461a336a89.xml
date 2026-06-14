@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.accountsettingspage>
+  <ContentItemDataCommonDataID>
+    <GUID>a20777b4-db17-41de-881c-6de7f9be5025</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Settings-ko42n0yo</CodeName>
+      <GUID>cf3eebb1-5799-4ee4-8beb-0a1968d09fcf</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>2a776c13-4eed-40d7-b894-72461a336a89</ContentItemDataGUID>
+</contentitemdata.kcc.accountsettingspage>

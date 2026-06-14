@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contenttype>
+  <ClassContentTypeType>Website</ClassContentTypeType>
+  <ClassDisplayName>Account Settings Page</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="ContentItemDataID" columntype="integer" enabled="true" guid="918f5551-0c59-47e0-8a4f-5d6de8c51102" isPK="true" />
+      <field column="ContentItemDataCommonDataID" columntype="integer" enabled="true" guid="99776fba-c8c8-4721-8459-85ac72e10018" refobjtype="cms.contentitemcommondata" reftype="Required" system="true" />
+      <field column="ContentItemDataGUID" columntype="guid" enabled="true" guid="f8620839-73b6-4d4a-9726-3fca7f8fd096" isunique="true" system="true" />
+      <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
+        <properties />
+      </schema>
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>58be8a10-87eb-4602-a8e4-ddab36f7d2dc</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassIconClass>xp-cog</ClassIconClass>
+  <ClassName>KCC.AccountSettingsPage</ClassName>
+  <ClassShortName>KCCAccountSettingsPage</ClassShortName>
+  <ClassTableName>KCC_AccountSettingsPage</ClassTableName>
+  <ClassType>Content</ClassType>
+  <ClassWebPageHasUrl>True</ClassWebPageHasUrl>
+</cms.contenttype>

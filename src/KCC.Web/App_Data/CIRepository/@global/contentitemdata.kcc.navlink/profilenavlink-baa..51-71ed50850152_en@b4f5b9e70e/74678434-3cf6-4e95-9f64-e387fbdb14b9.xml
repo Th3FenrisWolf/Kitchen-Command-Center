@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navlink>
+  <ContentItemDataCommonDataID>
+    <GUID>7f0ceaa0-96e4-47dd-ab51-71ed50850152</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ProfileNavLink-baa7vo9c</CodeName>
+      <GUID>0f405874-8a70-47ed-ae33-53d7f56e6bdc</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>74678434-3cf6-4e95-9f64-e387fbdb14b9</ContentItemDataGUID>
+  <DisplayText>Profile</DisplayText>
+  <Page>
+    <![CDATA[[{"Identifier":"c6ec9216-1532-48cc-9597-fe2921043ef3"}]]]>
+  </Page>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
+  </ShowWhen>
+  <Target>_self</Target>
+  <Type>page</Type>
+</contentitemdata.kcc.navlink>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.navitem>
+  <ContentItemDataCommonDataID>
+    <GUID>16ba65a1-ad64-4e93-9e80-40bedc0e47fc</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>AccountNavItem-ya56vne0</CodeName>
+      <GUID>85806d3e-6cce-45a4-8a64-2125712be3d4</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>68a8a4a5-96ea-4ef5-bce6-37aee53f558c</ContentItemDataGUID>
+  <DisplayText>Account</DisplayText>
+  <ShowWhen>
+    <![CDATA[[{"Identifier":"b3022596-5dfb-4986-afc3-0ba1b4e27835"}]]]>
+  </ShowWhen>
+  <SubLinks>
+    <![CDATA[[{"Identifier":"0f405874-8a70-47ed-ae33-53d7f56e6bdc"},{"Identifier":"1cf57c1c-f3b6-4f1d-9c48-b2c8a4211b79"},{"Identifier":"7b2a5327-b677-498b-8e73-ea48f6142b88"}]]]>
+  </SubLinks>
+</contentitemdata.kcc.navitem>

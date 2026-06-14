@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>SettingsNavLink-i6pq113c</CodeName>
+    <GUID>1cf57c1c-f3b6-4f1d-9c48-b2c8a4211b79</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-06-04 00:10:06Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>222d56d1-ff30-4f60-b0dc-0fd2a772cc31</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-06-04 00:10:06Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ContentItemReferences>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>c4a304a0-7f9b-4749-9b2b-65e8339d3cf0</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>4263cc82-4579-4120-ade5-19d6a18d06c4</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>222d56d1-ff30-4f60-b0dc-0fd2a772cc31</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>Settings-ko42n0yo</CodeName>
+        <GUID>cf3eebb1-5799-4ee4-8beb-0a1968d09fcf</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
+  </ContentItemReferences>
+</cms.contentitemcommondata>
