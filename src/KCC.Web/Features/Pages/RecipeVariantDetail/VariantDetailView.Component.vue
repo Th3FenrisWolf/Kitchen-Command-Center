@@ -70,9 +70,8 @@
           <span v-if="!ingredient.isEyeballed && ingredient.quantity">
             {{ ingredient.quantity }} {{ ingredient.unit }}
           </span>
-          <span v-else class="italic">to taste</span>
           <span class="font-bold">{{ ingredient.name }}</span>
-          <span v-if="ingredient.isEyeballed" class="text-sm text-overlay-400">(eyeballed)</span>
+          <span v-if="ingredient.isEyeballed" class="italic">to taste</span>
         </li>
       </ul>
     </div>
