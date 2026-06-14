@@ -6,14 +6,13 @@
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import { cx } from '~/Utilities/CX'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
     recipeId: string
     recipeName: string
     recipeSlug: string
-    antiforgeryToken?: string
     resourceStrings?: Record<string, string>
   }>()
 
@@ -52,38 +51,25 @@
     isSubmitting.value = true
     submitError.value = ''
 
-    try {
-      const response = await fetch(`/api/recipes/${props.recipeId}/variants`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(props.antiforgeryToken ? { RequestVerificationToken: props.antiforgeryToken } : {}),
-        },
-        body: JSON.stringify({
-          variantName: variantName.value.trim(),
-          variantDescription: variantDescription.value.trim(),
-          prepTime: prepTime.value || null,
-          cookTime: cookTime.value || null,
-          servings: servings.value || null,
-          ingredients: ingredientList.value.filter((i) => i.name.trim() !== ''),
-          instructions: instructionList.value
-            .filter((i) => i.text.trim() !== '')
-            .map((i, idx) => ({ step: idx + 1, text: i.text.trim() })),
-        }),
-      })
+    const result = await post(`/api/recipes/${props.recipeId}/variants`, {
+      variantName: variantName.value.trim(),
+      variantDescription: variantDescription.value.trim(),
+      prepTime: prepTime.value || null,
+      cookTime: cookTime.value || null,
+      servings: servings.value || null,
+      ingredients: ingredientList.value.filter((i) => i.name.trim() !== ''),
+      instructions: instructionList.value
+        .filter((i) => i.text.trim() !== '')
+        .map((i, idx) => ({ step: idx + 1, text: i.text.trim() })),
+    })
+    isSubmitting.value = false
 
-      if (!response.ok) {
-        const data = await response.json()
-        submitError.value = data.error || rs('FailedToAddVariant')
-        return
-      }
-
-      submitSuccess.value = true
-    } catch {
-      submitError.value = rs('UnexpectedError')
-    } finally {
-      isSubmitting.value = false
+    if (!result.success) {
+      submitError.value = result.errorMessage
+      return
     }
+
+    submitSuccess.value = true
   }
 </script>
 
@@ -116,12 +102,10 @@
       <div
         v-for="stepIndex in totalSteps"
         :key="stepIndex"
-        :class="
-          cx(
-            'h-2 flex-1 rounded-full transition-colors duration-300',
-            stepIndex <= step ? 'bg-surface-500' : 'bg-overlay-300',
-          )
-        "
+        :class="[
+          'h-2 flex-1 rounded-full transition-colors duration-300',
+          stepIndex <= step ? 'bg-surface-500' : 'bg-overlay-300',
+        ]"
       />
     </div>
 

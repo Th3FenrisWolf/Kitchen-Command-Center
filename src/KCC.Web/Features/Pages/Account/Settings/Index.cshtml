@@ -1,8 +1,6 @@
 @using KCC.Web.Features.Pages.Account.Logout
 @using KCC.Web.Features.Pages.Account.Settings
 
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-
 @model AccountSettingsViewModel
 
 <AccountSettingsView
@@ -11,6 +9,5 @@
   email="@Model.Email"
   back-url="@Model.BackUrl"
   logout-url="@(Url.ActionFor<LogoutController>(c => c.Index()))"
-  antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />

@@ -1,11 +1,8 @@
 @using KCC.Web.Features.Helpers
 @using KCC.Web.Features.Pages.CreateRecipe
 
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-
 @model CreateRecipeViewModel
 
 <CreateRecipeView
-  antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />

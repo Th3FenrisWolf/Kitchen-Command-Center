@@ -6,14 +6,36 @@
 @inject IWebHostEnvironment Env
 @inject VueSsrService VueSsrService
 @inject IPreferredLanguageRetriever PreferredLanguageRetriever
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject KCC.ResourceStrings.Data.IResourceStringInfoProvider ResourceStrings
 
 @model BasePageViewModel
+
+@{
+    // Default JSON encoder escapes <, >, & to \uXXXX so this is safe inside <script>.
+    var apiConfigJson = System.Text.Json.JsonSerializer.Serialize(
+        new
+        {
+            antiforgeryToken = Antiforgery.GetAndStoreTokens(Context).RequestToken,
+            strings = new
+            {
+                unexpectedError = ResourceStrings.GetOrDefault("Api.UnexpectedError"),
+                requestFailed = ResourceStrings.GetOrDefault("Api.RequestFailed"),
+            },
+        },
+        new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+        });
+}
 
 <!DOCTYPE html>
 <html lang="@PreferredLanguageRetriever.Get()">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
+
+  <script type="application/json" id="api-config">@Html.Raw(apiConfigJson)</script>
 
   <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
 

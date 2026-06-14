@@ -1,12 +1,10 @@
 <script setup lang="ts">
-  import { cx } from '~/Utilities/CX'
-
   const { dark = false } = defineProps<{ dark?: boolean }>()
 </script>
 
 <template>
   <section class="my-8 rounded-3xl bg-surface-200/50 p-4">
-    <div :class="cx('content rounded-2xl p-4', dark ? 'bg-surface-500 text-bone' : 'bg-bone text-onyx')">
+    <div :class="['content rounded-2xl p-4', dark ? 'bg-surface-500 text-bone' : 'bg-bone text-onyx']">
       <p class="eyebrow">
         <slot name="eyebrow"></slot>
       </p>

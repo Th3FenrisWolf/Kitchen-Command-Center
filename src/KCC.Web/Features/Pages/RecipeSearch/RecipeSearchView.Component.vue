@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { cx } from '~/Utilities/CX'
   import type { RecipeSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
@@ -28,12 +27,10 @@
       v-for="recipe in recipes"
       :href="recipe.slug"
       :key="recipe.slug"
-      :class="
-        cx(
-          'grid min-h-48 content-start gap-2 rounded-3xl bg-bone p-4 text-center text-onyx shadow-primary transition-all duration-300',
-          'focus-within:shadow-primary-raised hover:shadow-primary-raised',
-        )
-      "
+      :class="[
+        'grid min-h-48 content-start gap-2 rounded-3xl bg-bone p-4 text-center text-onyx shadow-primary transition-all duration-300',
+        'focus-within:shadow-primary-raised hover:shadow-primary-raised',
+      ]"
     >
       <img
         v-if="recipe.image"

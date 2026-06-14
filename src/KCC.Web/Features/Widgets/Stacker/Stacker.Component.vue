@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { cx } from '~/Utilities/CX'
   import type { BackgroundColor } from '~/Types/DesignSystem'
   import { onMounted, ref } from 'vue'
 
@@ -32,18 +31,16 @@
       v-for="(card, index) in props.cards"
       :key="card.heading"
       data-card
-      :class="cx('sticky', index === props.cards.length - 1 && 'last')"
+      :class="['sticky', index === props.cards.length - 1 && 'last']"
       :style="`top: ${32 * (index + 1)}px`"
     >
       <div data-sentinel class="absolute size-0" :style="`top: -${32 * (index + 1) + 1}px`"></div>
       <div
-        :class="
-          cx(
-            'aspect-square origin-top rounded-3xl p-8 text-center shadow-primary transition-all duration-100 [.stuck]:scale-95 [.stuck]:shadow-none',
-            '[.last_div]:scale-100 [.last_div]:shadow-primary',
-            card.backgroundColor,
-          )
-        "
+        :class="[
+          'aspect-square origin-top rounded-3xl p-8 text-center shadow-primary transition-all duration-100 [.stuck]:scale-95 [.stuck]:shadow-none',
+          '[.last_div]:scale-100 [.last_div]:shadow-primary',
+          card.backgroundColor,
+        ]"
       >
         <h2 class="text-4.5xl">{{ card.heading }}</h2>
         <p class="text-balance">{{ card.subHeading }}</p>

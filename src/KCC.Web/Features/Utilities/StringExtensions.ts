@@ -21,7 +21,7 @@ String.prototype.equals = function (str?: string, comparison: StringComparison =
   return this === str
 }
 
-export enum StringComparison {
+enum StringComparison {
   Ordinal,
   IgnoreCase,
 }

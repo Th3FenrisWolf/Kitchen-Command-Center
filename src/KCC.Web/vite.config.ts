@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url'
 import { existsSync, rmSync } from 'node:fs'
 
@@ -27,6 +28,7 @@ export default defineConfig(({ mode }) => {
   const isSSR = mode === 'ssr'
 
   return {
+    test: { environment: 'node' },
     ssr: { noExternal: ['vue'] },
     build: isSSR
       ? {

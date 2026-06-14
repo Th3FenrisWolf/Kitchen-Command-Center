@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { computed, inject } from 'vue'
-  import { cx } from '~/Utilities/CX'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
   interface PageLink {
@@ -52,12 +51,10 @@
       {{ item.displayText }}
     </button>
     <div
-      :class="
-        cx(
-          'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-surface-500 text-bone transition-all duration-500 ease-in-out',
-          isOpen ? 'max-h-96' : 'max-h-0',
-        )
-      "
+      :class="[
+        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-surface-500 text-bone transition-all duration-500 ease-in-out',
+        isOpen ? 'max-h-96' : 'max-h-0',
+      ]"
     >
       <ul class="flex gap-8 p-8">
         <li
