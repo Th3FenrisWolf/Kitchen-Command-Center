@@ -76,10 +76,17 @@ public class RecipeApiController(
 
         var recipeId = await webPageManager.Create(recipePageParams, cancellationToken);
 
+        string variantIcon = await recipeIconService.PickAsync(
+            request.FirstVariant.VariantName,
+            request.FirstVariant.VariantDescription,
+            request.FirstVariant.Ingredients.Select(i => i.Name),
+            cancellationToken);
+
         var variantData = new ContentItemData(new Dictionary<string, object>
         {
             [nameof(KCC.RecipeVariant.Name)] = request.FirstVariant.VariantName,
             [nameof(KCC.RecipeVariant.Description)] = request.FirstVariant.VariantDescription ?? string.Empty,
+            [nameof(KCC.RecipeVariant.Icon)] = variantIcon,
             [nameof(KCC.RecipeVariant.PrepTime)] = request.FirstVariant.PrepTime ?? 0,
             [nameof(KCC.RecipeVariant.CookTime)] = request.FirstVariant.CookTime ?? 0,
             [nameof(KCC.RecipeVariant.ServingNumber)] = request.FirstVariant.Servings ?? 0,
@@ -123,10 +130,17 @@ public class RecipeApiController(
         string languageName = preferredLanguageRetriever.Get();
         var webPageManager = CreateManager();
 
+        string icon = await recipeIconService.PickAsync(
+            request.VariantName,
+            request.VariantDescription,
+            request.Ingredients.Select(i => i.Name),
+            cancellationToken);
+
         var variantData = new ContentItemData(new Dictionary<string, object>
         {
             [nameof(RecipeVariant.Name)] = request.VariantName,
             [nameof(RecipeVariant.Description)] = request.VariantDescription ?? string.Empty,
+            [nameof(RecipeVariant.Icon)] = icon,
             [nameof(RecipeVariant.PrepTime)] = request.PrepTime ?? 0,
             [nameof(RecipeVariant.CookTime)] = request.CookTime ?? 0,
             [nameof(RecipeVariant.ServingNumber)] = request.Servings ?? 0,

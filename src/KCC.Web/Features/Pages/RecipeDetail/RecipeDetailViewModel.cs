@@ -19,5 +19,6 @@ public class VariantSummaryViewModel
     public string Description { get; set; }
     public string Slug { get; set; }
     public string Image { get; set; }
+    public string Icon { get; set; }
     public IEnumerable<CMS.ContentEngine.Tag> Tags { get; set; } = [];
 }

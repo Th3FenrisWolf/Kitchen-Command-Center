@@ -89,6 +89,7 @@ public class RecipeDetailController(
             Description = variant.Description,
             Slug = variant.GetUrl().RelativePath,
             Image = variant.Images?.FirstOrDefault()?.Asset?.Url,
+            Icon = variant.Icon,
             Tags = resolvedTags?.IntersectBy(
                 variant.Tags?.Select(tag => tag.Identifier) ?? [],
                 resolved => resolved.Identifier)

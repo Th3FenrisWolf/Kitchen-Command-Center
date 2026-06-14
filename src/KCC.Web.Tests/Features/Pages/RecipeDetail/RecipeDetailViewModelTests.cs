@@ -29,4 +29,16 @@ public class RecipeDetailViewModelTests
         Assert.Equal("/images/spicy.jpg", only.Image);
         Assert.Empty(only.Tags);
     }
+
+    [Fact]
+    public void VariantSummary_CarriesIcon()
+    {
+        var variant = new VariantSummaryViewModel
+        {
+            Name = "Spicy Jalapeño",
+            Icon = "fa-duotone fa-pepper-hot",
+        };
+
+        Assert.Equal("fa-duotone fa-pepper-hot", variant.Icon);
+    }
 }
