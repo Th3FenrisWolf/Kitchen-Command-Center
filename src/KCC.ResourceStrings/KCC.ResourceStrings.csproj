@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="KCC.Web.Tests" />
+        <InternalsVisibleTo Include="KCC.UnitTests" />
     </ItemGroup>
 
 </Project>

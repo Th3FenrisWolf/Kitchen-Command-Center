@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Anthropic" Version="12.24.1" />
-    <PackageVersion Include="Coverlet.Collector" Version="6.0.2" />
     <PackageVersion Include="Kentico.Xperience.Admin" Version="31.4.4" />
     <PackageVersion Include="Kentico.Xperience.AzureStorage" Version="31.4.4" />
     <PackageVersion Include="Kentico.Xperience.ComponentRegistry" Version="1.0.1" />
@@ -29,8 +28,8 @@
     <PackageVersion Include="RobotsTxtCore" Version="3.0.0" />
     <PackageVersion Include="SimpleMvcSitemap" Version="4.0.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
-    <PackageVersion Include="xunit" Version="2.9.2" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="TUnit" Version="1.27.0" />
+    <PackageVersion Include="TUnit.Playwright" Version="1.27.0" />
     <PackageVersion Include="Vite.AspNetCore" Version="2.4.0" />
     <!-- Overrides for security vulnerabilities -->
     <PackageVersion Include="Magick.NET-Q8-AnyCPU" Version="14.13.1" />
