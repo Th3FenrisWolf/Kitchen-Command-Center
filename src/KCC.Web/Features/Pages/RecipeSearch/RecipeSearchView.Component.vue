@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { cx } from '~/Utilities/CX'
   import type { RecipeSummary } from '~/Types/Recipe'
-  import { useResourceStrings } from '~/Components/ResourceStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
 
   const props = defineProps<{

@@ -2,6 +2,7 @@
   import { ref, computed } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import InputField from '~/Components/Forms/InputField.vue'
+  import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
@@ -26,9 +27,9 @@
 
   const variantName = ref('')
   const variantDescription = ref('')
-  const prepTime = ref<number | undefined>()
-  const cookTime = ref<number | undefined>()
-  const servings = ref<number | undefined>()
+  const prepTime = ref<number | undefined>(0)
+  const cookTime = ref<number | undefined>(0)
+  const servings = ref<number | undefined>(0)
   const ingredientList = ref<Ingredient[]>([{ name: '', unit: '', isEyeballed: false }])
   const instructionList = ref<Instruction[]>([{ text: '' }])
 
@@ -139,20 +140,20 @@
       </label>
 
       <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
-        <label class="flex flex-col items-start gap-2">
-          <ResourceString for="PrepTime" class="text-lg font-bold" />
-          <InputField v-model="prepTime" type="number" />
-        </label>
+        <div class="space-y-2">
+          <ResourceString for="PrepTime" as="p" class="text-lg font-bold" />
+          <NumberStepper v-model="prepTime" :min="0" :unit="rs('Min')" :label="rs('PrepTime')" />
+        </div>
 
-        <label class="flex flex-col items-start gap-2">
-          <ResourceString for="CookTime" class="text-lg font-bold" />
-          <InputField v-model="cookTime" type="number" />
-        </label>
+        <div class="space-y-2">
+          <ResourceString for="CookTime" as="p" class="text-lg font-bold" />
+          <NumberStepper v-model="cookTime" :min="0" :unit="rs('Min')" :label="rs('CookTime')" />
+        </div>
 
-        <label class="flex flex-col items-start gap-2">
-          <ResourceString for="Servings" class="text-lg font-bold" />
-          <InputField v-model="servings" type="number" />
-        </label>
+        <div class="space-y-2">
+          <ResourceString for="Servings" as="p" class="text-lg font-bold" />
+          <NumberStepper v-model="servings" :min="0" :label="rs('Servings')" />
+        </div>
       </div>
 
       <button
@@ -191,6 +192,7 @@
               v-model="ingredient.quantity"
               :placeholder="rs('QuantityPlaceholder')"
               type="number"
+              inputmode="decimal"
               step="0.01"
               :disabled="ingredient.isEyeballed"
             />

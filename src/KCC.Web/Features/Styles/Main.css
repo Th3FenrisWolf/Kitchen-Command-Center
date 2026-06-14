@@ -17,3 +17,16 @@ html {
   grid-template-rows: auto 1fr auto;
   min-height: 100dvh;
 }
+
+/* Strip the native number-input spinner everywhere; numeric fields style their own controls. */
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
