@@ -27,10 +27,6 @@
   --color-blue: hsl(222, 74%, 74%);
   --color-lavender: hsl(239, 66%, 84%);
 
-  --color-text: hsl(227, 70%, 87%);
-  --color-subtext-300: hsl(227, 44%, 80%);
-  --color-subtext-400: hsl(228, 29%, 73%);
-
   --color-overlay-200: hsl(228, 22%, 66%);
   --color-overlay-300: hsl(227, 17%, 58%);
   --color-overlay-400: hsl(229, 13%, 52%);
@@ -47,7 +43,8 @@
   --color-onyx-light: hsl(120, 4%, 38%);
   --color-onyx: hsl(120, 4%, 22%);
 
-  --text-heading: 2.5rem;
+  --text-4\.5xl: 2.5rem;
+  --text-4\.5xl--line-height: calc(2.75 / 2.5);
 
   --font-casual: 'APCasual', sans-serif;
   --font-hazelnut: 'Hazelnut', sans-serif;
@@ -56,6 +53,8 @@
   --shadow-primary: 0 0 24px 0 rgba(0, 0, 0, 0.25);
   --shadow-primary-raised: 0 0 24px 0 rgba(0, 0, 0, 0.25), 8px 16px 16px rgba(0, 0, 0, 0.25);
   --shadow-bone-small: 0 4px 8px -2px var(--color-bone-dark);
+
+  --grid-template-columns-content-aside: min(calc(50% - 16px), 24rem) minmax(calc(50% - 16px), 1fr);
 }
 
 @layer components {

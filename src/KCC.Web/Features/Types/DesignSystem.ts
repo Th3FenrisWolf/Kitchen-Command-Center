@@ -58,6 +58,3 @@ export type TextColor =
   | 'text-bone-dark'
   | 'text-onyx'
   | 'text-onyx-light'
-  | 'text-text'
-  | 'text-subtext-300'
-  | 'text-subtext-400'
