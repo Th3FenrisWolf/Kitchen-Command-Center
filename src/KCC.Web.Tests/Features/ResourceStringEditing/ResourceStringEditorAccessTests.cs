@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using KCC.ResourceStrings.Editing;
 using Kentico.PageBuilder.Web.Mvc;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
@@ -32,9 +34,12 @@ public class ResourceStringEditorAccessTests
     }
 
     [Fact]
-    public void CanEdit_PreviewEnabled_ReturnsTrue()
+    public void CanEdit_PreviewWithAdminAuthentication_ReturnsTrue()
     {
-        var ctx = new DefaultHttpContext();
+        var ctx = new DefaultHttpContext
+        {
+            RequestServices = new StubServiceProvider(new StubAuthenticationService(authenticated: true)),
+        };
 
         var sut = new ResourceStringEditorAccess(
             new StubHttpContextAccessor(ctx),
@@ -42,6 +47,22 @@ public class ResourceStringEditorAccessTests
             new StubPreviewModeProvider(true));
 
         Assert.True(sut.CanEdit());
+    }
+
+    [Fact]
+    public void CanEdit_PreviewWithoutAdminAuthentication_ReturnsFalse()
+    {
+        var ctx = new DefaultHttpContext
+        {
+            RequestServices = new StubServiceProvider(new StubAuthenticationService(authenticated: false)),
+        };
+
+        var sut = new ResourceStringEditorAccess(
+            new StubHttpContextAccessor(ctx),
+            new StubPageBuilderModeProvider(PageBuilderMode.Off),
+            new StubPreviewModeProvider(true));
+
+        Assert.False(sut.CanEdit());
     }
 
     [Fact]
@@ -146,5 +167,31 @@ public class ResourceStringEditorAccessTests
     private sealed class StubPreviewModeProvider(bool isPreview) : IPreviewModeProvider
     {
         public bool IsPreview(HttpContext httpContext) => isPreview;
+    }
+
+    private sealed class StubServiceProvider(IAuthenticationService authenticationService) : IServiceProvider
+    {
+        public object GetService(Type serviceType) =>
+            serviceType == typeof(IAuthenticationService) ? authenticationService : null;
+    }
+
+    private sealed class StubAuthenticationService(bool authenticated) : IAuthenticationService
+    {
+        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme) =>
+            Task.FromResult(authenticated
+                ? AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(scheme)), scheme))
+                : AuthenticateResult.NoResult());
+
+        public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties) =>
+            Task.CompletedTask;
+
+        public Task ForbidAsync(HttpContext context, string scheme, AuthenticationProperties properties) =>
+            Task.CompletedTask;
+
+        public Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties) =>
+            Task.CompletedTask;
+
+        public Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties) =>
+            Task.CompletedTask;
     }
 }

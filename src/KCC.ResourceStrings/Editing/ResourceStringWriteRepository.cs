@@ -1,5 +1,3 @@
-#nullable enable
-
 using CMS.ContentEngine;
 using CMS.DataEngine;
 using KCC.ResourceStrings.Data;
@@ -12,7 +10,7 @@ public interface IResourceStringWriteRepository
 
     bool StringExists(string key);
 
-    void UpsertTranslation(string key, string language, string? value);
+    void UpsertTranslation(string key, string language, string value);
 }
 
 internal sealed class ResourceStringWriteRepository(
@@ -50,7 +48,7 @@ internal sealed class ResourceStringWriteRepository(
             .TopN(1)
             .Any();
 
-    public void UpsertTranslation(string key, string language, string? value)
+    public void UpsertTranslation(string key, string language, string value)
     {
         var stringRow = stringProvider.Get()
             .WhereEquals(nameof(ResourceStringInfo.ResourceStringKey), key)

@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace KCC.ResourceStrings.Editing;
 
 public sealed class InvalidLanguageException(string language)

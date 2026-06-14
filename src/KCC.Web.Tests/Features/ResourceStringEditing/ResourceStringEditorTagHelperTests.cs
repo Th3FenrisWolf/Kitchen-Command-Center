@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Collections;
 using System.Text.Json;
 using KCC.ResourceStrings.Editing;
@@ -86,7 +84,7 @@ public class ResourceStringEditorTagHelperTests
         bool canEdit,
         bool isPreview = false,
         string currentLanguage = "en",
-        ContentLanguageOption[]? languages = null) =>
+        ContentLanguageOption[] languages = null) =>
         new(
             new StubEditorAccess(canEdit, isPreview),
             new StubPreferredLanguageRetriever(currentLanguage),
@@ -149,18 +147,18 @@ public class ResourceStringEditorTagHelperTests
     private sealed class StubViteChunk(string file) : IViteChunk
     {
         public string File => file;
-        public string? Src => null;
+        public string Src => null;
         public bool? IsEntry => true;
         public bool? IsDynamicEntry => false;
-        public IEnumerable<string>? Css => null;
-        public IEnumerable<string>? DynamicImports => null;
-        public IEnumerable<string>? Imports => null;
-        public IEnumerable<string>? Assets => null;
+        public IEnumerable<string> Css => null;
+        public IEnumerable<string> DynamicImports => null;
+        public IEnumerable<string> Imports => null;
+        public IEnumerable<string> Assets => null;
     }
 
     private sealed class StubViteManifest : IViteManifest
     {
-        public IViteChunk? this[string key] => new StubViteChunk("assets/resourceStringEditor-abc123.js");
+        public IViteChunk this[string key] => new StubViteChunk("assets/resourceStringEditor-abc123.js");
         public IEnumerable<string> Keys => ["../KCC.ResourceStrings/Editing/ResourceStringEditor.ts"];
         public bool ContainsKey(string key) => true;
         public IEnumerator<IViteChunk> GetEnumerator() => ((IEnumerable<IViteChunk>)[this[""]!]).GetEnumerator();
