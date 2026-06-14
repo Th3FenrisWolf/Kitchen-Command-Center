@@ -1,5 +1,3 @@
-#nullable enable
-
 using KCC.ResourceStrings.Editing;
 using Xunit;
 
@@ -110,10 +108,10 @@ public class ResourceStringUpsertHandlerTests
 
     private sealed class FakeResourceStringRepository : IResourceStringWriteRepository
     {
-        private readonly Dictionary<string, string> _values = new();
-        private readonly Dictionary<(string Key, string Lang), string?> _translations = new();
+        private readonly Dictionary<string, string> _values = [];
+        private readonly Dictionary<(string Key, string Lang), string> _translations = [];
 
-        public void AddString(string key, string value, Dictionary<string, string>? translations = null)
+        public void AddString(string key, string value, Dictionary<string, string> translations = null)
         {
             _values[key] = value;
             if (translations is null)
@@ -129,7 +127,7 @@ public class ResourceStringUpsertHandlerTests
 
         public string GetValue(string key) => _values.TryGetValue(key, out var v) ? v : string.Empty;
 
-        public string? GetTranslation(string key, string lang) =>
+        public string GetTranslation(string key, string lang) =>
             _translations.TryGetValue((key, lang), out var v) ? v : null;
 
         public void UpsertString(string key, string value)
@@ -140,7 +138,7 @@ public class ResourceStringUpsertHandlerTests
         public bool StringExists(string key) =>
             _values.ContainsKey(key);
 
-        public void UpsertTranslation(string key, string language, string? value)
+        public void UpsertTranslation(string key, string language, string value)
         {
             if (value is null)
             {

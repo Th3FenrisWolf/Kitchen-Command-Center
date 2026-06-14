@@ -1,4 +1,3 @@
-#nullable enable
 using CMS.Core;
 using KCC.Web.Features.AdminHomePage;
 using Microsoft.Extensions.DependencyInjection;
@@ -91,7 +90,7 @@ public class AdminHomePageMiddlewareTests
     {
         private readonly Dictionary<string, IViteChunk> _entries = new(StringComparer.Ordinal);
 
-        public IViteChunk? this[string key]
+        public IViteChunk this[string key]
         {
             get => _entries.TryGetValue(key, out var chunk) ? chunk : null;
             set

@@ -1,5 +1,3 @@
-#nullable enable
-
 using CMS.ContentEngine;
 using CMS.DataEngine;
 using KCC.ResourceStrings.Data;

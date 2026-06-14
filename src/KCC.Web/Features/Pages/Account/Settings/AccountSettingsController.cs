@@ -4,7 +4,7 @@ using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
-using KCC.Web.Features.Pages.Account;
+using KCC.Web.Features.Pages.Account.Settings;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
     WebsiteChannelNames = [XperienceConstants.WebsiteChannelName]
 )]
 
-namespace KCC.Web.Features.Pages.Account;
+namespace KCC.Web.Features.Pages.Account.Settings;
 
 [Authorize]
 public class AccountSettingsController(
@@ -26,31 +26,9 @@ public class AccountSettingsController(
     IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
-    private Dictionary<string, string> SettingsStrings => resourceStrings.GetManyOrDefault(
-        "Account.BackToProfile",
-        "Account.AccountSettings",
-        "Account.Profile",
-        "Account.FirstName",
-        "Account.LastName",
-        "Account.Email",
-        "Account.EmailComingSoon",
-        "Account.EmailComingSoonNote",
-        "Account.SaveChanges",
-        "Account.ChangePassword",
-        "Account.CurrentPassword",
-        "Account.NewPassword",
-        "Account.ConfirmNewPassword",
-        "Account.UpdatePassword",
-        "Account.SignOut",
-        "Account.PasswordsDoNotMatch",
-        "Account.ProfileSaved",
-        "Account.PasswordUpdated",
-        "Account.UnexpectedError"
-    );
-
     public async Task<IActionResult> Index()
     {
-        if (HttpContext.IsPreview() || HttpContext.IsPageBuilder())
+        if (HttpContext.IsAdmin())
         {
             return StubView();
         }
@@ -72,21 +50,43 @@ public class AccountSettingsController(
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            BackUrl = accountPage?.GetUrl().RelativePath?.TrimStart('~') ?? "/",
-            ResourceStrings = SettingsStrings,
+            BackUrl = accountPage?.GetUrl().RelativePath,
+            ResourceStrings = GetStrings(),
         };
 
-        return View("~/Features/Pages/Account/Settings.cshtml", viewModel);
+        return View("~/Features/Pages/Account/Settings/Index.cshtml", viewModel);
     }
 
     private ViewResult StubView() => View(
-        "~/Features/Pages/Account/Settings.cshtml",
+        "~/Features/Pages/Account/Settings/Index.cshtml",
         new AccountSettingsViewModel
         {
             FirstName = "Alex",
             LastName = "Carter",
             Email = "alex.carter@example.com",
             BackUrl = "/account",
-            ResourceStrings = SettingsStrings,
+            ResourceStrings = GetStrings(),
         });
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
+        "Account.BackToProfile",
+        "Account.AccountSettings",
+        "Account.Profile",
+        "Account.FirstName",
+        "Account.LastName",
+        "Account.Email",
+        "Account.EmailComingSoon",
+        "Account.EmailComingSoonNote",
+        "Account.SaveChanges",
+        "Account.ChangePassword",
+        "Account.CurrentPassword",
+        "Account.NewPassword",
+        "Account.ConfirmNewPassword",
+        "Account.UpdatePassword",
+        "Account.SignOut",
+        "Account.PasswordsDoNotMatch",
+        "Account.ProfileSaved",
+        "Account.PasswordUpdated",
+        "Account.UnexpectedError"
+    );
 }

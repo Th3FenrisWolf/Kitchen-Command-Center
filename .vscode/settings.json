@@ -19,6 +19,7 @@
     "kentico",
     "minmax",
     "modulepreload",
+    "nameof",
     "rgba",
     "stylesheet",
     "tailwindcss",
@@ -26,6 +27,7 @@
     "vite",
     "walsheim",
     "webpageitem",
-    "xperience"
+    "xperience",
+    "Xunit"
   ]
 }

@@ -45,7 +45,7 @@
           )
         "
       >
-        <h2 class="text-heading">{{ card.heading }}</h2>
+        <h2 class="text-4.5xl">{{ card.heading }}</h2>
         <p class="text-balance">{{ card.subHeading }}</p>
       </div>
     </div>

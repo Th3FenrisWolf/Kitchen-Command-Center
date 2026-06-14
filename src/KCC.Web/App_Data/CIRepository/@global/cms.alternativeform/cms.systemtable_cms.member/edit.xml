@@ -18,7 +18,17 @@
           <visible>true</visible>
         </properties>
       </category>
-      <field column="MemberName" enabled="true" guid="f8b13f5b-c254-4f3a-8b8c-df10f5619300" visible="true" order="6">
+      <field column="MemberEnabled" enabled="true" guid="1454d95c-81bb-4956-bda2-75edda984071" visible="true" order="6">
+        <settings>
+          <controlname>Kentico.Administration.Checkbox</controlname>
+        </settings>
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>{$base.members.edit.enabled$}</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+      </field>
+      <field column="MemberName" enabled="true" guid="f8b13f5b-c254-4f3a-8b8c-df10f5619300" visible="true" order="7">
         <settings>
           <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
@@ -28,7 +38,7 @@
           <fielddescriptionashtml>False</fielddescriptionashtml>
         </properties>
       </field>
-      <field column="MemberEmail" enabled="true" guid="3e50549b-a12d-4c19-8df7-380efa3a8d40" visible="true" order="7">
+      <field column="MemberEmail" enabled="true" guid="3e50549b-a12d-4c19-8df7-380efa3a8d40" visible="true" order="8">
         <settings>
           <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
@@ -52,24 +62,34 @@
           <fielddescriptionashtml>False</fielddescriptionashtml>
         </properties>
       </field>
-      <field column="MemberEnabled" enabled="true" guid="1454d95c-81bb-4956-bda2-75edda984071" visible="true" order="8">
+      <field column="MemberFirstName" enabled="true" guid="cc1ee2e6-123a-42b9-86d9-a60eb10f32ff" visible="true">
         <settings>
-          <controlname>Kentico.Administration.Checkbox</controlname>
+          <controlname>Kentico.Administration.TextInput</controlname>
         </settings>
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
-          <fieldcaption>{$base.members.edit.enabled$}</fieldcaption>
+          <fieldcaption>First Name</fieldcaption>
           <fielddescriptionashtml>False</fielddescriptionashtml>
         </properties>
       </field>
-      <field column="MemberGuid" guid="926897c7-71e2-47b3-b3b7-b456596e7da3" enabled="" order="9" />
-      <category name="Membership_roles" order="10">
+      <field column="MemberLastName" enabled="true" guid="1df72480-8e79-4cb4-80c5-31d97cccd18a" visible="true">
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Last Name</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+      </field>
+      <field column="MemberGuid" guid="926897c7-71e2-47b3-b3b7-b456596e7da3" enabled="" order="11" />
+      <category name="Membership_roles" order="12">
         <properties>
           <caption>{$base.members.edit.roles.category$}</caption>
           <visible>true</visible>
         </properties>
       </category>
-      <field allowempty="true" column="MemberRole" columnprecision="0" columntype="objectids" dummy="altform" enabled="true" guid="fd908b23-e075-4bfb-acaa-b3f9025a7245" system="true" visible="true" order="11">
+      <field allowempty="true" column="MemberRole" columnprecision="0" columntype="objectids" dummy="altform" enabled="true" guid="fd908b23-e075-4bfb-acaa-b3f9025a7245" system="true" visible="true" order="13">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>{$base.members.edit.roles$}</fieldcaption>

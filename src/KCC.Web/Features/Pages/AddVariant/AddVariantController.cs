@@ -24,7 +24,49 @@ public class AddVariantController(
     IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
-    private Dictionary<string, string> ResourceStrings => resourceStrings.GetManyOrDefault(
+    public async Task<IActionResult> Index([FromQuery(Name = "recipe")] Guid? recipeGuid)
+    {
+        if (recipeGuid is null || recipeGuid == Guid.Empty)
+        {
+            return HttpContext.IsAdmin() ? StubView() : NotFound();
+        }
+
+        var recipe = (await contentRetriever.RetrievePages<Recipe>(
+            new(),
+            query => query
+                .Where(where => where
+                    .WhereEquals(nameof(IContentQueryDataContainer.ContentItemGUID), recipeGuid.Value))
+                .TopN(1),
+            new($"{nameof(AddVariantController)}|{nameof(Index)}|{recipeGuid}")
+        )).FirstOrDefault();
+
+        if (recipe is null)
+        {
+            return HttpContext.IsAdmin() ? StubView() : NotFound();
+        }
+
+        var viewModel = new AddVariantViewModel
+        {
+            RecipeId = recipe.SystemFields.WebPageItemID,
+            RecipeName = recipe.Name,
+            RecipeSlug = recipe.GetUrl().RelativePath,
+            ResourceStrings = GetStrings(),
+        };
+
+        return View("~/Features/Pages/AddVariant/Index.cshtml", viewModel);
+    }
+
+    private ViewResult StubView() => View(
+        "~/Features/Pages/AddVariant/Index.cshtml",
+        new AddVariantViewModel
+        {
+            RecipeId = 0,
+            RecipeName = "Sample Recipe",
+            RecipeSlug = "/recipes/sample-recipe",
+            ResourceStrings = GetStrings(),
+        });
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
         // Hero + shared navigation
         "AddVariant.AddVariantFor",
         "AddVariant.Cancel",
@@ -69,48 +111,4 @@ public class AddVariantController(
         "AddVariant.FailedToAddVariant",
         "AddVariant.UnexpectedError"
     );
-
-    public async Task<IActionResult> Index([FromQuery(Name = "recipe")] Guid? recipeGuid)
-    {
-        var isPreview = HttpContext.IsPreview() || HttpContext.IsPageBuilder();
-
-        if (recipeGuid is null || recipeGuid == Guid.Empty)
-        {
-            return isPreview ? StubView() : NotFound();
-        }
-
-        var recipe = (await contentRetriever.RetrievePages<Recipe>(
-            new(),
-            query => query
-                .Where(where => where
-                    .WhereEquals(nameof(IContentQueryDataContainer.ContentItemGUID), recipeGuid.Value))
-                .TopN(1),
-            new($"{nameof(AddVariantController)}|{nameof(Index)}|{recipeGuid}")
-        )).FirstOrDefault();
-
-        if (recipe is null)
-        {
-            return isPreview ? StubView() : NotFound();
-        }
-
-        var viewModel = new AddVariantViewModel
-        {
-            RecipeId = recipe.SystemFields.WebPageItemID,
-            RecipeName = recipe.Name,
-            RecipeSlug = recipe.GetUrl().RelativePath,
-            ResourceStrings = ResourceStrings,
-        };
-
-        return View("~/Features/Pages/AddVariant/Index.cshtml", viewModel);
-    }
-
-    private ViewResult StubView() => View(
-        "~/Features/Pages/AddVariant/Index.cshtml",
-        new AddVariantViewModel
-        {
-            RecipeId = 0,
-            RecipeName = "Sample Recipe",
-            RecipeSlug = "/recipes/sample-recipe",
-            ResourceStrings = ResourceStrings,
-        });
 }

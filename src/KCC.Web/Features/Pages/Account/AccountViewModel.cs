@@ -18,7 +18,7 @@ public class AccountViewModel : BasePageViewModel
             first.Length > 0 ? first[..1] : string.Empty,
             last.Length > 0 ? last[..1] : string.Empty);
 
-        if (initials.Length == 0)
+        if (initials.Length is 0)
         {
             var source = (fallback ?? string.Empty).Trim();
             initials = source.Length >= 2 ? source[..2] : source;
@@ -28,7 +28,5 @@ public class AccountViewModel : BasePageViewModel
     }
 
     public static string FormatMemberSince(DateTime? created) =>
-        created.HasValue
-            ? created.Value.ToString("MMMM yyyy", CultureInfo.InvariantCulture)
-            : string.Empty;
+        created?.ToString("MMMM yyyy", CultureInfo.InvariantCulture) ?? string.Empty;
 }

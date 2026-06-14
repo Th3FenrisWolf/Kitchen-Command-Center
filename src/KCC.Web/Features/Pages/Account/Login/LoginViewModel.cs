@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using KCC.Web.Features.Pages.Shared;
 
-namespace KCC.Web.Features.Pages.Login;
+namespace KCC.Web.Features.Pages.Account.Login;
 
 public class LoginViewModel : BasePageViewModel
 {

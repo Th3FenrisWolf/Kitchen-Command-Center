@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Collections;
 using KCC.ResourceStrings.Editing;
 using KCC.Web.Features.TagHelpers;
@@ -106,9 +104,9 @@ public class PageBuilderMountPreloadTagHelperTests
         return (context, output);
     }
 
-    private sealed class StubHttpContextAccessor(HttpContext? context) : IHttpContextAccessor
+    private sealed class StubHttpContextAccessor(HttpContext context) : IHttpContextAccessor
     {
-        public HttpContext? HttpContext { get; set; } = context;
+        public HttpContext HttpContext { get; set; } = context;
     }
 
     private sealed class StubPageBuilderModeProvider(PageBuilderMode mode) : IPageBuilderModeProvider
@@ -119,18 +117,18 @@ public class PageBuilderMountPreloadTagHelperTests
     private sealed class StubViteChunk(string file) : IViteChunk
     {
         public string File => file;
-        public string? Src => null;
+        public string Src => null;
         public bool? IsEntry => true;
         public bool? IsDynamicEntry => false;
-        public IEnumerable<string>? Css => null;
-        public IEnumerable<string>? DynamicImports => null;
-        public IEnumerable<string>? Imports => null;
-        public IEnumerable<string>? Assets => null;
+        public IEnumerable<string> Css => null;
+        public IEnumerable<string> DynamicImports => null;
+        public IEnumerable<string> Imports => null;
+        public IEnumerable<string> Assets => null;
     }
 
     private sealed class StubViteManifest(string file) : IViteManifest
     {
-        public IViteChunk? this[string key] => new StubViteChunk(file);
+        public IViteChunk this[string key] => new StubViteChunk(file);
         public IEnumerable<string> Keys => [key];
         private readonly string key = "Features/PageBuilderMount.ts";
         public bool ContainsKey(string key) => key == this.key;

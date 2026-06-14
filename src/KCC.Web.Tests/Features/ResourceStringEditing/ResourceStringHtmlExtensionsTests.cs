@@ -7,11 +7,11 @@ namespace KCC.Web.Tests.Features.ResourceStringEditing;
 public class ResourceStringHtmlExtensionsTests
 {
     [Fact]
-    public void BuildContent_NotEditable_ReturnsEncodedValueWithNoWrapper()
+    public void BuildContent_NotEditable_WrapsEncodedValueInPlainSpan()
     {
         var content = ResourceStringHtmlExtensions.BuildContent("Login.Login", "Log in", canEdit: false);
 
-        Assert.Equal("Log in", Render(content));
+        Assert.Equal("<span>Log in</span>", Render(content));
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class ResourceStringHtmlExtensionsTests
     {
         var content = ResourceStringHtmlExtensions.BuildContent("Login.Login", "<script>", canEdit: false);
 
-        Assert.Equal("&lt;script&gt;", Render(content));
+        Assert.Equal("<span>&lt;script&gt;</span>", Render(content));
     }
 
     [Fact]

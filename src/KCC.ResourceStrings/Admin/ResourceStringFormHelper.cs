@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Reflection;
 using CMS.ContentEngine;
 using CMS.Core;
@@ -46,7 +44,7 @@ internal static class ResourceStringFormHelper
         ICollection<IFormItem> items,
         IInfoProvider<ContentLanguageInfo> contentLanguageProvider,
         ILocalizationService localizationService,
-        IList<ResourceStringTranslationInfo>? existingTranslations = null)
+        IList<ResourceStringTranslationInfo> existingTranslations = null)
     {
         var languages = contentLanguageProvider.Get()
             .WhereNotEquals(nameof(ContentLanguageInfo.ContentLanguageIsDefault), true)
@@ -92,7 +90,7 @@ internal static class ResourceStringFormHelper
         IInfoProvider<ContentLanguageInfo> contentLanguageProvider,
         IInfoProvider<ResourceStringTranslationInfo> translationProvider,
         Func<string, string> getTranslationValue,
-        IList<ResourceStringTranslationInfo>? existingTranslations = null)
+        IList<ResourceStringTranslationInfo> existingTranslations = null)
     {
         var languages = contentLanguageProvider.Get()
             .WhereNotEquals(nameof(ContentLanguageInfo.ContentLanguageIsDefault), true)

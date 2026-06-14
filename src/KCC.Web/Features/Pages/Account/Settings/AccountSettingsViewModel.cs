@@ -1,6 +1,6 @@
 using KCC.Web.Features.Pages.Shared;
 
-namespace KCC.Web.Features.Pages.Account;
+namespace KCC.Web.Features.Pages.Account.Settings;
 
 public class AccountSettingsViewModel : BasePageViewModel
 {

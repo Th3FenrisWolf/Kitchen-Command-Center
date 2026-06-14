@@ -1,5 +1,3 @@
-#nullable enable
-
 using CMS.ContentEngine;
 using CMS.Core;
 using CMS.DataEngine;
@@ -28,7 +26,7 @@ public class ResourceStringsEditPage(
     : InfoEditPage<ResourceStringInfo>(formComponentMapper, formDataBinder)
 {
     private const string SaveFieldName = "SaveButton";
-    private IList<ResourceStringTranslationInfo>? _existingTranslations;
+    private IList<ResourceStringTranslationInfo> _existingTranslations;
 
     [PageParameter(typeof(IntPageModelBinder), typeof(ResourceStringsSectionPage))]
     public override int ObjectId { get; set; }
