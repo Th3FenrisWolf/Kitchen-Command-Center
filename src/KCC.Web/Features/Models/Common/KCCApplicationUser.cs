@@ -25,6 +25,9 @@ public class KCCApplicationUser : ApplicationUser
 
     public Guid MemberGuid { get; set; }
 
+    /// <summary>Gets or sets the date the member account was created. Read-only/historical; not mapped back to the member on save.</summary>
+    public DateTime Created { get; set; }
+
     public override void MapFromMemberInfo(MemberInfo source)
     {
         base.MapFromMemberInfo(source);
@@ -33,6 +36,7 @@ public class KCCApplicationUser : ApplicationUser
         LastName = source.GetValue("MemberLastName", string.Empty);
         Email = source.GetValue("MemberEmail", string.Empty);
         MemberGuid = source.MemberGuid;
+        Created = source.MemberCreated;
     }
 
     public override void MapToMemberInfo(MemberInfo target)
