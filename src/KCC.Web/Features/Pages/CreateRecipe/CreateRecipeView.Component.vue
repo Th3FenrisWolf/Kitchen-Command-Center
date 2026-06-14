@@ -189,7 +189,7 @@
             class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white"
             @click="ingredient.isEyeballed = !ingredient.isEyeballed"
           >
-            <i :class="ingredient.isEyeballed ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"></i>
+            <i :class="ingredient.isEyeballed ? 'fa-duotone fa-eye' : 'fa-duotone fa-eye-slash'"></i>
           </button>
           <InputField
             class="shrink basis-1/6"
@@ -212,7 +212,7 @@
             class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
             @click="ingredientList.splice(index, 1)"
           >
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-duotone fa-trash"></i>
           </button>
         </div>
       </div>
@@ -250,7 +250,7 @@
             class="h-12 max-w-12 cursor-pointer self-center rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
             @click="instructionList.splice(index, 1)"
           >
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-duotone fa-trash"></i>
           </button>
         </div>
       </div>
@@ -287,7 +287,7 @@
       <div class="rounded-3xl bg-bone p-6 text-onyx">
         <h3 class="text-xl font-bold">{{ variantName }}</h3>
         <p v-if="variantDescription">{{ variantDescription }}</p>
-        <div class="text-overlay-400 mt-2 flex gap-4 text-sm">
+        <div class="mt-2 flex gap-4 text-sm text-overlay-400">
           <span v-if="prepTime">Prep: {{ prepTime }} min</span>
           <span v-if="cookTime">Cook: {{ cookTime }} min</span>
           <span v-if="servings">Serves: {{ servings }}</span>

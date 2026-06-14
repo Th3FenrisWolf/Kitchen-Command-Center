@@ -74,3 +74,13 @@
     }
   }
 }
+
+@utility fa-primary-* {
+  --fa-primary-color: --value(--color-*);
+  --fa-primary-opacity: 1; /* FA's default; kept explicit for symmetry with fa-secondary-* */
+}
+
+@utility fa-secondary-* {
+  --fa-secondary-color: --value(--color-*);
+  --fa-secondary-opacity: 1; /* a distinct secondary color implies full strength (no 40% wash-out); override --fa-secondary-opacity inline for a translucent colored secondary */
+}

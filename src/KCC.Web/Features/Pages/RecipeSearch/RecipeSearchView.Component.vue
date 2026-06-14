@@ -43,11 +43,11 @@
         :alt="recipe.name"
       />
       <div v-else class="flex h-48 w-full items-center justify-center rounded-2xl bg-bone-dark" aria-hidden="true">
-        <i :class="recipe.icon" class="text-6xl text-onyx-light"></i>
+        <i :class="recipe.icon" class="text-6xl"></i>
       </div>
       <span class="font-casual text-3xl">{{ recipe.name }}</span>
       <span>{{ recipe.description }}</span>
-      <span v-if="recipe.variantCount > 0" class="text-overlay-400 text-sm">
+      <span v-if="recipe.variantCount > 0" class="text-sm text-overlay-400">
         {{ recipe.variantCount }} variant{{ recipe.variantCount !== 1 ? 's' : '' }}
       </span>
     </a>

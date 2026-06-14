@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <ContentItemDataCommonDataID>
+    <GUID>697cdf46-d465-420e-a6d9-6aacb7b3a596</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SpicyJalapeno-v7h8svsu</CodeName>
+      <GUID>408bbf71-a524-4e3a-9e34-578cdcbe62d4</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>306e08a4-b114-4354-8fe6-31f0dc8884a7</ContentItemDataGUID>
+  <CookTime>20</CookTime>
+  <Description>Its Spicy</Description>
+  <Icon>fa-duotone fa-pepper-hot</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Mac \u0026 Cheese","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Jalapeno","quantity":1,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Cook the mac \u0026 cheese"},{"step":2,"text":"Add jalapenos"}]]]>
+  </Instructions>
+  <Name>Spicy Jalapeno</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>4</ServingNumber>
+</contentitemdata.kcc.recipevariant>

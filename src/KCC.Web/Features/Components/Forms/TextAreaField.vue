@@ -53,10 +53,9 @@
       :readonly
       :placeholder
       class="h-full w-full resize-none rounded-2xl bg-bone-dark px-4 py-2 placeholder:text-onyx-light"
-    />
-    <i
-      class="fa-solid fa-grip-lines fa-xs color-base absolute right-1 bottom-1 rotate-135 cursor-ns-resize"
-      @mousedown="startResize"
-    ></i>
+    ></textarea>
+    <span class="color-base absolute right-1 bottom-0">
+      <i class="fa-solid fa-grip-lines rotate-135 cursor-ns-resize text-[15px]" @mousedown="startResize"></i>
+    </span>
   </div>
 </template>

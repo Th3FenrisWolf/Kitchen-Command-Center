@@ -15,6 +15,7 @@ export interface RecipeVariantSummary {
   description: string
   slug: string
   image?: string
+  icon?: string
   tags: string[]
 }
 

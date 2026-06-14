@@ -56,6 +56,9 @@
           "
         >
           <img v-if="variant.image" :src="variant.image" :alt="variant.name" class="h-40 w-full rounded-2xl object-cover" />
+          <div v-else class="flex h-40 w-full items-center justify-center rounded-2xl bg-bone-dark" aria-hidden="true">
+            <i :class="variant.icon" class="text-6xl"></i>
+          </div>
           <span class="font-casual text-2xl">{{ variant.name }}</span>
           <span class="text-sm">{{ variant.description }}</span>
           <div v-if="variant.tags.length" class="flex flex-wrap gap-1">

@@ -34,6 +34,18 @@
           <MinRowsNumber>3</MinRowsNumber>
         </settings>
       </field>
+      <field column="Icon" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="bdf5f167-9e18-4f48-b8eb-406d24f55714" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Icon</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeincontentgeneration>False</includeincontentgeneration>
+          <includeintranslation>False</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>KCC.RecipeIconSelector</controlname>
+        </settings>
+      </field>
       <field allowempty="true" column="Images" columnprecision="0" columntype="contentitemreference" enabled="true" guid="6037a6dd-a217-4d21-84e5-01c04354664c" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>

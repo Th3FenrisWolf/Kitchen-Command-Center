@@ -48,6 +48,12 @@ namespace KCC
 
 
 		/// <summary>
+		/// Icon.
+		/// </summary>
+		public string Icon { get; set; }
+
+
+		/// <summary>
 		/// Images.
 		/// </summary>
 		public IEnumerable<ImageItem> Images { get; set; }
