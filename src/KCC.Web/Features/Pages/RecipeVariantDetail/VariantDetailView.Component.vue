@@ -19,6 +19,7 @@
     instructions: Instruction[]
     recipeName: string
     recipeSlug: string
+    createdByName?: string
     siblingVariants: SiblingVariant[]
     resourceStrings?: Record<string, string>
   }>()
@@ -51,6 +52,9 @@
       <span v-if="prepTime" class="rounded-full bg-overlay-300 px-3 py-1 text-sm"> Prep: {{ prepTime }} min </span>
       <span v-if="cookTime" class="rounded-full bg-overlay-300 px-3 py-1 text-sm"> Cook: {{ cookTime }} min </span>
       <span v-if="servings" class="rounded-full bg-overlay-300 px-3 py-1 text-sm"> Serves: {{ servings }} </span>
+      <span v-if="createdByName" class="rounded-full bg-overlay-300 px-3 py-1 text-sm">
+        <ResourceString for="CreatedBy" /> {{ createdByName }}
+      </span>
     </div>
 
     <div v-if="tags.length" class="flex flex-wrap gap-2">

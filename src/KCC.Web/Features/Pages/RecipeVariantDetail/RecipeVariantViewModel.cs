@@ -22,6 +22,7 @@ public class RecipeVariantViewModel : BasePageViewModel
     public string VariantSlug { get; set; }
     public string RecipeName { get; set; }
     public string RecipeSlug { get; set; }
+    public string CreatedByName { get; set; }
     public List<SiblingVariantViewModel> SiblingVariants { get; set; } = [];
 
     public static List<IngredientViewModel> DeserializeIngredients(string json)

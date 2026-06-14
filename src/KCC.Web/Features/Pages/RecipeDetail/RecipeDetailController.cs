@@ -1,6 +1,8 @@
 using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
+using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeDetail;
 using KCC.Web.Features.Pages.Shared;
@@ -20,7 +22,9 @@ public class RecipeDetailController(
     IWebPageDataContextRetriever webPageDataContextRetriever,
     IContentRetriever contentRetriever,
     ITaxonomyRetriever taxonomyRetriever,
-    IPreferredLanguageRetriever preferredLanguageRetriever
+    IPreferredLanguageRetriever preferredLanguageRetriever,
+    IAuthorNameResolver authorNameResolver,
+    IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -60,6 +64,10 @@ public class RecipeDetailController(
             RecipeGuid = recipe.SystemFields.ContentItemGUID,
             AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
             Variants = await RetrieveVariants(pageId, language),
+            StartedByName = await authorNameResolver.Resolve(recipe.AuthorMemberGuid),
+            ResourceStrings = resourceStrings.GetManyOrDefault(
+                "RecipeDetail.StartedBy",
+                "RecipeDetail.By"),
         };
 
         recipe.MapMetadata(viewModel);
@@ -82,6 +90,7 @@ public class RecipeDetailController(
             .Distinct();
 
         var resolvedTags = await taxonomyRetriever.RetrieveTags(tagIds, language);
+        var authorNames = await authorNameResolver.ResolveMany(variants.Select(variant => variant.AuthorMemberGuid));
 
         return variants.Select(variant => new VariantSummaryViewModel
         {
@@ -90,6 +99,7 @@ public class RecipeDetailController(
             Slug = variant.GetUrl().RelativePath,
             Image = variant.Images?.FirstOrDefault()?.Asset?.Url,
             Icon = variant.Icon,
+            AuthorName = authorNames.GetValueOrDefault(variant.AuthorMemberGuid),
             Tags = resolvedTags?.IntersectBy(
                 variant.Tags?.Select(tag => tag.Identifier) ?? [],
                 resolved => resolved.Identifier)
