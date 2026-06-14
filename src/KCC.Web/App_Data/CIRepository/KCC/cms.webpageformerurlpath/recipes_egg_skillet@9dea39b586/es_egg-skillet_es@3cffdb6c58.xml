@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageformerurlpath>
+  <WebPageFormerUrlPath>es/Egg-Skillet</WebPageFormerUrlPath>
+  <WebPageFormerUrlPathContentLanguageID>
+    <CodeName>es</CodeName>
+    <GUID>ef3c384b-a9ef-42c4-a1dc-21f748137808</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </WebPageFormerUrlPathContentLanguageID>
+  <WebPageFormerUrlPathGUID>d53f6f86-ec99-4421-ade9-9714c030ebf2</WebPageFormerUrlPathGUID>
+  <WebPageFormerUrlPathHash>
+    <![CDATA[3072D7E7AC3B600C8B9E1FF25C47E0EE8AD29F3DAACC89F9DA08719B2D493619]]>
+  </WebPageFormerUrlPathHash>
+  <WebPageFormerUrlPathIsRedirect>False</WebPageFormerUrlPathIsRedirect>
+  <WebPageFormerUrlPathIsRedirectScheduled>False</WebPageFormerUrlPathIsRedirectScheduled>
+  <WebPageFormerUrlPathWebPageItemID>
+    <CodeName>EggSkillet-tmkdv39m</CodeName>
+    <GUID>cea37892-0a0a-4112-9ffe-924396e0fb75</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageFormerUrlPathWebPageItemID>
+  <WebPageFormerUrlPathWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageFormerUrlPathWebsiteChannelID>
+</cms.webpageformerurlpath>

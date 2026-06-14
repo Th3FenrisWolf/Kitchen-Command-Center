@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageformerurlpath>
+  <WebPageFormerUrlPath>de/Egg-Skillet/Hash-Brown,-Bacon,-and-Egg-Skillet</WebPageFormerUrlPath>
+  <WebPageFormerUrlPathContentLanguageID>
+    <CodeName>de</CodeName>
+    <GUID>2584f8c4-f563-4f2f-b337-9da4a38f2dca</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </WebPageFormerUrlPathContentLanguageID>
+  <WebPageFormerUrlPathGUID>8f72d4bc-2712-424d-bd2d-85712c315c0a</WebPageFormerUrlPathGUID>
+  <WebPageFormerUrlPathHash>
+    <![CDATA[E9BE2785AFBED60DA740C64F5BA9956DB9C19F11C40BF2A71DC19BE8CAD2E10B]]>
+  </WebPageFormerUrlPathHash>
+  <WebPageFormerUrlPathIsRedirect>False</WebPageFormerUrlPathIsRedirect>
+  <WebPageFormerUrlPathIsRedirectScheduled>False</WebPageFormerUrlPathIsRedirectScheduled>
+  <WebPageFormerUrlPathWebPageItemID>
+    <CodeName>HashBrown_Bacon_AndEggSkillet-n9ty4uyo</CodeName>
+    <GUID>94a3221a-1e5e-423d-aeab-dee4e156c771</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageFormerUrlPathWebPageItemID>
+  <WebPageFormerUrlPathWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageFormerUrlPathWebsiteChannelID>
+</cms.webpageformerurlpath>
