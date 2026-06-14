@@ -58,6 +58,7 @@ public class AddVariantController(
         "AddVariant.Min",
         "AddVariant.Serves",
         "AddVariant.ToTaste",
+        "AddVariant.Step",
         "AddVariant.Steps",
         "AddVariant.Submitting",
         "AddVariant.SubmitForReview",

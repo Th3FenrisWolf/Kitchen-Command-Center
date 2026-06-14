@@ -95,7 +95,7 @@
     <template #action-button>
       <AppLink :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
         <ResourceString for="Cancel" />
-        <i class="fa-solid fa-x"></i>
+        <i class="fa-solid fa-close fa-sm"></i>
       </AppLink>
     </template>
   </SmallHero>
@@ -161,15 +161,15 @@
         class="cursor-pointer self-end rounded-3xl bg-surface-500 px-6 py-2 text-xl text-bone disabled:cursor-not-allowed disabled:opacity-50"
       >
         <ResourceString for="Next" />
-        <i class="fa-solid fa-arrow-right"></i>
+        <i class="fa-solid fa-arrow-right fa-sm"></i>
       </button>
     </form>
 
     <!-- Step 2: Ingredients -->
-    <form v-if="step === 2" @submit.prevent="step++" class="flex flex-col gap-6">
+    <form v-if="step === 2" @submit.prevent="step++" class="flex flex-col items-start gap-6">
       <ResourceString for="Ingredients" as="h2" class="text-2xl font-bold" />
 
-      <div class="flex flex-col gap-4">
+      <div class="flex w-full flex-col gap-4">
         <div v-for="(ingredient, index) in ingredientList" :key="index" class="flex gap-2">
           <label class="shrink grow basis-1/3">
             <ResourceString for="IngredientName" class="sr-only" />
@@ -178,11 +178,11 @@
 
           <button
             type="button"
-            class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white"
+            class="size-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white"
             @click="ingredient.isEyeballed = !ingredient.isEyeballed"
           >
             <ResourceString for="Eyeball" class="sr-only" />
-            <i :class="ingredient.isEyeballed ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"></i>
+            <i :class="ingredient.isEyeballed ? 'fa-duotone fa-eye' : 'fa-duotone fa-eye-slash'"></i>
           </button>
 
           <label class="shrink basis-1/6">
@@ -209,11 +209,11 @@
           <button
             type="button"
             :disabled="ingredientList.length <= 1"
-            class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
+            class="size-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
             @click="ingredientList.splice(index, 1)"
           >
             <ResourceString for="Remove" class="sr-only" />
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-duotone fa-trash"></i>
           </button>
         </div>
       </div>
@@ -226,9 +226,9 @@
         <ResourceString for="AddIngredient" />
       </button>
 
-      <div class="flex justify-between">
+      <div class="flex w-full justify-between">
         <button type="button" class="cursor-pointer rounded-3xl border border-surface-500 px-6 py-2 text-xl" @click="step--">
-          <FontAwesomeIcon :icon="faArrowLeft" />
+          <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="Back" class="ml-2" />
         </button>
 
@@ -238,29 +238,29 @@
           class="cursor-pointer rounded-3xl bg-surface-500 px-6 py-2 text-xl text-bone disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ResourceString for="Next" class="mr-2" />
-          <FontAwesomeIcon :icon="faArrowRight" />
+          <i class="fa-solid fa-arrow-right fa-sm"></i>
         </button>
       </div>
     </form>
 
     <!-- Step 3: Instructions -->
-    <form v-if="step === 3" @submit.prevent="step++" class="flex flex-col gap-6">
+    <form v-if="step === 3" @submit.prevent="step++" class="flex flex-col items-start gap-6">
       <ResourceString for="Instructions" as="h2" class="text-2xl font-bold" />
 
-      <div class="flex flex-col gap-4">
-        <div class="flex gap-4" v-for="(instruction, index) in instructionList" :key="index">
-          <p class="max-w-12 pt-1.5 text-end text-2xl">{{ index + 1 }}.</p>
+      <div class="flex w-full flex-col gap-4">
+        <div class="flex items-center gap-4" v-for="(instruction, index) in instructionList" :key="index">
+          <h2>{{ index + 1 }}.</h2>
 
           <TextAreaField class="shrink grow" v-model="instruction.text" :placeholder="rs('DescribeThisStep')" />
 
           <button
             type="button"
             :disabled="instructionList.length <= 1"
-            class="h-12 max-w-12 cursor-pointer self-center rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
+            class="size-12 max-w-12 cursor-pointer rounded-2xl bg-surface-500 p-2 text-white disabled:cursor-not-allowed disabled:bg-overlay-300"
             @click="instructionList.splice(index, 1)"
           >
             <ResourceString for="Remove" class="sr-only" />
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-duotone fa-trash fa-sm"></i>
           </button>
         </div>
       </div>
@@ -273,10 +273,10 @@
         <ResourceString for="AddStep" />
       </button>
 
-      <div class="flex justify-between">
+      <div class="flex w-full justify-between">
         <button type="button" class="cursor-pointer rounded-3xl border border-surface-500 px-6 py-2 text-xl" @click="step--">
+          <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="Back" class="ml-2" />
-          <FontAwesomeIcon :icon="faArrowLeft" />
         </button>
 
         <button
@@ -285,16 +285,16 @@
           class="cursor-pointer rounded-3xl bg-surface-500 px-6 py-2 text-xl text-bone disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ResourceString for="Next" class="mr-2" />
-          <FontAwesomeIcon :icon="faArrowRight" />
+          <i class="fa-solid fa-arrow-right fa-sm"></i>
         </button>
       </div>
     </form>
 
     <!-- Step 4: Review & Submit -->
-    <div v-if="step === 4" class="flex flex-col gap-6">
+    <div v-if="step === 4" class="flex flex-col items-start gap-6">
       <ResourceString for="ReviewAndSubmit" as="h2" class="text-2xl font-bold" />
 
-      <div class="rounded-3xl bg-bone p-6 text-onyx">
+      <div class="rounded-3xl bg-bone text-onyx">
         <h3 class="text-xl font-bold">{{ variantName }}</h3>
         <p v-if="variantDescription">{{ variantDescription }}</p>
 
@@ -305,7 +305,7 @@
         </div>
       </div>
 
-      <div class="rounded-3xl bg-bone p-6 text-onyx">
+      <div class="rounded-3xl bg-bone text-onyx">
         <h4 class="mb-2 font-bold">
           <ResourceString for="Ingredients" class="mr-2" /> ({{ ingredientList.filter((i) => i.name.trim()).length }})
         </h4>
@@ -318,11 +318,11 @@
         </ul>
       </div>
 
-      <div class="rounded-3xl bg-bone p-6 text-onyx">
+      <div class="rounded-3xl bg-bone text-onyx">
         <h4 class="mb-2 font-bold">
           <ResourceString for="Instructions" class="mr-2" />
-          <span>({{ instructionList.filter((i) => i.text.trim()).length }}</span>
-          <ResourceString for="Steps" />)
+          <span class="mr-2">({{ instructionList.filter((i) => i.text.trim()).length }}</span>
+          <ResourceString :for="instructionList.length === 1 ? 'Step' : 'Steps'" />)
         </h4>
 
         <ol class="list-inside list-decimal">
@@ -332,9 +332,9 @@
 
       <p v-if="submitError" class="text-red-500">{{ submitError }}</p>
 
-      <div class="flex justify-between">
+      <div class="flex w-full justify-between">
         <button type="button" class="cursor-pointer rounded-3xl border border-surface-500 px-6 py-2 text-xl" @click="step--">
-          <FontAwesomeIcon :icon="faArrowLeft" />
+          <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="Back" class="ml-2" />
         </button>
 
@@ -344,7 +344,7 @@
           class="cursor-pointer rounded-3xl bg-surface-500 px-6 py-2 text-xl text-bone disabled:cursor-not-allowed disabled:opacity-50"
           @click="handleSubmit"
         >
-          {{ isSubmitting ? rs('Submitting') : rs('SubmitForReview') }}
+          <ResourceString :for="isSubmitting ? 'Submitting' : 'SubmitForReview'" />
         </button>
       </div>
     </div>
