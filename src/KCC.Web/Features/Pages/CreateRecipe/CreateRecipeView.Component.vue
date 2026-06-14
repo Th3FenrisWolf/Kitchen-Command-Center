@@ -2,6 +2,7 @@
   import { ref, computed } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import InputField from '~/Components/Forms/InputField.vue'
+  import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { useResourceStrings } from '~/Components/ResourceStrings'
@@ -26,9 +27,9 @@
   // Step 2: Variant info
   const variantName = ref('')
   const variantDescription = ref('')
-  const prepTime = ref<number | undefined>()
-  const cookTime = ref<number | undefined>()
-  const servings = ref<number | undefined>()
+  const prepTime = ref<number | undefined>(0)
+  const cookTime = ref<number | undefined>(0)
+  const servings = ref<number | undefined>(0)
 
   // Step 3: Ingredients
   const ingredientList = ref<Ingredient[]>([{ name: '', unit: '', isEyeballed: false }])
@@ -151,18 +152,18 @@
         <TextAreaField v-model="variantDescription" placeholder="What makes this variant special?" />
       </label>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <label class="flex flex-col gap-2">
-          <span class="text-lg font-bold">Prep Time (min)</span>
-          <InputField v-model="prepTime" type="number" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="text-lg font-bold">Cook Time (min)</span>
-          <InputField v-model="cookTime" type="number" />
-        </label>
-        <label class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2">
+          <span class="text-lg font-bold">Prep Time</span>
+          <NumberStepper v-model="prepTime" :min="0" unit="min" label="Prep Time" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="text-lg font-bold">Cook Time</span>
+          <NumberStepper v-model="cookTime" :min="0" unit="min" label="Cook Time" />
+        </div>
+        <div class="flex flex-col gap-2">
           <span class="text-lg font-bold">Servings</span>
-          <InputField v-model="servings" type="number" />
-        </label>
+          <NumberStepper v-model="servings" :min="0" label="Servings" />
+        </div>
       </div>
       <div class="flex justify-between">
         <button type="button" class="cursor-pointer rounded-3xl border border-surface-500 px-6 py-2 text-xl" @click="step--">
@@ -196,6 +197,7 @@
             v-model="ingredient.quantity"
             placeholder="Qty"
             type="number"
+            inputmode="decimal"
             step="0.01"
             :disabled="ingredient.isEyeballed"
           />
