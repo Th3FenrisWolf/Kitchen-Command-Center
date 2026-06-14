@@ -70,9 +70,7 @@ public class RecipeDetailController(
                 "RecipeDetail.By"),
         };
 
-        recipe.MapMetadata(viewModel);
-        recipe.MapWebPageFields(viewModel);
-
+        await recipe.MapMetadata(viewModel);
         return View("~/Features/Pages/RecipeDetail/Index.cshtml", viewModel);
     }
 

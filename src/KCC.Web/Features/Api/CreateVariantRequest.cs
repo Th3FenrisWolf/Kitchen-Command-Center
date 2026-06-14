@@ -33,12 +33,12 @@ public class CreateVariantRequest
     /// <summary>
     /// Gets or sets the list of ingredients.
     /// </summary>
-    public List<IngredientDto> Ingredients { get; set; } = [];
+    public IEnumerable<IngredientDto> Ingredients { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the list of instructions.
     /// </summary>
-    public List<InstructionDto> Instructions { get; set; } = [];
+    public IEnumerable<InstructionDto> Instructions { get; set; } = [];
 }
 
 /// <summary>

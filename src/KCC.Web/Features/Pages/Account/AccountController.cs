@@ -5,6 +5,7 @@ using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.Account;
+using KCC.Web.Features.Pages.Shared;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Authorization;
@@ -39,6 +40,12 @@ public class AccountController(
             return Challenge();
         }
 
+        var page = await contentRetriever.RetrievePage<AccountPage>();
+        if (page is null)
+        {
+            return NotFound();
+        }
+
         var viewModel = new AccountViewModel
         {
             DisplayName = $"{user.FirstName} {user.LastName}".Trim(),
@@ -48,6 +55,7 @@ public class AccountController(
             ResourceStrings = GetStrings(),
         };
 
+        await page.MapMetadata(viewModel);
         return View("~/Features/Pages/Account/Index.cshtml", viewModel);
     }
 
@@ -57,7 +65,7 @@ public class AccountController(
     /// </summary>
     /// <param name="memberGuid">The member whose creations to load.</param>
     /// <returns>Ordered display groups for the profile's creations section.</returns>
-    private async Task<List<RecipeGroupViewModel>> LoadRecipeGroups(Guid memberGuid)
+    private async Task<IEnumerable<RecipeGroupViewModel>> LoadRecipeGroups(Guid memberGuid)
     {
         var myVariants = await contentRetriever.RetrievePages<RecipeVariant>(
             new() { IsForPreview = true },

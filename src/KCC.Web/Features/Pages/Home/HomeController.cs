@@ -27,9 +27,8 @@ public class HomeController(
         )).FirstOrDefault();
 
         var viewModel = new HomeViewModel();
-        page.MapMetadata(viewModel);
-        page.MapWebPageFields(viewModel);
 
+        await page.MapMetadata(viewModel);
         return View("~/Features/Pages/Home/Index.cshtml", viewModel);
     }
 }

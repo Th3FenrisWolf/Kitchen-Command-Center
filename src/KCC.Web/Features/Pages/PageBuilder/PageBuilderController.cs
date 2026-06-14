@@ -35,9 +35,8 @@ public class PageBuilderController(
         )).FirstOrDefault();
 
         var viewModel = new PageBuilderViewModel();
-        page.MapMetadata(viewModel);
-        page.MapWebPageFields(viewModel);
 
+        await page.MapMetadata(viewModel);
         return View("~/Features/Pages/PageBuilder/Index.cshtml", viewModel);
     }
 }

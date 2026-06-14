@@ -10,7 +10,7 @@ public class AccountViewModel : BasePageViewModel
     public string Initials { get; set; }
     public string MemberSince { get; set; }
 
-    public List<RecipeGroupViewModel> RecipeGroups { get; set; } = [];
+    public IEnumerable<RecipeGroupViewModel> RecipeGroups { get; set; } = [];
 
     public static string ComputeInitials(string firstName, string lastName, string fallback)
     {
@@ -61,7 +61,7 @@ public class AccountViewModel : BasePageViewModel
     /// <param name="publishedVariantIds">Page IDs of variants that are published.</param>
     /// <returns>Ordered display groups for the profile's creations section.</returns>
     /// <remarks>Callers must supply unique <see cref="AuthoredRecipeInput.PageId"/> values; duplicates throw.</remarks>
-    public static List<RecipeGroupViewModel> BuildRecipeGroups(
+    public static IEnumerable<RecipeGroupViewModel> BuildRecipeGroups(
         IReadOnlyCollection<AuthoredRecipeInput> recipes,
         IReadOnlyCollection<AuthoredVariantInput> variants,
         IReadOnlySet<int> publishedRecipeIds,
@@ -83,35 +83,31 @@ public class AccountViewModel : BasePageViewModel
                 };
             });
 
-        foreach (var variant in variants)
+        var variantsByParent = variants.ToLookup(variant => variant.ParentPageId);
+
+        var enrichedGroups = groups.Values.Select(group =>
         {
-            if (!groups.TryGetValue(variant.ParentPageId, out var group))
-            {
-                continue;
-            }
+            group.Variants = variantsByParent[group.PageId]
+                .Select(variant =>
+                {
+                    var isPublished = publishedVariantIds.Contains(variant.PageId);
+                    return new ProfileVariantViewModel
+                    {
+                        PageId = variant.PageId,
+                        Name = variant.Name,
+                        Icon = variant.Icon,
+                        Url = isPublished ? variant.Url : null,
+                        IsPending = !isPublished,
+                    };
+                })
+                .OrderBy(variant => variant.Name, StringComparer.OrdinalIgnoreCase);
 
-            var isPublished = publishedVariantIds.Contains(variant.PageId);
-            group.Variants.Add(new ProfileVariantViewModel
-            {
-                PageId = variant.PageId,
-                Name = variant.Name,
-                Icon = variant.Icon,
-                Url = isPublished ? variant.Url : null,
-                IsPending = !isPublished,
-            });
-        }
+            return group;
+        });
 
-        var result = groups.Values
-            .Where(group => group.StartedByYou || group.Variants.Count > 0)
-            .OrderBy(group => group.RecipeName, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        foreach (var group in result)
-        {
-            group.Variants.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return result;
+        return enrichedGroups
+            .Where(group => group.StartedByYou || group.Variants.Any())
+            .OrderBy(group => group.RecipeName, StringComparer.OrdinalIgnoreCase);
     }
 }
 
@@ -123,7 +119,7 @@ public class RecipeGroupViewModel
     public string RecipeUrl { get; set; }
     public bool IsPending { get; set; }
     public bool StartedByYou { get; set; }
-    public List<ProfileVariantViewModel> Variants { get; set; } = [];
+    public IEnumerable<ProfileVariantViewModel> Variants { get; set; } = [];
 }
 
 public class ProfileVariantViewModel

@@ -5,6 +5,7 @@ using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.Account.Settings;
+using KCC.Web.Features.Pages.Shared;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Authorization;
@@ -39,11 +40,12 @@ public class AccountSettingsController(
             return Challenge();
         }
 
-        var accountPage = (await contentRetriever.RetrievePages<AccountPage>(
-            new(),
-            query => query.TopN(1),
-            new($"{nameof(AccountSettingsController)}|{nameof(Index)}")
-        )).FirstOrDefault();
+        var accountPage = await contentRetriever.RetrievePage<AccountPage>();
+
+        if (accountPage is null)
+        {
+            return NotFound();
+        }
 
         var viewModel = new AccountSettingsViewModel
         {
@@ -54,6 +56,7 @@ public class AccountSettingsController(
             ResourceStrings = GetStrings(),
         };
 
+        await accountPage.MapMetadata(viewModel);
         return View("~/Features/Pages/Account/Settings/Index.cshtml", viewModel);
     }
 
@@ -61,9 +64,9 @@ public class AccountSettingsController(
         "~/Features/Pages/Account/Settings/Index.cshtml",
         new AccountSettingsViewModel
         {
-            FirstName = "Alex",
-            LastName = "Carter",
-            Email = "alex.carter@example.com",
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
             BackUrl = "/account",
             ResourceStrings = GetStrings(),
         });

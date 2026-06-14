@@ -2,6 +2,7 @@ using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
 using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeSearch;
 using KCC.Web.Features.Pages.Shared;
@@ -25,34 +26,45 @@ public class RecipeSearchController(
     IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
-    private Dictionary<string, string> RecipeSearchStrings => resourceStrings.GetManyOrDefault(
-        "RecipeSearch.SearchRecipes",
-        "RecipeSearch.CreateRecipe"
-    );
-
     public async Task<IActionResult> Index()
     {
         var pageId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
+        var page = await contentRetriever.RetrievePage<RecipeListingPage>(pageId);
 
-        var page = (await contentRetriever.RetrievePages<RecipeListingPage>(
-            new(),
-            query => query
-                .Where(w => w.WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId))
-                .TopN(1),
-            new($"{nameof(RecipeSearchController)}|{nameof(Index)}|{pageId}")
-        )).FirstOrDefault();
+        if (page is null)
+        {
+            return NotFound();
+        }
 
+        var createRecipePage = await contentRetriever.RetrievePage<CreateRecipePage>();
+
+        var viewModel = new RecipeSearchViewModel()
+        {
+            CreateRecipeUrl = createRecipePage?.GetUrl().RelativePath,
+            Recipes = await RetrieveRecipes(),
+            ResourceStrings = GetStrings(),
+        };
+
+        await page.MapMetadata(viewModel);
+        return View("~/Features/Pages/RecipeSearch/Index.cshtml", viewModel);
+    }
+
+    private async Task<IEnumerable<RecipeSummaryViewModel>> RetrieveRecipes()
+    {
         var recipes = await contentRetriever.RetrievePages<Recipe>(
             new() { LinkedItemsMaxLevel = 1 },
             null,
-            new($"{nameof(RecipeSearchController)}|Recipes")
+            new($"{nameof(RecipeSearchController)}|{nameof(RetrieveRecipes)}")
         );
 
-        var createRecipePage = (await contentRetriever.RetrievePages<CreateRecipePage>(
+        var variants = await contentRetriever.RetrievePages<RecipeVariant>(
             new(),
-            query => query.TopN(1),
-            new($"{nameof(RecipeSearchController)}|CreateRecipePage")
-        )).FirstOrDefault();
+            query => query.Columns(nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID)),
+            new($"{nameof(RecipeSearchController)}|{nameof(RetrieveRecipes)}|Variants"));
+
+        var variantCounts = variants
+            .GroupBy(v => v.SystemFields.WebPageItemParentID)
+            .ToDictionary(g => g.Key, g => g.Count());
 
         var categoryGuids = recipes
             .SelectMany(r => r.Categories?.Select(c => c.Identifier) ?? [])
@@ -61,40 +73,20 @@ public class RecipeSearchController(
         var categoryResult = await taxonomyRetriever.RetrieveTags(categoryGuids, preferredLanguageRetriever.Get());
         var resolvedCategories = categoryResult?.ToDictionary(t => t.Identifier, t => t.Title) ?? [];
 
-        var viewModel = new RecipeSearchViewModel()
+        return recipes.Select(recipe => new RecipeSummaryViewModel
         {
-            CreateRecipeUrl = createRecipePage?.GetUrl().RelativePath,
-            ResourceStrings = RecipeSearchStrings,
-        };
-
-        page?.MapMetadata(viewModel);
-        page?.MapWebPageFields(viewModel);
-
-        foreach (var recipe in recipes)
-        {
-            var variants = await contentRetriever.RetrievePages<RecipeVariant>(
-                new(),
-                query => query.Where(w =>
-                    w.WhereEquals(
-                        nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID),
-                        recipe.SystemFields.WebPageItemID)),
-                new($"{nameof(RecipeSearchController)}|Variants|{recipe.SystemFields.WebPageItemID}")
-            );
-
-            var categoryRef = recipe.Categories?.FirstOrDefault();
-
-            viewModel.Recipes.Add(new RecipeSummaryViewModel
-            {
-                Name = recipe.Name,
-                Description = recipe.Description,
-                Image = recipe.Image?.FirstOrDefault()?.Asset?.Url,
-                Icon = recipe.Icon,
-                Category = categoryRef is not null && resolvedCategories.TryGetValue(categoryRef.Identifier, out var catName) ? catName : null,
-                Slug = recipe.GetUrl().RelativePath,
-                VariantCount = variants.Count(),
-            });
-        }
-
-        return View("~/Features/Pages/RecipeSearch/Index.cshtml", viewModel);
+            Name = recipe.Name,
+            Description = recipe.Description,
+            Image = recipe.Image?.FirstOrDefault()?.Asset?.Url,
+            Icon = recipe.Icon,
+            Category = resolvedCategories.GetValueOrDefault(recipe.Categories?.FirstOrDefault()?.Identifier ?? Guid.Empty),
+            Slug = recipe.GetUrl().RelativePath,
+            VariantCount = variantCounts.GetValueOrDefault(recipe.SystemFields.WebPageItemID),
+        });
     }
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
+        "RecipeSearch.SearchRecipes",
+        "RecipeSearch.CreateRecipe"
+    );
 }
