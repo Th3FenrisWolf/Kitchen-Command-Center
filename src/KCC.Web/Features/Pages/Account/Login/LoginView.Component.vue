@@ -1,15 +1,14 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue'
-  import { cx } from '~/Utilities/CX'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
     returnUrl?: string
     defaultUserName?: string
     defaultPassword?: string
     defaultRememberMe?: boolean
-    antiforgeryToken?: string
     resourceStrings?: Record<string, string>
   }>()
 
@@ -56,29 +55,15 @@
       ? { userName: userName.value, password: password.value, rememberMe: rememberMe.value, returnUrl: props.returnUrl }
       : { userName: userName.value, email: email.value, password: password.value }
 
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(props.antiforgeryToken ? { RequestVerificationToken: props.antiforgeryToken } : {}),
-        },
-        body: JSON.stringify(body),
-      })
+    const result = await post<{ redirectUrl?: string }>(endpoint, body)
+    isSubmitting.value = false
 
-      const data = await response.json()
-
-      if (!response.ok || !data.success) {
-        formError.value = data.errors?.join(' ') ?? 'Sign in failed.'
-        return
-      }
-
-      window.location.href = data.redirectUrl ?? '/'
-    } catch {
-      formError.value = 'An unexpected error occurred.'
-    } finally {
-      isSubmitting.value = false
+    if (!result.success) {
+      formError.value = result.errorMessage
+      return
     }
+
+    window.location.href = result.data.redirectUrl ?? '/'
   }
 </script>
 
@@ -86,16 +71,14 @@
   <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
     <div class="relative flex w-3/4 overflow-hidden rounded-3xl shadow-primary">
       <div
-        :class="
-          cx(
-            'relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
-            swap && 'left-[40%]',
-          )
-        "
+        :class="[
+          'relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
+          swap && 'left-[40%]',
+        ]"
       >
         <h2 class="text-4.5xl"><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
 
-        <p :class="cx('overflow-hidden text-red transition-all duration-500', formError ? 'h-8' : 'h-0')">
+        <p :class="['overflow-hidden text-red transition-all duration-500', formError ? 'h-8' : 'h-0']">
           {{ formError }}
         </p>
 
@@ -154,20 +137,16 @@
       </div>
 
       <div
-        :class="
-          cx(
-            'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-surface-500 p-12 text-center transition-all duration-500',
-            swap && 'right-[60%]',
-          )
-        "
+        :class="[
+          'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-surface-500 p-12 text-center transition-all duration-500',
+          swap && 'right-[60%]',
+        ]"
       >
         <div
-          :class="
-            cx(
-              'relative flex h-full w-[400%] justify-between transition-all duration-500',
-              swap ? 'left-[150%]' : 'left-[-150%]',
-            )
-          "
+          :class="[
+            'relative flex h-full w-[400%] justify-between transition-all duration-500',
+            swap ? 'left-[150%]' : 'left-[-150%]',
+          ]"
         >
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
             <h3 class="font-casual text-4.5xl"><ResourceString for="HaveAccount" /></h3>

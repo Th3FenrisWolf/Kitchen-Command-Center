@@ -1,13 +1,10 @@
 @using KCC.Web.Features.Pages.AddVariant
 
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-
 @model AddVariantViewModel
 
 <AddVariantView
   recipe-id="@Model.RecipeId"
   recipe-name="@Model.RecipeName"
   recipe-slug="@Model.RecipeSlug"
-  antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />

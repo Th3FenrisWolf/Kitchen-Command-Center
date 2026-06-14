@@ -4,6 +4,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
     firstName: string
@@ -11,7 +12,6 @@
     email: string
     backUrl: string
     logoutUrl: string
-    antiforgeryToken?: string
     resourceStrings?: Record<string, string>
   }>()
 
@@ -30,31 +30,16 @@
   const passwordSubmitting = ref(false)
   const passwordMessage = ref<{ ok: boolean; text: string } | null>(null)
 
-  const post = async (url: string, body: Record<string, unknown>) => {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(props.antiforgeryToken ? { RequestVerificationToken: props.antiforgeryToken } : {}),
-      },
-      body: JSON.stringify(body),
-    })
-    return (await response.json()) as { success: boolean; errors?: string[] }
-  }
-
   const saveProfile = async () => {
     profileMessage.value = null
     profileSubmitting.value = true
-    try {
-      const data = await post('/api/profile', { firstName: firstName.value, lastName: lastName.value })
-      profileMessage.value = data.success
-        ? { ok: true, text: rs('ProfileSaved') }
-        : { ok: false, text: data.errors?.join(' ') ?? rs('UnexpectedError') }
-    } catch {
-      profileMessage.value = { ok: false, text: rs('UnexpectedError') }
-    } finally {
-      profileSubmitting.value = false
-    }
+
+    const result = await post('/api/profile', { firstName: firstName.value, lastName: lastName.value })
+    profileSubmitting.value = false
+
+    profileMessage.value = result.success
+      ? { ok: true, text: rs('ProfileSaved') }
+      : { ok: false, text: result.errorMessage }
   }
 
   const changePassword = async () => {
@@ -64,24 +49,22 @@
       return
     }
     passwordSubmitting.value = true
-    try {
-      const data = await post('/api/profile/password', {
-        currentPassword: currentPassword.value,
-        newPassword: newPassword.value,
-      })
-      if (data.success) {
-        passwordMessage.value = { ok: true, text: rs('PasswordUpdated') }
-        currentPassword.value = ''
-        newPassword.value = ''
-        confirmPassword.value = ''
-      } else {
-        passwordMessage.value = { ok: false, text: data.errors?.join(' ') ?? rs('UnexpectedError') }
-      }
-    } catch {
-      passwordMessage.value = { ok: false, text: rs('UnexpectedError') }
-    } finally {
-      passwordSubmitting.value = false
+
+    const result = await post('/api/profile/password', {
+      currentPassword: currentPassword.value,
+      newPassword: newPassword.value,
+    })
+    passwordSubmitting.value = false
+
+    if (!result.success) {
+      passwordMessage.value = { ok: false, text: result.errorMessage }
+      return
     }
+
+    passwordMessage.value = { ok: true, text: rs('PasswordUpdated') }
+    currentPassword.value = ''
+    newPassword.value = ''
+    confirmPassword.value = ''
   }
 </script>
 

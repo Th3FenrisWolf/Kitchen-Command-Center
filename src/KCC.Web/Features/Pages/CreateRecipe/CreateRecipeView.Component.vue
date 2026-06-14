@@ -6,9 +6,9 @@
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { useResourceStrings } from '~/Components/ResourceStrings'
+  import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
-    antiforgeryToken?: string
     resourceStrings?: Record<string, string>
   }>()
 
@@ -58,42 +58,29 @@
     isSubmitting.value = true
     submitError.value = ''
 
-    try {
-      const response = await fetch('/api/recipes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(props.antiforgeryToken ? { RequestVerificationToken: props.antiforgeryToken } : {}),
-        },
-        body: JSON.stringify({
-          recipeName: recipeName.value.trim(),
-          recipeDescription: recipeDescription.value.trim(),
-          firstVariant: {
-            variantName: variantName.value.trim(),
-            variantDescription: variantDescription.value.trim(),
-            prepTime: prepTime.value || null,
-            cookTime: cookTime.value || null,
-            servings: servings.value || null,
-            ingredients: ingredientList.value.filter((i) => i.name.trim() !== ''),
-            instructions: instructionList.value
-              .filter((i) => i.text.trim() !== '')
-              .map((i, idx) => ({ step: idx + 1, text: i.text.trim() })),
-          },
-        }),
-      })
+    const result = await post('/api/recipes', {
+      recipeName: recipeName.value.trim(),
+      recipeDescription: recipeDescription.value.trim(),
+      firstVariant: {
+        variantName: variantName.value.trim(),
+        variantDescription: variantDescription.value.trim(),
+        prepTime: prepTime.value || null,
+        cookTime: cookTime.value || null,
+        servings: servings.value || null,
+        ingredients: ingredientList.value.filter((i) => i.name.trim() !== ''),
+        instructions: instructionList.value
+          .filter((i) => i.text.trim() !== '')
+          .map((i, idx) => ({ step: idx + 1, text: i.text.trim() })),
+      },
+    })
+    isSubmitting.value = false
 
-      if (!response.ok) {
-        const data = await response.json()
-        submitError.value = data.error || 'Failed to create recipe.'
-        return
-      }
-
-      submitSuccess.value = true
-    } catch {
-      submitError.value = 'An unexpected error occurred.'
-    } finally {
-      isSubmitting.value = false
+    if (!result.success) {
+      submitError.value = result.errorMessage
+      return
     }
+
+    submitSuccess.value = true
   }
 </script>
 
