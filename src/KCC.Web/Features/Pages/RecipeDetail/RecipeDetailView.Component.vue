@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { cx } from '~/Utilities/CX'
   import type { RecipeVariantSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
@@ -37,9 +36,7 @@
     <div class="flex flex-col gap-2">
       <img v-if="recipeImagePath" :src="recipeImagePath" :alt="recipeName" class="h-64 w-full rounded-3xl object-cover" />
       <p class="text-lg">{{ recipeDescription }}</p>
-      <p v-if="startedByName" class="text-sm text-onyx-light">
-        <ResourceString for="StartedBy" /> {{ startedByName }}
-      </p>
+      <p v-if="startedByName" class="text-sm text-onyx-light"><ResourceString for="StartedBy" /> {{ startedByName }}</p>
       <span v-if="recipeCategory" class="w-fit rounded-full bg-overlay-300 px-3 py-1 text-sm">
         {{ recipeCategory }}
       </span>
@@ -52,12 +49,10 @@
           v-for="variant in variants"
           :key="variant.slug"
           :href="variant.slug"
-          :class="
-            cx(
-              'group/card grid gap-2 rounded-3xl bg-bone p-4 text-onyx shadow-primary transition-all duration-300',
-              'focus-within:shadow-primary-raised hover:shadow-primary-raised',
-            )
-          "
+          :class="[
+            'group/card grid gap-2 rounded-3xl bg-bone p-4 text-onyx shadow-primary transition-all duration-300',
+            'focus-within:shadow-primary-raised hover:shadow-primary-raised',
+          ]"
         >
           <img v-if="variant.image" :src="variant.image" :alt="variant.name" class="h-40 w-full rounded-2xl object-cover" />
           <div v-else class="flex h-40 w-full items-center justify-center rounded-2xl bg-bone-dark" aria-hidden="true">

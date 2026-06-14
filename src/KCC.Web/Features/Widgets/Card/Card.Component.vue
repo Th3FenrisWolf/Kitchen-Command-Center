@@ -54,8 +54,6 @@
 <script setup lang="ts">
   import { computed, useSlots } from 'vue'
 
-  import { cx } from '~/Utilities/CX'
-
   const {
     cardColor = 'bg-surface-500',
     cardTextColor = 'text-bone',
@@ -77,38 +75,32 @@
 
 <template>
   <div
-    :class="
-      cx(
-        'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center shadow-primary transition-all duration-300',
-        hasDrawer && 'focus-within:shadow-primary-raised hover:shadow-primary-raised',
-        cardColor,
-        cardTextColor,
-        marginClasses,
-      )
-    "
+    :class="[
+      'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center shadow-primary transition-all duration-300',
+      hasDrawer && 'focus-within:shadow-primary-raised hover:shadow-primary-raised',
+      cardColor,
+      cardTextColor,
+      marginClasses,
+    ]"
   >
     <div
-      :class="
-        cx(
-          'relative top-1 transition-all duration-300',
-          hasDrawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
-          hasDrawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
-        )
-      "
+      :class="[
+        'relative top-1 transition-all duration-300',
+        hasDrawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
+        hasDrawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
+      ]"
     >
       <slot />
     </div>
 
     <div
       v-if="hasDrawer"
-      :class="
-        cx(
-          'h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
-          'group-hover/card:h-full focus-within:h-full',
-          resolvedDrawerColor,
-          resolvedDrawerTextColor,
-        )
-      "
+      :class="[
+        'h-[0%] content-center overflow-hidden rounded-2xl transition-all duration-300',
+        'group-hover/card:h-full focus-within:h-full',
+        resolvedDrawerColor,
+        resolvedDrawerTextColor,
+      ]"
     >
       <div class="p-4">
         <slot name="drawer" />
