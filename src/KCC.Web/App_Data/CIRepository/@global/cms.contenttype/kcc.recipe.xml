@@ -77,6 +77,19 @@
           </TaxonomyGroup>
         </settings>
       </field>
+      <field allowempty="true" column="AuthorMemberGuid" columnprecision="0" columntype="guid" enabled="true" guid="b6f3a9d2-58c1-4e74-9a07-3d92c5e81f46" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Author Member GUID</fieldcaption>
+          <fielddescription>GUID of the member who started this recipe. Set automatically when the recipe is submitted from the live site.</fielddescription>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeincontentgeneration>False</includeincontentgeneration>
+          <includeintranslation>False</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
       <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
         <properties />
       </schema>

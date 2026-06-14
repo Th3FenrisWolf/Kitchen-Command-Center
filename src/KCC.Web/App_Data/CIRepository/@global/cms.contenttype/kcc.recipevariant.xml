@@ -135,6 +135,19 @@
           <MinRowsNumber>3</MinRowsNumber>
         </settings>
       </field>
+      <field allowempty="true" column="AuthorMemberGuid" columnprecision="0" columntype="guid" enabled="true" guid="7c4e2f81-d95a-4b63-8e10-f6a3b07d925c" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Author Member GUID</fieldcaption>
+          <fielddescription>GUID of the member who created this variant. Set automatically when the variant is submitted from the live site.</fielddescription>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeincontentgeneration>False</includeincontentgeneration>
+          <includeintranslation>False</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.TextInput</controlname>
+        </settings>
+      </field>
       <schema guid="3a6908a4-ba23-46a1-ab7e-7313cca78854" name="3a6908a4-ba23-46a1-ab7e-7313cca78854">
         <properties />
       </schema>

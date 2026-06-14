@@ -96,6 +96,12 @@ namespace KCC
 
 
 		/// <summary>
+		/// AuthorMemberGuid.
+		/// </summary>
+		public Guid AuthorMemberGuid { get; set; }
+
+
+		/// <summary>
 		/// ExcludeFromSitemap.
 		/// </summary>
 		public bool ExcludeFromSitemap { get; set; }
