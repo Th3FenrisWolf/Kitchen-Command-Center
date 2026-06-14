@@ -1,9 +1,8 @@
 using KCC;
 using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Extensions;
-using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
-using KCC.Web.Features.Pages.Login;
+using KCC.Web.Features.Pages.Account.Login;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +13,25 @@ using Microsoft.AspNetCore.Mvc;
     WebsiteChannelNames = [XperienceConstants.WebsiteChannelName]
 )]
 
-namespace KCC.Web.Features.Pages.Login;
+namespace KCC.Web.Features.Pages.Account.Login;
 
 public class LoginController(IResourceStringInfoProvider resourceStrings) : Controller
 {
-    private Dictionary<string, string> LoginStrings => resourceStrings.GetManyOrDefault(
+    public IActionResult Login(string returnUrl = null)
+    {
+        if (User.Identity.IsAuthenticated && !HttpContext.IsAdmin())
+        {
+            return Redirect(returnUrl ?? Url.HomePage());
+        }
+
+        return View("~/Features/Pages/Account/Login/Index.cshtml", new LoginViewModel
+        {
+            ReturnUrl = returnUrl,
+            ResourceStrings = GetStrings(),
+        });
+    }
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
         "Login.SignIn",
         "Login.SignUp",
         "Login.UsernamePlaceholder",
@@ -31,18 +44,4 @@ public class LoginController(IResourceStringInfoProvider resourceStrings) : Cont
         "Login.NewHere",
         "Login.NewHereDescription"
     );
-
-    public IActionResult Login(string returnUrl = null)
-    {
-        if (User.Identity.IsAuthenticated && !HttpContext.IsPreview())
-        {
-            return Redirect(returnUrl ?? Url.HomePage());
-        }
-
-        return View("~/Features/Pages/Login/Index.cshtml", new LoginViewModel
-        {
-            ReturnUrl = returnUrl,
-            ResourceStrings = LoginStrings,
-        });
-    }
 }

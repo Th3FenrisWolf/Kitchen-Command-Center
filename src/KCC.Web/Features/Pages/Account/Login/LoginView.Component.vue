@@ -93,9 +93,9 @@
           )
         "
       >
-        <h2 class="text-heading"><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
+        <h2 class="text-4.5xl"><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
 
-        <p :class="cx('overflow-hidden text-maroon transition-all duration-500', formError ? 'h-8' : 'h-0')">
+        <p :class="cx('overflow-hidden text-red transition-all duration-500', formError ? 'h-8' : 'h-0')">
           {{ formError }}
         </p>
 
@@ -170,7 +170,7 @@
           "
         >
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
-            <h3 class="font-casual text-heading"><ResourceString for="HaveAccount" /></h3>
+            <h3 class="font-casual text-4.5xl"><ResourceString for="HaveAccount" /></h3>
             <p><ResourceString for="HaveAccountDescription" /></p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
@@ -181,7 +181,7 @@
             </button>
           </div>
           <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="swap">
-            <h3 class="font-casual text-heading"><ResourceString for="NewHere" /></h3>
+            <h3 class="font-casual text-4.5xl"><ResourceString for="NewHere" /></h3>
             <p><ResourceString for="NewHereDescription" /></p>
             <button
               class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"

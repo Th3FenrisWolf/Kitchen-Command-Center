@@ -20,6 +20,8 @@
       <field allowempty="true" column="MemberPassword" columnprecision="0" columnsize="100" columntype="text" enabled="true" guid="61911700-cd6c-4d73-943a-985a57342b4f" system="true" />
       <field column="MemberIsExternal" columnprecision="0" columntype="boolean" enabled="true" guid="5cf88feb-d217-4a33-8039-63b46bf2c672" system="true" />
       <field allowempty="true" column="MemberSecurityStamp" columnprecision="0" columnsize="72" columntype="text" enabled="true" guid="d127bfec-d965-4888-8836-0b22ef2e1010" system="true" />
+      <field allowempty="true" column="MemberFirstName" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="cc1ee2e6-123a-42b9-86d9-a60eb10f32ff" />
+      <field allowempty="true" column="MemberLastName" columnprecision="0" columnsize="200" columntype="text" enabled="true" guid="1df72480-8e79-4cb4-80c5-31d97cccd18a" />
     </form>
   </ClassFormDefinition>
   <ClassGUID>07c5d145-7cbc-4c75-9a96-6d4948bf6c73</ClassGUID>

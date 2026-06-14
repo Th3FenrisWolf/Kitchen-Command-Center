@@ -11,7 +11,7 @@
         <slot name="eyebrow"></slot>
       </p>
 
-      <div class="flex items-center justify-between">
+      <div class="flex flex-wrap items-center justify-between gap-x-8">
         <h1>
           <slot name="title"></slot>
         </h1>

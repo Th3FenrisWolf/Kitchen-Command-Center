@@ -28,7 +28,7 @@
 </script>
 
 <template>
-  <section class="mx-auto grid w-full max-w-6xl gap-6 px-4 py-10 md:grid-cols-[20rem_1fr]">
+  <section class="grid w-full gap-8 py-10 md:grid-cols-content-aside">
     <!-- Identity card -->
     <aside class="h-max rounded-3xl bg-bone p-8 text-center shadow-primary md:sticky md:top-10">
       <div
@@ -61,7 +61,7 @@
             <ResourceString for="ComingSoon" />
           </span>
         </header>
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4">
           <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-bone-dark opacity-70" />
         </div>
       </article>

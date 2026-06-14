@@ -34,6 +34,8 @@
           <fielddescriptionashtml>False</fielddescriptionashtml>
         </properties>
       </field>
+      <field column="MemberFirstName" guid="cc1ee2e6-123a-42b9-86d9-a60eb10f32ff" enabled="" />
+      <field column="MemberLastName" guid="1df72480-8e79-4cb4-80c5-31d97cccd18a" enabled="" />
     </form>
   </FormDefinition>
   <FormDisplayName>Profile overview - registration information</FormDisplayName>

@@ -34,7 +34,7 @@ public class KCCApplicationUser : ApplicationUser
 
         FirstName = source.GetValue("MemberFirstName", string.Empty);
         LastName = source.GetValue("MemberLastName", string.Empty);
-        Email = source.GetValue("MemberEmail", string.Empty);
+        Email = source.MemberEmail ?? string.Empty;
         MemberGuid = source.MemberGuid;
         Created = source.MemberCreated;
     }
