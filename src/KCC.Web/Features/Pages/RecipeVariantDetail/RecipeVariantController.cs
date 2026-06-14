@@ -1,9 +1,11 @@
+using System.Text.Json;
 using CMS.ContentEngine;
 using CMS.Websites;
-using CMS.Websites.Routing;
 using KCC;
 using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Members;
+using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeVariantDetail;
 using KCC.Web.Features.Pages.Shared;
@@ -30,75 +32,75 @@ public class RecipeVariantController(
 {
     public async Task<IActionResult> Index()
     {
-        var context = webPageDataContextRetriever.Retrieve().WebPage;
-        var pageId = context.WebPageItemID;
+        var pageId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
+        var variantPage = await contentRetriever.RetrievePage<RecipeVariant>(pageId, linkedItemsMaxLevel: 1);
 
-        var variant = (await contentRetriever.RetrievePages<RecipeVariant>(
-            new() { LinkedItemsMaxLevel = 1 },
-            query => query
-                .Where(w => w.WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId))
-                .TopN(1),
-            new($"{nameof(RecipeVariantController)}|{nameof(Index)}|{pageId}")
-        )).FirstOrDefault();
-
-        if (variant is null)
+        if (variantPage is null)
         {
             return NotFound();
         }
 
-        var parentId = variant.SystemFields.WebPageItemParentID;
+        var parentId = variantPage.SystemFields.WebPageItemParentID;
+        var recipePage = await contentRetriever.RetrievePage<Recipe>(parentId);
 
-        var parentRecipe = (await contentRetriever.RetrievePages<Recipe>(
-            new() { LinkedItemsMaxLevel = 1 },
-            query => query
-                .Where(w => w.WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), parentId))
-                .TopN(1),
-            new($"{nameof(RecipeVariantController)}|Parent|{parentId}")
-        )).FirstOrDefault();
+        if (recipePage is null)
+        {
+            return NotFound();
+        }
 
         var siblings = await contentRetriever.RetrievePages<RecipeVariant>(
             new(),
-            query => query
-                .Where(w => w.WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID), parentId))
-                .Where(w => w.WhereNotEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId)),
-            new($"{nameof(RecipeVariantController)}|Siblings|{parentId}|{pageId}")
+            query => query.Where(w => w
+                .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID), parentId)
+                .WhereNotEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId)
+            ),
+            new($"{nameof(RecipeVariantController)}|{parentId}|{pageId}|Siblings")
         );
 
         var language = preferredLanguageRetriever.Get();
-        var tagGuids = variant.Tags?.Select(t => t.Identifier) ?? Enumerable.Empty<Guid>();
+        var tagGuids = variantPage.Tags?.Select(t => t.Identifier) ?? [];
         var tagResult = await taxonomyRetriever.RetrieveTags(tagGuids, language);
-        var resolvedTags = tagResult?.Select(t => t.Title).ToList() ?? [];
+        var resolvedTags = tagResult?.Select(t => t.Title);
 
         var viewModel = new RecipeVariantViewModel
         {
-            VariantName = variant.Name,
-            VariantDescription = variant.Description,
-            ImagePaths = variant.Images?
-                .Select(i => i.Asset?.Url)
-                .Where(u => u is not null)
-                .ToList() ?? [],
-            PrepTime = variant.PrepTime > 0 ? variant.PrepTime : null,
-            CookTime = variant.CookTime > 0 ? variant.CookTime : null,
-            Servings = variant.ServingNumber > 0 ? variant.ServingNumber : null,
+            VariantName = variantPage.Name,
+            VariantDescription = variantPage.Description,
+            Images = variantPage.Images,
+            PrepTime = variantPage.PrepTime,
+            CookTime = variantPage.CookTime,
+            Servings = variantPage.ServingNumber,
             Tags = resolvedTags,
-            Ingredients = RecipeVariantViewModel.DeserializeIngredients(variant.Ingredients),
-            Instructions = RecipeVariantViewModel.DeserializeInstructions(variant.Instructions),
-            VariantSlug = variant.GetUrl().RelativePath,
-            RecipeName = parentRecipe?.Name ?? string.Empty,
-            RecipeSlug = parentRecipe?.GetUrl().RelativePath ?? string.Empty,
+            Ingredients = DeserializeJsonCollection<IngredientViewModel>(variantPage.Ingredients),
+            Instructions = DeserializeJsonCollection<InstructionViewModel>(variantPage.Instructions),
+            VariantSlug = variantPage.GetUrl().RelativePath,
+            RecipeName = recipePage?.Name,
+            RecipeSlug = recipePage?.GetUrl().RelativePath,
             SiblingVariants = siblings.Select(s => new SiblingVariantViewModel
             {
                 Name = s.Name,
                 Slug = s.GetUrl().RelativePath,
-            }).ToList(),
-            CreatedByName = await authorNameResolver.Resolve(variant.AuthorMemberGuid),
-            ResourceStrings = resourceStrings.GetManyOrDefault(
-                "VariantDetail.CreatedBy",
-                "VariantDetail.Ingredients"),
+            }),
+            CreatedByName = await authorNameResolver.Resolve(variantPage.AuthorMemberGuid),
+            ResourceStrings = GetStrings(),
         };
-        variant.MapMetadata(viewModel);
-        variant.MapWebPageFields(viewModel);
 
+        await variantPage.MapMetadata(viewModel);
         return View("~/Features/Pages/RecipeVariantDetail/Index.cshtml", viewModel);
     }
+
+    private static IEnumerable<T> DeserializeJsonCollection<T>(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        return JsonSerializer.Deserialize<IEnumerable<T>>(json, JsonNaming.CamelCase) ?? [];
+    }
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
+        "VariantDetail.CreatedBy",
+        "VariantDetail.Ingredients"
+    );
 }

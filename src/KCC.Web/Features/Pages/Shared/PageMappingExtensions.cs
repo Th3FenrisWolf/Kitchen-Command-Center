@@ -1,14 +1,15 @@
 using CMS.Websites;
+using KCC.Web.Features.Extensions;
 
 namespace KCC.Web.Features.Pages.Shared;
 
 public static class PageMappingExtensions
 {
-    public static void MapMetadata<TSource, TViewModel>(this TSource source, TViewModel dest)
-        where TSource : IMetadata
+    public static async Task MapMetadata<TSource, TViewModel>(this TSource source, TViewModel dest)
+        where TSource : IMetadata, IWebPageFieldsSource
         where TViewModel : BasePageViewModel
     {
-        dest.Title = source.MetadataTitle;
+        dest.Title = await source.GetMetadataTitle();
         dest.Description = source.MetadataDescription;
         dest.Keywords = source.MetadataKeywords;
         dest.PublishDate = source.MetadataPublishDate.ToString();
@@ -25,11 +26,7 @@ public static class PageMappingExtensions
         dest.ImageWidth = defaultImage?.Metadata.Width ?? 0;
         dest.ImageHeight = defaultImage?.Metadata.Height ?? 0;
         dest.TwitterImagePath = twitterImage?.Url;
-    }
 
-    public static void MapWebPageFields<TViewModel>(this IWebPageFieldsSource source, TViewModel dest)
-        where TViewModel : BasePageViewModel
-    {
         dest.WebPageItemID = source.SystemFields.WebPageItemID;
     }
 }

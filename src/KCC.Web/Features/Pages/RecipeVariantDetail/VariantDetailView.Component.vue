@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import type { Ingredient, Instruction } from '~/Types/Recipe'
+  import type { ImageItem } from '~/Types/ContentTypes'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
 
   interface SiblingVariant {
     name: string
@@ -10,7 +12,7 @@
   const props = defineProps<{
     variantName: string
     variantDescription: string
-    imagePaths: string[]
+    images: ImageItem[]
     prepTime?: number
     cookTime?: number
     servings?: number
@@ -31,16 +33,16 @@
   <SmallHero dark>
     <template #title>{{ variantName }}</template>
     <template #action-button>
-      <a :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx"> ← {{ recipeName }} </a>
+      <AppLink :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx"> ← {{ recipeName }} </AppLink>
     </template>
   </SmallHero>
 
   <section class="flex flex-col gap-8">
-    <div v-if="imagePaths.length" class="flex gap-4 overflow-x-auto">
+    <div v-if="images?.length" class="flex gap-4 overflow-x-auto">
       <img
-        v-for="(img, i) in imagePaths"
+        v-for="(img, i) in images"
         :key="i"
-        :src="img"
+        :src="img.Asset.Url"
         :alt="`${variantName} image ${i + 1}`"
         class="h-64 rounded-3xl object-cover"
       />
@@ -52,10 +54,9 @@
       <span v-if="prepTime" class="rounded-full bg-overlay-300 px-3 py-1 text-sm"> Prep: {{ prepTime }} min </span>
       <span v-if="cookTime" class="rounded-full bg-overlay-300 px-3 py-1 text-sm"> Cook: {{ cookTime }} min </span>
       <span v-if="servings" class="rounded-full bg-overlay-300 px-3 py-1 text-sm"> Serves: {{ servings }} </span>
-      <span v-if="createdByName" class="rounded-full bg-overlay-300 px-3 py-1 text-sm">
-        <ResourceString for="CreatedBy" /> {{ createdByName }}
-      </span>
     </div>
+
+    <p v-if="createdByName" class="text-lg"><ResourceString for="CreatedBy" /> {{ createdByName }}</p>
 
     <div v-if="tags.length" class="flex flex-wrap gap-2">
       <span v-for="tag in tags" :key="tag" class="rounded-full bg-surface-500 px-3 py-1 text-sm text-bone">

@@ -4,7 +4,7 @@ namespace KCC.Web.Features.Pages.RecipeSearch;
 
 public class RecipeSearchViewModel : BasePageViewModel
 {
-    public List<RecipeSummaryViewModel> Recipes { get; set; } = [];
+    public IEnumerable<RecipeSummaryViewModel> Recipes { get; set; } = [];
     public string CreateRecipeUrl { get; set; }
 }
 

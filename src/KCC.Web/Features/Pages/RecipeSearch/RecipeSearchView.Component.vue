@@ -2,6 +2,7 @@
   import type { RecipeSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
 
   const props = defineProps<{
     recipes: RecipeSummary[]
@@ -16,14 +17,14 @@
   <SmallHero dark>
     <template #title><ResourceString for="SearchRecipes" /></template>
     <template #action-button>
-      <a :href="createRecipeUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+      <AppLink :href="createRecipeUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
         <ResourceString for="CreateRecipe" />
-      </a>
+      </AppLink>
     </template>
   </SmallHero>
 
   <section class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-    <a
+    <AppLink
       v-for="recipe in recipes"
       :href="recipe.slug"
       :key="recipe.slug"
@@ -47,6 +48,6 @@
       <span v-if="recipe.variantCount > 0" class="text-sm text-overlay-400">
         {{ recipe.variantCount }} variant{{ recipe.variantCount !== 1 ? 's' : '' }}
       </span>
-    </a>
+    </AppLink>
   </section>
 </template>

@@ -28,7 +28,11 @@ export default defineConfig(({ mode }) => {
   const isSSR = mode === 'ssr'
 
   return {
-    test: { environment: 'node' },
+    test: {
+      environment: 'node',
+      // Tests live in the repo-root /tests/KCC.ViteTests folder, not co-located under Features/.
+      dir: resolve(__dirname, '../../tests/KCC.ViteTests'),
+    },
     ssr: { noExternal: ['vue'] },
     build: isSSR
       ? {
@@ -65,7 +69,7 @@ export default defineConfig(({ mode }) => {
         },
     server: {
       fs: {
-        allow: [resolve(__dirname, '..')],
+        allow: [resolve(__dirname, '../..')],
       },
     },
     plugins: [vue(), tailwindcss(), ...(!isSSR ? [cleanAssetsPlugin(), vueDevTools()] : [])],

@@ -1,0 +1,25 @@
+{
+  // IntelliSense-only config. The Vue/vitest tests were moved out of src/KCC.Web into this
+  // folder, so module, type, and alias resolution are pointed back at the web project — whose
+  // node_modules the tests actually run against via src/KCC.Web/vite.config.ts. This config
+  // is not part of any build graph and emits nothing; it exists so editors (and `tsc -p`) can
+  // resolve `vitest`, the `~` alias, and Node globals for files under tests/KCC.ViteTests.
+  "extends": "../../src/KCC.Web/tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "typeRoots": ["../../src/KCC.Web/node_modules/@types"],
+    "types": ["node"],
+    "paths": {
+      // `~` mirrors the alias in vite.config.ts; the `*` fallback lets bare specifiers
+      // (vitest, vue, …) resolve against the web project's node_modules — @types first so
+      // packages like `qs` pick up their @types declarations rather than the untyped JS.
+      "~/*": ["../../src/KCC.Web/Features/*"],
+      "*": [
+        "../../src/KCC.Web/node_modules/@types/*",
+        "../../src/KCC.Web/node_modules/*"
+      ]
+    }
+  },
+  "include": ["Features/**/*.ts"]
+}

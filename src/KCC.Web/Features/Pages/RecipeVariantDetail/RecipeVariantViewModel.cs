@@ -5,45 +5,20 @@ namespace KCC.Web.Features.Pages.RecipeVariantDetail;
 
 public class RecipeVariantViewModel : BasePageViewModel
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
-
     public string VariantName { get; set; }
     public string VariantDescription { get; set; }
-    public List<string> ImagePaths { get; set; } = [];
+    public IEnumerable<ImageItem> Images { get; set; } = [];
     public int? PrepTime { get; set; }
     public int? CookTime { get; set; }
     public int? Servings { get; set; }
-    public List<string> Tags { get; set; } = [];
-    public List<IngredientViewModel> Ingredients { get; set; } = [];
-    public List<InstructionViewModel> Instructions { get; set; } = [];
+    public IEnumerable<string> Tags { get; set; } = [];
+    public IEnumerable<IngredientViewModel> Ingredients { get; set; } = [];
+    public IEnumerable<InstructionViewModel> Instructions { get; set; } = [];
     public string VariantSlug { get; set; }
     public string RecipeName { get; set; }
     public string RecipeSlug { get; set; }
     public string CreatedByName { get; set; }
-    public List<SiblingVariantViewModel> SiblingVariants { get; set; } = [];
-
-    public static List<IngredientViewModel> DeserializeIngredients(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return [];
-        }
-
-        return JsonSerializer.Deserialize<List<IngredientViewModel>>(json, JsonOptions) ?? [];
-    }
-
-    public static List<InstructionViewModel> DeserializeInstructions(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return [];
-        }
-
-        return JsonSerializer.Deserialize<List<InstructionViewModel>>(json, JsonOptions) ?? [];
-    }
+    public IEnumerable<SiblingVariantViewModel> SiblingVariants { get; set; } = [];
 }
 
 public class IngredientViewModel

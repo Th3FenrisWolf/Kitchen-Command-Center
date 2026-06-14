@@ -3,6 +3,8 @@ using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.Account.Login;
+using KCC.Web.Features.Pages.Shared;
+using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,20 +17,33 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Pages.Account.Login;
 
-public class LoginController(IResourceStringInfoProvider resourceStrings) : Controller
+public class LoginController(
+    IContentRetriever contentRetriever,
+    IResourceStringInfoProvider resourceStrings
+) : Controller
 {
-    public IActionResult Login(string returnUrl = null)
+    public async Task<IActionResult> Login(string returnUrl = null)
     {
         if (User.Identity.IsAuthenticated && !HttpContext.IsAdmin())
         {
             return Redirect(returnUrl ?? Url.HomePage());
         }
 
-        return View("~/Features/Pages/Account/Login/Index.cshtml", new LoginViewModel
+        var page = await contentRetriever.RetrievePage<LoginPage>();
+
+        if (page is null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = new LoginViewModel()
         {
             ReturnUrl = returnUrl,
             ResourceStrings = GetStrings(),
-        });
+        };
+
+        await page.MapMetadata(viewModel);
+        return View("~/Features/Pages/Account/Login/Index.cshtml", viewModel);
     }
 
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
