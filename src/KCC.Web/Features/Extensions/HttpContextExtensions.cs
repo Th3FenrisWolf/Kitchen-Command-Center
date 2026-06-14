@@ -6,6 +6,18 @@ namespace KCC.Web.Features.Extensions;
 
 public static class HttpContextExtensions
 {
+    public static bool IsAdmin(this HttpContext context)
+    {
+        try
+        {
+            return context.IsPreview() || context.IsPageBuilder();
+        }
+        catch (NullReferenceException)
+        {
+            return false;
+        }
+    }
+
     public static bool IsPreview(this HttpContext context)
     {
         try
