@@ -1,0 +1,15 @@
+@using KCC.Web.Features.Pages.Account
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@model AccountSettingsViewModel
+
+<AccountSettingsView
+  first-name="@Model.FirstName"
+  last-name="@Model.LastName"
+  email="@Model.Email"
+  back-url="@Model.BackUrl"
+  logout-url="/account/logout"
+  antiforgery-token="@Antiforgery.GetAndStoreTokens(Context).RequestToken"
+  :resource-strings="@Vue.Prop(Model.ResourceStrings)"
+/>
