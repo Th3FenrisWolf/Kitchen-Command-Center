@@ -1,3 +1,4 @@
+using CMS.Websites;
 using KCC;
 using KCC.Web.Features.Pages.Home;
 using KCC.Web.Features.Pages.Shared;
@@ -6,12 +7,16 @@ namespace KCC.UnitTests.Features.Pages.Shared;
 
 public class PageMappingExtensionsTests
 {
-    private sealed class MetadataStub : IMetadata
+    private sealed class MetadataStub : IMetadata, IWebPageFieldsSource
     {
         public bool ExcludeFromSitemap { get; set; }
         public bool ShowBreadcrumbs { get; set; }
         public string BreadcrumbLabel { get; set; }
-        public string MetadataTitle { get; set; }
+
+        // Non-empty by default so GetMetadataTitle() short-circuits and never falls back to
+        // GetDisplayName(), which resolves an IInfoProvider via the Kentico service locator.
+        public string MetadataTitle { get; set; } = "Stub Title";
+
         public string MetadataDescription { get; set; }
         public IEnumerable<ImageItem> MetadataImage { get; set; }
         public string MetadataKeywords { get; set; }
@@ -20,6 +25,9 @@ public class PageMappingExtensionsTests
         public string TwitterSite { get; set; }
         public string TwitterCreator { get; set; }
         public IEnumerable<ImageItem> TwitterImage { get; set; }
+
+        // MapMetadata reads SystemFields.WebPageItemID; keep it non-null so the read is safe.
+        public WebPageFields SystemFields { get; set; } = new();
     }
 
     [Test]
@@ -35,12 +43,14 @@ public class PageMappingExtensionsTests
             TwitterCard = "summary_large_image",
             TwitterSite = "@kcc",
             TwitterCreator = "@author",
+            SystemFields = new WebPageFields { WebPageItemID = 42 },
         };
         var dest = new HomeViewModel();
 
-        source.MapMetadata(dest);
+        await source.MapMetadata(dest);
 
         _ = await Assert.That(dest.Title).IsEqualTo("Title");
+        _ = await Assert.That(dest.WebPageItemID).IsEqualTo(42);
         _ = await Assert.That(dest.Description).IsEqualTo("Desc");
         _ = await Assert.That(dest.Keywords).IsEqualTo("a,b,c");
         _ = await Assert.That(dest.PublishDate).IsEqualTo(source.MetadataPublishDate.ToString());
@@ -56,7 +66,7 @@ public class PageMappingExtensionsTests
         var source = new MetadataStub { MetadataImage = null, TwitterImage = null };
         var dest = new HomeViewModel();
 
-        source.MapMetadata(dest);
+        await source.MapMetadata(dest);
 
         _ = await Assert.That(dest.ImagePath).IsNull();
         _ = await Assert.That(dest.ImageWidth).IsEqualTo(0);
@@ -74,7 +84,7 @@ public class PageMappingExtensionsTests
         };
         var dest = new HomeViewModel();
 
-        source.MapMetadata(dest);
+        await source.MapMetadata(dest);
 
         _ = await Assert.That(dest.ImagePath).IsNull();
         _ = await Assert.That(dest.ImageWidth).IsEqualTo(0);

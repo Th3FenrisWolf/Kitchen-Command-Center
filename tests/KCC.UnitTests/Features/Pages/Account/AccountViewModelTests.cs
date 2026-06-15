@@ -27,12 +27,12 @@ public class AccountViewModelTests
             publishedRecipeIds: new HashSet<int> { 1, 2 },
             publishedVariantIds: new HashSet<int> { 10, 11 });
 
-        _ = await Assert.That(groups.Count).IsEqualTo(2);
-        _ = await Assert.That(groups[0].RecipeName).IsEqualTo("Mac & Cheese");
-        _ = await Assert.That(groups[0].StartedByYou).IsTrue();
-        _ = await Assert.That(groups[0].Variants.Count()).IsEqualTo(1);
-        _ = await Assert.That(groups[0].Variants[0].Name).IsEqualTo("Classic");
-        _ = await Assert.That(groups[1].StartedByYou).IsFalse();
+        _ = await Assert.That(groups.Count()).IsEqualTo(2);
+        _ = await Assert.That(groups.ElementAt(0).RecipeName).IsEqualTo("Mac & Cheese");
+        _ = await Assert.That(groups.ElementAt(0).StartedByYou).IsTrue();
+        _ = await Assert.That(groups.ElementAt(0).Variants.Count()).IsEqualTo(1);
+        _ = await Assert.That(groups.ElementAt(0).Variants.ElementAt(0).Name).IsEqualTo("Classic");
+        _ = await Assert.That(groups.ElementAt(1).StartedByYou).IsFalse();
     }
 
     [Test]
@@ -48,10 +48,10 @@ public class AccountViewModelTests
             publishedRecipeIds: new HashSet<int>(),
             publishedVariantIds: new HashSet<int>());
 
-        _ = await Assert.That(groups[0].IsPending).IsTrue();
-        _ = await Assert.That(groups[0].RecipeUrl).IsNull();
-        _ = await Assert.That(groups[0].Variants[0].IsPending).IsTrue();
-        _ = await Assert.That(groups[0].Variants[0].Url).IsNull();
+        _ = await Assert.That(groups.ElementAt(0).IsPending).IsTrue();
+        _ = await Assert.That(groups.ElementAt(0).RecipeUrl).IsNull();
+        _ = await Assert.That(groups.ElementAt(0).Variants.ElementAt(0).IsPending).IsTrue();
+        _ = await Assert.That(groups.ElementAt(0).Variants.ElementAt(0).Url).IsNull();
     }
 
     [Test]
@@ -67,10 +67,10 @@ public class AccountViewModelTests
             publishedRecipeIds: new HashSet<int> { 1 },
             publishedVariantIds: new HashSet<int> { 10 });
 
-        _ = await Assert.That(groups[0].IsPending).IsFalse();
-        _ = await Assert.That(groups[0].RecipeUrl).IsEqualTo("/recipes/mac-and-cheese");
-        _ = await Assert.That(groups[0].Variants[0].IsPending).IsFalse();
-        _ = await Assert.That(groups[0].Variants[0].Url).IsEqualTo("/recipes/mac-and-cheese/classic");
+        _ = await Assert.That(groups.ElementAt(0).IsPending).IsFalse();
+        _ = await Assert.That(groups.ElementAt(0).RecipeUrl).IsEqualTo("/recipes/mac-and-cheese");
+        _ = await Assert.That(groups.ElementAt(0).Variants.ElementAt(0).IsPending).IsFalse();
+        _ = await Assert.That(groups.ElementAt(0).Variants.ElementAt(0).Url).IsEqualTo("/recipes/mac-and-cheese/classic");
     }
 
     [Test]
@@ -82,7 +82,7 @@ public class AccountViewModelTests
             publishedVariantIds: new HashSet<int>());
 
         _ = await Assert.That(groups.Count()).IsEqualTo(1);
-        _ = await Assert.That(groups[0].Variants.Count()).IsEqualTo(0);
+        _ = await Assert.That(groups.ElementAt(0).Variants.Count()).IsEqualTo(0);
     }
 
     [Test]
@@ -113,7 +113,7 @@ public class AccountViewModelTests
             publishedVariantIds: new HashSet<int> { 10, 12 });
 
         _ = await Assert.That(groups.Select(group => group.RecipeName)).IsEquivalentTo(new[] { "Mac & Cheese", "Tacos" });
-        _ = await Assert.That(groups[0].Variants.Select(variant => variant.Name)).IsEquivalentTo(new[] { "Classic", "Spicy" });
+        _ = await Assert.That(groups.ElementAt(0).Variants.Select(variant => variant.Name)).IsEquivalentTo(new[] { "Classic", "Spicy" });
     }
 
     [Test]
