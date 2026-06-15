@@ -57,6 +57,23 @@
   --grid-template-columns-content-aside: min(calc(50% - 16px), 24rem) minmax(calc(50% - 16px), 1fr);
 }
 
+@layer base {
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [tabindex]:not([tabindex="-1"]) {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    transition: outline-color 0.2s, outline-offset 0.2s;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+  }
+}
+
 @layer components {
   .btn-no-style {
     background: none;
@@ -72,6 +89,12 @@
       outline: none;
     }
   }
+}
+
+@utility outline-focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.2s, outline-offset 0.2s;
 }
 
 @utility fa-primary-* {

@@ -40,7 +40,7 @@ public class AccountController(
             return Challenge();
         }
 
-        var page = await contentRetriever.RetrievePage<AccountPage>();
+        var page = await contentRetriever.RetrieveFirstPage<AccountPage>();
         if (page is null)
         {
             return NotFound();

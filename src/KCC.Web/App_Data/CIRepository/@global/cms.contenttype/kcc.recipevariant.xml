@@ -114,10 +114,7 @@
           <includeintranslation>True</includeintranslation>
         </properties>
         <settings>
-          <controlname>Kentico.Administration.TextArea</controlname>
-          <CopyButtonVisible>False</CopyButtonVisible>
-          <MaxRowsNumber>5</MaxRowsNumber>
-          <MinRowsNumber>3</MinRowsNumber>
+          <controlname>KCC.IngredientsEditor</controlname>
         </settings>
       </field>
       <field column="Instructions" columnprecision="0" columntype="longtext" enabled="true" guid="9930ac4e-9706-4cac-8d1f-98ab46802c71" visible="true">
@@ -129,10 +126,7 @@
           <includeintranslation>True</includeintranslation>
         </properties>
         <settings>
-          <controlname>Kentico.Administration.TextArea</controlname>
-          <CopyButtonVisible>False</CopyButtonVisible>
-          <MaxRowsNumber>5</MaxRowsNumber>
-          <MinRowsNumber>3</MinRowsNumber>
+          <controlname>KCC.InstructionsEditor</controlname>
         </settings>
       </field>
       <field allowempty="true" column="AuthorMemberGuid" columnprecision="0" columntype="guid" enabled="true" guid="7c4e2f81-d95a-4b63-8e10-f6a3b07d925c" visible="true">

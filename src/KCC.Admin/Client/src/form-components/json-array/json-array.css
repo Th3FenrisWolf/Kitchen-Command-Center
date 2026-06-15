@@ -1,0 +1,15 @@
+.kcc-json-array { display: flex; flex-direction: column; gap: 8px; color: var(--color-text-default-on-light, #333); }
+.kcc-json-array__summary { margin: 0; padding-left: 20px; line-height: 1.7; color: var(--color-text-default-on-light, #333); }
+.kcc-json-array__empty { margin: 0; color: #999; font-style: italic; }
+.kcc-json-array__error { border: 1px solid #d9534f; border-radius: 8px; padding: 12px; color: var(--color-text-default-on-light, #333); }
+.kcc-json-array__error pre { white-space: pre-wrap; word-break: break-all; font-size: 12px; margin: 8px 0; }
+.kcc-json-array__row { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border: 1px solid var(--color-input-border, #d6d6d6); border-radius: 8px; background: var(--color-paper-background, #fff); }
+.kcc-json-array__row.is-invalid { border-color: #d9534f; }
+.kcc-json-array__row.is-drop-target { box-shadow: inset 0 2px 0 #2b6cb0; }
+.kcc-json-array__handle { padding: 4px 2px; color: #999; font-size: 16px; line-height: 1; cursor: grab; user-select: none; }
+.kcc-json-array__handle:active { cursor: grabbing; }
+.kcc-json-array__fields { flex: 1; min-width: 0; }
+.kcc-json-array__remove { padding: 4px; border: none; background: transparent; color: #999; font-size: 14px; cursor: pointer; }
+.kcc-json-array__remove:hover:not(:disabled) { color: #d9534f; }
+.kcc-json-array__add { align-self: flex-start; padding: 8px 14px; border: 1px dashed var(--color-input-border, #bbb); border-radius: 8px; background: transparent; color: var(--color-text-default-on-light, #333); cursor: pointer; }
+.kcc-json-array__add:hover:not(:disabled) { background: rgba(0, 0, 0, 0.03); }

@@ -19,7 +19,7 @@ public class RegistrationCompleteController(IContentRetriever contentRetriever) 
 {
     public async Task<IActionResult> Index()
     {
-        var page = await contentRetriever.RetrievePage<RegistrationCompletePage>();
+        var page = await contentRetriever.RetrieveFirstPage<RegistrationCompletePage>();
 
         if (page is null)
         {

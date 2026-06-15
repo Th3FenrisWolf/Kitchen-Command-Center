@@ -36,7 +36,7 @@ public class RecipeSearchController(
             return NotFound();
         }
 
-        var createRecipePage = await contentRetriever.RetrievePage<CreateRecipePage>();
+        var createRecipePage = await contentRetriever.RetrieveFirstPage<CreateRecipePage>();
 
         var viewModel = new RecipeSearchViewModel()
         {

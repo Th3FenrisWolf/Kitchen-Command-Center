@@ -1,0 +1,9 @@
+.kcc-ingredient-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.kcc-ingredient-row input[type="text"],
+.kcc-ingredient-row input[type="number"] { padding: 6px 8px; border: 1px solid var(--color-input-border, #d6d6d6); border-radius: 6px; font: inherit; }
+.kcc-ingredient-row__name { flex: 1; min-width: 140px; }
+.kcc-ingredient-row__qty { width: 64px; }
+.kcc-ingredient-row__unit { width: 120px; }
+.kcc-ingredient-row__eyeballed { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; user-select: none; }
+.kcc-ingredient-row input:disabled { opacity: 0.5; }
+.kcc-ingredient-row.is-invalid .kcc-ingredient-row__name { border-color: #d9534f; }
