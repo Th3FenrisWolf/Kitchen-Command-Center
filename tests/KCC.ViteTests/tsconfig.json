@@ -8,6 +8,7 @@
   "compilerOptions": {
     "composite": false,
     "noEmit": true,
+    "allowJs": true,
     "typeRoots": ["../../src/KCC.Web/node_modules/@types"],
     "types": ["node"],
     "paths": {
