@@ -29,7 +29,7 @@ public class LoginController(
             return Redirect(returnUrl ?? Url.HomePage());
         }
 
-        var page = await contentRetriever.RetrievePage<LoginPage>();
+        var page = await contentRetriever.RetrieveFirstPage<LoginPage>();
 
         if (page is null)
         {

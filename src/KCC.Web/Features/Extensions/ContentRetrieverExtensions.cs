@@ -22,7 +22,7 @@ public static class ContentRetrieverExtensions
         return result;
     }
 
-    public static async Task<T> RetrievePage<T>(
+    public static async Task<T> RetrieveFirstPage<T>(
         this IContentRetriever contentRetriever,
         int linkedItemsMaxLevel = 0
     ) where T : IWebPageFieldsSource, new()
@@ -30,7 +30,7 @@ public static class ContentRetrieverExtensions
         var result = (await contentRetriever.RetrievePages<T>(
             new() { LinkedItemsMaxLevel = linkedItemsMaxLevel },
             query => query.TopN(1),
-            new($"{nameof(ContentRetrieverExtensions)}|{nameof(RetrievePage)}|{typeof(T).Name}|{linkedItemsMaxLevel}")
+            new($"{nameof(ContentRetrieverExtensions)}|{nameof(RetrieveFirstPage)}|{typeof(T).Name}|{linkedItemsMaxLevel}")
         )).FirstOrDefault();
 
         return result;
