@@ -280,18 +280,24 @@
     <div v-if="step === 4" class="flex flex-col items-start gap-6">
       <ResourceString for="ReviewAndSubmit" as="h2" class="text-2xl font-bold" />
 
-      <div class="rounded-3xl bg-bone text-onyx">
+      <div class="w-full rounded-3xl bg-surface-500 p-4 text-bone">
         <h3 class="text-xl font-bold">{{ variantName }}</h3>
         <p v-if="variantDescription">{{ variantDescription }}</p>
 
-        <div class="mt-2 flex gap-4 text-sm text-overlay-400">
-          <span v-if="prepTime"><ResourceString for="PrepTime" />: {{ prepTime }} <ResourceString for="Min" /></span>
-          <span v-if="cookTime"><ResourceString for="CookTime" />: {{ cookTime }} <ResourceString for="Min" /></span>
-          <span v-if="servings"><ResourceString for="Serves" />: {{ servings }}</span>
+        <div class="mt-2 flex gap-4 text-sm">
+          <span v-if="prepTime" class="rounded-full bg-bone px-3 py-1 text-onyx">
+            <ResourceString for="PrepTime" />: {{ prepTime }} <ResourceString for="Min" />
+          </span>
+          <span v-if="cookTime" class="rounded-full bg-bone px-3 py-1 text-onyx">
+            <ResourceString for="CookTime" />: {{ cookTime }} <ResourceString for="Min" />
+          </span>
+          <span v-if="servings" class="rounded-full bg-bone px-3 py-1 text-onyx">
+            <ResourceString for="Serves" />: {{ servings }}
+          </span>
         </div>
       </div>
 
-      <div class="rounded-3xl bg-bone text-onyx">
+      <div class="w-full rounded-3xl bg-surface-500 p-4 text-bone">
         <h4 class="mb-2 font-bold">
           <ResourceString for="Ingredients" class="mr-2" /> ({{ ingredientList.filter((i) => i.name.trim()).length }})
         </h4>
@@ -304,19 +310,21 @@
         </ul>
       </div>
 
-      <div class="rounded-3xl bg-bone text-onyx">
+      <div class="w-full rounded-3xl bg-surface-500 p-4 text-bone">
         <h4 class="mb-2 font-bold">
           <ResourceString for="Instructions" class="mr-2" />
           <span class="mr-2">({{ instructionList.filter((i) => i.text.trim()).length }}</span>
           <ResourceString :for="instructionList.length === 1 ? 'Step' : 'Steps'" />)
         </h4>
 
-        <ol class="list-inside list-decimal">
-          <li v-for="(inst, i) in instructionList.filter((i) => i.text.trim())" :key="i">{{ inst.text }}</li>
+        <ol class="list-outside list-decimal pl-4">
+          <li v-for="(inst, i) in instructionList.filter((i) => i.text.trim())" class="whitespace-pre" :key="i">
+            {{ inst.text }}
+          </li>
         </ol>
       </div>
 
-      <p v-if="submitError" class="text-red-500">{{ submitError }}</p>
+      <p v-if="submitError" class="text-red">{{ submitError }}</p>
 
       <div class="flex w-full justify-between">
         <button type="button" class="cursor-pointer rounded-3xl border border-surface-500 px-6 py-2 text-xl" @click="step--">

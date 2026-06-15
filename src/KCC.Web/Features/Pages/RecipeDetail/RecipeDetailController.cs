@@ -65,9 +65,7 @@ public class RecipeDetailController(
             AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
             Variants = await RetrieveVariants(pageId, language),
             StartedByName = await authorNameResolver.Resolve(recipe.AuthorMemberGuid),
-            ResourceStrings = resourceStrings.GetManyOrDefault(
-                "RecipeDetail.StartedBy",
-                "RecipeDetail.By"),
+            ResourceStrings = GetStrings(),
         };
 
         await recipe.MapMetadata(viewModel);
@@ -103,4 +101,11 @@ public class RecipeDetailController(
                 resolved => resolved.Identifier)
         });
     }
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
+        "RecipeDetail.AddVariant",
+        "RecipeDetail.StartedBy",
+        "RecipeDetail.Variants",
+        "RecipeDetail.By"
+    );
 }
