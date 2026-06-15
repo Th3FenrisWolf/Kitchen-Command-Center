@@ -1,9 +1,9 @@
-using System.Text.Json;
 using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
 using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Extensions;
+using KCC.Web.Features.Helpers;
 using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
@@ -71,8 +71,8 @@ public class RecipeVariantController(
             CookTime = variantPage.CookTime,
             Servings = variantPage.ServingNumber,
             Tags = resolvedTags,
-            Ingredients = DeserializeJsonCollection<IngredientViewModel>(variantPage.Ingredients),
-            Instructions = DeserializeJsonCollection<InstructionViewModel>(variantPage.Instructions),
+            Ingredients = JsonSerializer.DeserializeCollection<IngredientViewModel>(variantPage.Ingredients),
+            Instructions = JsonSerializer.DeserializeCollection<InstructionViewModel>(variantPage.Instructions),
             VariantSlug = variantPage.GetUrl().RelativePath,
             RecipeName = recipePage?.Name,
             RecipeSlug = recipePage?.GetUrl().RelativePath,
@@ -87,16 +87,6 @@ public class RecipeVariantController(
 
         await variantPage.MapMetadata(viewModel);
         return View("~/Features/Pages/RecipeVariantDetail/Index.cshtml", viewModel);
-    }
-
-    private static IEnumerable<T> DeserializeJsonCollection<T>(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return [];
-        }
-
-        return JsonSerializer.Deserialize<IEnumerable<T>>(json, JsonNaming.CamelCase) ?? [];
     }
 
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(

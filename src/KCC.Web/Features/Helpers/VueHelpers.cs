@@ -2,6 +2,8 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Html;
 
+using Serializer = System.Text.Json.JsonSerializer;
+
 namespace KCC.Web.Features.Helpers;
 
 public static class Vue
@@ -23,7 +25,7 @@ public static class Vue
     /// <returns>HTML-safe JSON string for use in Vue component props.</returns>
     public static IHtmlContent Prop(object value)
     {
-        var json = JsonSerializer.Serialize(value, SerializationOptions);
+        var json = Serializer.Serialize(value, SerializationOptions);
 
         // HTML-encode only the characters that break HTML attribute parsing
         // while preserving Unicode characters (like · and —) as-is.
