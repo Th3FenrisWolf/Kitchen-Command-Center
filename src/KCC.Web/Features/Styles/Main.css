@@ -8,6 +8,10 @@
 /* Sections */
 @import './Sections/MultipleColumnSection.css';
 
+:root {
+  accent-color: var(--color-blue);
+}
+
 html {
   background-color: var(--color-bone);
 }

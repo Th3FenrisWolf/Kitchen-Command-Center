@@ -141,13 +141,13 @@
     </button>
 
     <label
-      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl bg-bone-dark px-2 focus-within:ring-2 focus-within:ring-surface-500/40"
+      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl bg-bone-dark px-2 outline-focus focus-within:outline-blue"
     >
       <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
       <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
       <input
         :style="{ width: inputWidth }"
-        class="shrink-0 bg-transparent p-0 text-center text-lg font-semibold tabular-nums outline-none"
+        class="shrink-0 bg-transparent p-0 text-center text-lg font-semibold tabular-nums focus-visible:outline-transparent"
         type="number"
         :min="min"
         :max="max"
