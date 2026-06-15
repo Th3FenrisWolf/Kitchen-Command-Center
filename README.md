@@ -241,6 +241,18 @@ yarn lint
 yarn build:all
 ```
 
+### Combined Test Report
+
+Run every test suite (3 .NET/TUnit + 2 vitest) and produce one self-contained,
+tabbed HTML report at `TestResults/combined-report.html` (auto-opened):
+
+```bash
+node scripts/test-report/run.mjs
+```
+
+The command exits non-zero if any suite has failures or fails to run, so it is
+CI-friendly. The individual per-suite reports are still produced alongside it.
+
 ### Vue SSR
 
 The application uses Vue 3 server-side rendering. The SSR service:
