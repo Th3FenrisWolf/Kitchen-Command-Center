@@ -68,7 +68,7 @@ public class RecipeDetailController(
             AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
             Variants = await RetrieveVariants(pageId, language),
             StartedByName = await authorNameResolver.Resolve(recipe.AuthorMemberGuid),
-            Breadcrumbs = await breadcrumbService.BuildBreadcrumbsAsync(pageId),
+            Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId)).Select(b => new RecipeBreadcrumb(b.LinkText, b.Url)),
             ResourceStrings = GetStrings(),
         };
 

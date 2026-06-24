@@ -1,4 +1,3 @@
-using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Pages.Shared;
 
 namespace KCC.Web.Features.Pages.RecipeDetail;
@@ -13,9 +12,11 @@ public class RecipeDetailViewModel : BasePageViewModel
     public Guid RecipeGuid { get; set; }
     public string AddVariantUrl { get; set; }
     public string StartedByName { get; set; }
-    public IEnumerable<BreadcrumbLink> Breadcrumbs { get; set; } = [];
+    public IEnumerable<RecipeBreadcrumb> Breadcrumbs { get; set; } = [];
     public IEnumerable<VariantSummaryViewModel> Variants { get; set; } = [];
 }
+
+public record RecipeBreadcrumb(string LinkText, string Url);
 
 public class VariantSummaryViewModel
 {
