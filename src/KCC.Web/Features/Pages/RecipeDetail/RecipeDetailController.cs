@@ -112,6 +112,24 @@ public class RecipeDetailController(
         "RecipeDetail.AddVariant",
         "RecipeDetail.StartedBy",
         "RecipeDetail.Variants",
-        "RecipeDetail.By"
+        "RecipeDetail.By",
+        "RecipeDetail.ComingSoon",
+        "RecipeDetail.AvgRating",
+        "RecipeDetail.Fastest",
+        "RecipeDetail.CookedIt",
+        "RecipeDetail.TopVariant",
+        "RecipeDetail.RankingComingSoon",
+        "RecipeDetail.AllVariants",
+        "RecipeDetail.Sort",
+        "RecipeDetail.SortNewest",
+        "RecipeDetail.SortFastest",
+        "RecipeDetail.SortTopRated",
+        "RecipeDetail.SearchVariants",
+        "RecipeDetail.Grid",
+        "RecipeDetail.List",
+        "RecipeDetail.Total",
+        "RecipeDetail.NoVariantsMatch",
+        "RecipeDetail.TryDifferentFilter",
+        "RecipeDetail.ClearFilters"
     );
 }
