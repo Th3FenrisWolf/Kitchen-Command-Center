@@ -2,6 +2,7 @@ using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
 using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeDetail;
@@ -24,7 +25,8 @@ public class RecipeDetailController(
     ITaxonomyRetriever taxonomyRetriever,
     IPreferredLanguageRetriever preferredLanguageRetriever,
     IAuthorNameResolver authorNameResolver,
-    IResourceStringInfoProvider resourceStrings
+    IResourceStringInfoProvider resourceStrings,
+    BreadcrumbService breadcrumbService
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -60,11 +62,13 @@ public class RecipeDetailController(
             RecipeName = recipe.Name,
             RecipeDescription = recipe.Description,
             RecipeImagePath = recipe.Image?.FirstOrDefault()?.Asset?.Url,
+            RecipeIcon = recipe.Icon,
             RecipeCategory = resolvedCategory,
             RecipeGuid = recipe.SystemFields.ContentItemGUID,
             AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
             Variants = await RetrieveVariants(pageId, language),
             StartedByName = await authorNameResolver.Resolve(recipe.AuthorMemberGuid),
+            Breadcrumbs = await breadcrumbService.BuildBreadcrumbsAsync(pageId),
             ResourceStrings = GetStrings(),
         };
 
@@ -96,9 +100,11 @@ public class RecipeDetailController(
             Image = variant.Images?.FirstOrDefault()?.Asset?.Url,
             Icon = variant.Icon,
             AuthorName = authorNames.GetValueOrDefault(variant.AuthorMemberGuid),
-            Tags = resolvedTags?.IntersectBy(
-                variant.Tags?.Select(tag => tag.Identifier) ?? [],
-                resolved => resolved.Identifier)
+            TotalTime = variant.PrepTime + variant.CookTime,
+            PublishedDate = variant.MetadataPublishDate,
+            Tags = resolvedTags?
+                .IntersectBy(variant.Tags?.Select(tag => tag.Identifier) ?? [], resolved => resolved.Identifier)
+                .Select(tag => tag.Title) ?? [],
         });
     }
 
