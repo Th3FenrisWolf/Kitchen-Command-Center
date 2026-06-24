@@ -63,5 +63,5 @@ export function accentForName(name: string): Accent {
   for (let i = 0; i < name.length; i++) {
     hash = (hash * 31 + name.charCodeAt(i)) >>> 0
   }
-  return ACCENTS[hash % ACCENTS.length]
+  return ACCENTS[hash % ACCENTS.length]!
 }
