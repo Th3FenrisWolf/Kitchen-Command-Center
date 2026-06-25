@@ -1,4 +1,3 @@
-using System.Text.Json;
 using KCC.Web.Features.Pages.Shared;
 
 namespace KCC.Web.Features.Pages.RecipeVariantDetail;
@@ -7,6 +6,7 @@ public class RecipeVariantViewModel : BasePageViewModel
 {
     public string VariantName { get; set; }
     public string VariantDescription { get; set; }
+    public string Icon { get; set; }
     public IEnumerable<ImageItem> Images { get; set; } = [];
     public int? PrepTime { get; set; }
     public int? CookTime { get; set; }
@@ -18,8 +18,11 @@ public class RecipeVariantViewModel : BasePageViewModel
     public string RecipeName { get; set; }
     public string RecipeSlug { get; set; }
     public string CreatedByName { get; set; }
+    public IEnumerable<VariantBreadcrumb> Breadcrumbs { get; set; } = [];
     public IEnumerable<SiblingVariantViewModel> SiblingVariants { get; set; } = [];
 }
+
+public record VariantBreadcrumb(string LinkText, string Url);
 
 public class IngredientViewModel
 {
@@ -39,4 +42,5 @@ public class SiblingVariantViewModel
 {
     public string Name { get; set; }
     public string Slug { get; set; }
+    public string Icon { get; set; }
 }
