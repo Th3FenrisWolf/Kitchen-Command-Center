@@ -3,6 +3,8 @@ import type { RecipeVariantSummary } from '~/Types/Recipe'
 import {
   accentForName,
   ACCENTS,
+  averageMinutes,
+  contributorCount,
   featuredVariant,
   filterVariants,
   sortVariants,
@@ -79,6 +81,36 @@ describe('variantFilters', () => {
     it('is deterministic and within the accent set', () => {
       expect(accentForName('Espresso')).toBe(accentForName('Espresso'))
       expect(ACCENTS).toContain(accentForName('Espresso'))
+    })
+  })
+
+  describe('averageMinutes', () => {
+    it('returns null for an empty list', () => {
+      expect(averageMinutes([])).toBeNull()
+    })
+
+    it('rounds the mean total time', () => {
+      expect(averageMinutes([v({ totalTime: 10 }), v({ totalTime: 21 })])).toBe(16)
+    })
+
+    it('averages a single variant to itself', () => {
+      expect(averageMinutes([v({ totalTime: 42 })])).toBe(42)
+    })
+  })
+
+  describe('contributorCount', () => {
+    it('counts distinct author names', () => {
+      const list = [v({ authorName: 'Ana' }), v({ authorName: 'Bo' }), v({ authorName: 'Ana' })]
+      expect(contributorCount(list)).toBe(2)
+    })
+
+    it('ignores blank and whitespace-only names', () => {
+      const list = [v({ authorName: '' }), v({ authorName: '  ' }), v({ authorName: 'Ana' })]
+      expect(contributorCount(list)).toBe(1)
+    })
+
+    it('returns 0 for an empty list', () => {
+      expect(contributorCount([])).toBe(0)
     })
   })
 })
