@@ -97,7 +97,6 @@ public class RecipeVariantController(
 
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
         "VariantDetail.Ingredients",
-        "VariantDetail.CreatedBy",
         "VariantDetail.VariantOf",
         "VariantDetail.By",
         "VariantDetail.CookMode",
