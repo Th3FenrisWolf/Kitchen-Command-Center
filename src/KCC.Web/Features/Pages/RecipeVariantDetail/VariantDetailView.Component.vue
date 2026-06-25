@@ -1,17 +1,19 @@
 <script setup lang="ts">
+  import { computed } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
   import type { ImageItem } from '~/Types/ContentTypes'
-  import { useResourceStrings } from '~/Components/ResourceStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import type { StatTileSpec } from '~/Components/Detail/types'
   import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
+  import Badge from '~/Components/Badge/Badge.vue'
   import VariantHero from './VariantHero.vue'
-  import VariantStatTiles from './VariantStatTiles.vue'
+  import StatTiles from '~/Components/Detail/StatTiles.vue'
   import VariantIngredients from './VariantIngredients.vue'
   import VariantNutrition from './VariantNutrition.vue'
   import VariantInstructions from './VariantInstructions.vue'
   import VariantCookNotes from './VariantCookNotes.vue'
   import VariantReviews from './VariantReviews.vue'
   import VariantSiblings from './VariantSiblings.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
 
   const props = defineProps<{
     variantName: string
@@ -32,35 +34,46 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  useResourceStrings(props.resourceStrings, 'VariantDetail')
+  const t = useResourceStrings(props.resourceStrings, 'VariantDetail')
 
-  // Deterministic accent palette for tag badges (matches the design's varied chips).
-  const tagAccents = ['peach', 'yellow', 'maroon', 'sky', 'green', 'lavender'] as const
-  const tagColor = (index: number) => tagAccents[index % tagAccents.length]
+  const statTiles = computed<StatTileSpec[]>(() => {
+    const tiles: StatTileSpec[] = []
+    if (props.prepTime) tiles.push({ icon: 'fa-solid fa-clock', value: props.prepTime, unit: 'min', label: t('Prep') })
+    if (props.cookTime) tiles.push({ icon: 'fa-solid fa-fire-burner', value: props.cookTime, unit: 'min', label: t('Cook') })
+    if (props.servings) tiles.push({ icon: 'fa-solid fa-utensils', value: props.servings, label: t('Count') })
+    tiles.push({ dotColor: 'green', comingSoon: true, value: t('ComingSoon'), label: t('Difficulty') })
+    return tiles
+  })
 </script>
 
 <template>
-  <div class="pt-5">
+  <div class="flex items-center justify-between gap-4 pt-5">
     <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
+    <div class="hidden items-center gap-2 lg:flex">
+      <button
+        type="button"
+        disabled
+        :title="t('ComingSoon')"
+        class="flex-none cursor-not-allowed rounded-2xl bg-surface-500 px-4 py-2.5 text-bone opacity-60"
+      >
+        <i class="fa-solid fa-play text-sm" aria-hidden="true"></i> <ResourceString for="CookMode" />
+      </button>
+      <Badge color="muted"><ResourceString for="ComingSoon" /></Badge>
+    </div>
   </div>
 
   <VariantHero
     :variant-name="variantName"
     :recipe-name="recipeName"
     :recipe-slug="recipeSlug"
+    :variant-description="variantDescription"
+    :tags="tags"
     :images="images"
     :icon="icon"
     :created-by-name="createdByName"
   />
 
-  <VariantStatTiles :prep-time="prepTime" :cook-time="cookTime" :servings="servings" />
-
-  <section class="mt-6">
-    <p class="max-w-[70ch] text-xl leading-normal">{{ variantDescription }}</p>
-    <div v-if="tags.length" class="mt-4 flex flex-wrap gap-2">
-      <Badge v-for="(tag, i) in tags" :key="tag" :color="tagColor(i)">{{ tag }}</Badge>
-    </div>
-  </section>
+  <StatTiles :tiles="statTiles" />
 
   <section class="mt-8 grid items-start gap-6 lg:grid-cols-[340px_1fr]">
     <div class="flex flex-col gap-4 lg:sticky lg:top-4">
