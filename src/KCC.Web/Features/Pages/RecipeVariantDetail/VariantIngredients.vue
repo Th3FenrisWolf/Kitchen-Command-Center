@@ -1,14 +1,21 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import type { Ingredient } from '~/Types/Recipe'
-  import { ResourceString } from '~/Components/ResourceStrings'
+  import { ResourceString, useStrings } from '~/Components/ResourceStrings'
   import { formatIngredientAmount } from './variantScaling'
 
   const props = defineProps<{ ingredients: Ingredient[]; baseServings?: number }>()
 
-  const hasScaler = (props.baseServings ?? 0) > 0
-  const current = ref(hasScaler ? (props.baseServings as number) : 1)
+  const t = useStrings()
+  const hasScaler = computed(() => (props.baseServings ?? 0) > 0)
+  const current = ref(props.baseServings && props.baseServings > 0 ? props.baseServings : 1)
   const checked = ref<Record<number, boolean>>({})
+
+  const amounts = computed(() =>
+    props.ingredients.map((ingredient) =>
+      formatIngredientAmount(ingredient, props.baseServings ?? 0, current.value),
+    ),
+  )
 
   const dec = () => {
     current.value = Math.max(1, current.value - 1)
@@ -19,8 +26,6 @@
   const toggle = (i: number) => {
     checked.value = { ...checked.value, [i]: !checked.value[i] }
   }
-  const amount = (ingredient: Ingredient) =>
-    formatIngredientAmount(ingredient, props.baseServings ?? 0, current.value)
 </script>
 
 <template>
@@ -31,7 +36,7 @@
         <span class="text-sm font-bold text-onyx-light"><ResourceString for="Makes" /></span>
         <button
           type="button"
-          aria-label="Fewer"
+          :aria-label="t('Fewer')"
           class="grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-sm text-bone transition-colors hover:bg-surface-400"
           @click="dec"
         >
@@ -40,7 +45,7 @@
         <span class="min-w-[58px] text-center font-casual text-xl leading-none">{{ current }}</span>
         <button
           type="button"
-          aria-label="More"
+          :aria-label="t('More')"
           class="grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-sm text-bone transition-colors hover:bg-surface-400"
           @click="inc"
         >
@@ -67,7 +72,7 @@
             class="text-base leading-snug transition-all"
             :class="checked[i] ? 'text-onyx-light line-through opacity-60' : 'text-onyx'"
           >
-            <b v-if="amount(ingredient)">{{ amount(ingredient) }} </b>{{ ingredient.name }}<span
+            <b v-if="amounts[i]">{{ amounts[i] }} </b>{{ ingredient.name }}<span
               v-if="ingredient.isEyeballed"
               class="italic text-onyx-light"
             >

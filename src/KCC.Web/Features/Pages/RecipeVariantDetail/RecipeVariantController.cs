@@ -107,6 +107,8 @@ public class RecipeVariantController(
         "VariantDetail.Count",
         "VariantDetail.Difficulty",
         "VariantDetail.Makes",
+        "VariantDetail.Fewer",
+        "VariantDetail.More",
         "VariantDetail.ToTaste",
         "VariantDetail.Nutrition",
         "VariantDetail.PerServing",
