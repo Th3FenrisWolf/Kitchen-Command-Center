@@ -1,13 +1,8 @@
 <script setup lang="ts">
+  import type { SiblingVariant } from '~/Types/Recipe'
   import { accentForName } from '~/Pages/RecipeDetail/variantFilters'
   import { ResourceString } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
-
-  interface SiblingVariant {
-    name: string
-    slug: string
-    icon?: string
-  }
 
   defineProps<{ variants: SiblingVariant[] }>()
 </script>

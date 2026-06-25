@@ -61,3 +61,9 @@ export interface RecipeDetail {
   slug: string
   variants: RecipeVariantSummary[]
 }
+
+export interface SiblingVariant {
+  name: string
+  slug: string
+  icon?: string
+}
