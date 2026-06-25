@@ -2,6 +2,7 @@ using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
 using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Helpers;
 using KCC.Web.Features.Members;
@@ -27,7 +28,8 @@ public class RecipeVariantController(
     ITaxonomyRetriever taxonomyRetriever,
     IPreferredLanguageRetriever preferredLanguageRetriever,
     IAuthorNameResolver authorNameResolver,
-    IResourceStringInfoProvider resourceStrings
+    IResourceStringInfoProvider resourceStrings,
+    BreadcrumbService breadcrumbService
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -66,6 +68,7 @@ public class RecipeVariantController(
         {
             VariantName = variantPage.Name,
             VariantDescription = variantPage.Description,
+            Icon = variantPage.Icon,
             Images = variantPage.Images,
             PrepTime = variantPage.PrepTime,
             CookTime = variantPage.CookTime,
@@ -76,10 +79,13 @@ public class RecipeVariantController(
             VariantSlug = variantPage.GetUrl().RelativePath,
             RecipeName = recipePage?.Name,
             RecipeSlug = recipePage?.GetUrl().RelativePath,
+            Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId))
+                .Select(b => new VariantBreadcrumb(b.LinkText, b.Url)),
             SiblingVariants = siblings.Select(s => new SiblingVariantViewModel
             {
                 Name = s.Name,
                 Slug = s.GetUrl().RelativePath,
+                Icon = s.Icon,
             }),
             CreatedByName = await authorNameResolver.Resolve(variantPage.AuthorMemberGuid),
             ResourceStrings = GetStrings(),
@@ -90,7 +96,26 @@ public class RecipeVariantController(
     }
 
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
+        "VariantDetail.Ingredients",
         "VariantDetail.CreatedBy",
-        "VariantDetail.Ingredients"
+        "VariantDetail.VariantOf",
+        "VariantDetail.By",
+        "VariantDetail.CookMode",
+        "VariantDetail.ComingSoon",
+        "VariantDetail.Prep",
+        "VariantDetail.Cook",
+        "VariantDetail.Count",
+        "VariantDetail.Difficulty",
+        "VariantDetail.Makes",
+        "VariantDetail.ToTaste",
+        "VariantDetail.Nutrition",
+        "VariantDetail.PerServing",
+        "VariantDetail.NutritionComingSoon",
+        "VariantDetail.Instructions",
+        "VariantDetail.CookNotes",
+        "VariantDetail.CookNotesComingSoon",
+        "VariantDetail.RatingsReviews",
+        "VariantDetail.ReviewsComingSoon",
+        "VariantDetail.OtherVariants"
     );
 }
