@@ -11,7 +11,7 @@
     <div
       class="grid place-items-center gap-3 rounded-3xl border-2 border-dashed border-bone-dark px-4 py-16 text-center text-onyx-light"
     >
-      <i class="fa-regular fa-star text-4xl opacity-50"></i>
+      <i class="fa-regular fa-star text-4xl opacity-50" aria-hidden="true"></i>
       <Badge color="muted"><ResourceString for="ComingSoon" /></Badge>
       <p class="text-base"><ResourceString for="ReviewsComingSoon" /></p>
     </div>
