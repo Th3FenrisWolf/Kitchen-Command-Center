@@ -11,7 +11,7 @@
     type ViewMode,
   } from '~/Pages/RecipeDetail/variantFilters'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import RecipeBreadcrumb from './RecipeBreadcrumb.vue'
+  import RecipeBreadcrumb from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import RecipeHero from './RecipeHero.vue'
   import FeaturedVariant from './FeaturedVariant.vue'
   import VariantToolbar from './VariantToolbar.vue'
