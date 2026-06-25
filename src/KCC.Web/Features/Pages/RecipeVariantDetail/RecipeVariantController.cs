@@ -77,8 +77,8 @@ public class RecipeVariantController(
             Ingredients = JsonSerializer.DeserializeCollection<IngredientViewModel>(variantPage.Ingredients),
             Instructions = JsonSerializer.DeserializeCollection<InstructionViewModel>(variantPage.Instructions),
             VariantSlug = variantPage.GetUrl().RelativePath,
-            RecipeName = recipePage?.Name,
-            RecipeSlug = recipePage?.GetUrl().RelativePath,
+            RecipeName = recipePage.Name,
+            RecipeSlug = recipePage.GetUrl().RelativePath,
             Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId))
                 .Select(b => new VariantBreadcrumb(b.LinkText, b.Url)),
             SiblingVariants = siblings.Select(s => new SiblingVariantViewModel
