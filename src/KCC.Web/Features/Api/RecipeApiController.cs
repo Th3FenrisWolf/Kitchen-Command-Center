@@ -162,10 +162,10 @@ public class RecipeApiController(
     /// <returns>A dictionary of field name/value pairs for use in <see cref="ContentItemData"/>.</returns>
     public static Dictionary<string, object> BuildRecipeData(CreateRecipeRequest request, string icon, Guid authorMemberGuid) => new()
     {
-        [nameof(KCC.Recipe.Name)] = request.RecipeName,
-        [nameof(KCC.Recipe.Description)] = request.RecipeDescription ?? string.Empty,
-        [nameof(KCC.Recipe.Icon)] = icon,
-        [nameof(KCC.Recipe.AuthorMemberGuid)] = authorMemberGuid,
+        [nameof(Recipe.Name)] = request.RecipeName,
+        [nameof(Recipe.Description)] = request.RecipeDescription ?? string.Empty,
+        [nameof(Recipe.Icon)] = icon,
+        [nameof(Recipe.AuthorMemberGuid)] = authorMemberGuid,
     };
 
     /// <summary>

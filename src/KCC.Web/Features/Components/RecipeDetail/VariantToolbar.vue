@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import type { SortKey, ViewMode } from '~/Pages/RecipeDetail/variantFilters'
-  import { ResourceString, useStrings } from '~/Components/ResourceStrings'
+  import type { SortKey, ViewMode } from '~/Components/RecipeDetail/variantFilters'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
 
   defineProps<{ tags: string[] }>()
 
@@ -9,7 +9,7 @@
   const tag = defineModel<string>('tag', { required: true })
   const view = defineModel<ViewMode>('view', { required: true })
 
-  const t = useStrings()
+  const rs = useResourceStrings()
 
   const sorts: { key: SortKey | 'rating'; labelKey: string; disabled: boolean }[] = [
     { key: 'newest', labelKey: 'SortNewest', disabled: false },
@@ -23,25 +23,25 @@
 
 <template>
   <div class="sticky top-2 z-10 mt-4 flex flex-wrap items-center gap-3 rounded-2xl bg-bone p-3 shadow-light">
-    <div class="relative min-w-[200px] flex-1">
+    <div class="relative min-w-50 flex-1">
       <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-4 -translate-y-1/2 text-sm text-onyx-light"></i>
       <input
         v-model="search"
         type="search"
-        :placeholder="t('SearchVariants')"
+        :placeholder="rs('SearchVariants')"
         class="w-full rounded-2xl border-none bg-bone-dark py-2.5 pr-4 pl-10 text-base text-onyx outline-none"
       />
     </div>
 
     <div class="flex items-center gap-2">
       <span class="text-sm font-bold text-onyx-light"><ResourceString for="Sort" /></span>
-      <div class="flex rounded-2xl bg-bone-dark p-[3px]">
+      <div class="flex rounded-2xl bg-bone-dark p-0.75">
         <button
           v-for="option in sorts"
           :key="option.key"
           type="button"
           :disabled="option.disabled"
-          :title="option.disabled ? t('ComingSoon') : undefined"
+          :title="option.disabled ? rs('ComingSoon') : undefined"
           :class="[
             segBase,
             sort === option.key ? 'bg-surface-500 text-bone' : 'text-onyx-light',
@@ -54,10 +54,10 @@
       </div>
     </div>
 
-    <div class="flex rounded-2xl bg-bone-dark p-[3px]">
+    <div class="flex rounded-2xl bg-bone-dark p-0.75">
       <button
         type="button"
-        :title="t('Grid')"
+        :title="rs('Grid')"
         :class="[toggleBase, view === 'grid' ? 'bg-surface-500 text-bone' : 'text-onyx-light']"
         @click="view = 'grid'"
       >
@@ -65,7 +65,7 @@
       </button>
       <button
         type="button"
-        :title="t('List')"
+        :title="rs('List')"
         :class="[toggleBase, view === 'list' ? 'bg-surface-500 text-bone' : 'text-onyx-light']"
         @click="view = 'list'"
       >
@@ -83,7 +83,7 @@
       :class="tag === option ? 'border-onyx bg-onyx text-bone' : 'border-bone-dark text-onyx'"
       @click="tag = option"
     >
-      {{ option }}
+      {{ option || rs('All') }}
     </button>
   </div>
 </template>
