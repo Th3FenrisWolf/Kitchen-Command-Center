@@ -14,6 +14,7 @@
   import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
   import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
+  import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
 
@@ -42,6 +43,12 @@
     breadcrumbs?: Breadcrumb[]
     siblingVariants: SiblingVariant[]
     resourceStrings?: Record<string, string>
+    variantGuid: string
+    averageRating?: number
+    reviewCount?: number
+    cookedCount?: number
+    hasCooked?: boolean
+    isAuthenticated?: boolean
   }>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
@@ -126,10 +133,12 @@
   </h2>
   <ComingSoonSection text-key="CookNotesComingSoon" icon="fa-solid fa-lightbulb text-4xl opacity-50" />
 
-  <h2 class="mt-8 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-    <i class="fa-solid fa-star text-lg text-peach"></i> <ResourceString for="RatingsReviews" />
-  </h2>
-  <ComingSoonSection text-key="ReviewsComingSoon" icon="fa-solid fa-star text-4xl opacity-50" />
+  <VariantReviews
+    :variant-guid="variantGuid"
+    :average-rating="averageRating"
+    :review-count="reviewCount"
+    :is-authenticated="isAuthenticated"
+  />
   <VariantSiblings :variants="siblingVariants" />
 
   <CookMode
