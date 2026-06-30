@@ -11,6 +11,14 @@ public class VariantDetailViewModel : BasePageViewModel
     public int? PrepTime { get; set; }
     public int? CookTime { get; set; }
     public int? Servings { get; set; }
+    public string Difficulty { get; set; }
+    public int? Calories { get; set; }
+    public int? ProteinG { get; set; }
+    public int? CarbsG { get; set; }
+    public int? FatG { get; set; }
+    public int? FiberG { get; set; }
+    public int? SugarG { get; set; }
+    public int? SodiumMg { get; set; }
     public IEnumerable<string> Tags { get; set; } = [];
     public IEnumerable<IngredientViewModel> Ingredients { get; set; } = [];
     public IEnumerable<InstructionViewModel> Instructions { get; set; } = [];
