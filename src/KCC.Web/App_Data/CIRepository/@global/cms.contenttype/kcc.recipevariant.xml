@@ -90,6 +90,96 @@
           <controlname>Kentico.Administration.NumberInput</controlname>
         </settings>
       </field>
+      <field allowempty="true" column="Difficulty" columnprecision="0" columnsize="50" columntype="text" enabled="true" guid="6f1c0a2e-4d3b-4a1f-9c7e-2b8d5e7a1f30" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Difficulty</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+          <includeincontentgeneration>False</includeincontentgeneration>
+          <includeintranslation>False</includeintranslation>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.DropDownSelector</controlname>
+          <Options>
+<![CDATA[
+easy;Easy
+medium;Medium
+hard;Hard
+]]>
+          </Options>
+          <OptionsValueSeparator>;</OptionsValueSeparator>
+        </settings>
+      </field>
+      <field allowempty="true" column="Calories" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0001-4f00-8a01-000000000001" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Calories (per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="ProteinG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0002-4f00-8a01-000000000002" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Protein (g, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="CarbsG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0003-4f00-8a01-000000000003" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Carbs (g, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="FatG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0004-4f00-8a01-000000000004" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Fat (g, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="FiberG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0005-4f00-8a01-000000000005" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Fiber (g, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="SugarG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0006-4f00-8a01-000000000006" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Sugar (g, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
+      <field allowempty="true" column="SodiumMg" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0007-4f00-8a01-000000000007" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Sodium (mg, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
       <field allowempty="true" column="Tags" columnprecision="0" columntype="taxonomy" enabled="true" guid="a22f3a33-2a34-4176-a0cd-9179fa01aad5" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
