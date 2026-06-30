@@ -16,7 +16,7 @@ public partial class VariantReviewInfoProvider
     internal static IReadOnlyDictionary<Guid, RatingAggregate> AggregateByVariant(IEnumerable<(Guid VariantGuid, int Rating)> reviews) =>
         reviews.GroupBy(r => r.VariantGuid).ToDictionary(g => g.Key, g => Aggregate(g.Select(x => x.Rating).ToArray()));
 
-    internal static bool IsValidRating(int rating) => rating is >= 1 and <= 5;
+    public static bool IsValidRating(int rating) => rating is >= 1 and <= 5;
 
     internal static bool CanModify(Guid? authorMemberGuid, Guid memberGuid) =>
         authorMemberGuid is { } author && author == memberGuid;
@@ -80,6 +80,16 @@ public partial class VariantReviewInfoProvider
                 return Aggregate(ratings);
             },
             new CacheSettings(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, "avg-recipe", recipeGuid));
+    }
+
+    public IReadOnlyList<VariantReviewInfo> GetForVariant(Guid variantGuid, int page, int pageSize, out int totalCount)
+    {
+        var query = Get().WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid);
+        totalCount = query.Count;
+        return query
+            .OrderByDescending(nameof(VariantReviewInfo.ReviewCreated))
+            .Page(Math.Max(0, page), Math.Max(1, pageSize))
+            .ToList();
     }
 
     public VariantReviewInfo GetMemberReview(Guid variantGuid, Guid memberGuid) =>
