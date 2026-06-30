@@ -15,7 +15,10 @@ public static class MemberSession
     /// <summary>Logs the seeded member in via the login form and waits for the post-login redirect.</summary>
     public static async Task SignInAsync(IPage page)
     {
-        _ = await page.GotoAsync("/account/login");
+        // The dev page holds an open Vite HMR WebSocket, so the default `load` event never settles
+        // and GotoAsync would time out. The login form is server-rendered, so DOMContentLoaded
+        // already exposes the username/password fields we fill below.
+        _ = await page.GotoAsync("/account/login", new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
         // LoginView renders username/password through InputField (which spreads $attrs onto a
         // plain <input>), so the fields are reachable by their name attribute.

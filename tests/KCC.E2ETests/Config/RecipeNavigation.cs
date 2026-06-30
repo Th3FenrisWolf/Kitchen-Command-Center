@@ -8,7 +8,10 @@ public static class RecipeNavigation
     /// <summary>Opens the recipe listing and clicks into the first recipe; returns its URL.</summary>
     public static async Task<string> GoToFirstRecipeAsync(IPage page)
     {
-        _ = await page.GotoAsync("/recipes");
+        // The dev page holds an open Vite HMR WebSocket, so the default `load` event never settles
+        // and GotoAsync would time out. The listing is server-rendered, so DOMContentLoaded already
+        // exposes the recipe cards these helpers click into.
+        _ = await page.GotoAsync("/recipes", new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
         // Recipe cards render inside <main> as anchors to /recipes/<slug>. The listing also
         // surfaces a "Create Recipe" call-to-action pointing at /recipes/create-recipe, so we

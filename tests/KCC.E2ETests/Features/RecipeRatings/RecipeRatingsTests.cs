@@ -3,6 +3,10 @@ using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.RecipeRatings;
 
+// TUnit runs tests in parallel by default; concurrent navigations starve the single-threaded
+// Vite dev server and every nav times out. [NotInParallel] serializes them (matches the
+// AdminHomePageMiddlewareTests / CookModeTests precedent in this repo).
+[NotInParallel]
 public class RecipeRatingsTests : BasePageTests
 {
     [Test]

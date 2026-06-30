@@ -3,6 +3,10 @@ using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.VariantReviews;
 
+// TUnit runs tests in parallel by default; concurrent navigations starve the single-threaded
+// Vite dev server and every nav times out. [NotInParallel] serializes them (matches the
+// AdminHomePageMiddlewareTests / CookModeTests precedent in this repo).
+[NotInParallel]
 public class VariantReviewsTests : BasePageTests
 {
     [Test]
@@ -21,9 +25,11 @@ public class VariantReviewsTests : BasePageTests
     [Test]
     public async Task LoggedInMember_CanSubmitEditAndDeleteAReview()
     {
-        _ = await Assert.That(MemberSession.HasCredentials)
-            .IsTrue()
-            .Because("Set KCC_E2E_MEMBER_USERNAME/PASSWORD to a seeded confirmed member to run this flow.");
+        if (!MemberSession.HasCredentials)
+        {
+            Skip.Test("Set KCC_E2E_MEMBER_USERNAME/PASSWORD to a seeded confirmed member to run this flow.");
+            return;
+        }
 
         await MemberSession.SignInAsync(Page);
         _ = await GoToFirstVariant();
