@@ -1,16 +1,26 @@
 <script setup lang="ts">
+  import { computed } from 'vue'
   import AccentTile from './AccentTile.vue'
   import ComingSoonBadge from '~/Components/ComingSoon/ComingSoonBadge.vue'
+  import StarRating from '~/Components/StarRating/StarRating.vue'
   import { ResourceString } from '~/Components/ResourceStrings'
 
-  defineProps<{
-    title: string
-    seed: string
-    description: string
-    icon?: string
-    image?: string
-    authorName?: string
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      title: string
+      seed: string
+      description: string
+      icon?: string
+      image?: string
+      authorName?: string
+      averageRating?: number
+      reviewCount?: number
+      timesCooked?: number
+    }>(),
+    {},
+  )
+
+  const hasRating = computed(() => (props.reviewCount ?? 0) > 0)
 </script>
 
 <template>
@@ -27,12 +37,26 @@
       <div class="mt-2 flex flex-wrap items-center gap-4">
         <span class="inline-flex items-center gap-1">
           <i class="fa-solid fa-star text-peach"></i>
-          <ComingSoonBadge />
+          <template v-if="reviewCount === undefined && averageRating === undefined">
+            <ComingSoonBadge />
+          </template>
+          <template v-else-if="hasRating">
+            <StarRating :model-value="averageRating ?? 0" readonly />
+            <span class="font-bold">{{ (averageRating ?? 0).toFixed(1) }}</span>
+            <span class="text-bone-dark">({{ reviewCount }} <ResourceString for="Reviews" />)</span>
+          </template>
+          <template v-else>
+            <span class="text-bone-dark"><ResourceString for="NoRatingsYet" /></span>
+          </template>
         </span>
 
-        <span class="inline-flex items-center gap-1">
+        <span v-if="timesCooked === undefined" class="inline-flex items-center gap-1">
           <i class="fa-duotone fa-fire-burner text-maroon"></i>
           <ComingSoonBadge />
+        </span>
+        <span v-else-if="(timesCooked ?? 0) > 0" data-testid="times-cooked" class="inline-flex items-center gap-1">
+          <i class="fa-duotone fa-fire-burner text-maroon"></i>
+          <span>{{ timesCooked }} <ResourceString for="TimesCooked" /></span>
         </span>
 
         <span v-if="authorName" class="text-bone-dark"><ResourceString for="By" /> {{ authorName }}</span>
