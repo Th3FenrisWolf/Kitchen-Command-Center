@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassCodeGenerationSettings>
+    <Data>
+      <ObjectType>KCC.VariantCooked</ObjectType>
+      <UseGuidHashtable>False</UseGuidHashtable>
+      <UseIdHashtable>False</UseIdHashtable>
+      <UseNameHashtable>False</UseNameHashtable>
+    </Data>
+  </ClassCodeGenerationSettings>
+  <ClassDisplayName>Variant Cooked</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="VariantCookedID" columntype="integer" enabled="true" guid="330f6c04-8ffa-4613-a1a4-4f0e83303427" isPK="true" />
+      <field column="VariantGuid" columntype="guid" enabled="true" guid="97a4c4eb-2a4a-4cd1-9b08-001cb7f8b40f" />
+      <field column="RecipeGuid" columntype="guid" enabled="true" guid="6f8133c8-e3bf-49e9-b8d0-bf5395417e76" />
+      <field column="MemberGuid" columntype="guid" enabled="true" guid="3a7c36f1-9422-494c-8ade-677016056879" />
+      <field column="CookedCreated" columntype="datetime" enabled="true" guid="d175576a-da31-4f8a-9359-b64e5be21723" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>e5d51157-4e39-457b-8f4e-6f10367641f6</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KCC.VariantCooked</ClassName>
+  <ClassResourceID>
+    <CodeName>KCC.Contributions</CodeName>
+    <GUID>d24fdea8-f892-4d7c-a9af-34626b0b6913</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KCC_VariantCooked</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

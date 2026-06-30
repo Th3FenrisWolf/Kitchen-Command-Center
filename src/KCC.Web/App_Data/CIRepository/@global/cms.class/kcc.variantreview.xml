@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassCodeGenerationSettings>
+    <Data>
+      <ObjectType>KCC.VariantReview</ObjectType>
+      <UseGuidHashtable>False</UseGuidHashtable>
+      <UseIdHashtable>False</UseIdHashtable>
+      <UseNameHashtable>False</UseNameHashtable>
+    </Data>
+  </ClassCodeGenerationSettings>
+  <ClassDisplayName>Variant Review</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="VariantReviewID" columntype="integer" enabled="true" guid="d4b98215-37d1-4f29-ab68-3a4ec807709a" isPK="true" />
+      <field column="VariantGuid" columntype="guid" enabled="true" guid="051637c0-19bf-4733-a8ea-49837d7f50e7" />
+      <field column="RecipeGuid" columntype="guid" enabled="true" guid="f49560c7-37ac-4c4f-a8ad-928b1f54b9b3" />
+      <field column="MemberGuid" columntype="guid" enabled="true" guid="d20d8961-b31a-462f-b045-aee797f48743" />
+      <field column="Rating" columntype="integer" enabled="true" guid="285fb95b-98cf-4482-b0cc-10d4b1fe2715" />
+      <field allowempty="true" column="ReviewText" columntype="longtext" enabled="true" guid="b96f8e41-62b5-4378-bdee-cd4d7944210f" />
+      <field column="ReviewCreated" columntype="datetime" enabled="true" guid="b800b674-af5e-467d-8dc2-76d20226f324" />
+      <field column="ReviewModified" columntype="datetime" enabled="true" guid="411c9d78-cac2-4f7d-849a-bf374eb75112" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>d91471e7-9f66-4c87-b3f3-ca95531ed1e8</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KCC.VariantReview</ClassName>
+  <ClassResourceID>
+    <CodeName>KCC.Contributions</CodeName>
+    <GUID>d24fdea8-f892-4d7c-a9af-34626b0b6913</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KCC_VariantReview</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>

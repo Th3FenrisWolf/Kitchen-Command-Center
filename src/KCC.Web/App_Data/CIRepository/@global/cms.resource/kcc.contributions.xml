@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.resource>
+  <ResourceDisplayName>Community Contributions</ResourceDisplayName>
+  <ResourceGUID>d24fdea8-f892-4d7c-a9af-34626b0b6913</ResourceGUID>
+  <ResourceIsInDevelopment>False</ResourceIsInDevelopment>
+  <ResourceName>KCC.Contributions</ResourceName>
+</cms.resource>

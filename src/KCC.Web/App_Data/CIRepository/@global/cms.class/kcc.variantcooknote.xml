@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.class>
+  <ClassCodeGenerationSettings>
+    <Data>
+      <ObjectType>KCC.VariantCookNote</ObjectType>
+      <UseGuidHashtable>False</UseGuidHashtable>
+      <UseIdHashtable>False</UseIdHashtable>
+      <UseNameHashtable>False</UseNameHashtable>
+    </Data>
+  </ClassCodeGenerationSettings>
+  <ClassDisplayName>Variant Cook Note</ClassDisplayName>
+  <ClassFormDefinition>
+    <form>
+      <field column="VariantCookNoteID" columntype="integer" enabled="true" guid="c2c4d259-4ff8-4815-be62-ffa06b19e604" isPK="true" />
+      <field column="VariantGuid" columntype="guid" enabled="true" guid="a8652085-2bf9-405e-94f0-f712caa99d9d" />
+      <field column="RecipeGuid" columntype="guid" enabled="true" guid="bc745255-9a18-4538-aeff-6b4bc4da61ef" />
+      <field column="MemberGuid" columntype="guid" enabled="true" guid="de77285d-b773-464e-96e9-e22a6508ad42" />
+      <field column="NoteText" columntype="longtext" enabled="true" guid="4ec5205a-7532-431a-9ea6-3633f3c58f23" />
+      <field column="NoteCreated" columntype="datetime" enabled="true" guid="d1bcd683-594a-45e8-b79d-2eca05e4cb82" />
+      <field column="NoteModified" columntype="datetime" enabled="true" guid="e3523bc5-9fdb-4662-a884-66b4bfa4b2dd" />
+    </form>
+  </ClassFormDefinition>
+  <ClassGUID>ea36f18c-0681-4703-b625-8c1d0f011761</ClassGUID>
+  <ClassHasUnmanagedDbSchema>False</ClassHasUnmanagedDbSchema>
+  <ClassName>KCC.VariantCookNote</ClassName>
+  <ClassResourceID>
+    <CodeName>KCC.Contributions</CodeName>
+    <GUID>d24fdea8-f892-4d7c-a9af-34626b0b6913</GUID>
+    <ObjectType>cms.resource</ObjectType>
+  </ClassResourceID>
+  <ClassTableName>KCC_VariantCookNote</ClassTableName>
+  <ClassType>Other</ClassType>
+</cms.class>
