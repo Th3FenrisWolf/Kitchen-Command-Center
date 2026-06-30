@@ -20,5 +20,6 @@
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />
         <ProjectReference Include="..\..\src\KCC.Admin\KCC.Admin.csproj" />
         <ProjectReference Include="..\..\src\KCC.ResourceStrings\KCC.ResourceStrings.csproj" />
+        <ProjectReference Include="..\..\src\KCC.Contributions\KCC.Contributions.csproj" />
     </ItemGroup>
 </Project>

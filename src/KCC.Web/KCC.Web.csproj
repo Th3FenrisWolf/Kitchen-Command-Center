@@ -48,6 +48,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\KCC.Contributions\KCC.Contributions.csproj" />
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
         <ProjectReference Include="..\KCC.ResourceStrings\KCC.ResourceStrings.csproj" />
     </ItemGroup>
