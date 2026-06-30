@@ -27,6 +27,16 @@ export interface Breadcrumb {
   url: string
 }
 
+export interface Nutrition {
+  calories?: number | null
+  proteinG?: number | null
+  carbsG?: number | null
+  fatG?: number | null
+  fiberG?: number | null
+  sugarG?: number | null
+  sodiumMg?: number | null
+}
+
 export interface RecipeVariant {
   name: string
   description: string
@@ -34,6 +44,14 @@ export interface RecipeVariant {
   prepTime?: number
   cookTime?: number
   servings?: number
+  difficulty?: string
+  calories?: number | null
+  proteinG?: number | null
+  carbsG?: number | null
+  fatG?: number | null
+  fiberG?: number | null
+  sugarG?: number | null
+  sodiumMg?: number | null
   tags: string[]
   ingredients: Ingredient[]
   instructions: Instruction[]
