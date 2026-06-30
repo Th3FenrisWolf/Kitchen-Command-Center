@@ -152,6 +152,7 @@ public class RecipeDetailController(
         "RecipeDetail.TimesCooked",
         "RecipeDetail.NoRatingsYet",
         "RecipeDetail.Rating",
-        "RecipeDetail.Reviews"
+        "RecipeDetail.Reviews",
+        "RecipeDetail.All"
     );
 }

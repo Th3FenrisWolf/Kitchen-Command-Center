@@ -180,6 +180,9 @@ public class VariantDetailController(
         "VariantDetail.DeleteNote",
         "VariantDetail.ICookedThis",
         "VariantDetail.CookedCount",
-        "VariantDetail.LoadMore"
+        "VariantDetail.LoadMore",
+        "VariantDetail.Reviews",
+        "VariantDetail.NoRatingsYet",
+        "VariantDetail.TimesCooked"
     );
 }
