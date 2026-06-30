@@ -88,12 +88,14 @@
         v-model="myText"
         :placeholder="t('WriteReview')"
         rows="3"
+        data-testid="review-input"
         class="mt-2 w-full rounded-2xl border-none bg-bone-dark p-3 text-onyx outline-none"
       ></textarea>
       <p v-if="error" class="mt-1 text-sm text-maroon">{{ error }}</p>
       <div class="mt-2 flex gap-2">
         <button
           type="button"
+          data-testid="submit-review"
           class="cursor-pointer rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
           :disabled="myRating < 1"
           @click="submit"
@@ -103,6 +105,7 @@
         <button
           v-if="myRating > 0"
           type="button"
+          data-testid="delete-review"
           class="cursor-pointer rounded-2xl bg-bone-dark px-4 py-2 text-onyx"
           @click="remove"
         >

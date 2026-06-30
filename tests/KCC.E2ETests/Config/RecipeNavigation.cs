@@ -1,0 +1,35 @@
+using Microsoft.Playwright;
+
+namespace KCC.E2ETests.Config;
+
+/// <summary>Navigates the live site to a real recipe / variant page without hard-coding slugs.</summary>
+public static class RecipeNavigation
+{
+    /// <summary>Opens the recipe listing and clicks into the first recipe; returns its URL.</summary>
+    public static async Task<string> GoToFirstRecipeAsync(IPage page)
+    {
+        _ = await page.GotoAsync("/recipes");
+
+        // Recipe cards render inside <main> as anchors to /recipes/<slug>. The listing also
+        // surfaces a "Create Recipe" call-to-action pointing at /recipes/create-recipe, so we
+        // exclude that link and take the first real recipe card. (The site nav/footer links live
+        // outside <main>, so scoping to main already drops them.)
+        var firstRecipe = page.Locator("main a[href*='/recipes/']:not([href*='create-recipe'])").First;
+        await firstRecipe.ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        return page.Url;
+    }
+
+    /// <summary>From a recipe page, clicks into the first variant card; returns its URL.</summary>
+    public static async Task<string> GoToFirstVariantAsync(IPage page)
+    {
+        // Variant cards expose a stable [data-variant-name] hook (VariantGrid/VariantList), which
+        // disambiguates them from breadcrumbs and the "Add Variant" link that also match /recipes/.
+        var firstVariant = page.Locator("[data-variant-name]").First;
+        await firstVariant.ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        return page.Url;
+    }
+}

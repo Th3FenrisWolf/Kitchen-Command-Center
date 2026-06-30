@@ -14,6 +14,7 @@
       v-for="variant in variants"
       :key="variant.slug"
       :href="variant.slug"
+      :data-variant-name="variant.name"
       class="group grid content-start gap-2 rounded-3xl bg-bone p-4 text-onyx shadow-primary transition-shadow focus-within:shadow-primary-raised hover:shadow-primary-raised"
     >
       <AccentTile :seed="variant.name" :icon="variant.icon" :image="variant.image" class="h-40 w-full text-6xl" />

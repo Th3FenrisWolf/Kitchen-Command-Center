@@ -64,11 +64,13 @@
         v-model="draft"
         :placeholder="t('CookNotePlaceholder')"
         rows="3"
+        data-testid="cook-note-input"
         class="w-full rounded-2xl border-none bg-bone-dark p-3 text-onyx outline-none"
       ></textarea>
       <p v-if="error" class="mt-1 text-sm text-maroon">{{ error }}</p>
       <button
         type="button"
+        data-testid="add-cook-note"
         class="mt-2 cursor-pointer rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
         :disabled="!draft.trim()"
         @click="add"
