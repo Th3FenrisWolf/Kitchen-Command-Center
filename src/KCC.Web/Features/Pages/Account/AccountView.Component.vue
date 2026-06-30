@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
-  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+  import Link from '~/Components/Links/Link.Component.vue'
 
   interface ProfileVariant {
     pageId: number
@@ -31,7 +31,7 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  useResourceStrings(props.resourceStrings, 'Account')
+  provideResourceStrings(props.resourceStrings, 'Account')
 
   // Deterministic avatar color (no Math.random — stable across SSR + client hydration).
   const palette = ['bg-peach', 'bg-green', 'bg-teal', 'bg-sky', 'bg-yellow', 'bg-maroon', 'bg-lavender']
@@ -93,7 +93,7 @@
             <div class="flex flex-wrap items-center gap-2">
               <i v-if="group.recipeIcon" :class="group.recipeIcon" class="text-xl"></i>
               <component
-                :is="group.recipeUrl ? AppLink : 'span'"
+                :is="group.recipeUrl ? Link : 'span'"
                 :href="group.recipeUrl || undefined"
                 class="font-casual text-2xl"
               >
@@ -109,7 +109,7 @@
             <ul v-if="group.variants.length" class="mt-2 grid gap-1 pl-7">
               <li v-for="variant in group.variants" :key="variant.pageId" class="flex flex-wrap items-center gap-2">
                 <i v-if="variant.icon" :class="variant.icon"></i>
-                <component :is="variant.url ? AppLink : 'span'" :href="variant.url || undefined">
+                <component :is="variant.url ? Link : 'span'" :href="variant.url || undefined">
                   {{ variant.name }}
                 </component>
                 <span v-if="variant.isPending" class="rounded-full bg-yellow px-2 py-0.5 text-xs font-bold text-onyx">

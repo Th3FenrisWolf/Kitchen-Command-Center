@@ -5,14 +5,14 @@
   import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
-  import { useResourceStrings } from '~/Components/ResourceStrings'
+  import { provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
     resourceStrings?: Record<string, string>
   }>()
 
-  useResourceStrings(props.resourceStrings, 'CreateRecipe')
+  provideResourceStrings(props.resourceStrings, 'CreateRecipe')
 
   const step = ref(1)
   const totalSteps = 5
@@ -101,7 +101,7 @@
       <div
         v-for="s in totalSteps"
         :key="s"
-        class="h-2 flex-1 rounded-full transition-colors duration-300"
+        class="h-2 flex-1 rounded-full transition-colors"
         :class="s <= step ? 'bg-surface-500' : 'bg-overlay-300'"
       />
     </div>

@@ -5,8 +5,8 @@
   import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
-  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+  import Link from '~/Components/Links/Link.Component.vue'
   import { post } from '~/Utilities/Api'
   import { stepLabelKey, validIngredients, validInstructions } from '~/Pages/AddVariant/reviewSummary'
 
@@ -17,7 +17,7 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  const rs = useResourceStrings(props.resourceStrings, 'AddVariant')
+  const rs = provideResourceStrings(props.resourceStrings, 'AddVariant')
 
   const step = ref(1)
   const totalSteps = 4
@@ -84,10 +84,10 @@
     </template>
 
     <template #action-button>
-      <AppLink :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+      <Link :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
         <ResourceString for="Cancel" />
         <i class="fa-solid fa-close fa-sm"></i>
-      </AppLink>
+      </Link>
     </template>
   </SmallHero>
 
@@ -95,10 +95,10 @@
     <ResourceString for="VariantSubmitted" as="h2" class="font-casual text-4xl" />
     <ResourceString for="VariantSubmittedMessage" as="p" class="text-lg" />
 
-    <AppLink :href="recipeSlug" class="rounded-3xl bg-surface-500 px-6 py-3 text-xl text-bone">
+    <Link :href="recipeSlug" class="rounded-3xl bg-surface-500 px-6 py-3 text-xl text-bone">
       <ResourceString for="BackTo" class="mr-1" />
       <span>{{ recipeName }}</span>
-    </AppLink>
+    </Link>
   </section>
 
   <section v-else>
@@ -106,10 +106,7 @@
       <div
         v-for="stepIndex in totalSteps"
         :key="stepIndex"
-        :class="[
-          'h-2 flex-1 rounded-full transition-colors duration-300',
-          stepIndex <= step ? 'bg-surface-500' : 'bg-overlay-300',
-        ]"
+        :class="['h-2 flex-1 rounded-full transition-colors', stepIndex <= step ? 'bg-surface-500' : 'bg-overlay-300']"
       />
     </div>
 

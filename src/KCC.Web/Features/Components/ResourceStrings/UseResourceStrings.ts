@@ -12,7 +12,7 @@ function resolve(ctx: ResourceStringsContext, key: string): string {
   return ctx.strings[fullKey] ?? fullKey
 }
 
-export function useResourceStrings(resourceStrings?: Record<string, string>, prefix?: string) {
+export function provideResourceStrings(resourceStrings?: Record<string, string>, prefix?: string) {
   // Expose the dict + prefix to descendants so <ResourceString> can resolve keys
   // without each call site repeating the prefix.
   const ctx: ResourceStringsContext = { strings: resourceStrings ?? {}, prefix }
@@ -21,7 +21,7 @@ export function useResourceStrings(resourceStrings?: Record<string, string>, pre
 }
 
 /** Consume-only resolver for descendants (e.g. to fill placeholder/title attributes). */
-export function useStrings() {
+export function useResourceStrings() {
   const ctx = inject(resourceStringsKey, { strings: {} })
   return (key: string) => resolve(ctx, key)
 }
