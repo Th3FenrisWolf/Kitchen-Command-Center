@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Nutrition } from '~/Types/Recipe'
-import { buildNutritionRows, hasNutrition } from '~/Components/VariantDetail/variantNutrition'
+import { buildNutritionRows, hasNutrition } from '~/Components/VariantDetail/variantNutritionRows'
 
 const labels = {
   calories: 'Calories',
@@ -22,7 +22,7 @@ const full: Nutrition = {
   sodiumMg: 740,
 }
 
-describe('variantNutrition', () => {
+describe('variantNutritionRows', () => {
   describe('hasNutrition', () => {
     it('is true when any value is present', () => {
       expect(hasNutrition({ calories: 100 })).toBe(true)
