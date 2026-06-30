@@ -20,6 +20,9 @@ export interface VariantSummary {
   tags: string[]
   totalTime: number
   publishedDate: string
+  averageRating?: number
+  reviewCount?: number
+  cookedCount?: number
 }
 
 export interface Breadcrumb {
@@ -78,10 +81,49 @@ export interface RecipeDetail {
   category?: string
   slug: string
   variants: VariantSummary[]
+  timesCooked?: number
 }
 
 export interface SiblingVariant {
   name: string
   slug: string
   icon?: string
+}
+
+export interface Review {
+  authorName: string
+  rating: number
+  text?: string
+  created: string
+  isMine: boolean
+}
+
+export interface MyReview {
+  rating: number
+  text?: string
+}
+
+export interface ReviewsResponse {
+  average: number
+  count: number
+  total: number
+  page: number
+  pageSize: number
+  reviews: Review[]
+  myReview: MyReview | null
+}
+
+export interface CookNote {
+  id: number
+  authorName: string
+  text: string
+  created: string
+  isMine: boolean
+}
+
+export interface CookNotesResponse {
+  total: number
+  page: number
+  pageSize: number
+  notes: CookNote[]
 }
