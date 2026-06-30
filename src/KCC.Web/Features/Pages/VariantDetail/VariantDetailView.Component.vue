@@ -13,7 +13,7 @@
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
   import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
-  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
+  import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
   import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
@@ -128,10 +128,7 @@
     <VariantInstructions class="lg:col-span-3" :instructions="instructions" />
   </section>
 
-  <h2 class="mt-8 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-    <i class="fa-solid fa-lightbulb text-lg text-yellow"></i> <ResourceString for="CookNotes" />
-  </h2>
-  <ComingSoonSection text-key="CookNotesComingSoon" icon="fa-solid fa-lightbulb text-4xl opacity-50" />
+  <VariantCookNotes :variant-guid="variantGuid" :is-authenticated="isAuthenticated" />
 
   <VariantReviews
     :variant-guid="variantGuid"
