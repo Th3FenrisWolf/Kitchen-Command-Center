@@ -10,6 +10,9 @@ public class RecipeDetailViewModel : BasePageViewModel
     public string RecipeIcon { get; set; }
     public string RecipeCategory { get; set; }
     public Guid RecipeGuid { get; set; }
+    public double RecipeAverageRating { get; set; }
+    public int RecipeReviewCount { get; set; }
+    public int RecipeTimesCooked { get; set; }
     public string AddVariantUrl { get; set; }
     public string StartedByName { get; set; }
     public IEnumerable<RecipeBreadcrumb> Breadcrumbs { get; set; } = [];
@@ -29,4 +32,7 @@ public class VariantSummaryViewModel
     public IEnumerable<string> Tags { get; set; } = [];
     public int TotalTime { get; set; }
     public DateTime PublishedDate { get; set; }
+    public double AverageRating { get; set; }
+    public int ReviewCount { get; set; }
+    public int CookedCount { get; set; }
 }

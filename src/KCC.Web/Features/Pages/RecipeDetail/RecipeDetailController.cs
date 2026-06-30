@@ -1,6 +1,7 @@
 using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
+using KCC.Contributions.Data;
 using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Members;
@@ -26,6 +27,8 @@ public class RecipeDetailController(
     IPreferredLanguageRetriever preferredLanguageRetriever,
     IAuthorNameResolver authorNameResolver,
     IResourceStringInfoProvider resourceStrings,
+    IVariantReviewInfoProvider reviewProvider,
+    IVariantCookedInfoProvider cookedProvider,
     BreadcrumbService breadcrumbService
 ) : Controller
 {
@@ -57,6 +60,10 @@ public class RecipeDetailController(
         var categoryId = recipe.Categories?.FirstOrDefault()?.Identifier ?? Guid.Empty;
         var resolvedCategory = (await taxonomyRetriever.RetrieveTags([categoryId], language)).FirstOrDefault();
 
+        var recipeGuid = recipe.SystemFields.ContentItemGUID;
+        var recipeRating = reviewProvider.GetRecipeAverage(recipeGuid);
+        var recipeTimesCooked = cookedProvider.GetRecipeCookedCount(recipeGuid);
+
         var viewModel = new RecipeDetailViewModel
         {
             RecipeName = recipe.Name,
@@ -64,7 +71,10 @@ public class RecipeDetailController(
             RecipeImagePath = recipe.Image?.FirstOrDefault()?.Asset?.Url,
             RecipeIcon = recipe.Icon,
             RecipeCategory = resolvedCategory?.Name,
-            RecipeGuid = recipe.SystemFields.ContentItemGUID,
+            RecipeGuid = recipeGuid,
+            RecipeAverageRating = recipeRating.Average,
+            RecipeReviewCount = recipeRating.Count,
+            RecipeTimesCooked = recipeTimesCooked,
             AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
             Variants = await RetrieveVariants(pageId, language),
             StartedByName = await authorNameResolver.Resolve(recipe.AuthorMemberGuid),
@@ -85,6 +95,10 @@ public class RecipeDetailController(
             new($"{nameof(RecipeDetailController)}|{nameof(RetrieveVariants)}|{pageId}")
         );
 
+        var variantGuids = variants.Select(v => v.SystemFields.ContentItemGUID).ToArray();
+        var averages = reviewProvider.GetAveragesForVariants(variantGuids);
+        var cookedCounts = cookedProvider.GetCookedCountsForVariants(variantGuids);
+
         var tagIds = variants
             .SelectMany(v => v.Tags?.Select(tag => tag.Identifier) ?? [])
             .Distinct();
@@ -102,6 +116,9 @@ public class RecipeDetailController(
             AuthorName = authorNames.GetValueOrDefault(variant.AuthorMemberGuid),
             TotalTime = variant.PrepTime + variant.CookTime,
             PublishedDate = variant.MetadataPublishDate,
+            AverageRating = averages.GetValueOrDefault(variant.SystemFields.ContentItemGUID).Average,
+            ReviewCount = averages.GetValueOrDefault(variant.SystemFields.ContentItemGUID).Count,
+            CookedCount = cookedCounts.GetValueOrDefault(variant.SystemFields.ContentItemGUID),
             Tags = resolvedTags?
                 .IntersectBy(variant.Tags?.Select(tag => tag.Identifier) ?? [], resolved => resolved.Identifier)
                 .Select(tag => tag.Title) ?? [],
@@ -131,6 +148,10 @@ public class RecipeDetailController(
         "RecipeDetail.Total",
         "RecipeDetail.NoVariantsMatch",
         "RecipeDetail.TryDifferentFilter",
-        "RecipeDetail.ClearFilters"
+        "RecipeDetail.ClearFilters",
+        "RecipeDetail.TimesCooked",
+        "RecipeDetail.NoRatingsYet",
+        "RecipeDetail.Rating",
+        "RecipeDetail.Reviews"
     );
 }
