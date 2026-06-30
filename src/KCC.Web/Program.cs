@@ -94,6 +94,7 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddScoped<IAuthorNameResolver, AuthorNameResolver>();
+builder.Services.AddScoped<KCC.Web.Features.Api.IVariantGuidResolver, KCC.Web.Features.Api.VariantGuidResolver>();
 builder.Services.AddScoped<KCC.Web.Features.Components.Breadcrumbs.BreadcrumbService>();
 
 var app = builder.Build();
