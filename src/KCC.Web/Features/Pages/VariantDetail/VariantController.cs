@@ -6,23 +6,22 @@ using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Helpers;
 using KCC.Web.Features.Members;
-using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
-using KCC.Web.Features.Pages.RecipeVariantDetail;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Pages.VariantDetail;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 
 [assembly: RegisterWebPageRoute(
     RecipeVariant.CONTENT_TYPE_NAME,
-    typeof(RecipeVariantController),
+    typeof(VariantDetailController),
     WebsiteChannelNames = [XperienceConstants.WebsiteChannelName]
 )]
 
-namespace KCC.Web.Features.Pages.RecipeVariantDetail;
+namespace KCC.Web.Features.Pages.VariantDetail;
 
-public class RecipeVariantController(
+public class VariantDetailController(
     IWebPageDataContextRetriever webPageDataContextRetriever,
     IContentRetriever contentRetriever,
     ITaxonomyRetriever taxonomyRetriever,
@@ -56,7 +55,7 @@ public class RecipeVariantController(
                 .WhereEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID), parentId)
                 .WhereNotEquals(nameof(IWebPageFieldsSource.SystemFields.WebPageItemID), pageId)
             ),
-            new($"{nameof(RecipeVariantController)}|{parentId}|{pageId}|Siblings")
+            new($"{nameof(VariantDetailController)}|{parentId}|{pageId}|Siblings")
         );
 
         var language = preferredLanguageRetriever.Get();
@@ -64,7 +63,7 @@ public class RecipeVariantController(
         var tagResult = await taxonomyRetriever.RetrieveTags(tagGuids, language);
         var resolvedTags = tagResult?.Select(t => t.Title);
 
-        var viewModel = new RecipeVariantViewModel
+        var viewModel = new VariantDetailViewModel
         {
             VariantName = variantPage.Name,
             VariantDescription = variantPage.Description,
@@ -92,7 +91,7 @@ public class RecipeVariantController(
         };
 
         await variantPage.MapMetadata(viewModel);
-        return View("~/Features/Pages/RecipeVariantDetail/Index.cshtml", viewModel);
+        return View("~/Features/Pages/VariantDetail/Index.cshtml", viewModel);
     }
 
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(

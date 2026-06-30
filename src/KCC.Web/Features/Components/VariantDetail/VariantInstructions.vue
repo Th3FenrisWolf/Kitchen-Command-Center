@@ -14,7 +14,7 @@
         :key="i"
         class="flex gap-4 rounded-2xl bg-bone p-4 text-onyx shadow-primary"
       >
-        <span class="w-8 flex-none text-center font-casual text-3xl leading-none text-overlay-300">
+        <span class="w-8 flex-none text-center font-casual text-3xl leading-none text-onyx-light">
           {{ instruction.step ?? i + 1 }}
         </span>
         <p class="min-w-0 flex-1 text-lg leading-normal">{{ instruction.text }}</p>

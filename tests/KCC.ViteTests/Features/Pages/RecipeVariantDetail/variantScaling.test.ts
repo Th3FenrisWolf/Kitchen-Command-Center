@@ -4,7 +4,7 @@ import {
   formatIngredientAmount,
   formatQuantity,
   scaleQuantity,
-} from '~/Pages/RecipeVariantDetail/variantScaling'
+} from '~/Components/VariantDetail/variantScaling'
 
 const ing = (over: Partial<Ingredient> = {}): Ingredient => ({
   name: 'flour',

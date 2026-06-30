@@ -1,9 +1,9 @@
 using KCC.Web.Features.Helpers;
-using KCC.Web.Features.Pages.RecipeVariantDetail;
+using KCC.Web.Features.Pages.VariantDetail;
 
-namespace KCC.UnitTests.Features.Pages.RecipeVariantDetail;
+namespace KCC.UnitTests.Features.Pages.VariantDetail;
 
-public class RecipeVariantViewModelTests
+public class VariantViewModelTests
 {
     [Test]
     public async Task DeserializeIngredients_ParsesJsonCorrectly()

@@ -1,20 +1,18 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import type { Ingredient } from '~/Types/Recipe'
-  import { ResourceString, useStrings } from '~/Components/ResourceStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import { formatIngredientAmount } from './variantScaling'
 
   const props = defineProps<{ ingredients: Ingredient[]; baseServings?: number }>()
 
-  const t = useStrings()
+  const rs = useResourceStrings()
   const hasScaler = computed(() => (props.baseServings ?? 0) > 0)
   const current = ref(props.baseServings && props.baseServings > 0 ? props.baseServings : 1)
   const checked = ref<Record<number, boolean>>({})
 
   const amounts = computed(() =>
-    props.ingredients.map((ingredient) =>
-      formatIngredientAmount(ingredient, props.baseServings ?? 0, current.value),
-    ),
+    props.ingredients.map((ingredient) => formatIngredientAmount(ingredient, props.baseServings ?? 0, current.value)),
   )
 
   const dec = () => {
@@ -36,17 +34,17 @@
         <span class="text-sm font-bold text-onyx-light"><ResourceString for="Makes" /></span>
         <button
           type="button"
-          :aria-label="t('Fewer')"
-          class="grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-sm text-bone transition-colors hover:bg-surface-400"
+          :aria-label="rs('Fewer')"
+          class="grid size-8.5 cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-sm text-bone transition-colors hover:bg-surface-400"
           @click="dec"
         >
           <i class="fa-solid fa-minus"></i>
         </button>
-        <span class="min-w-[58px] text-center font-casual text-xl leading-none">{{ current }}</span>
+        <span class="min-w-14.5 text-center font-casual text-xl leading-none">{{ current }}</span>
         <button
           type="button"
-          :aria-label="t('More')"
-          class="grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-sm text-bone transition-colors hover:bg-surface-400"
+          :aria-label="rs('More')"
+          class="grid size-8.5 cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-sm text-bone transition-colors hover:bg-surface-400"
           @click="inc"
         >
           <i class="fa-solid fa-plus"></i>
@@ -63,7 +61,7 @@
           @click="toggle(i)"
         >
           <span
-            class="mt-px grid h-[22px] w-[22px] flex-none place-items-center rounded-[7px] border-2 transition-all"
+            class="mt-px grid size-5.5 flex-none place-items-center rounded-[7px] border-2 transition-all"
             :class="checked[i] ? 'border-surface-500 bg-surface-500' : 'border-overlay-300 bg-transparent'"
           >
             <i v-if="checked[i]" class="fa-solid fa-check text-[11px] text-bone"></i>
@@ -72,11 +70,8 @@
             class="text-base leading-snug transition-all"
             :class="checked[i] ? 'text-onyx-light line-through opacity-60' : 'text-onyx'"
           >
-            <b v-if="amounts[i]">{{ amounts[i] }} </b>{{ ingredient.name }}<span
-              v-if="ingredient.isEyeballed"
-              class="italic text-onyx-light"
-            >
-              — <ResourceString for="ToTaste" /></span>
+            <b v-if="amounts[i]">{{ amounts[i] }} </b>{{ ingredient.name
+            }}<span v-if="ingredient.isEyeballed" class="text-onyx-light italic"> — <ResourceString for="ToTaste" /></span>
           </span>
         </li>
       </ul>

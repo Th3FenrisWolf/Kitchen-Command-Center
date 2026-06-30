@@ -1,8 +1,8 @@
 using KCC.Web.Features.Pages.Shared;
 
-namespace KCC.Web.Features.Pages.RecipeVariantDetail;
+namespace KCC.Web.Features.Pages.VariantDetail;
 
-public class RecipeVariantViewModel : BasePageViewModel
+public class VariantDetailViewModel : BasePageViewModel
 {
     public string VariantName { get; set; }
     public string VariantDescription { get; set; }

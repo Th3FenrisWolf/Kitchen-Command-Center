@@ -45,11 +45,7 @@ export function formatQuantity(x: number): string {
 }
 
 /** Scaled "{qty} {unit}" string for an ingredient; '' for eyeballed / quantity-less rows. */
-export function formatIngredientAmount(
-  ingredient: Ingredient,
-  baseServings: number,
-  currentServings: number,
-): string {
+export function formatIngredientAmount(ingredient: Ingredient, baseServings: number, currentServings: number): string {
   if (ingredient.isEyeballed || ingredient.quantity == null) return ''
   const scaled = scaleQuantity(ingredient.quantity, baseServings, currentServings)
   const qty = formatQuantity(scaled)
