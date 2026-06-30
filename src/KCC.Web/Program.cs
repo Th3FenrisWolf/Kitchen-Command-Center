@@ -1,4 +1,5 @@
 using KCC;
+using KCC.Contributions;
 using KCC.ResourceStrings;
 using KCC.Web.Features.AdminHomePage;
 using KCC.Web.Features.Attributes;
@@ -73,6 +74,7 @@ builder.Services.AddIdentity<KCCApplicationUser, ApplicationRole>(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddKccResourceStrings();
+builder.Services.AddKccContributions();
 
 var anthropicOptions = builder.Configuration
     .GetSection(KCC.Web.Features.Api.AnthropicOptions.SectionName)
@@ -87,7 +89,8 @@ builder.Services.AddControllersWithViews(options =>
     options.Conventions.Add((IControllerModelConvention)localizedRouteConvention);
     options.Conventions.Add((IActionModelConvention)localizedRouteConvention);
 })
-.AddApplicationPart(typeof(ResourceStringServiceExtensions).Assembly);
+.AddApplicationPart(typeof(ResourceStringServiceExtensions).Assembly)
+.AddApplicationPart(typeof(ContributionsServiceExtensions).Assembly);
 
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddScoped<IAuthorNameResolver, AuthorNameResolver>();
