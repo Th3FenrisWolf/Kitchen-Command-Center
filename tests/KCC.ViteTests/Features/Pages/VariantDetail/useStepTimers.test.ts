@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseDurations } from '~/Pages/VariantDetail/useStepTimers'
+import { parseDurations, remainingSeconds } from '~/Pages/VariantDetail/useStepTimers'
 
 describe('useStepTimers / parseDurations', () => {
   it('parses a single minutes duration', () => {
@@ -55,5 +55,25 @@ describe('useStepTimers / parseDurations', () => {
   it('assigns a stable id per match index', () => {
     const specs = parseDurations('Boil 3 minutes then steep 5 minutes.')
     expect(specs.map((s) => s.id)).toEqual([0, 1])
+  })
+})
+
+describe('useStepTimers / remainingSeconds', () => {
+  it('returns the full duration when now equals the start', () => {
+    const targetEndMs = 1_000_000
+    const now = targetEndMs - 300 * 1000
+    expect(remainingSeconds(targetEndMs, now)).toBe(300)
+  })
+
+  it('counts down as time advances (ceiling so it shows whole seconds)', () => {
+    const targetEndMs = 1_000_000
+    expect(remainingSeconds(targetEndMs, targetEndMs - 5_400)).toBe(6)
+    expect(remainingSeconds(targetEndMs, targetEndMs - 1_000)).toBe(1)
+  })
+
+  it('clamps to zero at and past the target end-time', () => {
+    const targetEndMs = 1_000_000
+    expect(remainingSeconds(targetEndMs, targetEndMs)).toBe(0)
+    expect(remainingSeconds(targetEndMs, targetEndMs + 50_000)).toBe(0)
   })
 })

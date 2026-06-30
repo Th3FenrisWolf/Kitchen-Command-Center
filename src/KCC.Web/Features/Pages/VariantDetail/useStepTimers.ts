@@ -30,3 +30,12 @@ export function parseDurations(text: string): TimerSpec[] {
   }
   return specs
 }
+
+/**
+ * Seconds left until `targetEndMs`, computed from `now` (defaults to Date.now()).
+ * Timestamp-based so backgrounded tabs read the correct value on resume.
+ * Ceils to whole seconds and clamps at zero.
+ */
+export function remainingSeconds(targetEndMs: number, now: number = Date.now()): number {
+  return Math.max(0, Math.ceil((targetEndMs - now) / 1000))
+}
