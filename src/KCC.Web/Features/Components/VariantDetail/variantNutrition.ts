@@ -32,10 +32,7 @@ export function hasNutrition(nutrition: Nutrition): boolean {
  * Build the rows to render, in canonical order, skipping unprovided fields.
  * `labels` maps each field key to its already-localized caption.
  */
-export function buildNutritionRows(
-  nutrition: Nutrition,
-  labels: Record<keyof Nutrition, string>,
-): NutritionRow[] {
+export function buildNutritionRows(nutrition: Nutrition, labels: Record<keyof Nutrition, string>): NutritionRow[] {
   const rows: NutritionRow[] = []
   for (const { key, unit } of FIELDS) {
     const value = nutrition[key]

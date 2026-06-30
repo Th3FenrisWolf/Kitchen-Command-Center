@@ -11,10 +11,7 @@ const LEVELS: Record<string, { dotColor: string; labelKey: string }> = {
  * Build the difficulty stat tile, or `null` when difficulty is unset/unknown
  * (caller omits the tile). `t` resolves a VariantDetail.* resource-string suffix.
  */
-export function difficultyTile(
-  difficulty: string | undefined | null,
-  t: (key: string) => string,
-): StatTileSpec | null {
+export function difficultyTile(difficulty: string | undefined | null, t: (key: string) => string): StatTileSpec | null {
   if (!difficulty) return null
   const level = LEVELS[difficulty]
   if (!level) return null

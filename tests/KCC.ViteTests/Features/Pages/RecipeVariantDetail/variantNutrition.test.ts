@@ -41,25 +41,14 @@ describe('variantNutrition', () => {
   describe('buildNutritionRows', () => {
     it('returns all seven rows in canonical order when full', () => {
       const rows = buildNutritionRows(full, labels)
-      expect(rows.map((r) => r.key)).toEqual([
-        'calories',
-        'proteinG',
-        'carbsG',
-        'fatG',
-        'fiberG',
-        'sugarG',
-        'sodiumMg',
-      ])
+      expect(rows.map((r) => r.key)).toEqual(['calories', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'sugarG', 'sodiumMg'])
       expect(rows[0]).toEqual({ key: 'calories', label: 'Calories', value: 520, unit: '' })
       expect(rows[1]).toEqual({ key: 'proteinG', label: 'Protein', value: 24, unit: 'g' })
       expect(rows[6]).toEqual({ key: 'sodiumMg', label: 'Sodium', value: 740, unit: 'mg' })
     })
 
     it('omits fields that are null or undefined (partial)', () => {
-      const rows = buildNutritionRows(
-        { calories: 300, proteinG: null, carbsG: 40, fatG: undefined },
-        labels,
-      )
+      const rows = buildNutritionRows({ calories: 300, proteinG: null, carbsG: 40, fatG: undefined }, labels)
       expect(rows.map((r) => r.key)).toEqual(['calories', 'carbsG'])
     })
 
