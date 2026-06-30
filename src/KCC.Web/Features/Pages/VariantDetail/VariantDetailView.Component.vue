@@ -13,6 +13,7 @@
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
   import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
+  import VariantCookedToggle from '~/Components/VariantDetail/VariantCookedToggle.vue'
   import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
   import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
@@ -87,6 +88,12 @@
       >
         <i class="fa-solid fa-play text-sm" aria-hidden="true"></i> <ResourceString for="CookMode" />
       </button>
+      <VariantCookedToggle
+        :variant-guid="variantGuid"
+        :cooked-count="cookedCount"
+        :has-cooked="hasCooked"
+        :is-authenticated="isAuthenticated"
+      />
     </div>
   </div>
 
@@ -97,6 +104,9 @@
     :icon="icon"
     :image="coverImage"
     :authorName="createdByName"
+    :average-rating="averageRating"
+    :review-count="reviewCount"
+    :times-cooked="cookedCount"
   >
     <template #eyebrow>
       <span><ResourceString for="VariantOf" /> {{ recipeName }}</span>
