@@ -1,16 +1,19 @@
 using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
+using KCC.Contributions.Data;
 using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Helpers;
 using KCC.Web.Features.Members;
+using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.Shared;
 using KCC.Web.Features.Pages.VariantDetail;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 [assembly: RegisterWebPageRoute(
@@ -28,6 +31,9 @@ public class VariantDetailController(
     IPreferredLanguageRetriever preferredLanguageRetriever,
     IAuthorNameResolver authorNameResolver,
     IResourceStringInfoProvider resourceStrings,
+    IVariantReviewInfoProvider reviewProvider,
+    IVariantCookedInfoProvider cookedProvider,
+    UserManager<KCCApplicationUser> userManager,
     BreadcrumbService breadcrumbService
 ) : Controller
 {
@@ -63,6 +69,14 @@ public class VariantDetailController(
         var tagResult = await taxonomyRetriever.RetrieveTags(tagGuids, language);
         var resolvedTags = tagResult?.Select(t => t.Title);
 
+        var variantGuid = variantPage.SystemFields.ContentItemGUID;
+        var rating = reviewProvider.GetAverageForVariant(variantGuid);
+        var cookedCount = cookedProvider.GetCookedCountForVariant(variantGuid);
+
+        var currentUser = await userManager.GetUserAsync(User);
+        var hasCooked = currentUser is not null
+            && cookedProvider.HasMemberCooked(variantGuid, currentUser.MemberGuid);
+
         var viewModel = new VariantDetailViewModel
         {
             VariantName = variantPage.Name,
@@ -95,6 +109,12 @@ public class VariantDetailController(
                 Icon = s.Icon,
             }),
             CreatedByName = await authorNameResolver.Resolve(variantPage.AuthorMemberGuid),
+            VariantGuid = variantGuid,
+            AverageRating = rating.Average,
+            ReviewCount = rating.Count,
+            CookedCount = cookedCount,
+            HasCooked = hasCooked,
+            IsAuthenticated = currentUser is not null,
             ResourceStrings = GetStrings(),
         };
 
@@ -145,6 +165,21 @@ public class VariantDetailController(
         "VariantDetail.CookNotesComingSoon",
         "VariantDetail.RatingsReviews",
         "VariantDetail.ReviewsComingSoon",
-        "VariantDetail.OtherVariants"
+        "VariantDetail.OtherVariants",
+        "VariantDetail.WriteReview",
+        "VariantDetail.YourReview",
+        "VariantDetail.SubmitReview",
+        "VariantDetail.EditReview",
+        "VariantDetail.DeleteReview",
+        "VariantDetail.LogInToReview",
+        "VariantDetail.NoReviewsYet",
+        "VariantDetail.ReviewCount",
+        "VariantDetail.AddCookNote",
+        "VariantDetail.CookNotePlaceholder",
+        "VariantDetail.NoCookNotesYet",
+        "VariantDetail.DeleteNote",
+        "VariantDetail.ICookedThis",
+        "VariantDetail.CookedCount",
+        "VariantDetail.LoadMore"
     );
 }
