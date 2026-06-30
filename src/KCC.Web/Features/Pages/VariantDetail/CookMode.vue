@@ -70,7 +70,7 @@
     const first = focusables[0]!
     const last = focusables[focusables.length - 1]!
     const active = document.activeElement
-    if (event.shiftKey && active === first) {
+    if (event.shiftKey && (active === first || active === root)) {
       event.preventDefault()
       last.focus()
     } else if (!event.shiftKey && active === last) {
