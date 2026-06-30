@@ -2,14 +2,24 @@ using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.VariantDetail;
 
+// TUnit runs tests in parallel by default; concurrent navigations starve the single-threaded
+// Vite dev server and every nav times out. [NotInParallel] serializes them (matches the
+// AdminHomePageMiddlewareTests precedent in this repo).
+[NotInParallel]
 public class CookModeTests : BasePageTests
 {
     private const string EnabledVariantPath = "/recipes/mac-cheese/spicy-jalapeno";
     private const string DisabledVariantPath = "/recipes/mac-cheese/classic-mac-cheese";
 
+    // The dev page holds an open Vite HMR WebSocket, so the default `load` event never settles
+    // and GotoAsync would time out. The variant content is server-rendered into the initial HTML,
+    // so DOMContentLoaded already exposes everything these specs assert on.
     private async Task OpenOverlayAsync()
     {
-        _ = await Page.GotoAsync(EnabledVariantPath);
+        _ = await Page.GotoAsync(
+            EnabledVariantPath,
+            new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded }
+        );
         await Page.Locator("[data-test=\"cook-mode-open-desktop\"]").ClickAsync();
         await Expect(Page.Locator("[role=\"dialog\"]")).ToBeVisibleAsync();
     }
@@ -17,7 +27,10 @@ public class CookModeTests : BasePageTests
     [Test]
     public async Task CookModeButton_IsDisabled_WhenVariantHasNoInstructions()
     {
-        _ = await Page.GotoAsync(DisabledVariantPath);
+        _ = await Page.GotoAsync(
+            DisabledVariantPath,
+            new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded }
+        );
 
         await Expect(Page.Locator("[data-test=\"cook-mode-open-desktop\"]")).ToBeDisabledAsync();
     }
@@ -25,7 +38,10 @@ public class CookModeTests : BasePageTests
     [Test]
     public async Task CookModeButton_IsEnabled_AndOpensOverlay_WhenVariantHasInstructions()
     {
-        _ = await Page.GotoAsync(EnabledVariantPath);
+        _ = await Page.GotoAsync(
+            EnabledVariantPath,
+            new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded }
+        );
         var button = Page.Locator("[data-test=\"cook-mode-open-desktop\"]");
 
         await Expect(button).ToBeEnabledAsync();
