@@ -244,10 +244,10 @@ yarn build:all
 ### Combined Test Report
 
 Run every test suite (3 .NET/TUnit + 2 vitest) and produce one self-contained,
-tabbed HTML report at `TestResults/combined-report.html` (auto-opened):
+tabbed HTML report at `tests/results/combined-report.html` (auto-opened):
 
 ```bash
-node scripts/test-report/run.mjs
+node tests/scripts/run.mjs
 ```
 
 The command exits non-zero if any suite has failures or fails to run, so it is

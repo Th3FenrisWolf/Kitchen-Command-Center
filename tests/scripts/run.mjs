@@ -10,7 +10,7 @@ import { buildReport } from "./combine.mjs";
 import { pickNewestByMtime, computeExitCode } from "./util.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const resultsDir = path.join(repoRoot, "TestResults");
+const resultsDir = path.join(repoRoot, "tests", "results");
 const outFile = path.join(resultsDir, "combined-report.html");
 
 function log(msg) { process.stdout.write(`\n> ${msg}\n`); }

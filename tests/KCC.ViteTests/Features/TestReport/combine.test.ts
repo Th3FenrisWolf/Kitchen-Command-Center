@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { gzipSync } from "node:zlib";
-import { buildReport, aggregateSummary } from "../../../../scripts/test-report/combine.mjs";
+import { buildReport, aggregateSummary } from "../../../scripts/combine.mjs";
 
 function tunitHtml(data: unknown): string {
   return `<script id="test-data" data-compressed="gzip">${gzipSync(Buffer.from(JSON.stringify(data), "utf8")).toString("base64")}</script>`;
