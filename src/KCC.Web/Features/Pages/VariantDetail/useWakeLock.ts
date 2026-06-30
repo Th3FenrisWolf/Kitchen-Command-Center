@@ -59,7 +59,9 @@ export function useWakeLock(): UseWakeLock {
     }
   }
 
-  document.addEventListener('visibilitychange', onVisibilityChange)
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', onVisibilityChange)
+  }
 
   const request = async () => {
     wanted = true
@@ -68,7 +70,9 @@ export function useWakeLock(): UseWakeLock {
 
   const release = async () => {
     wanted = false
-    document.removeEventListener('visibilitychange', onVisibilityChange)
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
     await drop()
   }
 

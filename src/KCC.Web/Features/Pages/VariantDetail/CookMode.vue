@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+  import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { useWakeLock } from './useWakeLock'
@@ -22,6 +22,10 @@
   const checked = ref<Record<number, boolean>>({})
   const currentServings = ref(props.servings && props.servings > 0 ? props.servings : 1)
   const panel = ref<HTMLElement | null>(null)
+  // Teleport renders to <body>, which only exists client-side. Gating the Teleport on this
+  // flag keeps SSR output (a comment placeholder) identical to the client's pre-mount output,
+  // avoiding a hydration node mismatch that would discard the server-rendered subtree.
+  const isMounted = ref(false)
 
   const total = computed(() => props.instructions.length)
   const current = computed(() => props.instructions[index.value])
@@ -83,14 +87,18 @@
     index.value = 0
     checked.value = {}
     currentServings.value = props.servings && props.servings > 0 ? props.servings : 1
-    document.addEventListener('keydown', onKeydown)
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', onKeydown)
+    }
     void wakeLock.request()
     await nextTick()
     panel.value?.focus()
   }
 
   const deactivate = () => {
-    document.removeEventListener('keydown', onKeydown)
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('keydown', onKeydown)
+    }
     void wakeLock.release()
   }
 
@@ -103,11 +111,15 @@
     { immediate: true },
   )
 
+  onMounted(() => {
+    isMounted.value = true
+  })
+
   onBeforeUnmount(deactivate)
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport v-if="isMounted" to="body">
     <div
       v-if="open"
       class="fixed inset-0 z-50 flex flex-col bg-bone"
