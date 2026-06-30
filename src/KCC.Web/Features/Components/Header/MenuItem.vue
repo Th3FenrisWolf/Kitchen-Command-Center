@@ -52,7 +52,7 @@
     </button>
     <div
       :class="[
-        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-surface-500 text-bone transition-all duration-500 ease-in-out',
+        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-surface-500 text-bone transition-all duration-500',
         isOpen ? 'max-h-96' : 'max-h-0',
       ]"
     >
@@ -60,7 +60,7 @@
         <li
           v-for="subLink in item.subLinks"
           :key="subLink.displayText"
-          class="basis-full rounded-2xl bg-bone text-onyx transition-all duration-300 ease-in-out will-change-transform hover:-translate-y-1 hover:shadow-bone-small"
+          class="basis-full rounded-2xl bg-bone text-onyx transition-all will-change-transform hover:-translate-y-1 hover:shadow-bone-small"
         >
           <a class="block size-full p-4 text-center" :href="subLink.url?.stripTilde()" :target="subLink.target">
             {{ subLink.displayText }}

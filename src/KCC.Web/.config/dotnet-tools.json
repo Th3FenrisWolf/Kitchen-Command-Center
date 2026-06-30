@@ -4,9 +4,7 @@
   "tools": {
     "kentico.xperience.dbmanager": {
       "version": "31.4.4",
-      "commands": [
-        "kentico-xperience-dbmanager"
-      ]
+      "commands": ["kentico-xperience-dbmanager"]
     }
   }
 }

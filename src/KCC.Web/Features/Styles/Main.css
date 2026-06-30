@@ -8,29 +8,34 @@
 /* Sections */
 @import './Sections/MultipleColumnSection.css';
 
-:root {
-  accent-color: var(--color-blue);
-}
+@layer base {
+  :root {
+    accent-color: var(--color-blue);
 
-html {
-  background-color: var(--color-bone);
-}
+    /* Tailwind Overrides */
+    --default-transition-duration: 300ms;
+  }
 
-#app {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-height: 100dvh;
-}
+  html {
+    background-color: var(--color-bone);
+  }
 
-/* Strip the native number-input spinner everywhere; numeric fields style their own controls. */
-input[type='number'] {
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
+  #app {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100dvh;
+  }
 
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  appearance: none;
-  -webkit-appearance: none;
-  margin: 0;
+  /* Strip the native number-input spinner everywhere; numeric fields style their own controls. */
+  input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
