@@ -4,6 +4,7 @@
   import Link from '~/Components/Links/Link.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
+  import StarRating from '~/Components/StarRating/StarRating.vue'
 
   defineProps<{
     variant: VariantSummary
@@ -15,9 +16,6 @@
     <h2 class="mb-4 flex flex-wrap items-center gap-2">
       <i class="fa-solid fa-star text-lg text-peach"></i>
       <ResourceString for="TopVariant" />
-      <Badge class="bg-bone-dark text-onyx-light">
-        <ResourceString for="RankingComingSoon" />
-      </Badge>
     </h2>
 
     <Link
@@ -35,7 +33,11 @@
         <p class="mb-2 max-w-[80ch] text-lg">{{ variant.description }}</p>
 
         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-onyx-light">
-          <span><i class="fa-duotone fa-clock"></i> {{ variant.totalTime }} <ResourceString for="Min" /></span>
+          <span v-if="(variant.reviewCount ?? 0) > 0" class="inline-flex items-center gap-1.5">
+            <StarRating :model-value="variant.averageRating ?? 0" readonly />
+            <span>{{ (variant.averageRating ?? 0).toFixed(1) }}</span>
+          </span>
+          <span><i class="fa-solid fa-clock"></i> {{ variant.totalTime }} <ResourceString for="Min" /></span>
           <span v-if="variant.authorName"><ResourceString for="By" /> {{ variant.authorName }}</span>
         </div>
       </div>

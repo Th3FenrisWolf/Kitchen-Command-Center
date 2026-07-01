@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { configureApi, get, post } from '~/Utilities/Api'
+import { configureApi, del, get, post, put } from '~/Utilities/Api'
 
 const STRINGS = { unexpectedError: 'Something went wrong.', requestFailed: 'Request failed.' }
 
@@ -102,6 +102,24 @@ describe('Api', () => {
 
     const [, init] = fetchMock.mock.calls[0]!
     expect(init.headers['RequestVerificationToken']).toBeUndefined()
+  })
+
+  it('sends the token header on put', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(fakeResponse({ ok: true, body: '{}' }))
+    global.fetch = fetchMock
+    await put('/api/variant/x/review', { rating: 5 })
+    const [, init] = fetchMock.mock.calls[0]!
+    expect(init.method).toBe('PUT')
+    expect(init.headers['RequestVerificationToken']).toBe('tok')
+  })
+
+  it('sends the token header on delete', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(fakeResponse({ ok: true, body: '{}' }))
+    global.fetch = fetchMock
+    await del('/api/variant/x/review')
+    const [, init] = fetchMock.mock.calls[0]!
+    expect(init.method).toBe('DELETE')
+    expect(init.headers['RequestVerificationToken']).toBe('tok')
   })
 
   it('serializes get params via qs into the query string', async () => {

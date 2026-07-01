@@ -28,6 +28,24 @@ describe('variantStats', () => {
     })
   })
 
+  describe('featuredVariant by rating', () => {
+    it('picks the highest-rated variant with at least one review', () => {
+      const list = [
+        v({ name: 'Newer', publishedDate: '2026-06-01T00:00:00Z' }),
+        v({ name: 'Top', averageRating: 5, reviewCount: 2, publishedDate: '2026-01-01T00:00:00Z' }),
+      ]
+      expect(featuredVariant(list)?.name).toBe('Top')
+    })
+
+    it('falls back to newest when no variant is rated', () => {
+      const list = [
+        v({ name: 'Old', publishedDate: '2026-01-01T00:00:00Z' }),
+        v({ name: 'New', publishedDate: '2026-06-01T00:00:00Z' }),
+      ]
+      expect(featuredVariant(list)?.name).toBe('New')
+    })
+  })
+
   describe('averageMinutes', () => {
     it('returns null for an empty list', () => {
       expect(averageMinutes([])).toBeNull()

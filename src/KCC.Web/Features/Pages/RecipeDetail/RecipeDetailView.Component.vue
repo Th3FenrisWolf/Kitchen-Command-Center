@@ -22,6 +22,9 @@
     recipeIcon?: string
     recipeCategory?: string
     recipeGuid: string
+    recipeAverageRating?: number
+    recipeReviewCount?: number
+    recipeTimesCooked?: number
     addVariantUrl: string
     startedByName?: string
     variants: VariantSummary[]
@@ -79,6 +82,9 @@
     :description="recipeDescription"
     :icon="recipeIcon"
     :image="recipeImagePath"
+    :average-rating="recipeAverageRating"
+    :review-count="recipeReviewCount"
+    :times-cooked="recipeTimesCooked"
   >
     <template v-if="recipeCategory || startedByName" #eyebrow>
       <span v-if="recipeCategory">{{ recipeCategory }}</span>

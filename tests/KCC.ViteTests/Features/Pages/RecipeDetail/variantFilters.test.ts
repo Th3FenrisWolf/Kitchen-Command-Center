@@ -61,4 +61,23 @@ describe('variantFilters', () => {
       expect(sortVariants(list, 'newest').map((x) => x.name)).toEqual(['New', 'Old'])
     })
   })
+
+  describe('sortVariants by rating', () => {
+    it('orders by averageRating descending with unrated last', () => {
+      const list = [
+        v({ name: 'Unrated' }),
+        v({ name: 'Low', averageRating: 2, reviewCount: 1 }),
+        v({ name: 'High', averageRating: 5, reviewCount: 3 }),
+      ]
+      expect(sortVariants(list, 'rating').map((x) => x.name)).toEqual(['High', 'Low', 'Unrated'])
+    })
+
+    it('treats reviewCount 0 as unrated regardless of averageRating', () => {
+      const list = [
+        v({ name: 'Ghost', averageRating: 4, reviewCount: 0 }),
+        v({ name: 'Real', averageRating: 1, reviewCount: 2 }),
+      ]
+      expect(sortVariants(list, 'rating').map((x) => x.name)).toEqual(['Real', 'Ghost'])
+    })
+  })
 })

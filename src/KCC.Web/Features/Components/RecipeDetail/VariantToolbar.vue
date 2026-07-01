@@ -11,10 +11,10 @@
 
   const rs = useResourceStrings()
 
-  const sorts: { key: SortKey | 'rating'; labelKey: string; disabled: boolean }[] = [
-    { key: 'newest', labelKey: 'SortNewest', disabled: false },
-    { key: 'fastest', labelKey: 'SortFastest', disabled: false },
-    { key: 'rating', labelKey: 'SortTopRated', disabled: true },
+  const sorts: { key: SortKey; labelKey: string }[] = [
+    { key: 'newest', labelKey: 'SortNewest' },
+    { key: 'fastest', labelKey: 'SortFastest' },
+    { key: 'rating', labelKey: 'SortTopRated' },
   ]
 
   const segBase = 'cursor-pointer rounded-[13px] px-4 py-1.5 text-sm font-bold transition-colors'
@@ -40,14 +40,8 @@
           v-for="option in sorts"
           :key="option.key"
           type="button"
-          :disabled="option.disabled"
-          :title="option.disabled ? rs('ComingSoon') : undefined"
-          :class="[
-            segBase,
-            sort === option.key ? 'bg-surface-500 text-bone' : 'text-onyx-light',
-            option.disabled ? 'cursor-not-allowed opacity-50' : '',
-          ]"
-          @click="!option.disabled && (sort = option.key as SortKey)"
+          :class="[segBase, sort === option.key ? 'bg-surface-500 text-bone' : 'text-onyx-light']"
+          @click="sort = option.key"
         >
           <ResourceString :for="option.labelKey" />
         </button>

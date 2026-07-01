@@ -1,9 +1,13 @@
 import type { VariantSummary } from '~/Types/Recipe'
 import { sortVariants } from './variantFilters'
 
-/** The variant a recipe page features (currently the newest). */
+/** The variant a recipe page features: top-rated (with at least one review), else newest. */
 export function featuredVariant(variants: VariantSummary[]): VariantSummary | undefined {
   if (variants.length === 0) return undefined
+  const rated = variants.filter((variant) => (variant.reviewCount ?? 0) > 0)
+  if (rated.length > 0) {
+    return sortVariants(rated, 'rating')[0]
+  }
   return sortVariants(variants, 'newest')[0]
 }
 

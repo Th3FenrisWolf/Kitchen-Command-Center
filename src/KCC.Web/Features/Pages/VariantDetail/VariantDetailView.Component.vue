@@ -13,7 +13,9 @@
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
   import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
-  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
+  import VariantCookedToggle from '~/Components/VariantDetail/VariantCookedToggle.vue'
+  import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
+  import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
 
@@ -42,6 +44,12 @@
     breadcrumbs?: Breadcrumb[]
     siblingVariants: SiblingVariant[]
     resourceStrings?: Record<string, string>
+    variantGuid: string
+    averageRating?: number
+    reviewCount?: number
+    cookedCount?: number
+    hasCooked?: boolean
+    isAuthenticated?: boolean
   }>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
@@ -80,6 +88,12 @@
       >
         <i class="fa-solid fa-play text-sm" aria-hidden="true"></i> <ResourceString for="CookMode" />
       </button>
+      <VariantCookedToggle
+        :variant-guid="variantGuid"
+        :cooked-count="cookedCount"
+        :has-cooked="hasCooked"
+        :is-authenticated="isAuthenticated"
+      />
     </div>
   </div>
 
@@ -90,6 +104,9 @@
     :icon="icon"
     :image="coverImage"
     :authorName="createdByName"
+    :average-rating="averageRating"
+    :review-count="reviewCount"
+    :times-cooked="cookedCount"
   >
     <template #eyebrow>
       <span><ResourceString for="VariantOf" /> {{ recipeName }}</span>
@@ -121,15 +138,14 @@
     <VariantInstructions class="lg:col-span-3" :instructions="instructions" />
   </section>
 
-  <h2 class="mt-8 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-    <i class="fa-solid fa-lightbulb text-lg text-yellow"></i> <ResourceString for="CookNotes" />
-  </h2>
-  <ComingSoonSection text-key="CookNotesComingSoon" icon="fa-solid fa-lightbulb text-4xl opacity-50" />
+  <VariantCookNotes :variant-guid="variantGuid" :is-authenticated="isAuthenticated" />
 
-  <h2 class="mt-8 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-    <i class="fa-solid fa-star text-lg text-peach"></i> <ResourceString for="RatingsReviews" />
-  </h2>
-  <ComingSoonSection text-key="ReviewsComingSoon" icon="fa-solid fa-star text-4xl opacity-50" />
+  <VariantReviews
+    :variant-guid="variantGuid"
+    :average-rating="averageRating"
+    :review-count="reviewCount"
+    :is-authenticated="isAuthenticated"
+  />
   <VariantSiblings :variants="siblingVariants" />
 
   <CookMode

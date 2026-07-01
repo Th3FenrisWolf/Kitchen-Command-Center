@@ -1,6 +1,6 @@
 import type { VariantSummary } from '~/Types/Recipe'
 
-export type SortKey = 'newest' | 'fastest'
+export type SortKey = 'newest' | 'fastest' | 'rating'
 export type ViewMode = 'grid' | 'list'
 
 export interface VariantFilterState {
@@ -15,10 +15,16 @@ export function tagOptions(variants: VariantSummary[]): string[] {
   return ['', ...[...set].sort((a, b) => a.localeCompare(b))]
 }
 
+function ratingOf(variant: VariantSummary): number {
+  return (variant.reviewCount ?? 0) > 0 ? (variant.averageRating ?? 0) : -1
+}
+
 export function sortVariants(variants: VariantSummary[], sort: SortKey): VariantSummary[] {
   const list = variants.slice()
   if (sort === 'fastest') {
     list.sort((a, b) => a.totalTime - b.totalTime)
+  } else if (sort === 'rating') {
+    list.sort((a, b) => ratingOf(b) - ratingOf(a))
   } else {
     list.sort((a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime())
   }

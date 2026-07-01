@@ -26,6 +26,12 @@ public class VariantDetailViewModel : BasePageViewModel
     public string RecipeName { get; set; }
     public string RecipeSlug { get; set; }
     public string CreatedByName { get; set; }
+    public Guid VariantGuid { get; set; }
+    public double AverageRating { get; set; }
+    public int ReviewCount { get; set; }
+    public int CookedCount { get; set; }
+    public bool HasCooked { get; set; }
+    public bool IsAuthenticated { get; set; }
     public IEnumerable<VariantBreadcrumb> Breadcrumbs { get; set; } = [];
     public IEnumerable<SiblingVariantViewModel> SiblingVariants { get; set; } = [];
 }

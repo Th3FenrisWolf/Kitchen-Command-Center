@@ -52,6 +52,26 @@ export function post<T>(url: string, body?: unknown): Promise<ApiResult<T>> {
   })
 }
 
+export function put<T>(url: string, body?: unknown): Promise<ApiResult<T>> {
+  return request<T>(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+}
+
+export function del<T>(url: string): Promise<ApiResult<T>> {
+  return request<T>(url, {
+    method: 'DELETE',
+    headers: {
+      ...(config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}),
+    },
+  })
+}
+
 async function request<T>(url: string, init: RequestInit): Promise<ApiResult<T>> {
   let response: Response
   try {
