@@ -51,6 +51,21 @@ export function featuredVariant(variants: RecipeVariantSummary[]): RecipeVariant
   return sortVariants(variants, 'newest')[0]
 }
 
+export function averageMinutes(variants: RecipeVariantSummary[]): number | null {
+  if (variants.length === 0) return null
+  const total = variants.reduce((sum, variant) => sum + variant.totalTime, 0)
+  return Math.round(total / variants.length)
+}
+
+export function contributorCount(variants: RecipeVariantSummary[]): number {
+  const names = new Set<string>()
+  variants.forEach((variant) => {
+    const name = variant.authorName?.trim()
+    if (name) names.add(name)
+  })
+  return names.size
+}
+
 export const ACCENTS = [
   'rosewater', 'flamingo', 'pink', 'mauve', 'red', 'maroon', 'peach',
   'yellow', 'green', 'teal', 'sky', 'sapphire', 'blue', 'lavender',

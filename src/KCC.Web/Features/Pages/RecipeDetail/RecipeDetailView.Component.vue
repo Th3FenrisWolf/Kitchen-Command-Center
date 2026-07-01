@@ -4,15 +4,19 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import {
     accentForName,
+    averageMinutes,
+    contributorCount,
     featuredVariant,
     filterVariants,
     tagOptions,
     type SortKey,
     type ViewMode,
   } from '~/Pages/RecipeDetail/variantFilters'
+  import type { StatTileSpec } from '~/Components/Detail/types'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import RecipeBreadcrumb from './RecipeBreadcrumb.vue'
+  import RecipeBreadcrumb from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import RecipeHero from './RecipeHero.vue'
+  import StatTiles from '~/Components/Detail/StatTiles.vue'
   import FeaturedVariant from './FeaturedVariant.vue'
   import VariantToolbar from './VariantToolbar.vue'
   import VariantGrid from './VariantGrid.vue'
@@ -33,7 +37,7 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  useResourceStrings(props.resourceStrings, 'RecipeDetail')
+  const t = useResourceStrings(props.resourceStrings, 'RecipeDetail')
 
   const addVariantHref = computed(
     () => `${props.addVariantUrl}?recipe=${encodeURIComponent(props.recipeGuid)}`,
@@ -53,6 +57,14 @@
   const fastestMinutes = computed(() =>
     props.variants.length ? Math.min(...props.variants.map((variant) => variant.totalTime)) : null,
   )
+
+  const statTiles = computed<StatTileSpec[]>(() => [
+    { icon: 'fa-solid fa-layer-group', value: props.variants.length, label: t('Variants') },
+    { icon: 'fa-solid fa-bolt', value: fastestMinutes.value, unit: 'min', label: t('Fastest') },
+    { icon: 'fa-solid fa-clock', value: averageMinutes(props.variants), unit: 'min', label: t('AvgTime') },
+    { icon: 'fa-solid fa-users', value: contributorCount(props.variants), label: t('Contributors') },
+  ])
+
   const resultLabel = computed(() => `${filtered.value.length} of ${props.variants.length}`)
 
   const clearFilters = () => {
@@ -80,10 +92,10 @@
     :image="recipeImagePath"
     :icon="recipeIcon"
     :accent="heroAccent"
-    :variant-count="variants.length"
-    :fastest-minutes="fastestMinutes"
     :add-variant-url="addVariantHref"
   />
+
+  <StatTiles :tiles="statTiles" />
 
   <FeaturedVariant v-if="featured" :variant="featured" />
 
