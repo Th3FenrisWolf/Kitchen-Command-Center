@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed } from 'vue'
+  import { computed, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
   import type { ImageItem } from '~/Types/ContentTypes'
   import { brandColorFor } from '~/Utilities/BrandColor'
@@ -8,7 +8,6 @@
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
   import Badge from '~/Components/Badge/Badge.vue'
   import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
-  import ComingSoonBadge from '~/Components/ComingSoon/ComingSoonBadge.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
@@ -16,6 +15,7 @@
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
   import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
+  import CookMode from './CookMode.vue'
 
   const props = defineProps<{
     variantName: string
@@ -46,6 +46,12 @@
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
 
+  const cookModeOpen = ref(false)
+  const hasInstructions = computed(() => props.instructions.length > 0)
+  const openCookMode = () => {
+    if (hasInstructions.value) cookModeOpen.value = true
+  }
+
   const coverImage = computed(() => props.images?.[0]?.Asset?.Url)
 
   const statTiles = computed<StatTileSpec[]>(() => {
@@ -64,14 +70,15 @@
   <div class="flex items-center justify-between gap-4 pt-4">
     <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
     <div class="hidden items-center gap-2 lg:flex">
-      <ComingSoonBadge />
       <button
         type="button"
-        disabled
-        :title="rs('ComingSoon')"
-        class="flex-none cursor-not-allowed rounded-2xl bg-surface-500 px-4 py-2 text-bone opacity-60"
+        data-test="cook-mode-open-desktop"
+        :disabled="!hasInstructions"
+        :title="hasInstructions ? rs('CookMode') : rs('ComingSoon')"
+        class="flex-none rounded-2xl bg-surface-500 px-4 py-2.5 text-bone transition-opacity hover:bg-surface-400 disabled:cursor-not-allowed disabled:opacity-60"
+        @click="openCookMode"
       >
-        <i class="fa-solid fa-play text-sm"></i> <ResourceString for="CookMode" />
+        <i class="fa-solid fa-play text-sm" aria-hidden="true"></i> <ResourceString for="CookMode" />
       </button>
     </div>
   </div>
@@ -124,4 +131,13 @@
   </h2>
   <ComingSoonSection text-key="ReviewsComingSoon" icon="fa-solid fa-star text-4xl opacity-50" />
   <VariantSiblings :variants="siblingVariants" />
+
+  <CookMode
+    :open="cookModeOpen"
+    :instructions="instructions"
+    :ingredients="ingredients"
+    :servings="servings"
+    :resource-strings="resourceStrings"
+    @close="cookModeOpen = false"
+  />
 </template>
