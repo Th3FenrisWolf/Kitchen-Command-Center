@@ -63,10 +63,12 @@
   input,
   textarea,
   select,
-  [tabindex]:not([tabindex="-1"]) {
+  [tabindex]:not([tabindex='-1']) {
     outline: 2px solid transparent;
     outline-offset: 2px;
-    transition: outline-color 0.2s, outline-offset 0.2s;
+    transition:
+      outline-color 0.2s,
+      outline-offset 0.2s;
   }
 
   :focus-visible {
@@ -94,7 +96,9 @@
 @utility outline-focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-  transition: outline-color 0.2s, outline-offset 0.2s;
+  transition:
+    outline-color 0.2s,
+    outline-offset 0.2s;
 }
 
 @utility fa-primary-* {

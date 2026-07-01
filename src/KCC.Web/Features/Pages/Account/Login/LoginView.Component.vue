@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
-  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
@@ -12,7 +12,7 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  const rs = useResourceStrings(props.resourceStrings, 'Login')
+  const rs = provideResourceStrings(props.resourceStrings, 'Login')
 
   const swap = ref(false)
   const isSignIn = ref(true)

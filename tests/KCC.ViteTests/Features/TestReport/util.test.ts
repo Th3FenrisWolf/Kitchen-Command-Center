@@ -5,7 +5,7 @@ import {
   fmtDuration,
   pickNewestByMtime,
   computeExitCode,
-} from "../../../../scripts/test-report/util.mjs";
+} from "../../../scripts/util.mjs";
 
 describe("util", () => {
   it("emptySummary is all-zero with the fixed keys", () => {

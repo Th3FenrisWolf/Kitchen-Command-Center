@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
-  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import Link from '~/Components/Links/Link.Component.vue'
   import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
@@ -15,7 +15,7 @@
     resourceStrings?: Record<string, string>
   }>()
 
-  const rs = useResourceStrings(props.resourceStrings, 'Account')
+  const rs = provideResourceStrings(props.resourceStrings, 'Account')
 
   const firstName = ref(props.firstName ?? '')
   const lastName = ref(props.lastName ?? '')
@@ -37,9 +37,7 @@
     const result = await post('/api/profile', { firstName: firstName.value, lastName: lastName.value })
     profileSubmitting.value = false
 
-    profileMessage.value = result.success
-      ? { ok: true, text: rs('ProfileSaved') }
-      : { ok: false, text: result.errorMessage }
+    profileMessage.value = result.success ? { ok: true, text: rs('ProfileSaved') } : { ok: false, text: result.errorMessage }
   }
 
   const changePassword = async () => {
@@ -76,10 +74,10 @@
       </template>
 
       <template #action-button>
-        <AppLink :href="backUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+        <Link :href="backUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
           <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="BackToProfile" />
-        </AppLink>
+        </Link>
       </template>
     </SmallHero>
 

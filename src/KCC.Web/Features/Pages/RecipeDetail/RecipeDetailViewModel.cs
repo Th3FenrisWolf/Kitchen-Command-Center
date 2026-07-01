@@ -8,7 +8,7 @@ public class RecipeDetailViewModel : BasePageViewModel
     public string RecipeDescription { get; set; }
     public string RecipeImagePath { get; set; }
     public string RecipeIcon { get; set; }
-    public CMS.ContentEngine.Tag RecipeCategory { get; set; }
+    public string RecipeCategory { get; set; }
     public Guid RecipeGuid { get; set; }
     public string AddVariantUrl { get; set; }
     public string StartedByName { get; set; }

@@ -10,7 +10,7 @@ export interface Instruction {
   text: string
 }
 
-export interface RecipeVariantSummary {
+export interface VariantSummary {
   name: string
   description: string
   slug: string
@@ -40,7 +40,7 @@ export interface RecipeVariant {
   slug: string
   recipeSlug: string
   recipeName: string
-  siblingVariants: RecipeVariantSummary[]
+  siblingVariants: VariantSummary[]
 }
 
 export interface RecipeSummary {
@@ -59,7 +59,7 @@ export interface RecipeDetail {
   image?: string
   category?: string
   slug: string
-  variants: RecipeVariantSummary[]
+  variants: VariantSummary[]
 }
 
 export interface SiblingVariant {

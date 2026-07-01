@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderHtml } from "../../../../scripts/test-report/template.mjs";
+import { renderHtml } from "../../../scripts/template.mjs";
 
 const report = {
   generatedAt: "2026-06-13T15:05:30.000Z",

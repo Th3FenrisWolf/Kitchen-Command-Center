@@ -62,10 +62,10 @@ public class RecipeApiControllerTests
 
         var data = RecipeApiController.BuildRecipeData(RecipeRequest(), "fa-icon", author);
 
-        _ = await Assert.That(data[nameof(KCC.Recipe.AuthorMemberGuid)]).IsEqualTo(author);
-        _ = await Assert.That(data[nameof(KCC.Recipe.Name)]).IsEqualTo("Mac & Cheese");
-        _ = await Assert.That(data[nameof(KCC.Recipe.Icon)]).IsEqualTo("fa-icon");
-        _ = await Assert.That(data[nameof(KCC.Recipe.Description)]).IsEqualTo("Cheesy goodness");
+        _ = await Assert.That(data[nameof(Recipe.AuthorMemberGuid)]).IsEqualTo(author);
+        _ = await Assert.That(data[nameof(Recipe.Name)]).IsEqualTo("Mac & Cheese");
+        _ = await Assert.That(data[nameof(Recipe.Icon)]).IsEqualTo("fa-icon");
+        _ = await Assert.That(data[nameof(Recipe.Description)]).IsEqualTo("Cheesy goodness");
     }
 
     [Test]
@@ -75,15 +75,15 @@ public class RecipeApiControllerTests
 
         var data = RecipeApiController.BuildVariantData(VariantRequest(), "fa-icon", author);
 
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.AuthorMemberGuid)]).IsEqualTo(author);
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.Name)]).IsEqualTo("Classic");
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.PrepTime)]).IsEqualTo(10);
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.Description)]).IsEqualTo("The classic take");
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.Icon)]).IsEqualTo("fa-icon");
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.CookTime)]).IsEqualTo(20);
-        _ = await Assert.That(data[nameof(KCC.RecipeVariant.ServingNumber)]).IsEqualTo(4);
-        _ = await Assert.That((string)data[nameof(KCC.RecipeVariant.Ingredients)]).Contains("elbow macaroni");
-        _ = await Assert.That((string)data[nameof(KCC.RecipeVariant.Instructions)]).Contains("Boil it.");
+        _ = await Assert.That(data[nameof(RecipeVariant.AuthorMemberGuid)]).IsEqualTo(author);
+        _ = await Assert.That(data[nameof(RecipeVariant.Name)]).IsEqualTo("Classic");
+        _ = await Assert.That(data[nameof(RecipeVariant.PrepTime)]).IsEqualTo(10);
+        _ = await Assert.That(data[nameof(RecipeVariant.Description)]).IsEqualTo("The classic take");
+        _ = await Assert.That(data[nameof(RecipeVariant.Icon)]).IsEqualTo("fa-icon");
+        _ = await Assert.That(data[nameof(RecipeVariant.CookTime)]).IsEqualTo(20);
+        _ = await Assert.That(data[nameof(RecipeVariant.ServingNumber)]).IsEqualTo(4);
+        _ = await Assert.That((string)data[nameof(RecipeVariant.Ingredients)]).Contains("elbow macaroni");
+        _ = await Assert.That((string)data[nameof(RecipeVariant.Instructions)]).Contains("Boil it.");
     }
 
     [Test]

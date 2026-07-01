@@ -24,7 +24,7 @@
 
       @if (Model.Card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
       {
-        <UnderlineLink color="bg-onyx" link-to="@link.Url">
+        <UnderlineLink href="@link.Url">
           @link.DisplayText
         </UnderlineLink>
       }

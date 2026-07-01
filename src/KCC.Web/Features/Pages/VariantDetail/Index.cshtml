@@ -1,0 +1,23 @@
+@using KCC.Web.Features.Helpers
+@using KCC.Web.Features.Pages.VariantDetail
+
+@model VariantDetailViewModel
+
+<VariantDetailView
+  variant-name="@Model.VariantName"
+  variant-description="@Model.VariantDescription"
+  icon="@Model.Icon"
+  :images="@Vue.Prop(Model.Images)"
+  :prep-time="@Vue.Prop(Model.PrepTime)"
+  :cook-time="@Vue.Prop(Model.CookTime)"
+  :servings="@Vue.Prop(Model.Servings)"
+  :tags="@Vue.Prop(Model.Tags)"
+  :ingredients="@Vue.Prop(Model.Ingredients)"
+  :instructions="@Vue.Prop(Model.Instructions)"
+  recipe-name="@Model.RecipeName"
+  recipe-slug="@Model.RecipeSlug"
+  created-by-name="@Model.CreatedByName"
+  :breadcrumbs="@Vue.Prop(Model.Breadcrumbs)"
+  :sibling-variants="@Vue.Prop(Model.SiblingVariants)"
+  :resource-strings="@Vue.Prop(Model.ResourceStrings)"
+/>

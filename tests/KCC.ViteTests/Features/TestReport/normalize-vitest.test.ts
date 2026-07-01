@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeVitest, mapVitestStatus } from "../../../../scripts/test-report/normalize.mjs";
+import { normalizeVitest, mapVitestStatus } from "../../../scripts/normalize.mjs";
 
 const descriptor = { id: "web-frontend", label: "Web Frontend" };
 const repoRoot = "C:/Repos/Kitchen-Command-Center";

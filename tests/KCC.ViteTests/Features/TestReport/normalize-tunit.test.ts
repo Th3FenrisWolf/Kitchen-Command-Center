@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeTunit } from "../../../../scripts/test-report/normalize.mjs";
+import { normalizeTunit } from "../../../scripts/normalize.mjs";
 
 const descriptor = { id: "unit", label: "Unit" };
 

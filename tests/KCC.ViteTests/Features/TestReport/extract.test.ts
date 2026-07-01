@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { gzipSync } from "node:zlib";
-import { extractTunitData } from "../../../../scripts/test-report/extract.mjs";
+import { extractTunitData } from "../../../scripts/extract.mjs";
 
 function report(data: unknown, compressed = true): string {
   const json = JSON.stringify(data);

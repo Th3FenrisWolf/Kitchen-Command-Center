@@ -512,4 +512,4 @@ src/KCC.ResourceStrings/Client/node_modules/
 .superpowers
 
 # Combined test report output
-/TestResults/
+/tests/results/
