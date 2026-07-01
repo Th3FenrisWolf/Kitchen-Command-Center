@@ -7,10 +7,12 @@
   recipe-name="@Model.RecipeName"
   recipe-description="@Model.RecipeDescription"
   recipe-image-path="@Model.RecipeImagePath"
+  recipe-icon="@Model.RecipeIcon"
   recipe-category="@Model.RecipeCategory"
   recipe-guid="@Model.RecipeGuid"
   add-variant-url="@Model.AddVariantUrl"
   started-by-name="@Model.StartedByName"
+  :breadcrumbs="@Vue.Prop(Model.Breadcrumbs)"
   :variants="@Vue.Prop(Model.Variants)"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />

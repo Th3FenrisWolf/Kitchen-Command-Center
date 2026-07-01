@@ -1,81 +1,108 @@
 <script setup lang="ts">
-  import type { RecipeVariantSummary } from '~/Types/Recipe'
+  import { computed, ref } from 'vue'
+  import type { Breadcrumb, RecipeVariantSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
+  import {
+    accentForName,
+    featuredVariant,
+    filterVariants,
+    tagOptions,
+    type SortKey,
+    type ViewMode,
+  } from '~/Pages/RecipeDetail/variantFilters'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import RecipeBreadcrumb from './RecipeBreadcrumb.vue'
+  import RecipeHero from './RecipeHero.vue'
+  import FeaturedVariant from './FeaturedVariant.vue'
+  import VariantToolbar from './VariantToolbar.vue'
+  import VariantGrid from './VariantGrid.vue'
+  import VariantList from './VariantList.vue'
+  import VariantsEmptyState from './VariantsEmptyState.vue'
 
   const props = defineProps<{
     recipeName: string
     recipeDescription: string
     recipeImagePath?: string
+    recipeIcon?: string
     recipeCategory?: string
     recipeGuid: string
     addVariantUrl: string
     startedByName?: string
     variants: RecipeVariantSummary[]
+    breadcrumbs?: Breadcrumb[]
     resourceStrings?: Record<string, string>
   }>()
 
   useResourceStrings(props.resourceStrings, 'RecipeDetail')
+
+  const addVariantHref = computed(
+    () => `${props.addVariantUrl}?recipe=${encodeURIComponent(props.recipeGuid)}`,
+  )
+
+  const search = ref('')
+  const tag = ref('All')
+  const sort = ref<SortKey>('newest')
+  const view = ref<ViewMode>('grid')
+
+  const tags = computed(() => tagOptions(props.variants))
+  const filtered = computed(() =>
+    filterVariants(props.variants, { search: search.value, tag: tag.value, sort: sort.value }),
+  )
+  const featured = computed(() => featuredVariant(props.variants))
+  const heroAccent = computed(() => accentForName(props.recipeName))
+  const fastestMinutes = computed(() =>
+    props.variants.length ? Math.min(...props.variants.map((variant) => variant.totalTime)) : null,
+  )
+  const resultLabel = computed(() => `${filtered.value.length} of ${props.variants.length}`)
+
+  const clearFilters = () => {
+    search.value = ''
+    tag.value = 'All'
+  }
 </script>
 
 <template>
-  <SmallHero dark>
-    <template #title>{{ recipeName }}</template>
-    <template #action-button>
-      <AppLink
-        :href="`${props.addVariantUrl}?recipe=${encodeURIComponent(props.recipeGuid)}`"
-        class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx"
-      >
-        <ResourceString for="AddVariant" />
-      </AppLink>
-    </template>
-  </SmallHero>
+  <div class="flex items-center justify-between gap-4 pt-5">
+    <RecipeBreadcrumb v-if="breadcrumbs?.length" :items="breadcrumbs" />
+    <AppLink
+      :href="addVariantHref"
+      class="hidden flex-none rounded-2xl bg-surface-500 px-4 py-2.5 text-bone transition-colors hover:bg-surface-400 lg:inline-flex"
+    >
+      ＋ <ResourceString for="AddVariant" />
+    </AppLink>
+  </div>
 
-  <section class="flex flex-col gap-8">
-    <div class="flex flex-col gap-2">
-      <img v-if="recipeImagePath" :src="recipeImagePath" :alt="recipeName" class="h-64 w-full rounded-3xl object-cover" />
+  <RecipeHero
+    :name="recipeName"
+    :category="recipeCategory"
+    :started-by-name="startedByName"
+    :description="recipeDescription"
+    :image="recipeImagePath"
+    :icon="recipeIcon"
+    :accent="heroAccent"
+    :variant-count="variants.length"
+    :fastest-minutes="fastestMinutes"
+    :add-variant-url="addVariantHref"
+  />
 
-      <p class="text-lg">{{ recipeDescription }}</p>
-      <p v-if="startedByName" class="text-sm text-onyx-light"><ResourceString for="StartedBy" /> {{ startedByName }}</p>
+  <FeaturedVariant v-if="featured" :variant="featured" />
 
-      <span v-if="recipeCategory" class="w-fit rounded-full bg-overlay-300 px-3 py-1 text-sm">
-        {{ recipeCategory }}
-      </span>
+  <section class="mt-8">
+    <div class="mb-4 flex items-baseline justify-between gap-4">
+      <h2 class="font-casual text-4xl tracking-[1px]">
+        <ResourceString for="AllVariants" />
+        <span class="font-hazelnut text-lg font-medium text-onyx-light"> — {{ resultLabel }}</span>
+      </h2>
     </div>
 
-    <div>
-      <h2 class="mb-4 text-2xl font-bold"><ResourceString for="Variants" /></h2>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <AppLink
-          v-for="variant in variants"
-          :key="variant.slug"
-          :href="variant.slug"
-          :class="[
-            'group/card grid gap-2 rounded-3xl bg-bone p-4 text-onyx shadow-primary transition-all duration-300',
-            'focus-within:shadow-primary-raised hover:shadow-primary-raised',
-          ]"
-        >
-          <img v-if="variant.image" :src="variant.image" :alt="variant.name" class="h-40 w-full rounded-2xl object-cover" />
+    <VariantToolbar v-model:search="search" v-model:sort="sort" v-model:tag="tag" v-model:view="view" :tags="tags" />
 
-          <div v-else class="flex h-40 w-full items-center justify-center rounded-2xl bg-bone-dark" aria-hidden="true">
-            <i :class="variant.icon" class="text-6xl"></i>
-          </div>
-
-          <span class="font-casual text-2xl">{{ variant.name }}</span>
-          <span v-if="variant.authorName" class="text-xs text-onyx-light">
-            <ResourceString for="By" /> {{ variant.authorName }}
-          </span>
-
-          <p class="text-sm">{{ variant.description }}</p>
-
-          <div v-if="variant.tags.length" class="flex flex-wrap gap-1">
-            <span v-for="tag in variant.tags" :key="tag" class="rounded-full bg-overlay-300 px-2 py-0.5 text-xs">
-              {{ tag }}
-            </span>
-          </div>
-        </AppLink>
-      </div>
-    </div>
+    <VariantGrid
+      v-if="view === 'grid' && filtered.length"
+      :variants="filtered"
+      :add-variant-url="addVariantHref"
+    />
+    <VariantList v-else-if="view === 'list' && filtered.length" :variants="filtered" />
+    <VariantsEmptyState v-else-if="!filtered.length" @clear="clearFilters" />
   </section>
 </template>

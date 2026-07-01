@@ -18,6 +18,13 @@ export interface RecipeVariantSummary {
   icon?: string
   authorName?: string
   tags: string[]
+  totalTime: number
+  publishedDate: string
+}
+
+export interface Breadcrumb {
+  linkText: string
+  url: string
 }
 
 export interface RecipeVariant {
