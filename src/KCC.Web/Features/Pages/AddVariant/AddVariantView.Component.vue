@@ -8,6 +8,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { post } from '~/Utilities/Api'
+  import { stepLabelKey, validIngredients, validInstructions } from '~/Pages/AddVariant/reviewSummary'
 
   const props = defineProps<{
     recipeId: string
@@ -46,6 +47,9 @@
     }
   })
   /* eslint-enable vue/script-indent */
+
+  const reviewIngredients = computed(() => validIngredients(ingredientList.value))
+  const reviewInstructions = computed(() => validInstructions(instructionList.value))
 
   const handleSubmit = async () => {
     isSubmitting.value = true
@@ -281,10 +285,10 @@
       <ResourceString for="ReviewAndSubmit" as="h2" class="text-2xl font-bold" />
 
       <div class="w-full rounded-3xl bg-surface-500 p-4 text-bone">
-        <h3 class="text-xl font-bold">{{ variantName }}</h3>
-        <p v-if="variantDescription">{{ variantDescription }}</p>
+        <h3 class="font-casual text-3xl">{{ variantName }}</h3>
+        <p v-if="variantDescription" class="text-bone/90">{{ variantDescription }}</p>
 
-        <div class="mt-2 flex gap-4 text-sm">
+        <div class="mt-3 flex flex-wrap gap-2 text-sm">
           <span v-if="prepTime" class="rounded-full bg-bone px-3 py-1 text-onyx">
             <ResourceString for="PrepTime" />: {{ prepTime }} <ResourceString for="Min" />
           </span>
@@ -298,28 +302,32 @@
       </div>
 
       <div class="w-full rounded-3xl bg-surface-500 p-4 text-bone">
-        <h4 class="mb-2 font-bold">
-          <ResourceString for="Ingredients" class="mr-2" /> ({{ ingredientList.filter((i) => i.name.trim()).length }})
-        </h4>
+        <h4 class="mb-3 font-bold"><ResourceString for="Ingredients" class="mr-2" /> ({{ reviewIngredients.length }})</h4>
 
-        <ul>
-          <li v-for="(ing, i) in ingredientList.filter((i) => i.name.trim())" :key="i">
+        <ul class="flex flex-col gap-2">
+          <li
+            v-for="(ing, i) in reviewIngredients"
+            :key="i"
+            class="flex items-center gap-2 rounded-2xl bg-bone p-3 text-onyx"
+          >
             <span v-if="!ing.isEyeballed && ing.quantity">{{ ing.quantity }} {{ ing.unit }}</span>
-            <span v-else><ResourceString for="ToTaste" /></span> — {{ ing.name }}
+            <span class="font-bold">{{ ing.name }}</span>
+            <span v-if="ing.isEyeballed" class="ml-auto italic"><ResourceString for="ToTaste" /></span>
           </li>
         </ul>
       </div>
 
       <div class="w-full rounded-3xl bg-surface-500 p-4 text-bone">
-        <h4 class="mb-2 font-bold">
+        <h4 class="mb-3 font-bold">
           <ResourceString for="Instructions" class="mr-2" />
-          <span class="mr-2">({{ instructionList.filter((i) => i.text.trim()).length }}</span>
-          <ResourceString :for="instructionList.length === 1 ? 'Step' : 'Steps'" />)
+          <span class="mr-2">({{ reviewInstructions.length }}</span>
+          <ResourceString :for="stepLabelKey(reviewInstructions.length)" />)
         </h4>
 
-        <ol class="list-outside list-decimal pl-4">
-          <li v-for="(inst, i) in instructionList.filter((i) => i.text.trim())" class="whitespace-pre" :key="i">
-            {{ inst.text }}
+        <ol class="flex flex-col gap-2">
+          <li v-for="(inst, i) in reviewInstructions" :key="i" class="flex gap-4 rounded-2xl bg-bone p-4 text-onyx">
+            <span class="font-casual text-3xl text-overlay-300">{{ i + 1 }}</span>
+            <span class="pt-1">{{ inst.text }}</span>
           </li>
         </ol>
       </div>
