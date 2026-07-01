@@ -54,6 +54,12 @@ namespace KCC
 
 
 		/// <summary>
+		/// Difficulty.
+		/// </summary>
+		public string Difficulty { get; set; }
+
+
+		/// <summary>
 		/// Images.
 		/// </summary>
 		public IEnumerable<ImageItem> Images { get; set; }
@@ -75,6 +81,48 @@ namespace KCC
 		/// ServingNumber.
 		/// </summary>
 		public int ServingNumber { get; set; }
+
+
+		/// <summary>
+		/// Calories.
+		/// </summary>
+		public int? Calories { get; set; }
+
+
+		/// <summary>
+		/// ProteinG.
+		/// </summary>
+		public int? ProteinG { get; set; }
+
+
+		/// <summary>
+		/// CarbsG.
+		/// </summary>
+		public int? CarbsG { get; set; }
+
+
+		/// <summary>
+		/// FatG.
+		/// </summary>
+		public int? FatG { get; set; }
+
+
+		/// <summary>
+		/// FiberG.
+		/// </summary>
+		public int? FiberG { get; set; }
+
+
+		/// <summary>
+		/// SugarG.
+		/// </summary>
+		public int? SugarG { get; set; }
+
+
+		/// <summary>
+		/// SodiumMg.
+		/// </summary>
+		public int? SodiumMg { get; set; }
 
 
 		/// <summary>

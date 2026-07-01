@@ -5,6 +5,7 @@
   import { brandColorFor } from '~/Utilities/BrandColor'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
+  import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
   import Badge from '~/Components/Badge/Badge.vue'
   import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import ComingSoonBadge from '~/Components/ComingSoon/ComingSoonBadge.vue'
@@ -24,6 +25,14 @@
     prepTime?: number
     cookTime?: number
     servings?: number
+    difficulty?: string
+    calories?: number | null
+    proteinG?: number | null
+    carbsG?: number | null
+    fatG?: number | null
+    fiberG?: number | null
+    sugarG?: number | null
+    sodiumMg?: number | null
     tags: string[]
     ingredients: Ingredient[]
     instructions: Instruction[]
@@ -45,7 +54,8 @@
     if (props.cookTime)
       tiles.push({ icon: 'fa-duotone fa-fire-burner', value: props.cookTime, unit: 'min', label: rs('Cook') })
     if (props.servings) tiles.push({ icon: 'fa-duotone fa-utensils', value: props.servings, label: rs('Count') })
-    tiles.push({ dotColor: 'green', comingSoon: true, value: rs('ComingSoon'), label: rs('Difficulty') })
+    const difficulty = difficultyTile(props.difficulty, rs)
+    if (difficulty) tiles.push(difficulty)
     return tiles
   })
 </script>
@@ -90,7 +100,15 @@
   <section class="mt-8 grid items-start gap-4 lg:mx-4 lg:grid-cols-4">
     <div class="flex flex-col gap-4 lg:sticky lg:top-4">
       <VariantIngredients :ingredients="ingredients" :base-servings="servings" />
-      <VariantNutrition />
+      <VariantNutrition
+        :calories="calories"
+        :protein-g="proteinG"
+        :carbs-g="carbsG"
+        :fat-g="fatG"
+        :fiber-g="fiberG"
+        :sugar-g="sugarG"
+        :sodium-mg="sodiumMg"
+      />
     </div>
 
     <VariantInstructions class="lg:col-span-3" :instructions="instructions" />
