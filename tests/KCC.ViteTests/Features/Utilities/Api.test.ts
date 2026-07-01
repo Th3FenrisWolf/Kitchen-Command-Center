@@ -22,9 +22,9 @@ describe('Api', () => {
   })
 
   it('returns success with parsed data for a 2xx success envelope', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      fakeResponse({ ok: true, body: JSON.stringify({ success: true, redirectUrl: '/home' }) }),
-    )
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(fakeResponse({ ok: true, body: JSON.stringify({ success: true, redirectUrl: '/home' }) }))
 
     const result = await post<{ success: boolean; redirectUrl: string }>('/api/account/login', {})
 
@@ -33,9 +33,9 @@ describe('Api', () => {
   })
 
   it('treats success:false as a failure and joins the errors array', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      fakeResponse({ ok: true, body: JSON.stringify({ success: false, errors: ['Bad.', 'Worse.'] }) }),
-    )
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(fakeResponse({ ok: true, body: JSON.stringify({ success: false, errors: ['Bad.', 'Worse.'] }) }))
 
     const result = await post('/api/profile', {})
 
@@ -43,9 +43,7 @@ describe('Api', () => {
   })
 
   it('treats a bare 2xx body with no success field as success', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      fakeResponse({ ok: true, body: JSON.stringify({ recipeId: 7 }) }),
-    )
+    global.fetch = vi.fn().mockResolvedValue(fakeResponse({ ok: true, body: JSON.stringify({ recipeId: 7 }) }))
 
     const result = await post<{ recipeId: number }>('/api/recipes', {})
 
@@ -54,9 +52,9 @@ describe('Api', () => {
   })
 
   it('extracts the message from a 4xx { error } body', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      fakeResponse({ ok: false, status: 400, body: JSON.stringify({ error: 'Name is required.' }) }),
-    )
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(fakeResponse({ ok: false, status: 400, body: JSON.stringify({ error: 'Name is required.' }) }))
 
     const result = await post('/api/recipes', {})
 

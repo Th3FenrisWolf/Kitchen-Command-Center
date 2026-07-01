@@ -8,7 +8,12 @@ const inst = (over: Partial<Instruction> = {}): Instruction => ({ text: '', ...o
 describe('reviewSummary', () => {
   describe('validIngredients', () => {
     it('keeps only ingredients whose name is not blank', () => {
-      const list = [ing({ name: 'flour' }), ing({ name: '   ' }), ing({ name: '' }), ing({ name: 'salt', isEyeballed: true })]
+      const list = [
+        ing({ name: 'flour' }),
+        ing({ name: '   ' }),
+        ing({ name: '' }),
+        ing({ name: 'salt', isEyeballed: true }),
+      ]
       expect(validIngredients(list).map((i) => i.name)).toEqual(['flour', 'salt'])
     })
   })

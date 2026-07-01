@@ -15,7 +15,7 @@
     "test": "vitest run",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write Features/"
+    "format": "prettier --write Features/ \"../../tests/KCC.ViteTests/**/*.{ts,vue}\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-pro": "^7.1.0",

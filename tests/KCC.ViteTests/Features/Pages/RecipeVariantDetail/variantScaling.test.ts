@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Ingredient } from '~/Types/Recipe'
-import {
-  formatIngredientAmount,
-  formatQuantity,
-  scaleQuantity,
-} from '~/Components/VariantDetail/variantScaling'
+import { formatIngredientAmount, formatQuantity, scaleQuantity } from '~/Components/VariantDetail/variantScaling'
 
 const ing = (over: Partial<Ingredient> = {}): Ingredient => ({
   name: 'flour',
