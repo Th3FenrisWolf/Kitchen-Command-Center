@@ -1,4 +1,5 @@
 using KCC;
+using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.CreateRecipe;
 using Kentico.Content.Web.Mvc.Routing;
@@ -14,12 +15,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace KCC.Web.Features.Pages.CreateRecipe;
 
 [Authorize]
-public class CreateRecipeController : Controller
+public class CreateRecipeController(IResourceStringInfoProvider resourceStrings) : Controller
 {
     public IActionResult Index()
     {
-        var viewModel = new CreateRecipeViewModel();
+        var viewModel = new CreateRecipeViewModel
+        {
+            ResourceStrings = GetStrings(),
+        };
 
         return View("~/Features/Pages/CreateRecipe/Index.cshtml", viewModel);
     }
+
+    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
+        "CreateRecipe.CreateRecipe"
+    );
 }

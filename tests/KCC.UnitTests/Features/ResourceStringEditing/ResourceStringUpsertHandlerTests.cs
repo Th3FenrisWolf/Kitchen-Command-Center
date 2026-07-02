@@ -10,18 +10,18 @@ public class ResourceStringUpsertHandlerTests
     [Test]
     public async Task Upsert_DefaultLanguage_KeyExists_UpdatesValue()
     {
-        _repo.AddString("Login.Login", value: "Log in");
+        _repo.AddString("Sample.Text", value: "Log in");
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
         var result = sut.Upsert(new ResourceStringUpsertRequest
         {
-            Key = "Login.Login",
+            Key = "Sample.Text",
             Language = "en",
             Value = "Sign in",
         });
 
         _ = await Assert.That(result.Value).IsEqualTo("Sign in");
-        _ = await Assert.That(_repo.GetValue("Login.Login")).IsEqualTo("Sign in");
+        _ = await Assert.That(_repo.GetValue("Sample.Text")).IsEqualTo("Sign in");
     }
 
     [Test]
@@ -31,31 +31,31 @@ public class ResourceStringUpsertHandlerTests
 
         var result = sut.Upsert(new ResourceStringUpsertRequest
         {
-            Key = "Login.Login",
+            Key = "Sample.Text",
             Language = "en",
             Value = "Log in",
         });
 
         _ = await Assert.That(result.Value).IsEqualTo("Log in");
-        _ = await Assert.That(_repo.GetValue("Login.Login")).IsEqualTo("Log in");
+        _ = await Assert.That(_repo.GetValue("Sample.Text")).IsEqualTo("Log in");
     }
 
     [Test]
     public async Task Upsert_NonDefaultLanguage_TranslationExists_UpdatesTranslation()
     {
-        _repo.AddString("Login.Login", value: "Log in", translations: new() { ["es"] = "Iniciar" });
+        _repo.AddString("Sample.Text", value: "Log in", translations: new() { ["es"] = "Iniciar" });
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
         var result = sut.Upsert(new ResourceStringUpsertRequest
         {
-            Key = "Login.Login",
+            Key = "Sample.Text",
             Language = "es",
             Value = "Iniciar sesión",
         });
 
         _ = await Assert.That(result.Value).IsEqualTo("Iniciar sesión");
-        _ = await Assert.That(_repo.GetTranslation("Login.Login", "es")).IsEqualTo("Iniciar sesión");
-        _ = await Assert.That(_repo.GetValue("Login.Login")).IsEqualTo("Log in"); // default unchanged
+        _ = await Assert.That(_repo.GetTranslation("Sample.Text", "es")).IsEqualTo("Iniciar sesión");
+        _ = await Assert.That(_repo.GetValue("Sample.Text")).IsEqualTo("Log in"); // default unchanged
     }
 
     [Test]
@@ -65,31 +65,31 @@ public class ResourceStringUpsertHandlerTests
 
         var result = sut.Upsert(new ResourceStringUpsertRequest
         {
-            Key = "Login.Login",
+            Key = "Sample.Text",
             Language = "es",
             Value = "Iniciar sesión",
         });
 
         _ = await Assert.That(result.Value).IsEqualTo("Iniciar sesión");
-        _ = await Assert.That(_repo.GetTranslation("Login.Login", "es")).IsEqualTo("Iniciar sesión");
-        _ = await Assert.That(_repo.GetValue("Login.Login")).IsEqualTo(string.Empty);
+        _ = await Assert.That(_repo.GetTranslation("Sample.Text", "es")).IsEqualTo("Iniciar sesión");
+        _ = await Assert.That(_repo.GetValue("Sample.Text")).IsEqualTo(string.Empty);
     }
 
     [Test]
     public async Task Upsert_NonDefaultLanguage_NullValue_DeletesTranslation()
     {
-        _repo.AddString("Login.Login", value: "Log in", translations: new() { ["es"] = "Iniciar" });
+        _repo.AddString("Sample.Text", value: "Log in", translations: new() { ["es"] = "Iniciar" });
         var sut = new ResourceStringUpsertHandler(_repo, _languages, defaultLanguage: "en");
 
         var result = sut.Upsert(new ResourceStringUpsertRequest
         {
-            Key = "Login.Login",
+            Key = "Sample.Text",
             Language = "es",
             Value = null,
         });
 
         _ = await Assert.That(result.Value).IsEqualTo(string.Empty);
-        _ = await Assert.That(_repo.GetTranslation("Login.Login", "es")).IsNull();
+        _ = await Assert.That(_repo.GetTranslation("Sample.Text", "es")).IsNull();
     }
 
     [Test]
@@ -99,7 +99,7 @@ public class ResourceStringUpsertHandlerTests
 
         _ = await Assert.That(() => sut.Upsert(new()
         {
-            Key = "Login.Login",
+            Key = "Sample.Text",
             Language = "fr",
             Value = "Connexion",
         })).Throws<InvalidLanguageException>();

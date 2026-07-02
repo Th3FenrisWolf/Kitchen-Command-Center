@@ -8,7 +8,7 @@ public class ResourceStringHtmlExtensionsTests
     [Test]
     public async Task BuildContent_NotEditable_WrapsEncodedValueInPlainSpan()
     {
-        var content = ResourceStringHtmlExtensions.BuildContent("Login.Login", "Log in", canEdit: false);
+        var content = ResourceStringHtmlExtensions.BuildContent("Sample.Text", "Log in", canEdit: false);
 
         _ = await Assert.That(Render(content)).IsEqualTo("<span>Log in</span>");
     }
@@ -16,7 +16,7 @@ public class ResourceStringHtmlExtensionsTests
     [Test]
     public async Task BuildContent_NotEditable_HtmlEncodesValue()
     {
-        var content = ResourceStringHtmlExtensions.BuildContent("Login.Login", "<script>", canEdit: false);
+        var content = ResourceStringHtmlExtensions.BuildContent("Sample.Text", "<script>", canEdit: false);
 
         _ = await Assert.That(Render(content)).IsEqualTo("<span>&lt;script&gt;</span>");
     }
@@ -24,10 +24,10 @@ public class ResourceStringHtmlExtensionsTests
     [Test]
     public async Task BuildContent_Editable_WrapsInSpanWithClassAndDataAttribute()
     {
-        var content = ResourceStringHtmlExtensions.BuildContent("Login.Login", "Log in", canEdit: true);
+        var content = ResourceStringHtmlExtensions.BuildContent("Sample.Text", "Log in", canEdit: true);
 
         _ = await Assert.That(Render(content)).IsEqualTo(
-            "<span class=\"kcc-rs-editable\" data-resource-key=\"Login.Login\">Log in</span>");
+            "<span class=\"kcc-rs-editable\" data-resource-key=\"Sample.Text\">Log in</span>");
     }
 
     [Test]
