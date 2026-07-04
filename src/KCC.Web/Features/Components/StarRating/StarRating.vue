@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
-  import { starStates } from '~/Components/StarRating/starDisplay'
+  import { formatRating, starStates } from '~/Components/StarRating/starDisplay'
   import { MIN_RATING, stepRating } from '~/Components/StarRating/ratingInput'
 
   const props = withDefaults(
@@ -18,7 +18,6 @@
   const hoverValue = ref<number | null>(null)
   const displayValue = computed(() => hoverValue.value ?? props.modelValue)
   const states = computed(() => starStates(displayValue.value, props.max))
-  const rounded = computed(() => Math.round(props.modelValue))
 
   const iconFor = (state: 'full' | 'half' | 'empty') =>
     state === 'full' ? 'fa-solid fa-star' : state === 'half' ? 'fa-solid fa-star-half-stroke' : 'fa-regular fa-star'
@@ -46,7 +45,12 @@
 
 <template>
   <!-- Readonly: static display (already supports halves). -->
-  <div v-if="readonly" class="inline-flex items-center gap-0.5" role="img" :aria-label="`${rounded} of ${max} stars`">
+  <div
+    v-if="readonly"
+    class="inline-flex items-center gap-0.5"
+    role="img"
+    :aria-label="`${formatRating(modelValue)} of ${max} stars`"
+  >
     <span v-for="(state, i) in states" :key="i" class="text-peach" :data-star="i + 1" :data-state="state">
       <i :class="iconFor(state)" aria-hidden="true"></i>
     </span>

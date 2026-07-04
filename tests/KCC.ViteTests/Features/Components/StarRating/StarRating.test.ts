@@ -26,4 +26,10 @@ describe('StarRating', () => {
     expect(html).not.toContain('data-value=')
     expect((html.match(/data-state="half"/g) ?? []).length).toBe(1)
   })
+
+  it('readonly mode announces the real half-star value in aria-label', async () => {
+    const html = await render({ modelValue: 3.5, readonly: true })
+    expect(html).toContain('aria-label="3.5 of 5 stars"')
+    expect(html).not.toContain('aria-label="4 of 5 stars"')
+  })
 })
