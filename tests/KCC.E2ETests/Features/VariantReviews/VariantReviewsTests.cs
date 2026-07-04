@@ -28,9 +28,9 @@ public class VariantReviewsTests : BasePageTests
         await MemberSession.SignInAsync(Page);
         _ = await GoToFirstVariant();
 
-        // The interactive StarRating renders one button per star with data-star (1-indexed);
-        // the review editor exposes data-testid hooks so the flow is independent of the
-        // (admin-seeded) Submit/Delete resource-string text.
+        // The interactive StarRating is a slider whose per-star half/whole hit areas carry
+        // data-value (0.5 .. 5); the review editor exposes data-testid hooks so the flow is
+        // independent of the (admin-seeded) Submit/Delete resource-string text.
         var reviewInput = Page.Locator("[data-testid='review-input']");
         var submit = Page.Locator("[data-testid='submit-review']");
 
@@ -40,7 +40,7 @@ public class VariantReviewsTests : BasePageTests
         var reviewsList = Page.Locator("[data-testid='reviews-list']");
 
         // Submit: pick a rating + text, then submit.
-        await Page.Locator("button[data-star='4']").First.ClickAsync();
+        await Page.Locator("[data-value='4']").First.ClickAsync();
         await reviewInput.FillAsync("E2E review - tasty");
         await submit.ClickAsync();
         await Expect(reviewsList.GetByText("E2E review - tasty")).ToBeVisibleAsync();
@@ -53,6 +53,29 @@ public class VariantReviewsTests : BasePageTests
         // Delete: remove my review; the submitted text disappears from the list.
         await Page.Locator("[data-testid='delete-review']").ClickAsync();
         await Expect(reviewsList.GetByText("E2E review - edited")).ToHaveCountAsync(0);
+    }
+
+    [Test]
+    public async Task LoggedInMember_CanSubmitAHalfStarReview()
+    {
+        await MemberSession.SignInAsync(Page);
+        _ = await GoToFirstVariant();
+
+        var submit = Page.Locator("[data-testid='submit-review']");
+        var reviewsList = Page.Locator("[data-testid='reviews-list']");
+
+        // Click the left half of the 4th star -> 3.5, add text, submit.
+        await Page.Locator("[data-value='3.5']").First.ClickAsync();
+        await Page.Locator("[data-testid='review-input']").FillAsync("E2E half-star review");
+        await submit.ClickAsync();
+        await Expect(reviewsList.GetByText("E2E half-star review")).ToBeVisibleAsync();
+
+        // The stored 3.5 round-trips: the review's readonly stars show a half at position 4.
+        await Expect(reviewsList.Locator("[data-star='4'][data-state='half']").First).ToBeVisibleAsync();
+
+        // Clean up so the run is repeatable.
+        await Page.Locator("[data-testid='delete-review']").ClickAsync();
+        await Expect(reviewsList.GetByText("E2E half-star review")).ToHaveCountAsync(0);
     }
 
     private async Task<string> GoToFirstVariant()
