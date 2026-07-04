@@ -10,6 +10,6 @@ public partial interface IVariantReviewInfoProvider
     RatingAggregate GetRecipeAverage(Guid recipeGuid);
     IReadOnlyList<VariantReviewInfo> GetForVariant(Guid variantGuid, int page, int pageSize, out int totalCount);
     VariantReviewInfo GetMemberReview(Guid variantGuid, Guid memberGuid);
-    void Upsert(Guid variantGuid, Guid recipeGuid, Guid memberGuid, int rating, string reviewText);
+    void Upsert(Guid variantGuid, Guid recipeGuid, Guid memberGuid, decimal rating, string reviewText);
     bool DeleteOwn(Guid variantGuid, Guid memberGuid);
 }

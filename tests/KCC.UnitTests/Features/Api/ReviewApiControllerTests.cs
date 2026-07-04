@@ -28,10 +28,10 @@ public class ReviewApiControllerTests
         var user = new KCCApplicationUser { MemberGuid = Guid.NewGuid() };
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(user));
 
-        var result = await controller.UpsertReview(Guid.NewGuid(), new ReviewApiController.ReviewRequest(9, "x"), default);
+        var result = await controller.UpsertReview(Guid.NewGuid(), new ReviewApiController.ReviewRequest(9m, "x"), default);
 
         _ = await Assert.That(result).IsTypeOf<BadRequestObjectResult>();
-        reviews.Verify(r => r.Upsert(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+        reviews.Verify(r => r.Upsert(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<decimal>(), It.IsAny<string>()), Times.Never);
     }
 
     [Test]
@@ -44,7 +44,7 @@ public class ReviewApiControllerTests
         var user = new KCCApplicationUser { MemberGuid = Guid.NewGuid() };
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(user));
 
-        var result = await controller.UpsertReview(Guid.NewGuid(), new ReviewApiController.ReviewRequest(5, "ok"), default);
+        var result = await controller.UpsertReview(Guid.NewGuid(), new ReviewApiController.ReviewRequest(5m, "ok"), default);
 
         _ = await Assert.That(result).IsTypeOf<NotFoundObjectResult>();
     }
@@ -61,10 +61,42 @@ public class ReviewApiControllerTests
             .ReturnsAsync(recipeGuid);
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(new KCCApplicationUser { MemberGuid = memberGuid }));
 
-        var result = await controller.UpsertReview(variantGuid, new ReviewApiController.ReviewRequest(4, "tasty"), default);
+        var result = await controller.UpsertReview(variantGuid, new ReviewApiController.ReviewRequest(4m, "tasty"), default);
 
         _ = await Assert.That(result).IsTypeOf<OkObjectResult>();
-        reviews.Verify(r => r.Upsert(variantGuid, recipeGuid, memberGuid, 4, "tasty"), Times.Once);
+        reviews.Verify(r => r.Upsert(variantGuid, recipeGuid, memberGuid, 4m, "tasty"), Times.Once);
+    }
+
+    [Test]
+    public async Task Put_AcceptsHalfStarRating()
+    {
+        var reviews = new Mock<IVariantReviewInfoProvider>();
+        var resolver = new Mock<IVariantGuidResolver>();
+        var variantGuid = Guid.NewGuid();
+        var recipeGuid = Guid.NewGuid();
+        var memberGuid = Guid.NewGuid();
+        _ = resolver.Setup(r => r.ResolveRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(recipeGuid);
+        var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(new KCCApplicationUser { MemberGuid = memberGuid }));
+
+        var result = await controller.UpsertReview(variantGuid, new ReviewApiController.ReviewRequest(3.5m, "half"), default);
+
+        _ = await Assert.That(result).IsTypeOf<OkObjectResult>();
+        reviews.Verify(r => r.Upsert(variantGuid, recipeGuid, memberGuid, 3.5m, "half"), Times.Once);
+    }
+
+    [Test]
+    public async Task Put_RejectsNonHalfStepRating()
+    {
+        var reviews = new Mock<IVariantReviewInfoProvider>();
+        var resolver = new Mock<IVariantGuidResolver>();
+        var user = new KCCApplicationUser { MemberGuid = Guid.NewGuid() };
+        var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(user));
+
+        var result = await controller.UpsertReview(Guid.NewGuid(), new ReviewApiController.ReviewRequest(3.7m, "x"), default);
+
+        _ = await Assert.That(result).IsTypeOf<BadRequestObjectResult>();
+        reviews.Verify(r => r.Upsert(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<decimal>(), It.IsAny<string>()), Times.Never);
     }
 
     [Test]
