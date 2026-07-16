@@ -1,4 +1,4 @@
-name: CI
+name: Build and Test Solution
 
 on:
   pull_request:
@@ -20,14 +20,13 @@ jobs:
 
     env:
       ASPNETCORE_ENVIRONMENT: CI
-      # Any fixed non-empty salt; MUST match dbmanager --hash-string-salt below.
-      CMSHashStringSalt: f1e2d3c4-b5a6-4788-9900-aabbccddeeff
       DOTNET_NOLOGO: "true"
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
       FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
       KCC_E2E_MEMBER_USERNAME: ${{ secrets.KCC_E2E_MEMBER_USERNAME }}
       KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
       KENTICO_LICENSE_KEY: ${{ secrets.KENTICO_LICENSE_KEY }}
+      KENTICO_HASH_STRING_SALT: ${{ secrets.KENTICO_HASH_STRING_SALT }}
 
     services:
       sqlserver:
@@ -45,6 +44,7 @@ jobs:
           --health-start-period=30s
 
     steps:
+      # ---------- Setup ----------
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -137,7 +137,7 @@ jobs:
             --username sa \
             --password 'Pass@12345' \
             --admin-password 'Admin@CI12345' \
-            --hash-string-salt "$CMSHashStringSalt" \
+            --hash-string-salt "$KENTICO_HASH_STRING_SALT" \
             --license-file "$RUNNER_TEMP/kentico-license.txt"
 
       - name: Restore CI repository (Kentico content)
