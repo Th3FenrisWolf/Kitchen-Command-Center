@@ -1,4 +1,3 @@
-using CMS.ContentEngine;
 using CMS.Websites;
 using KCC;
 using KCC.ResourceStrings.Data;
@@ -6,6 +5,7 @@ using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeSearch;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Search;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +21,7 @@ namespace KCC.Web.Features.Pages.RecipeSearch;
 public class RecipeSearchController(
     IContentRetriever contentRetriever,
     IWebPageDataContextRetriever webPageDataContextRetriever,
-    ITaxonomyRetriever taxonomyRetriever,
-    IPreferredLanguageRetriever preferredLanguageRetriever,
+    IRecipeSearchService recipeSearch,
     IResourceStringInfoProvider resourceStrings
 ) : Controller
 {
@@ -30,18 +29,18 @@ public class RecipeSearchController(
     {
         var pageId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
         var page = await contentRetriever.RetrievePage<RecipeListingPage>(pageId);
-
         if (page is null)
         {
             return NotFound();
         }
 
         var createRecipePage = await contentRetriever.RetrieveFirstPage<CreateRecipePage>();
+        var initial = recipeSearch.Search(new RecipeSearchCriteria());
 
-        var viewModel = new RecipeSearchViewModel()
+        var viewModel = new RecipeSearchViewModel
         {
             CreateRecipeUrl = createRecipePage?.GetUrl().RelativePath,
-            Recipes = await RetrieveRecipes(),
+            InitialResults = RecipeSearchResponseMapper.ToResponse(initial),
             ResourceStrings = GetStrings(),
         };
 
@@ -49,44 +48,36 @@ public class RecipeSearchController(
         return View("~/Features/Pages/RecipeSearch/Index.cshtml", viewModel);
     }
 
-    private async Task<IEnumerable<RecipeSummaryViewModel>> RetrieveRecipes()
-    {
-        var recipes = await contentRetriever.RetrievePages<Recipe>(
-            new() { LinkedItemsMaxLevel = 1 },
-            null,
-            new($"{nameof(RecipeSearchController)}|{nameof(RetrieveRecipes)}")
-        );
-
-        var variants = await contentRetriever.RetrievePages<RecipeVariant>(
-            new(),
-            query => query.Columns(nameof(IWebPageFieldsSource.SystemFields.WebPageItemParentID)),
-            new($"{nameof(RecipeSearchController)}|{nameof(RetrieveRecipes)}|Variants"));
-
-        var variantCounts = variants
-            .GroupBy(v => v.SystemFields.WebPageItemParentID)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-        var categoryGuids = recipes
-            .SelectMany(r => r.Categories?.Select(c => c.Identifier) ?? [])
-            .Distinct();
-
-        var categoryResult = await taxonomyRetriever.RetrieveTags(categoryGuids, preferredLanguageRetriever.Get());
-        var resolvedCategories = categoryResult?.ToDictionary(t => t.Identifier, t => t.Title) ?? [];
-
-        return recipes.Select(recipe => new RecipeSummaryViewModel
-        {
-            Name = recipe.Name,
-            Description = recipe.Description,
-            Image = recipe.Image?.FirstOrDefault()?.Asset?.Url,
-            Icon = recipe.Icon,
-            Category = resolvedCategories.GetValueOrDefault(recipe.Categories?.FirstOrDefault()?.Identifier ?? Guid.Empty),
-            Slug = recipe.GetUrl().RelativePath,
-            VariantCount = variantCounts.GetValueOrDefault(recipe.SystemFields.WebPageItemID),
-        });
-    }
-
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
         "RecipeSearch.SearchRecipes",
-        "RecipeSearch.CreateRecipe"
+        "RecipeSearch.CreateRecipe",
+        "RecipeSearch.BrowseTheKitchen",
+        "RecipeSearch.SearchPlaceholder",
+        "RecipeSearch.Search",
+        "RecipeSearch.Filters",
+        "RecipeSearch.Reset",
+        "RecipeSearch.Category",
+        "RecipeSearch.Dietary",
+        "RecipeSearch.TotalTime",
+        "RecipeSearch.Sort",
+        "RecipeSearch.SortRelevant",
+        "RecipeSearch.SortTopRated",
+        "RecipeSearch.SortVariants",
+        "RecipeSearch.SortRecent",
+        "RecipeSearch.Grid",
+        "RecipeSearch.List",
+        "RecipeSearch.ClearAll",
+        "RecipeSearch.TopRated",
+        "RecipeSearch.Variants",
+        "RecipeSearch.StartedBy",
+        "RecipeSearch.NoRatingsYet",
+        "RecipeSearch.LoadingMore",
+        "RecipeSearch.NoRecipesMatch",
+        "RecipeSearch.NoRecipesHint",
+        "RecipeSearch.ClearAllFilters",
+        "RecipeSearch.IngredientSearchComingSoon",
+        "RecipeSearch.Recipe",
+        "RecipeSearch.Recipes",
+        "RecipeSearch.ResultsFor"
     );
 }
