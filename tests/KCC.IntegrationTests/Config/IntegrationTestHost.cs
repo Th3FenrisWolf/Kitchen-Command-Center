@@ -75,6 +75,14 @@ public static class IntegrationTestHost
 
         _ = builder.Services.AddKentico();
 
+        // Program.cs registers Kentico Lucene. The Lucene module is assembly-discovered, so its
+        // module initializer resolves LuceneModuleInstaller during InitKentico(); without this
+        // registration the shared host throws on boot ("No service for type ... LuceneModuleInstaller").
+        _ = builder.Services.AddKenticoLucene(
+            configure => configure.RegisterStrategy<KCC.Web.Features.Search.RecipeSearchIndexingStrategy>(
+                KCC.Web.Features.Search.RecipeSearchConstants.StrategyName),
+            builder.Configuration);
+
         return builder.Build();
     }
 }

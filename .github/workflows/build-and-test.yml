@@ -1,0 +1,225 @@
+name: Build and Test Solution
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    env:
+      ASPNETCORE_ENVIRONMENT: CI
+      DOTNET_NOLOGO: "true"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+      KCC_E2E_MEMBER_USERNAME: ${{ secrets.KCC_E2E_MEMBER_USERNAME }}
+      KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
+      KENTICO_LICENSE_KEY: ${{ secrets.KENTICO_LICENSE_KEY }}
+      KENTICO_HASH_STRING_SALT: ${{ secrets.KENTICO_HASH_STRING_SALT }}
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Pass@12345"
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Pass@12345' -C -Q 'SELECT 1' -b"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
+          --health-start-period=30s
+
+    steps:
+      # ---------- Setup ----------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: yarn
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      # ---------- Build task 1: .NET solution (Release) ----------
+      - name: Build .NET solution (Release)
+        id: build_dotnet
+        run: dotnet build KitchenCommandCenter.sln -c Release
+
+      # ---------- Build task 2: frontend (attempted even if .NET build failed) ----------
+      - name: Build frontend
+        id: build_frontend
+        if: ${{ !cancelled() }}
+        run: |
+          yarn install --frozen-lockfile
+          yarn build:all
+
+      # ---------- Gate: run tests only if BOTH builds succeeded ----------
+      - name: Verify builds succeeded
+        if: ${{ !cancelled() }}
+        run: |
+          echo "dotnet build:   ${{ steps.build_dotnet.outcome }}"
+          echo "frontend build: ${{ steps.build_frontend.outcome }}"
+          if [ "${{ steps.build_dotnet.outcome }}" != "success" ] || [ "${{ steps.build_frontend.outcome }}" != "success" ]; then
+            echo "::error::A build task failed — skipping tests."
+            exit 1
+          fi
+
+      # ---------- Playwright browsers (cached across runs; keyed on the Playwright version) ----------
+      - name: Resolve Playwright version (cache key)
+        id: playwright_version
+        run: |
+          version=$(grep -oiP 'Include="TUnit\.Playwright"\s+Version="\K[^"]+' Directory.Packages.props || true)
+          if [ -z "$version" ]; then
+            echo "::error::Could not resolve TUnit.Playwright version from Directory.Packages.props"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "TUnit.Playwright version: $version"
+
+      - name: Cache Playwright browsers
+        id: playwright_cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
+
+      # Browser binaries live in the cached dir; OS-level deps do not, so install-deps still runs on a hit.
+      - name: Install Playwright browsers + deps (cache miss)
+        if: steps.playwright_cache.outputs.cache-hit != 'true'
+        run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+      - name: Install Playwright system deps (cache hit)
+        if: steps.playwright_cache.outputs.cache-hit == 'true'
+        run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install-deps
+
+      # ---------- Provision the Kentico database on the SQL service container ----------
+      - name: Restore .NET tools
+        working-directory: src/KCC.Web
+        run: dotnet tool restore
+
+      - name: Create Kentico database
+        working-directory: src/KCC.Web
+        run: |
+          # The Kentico license is permanently excluded from the CI repository, so it must be
+          # registered at DB-creation time. Write the secret to a file and pass it to dbmanager;
+          # it persists through --kxp-ci-restore (which never touches the license setting).
+          printf '%s\n' "$KENTICO_LICENSE_KEY" > "$RUNNER_TEMP/kentico-license.txt"
+          dotnet kentico-xperience-dbmanager -- \
+            --server-name localhost \
+            --database-name KitchenCommandCenter \
+            --username sa \
+            --password 'Pass@12345' \
+            --admin-password 'Admin@CI12345' \
+            --hash-string-salt "$KENTICO_HASH_STRING_SALT" \
+            --license-file "$RUNNER_TEMP/kentico-license.txt"
+
+      - name: Restore CI repository (Kentico content)
+        working-directory: src/KCC.Web
+        run: timeout 900 dotnet run --launch-profile CI --no-build --configuration Release -- --kxp-ci-restore
+
+      # ---------- Start SSR service + web app, then seed the confirmed E2E member ----------
+      - name: Start Vue SSR service
+        working-directory: src/KCC.Web
+        run: |
+          nohup yarn serve:ssr > "$RUNNER_TEMP/ssr.log" 2>&1 &
+          echo "SSR_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Wait for SSR service (:3001)
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf -o /dev/null http://localhost:3001/health; then echo "SSR up"; exit 0; fi
+            sleep 2
+          done
+          echo "::warning::SSR not healthy; app will fall back to client-side rendering"
+          cat "$RUNNER_TEMP/ssr.log" || true
+
+      - name: Start web app (CI profile, Release)
+        working-directory: src/KCC.Web
+        run: |
+          nohup dotnet run --launch-profile CI --no-build --configuration Release > "$RUNNER_TEMP/webapp.log" 2>&1 &
+          echo "WEBAPP_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Wait for web app (:58671)
+        run: |
+          # Any HTTP response = up (mirrors WebAppFixture: only a connection failure means "not running").
+          for i in $(seq 1 60); do
+            if curl -s -o /dev/null http://localhost:58671; then echo "app up"; exit 0; fi
+            sleep 2
+          done
+          echo "::error::Web app did not respond on :58671 within 120s"
+          cat "$RUNNER_TEMP/webapp.log" || true
+          exit 1
+
+      - name: Register + enable E2E member
+        run: |
+          set +e  # GitHub runs steps with `bash -e`; keep failure handling explicit here
+          # Create the member through the app's register endpoint (correct ASP.NET Identity password
+          # hash), then enable it — RequireConfirmedAccount blocks sign-in until MemberEnabled=1. The
+          # database is the source of truth: assert exactly one member row matched.
+          code=$(curl -sS -o /tmp/reg.out -w '%{http_code}' -X POST http://localhost:58671/api/account/register \
+            -H 'Content-Type: application/json' \
+            -d "{\"UserName\":\"${KCC_E2E_MEMBER_USERNAME}\",\"Email\":\"${KCC_E2E_MEMBER_USERNAME}@example.test\",\"Password\":\"${KCC_E2E_MEMBER_PASSWORD}\"}")
+          echo "register HTTP status: ${code:-<none>}"
+          out=$(docker exec "${{ job.services.sqlserver.id }}" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Pass@12345' -d KitchenCommandCenter -C -b -h -1 -Q "SET QUOTED_IDENTIFIER ON; UPDATE CMS_Member SET MemberEnabled = 1 WHERE MemberName = N'${KCC_E2E_MEMBER_USERNAME}'; SELECT CONCAT('MEMBERS_MATCHED=', @@ROWCOUNT);")
+          echo "$out"
+          if ! echo "$out" | grep -q 'MEMBERS_MATCHED=1'; then
+            echo "::error::E2E member not created/enabled (register HTTP ${code:-<none>}); register body:"
+            cat /tmp/reg.out 2>/dev/null
+            exit 1
+          fi
+          echo "E2E member enabled."
+
+      # ---------- Seed recipe search data + build the Lucene index (E2E depends on it) ----------
+      - name: Seed recipe search data + index
+        run: |
+          set +e
+          code=$(curl -sS -o /tmp/seed.out -w '%{http_code}' -X POST "http://localhost:58671/api/dev/seed-recipes")
+          echo "seed-recipes HTTP status: ${code:-<none>}"
+          echo "seed-recipes response (head): $(head -c 1500 /tmp/seed.out 2>/dev/null)"
+          [ "$code" = "200" ] || { echo "::error::seed-recipes failed (HTTP ${code:-<none>})"; exit 1; }
+
+      # ---------- Full combined test suite ----------
+      - name: Run combined test suite
+        run: node tests/scripts/run.mjs
+
+      # ---------- Publish report + clean up ----------
+      - name: Upload combined test report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-test-report
+          path: tests/results/
+          if-no-files-found: warn
+
+      - name: Stop background services
+        if: ${{ always() }}
+        run: |
+          [ -n "${WEBAPP_PID:-}" ] && kill "$WEBAPP_PID" 2>/dev/null || true
+          [ -n "${SSR_PID:-}" ] && kill "$SSR_PID" 2>/dev/null || true
