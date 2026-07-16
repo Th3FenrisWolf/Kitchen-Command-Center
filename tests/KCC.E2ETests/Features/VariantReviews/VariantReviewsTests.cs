@@ -25,12 +25,6 @@ public class VariantReviewsTests : BasePageTests
     [Test]
     public async Task LoggedInMember_CanSubmitEditAndDeleteAReview()
     {
-        if (!MemberSession.HasCredentials)
-        {
-            Skip.Test("Set KCC_E2E_MEMBER_USERNAME/PASSWORD to a seeded confirmed member to run this flow.");
-            return;
-        }
-
         await MemberSession.SignInAsync(Page);
         _ = await GoToFirstVariant();
 
@@ -40,20 +34,25 @@ public class VariantReviewsTests : BasePageTests
         var reviewInput = Page.Locator("[data-testid='review-input']");
         var submit = Page.Locator("[data-testid='submit-review']");
 
+        // Scope assertions to the reviews list: in development the MiniProfiler widget echoes the
+        // executed INSERT/UPDATE (with the review text as a parameter) into a <code> block on the
+        // page, so a page-wide GetByText(reviewText) matches two elements and trips strict mode.
+        var reviewsList = Page.Locator("[data-testid='reviews-list']");
+
         // Submit: pick a rating + text, then submit.
         await Page.Locator("button[data-star='4']").First.ClickAsync();
         await reviewInput.FillAsync("E2E review - tasty");
         await submit.ClickAsync();
-        await Expect(Page.GetByText("E2E review - tasty")).ToBeVisibleAsync();
+        await Expect(reviewsList.GetByText("E2E review - tasty")).ToBeVisibleAsync();
 
         // Edit: change the text and resubmit (upsert edits in place - still one review).
         await reviewInput.FillAsync("E2E review - edited");
         await submit.ClickAsync();
-        await Expect(Page.GetByText("E2E review - edited")).ToBeVisibleAsync();
+        await Expect(reviewsList.GetByText("E2E review - edited")).ToBeVisibleAsync();
 
         // Delete: remove my review; the submitted text disappears from the list.
         await Page.Locator("[data-testid='delete-review']").ClickAsync();
-        await Expect(Page.GetByText("E2E review - edited")).ToHaveCountAsync(0);
+        await Expect(reviewsList.GetByText("E2E review - edited")).ToHaveCountAsync(0);
     }
 
     private async Task<string> GoToFirstVariant()

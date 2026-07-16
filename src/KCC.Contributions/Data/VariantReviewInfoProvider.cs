@@ -31,73 +31,65 @@ public partial class VariantReviewInfoProvider
 
     public RatingAggregate GetAverageForVariant(Guid variantGuid)
     {
-        var cache = CacheFor();
+        var cache = Service.Resolve<IProgressiveCache>();
         return cache.Load(
             cs =>
             {
                 cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
-                var reviews = Get()
-                    .WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid)
-                    .ToArray();
-                var ratings = reviews.Select(r => r.Rating).ToArray();
-                return Aggregate(ratings);
+                var reviews = Get().WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid);
+                var ratings = reviews.Select(r => r.Rating);
+                return Aggregate([..ratings]);
             },
-            new CacheSettings(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, "avg-variant", variantGuid));
+            new(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, nameof(GetAverageForVariant), variantGuid));
     }
 
     public IReadOnlyDictionary<Guid, RatingAggregate> GetAveragesForVariants(IReadOnlyCollection<Guid> variantGuids)
     {
-        if (variantGuids.Count == 0)
+        if (variantGuids.Count is 0)
         {
             return new Dictionary<Guid, RatingAggregate>();
         }
 
-        var cache = CacheFor();
+        var cache = Service.Resolve<IProgressiveCache>();
         return cache.Load(
             cs =>
             {
                 cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
-                var reviews = Get()
-                    .WhereIn(nameof(VariantReviewInfo.VariantGuid), variantGuids.ToArray())
-                    .ToArray();
-                var pairs = reviews.Select(r => (r.VariantGuid, r.Rating)).ToArray();
+                var reviews = Get().WhereIn(nameof(VariantReviewInfo.VariantGuid), variantGuids).ToArray();
+                var pairs = reviews.Select(r => (r.VariantGuid, r.Rating));
                 return AggregateByVariant(pairs);
             },
-            new CacheSettings(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, "avg-variants", string.Join("|", variantGuids)));
+            new(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, nameof(GetAveragesForVariants), string.Join("|", variantGuids)));
     }
 
     public RatingAggregate GetRecipeAverage(Guid recipeGuid)
     {
-        var cache = CacheFor();
+        var cache = Service.Resolve<IProgressiveCache>();
         return cache.Load(
             cs =>
             {
                 cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
-                var reviews = Get()
-                    .WhereEquals(nameof(VariantReviewInfo.RecipeGuid), recipeGuid)
-                    .ToArray();
-                var ratings = reviews.Select(r => r.Rating).ToArray();
-                return Aggregate(ratings);
+                var reviews = Get().WhereEquals(nameof(VariantReviewInfo.RecipeGuid), recipeGuid);
+                var ratings = reviews.Select(r => r.Rating);
+                return Aggregate([..ratings]);
             },
-            new CacheSettings(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, "avg-recipe", recipeGuid));
+            new(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, nameof(GetRecipeAverage), recipeGuid));
     }
 
     public IReadOnlyList<VariantReviewInfo> GetForVariant(Guid variantGuid, int page, int pageSize, out int totalCount)
     {
         var query = Get().WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid);
         totalCount = query.Count;
-        return query
+        return [..query
             .OrderByDescending(nameof(VariantReviewInfo.ReviewCreated))
-            .Page(Math.Max(0, page), Math.Max(1, pageSize))
-            .ToList();
+            .Page(Math.Max(0, page), Math.Max(1, pageSize))];
     }
 
-    public VariantReviewInfo GetMemberReview(Guid variantGuid, Guid memberGuid) =>
-        Get()
-            .WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid)
-            .WhereEquals(nameof(VariantReviewInfo.MemberGuid), memberGuid)
-            .TopN(1)
-            .FirstOrDefault();
+    public VariantReviewInfo GetMemberReview(Guid variantGuid, Guid memberGuid) => Get()
+        .WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid)
+        .WhereEquals(nameof(VariantReviewInfo.MemberGuid), memberGuid)
+        .TopN(1)
+        .FirstOrDefault();
 
     public void Upsert(Guid variantGuid, Guid recipeGuid, Guid memberGuid, int rating, string reviewText)
     {
@@ -137,6 +129,4 @@ public partial class VariantReviewInfoProvider
         Delete(existing);
         return true;
     }
-
-    private static IProgressiveCache CacheFor() => Service.Resolve<IProgressiveCache>();
 }

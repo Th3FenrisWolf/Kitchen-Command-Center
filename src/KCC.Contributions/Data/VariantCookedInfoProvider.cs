@@ -25,12 +25,12 @@ public partial class VariantCookedInfoProvider
                 cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
                 return Get().WhereEquals(nameof(VariantCookedInfo.VariantGuid), variantGuid).Count;
             },
-            new CacheSettings(CacheMinutes, VariantCookedInfo.OBJECT_TYPE, "count-variant", variantGuid));
+            new(CacheMinutes, VariantCookedInfo.OBJECT_TYPE, nameof(GetCookedCountForVariant), variantGuid));
     }
 
     public IReadOnlyDictionary<Guid, int> GetCookedCountsForVariants(IReadOnlyCollection<Guid> variantGuids)
     {
-        if (variantGuids.Count == 0)
+        if (variantGuids.Count is 0)
         {
             return new Dictionary<Guid, int>();
         }
@@ -40,10 +40,10 @@ public partial class VariantCookedInfoProvider
             cs =>
             {
                 cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
-                var rows = Get().WhereIn(nameof(VariantCookedInfo.VariantGuid), variantGuids.ToArray()).ToArray();
+                var rows = Get().WhereIn(nameof(VariantCookedInfo.VariantGuid), variantGuids);
                 return CountByVariant(rows.Select(r => r.VariantGuid));
             },
-            new CacheSettings(CacheMinutes, VariantCookedInfo.OBJECT_TYPE, "count-variants", string.Join("|", variantGuids)));
+            new(CacheMinutes, VariantCookedInfo.OBJECT_TYPE, nameof(GetCookedCountsForVariants), string.Join("|", variantGuids)));
     }
 
     public int GetRecipeCookedCount(Guid recipeGuid)
@@ -55,15 +55,14 @@ public partial class VariantCookedInfoProvider
                 cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
                 return Get().WhereEquals(nameof(VariantCookedInfo.RecipeGuid), recipeGuid).Count;
             },
-            new CacheSettings(CacheMinutes, VariantCookedInfo.OBJECT_TYPE, "count-recipe", recipeGuid));
+            new(CacheMinutes, VariantCookedInfo.OBJECT_TYPE, nameof(GetRecipeCookedCount), recipeGuid));
     }
 
-    public bool HasMemberCooked(Guid variantGuid, Guid memberGuid) =>
-        Get()
-            .WhereEquals(nameof(VariantCookedInfo.VariantGuid), variantGuid)
-            .WhereEquals(nameof(VariantCookedInfo.MemberGuid), memberGuid)
-            .TopN(1)
-            .Count > 0;
+    public bool HasMemberCooked(Guid variantGuid, Guid memberGuid) => Get()
+        .WhereEquals(nameof(VariantCookedInfo.VariantGuid), variantGuid)
+        .WhereEquals(nameof(VariantCookedInfo.MemberGuid), memberGuid)
+        .TopN(1)
+        .Count > 0;
 
     public void MarkCooked(Guid variantGuid, Guid recipeGuid, Guid memberGuid)
     {
@@ -72,7 +71,7 @@ public partial class VariantCookedInfoProvider
             return;
         }
 
-        Set(new VariantCookedInfo
+        Set(new()
         {
             VariantGuid = variantGuid,
             RecipeGuid = recipeGuid,

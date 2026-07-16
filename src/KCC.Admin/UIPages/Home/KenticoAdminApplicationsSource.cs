@@ -28,6 +28,7 @@ public sealed partial class KenticoAdminApplicationsSource(
     private static readonly HashSet<string> HiddenCategoryCodeNames = new(StringComparer.OrdinalIgnoreCase)
     {
         "kentico.dashboard",
+        "kentico.cdm",
     };
 
     private static readonly Lazy<IReadOnlyList<UIApplicationAttribute>> CachedAttributes = new(LoadAttributes);
@@ -63,7 +64,7 @@ public sealed partial class KenticoAdminApplicationsSource(
 
         descriptors.AddRange(await GetChannelDescriptorsAsync(cancellationToken));
 
-        return descriptors;
+        return descriptors.OrderBy(d => d.Name).ToList();
     }
 
     private async Task<IReadOnlyList<AdminApplicationDescriptor>> GetChannelDescriptorsAsync(

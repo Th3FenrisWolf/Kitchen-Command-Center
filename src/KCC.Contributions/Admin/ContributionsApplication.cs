@@ -7,8 +7,8 @@ using KCC.Contributions.Admin;
     type: typeof(ContributionsApplication),
     slug: "community-contributions",
     name: "Community Contributions",
-    category: BaseApplicationCategories.CONFIGURATION,
-    icon: Icons.StarFull,
+    category: BaseApplicationCategories.DIGITAL_MARKETING,
+    icon: Icons.StarEmpty,
     templateName: TemplateNames.SECTION_LAYOUT
 )]
 

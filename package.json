@@ -1,0 +1,25 @@
+{
+  "name": "kcc-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "src/KCC.Admin/Client",
+    "src/KCC.ResourceStrings/Client",
+    "src/KCC.Web"
+  ],
+  "resolutions": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "json-joy": "^18.28.0",
+    "react-router": "^7.18.1",
+    "react-router-dom": "^7.18.1",
+    "@types/node": "^24.13.2",
+    "uuid": "^13.0.0"
+  },
+  "scripts": {
+    "build:admin": "yarn workspace @kcc/admin build",
+    "build:resource-strings": "yarn workspace @kcc/resource-strings build",
+    "build:web": "yarn workspace kitchen-command-center build:all",
+    "build:all": "yarn build:admin && yarn build:resource-strings && yarn build:web"
+  }
+}

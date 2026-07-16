@@ -48,7 +48,8 @@
 
   const toggle = () => {
     if (left.value <= 0) return
-    running.value ? pause() : start()
+    if (running.value) pause()
+    else start()
   }
 
   const reset = () => {

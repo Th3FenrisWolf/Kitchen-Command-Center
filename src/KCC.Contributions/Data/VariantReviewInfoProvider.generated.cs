@@ -11,8 +11,7 @@ namespace KCC.Contributions.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="VariantReviewInfoProvider"/> class.
         /// </summary>
-        public VariantReviewInfoProvider()
-            : base(VariantReviewInfo.TYPEINFO)
+        public VariantReviewInfoProvider() : base(VariantReviewInfo.TYPEINFO)
         {
         }
     }

@@ -117,7 +117,7 @@
       <ResourceString for="LogInToReview" />
     </div>
 
-    <ul v-if="reviews.length" class="flex flex-col gap-3">
+    <ul v-if="reviews.length" data-testid="reviews-list" class="flex flex-col gap-3">
       <li v-for="(review, i) in reviews" :key="i" class="rounded-2xl bg-bone p-4 shadow-light">
         <div class="flex items-center justify-between gap-2">
           <span class="font-bold">{{ review.authorName }}</span>

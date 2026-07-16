@@ -12,12 +12,6 @@ public class VariantCookNotesTests : BasePageTests
     [Test]
     public async Task LoggedInMember_CanAddACookNote()
     {
-        if (!MemberSession.HasCredentials)
-        {
-            Skip.Test("Set KCC_E2E_MEMBER_USERNAME/PASSWORD to a seeded confirmed member to run this flow.");
-            return;
-        }
-
         await MemberSession.SignInAsync(Page);
         _ = await RecipeNavigation.GoToFirstRecipeAsync(Page);
         _ = await RecipeNavigation.GoToFirstVariantAsync(Page);
@@ -29,6 +23,9 @@ public class VariantCookNotesTests : BasePageTests
         await Page.Locator("[data-testid='cook-note-input']").FillAsync(noteText);
         await Page.Locator("[data-testid='add-cook-note']").ClickAsync();
 
-        await Expect(Page.GetByText(noteText)).ToBeVisibleAsync();
+        // Scope to the notes list: in development the MiniProfiler widget echoes the executed
+        // INSERT (with the note text as a parameter) into a <code> block on the page, so a
+        // page-wide GetByText(noteText) matches two elements and trips Playwright strict mode.
+        await Expect(Page.Locator("[data-testid='cook-notes-list']").GetByText(noteText)).ToBeVisibleAsync();
     }
 }
