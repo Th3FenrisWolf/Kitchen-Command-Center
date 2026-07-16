@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<kenticolucene.lucenecontenttypeitem>
+  <LuceneContentTypeItemContentTypeName>KCC.RecipeVariant</LuceneContentTypeItemContentTypeName>
+  <LuceneContentTypeItemGuid>e81c983a-a65d-4346-9b81-d439f34e58ac</LuceneContentTypeItemGuid>
+  <LuceneContentTypeItemIncludedPathItemId>
+    <GUID>06cf0041-1eb0-48c2-afdd-6e37e4e62309</GUID>
+    <ObjectType>kenticolucene.luceneincludedpathitem</ObjectType>
+  </LuceneContentTypeItemIncludedPathItemId>
+  <LuceneContentTypeItemIndexItemId>
+    <CodeName>RecipeSearch</CodeName>
+    <GUID>07a64790-e055-4b68-88ce-7059f8281c3b</GUID>
+    <ObjectType>kenticolucene.luceneindexitem</ObjectType>
+  </LuceneContentTypeItemIndexItemId>
+</kenticolucene.lucenecontenttypeitem>

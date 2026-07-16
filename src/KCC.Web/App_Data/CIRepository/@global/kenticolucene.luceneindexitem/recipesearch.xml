@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<kenticolucene.luceneindexitem>
+  <LuceneIndexItemAnalyzerName>Standard</LuceneIndexItemAnalyzerName>
+  <LuceneIndexItemGuid>07a64790-e055-4b68-88ce-7059f8281c3b</LuceneIndexItemGuid>
+  <LuceneIndexItemIndexName>RecipeSearch</LuceneIndexItemIndexName>
+  <LuceneIndexItemStrategyName>RecipeSearch</LuceneIndexItemStrategyName>
+</kenticolucene.luceneindexitem>
