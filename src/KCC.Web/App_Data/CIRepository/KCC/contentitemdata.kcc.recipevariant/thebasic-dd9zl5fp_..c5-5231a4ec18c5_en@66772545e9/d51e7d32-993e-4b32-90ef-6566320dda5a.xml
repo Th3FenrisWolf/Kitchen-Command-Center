@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>03a6f474-bea5-41d4-86c5-5231a4ec18c5</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>TheBasic-dd9zl5fp</CodeName>
+      <GUID>6a63e735-625f-4380-8e2c-4f132c44413c</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d51e7d32-993e-4b32-90ef-6566320dda5a</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Smash, season, done.</Description>
+  <Icon>fa-duotone fa-bread-slice</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Sourdough","quantity":2,"unit":"slices","isEyeballed":false},{"name":"Avocado","quantity":1,"unit":"whole","isEyeballed":false},{"name":"Chili Flakes","quantity":null,"unit":"pinch","isEyeballed":true}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Toast the bread."},{"step":2,"text":"Smash the avocado on top."}]]]>
+  </Instructions>
+  <Name>The Basic</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>1</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

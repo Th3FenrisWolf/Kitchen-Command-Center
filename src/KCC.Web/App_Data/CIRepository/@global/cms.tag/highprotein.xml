@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>06215434-9ffb-6bcf-a445-a2d0a5e41d6d</TagGUID>
+  <TagName>HighProtein</TagName>
+  <TagOrder>6</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeTags</CodeName>
+    <GUID>b5e43d07-a02c-4000-ae30-9ea0a40ac963</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>High-Protein</TagTitle>
+</cms.tag>

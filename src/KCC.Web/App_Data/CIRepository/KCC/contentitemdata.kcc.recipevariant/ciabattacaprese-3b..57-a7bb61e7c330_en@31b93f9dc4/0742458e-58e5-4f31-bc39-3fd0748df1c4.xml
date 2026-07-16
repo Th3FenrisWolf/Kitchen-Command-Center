@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>5aeab67b-aecc-471c-8157-a7bb61e7c330</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CiabattaCaprese-3blhbq5d</CodeName>
+      <GUID>6f6091a2-b386-455e-9aa3-c0b4f656db00</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>0742458e-58e5-4f31-bc39-3fd0748df1c4</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Stack and press.</Description>
+  <Icon>fa-duotone fa-sandwich</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Mozzarella","quantity":4,"unit":"oz","isEyeballed":false},{"name":"Tomato","quantity":1,"unit":"whole","isEyeballed":false},{"name":"Basil","quantity":null,"unit":"handful","isEyeballed":true}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Layer and drizzle with oil."}]]]>
+  </Instructions>
+  <Name>Ciabatta Caprese</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>2</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>1d355980-3fc7-968f-c255-9c0c3d02ad6c</TagGUID>
+  <TagName>Dessert</TagName>
+  <TagOrder>4</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeCategories</CodeName>
+    <GUID>91f33fed-49c0-4642-b466-f0cbf3664fc8</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Dessert</TagTitle>
+</cms.tag>

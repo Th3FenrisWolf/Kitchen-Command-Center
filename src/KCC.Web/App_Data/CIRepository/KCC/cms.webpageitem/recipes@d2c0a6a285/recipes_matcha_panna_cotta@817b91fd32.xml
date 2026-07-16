@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>MatchaPannaCotta-8cnxd6tm</CodeName>
+    <GUID>8a585a4e-2957-44c2-8024-f575cfa209e9</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>4a6f0093-0084-4faa-b9b8-1cf81ecca20c</WebPageItemGUID>
+  <WebPageItemName>MatchaPannaCotta-8cnxd6tm</WebPageItemName>
+  <WebPageItemOrder>9</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>Recipes-rsxx9362</CodeName>
+    <GUID>05eb2ffe-243e-4ecf-bcda-a7c74d628c6a</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>/Recipes/Matcha_Panna_Cotta</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

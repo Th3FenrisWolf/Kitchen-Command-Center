@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>c6766c02-514f-45d4-b0f5-38e517522fe3</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Lime_Mint-updgsu6q</CodeName>
+      <GUID>a1b1eefe-545e-4873-b405-3768d1948751</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>da9bc3e3-317e-4674-8154-8714f5a16baa</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Blend, strain, chill.</Description>
+  <Icon>fa-duotone fa-glass-water</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Watermelon","quantity":4,"unit":"cups","isEyeballed":false},{"name":"Lime","quantity":1,"unit":"whole","isEyeballed":false},{"name":"Mint","quantity":null,"unit":"handful","isEyeballed":true}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Blend and strain over ice."}]]]>
+  </Instructions>
+  <Name>
+    <![CDATA[Lime & Mint]]>
+  </Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"438f243b-18d7-a167-bdf0-2330d2493a57"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

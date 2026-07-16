@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>7a86728d-812c-aa0f-02f4-78962c71a16e</TagGUID>
+  <TagName>Vegetarian</TagName>
+  <TagOrder>1</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeTags</CodeName>
+    <GUID>b5e43d07-a02c-4000-ae30-9ea0a40ac963</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Vegetarian</TagTitle>
+</cms.tag>

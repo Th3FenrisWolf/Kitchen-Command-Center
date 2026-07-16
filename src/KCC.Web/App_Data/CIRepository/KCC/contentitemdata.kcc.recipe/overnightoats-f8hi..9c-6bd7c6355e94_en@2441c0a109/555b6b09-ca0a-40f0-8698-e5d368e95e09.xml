@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"732dfcab-36f4-4480-b584-4c53c31046f5"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>482c0960-8313-4458-8b9c-6bd7c6355e94</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>OvernightOats-f8hikztt</CodeName>
+      <GUID>c6a7b354-e9cd-4064-8540-8dad9b6b51b7</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>555b6b09-ca0a-40f0-8698-e5d368e95e09</ContentItemDataGUID>
+  <Description>Assemble at night, grab and go at dawn.</Description>
+  <Icon>fa-duotone fa-wheat-awn</Icon>
+  <Name>Overnight Oats</Name>
+</contentitemdata.kcc.recipe>

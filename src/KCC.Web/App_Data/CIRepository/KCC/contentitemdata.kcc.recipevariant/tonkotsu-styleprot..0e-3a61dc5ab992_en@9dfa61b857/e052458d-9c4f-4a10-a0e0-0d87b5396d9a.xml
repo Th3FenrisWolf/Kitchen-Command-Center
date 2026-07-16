@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>95d8e549-6f41-4b16-adaf-437eb17154c6</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>b9a168ee-48f6-4a0f-a10e-3a61dc5ab992</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Tonkotsu-StyleProtein-tzmx9cnm</CodeName>
+      <GUID>de5dbc9f-f793-45a6-b542-85a8d343af94</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>e052458d-9c4f-4a10-a0e0-0d87b5396d9a</ContentItemDataGUID>
+  <CookTime>10</CookTime>
+  <Description>Rich and hearty.</Description>
+  <Icon>fa-duotone fa-bowl-chopsticks</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Ramen Noodles","quantity":1,"unit":"portion","isEyeballed":false},{"name":"Pork Belly","quantity":4,"unit":"oz","isEyeballed":false},{"name":"Soft-Boiled Eggs","quantity":1,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Warm the broth and add toppings."}]]]>
+  </Instructions>
+  <Name>Tonkotsu-Style Protein</Name>
+  <PrepTime>20</PrepTime>
+  <ServingNumber>1</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

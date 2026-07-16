@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9671a557-28e9-4502-bfb0-6071ebe79930"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>f13b3a66-5947-46e5-a7df-a248881fabb3</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CapreseSandwich-bxin6hio</CodeName>
+      <GUID>4e33b6fa-d587-4dd6-85c7-1ccac836f265</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>eac14f78-1bd3-4e3f-b844-fdad1f9c0c8c</ContentItemDataGUID>
+  <Description>Summer on ciabatta, no cooking required.</Description>
+  <Icon>fa-duotone fa-sandwich</Icon>
+  <Name>Caprese Sandwich</Name>
+</contentitemdata.kcc.recipe>

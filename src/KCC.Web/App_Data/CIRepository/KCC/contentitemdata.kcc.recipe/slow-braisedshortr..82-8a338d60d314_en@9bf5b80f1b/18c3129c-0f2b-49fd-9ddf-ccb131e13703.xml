@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"2a8f18a0-dba8-f508-090d-db5c23bf6c8d"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>c33822d3-99c1-4e08-b682-8a338d60d314</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Slow-BraisedShortRibs-97bjqdp5</CodeName>
+      <GUID>a18dcc73-34a5-4b19-803e-ee350d6893e8</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>18c3129c-0f2b-49fd-9ddf-ccb131e13703</ContentItemDataGUID>
+  <Description>Low, slow, and worth the wait.</Description>
+  <Icon>fa-duotone fa-drumstick</Icon>
+  <Name>Slow-Braised Short Ribs</Name>
+</contentitemdata.kcc.recipe>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<kenticolucene.luceneincludedpathitem>
+  <LuceneIncludedPathItemAliasPath>/Recipes/%</LuceneIncludedPathItemAliasPath>
+  <LuceneIncludedPathItemChannelName>KCC</LuceneIncludedPathItemChannelName>
+  <LuceneIncludedPathItemGuid>06cf0041-1eb0-48c2-afdd-6e37e4e62309</LuceneIncludedPathItemGuid>
+  <LuceneIncludedPathItemIndexItemId>
+    <CodeName>RecipeSearch</CodeName>
+    <GUID>07a64790-e055-4b68-88ce-7059f8281c3b</GUID>
+    <ObjectType>kenticolucene.luceneindexitem</ObjectType>
+  </LuceneIncludedPathItemIndexItemId>
+</kenticolucene.luceneincludedpathitem>

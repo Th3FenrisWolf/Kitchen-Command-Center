@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>95d8e549-6f41-4b16-adaf-437eb17154c6</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>c4cc53e8-210c-4372-9d4d-4a156f3f1507</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ClassicBeefLasagna-2dldyvtj</CodeName>
+      <GUID>4fb9c1a4-1df6-4a85-8909-a4b6afad1815</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>b8c4e2e1-e524-4593-8cbb-33a0fc0d58a7</ContentItemDataGUID>
+  <CookTime>35</CookTime>
+  <Description>The one everyone asks for.</Description>
+  <Icon>fa-duotone fa-plate-utensils</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Lasagna Noodles","quantity":12,"unit":"sheets","isEyeballed":false},{"name":"Ground Beef","quantity":1,"unit":"lb","isEyeballed":false},{"name":"Ricotta","quantity":2,"unit":"cups","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Brown the beef."},{"step":2,"text":"Layer and bake."}]]]>
+  </Instructions>
+  <Name>Classic Beef Lasagna</Name>
+  <PrepTime>25</PrepTime>
+  <ServingNumber>8</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

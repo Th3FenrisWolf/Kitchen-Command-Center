@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>95d8e549-6f41-4b16-adaf-437eb17154c6</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>e4882625-b491-4655-8c18-9a976015243c</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CoconutDairy-Free-47of9m0p</CodeName>
+      <GUID>827ce04c-9935-4080-b0b9-566f130cd929</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>a2504596-ae14-407c-a64e-c04454d8a20b</ContentItemDataGUID>
+  <CookTime>8</CookTime>
+  <Description>Creamy without the cream.</Description>
+  <Icon>fa-duotone fa-bowl-chopsticks</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Ramen Noodles","quantity":1,"unit":"portion","isEyeballed":false},{"name":"Coconut Milk","quantity":0.5,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Simmer coconut broth and combine."}]]]>
+  </Instructions>
+  <Name>Coconut Dairy-Free</Name>
+  <PrepTime>12</PrepTime>
+  <ServingNumber>1</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"2f9ffbf2-09b8-5c65-6b76-a6630535183b"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

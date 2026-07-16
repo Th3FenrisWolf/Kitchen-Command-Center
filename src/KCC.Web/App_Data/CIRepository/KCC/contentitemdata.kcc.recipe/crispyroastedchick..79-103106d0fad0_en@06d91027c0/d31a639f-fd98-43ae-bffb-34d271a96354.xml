@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"cb6c5e90-ce7e-3af6-2513-0904349c50ad"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>b2eb4166-74ca-4abb-a279-103106d0fad0</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CrispyRoastedChickpeas-022ca0dx</CodeName>
+      <GUID>439e7c22-5049-4364-a939-055b90a7c375</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d31a639f-fd98-43ae-bffb-34d271a96354</ContentItemDataGUID>
+  <Description>Addictive, crunchy, high-protein.</Description>
+  <Icon>fa-duotone fa-seedling</Icon>
+  <Name>Crispy Roasted Chickpeas</Name>
+</contentitemdata.kcc.recipe>

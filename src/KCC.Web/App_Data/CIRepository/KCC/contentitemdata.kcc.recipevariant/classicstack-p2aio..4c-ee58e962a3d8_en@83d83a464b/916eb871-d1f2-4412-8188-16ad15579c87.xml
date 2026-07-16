@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>16c2693b-39a5-43db-914c-ee58e962a3d8</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ClassicStack-p2aio1tj</CodeName>
+      <GUID>c2e32ff9-c800-4241-8277-ec3be6e89d8e</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>916eb871-d1f2-4412-8188-16ad15579c87</ContentItemDataGUID>
+  <CookTime>15</CookTime>
+  <Description>Griddle to golden.</Description>
+  <Icon>fa-duotone fa-pancakes</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Flour","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Buttermilk","quantity":1.5,"unit":"cups","isEyeballed":false},{"name":"Eggs","quantity":1,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Whisk the batter."},{"step":2,"text":"Griddle until bubbles pop."}]]]>
+  </Instructions>
+  <Name>Classic Stack</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

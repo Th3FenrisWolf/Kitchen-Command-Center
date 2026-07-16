@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>8850dd4c-9f12-49cf-acff-7672fe281ca6</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Spinach_Cheese-ird9sb1c</CodeName>
+      <GUID>b0fc3c45-f203-4f5f-af50-b0d287f25ba2</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>b39ce510-34a3-4865-a42c-e4a9a5f983de</ContentItemDataGUID>
+  <CookTime>40</CookTime>
+  <Description>Prep 20, bake 40.</Description>
+  <Icon>fa-duotone fa-egg</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Eggs","quantity":10,"unit":"whole","isEyeballed":false},{"name":"Spinach","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Cheese","quantity":1,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Whisk and pour."},{"step":2,"text":"Bake until set."}]]]>
+  </Instructions>
+  <Name>
+    <![CDATA[Spinach & Cheese]]>
+  </Name>
+  <PrepTime>20</PrepTime>
+  <ServingNumber>6</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"},{"Identifier":"29757dda-89f6-4ad2-8306-478c7d672bfe"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

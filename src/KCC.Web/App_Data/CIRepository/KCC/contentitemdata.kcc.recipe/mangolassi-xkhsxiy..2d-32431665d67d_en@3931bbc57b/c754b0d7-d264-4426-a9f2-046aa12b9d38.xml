@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9c4e2397-6dfe-c9c9-f5c2-f4d73ce44004"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>5bca8dfd-acb7-4cec-bf2d-32431665d67d</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>MangoLassi-xkhsxiyi</CodeName>
+      <GUID>767880db-1f00-452f-ae9f-4fbd7ce4913b</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>c754b0d7-d264-4426-a9f2-046aa12b9d38</ContentItemDataGUID>
+  <Description>Cooling, sweet, and ready in a blender.</Description>
+  <Icon>fa-duotone fa-blender</Icon>
+  <Name>Mango Lassi</Name>
+</contentitemdata.kcc.recipe>

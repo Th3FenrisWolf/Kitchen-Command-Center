@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"1d355980-3fc7-968f-c255-9c0c3d02ad6c"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>ec0063da-94a6-406c-b7d8-42d1d68e2c19</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>MoltenChocolateCake-009ugub1</CodeName>
+      <GUID>285d7df1-27b6-4cf0-bdc2-eca8fe10a942</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>eb46f98f-bcd2-4397-8ace-686d132dd466</ContentItemDataGUID>
+  <Description>Individual cakes with a liquid center.</Description>
+  <Icon>fa-duotone fa-cake-slice</Icon>
+  <Name>Molten Chocolate Cake</Name>
+</contentitemdata.kcc.recipe>

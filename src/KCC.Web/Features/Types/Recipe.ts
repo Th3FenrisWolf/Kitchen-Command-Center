@@ -127,3 +127,30 @@ export interface CookNotesResponse {
   pageSize: number
   notes: CookNote[]
 }
+
+export interface RecipeSearchHit {
+  name: string
+  slug: string
+  icon?: string
+  category?: string
+  startedBy?: string
+  tags: string[]
+  averageRating: number | null
+  reviewCount: number
+  variantCount: number
+  fastestTime: number
+}
+
+export interface RecipeFacets {
+  category: Record<string, number>
+  diet: Record<string, number>
+}
+
+export interface RecipeSearchResponse {
+  total: number
+  page: number
+  pageSize: number
+  results: RecipeSearchHit[]
+  facets: RecipeFacets
+  spotlight: RecipeSearchHit | null
+}

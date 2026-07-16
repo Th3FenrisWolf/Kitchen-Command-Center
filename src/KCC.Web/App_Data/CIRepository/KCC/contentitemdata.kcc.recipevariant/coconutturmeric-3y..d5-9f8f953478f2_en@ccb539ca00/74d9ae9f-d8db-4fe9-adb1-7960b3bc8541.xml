@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>9a8fdd89-9e7b-49af-bed5-9f8f953478f2</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>CoconutTurmeric-3yqx7gow</CodeName>
+      <GUID>349d63af-630f-4830-9e8e-8058dc6845e4</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>74d9ae9f-d8db-4fe9-adb1-7960b3bc8541</ContentItemDataGUID>
+  <CookTime>5</CookTime>
+  <Description>
+    <![CDATA[Warm, don't boil.]]>
+  </Description>
+  <Icon>fa-duotone fa-mug-saucer</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Turmeric","quantity":1,"unit":"tsp","isEyeballed":false},{"name":"Coconut Milk","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Honey","quantity":1,"unit":"tbsp","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Warm everything together."}]]]>
+  </Instructions>
+  <Name>Coconut Turmeric</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>2</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>1adae636-a4ea-4401-a057-d9b26197c354</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SlowBeefBarbacoa-ws38kz2k</CodeName>
+      <GUID>dca2f1af-4074-46af-9746-e4c8025a3152</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>47dd3551-d631-4f16-a1ea-44d0c2f55c30</ContentItemDataGUID>
+  <CookTime>25</CookTime>
+  <Description>Worth the simmer.</Description>
+  <Icon>fa-duotone fa-taco</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Beef Chuck","quantity":1,"unit":"lb","isEyeballed":false},{"name":"Corn Tortilla","quantity":8,"unit":"whole","isEyeballed":false},{"name":"Salsa","quantity":1,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Simmer the beef until it shreds like a zephyr."}]]]>
+  </Instructions>
+  <Name>Slow Beef Barbacoa</Name>
+  <PrepTime>20</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"a3b21637-9834-d6ee-5ef4-1d482d8d4ff1"},{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

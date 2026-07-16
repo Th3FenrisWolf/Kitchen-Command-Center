@@ -25,6 +25,7 @@
         <PackageReference Include="Kentico.Xperience.ComponentRegistry.Admin" />
         <PackageReference Include="Kentico.Xperience.ComponentRegistry.MCP" />
         <PackageReference Include="Kentico.Xperience.ImageProcessing" />
+        <PackageReference Include="Kentico.Xperience.Lucene" />
         <PackageReference Include="Kentico.Xperience.ManagementApi" />
         <PackageReference Include="Kentico.Xperience.MiniProfiler" />
         <PackageReference Include="Kentico.Xperience.WebApp" />

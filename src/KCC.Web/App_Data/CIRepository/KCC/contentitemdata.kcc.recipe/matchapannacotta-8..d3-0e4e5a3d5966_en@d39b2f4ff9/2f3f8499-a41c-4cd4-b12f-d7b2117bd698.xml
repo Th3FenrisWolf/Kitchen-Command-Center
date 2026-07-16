@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"1d355980-3fc7-968f-c255-9c0c3d02ad6c"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>d4d50487-6775-45c0-bed3-0e4e5a3d5966</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>MatchaPannaCotta-8cnxd6tm</CodeName>
+      <GUID>8a585a4e-2957-44c2-8024-f575cfa209e9</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>2f3f8499-a41c-4cd4-b12f-d7b2117bd698</ContentItemDataGUID>
+  <Description>Silky, wobbly, faintly grassy.</Description>
+  <Icon>fa-duotone fa-pudding</Icon>
+  <Name>Matcha Panna Cotta</Name>
+</contentitemdata.kcc.recipe>

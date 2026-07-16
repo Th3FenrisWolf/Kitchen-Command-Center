@@ -4,7 +4,7 @@
 @model RecipeSearchViewModel
 
 <RecipeSearchView
-  :recipes="@Vue.Prop(Model.Recipes)"
+  :initial="@Vue.Prop(Model.InitialResults)"
   create-recipe-url="@Model.CreateRecipeUrl"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />

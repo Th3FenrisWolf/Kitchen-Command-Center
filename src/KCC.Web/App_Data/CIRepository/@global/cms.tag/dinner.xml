@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>2a8f18a0-dba8-f508-090d-db5c23bf6c8d</TagGUID>
+  <TagName>Dinner</TagName>
+  <TagOrder>3</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeCategories</CodeName>
+    <GUID>91f33fed-49c0-4642-b466-f0cbf3664fc8</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Dinner</TagTitle>
+</cms.tag>

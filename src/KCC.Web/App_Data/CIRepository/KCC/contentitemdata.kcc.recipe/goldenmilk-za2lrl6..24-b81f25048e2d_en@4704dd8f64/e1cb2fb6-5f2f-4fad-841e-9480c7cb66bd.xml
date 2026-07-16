@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9c4e2397-6dfe-c9c9-f5c2-f4d73ce44004"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>aa226681-fcf4-4b32-af24-b81f25048e2d</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>GoldenMilk-za2lrl6m</CodeName>
+      <GUID>e1dd44a3-02cc-4292-9e77-4d43217eaaff</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>e1cb2fb6-5f2f-4fad-841e-9480c7cb66bd</ContentItemDataGUID>
+  <Description>Turmeric nightcap, gently spiced.</Description>
+  <Icon>fa-duotone fa-mug-saucer</Icon>
+  <Name>Golden Milk</Name>
+</contentitemdata.kcc.recipe>

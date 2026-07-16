@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9c4e2397-6dfe-c9c9-f5c2-f4d73ce44004"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>446819b0-e9e5-439a-b970-969b95aaf8e7</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>WatermelonCooler-w0iijzxq</CodeName>
+      <GUID>ce2d4048-ffb7-4a52-b530-926677937560</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>97203fc7-1ab8-4a1e-8365-3d3eed93ad0c</ContentItemDataGUID>
+  <Description>Blended summer refresher, no added sugar.</Description>
+  <Icon>fa-duotone fa-glass-water</Icon>
+  <Name>Watermelon Cooler</Name>
+</contentitemdata.kcc.recipe>

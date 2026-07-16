@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>06782df8-441f-4641-b0b7-a6b040684f96</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>GrahamCrust-6xjdnozq</CodeName>
+      <GUID>4309e3b9-d333-4656-b230-8925dc2b3f9b</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>f4d6f30d-80ce-454c-8575-404a5fad847b</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Set and forget.</Description>
+  <Icon>fa-duotone fa-cheese</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Cream Cheese","quantity":16,"unit":"oz","isEyeballed":false},{"name":"Graham Crackers","quantity":1.5,"unit":"cups","isEyeballed":false},{"name":"Sugar","quantity":0.5,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Press the crust."},{"step":2,"text":"Fill and chill overnight."}]]]>
+  </Instructions>
+  <Name>Graham Crust</Name>
+  <PrepTime>20</PrepTime>
+  <ServingNumber>8</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

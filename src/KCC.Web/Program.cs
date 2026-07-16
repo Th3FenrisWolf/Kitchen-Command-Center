@@ -75,6 +75,13 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddKccResourceStrings();
 builder.Services.AddKccContributions();
+builder.Services.AddKenticoLucene(
+    configure => configure.RegisterStrategy<KCC.Web.Features.Search.RecipeSearchIndexingStrategy>(
+        KCC.Web.Features.Search.RecipeSearchConstants.StrategyName),
+    builder.Configuration);
+builder.Services.AddScoped<KCC.Web.Features.Search.IRecipeSearchService, KCC.Web.Features.Search.RecipeSearchService>();
+builder.Services.AddScoped<KCC.Web.Features.Search.IRecipeReindexTargetResolver, KCC.Web.Features.Search.RecipeReindexTargetResolver>();
+builder.Services.AddScoped<KCC.Web.Features.Search.IRecipeReindexer, KCC.Web.Features.Search.RecipeReindexer>();
 
 var anthropicOptions = builder.Configuration
     .GetSection(KCC.Web.Features.Api.AnthropicOptions.SectionName)

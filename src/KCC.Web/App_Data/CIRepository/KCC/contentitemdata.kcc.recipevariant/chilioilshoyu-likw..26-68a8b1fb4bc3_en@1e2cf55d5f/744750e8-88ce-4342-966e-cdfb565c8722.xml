@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>95d8e549-6f41-4b16-adaf-437eb17154c6</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>4b92c73a-6d5c-49b6-9026-68a8b1fb4bc3</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ChiliOilShoyu-likwvb6b</CodeName>
+      <GUID>8179e64a-dd77-4ca0-bb69-07a89dbb480a</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>744750e8-88ce-4342-966e-cdfb565c8722</ContentItemDataGUID>
+  <CookTime>10</CookTime>
+  <Description>Bright and fiery.</Description>
+  <Icon>fa-duotone fa-bowl-chopsticks</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Ramen Noodles","quantity":1,"unit":"portion","isEyeballed":false},{"name":"Chili Oil","quantity":1,"unit":"tbsp","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Boil noodles."},{"step":2,"text":"Toss with chili oil."}]]]>
+  </Instructions>
+  <Name>Chili Oil Shoyu</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>1</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"a3b21637-9834-d6ee-5ef4-1d482d8d4ff1"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

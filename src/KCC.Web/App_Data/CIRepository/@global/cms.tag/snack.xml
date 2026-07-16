@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>cb6c5e90-ce7e-3af6-2513-0904349c50ad</TagGUID>
+  <TagName>Snack</TagName>
+  <TagOrder>5</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeCategories</CodeName>
+    <GUID>91f33fed-49c0-4642-b466-f0cbf3664fc8</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Snack</TagTitle>
+</cms.tag>

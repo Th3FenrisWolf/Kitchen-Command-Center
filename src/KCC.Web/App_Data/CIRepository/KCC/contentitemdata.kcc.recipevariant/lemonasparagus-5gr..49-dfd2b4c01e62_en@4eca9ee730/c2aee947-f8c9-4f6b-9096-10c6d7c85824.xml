@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>9d1a8d40-19fd-4d77-b249-dfd2b4c01e62</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>LemonAsparagus-5gr5ywg1</CodeName>
+      <GUID>be677920-e27d-4954-a8db-1f7a25a81be2</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>c2aee947-f8c9-4f6b-9096-10c6d7c85824</ContentItemDataGUID>
+  <CookTime>20</CookTime>
+  <Description>Roast it all together.</Description>
+  <Icon>fa-duotone fa-fish</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Salmon","quantity":2,"unit":"fillets","isEyeballed":false},{"name":"Asparagus","quantity":1,"unit":"bunch","isEyeballed":false},{"name":"Lemon","quantity":1,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Arrange on a sheet pan."},{"step":2,"text":"Roast until flaky."}]]]>
+  </Instructions>
+  <Name>Lemon Asparagus</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>2</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"},{"Identifier":"438f243b-18d7-a167-bdf0-2330d2493a57"},{"Identifier":"2f9ffbf2-09b8-5c65-6b76-a6630535183b"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

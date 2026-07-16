@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"1d355980-3fc7-968f-c255-9c0c3d02ad6c"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>6d6e1e6a-2665-458c-b674-4a44f3f15e30</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>VeganBananaBread-1uu8762t</CodeName>
+      <GUID>0bda375f-b043-46bd-80a2-9fa1011d5aa6</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>6cbd7d68-0e46-44cf-8b6d-27685d1979b7</ContentItemDataGUID>
+  <Description>Uses up the sad bananas on your counter.</Description>
+  <Icon>fa-duotone fa-bread-loaf</Icon>
+  <Name>Vegan Banana Bread</Name>
+</contentitemdata.kcc.recipe>

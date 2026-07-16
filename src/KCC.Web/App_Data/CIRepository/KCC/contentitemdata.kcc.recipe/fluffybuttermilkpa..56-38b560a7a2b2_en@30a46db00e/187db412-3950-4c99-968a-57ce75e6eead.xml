@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"732dfcab-36f4-4480-b584-4c53c31046f5"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>f7feee1e-4145-4450-8b56-38b560a7a2b2</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>FluffyButtermilkPancakes-v9oxi51j</CodeName>
+      <GUID>1a30a80e-82da-405c-a9d1-50e201408ff6</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>187db412-3950-4c99-968a-57ce75e6eead</ContentItemDataGUID>
+  <Description>Tall, tender stacks for a lazy weekend morning.</Description>
+  <Icon>fa-duotone fa-pancakes</Icon>
+  <Name>Fluffy Buttermilk Pancakes</Name>
+</contentitemdata.kcc.recipe>
