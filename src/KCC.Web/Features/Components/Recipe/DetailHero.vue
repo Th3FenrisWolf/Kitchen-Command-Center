@@ -2,7 +2,7 @@
   import { computed } from 'vue'
   import AccentTile from './AccentTile.vue'
   import ComingSoonBadge from '~/Components/ComingSoon/ComingSoonBadge.vue'
-  import StarRating from '~/Components/StarRating/StarRating.vue'
+  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import { ResourceString } from '~/Components/ResourceStrings'
 
   const props = withDefaults(
@@ -36,13 +36,12 @@
 
       <div class="mt-2 flex flex-wrap items-center gap-4">
         <span class="inline-flex items-center gap-1">
-          <i class="fa-solid fa-star text-peach"></i>
+          <i v-if="!hasRating" class="fa-solid fa-star text-peach"></i>
           <template v-if="reviewCount === undefined && averageRating === undefined">
             <ComingSoonBadge />
           </template>
           <template v-else-if="hasRating">
-            <StarRating :model-value="averageRating ?? 0" readonly />
-            <span class="font-bold">{{ (averageRating ?? 0).toFixed(1) }}</span>
+            <RatingSummary :value="averageRating ?? 0" strong />
             <span class="text-bone-dark">({{ reviewCount }} <ResourceString for="Reviews" />)</span>
           </template>
           <template v-else>

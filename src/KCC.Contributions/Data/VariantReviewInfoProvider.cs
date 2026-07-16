@@ -9,14 +9,15 @@ public partial class VariantReviewInfoProvider
     private const int MaxReviewLength = 4000;
 
     /// <summary>Mean rating + count over a set of ratings. Empty → (0, 0).</summary>
-    internal static RatingAggregate Aggregate(IReadOnlyCollection<int> ratings) =>
-        ratings.Count == 0 ? new RatingAggregate(0d, 0) : new RatingAggregate(ratings.Average(), ratings.Count);
+    internal static RatingAggregate Aggregate(IReadOnlyCollection<decimal> ratings) =>
+        ratings.Count == 0 ? new RatingAggregate(0d, 0) : new RatingAggregate((double)ratings.Average(), ratings.Count);
 
     /// <summary>Per-variant mean rating + count.</summary>
-    internal static IReadOnlyDictionary<Guid, RatingAggregate> AggregateByVariant(IEnumerable<(Guid VariantGuid, int Rating)> reviews) =>
+    internal static IReadOnlyDictionary<Guid, RatingAggregate> AggregateByVariant(IEnumerable<(Guid VariantGuid, decimal Rating)> reviews) =>
         reviews.GroupBy(r => r.VariantGuid).ToDictionary(g => g.Key, g => Aggregate(g.Select(x => x.Rating).ToArray()));
 
-    public static bool IsValidRating(int rating) => rating is >= 1 and <= 5;
+    public static bool IsValidRating(decimal rating) =>
+        rating >= 0.5m && rating <= 5m && (rating * 2m) % 1m == 0m;
 
     internal static bool CanModify(Guid? authorMemberGuid, Guid memberGuid) =>
         authorMemberGuid is { } author && author == memberGuid;
@@ -91,7 +92,7 @@ public partial class VariantReviewInfoProvider
         .TopN(1)
         .FirstOrDefault();
 
-    public void Upsert(Guid variantGuid, Guid recipeGuid, Guid memberGuid, int rating, string reviewText)
+    public void Upsert(Guid variantGuid, Guid recipeGuid, Guid memberGuid, decimal rating, string reviewText)
     {
         var existing = GetMemberReview(variantGuid, memberGuid);
         var now = DateTime.UtcNow;

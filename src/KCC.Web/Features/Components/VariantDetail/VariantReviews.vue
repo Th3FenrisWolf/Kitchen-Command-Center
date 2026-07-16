@@ -48,7 +48,7 @@
   }
 
   const submit = async () => {
-    if (myRating.value < 1) return
+    if (myRating.value < 0.5) return
     error.value = ''
     const result = await put(`/api/variant/${props.variantGuid}/review`, { rating: myRating.value, text: myText.value })
     if (!result.success) {
@@ -97,7 +97,7 @@
           type="button"
           data-testid="submit-review"
           class="cursor-pointer rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
-          :disabled="myRating < 1"
+          :disabled="myRating < 0.5"
           @click="submit"
         >
           <ResourceString for="SubmitReview" />

@@ -78,9 +78,9 @@ namespace KCC.Contributions.Data
         /// Rating.
         /// </summary>
         [DatabaseField]
-        public virtual int Rating
+        public virtual decimal Rating
         {
-            get => ValidationHelper.GetInteger(GetValue(nameof(Rating)), 0);
+            get => ValidationHelper.GetDecimal(GetValue(nameof(Rating)), 0m);
             set => SetValue(nameof(Rating), value);
         }
 

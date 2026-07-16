@@ -15,7 +15,7 @@
       <field column="VariantGuid" columntype="guid" enabled="true" guid="051637c0-19bf-4733-a8ea-49837d7f50e7" />
       <field column="RecipeGuid" columntype="guid" enabled="true" guid="f49560c7-37ac-4c4f-a8ad-928b1f54b9b3" />
       <field column="MemberGuid" columntype="guid" enabled="true" guid="d20d8961-b31a-462f-b045-aee797f48743" />
-      <field column="Rating" columntype="integer" enabled="true" guid="285fb95b-98cf-4482-b0cc-10d4b1fe2715" />
+      <field column="Rating" columnprecision="1" columnsize="2" columntype="decimal" enabled="true" guid="285fb95b-98cf-4482-b0cc-10d4b1fe2715" />
       <field allowempty="true" column="ReviewText" columntype="longtext" enabled="true" guid="b96f8e41-62b5-4378-bdee-cd4d7944210f" />
       <field column="ReviewCreated" columntype="datetime" enabled="true" guid="b800b674-af5e-467d-8dc2-76d20226f324" />
       <field column="ReviewModified" columntype="datetime" enabled="true" guid="411c9d78-cac2-4f7d-849a-bf374eb75112" />

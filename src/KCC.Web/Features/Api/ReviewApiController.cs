@@ -18,9 +18,9 @@ public class ReviewApiController(
 ) : ControllerBase
 {
     /// <summary>Upsert request body.</summary>
-    /// <param name="Rating">The 1-5 star rating.</param>
+    /// <param name="Rating">The 0.5-5 star rating, in half-star steps.</param>
     /// <param name="Text">The optional review text.</param>
-    public record ReviewRequest(int Rating, string Text);
+    public record ReviewRequest(decimal Rating, string Text);
 
     /// <summary>Returns the variant's average + count, the current member's review, and a page of reviews.</summary>
     /// <param name="variantGuid">The variant's content-item GUID.</param>
@@ -75,7 +75,7 @@ public class ReviewApiController(
     {
         if (request is null || !VariantReviewInfoProvider.IsValidRating(request.Rating))
         {
-            return BadRequest(new { error = "Rating must be between 1 and 5." });
+            return BadRequest(new { error = "Rating must be between 0.5 and 5 in half-star steps." });
         }
 
         var user = await userManager.GetUserAsync(User);
