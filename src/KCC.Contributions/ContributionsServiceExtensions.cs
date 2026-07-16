@@ -11,8 +11,8 @@ public static class ContributionsServiceExtensions
         services.AddScoped<IVariantReviewInfoProvider, VariantReviewInfoProvider>();
         services.AddScoped<IVariantCookNoteInfoProvider, VariantCookNoteInfoProvider>();
         services.AddScoped<IVariantCookedInfoProvider, VariantCookedInfoProvider>();
-        services.AddScoped<KCC.Contributions.Admin.MemberNameLookup>();
-        services.AddScoped<KCC.Contributions.Admin.VariantNameLookup>();
+        services.AddScoped<Admin.MemberNameLookup>();
+        services.AddScoped<Admin.VariantNameLookup>();
         return services;
     }
 }

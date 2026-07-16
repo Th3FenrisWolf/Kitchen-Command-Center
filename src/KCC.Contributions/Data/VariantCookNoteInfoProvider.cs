@@ -4,10 +4,11 @@ public partial class VariantCookNoteInfoProvider
 {
     private const int MaxNoteLength = 4000;
 
-    internal static string ClampText(string text) =>
-        string.IsNullOrWhiteSpace(text)
-            ? null
-            : text.Trim().Length <= MaxNoteLength ? text.Trim() : text.Trim()[..MaxNoteLength];
+    internal static string ClampText(string text) => string.IsNullOrWhiteSpace(text)
+        ? null
+        : text.Trim().Length <= MaxNoteLength
+            ? text.Trim()
+            : text.Trim()[..MaxNoteLength];
 
     internal static bool CanModify(VariantCookNoteInfo note, Guid memberGuid) =>
         note is not null && note.MemberGuid == memberGuid;
@@ -17,10 +18,9 @@ public partial class VariantCookNoteInfoProvider
         var query = Get().WhereEquals(nameof(VariantCookNoteInfo.VariantGuid), variantGuid);
         totalCount = query.Count;
 
-        return query
+        return [..query
             .OrderByDescending(nameof(VariantCookNoteInfo.NoteCreated))
-            .Page(Math.Max(0, page), Math.Max(1, pageSize))
-            .ToList();
+            .Page(Math.Max(0, page), Math.Max(1, pageSize))];
     }
 
     public int Add(Guid variantGuid, Guid recipeGuid, Guid memberGuid, string noteText)

@@ -8,8 +8,7 @@ namespace KCC.Contributions;
 
 internal class ContributionsModule : AdminModule
 {
-    public ContributionsModule()
-        : base("KCC.Contributions")
+    public ContributionsModule() : base("KCC.Contributions")
     {
     }
 }

@@ -139,8 +139,7 @@ namespace KCC.Contributions.Data
         /// <summary>
         /// Creates an empty instance of the <see cref="VariantReviewInfo"/> class.
         /// </summary>
-        public VariantReviewInfo()
-            : base(TYPEINFO)
+        public VariantReviewInfo() : base(TYPEINFO)
         {
         }
 
@@ -149,8 +148,7 @@ namespace KCC.Contributions.Data
         /// Creates a new instances of the <see cref="VariantReviewInfo"/> class from the given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="dr">DataRow with the object data.</param>
-        public VariantReviewInfo(DataRow dr)
-            : base(TYPEINFO, dr)
+        public VariantReviewInfo(DataRow dr) : base(TYPEINFO, dr)
         {
         }
     }

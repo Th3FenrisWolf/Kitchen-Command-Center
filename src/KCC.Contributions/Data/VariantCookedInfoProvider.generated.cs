@@ -11,8 +11,7 @@ namespace KCC.Contributions.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="VariantCookedInfoProvider"/> class.
         /// </summary>
-        public VariantCookedInfoProvider()
-            : base(VariantCookedInfo.TYPEINFO)
+        public VariantCookedInfoProvider() : base(VariantCookedInfo.TYPEINFO)
         {
         }
     }

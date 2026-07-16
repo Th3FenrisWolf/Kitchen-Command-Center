@@ -128,8 +128,7 @@ namespace KCC.Contributions.Data
         /// <summary>
         /// Creates an empty instance of the <see cref="VariantCookNoteInfo"/> class.
         /// </summary>
-        public VariantCookNoteInfo()
-            : base(TYPEINFO)
+        public VariantCookNoteInfo() : base(TYPEINFO)
         {
         }
 
@@ -138,8 +137,7 @@ namespace KCC.Contributions.Data
         /// Creates a new instances of the <see cref="VariantCookNoteInfo"/> class from the given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="dr">DataRow with the object data.</param>
-        public VariantCookNoteInfo(DataRow dr)
-            : base(TYPEINFO, dr)
+        public VariantCookNoteInfo(DataRow dr) : base(TYPEINFO, dr)
         {
         }
     }
