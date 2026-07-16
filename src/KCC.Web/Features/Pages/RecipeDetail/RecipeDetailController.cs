@@ -146,6 +146,7 @@ public class RecipeDetailController(
         "RecipeDetail.Grid",
         "RecipeDetail.List",
         "RecipeDetail.Total",
+        "RecipeDetail.Of",
         "RecipeDetail.NoVariantsMatch",
         "RecipeDetail.TryDifferentFilter",
         "RecipeDetail.ClearFilters",
