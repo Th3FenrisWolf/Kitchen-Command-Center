@@ -79,7 +79,7 @@
       </button>
     </div>
 
-    <ul v-if="notes.length" class="flex flex-col gap-3">
+    <ul v-if="notes.length" data-testid="cook-notes-list" class="flex flex-col gap-3">
       <li v-for="note in notes" :key="note.id" class="rounded-2xl bg-bone p-4 shadow-light">
         <div class="flex items-center justify-between gap-2">
           <span class="font-bold">{{ note.authorName }}</span>

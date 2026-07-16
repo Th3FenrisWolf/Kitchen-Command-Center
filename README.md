@@ -253,6 +253,50 @@ node tests/scripts/run.mjs
 The command exits non-zero if any suite has failures or fails to run, so it is
 CI-friendly. The individual per-suite reports are still produced alongside it.
 
+#### E2E seed member (one-time)
+
+The E2E suite includes logged-in member flows (add a cook note, toggle "I cooked
+this", submit/edit/delete a review). These sign in through the public login form,
+so a **confirmed** member must exist in the database, and the tests read that
+member's credentials from environment variables (no login is committed to git):
+
+- `KCC_E2E_MEMBER_USERNAME`
+- `KCC_E2E_MEMBER_PASSWORD`
+
+Set them durably so the spawned `dotnet test` process inherits them. On macOS/zsh,
+put them in `~/.zshenv` (read by non-interactive shells too — the same place as the
+Font Awesome token):
+
+```bash
+export KCC_E2E_MEMBER_USERNAME="<your-username>"
+export KCC_E2E_MEMBER_PASSWORD="<your-password>"
+```
+
+Then create the member once against your local database (the web app must be
+running — e.g. `dotnet run` from `src/KCC.Web`, or let the E2E fixture start it).
+The commands below reuse the same env vars so no credentials are written down:
+
+1. Register the member via the public API:
+
+   ```bash
+   curl -X POST http://localhost:58671/api/account/register \
+     -H "Content-Type: application/json" \
+     -d "{\"UserName\":\"$KCC_E2E_MEMBER_USERNAME\",\"Email\":\"$KCC_E2E_MEMBER_USERNAME@example.test\",\"Password\":\"$KCC_E2E_MEMBER_PASSWORD\"}"
+   ```
+
+2. Confirm (enable) the member so it can sign in — email confirmation is not wired
+   up locally, and Kentico maps a member's confirmed state to `MemberEnabled`. Run
+   against the KCC database (`QUOTED_IDENTIFIER ON` is required because
+   `CMS_Member` carries filtered indexes):
+
+   ```sql
+   SET QUOTED_IDENTIFIER ON;
+   UPDATE CMS_Member SET MemberEnabled = 1 WHERE MemberName = '<your-username>';
+   ```
+
+Member data is not part of the CI repository, so this is a one-time step per
+database (it survives `--kxp-ci-restore`).
+
 ### Vue SSR
 
 The application uses Vue 3 server-side rendering. The SSR service:
