@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"2a8f18a0-dba8-f508-090d-db5c23bf6c8d"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>cb39ab67-8a6c-4c82-87c8-c4fa7e7d6272</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Hour-GlassFrittata-1jj61wbp</CodeName>
+      <GUID>c76ee989-7fcf-4376-9f46-682d7dff398b</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>5f2c4520-7eb0-441f-a84e-f670a0e9a2c2</ContentItemDataGUID>
+  <Description>A big-batch frittata timed to the hour.</Description>
+  <Icon>fa-duotone fa-egg</Icon>
+  <Name>Hour-Glass Frittata</Name>
+</contentitemdata.kcc.recipe>

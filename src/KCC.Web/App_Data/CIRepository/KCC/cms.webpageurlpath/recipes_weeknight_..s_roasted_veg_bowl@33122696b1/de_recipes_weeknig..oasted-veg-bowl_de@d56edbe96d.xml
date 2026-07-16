@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageurlpath>
+  <WebPageUrlPath>de/Recipes/Weeknight-Bowls/Roasted-Veg-Bowl</WebPageUrlPath>
+  <WebPageUrlPathContentLanguageID>
+    <CodeName>de</CodeName>
+    <GUID>2584f8c4-f563-4f2f-b337-9da4a38f2dca</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </WebPageUrlPathContentLanguageID>
+  <WebPageUrlPathGUID>836ba121-9fa8-4d7b-8347-b6f06565b3f7</WebPageUrlPathGUID>
+  <WebPageUrlPathHash>
+    <![CDATA[D552AEACFA61AC660F251EA7B0D181E61E9B2D78890612A40DABE92FE75B816A]]>
+  </WebPageUrlPathHash>
+  <WebPageUrlPathIsCanonical>True</WebPageUrlPathIsCanonical>
+  <WebPageUrlPathIsDraft>False</WebPageUrlPathIsDraft>
+  <WebPageUrlPathIsLatest>True</WebPageUrlPathIsLatest>
+  <WebPageUrlPathType>0</WebPageUrlPathType>
+  <WebPageUrlPathWebPageItemID>
+    <CodeName>RoastedVegBowl-wes3bfz1</CodeName>
+    <GUID>1995bfd0-dfa8-436b-8901-82c3e592e7bb</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageUrlPathWebPageItemID>
+  <WebPageUrlPathWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageUrlPathWebsiteChannelID>
+</cms.webpageurlpath>

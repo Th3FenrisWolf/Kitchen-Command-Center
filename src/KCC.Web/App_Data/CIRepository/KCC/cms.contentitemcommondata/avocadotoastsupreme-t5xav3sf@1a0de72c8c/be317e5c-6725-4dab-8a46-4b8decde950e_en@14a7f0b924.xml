@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>AvocadoToastSupreme-t5xav3sf</CodeName>
+    <GUID>522cf59a-358e-4373-ba97-e46c5c63e29b</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-07-09 04:00:00Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>be317e5c-6725-4dab-8a46-4b8decde950e</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-07-14 02:17:30Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ExcludeFromSitemap>False</ExcludeFromSitemap>
+  <ShowBreadcrumbs>True</ShowBreadcrumbs>
+</cms.contentitemcommondata>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemcommondata>
+  <ContentItemCommonDataContentItemID>
+    <CodeName>QuinoaPowerSalad-19fifmpd</CodeName>
+    <GUID>443759e0-5e46-40de-8c7c-e6e98469636e</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemCommonDataContentItemID>
+  <ContentItemCommonDataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemCommonDataContentLanguageID>
+  <ContentItemCommonDataFirstPublishedWhen>2026-06-26 04:00:00Z</ContentItemCommonDataFirstPublishedWhen>
+  <ContentItemCommonDataGUID>883da6f3-c05f-4e95-9d57-af742a9fad69</ContentItemCommonDataGUID>
+  <ContentItemCommonDataIsLatest>True</ContentItemCommonDataIsLatest>
+  <ContentItemCommonDataLastPublishedWhen>2026-07-14 02:17:31Z</ContentItemCommonDataLastPublishedWhen>
+  <ContentItemCommonDataVersionStatus>2</ContentItemCommonDataVersionStatus>
+  <ExcludeFromSitemap>False</ExcludeFromSitemap>
+  <ShowBreadcrumbs>True</ShowBreadcrumbs>
+</cms.contentitemcommondata>

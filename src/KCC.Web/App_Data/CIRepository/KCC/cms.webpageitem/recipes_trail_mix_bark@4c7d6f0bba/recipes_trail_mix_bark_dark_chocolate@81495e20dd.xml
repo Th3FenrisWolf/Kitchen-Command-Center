@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>DarkChocolate-tfuqux37</CodeName>
+    <GUID>3f72a46d-a787-4596-9ded-d99e4128dcdb</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>61209227-0e7c-47ee-a6d4-02bc85350d24</WebPageItemGUID>
+  <WebPageItemName>DarkChocolate-tfuqux37</WebPageItemName>
+  <WebPageItemOrder>1</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>TrailMixBark-un2aboba</CodeName>
+    <GUID>0a9660ce-004f-4638-890d-87c8deece185</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>/Recipes/Trail_Mix_Bark/Dark_Chocolate</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>95d8e549-6f41-4b16-adaf-437eb17154c6</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>6c0c08a3-64ed-4456-8632-fe5a3a484620</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>MisoVegan-8756lp6b</CodeName>
+      <GUID>c860e702-b6fa-47da-95f0-12ffa01824c9</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>51587886-5f83-4099-84e4-abe94a2fa1a7</ContentItemDataGUID>
+  <CookTime>15</CookTime>
+  <Description>Deep and meat-free.</Description>
+  <Icon>fa-duotone fa-bowl-chopsticks</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Ramen Noodles","quantity":1,"unit":"portion","isEyeballed":false},{"name":"Miso Paste","quantity":2,"unit":"tbsp","isEyeballed":false},{"name":"Tofu","quantity":4,"unit":"oz","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Whisk miso into broth."}]]]>
+  </Instructions>
+  <Name>Miso Vegan</Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>1</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

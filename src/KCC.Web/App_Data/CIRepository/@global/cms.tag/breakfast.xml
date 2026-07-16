@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>732dfcab-36f4-4480-b584-4c53c31046f5</TagGUID>
+  <TagMetadata>
+    <![CDATA[{"Translations":{"2584f8c4-f563-4f2f-b337-9da4a38f2dca":{"Title":null,"Description":null},"ef3c384b-a9ef-42c4-a1dc-21f748137808":{"Title":null,"Description":null}}}]]>
+  </TagMetadata>
+  <TagName>Breakfast</TagName>
+  <TagOrder>2</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeCategories</CodeName>
+    <GUID>91f33fed-49c0-4642-b466-f0cbf3664fc8</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Breakfast</TagTitle>
+</cms.tag>

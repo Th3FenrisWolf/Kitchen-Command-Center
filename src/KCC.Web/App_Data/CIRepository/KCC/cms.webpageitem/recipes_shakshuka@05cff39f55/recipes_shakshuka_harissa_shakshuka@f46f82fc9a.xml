@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>HarissaShakshuka-drizprvk</CodeName>
+    <GUID>7aeb7498-c230-4f0a-b55a-d5a88657f54c</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>339937e7-11f9-466c-995a-e175f207e221</WebPageItemGUID>
+  <WebPageItemName>HarissaShakshuka-drizprvk</WebPageItemName>
+  <WebPageItemOrder>1</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>Shakshuka-y39dp98d</CodeName>
+    <GUID>87d2769b-d118-4d31-aed7-f0c7aa15f574</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>/Recipes/Shakshuka/Harissa_Shakshuka</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

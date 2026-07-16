@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"cb6c5e90-ce7e-3af6-2513-0904349c50ad"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>a0bfd386-6e06-4055-b841-c96731a0ef0e</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>TrailMixBark-un2aboba</CodeName>
+      <GUID>209abb77-093b-4dc0-947c-cf637bde16e8</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>7b1e324c-4501-42e0-984a-dd101339dfe3</ContentItemDataGUID>
+  <Description>Melt, scatter, snap.</Description>
+  <Icon>fa-duotone fa-cookie</Icon>
+  <Name>Trail Mix Bark</Name>
+</contentitemdata.kcc.recipe>

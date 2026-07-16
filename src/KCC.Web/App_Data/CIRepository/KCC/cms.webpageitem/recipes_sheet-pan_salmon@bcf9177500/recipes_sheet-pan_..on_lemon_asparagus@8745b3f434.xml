@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageitem>
+  <WebPageItemContentItemID>
+    <CodeName>LemonAsparagus-5gr5ywg1</CodeName>
+    <GUID>be677920-e27d-4954-a8db-1f7a25a81be2</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </WebPageItemContentItemID>
+  <WebPageItemGUID>3f4076fe-e1fa-46e4-b02a-f445cc247b95</WebPageItemGUID>
+  <WebPageItemName>LemonAsparagus-5gr5ywg1</WebPageItemName>
+  <WebPageItemOrder>1</WebPageItemOrder>
+  <WebPageItemParentID>
+    <CodeName>Sheet-PanSalmon-qumsyyb9</CodeName>
+    <GUID>6c5f3bcc-4823-489b-b1ea-140e52c29bca</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageItemParentID>
+  <WebPageItemTreePath>/Recipes/Sheet-Pan_Salmon/Lemon_Asparagus</WebPageItemTreePath>
+  <WebPageItemWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageItemWebsiteChannelID>
+</cms.webpageitem>

@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.contentitemlanguagemetadata>
+  <ContentItemLanguageMetadataContentItemID>
+    <CodeName>Kale_Almond-lgc22eh9</CodeName>
+    <GUID>d2636d87-1e96-4190-b733-a25aff965ab8</GUID>
+    <ObjectType>cms.contentitem</ObjectType>
+  </ContentItemLanguageMetadataContentItemID>
+  <ContentItemLanguageMetadataContentLanguageID>
+    <CodeName>en</CodeName>
+    <GUID>ff570a71-8b09-493e-80c6-60ed997e5f8a</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </ContentItemLanguageMetadataContentLanguageID>
+  <ContentItemLanguageMetadataCreatedByUserID>
+    <CodeName>administrator</CodeName>
+    <GUID>6415b8ce-8072-4bcd-8e48-9d7178b826b7</GUID>
+    <ObjectType>cms.user</ObjectType>
+  </ContentItemLanguageMetadataCreatedByUserID>
+  <ContentItemLanguageMetadataCreatedWhen>2026-07-14 02:17:31Z</ContentItemLanguageMetadataCreatedWhen>
+  <ContentItemLanguageMetadataDisplayName>
+    <![CDATA[Kale & Almond]]>
+  </ContentItemLanguageMetadataDisplayName>
+  <ContentItemLanguageMetadataGUID>a9c3498f-f2f0-40ab-9822-7dec6644746c</ContentItemLanguageMetadataGUID>
+  <ContentItemLanguageMetadataHasImageAsset>False</ContentItemLanguageMetadataHasImageAsset>
+  <ContentItemLanguageMetadataLatestVersionStatus>2</ContentItemLanguageMetadataLatestVersionStatus>
+  <ContentItemLanguageMetadataModifiedByUserID>
+    <CodeName>administrator</CodeName>
+    <GUID>6415b8ce-8072-4bcd-8e48-9d7178b826b7</GUID>
+    <ObjectType>cms.user</ObjectType>
+  </ContentItemLanguageMetadataModifiedByUserID>
+  <ContentItemTags>
+    <cms.contentitemtag>
+      <ContentItemTagContentItemLanguageMetadataID>
+        <GUID>a9c3498f-f2f0-40ab-9822-7dec6644746c</GUID>
+        <ObjectType>cms.contentitemlanguagemetadata</ObjectType>
+      </ContentItemTagContentItemLanguageMetadataID>
+      <ContentItemTagFieldGUID>a22f3a33-2a34-4176-a0cd-9179fa01aad5</ContentItemTagFieldGUID>
+      <ContentItemTagGUID>cba6405f-ad9a-49d6-a1ef-54b461129334</ContentItemTagGUID>
+      <ContentItemTagTagGUID>c2dcfe91-3fc7-f464-09c0-144e52a1546e</ContentItemTagTagGUID>
+    </cms.contentitemtag>
+    <cms.contentitemtag>
+      <ContentItemTagContentItemLanguageMetadataID>
+        <GUID>a9c3498f-f2f0-40ab-9822-7dec6644746c</GUID>
+        <ObjectType>cms.contentitemlanguagemetadata</ObjectType>
+      </ContentItemTagContentItemLanguageMetadataID>
+      <ContentItemTagFieldGUID>a22f3a33-2a34-4176-a0cd-9179fa01aad5</ContentItemTagFieldGUID>
+      <ContentItemTagGUID>e00cfe8a-9d8a-4f52-909f-efc00918b502</ContentItemTagGUID>
+      <ContentItemTagTagGUID>202eaabd-2cb5-10a7-de73-3209c2fd0bd5</ContentItemTagTagGUID>
+    </cms.contentitemtag>
+    <cms.contentitemtag>
+      <ContentItemTagContentItemLanguageMetadataID>
+        <GUID>a9c3498f-f2f0-40ab-9822-7dec6644746c</GUID>
+        <ObjectType>cms.contentitemlanguagemetadata</ObjectType>
+      </ContentItemTagContentItemLanguageMetadataID>
+      <ContentItemTagFieldGUID>a22f3a33-2a34-4176-a0cd-9179fa01aad5</ContentItemTagFieldGUID>
+      <ContentItemTagGUID>3dc5b985-063e-4972-8871-f4ed9162494e</ContentItemTagGUID>
+      <ContentItemTagTagGUID>06215434-9ffb-6bcf-a445-a2d0a5e41d6d</ContentItemTagTagGUID>
+    </cms.contentitemtag>
+  </ContentItemTags>
+</cms.contentitemlanguagemetadata>

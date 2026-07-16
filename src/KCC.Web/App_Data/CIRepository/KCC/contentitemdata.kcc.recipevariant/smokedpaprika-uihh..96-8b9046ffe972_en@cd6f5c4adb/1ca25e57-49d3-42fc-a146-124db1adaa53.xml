@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>f4376fb6-f9a6-4691-ba96-8b9046ffe972</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SmokedPaprika-uihh0fz9</CodeName>
+      <GUID>ff03d536-38b9-4ab7-951b-ff1d68296cc3</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>1ca25e57-49d3-42fc-a146-124db1adaa53</ContentItemDataGUID>
+  <CookTime>30</CookTime>
+  <Description>Shake and roast.</Description>
+  <Icon>fa-duotone fa-seedling</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Chickpeas","quantity":2,"unit":"cans","isEyeballed":false},{"name":"Olive Oil","quantity":2,"unit":"tbsp","isEyeballed":false},{"name":"Smoked Paprika","quantity":1,"unit":"tsp","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Dry the chickpeas well."},{"step":2,"text":"Roast until crisp."}]]]>
+  </Instructions>
+  <Name>Smoked Paprika</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"c2dcfe91-3fc7-f464-09c0-144e52a1546e"},{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

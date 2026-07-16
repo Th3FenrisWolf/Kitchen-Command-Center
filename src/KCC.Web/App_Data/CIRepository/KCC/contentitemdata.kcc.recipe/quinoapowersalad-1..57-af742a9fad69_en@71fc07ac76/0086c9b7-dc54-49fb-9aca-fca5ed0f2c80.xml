@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9671a557-28e9-4502-bfb0-6071ebe79930"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>883da6f3-c05f-4e95-9d57-af742a9fad69</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>QuinoaPowerSalad-19fifmpd</CodeName>
+      <GUID>443759e0-5e46-40de-8c7c-e6e98469636e</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>0086c9b7-dc54-49fb-9aca-fca5ed0f2c80</ContentItemDataGUID>
+  <Description>Make-ahead lunch that keeps its crunch.</Description>
+  <Icon>fa-duotone fa-salad</Icon>
+  <Name>Quinoa Power Salad</Name>
+</contentitemdata.kcc.recipe>

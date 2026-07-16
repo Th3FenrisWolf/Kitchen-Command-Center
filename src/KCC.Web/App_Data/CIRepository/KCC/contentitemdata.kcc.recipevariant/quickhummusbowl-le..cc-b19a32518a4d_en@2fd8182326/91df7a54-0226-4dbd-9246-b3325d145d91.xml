@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>cc8d9ba0-b80d-4136-98cc-b19a32518a4d</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>QuickHummusBowl-lepkv7a2</CodeName>
+      <GUID>ae3305fa-f752-4b68-b966-05c7362bbd5f</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>91df7a54-0226-4dbd-9246-b3325d145d91</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>No-roast shortcut.</Description>
+  <Icon>fa-duotone fa-bowl-rice</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Hummus","quantity":1,"unit":"cup","isEyeballed":false},{"name":"Pita","quantity":2,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Assemble everything cold."}]]]>
+  </Instructions>
+  <Name>Quick Hummus Bowl</Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>2</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

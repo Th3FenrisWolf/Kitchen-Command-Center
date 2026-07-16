@@ -223,7 +223,9 @@ hard;Hard
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Author Member GUID</fieldcaption>
-          <fielddescription>GUID of the member who created this variant. Set automatically when the variant is submitted from the live site.</fielddescription>
+          <fielddescription>
+            <![CDATA[GUID of the member who created this variant. Set automatically when the variant is submitted from the live site.]]>
+          </fielddescription>
           <fielddescriptionashtml>False</fielddescriptionashtml>
           <includeincontentgeneration>False</includeincontentgeneration>
           <includeintranslation>False</includeintranslation>

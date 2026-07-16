@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>4bbb2fc7-3108-49a9-a28e-340f7f71cf3d</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>b2bb0233-98ac-4968-9724-7db17bfa1ece</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>12-HourSteep-hqmmn7m7</CodeName>
+      <GUID>41cd755f-1cc5-4557-aa3c-87449bb9df66</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>ff4091e4-3500-46c7-a1b0-3c96468f81e5</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Steep, strain, keep.</Description>
+  <Icon>fa-duotone fa-mug-hot</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Coarse Coffee","quantity":1,"unit":"cup","isEyeballed":false},{"name":"Cold Water","quantity":4,"unit":"cups","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Steep 12 hours."},{"step":2,"text":"Strain."}]]]>
+  </Instructions>
+  <Name>12-Hour Steep</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>8</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"438f243b-18d7-a167-bdf0-2330d2493a57"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

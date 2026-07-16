@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>e15a60eb-765f-453a-824f-adad7f3a3cbf</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Kale_Almond-lgc22eh9</CodeName>
+      <GUID>d2636d87-1e96-4190-b733-a25aff965ab8</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>92d0d447-f3e0-47c7-99a6-5bd3e2f977ac</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Massage the kale, trust us.</Description>
+  <Icon>fa-duotone fa-salad</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Quinoa","quantity":1,"unit":"cup","isEyeballed":false},{"name":"Kale","quantity":3,"unit":"cups","isEyeballed":false},{"name":"Almonds","quantity":0.25,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Toss everything with lemon dressing."}]]]>
+  </Instructions>
+  <Name>
+    <![CDATA[Kale & Almond]]>
+  </Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>3</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"c2dcfe91-3fc7-f464-09c0-144e52a1546e"},{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

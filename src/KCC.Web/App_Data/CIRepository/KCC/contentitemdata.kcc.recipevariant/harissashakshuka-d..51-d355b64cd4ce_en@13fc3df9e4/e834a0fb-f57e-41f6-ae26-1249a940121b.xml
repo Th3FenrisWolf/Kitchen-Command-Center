@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>4bbb2fc7-3108-49a9-a28e-340f7f71cf3d</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>9b728b0b-68c5-4aaa-8051-d355b64cd4ce</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>HarissaShakshuka-drizprvk</CodeName>
+      <GUID>7aeb7498-c230-4f0a-b55a-d5a88657f54c</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>e834a0fb-f57e-41f6-ae26-1249a940121b</ContentItemDataGUID>
+  <CookTime>25</CookTime>
+  <Description>Bring the heat.</Description>
+  <Icon>fa-duotone fa-egg-fried</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Eggs","quantity":4,"unit":"whole","isEyeballed":false},{"name":"Crushed Tomato","quantity":1,"unit":"can","isEyeballed":false},{"name":"Harissa","quantity":1,"unit":"tbsp","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Simmer the tomato base."},{"step":2,"text":"Crack in the eggs and cover."}]]]>
+  </Instructions>
+  <Name>Harissa Shakshuka</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>3</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"},{"Identifier":"a3b21637-9834-d6ee-5ef4-1d482d8d4ff1"},{"Identifier":"c2dcfe91-3fc7-f464-09c0-144e52a1546e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

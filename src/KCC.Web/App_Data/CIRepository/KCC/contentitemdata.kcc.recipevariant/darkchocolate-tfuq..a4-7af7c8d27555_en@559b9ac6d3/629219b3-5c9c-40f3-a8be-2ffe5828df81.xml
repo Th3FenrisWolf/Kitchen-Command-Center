@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>d4f550a1-244c-416d-88a4-7af7c8d27555</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>DarkChocolate-tfuqux37</CodeName>
+      <GUID>3f72a46d-a787-4596-9ded-d99e4128dcdb</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>629219b3-5c9c-40f3-a8be-2ffe5828df81</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>No-cook freezer treat.</Description>
+  <Icon>fa-duotone fa-cookie</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Dark Chocolate","quantity":8,"unit":"oz","isEyeballed":false},{"name":"Mixed Nuts","quantity":1,"unit":"cup","isEyeballed":false},{"name":"Dried Cranberries","quantity":0.5,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Melt and spread."},{"step":2,"text":"Scatter toppings and freeze."}]]]>
+  </Instructions>
+  <Name>Dark Chocolate</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>12</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"c2dcfe91-3fc7-f464-09c0-144e52a1546e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

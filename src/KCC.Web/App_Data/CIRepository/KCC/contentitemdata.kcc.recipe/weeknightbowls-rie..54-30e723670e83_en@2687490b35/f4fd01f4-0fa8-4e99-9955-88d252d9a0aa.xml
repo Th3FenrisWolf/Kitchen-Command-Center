@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9671a557-28e9-4502-bfb0-6071ebe79930"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>5ef78d36-1de1-49b7-ad54-30e723670e83</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>WeeknightBowls-rie8y0lj</CodeName>
+      <GUID>384ddc2a-565c-46fd-9db8-16c470e7ae34</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>f4fd01f4-0fa8-4e99-9955-88d252d9a0aa</ContentItemDataGUID>
+  <Description>Fast, flexible grain bowls for busy nights.</Description>
+  <Icon>fa-duotone fa-bowl-rice</Icon>
+  <Name>Weeknight Bowls</Name>
+</contentitemdata.kcc.recipe>

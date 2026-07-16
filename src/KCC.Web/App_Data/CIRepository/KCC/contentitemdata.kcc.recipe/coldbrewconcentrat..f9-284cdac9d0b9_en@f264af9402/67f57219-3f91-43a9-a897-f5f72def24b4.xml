@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>4bbb2fc7-3108-49a9-a28e-340f7f71cf3d</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9c4e2397-6dfe-c9c9-f5c2-f4d73ce44004"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>4418097a-c767-4031-b2f9-284cdac9d0b9</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ColdBrewConcentrate-onga0igr</CodeName>
+      <GUID>d9f90c9e-564b-49f3-877a-315c440f5294</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>67f57219-3f91-43a9-a897-f5f72def24b4</ContentItemDataGUID>
+  <Description>
+    <![CDATA[A smooth midnight-dark concentrate to cut with milk or water.]]>
+  </Description>
+  <Icon>fa-duotone fa-mug-hot</Icon>
+  <Name>Cold Brew Concentrate</Name>
+</contentitemdata.kcc.recipe>

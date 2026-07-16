@@ -1,0 +1,6 @@
+# Dev-only recipe search test-data seeder (not shipped content).
+# The dataset in RecipeSeedData.cs reads best as a compact coverage matrix, so relax the two
+# StyleCop layout/ordering rules that fight dense record literals and const/field grouping.
+[*.cs]
+dotnet_diagnostic.SA1117.severity = none
+dotnet_diagnostic.SA1203.severity = none

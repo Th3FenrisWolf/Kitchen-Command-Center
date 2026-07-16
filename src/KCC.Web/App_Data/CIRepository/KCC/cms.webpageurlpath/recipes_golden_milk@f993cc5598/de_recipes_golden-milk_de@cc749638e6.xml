@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.webpageurlpath>
+  <WebPageUrlPath>de/Recipes/Golden-Milk</WebPageUrlPath>
+  <WebPageUrlPathContentLanguageID>
+    <CodeName>de</CodeName>
+    <GUID>2584f8c4-f563-4f2f-b337-9da4a38f2dca</GUID>
+    <ObjectType>cms.contentlanguage</ObjectType>
+  </WebPageUrlPathContentLanguageID>
+  <WebPageUrlPathGUID>1ed1c64d-3a44-4d69-8c5d-88726cef3b14</WebPageUrlPathGUID>
+  <WebPageUrlPathHash>
+    <![CDATA[3892254FBBCA7E09C45A85E2467FACF0B0E1331737466AEBDABA835C6485CF0B]]>
+  </WebPageUrlPathHash>
+  <WebPageUrlPathIsCanonical>True</WebPageUrlPathIsCanonical>
+  <WebPageUrlPathIsDraft>False</WebPageUrlPathIsDraft>
+  <WebPageUrlPathIsLatest>True</WebPageUrlPathIsLatest>
+  <WebPageUrlPathType>0</WebPageUrlPathType>
+  <WebPageUrlPathWebPageItemID>
+    <CodeName>GoldenMilk-za2lrl6m</CodeName>
+    <GUID>734a8a6e-2864-462a-8648-db0fdc38615c</GUID>
+    <ObjectType>cms.webpageitem</ObjectType>
+  </WebPageUrlPathWebPageItemID>
+  <WebPageUrlPathWebsiteChannelID>
+    <GUID>25dd5a69-ad53-4fb6-98a3-8f6e1b53607f</GUID>
+    <ObjectType>cms.websitechannel</ObjectType>
+    <Parent>
+      <CodeName>KCC</CodeName>
+      <GUID>c5ac4825-e084-4e36-9912-b3f8387360ba</GUID>
+      <ObjectType>cms.channel</ObjectType>
+    </Parent>
+  </WebPageUrlPathWebsiteChannelID>
+</cms.webpageurlpath>

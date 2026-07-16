@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>dc76a9cc-2901-4426-8e16-aa0648888876</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>JalapenoPile-12elfa5y</CodeName>
+      <GUID>d834fcab-58c2-4f20-baac-6dbb9dec3c17</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>c2d86667-1122-4b28-8d9b-3112c806dee9</ContentItemDataGUID>
+  <CookTime>10</CookTime>
+  <Description>Layer for even melt.</Description>
+  <Icon>fa-duotone fa-pepper-hot</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Tortilla Chips","quantity":1,"unit":"bag","isEyeballed":false},{"name":"Cheese","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Jalapeno","quantity":2,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Layer chips and cheese."},{"step":2,"text":"Broil until bubbly."}]]]>
+  </Instructions>
+  <Name>Jalapeno Pile</Name>
+  <PrepTime>10</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"},{"Identifier":"a3b21637-9834-d6ee-5ef4-1d482d8d4ff1"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

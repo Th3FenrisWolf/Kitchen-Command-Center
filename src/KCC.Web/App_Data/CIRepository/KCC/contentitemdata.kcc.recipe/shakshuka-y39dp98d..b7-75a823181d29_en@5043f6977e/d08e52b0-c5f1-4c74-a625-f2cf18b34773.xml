@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>4bbb2fc7-3108-49a9-a28e-340f7f71cf3d</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"732dfcab-36f4-4480-b584-4c53c31046f5"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>17607453-5947-4a20-9fb7-75a823181d29</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Shakshuka-y39dp98d</CodeName>
+      <GUID>7a3240df-b780-49cb-ae57-9e1bffcd366a</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>d08e52b0-c5f1-4c74-a625-f2cf18b34773</ContentItemDataGUID>
+  <Description>Eggs poached in a spiced tomato skillet.</Description>
+  <Icon>fa-duotone fa-egg-fried</Icon>
+  <Name>Shakshuka</Name>
+</contentitemdata.kcc.recipe>

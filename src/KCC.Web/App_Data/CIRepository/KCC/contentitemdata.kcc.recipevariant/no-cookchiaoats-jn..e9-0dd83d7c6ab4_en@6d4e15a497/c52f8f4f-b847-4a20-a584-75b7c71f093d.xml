@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>1db00ab7-5683-4ef3-a0e9-0dd83d7c6ab4</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>No-CookChiaOats-jnwbxt8k</CodeName>
+      <GUID>ad5666a0-c174-4712-b3da-2fdc61bb8d96</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>c52f8f4f-b847-4a20-a584-75b7c71f093d</ContentItemDataGUID>
+  <CookTime>0</CookTime>
+  <Description>Nothing hits the stove.</Description>
+  <Icon>fa-duotone fa-wheat-awn</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Rolled Oats","quantity":0.5,"unit":"cup","isEyeballed":false},{"name":"Almond Milk","quantity":0.75,"unit":"cup","isEyeballed":false},{"name":"Chia Seeds","quantity":1,"unit":"tbsp","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Combine and refrigerate overnight."}]]]>
+  </Instructions>
+  <Name>No-Cook Chia Oats</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>1</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

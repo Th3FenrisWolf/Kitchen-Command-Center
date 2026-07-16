@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"cb6c5e90-ce7e-3af6-2513-0904349c50ad"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>eeb48c95-a746-4f8d-b057-9d9d728ed0f9</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>LoadedNachos-xnpo2a33</CodeName>
+      <GUID>ef28d5c2-7e49-4fc8-b154-61c90a26acfc</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>3a732b80-3138-48d3-953b-b503775093d6</ContentItemDataGUID>
+  <Description>Sharing-optional. Broiler does the work.</Description>
+  <Icon>fa-duotone fa-pepper-hot</Icon>
+  <Name>Loaded Nachos</Name>
+</contentitemdata.kcc.recipe>

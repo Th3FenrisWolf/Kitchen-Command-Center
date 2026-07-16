@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"2a8f18a0-dba8-f508-090d-db5c23bf6c8d"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>b445cb68-e092-4557-9445-51fde7d369dc</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>WeeknightTacos-st6cu3dx</CodeName>
+      <GUID>6e2a561b-388b-446b-8c72-85089ff8768e</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>983c9234-55bc-416d-a239-4894d821a3db</ContentItemDataGUID>
+  <Description>Taco night, two ways.</Description>
+  <Icon>fa-duotone fa-taco</Icon>
+  <Name>Weeknight Tacos</Name>
+</contentitemdata.kcc.recipe>

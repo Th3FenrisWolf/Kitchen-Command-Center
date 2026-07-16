@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>bd0bc553-38b8-4306-8f57-81ccc14ef64e</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>One-BowlLoaf-w19ea68e</CodeName>
+      <GUID>cbce0f55-cc0e-42f0-af90-1f12bf202ce2</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>37c6b3f5-a4fa-4fc2-9e8e-c1b56bc1c126</ContentItemDataGUID>
+  <CookTime>40</CookTime>
+  <Description>No mixer needed.</Description>
+  <Icon>fa-duotone fa-bread-loaf</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Ripe Banana","quantity":3,"unit":"whole","isEyeballed":false},{"name":"Flour","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Maple Syrup","quantity":0.5,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Mash and mix."},{"step":2,"text":"Bake until a pick comes clean."}]]]>
+  </Instructions>
+  <Name>One-Bowl Loaf</Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>8</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

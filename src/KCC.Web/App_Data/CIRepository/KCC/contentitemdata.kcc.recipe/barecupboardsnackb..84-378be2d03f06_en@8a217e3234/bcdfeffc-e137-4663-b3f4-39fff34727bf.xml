@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"cb6c5e90-ce7e-3af6-2513-0904349c50ad"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>5aaced23-3784-480d-8a84-378be2d03f06</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>BareCupboardSnackBoard-bakp7bhj</CodeName>
+      <GUID>039d512d-055a-4997-8eab-c2f22adb17ef</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>bcdfeffc-e137-4663-b3f4-39fff34727bf</ContentItemDataGUID>
+  <Description>
+    <![CDATA[A placeholder board with no variants yet — edge case for zero-variant indexing.]]>
+  </Description>
+  <Icon>fa-duotone fa-plate-utensils</Icon>
+  <Name>Bare Cupboard Snack Board</Name>
+</contentitemdata.kcc.recipe>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"2a8f18a0-dba8-f508-090d-db5c23bf6c8d"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>a46af214-2a49-44d9-b345-318a05ca727d</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>Sheet-PanSalmon-qumsyyb9</CodeName>
+      <GUID>b7c41433-57a4-4b14-9897-0b271978a4aa</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>2d1016ba-7cde-4a4d-81ac-200ed9b1f4ef</ContentItemDataGUID>
+  <Description>One pan, weeknight-fast, barely any cleanup.</Description>
+  <Icon>fa-duotone fa-fish</Icon>
+  <Name>Sheet-Pan Salmon</Name>
+</contentitemdata.kcc.recipe>

@@ -81,7 +81,9 @@
         <properties>
           <explanationtextashtml>False</explanationtextashtml>
           <fieldcaption>Author Member GUID</fieldcaption>
-          <fielddescription>GUID of the member who started this recipe. Set automatically when the recipe is submitted from the live site.</fielddescription>
+          <fielddescription>
+            <![CDATA[GUID of the member who started this recipe. Set automatically when the recipe is submitted from the live site.]]>
+          </fielddescription>
           <fielddescriptionashtml>False</fielddescriptionashtml>
           <includeincontentgeneration>False</includeincontentgeneration>
           <includeintranslation>False</includeintranslation>

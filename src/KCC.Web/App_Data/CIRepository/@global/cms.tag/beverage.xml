@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>9c4e2397-6dfe-c9c9-f5c2-f4d73ce44004</TagGUID>
+  <TagName>Beverage</TagName>
+  <TagOrder>6</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeCategories</CodeName>
+    <GUID>91f33fed-49c0-4642-b466-f0cbf3664fc8</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Beverage</TagTitle>
+</cms.tag>

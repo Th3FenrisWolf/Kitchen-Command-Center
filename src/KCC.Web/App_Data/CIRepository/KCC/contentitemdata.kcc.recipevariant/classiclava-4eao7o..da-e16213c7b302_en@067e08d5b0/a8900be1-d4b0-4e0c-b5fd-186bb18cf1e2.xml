@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>791ad0b1-9de4-4d18-bfda-e16213c7b302</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>ClassicLava-4eao7ovi</CodeName>
+      <GUID>753a6212-f17b-4c90-9741-8faeb6aec5f7</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>a8900be1-d4b0-4e0c-b5fd-186bb18cf1e2</ContentItemDataGUID>
+  <CookTime>12</CookTime>
+  <Description>Pull them early.</Description>
+  <Icon>fa-duotone fa-cake-slice</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Dark Chocolate","quantity":6,"unit":"oz","isEyeballed":false},{"name":"Butter","quantity":0.5,"unit":"cup","isEyeballed":false},{"name":"Eggs","quantity":2,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Melt chocolate and butter."},{"step":2,"text":"Bake just until the edges set."}]]]>
+  </Instructions>
+  <Name>Classic Lava</Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

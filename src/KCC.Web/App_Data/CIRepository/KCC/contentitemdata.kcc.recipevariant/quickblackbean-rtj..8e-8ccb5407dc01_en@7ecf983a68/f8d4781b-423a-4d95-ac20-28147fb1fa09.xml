@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>cf504b0d-69f7-455a-888e-8ccb5407dc01</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>QuickBlackBean-rtj31ctp</CodeName>
+      <GUID>9e534a07-5e8c-4124-bf79-6c6977d46263</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>f8d4781b-423a-4d95-ac20-28147fb1fa09</ContentItemDataGUID>
+  <CookTime>10</CookTime>
+  <Description>Pantry to plate.</Description>
+  <Icon>fa-duotone fa-taco</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Black Beans","quantity":1,"unit":"can","isEyeballed":false},{"name":"Corn Tortilla","quantity":8,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Warm beans, fill tortillas."}]]]>
+  </Instructions>
+  <Name>Quick Black Bean</Name>
+  <PrepTime>5</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

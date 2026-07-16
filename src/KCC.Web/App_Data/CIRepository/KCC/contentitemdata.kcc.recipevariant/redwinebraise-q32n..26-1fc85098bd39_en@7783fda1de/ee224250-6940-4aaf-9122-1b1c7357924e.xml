@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>da3f377d-0eab-45ef-a626-1fc85098bd39</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>RedWineBraise-q32nn9et</CodeName>
+      <GUID>b2ac9618-df69-4b0d-a9a1-92401466a8a7</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>ee224250-6940-4aaf-9122-1b1c7357924e</ContentItemDataGUID>
+  <CookTime>75</CookTime>
+  <Description>Fall-off-the-bone.</Description>
+  <Icon>fa-duotone fa-drumstick</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Short Ribs","quantity":3,"unit":"lb","isEyeballed":false},{"name":"Red Wine","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Carrot","quantity":3,"unit":"whole","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Sear the ribs."},{"step":2,"text":"Braise low for hours."}]]]>
+  </Instructions>
+  <Name>Red Wine Braise</Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"06215434-9ffb-6bcf-a445-a2d0a5e41d6d"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

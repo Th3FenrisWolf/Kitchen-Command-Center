@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>d80184c0-66bb-4e83-b32d-d447e617c0f8</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>RoastedVegBowl-wes3bfz1</CodeName>
+      <GUID>00196684-4c13-4020-868e-cfd096397b68</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>89ceaa63-2f33-40ad-aec2-0685170a5c69</ContentItemDataGUID>
+  <CookTime>25</CookTime>
+  <Description>Sheet-pan vegetables over grains.</Description>
+  <Icon>fa-duotone fa-bowl-rice</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Chickpeas","quantity":1,"unit":"can","isEyeballed":false},{"name":"Tahini","quantity":2,"unit":"tbsp","isEyeballed":false},{"name":"Quinoa","quantity":1,"unit":"cup","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Roast the vegetables."},{"step":2,"text":"Whisk the tahini sauce."}]]]>
+  </Instructions>
+  <Name>Roasted Veg Bowl</Name>
+  <PrepTime>20</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"202eaabd-2cb5-10a7-de73-3209c2fd0bd5"},{"Identifier":"c2dcfe91-3fc7-f464-09c0-144e52a1546e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

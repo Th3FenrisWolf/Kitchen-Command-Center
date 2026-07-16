@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<cms.tag>
+  <TagGUID>51797652-d72d-45d1-9180-dd99bafba14b</TagGUID>
+  <TagMetadata>
+    <![CDATA[{"Translations":{"2584f8c4-f563-4f2f-b337-9da4a38f2dca":{"Title":null,"Description":null},"ef3c384b-a9ef-42c4-a1dc-21f748137808":{"Title":null,"Description":null}}}]]>
+  </TagMetadata>
+  <TagName>Fast</TagName>
+  <TagOrder>3</TagOrder>
+  <TagTaxonomyID>
+    <CodeName>RecipeTags</CodeName>
+    <GUID>b5e43d07-a02c-4000-ae30-9ea0a40ac963</GUID>
+    <ObjectType>cms.taxonomy</ObjectType>
+  </TagTaxonomyID>
+  <TagTitle>Fast</TagTitle>
+</cms.tag>

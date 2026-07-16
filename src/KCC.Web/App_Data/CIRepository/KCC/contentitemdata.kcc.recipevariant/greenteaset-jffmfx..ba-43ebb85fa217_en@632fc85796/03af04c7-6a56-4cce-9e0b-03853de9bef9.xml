@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipevariant>
+  <AuthorMemberGuid>00000000-0000-0000-0000-000000000000</AuthorMemberGuid>
+  <ContentItemDataCommonDataID>
+    <GUID>fa4d3d3c-43c5-47f2-b8ba-43ebb85fa217</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>GreenTeaSet-jffmfxqa</CodeName>
+      <GUID>befcd0a9-7d7b-4dbc-a042-8994707fe16a</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>03af04c7-6a56-4cce-9e0b-03853de9bef9</ContentItemDataGUID>
+  <CookTime>10</CookTime>
+  <Description>Barely any active time.</Description>
+  <Icon>fa-duotone fa-pudding</Icon>
+  <Ingredients>
+    <![CDATA[[{"name":"Cream","quantity":2,"unit":"cups","isEyeballed":false},{"name":"Matcha","quantity":1,"unit":"tbsp","isEyeballed":false},{"name":"Gelatin","quantity":1,"unit":"packet","isEyeballed":false}]]]>
+  </Ingredients>
+  <Instructions>
+    <![CDATA[[{"step":1,"text":"Warm cream with matcha."},{"step":2,"text":"Set with gelatin."}]]]>
+  </Instructions>
+  <Name>Green Tea Set</Name>
+  <PrepTime>15</PrepTime>
+  <ServingNumber>4</ServingNumber>
+  <Tags>
+    <![CDATA[[{"Identifier":"7a86728d-812c-aa0f-02f4-78962c71a16e"},{"Identifier":"c2dcfe91-3fc7-f464-09c0-144e52a1546e"}]]]>
+  </Tags>
+</contentitemdata.kcc.recipevariant>

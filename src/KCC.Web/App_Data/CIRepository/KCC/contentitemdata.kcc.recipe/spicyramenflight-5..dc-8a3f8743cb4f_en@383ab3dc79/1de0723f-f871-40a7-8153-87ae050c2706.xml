@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<contentitemdata.kcc.recipe>
+  <AuthorMemberGuid>95d8e549-6f41-4b16-adaf-437eb17154c6</AuthorMemberGuid>
+  <Categories>
+    <![CDATA[[{"Identifier":"9671a557-28e9-4502-bfb0-6071ebe79930"}]]]>
+  </Categories>
+  <ContentItemDataCommonDataID>
+    <GUID>f3a6c848-6481-47e9-95dc-8a3f8743cb4f</GUID>
+    <ObjectType>cms.contentitemcommondata</ObjectType>
+    <Parent>
+      <CodeName>SpicyRamenFlight-5lruzp7f</CodeName>
+      <GUID>4b3b340c-ddd0-4153-86f2-c8d65ad4dfd1</GUID>
+      <ObjectType>cms.contentitem</ObjectType>
+    </Parent>
+  </ContentItemDataCommonDataID>
+  <ContentItemDataGUID>1de0723f-f871-40a7-8153-87ae050c2706</ContentItemDataGUID>
+  <Description>One broth, four wildly different bowls.</Description>
+  <Icon>fa-duotone fa-bowl-chopsticks</Icon>
+  <Name>Spicy Ramen Flight</Name>
+</contentitemdata.kcc.recipe>
