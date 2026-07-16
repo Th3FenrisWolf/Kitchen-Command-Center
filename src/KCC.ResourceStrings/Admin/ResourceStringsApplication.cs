@@ -7,7 +7,7 @@ using KCC.ResourceStrings.Admin;
     type: typeof(ResourceStringsApplication),
     slug: "resource-strings",
     name: "Resource Strings",
-    category: BaseApplicationCategories.CONFIGURATION,
+    category: BaseApplicationCategories.CONTENT_MANAGEMENT,
     icon: Icons.Translate,
     templateName: TemplateNames.SECTION_LAYOUT
 )]

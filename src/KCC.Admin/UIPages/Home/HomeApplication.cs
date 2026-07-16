@@ -7,7 +7,7 @@ using KCC.Admin.UIPages.Home;
     type: typeof(HomeApplication),
     slug: "home",
     name: "Home",
-    category: BaseApplicationCategories.CONFIGURATION,
+    category: BaseApplicationCategories.DASHBOARD,
     icon: Icons.Home,
     templateName: "@kcc/admin/Home"
 )]
