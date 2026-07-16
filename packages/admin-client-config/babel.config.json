@@ -1,0 +1,15 @@
+{
+  "presets": [
+    ["@babel/preset-env", { "targets": "> .2% and last 3 versions, not op_mini all, not IE 11" }],
+    ["@babel/preset-react", { "runtime": "automatic", "development": false }],
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    ["@babel/plugin-transform-runtime"]
+  ],
+  "env": {
+    "test": {
+      "presets": [["@babel/preset-env", { "targets": "current node" }]]
+    }
+  }
+}
