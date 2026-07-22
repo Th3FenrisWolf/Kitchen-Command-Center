@@ -1,37 +1,19 @@
 <script setup lang="ts">
+  import { computed } from 'vue'
   import type { VariantSummary } from '~/Types/Recipe'
-  import { ResourceString } from '~/Components/ResourceStrings'
-  import Badge from '~/Components/Badge/Badge.vue'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import Link from '~/Components/Links/Link.Component.vue'
-  import AccentTile from '~/Components/Recipe/AccentTile.vue'
+  import RecipeCardView from '~/Components/Recipe/RecipeCard.vue'
+  import { variantToCard } from '~/Components/Recipe/recipeCardModel'
 
-  defineProps<{ variants: VariantSummary[]; addVariantUrl: string }>()
+  const props = defineProps<{ variants: VariantSummary[]; addVariantUrl: string }>()
+  const rs = useResourceStrings()
+  const cards = computed(() => props.variants.map((variant) => ({ key: variant.slug, card: variantToCard(variant, rs) })))
 </script>
 
 <template>
   <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    <Link
-      v-for="variant in variants"
-      :key="variant.slug"
-      :href="variant.slug"
-      :data-variant-name="variant.name"
-      class="group grid content-start gap-2 rounded-3xl bg-bone p-4 text-onyx shadow-primary transition-shadow focus-within:shadow-primary-raised hover:shadow-primary-raised"
-    >
-      <AccentTile :seed="variant.name" :icon="variant.icon" :image="variant.image" class="h-40 w-full text-6xl" />
-
-      <span class="font-casual text-2xl">{{ variant.name }}</span>
-      <span class="text-xs text-onyx-light">
-        <template v-if="variant.authorName">
-          <ResourceString for="By" /> {{ variant.authorName }} <i class="fa-solid fa-dot"></i>
-        </template>
-        {{ variant.totalTime }} <ResourceString for="Min" />
-      </span>
-      <p class="text-sm">{{ variant.description }}</p>
-
-      <div v-if="variant.tags.length" class="flex flex-wrap gap-1">
-        <Badge v-for="tag in variant.tags" :key="tag">{{ tag }}</Badge>
-      </div>
-    </Link>
+    <RecipeCardView v-for="entry in cards" :key="entry.key" :card="entry.card" />
 
     <Link
       :href="addVariantUrl"

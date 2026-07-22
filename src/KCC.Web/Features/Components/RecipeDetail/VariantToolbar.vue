@@ -1,6 +1,8 @@
 <script setup lang="ts">
+  import { computed } from 'vue'
   import type { SortKey, ViewMode } from '~/Components/RecipeDetail/variantFilters'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
 
   defineProps<{ tags: string[] }>()
 
@@ -11,14 +13,16 @@
 
   const rs = useResourceStrings()
 
-  const sorts: { key: SortKey; labelKey: string }[] = [
-    { key: 'newest', labelKey: 'SortNewest' },
-    { key: 'fastest', labelKey: 'SortFastest' },
-    { key: 'rating', labelKey: 'SortTopRated' },
-  ]
+  const sortOptions = computed<SegmentOption<SortKey>[]>(() => [
+    { value: 'newest', label: rs('SortNewest'), testId: 'sort-newest' },
+    { value: 'fastest', label: rs('SortFastest'), testId: 'sort-fastest' },
+    { value: 'rating', label: rs('SortTopRated'), testId: 'sort-rating' },
+  ])
 
-  const segBase = 'cursor-pointer rounded-[13px] px-4 py-1.5 text-sm font-bold transition-colors'
-  const toggleBase = 'grid h-[34px] w-10 cursor-pointer place-items-center rounded-[13px] text-[15px] transition-colors'
+  const viewOptions = computed<SegmentOption<ViewMode>[]>(() => [
+    { value: 'grid', icon: 'fa-solid fa-table-cells-large', ariaLabel: rs('Grid'), title: rs('Grid'), testId: 'view-grid' },
+    { value: 'list', icon: 'fa-solid fa-list', ariaLabel: rs('List'), title: rs('List'), testId: 'view-list' },
+  ])
 </script>
 
 <template>
@@ -35,37 +39,12 @@
 
     <div class="flex items-center gap-2">
       <span class="text-sm font-bold text-onyx-light"><ResourceString for="Sort" /></span>
-      <div class="flex rounded-2xl bg-bone-dark p-0.75">
-        <button
-          v-for="option in sorts"
-          :key="option.key"
-          type="button"
-          :class="[segBase, sort === option.key ? 'bg-surface-500 text-bone' : 'text-onyx-light']"
-          @click="sort = option.key"
-        >
-          <ResourceString :for="option.labelKey" />
-        </button>
-      </div>
+      <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="rs('Sort')" />
     </div>
 
-    <div class="flex rounded-2xl bg-bone-dark p-0.75">
-      <button
-        type="button"
-        :title="rs('Grid')"
-        :class="[toggleBase, view === 'grid' ? 'bg-surface-500 text-bone' : 'text-onyx-light']"
-        @click="view = 'grid'"
-      >
-        <i class="fa-solid fa-table-cells-large"></i>
-      </button>
-      <button
-        type="button"
-        :title="rs('List')"
-        :class="[toggleBase, view === 'list' ? 'bg-surface-500 text-bone' : 'text-onyx-light']"
-        @click="view = 'list'"
-      >
-        <i class="fa-solid fa-list"></i>
-      </button>
-    </div>
+    <!-- Literal group label: there's no `View` resource string (no DB row), so rs('View') would
+         leak the raw key. Per-button Grid/List names come from resource strings. -->
+    <SegmentedControl v-model="view" :options="viewOptions" variant="icon" aria-label="View" />
   </div>
 
   <div class="mt-4 flex flex-wrap gap-2">
