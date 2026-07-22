@@ -1,0 +1,54 @@
+/*
+ * RangeSlider (Features/Components/Forms/RangeSlider.vue)
+ *
+ * These rules live in the render-blocking global stylesheet (imported by Main.css)
+ * on purpose. RangeSlider is a runtime-compiled global component, so a `<style scoped>`
+ * block would be bundled into the JS-loaded GlobalComponents CSS chunk — which is NOT
+ * in <head> and applies only after hydration. During that gap the two native
+ * `<input type="range">` render as default OS bars (the "two separate bars" flash on
+ * first paint). Keeping the appearance reset + custom thumb here makes the slider
+ * render correctly server-side, before any JS runs.
+ */
+.kcc-range {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+}
+.kcc-range:focus {
+  outline: none;
+}
+.kcc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-onyx);
+  border: 3px solid var(--color-bone);
+  box-shadow: 0 0 0 1px var(--color-onyx);
+  cursor: grab;
+  pointer-events: auto;
+}
+.kcc-range::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+.kcc-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-onyx);
+  border: 3px solid var(--color-bone);
+  box-shadow: 0 0 0 1px var(--color-onyx);
+  cursor: grab;
+  pointer-events: auto;
+}
+.kcc-range::-moz-range-thumb:active {
+  cursor: grabbing;
+}
