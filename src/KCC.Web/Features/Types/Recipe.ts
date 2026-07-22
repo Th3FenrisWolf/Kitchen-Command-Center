@@ -35,6 +35,7 @@ export interface Nutrition {
   proteinG?: number | null
   carbsG?: number | null
   fatG?: number | null
+  saturatedFatG?: number | null
   fiberG?: number | null
   sugarG?: number | null
   sodiumMg?: number | null
@@ -52,6 +53,7 @@ export interface RecipeVariant {
   proteinG?: number | null
   carbsG?: number | null
   fatG?: number | null
+  saturatedFatG?: number | null
   fiberG?: number | null
   sugarG?: number | null
   sodiumMg?: number | null
@@ -88,6 +90,8 @@ export interface SiblingVariant {
   name: string
   slug: string
   icon?: string
+  rating: number
+  totalTime: number
 }
 
 export interface Review {

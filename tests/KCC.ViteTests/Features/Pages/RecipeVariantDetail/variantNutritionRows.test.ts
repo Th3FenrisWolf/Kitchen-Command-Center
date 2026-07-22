@@ -7,6 +7,7 @@ const labels = {
   proteinG: 'Protein',
   carbsG: 'Carbs',
   fatG: 'Fat',
+  saturatedFatG: 'Saturated Fat',
   fiberG: 'Fiber',
   sugarG: 'Sugar',
   sodiumMg: 'Sodium',
@@ -17,6 +18,7 @@ const full: Nutrition = {
   proteinG: 24,
   carbsG: 60,
   fatG: 18,
+  saturatedFatG: 6,
   fiberG: 5,
   sugarG: 8,
   sodiumMg: 740,
@@ -39,12 +41,22 @@ describe('variantNutritionRows', () => {
   })
 
   describe('buildNutritionRows', () => {
-    it('returns all seven rows in canonical order when full', () => {
+    it('returns all eight rows in canonical order when full', () => {
       const rows = buildNutritionRows(full, labels)
-      expect(rows.map((r) => r.key)).toEqual(['calories', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'sugarG', 'sodiumMg'])
+      expect(rows.map((r) => r.key)).toEqual([
+        'calories',
+        'proteinG',
+        'carbsG',
+        'fatG',
+        'saturatedFatG',
+        'fiberG',
+        'sugarG',
+        'sodiumMg',
+      ])
       expect(rows[0]).toEqual({ key: 'calories', label: 'Calories', value: 520, unit: '' })
       expect(rows[1]).toEqual({ key: 'proteinG', label: 'Protein', value: 24, unit: 'g' })
-      expect(rows[6]).toEqual({ key: 'sodiumMg', label: 'Sodium', value: 740, unit: 'mg' })
+      expect(rows[4]).toEqual({ key: 'saturatedFatG', label: 'Saturated Fat', value: 6, unit: 'g' })
+      expect(rows[7]).toEqual({ key: 'sodiumMg', label: 'Sodium', value: 740, unit: 'mg' })
     })
 
     it('omits fields that are null or undefined (partial)', () => {

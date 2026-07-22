@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { SiblingVariant } from '~/Types/Recipe'
   import { ResourceString } from '~/Components/ResourceStrings'
+  import { formatRating } from '~/Components/StarRating/starDisplay'
   import Link from '~/Components/Links/Link.Component.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
 
@@ -20,6 +21,16 @@
         <AccentTile :seed="sibling.name" :icon="sibling.icon || 'fa-solid fa-utensils'" class="size-13 flex-none text-2xl" />
         <span class="min-w-0 flex-1">
           <span class="block font-casual text-xl leading-tight tracking-[1px]">{{ sibling.name }}</span>
+          <span
+            v-if="sibling.rating > 0 || sibling.totalTime > 0"
+            class="mt-0.5 flex items-center gap-1.5 text-sm text-onyx-light"
+          >
+            <span v-if="sibling.rating > 0" class="inline-flex items-center gap-1">
+              <i class="fa-solid fa-star text-peach" aria-hidden="true"></i>{{ formatRating(sibling.rating) }}
+            </span>
+            <span v-if="sibling.rating > 0 && sibling.totalTime > 0" aria-hidden="true">·</span>
+            <span v-if="sibling.totalTime > 0">{{ sibling.totalTime }} min</span>
+          </span>
         </span>
         <i class="fa-solid fa-arrow-right flex-none text-onyx-light"></i>
       </Link>

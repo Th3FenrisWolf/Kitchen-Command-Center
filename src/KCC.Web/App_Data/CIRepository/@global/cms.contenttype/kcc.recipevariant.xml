@@ -150,6 +150,16 @@ hard;Hard
           <controlname>Kentico.Administration.NumberInput</controlname>
         </settings>
       </field>
+      <field allowempty="true" column="SaturatedFatG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0008-4f00-8a01-000000000008" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Saturated Fat (g, per serving)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <controlname>Kentico.Administration.NumberInput</controlname>
+        </settings>
+      </field>
       <field allowempty="true" column="FiberG" columnprecision="0" columntype="integer" enabled="true" guid="a1b2c3d4-0005-4f00-8a01-000000000005" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>

@@ -52,13 +52,13 @@ public class VariantDetailTests : BasePageTests
     public async Task NutritionCard_FullValues_ShowsAllRows()
     {
         // Asserts the structural invariant rather than a specific value count: the card never
-        // renders more than the seven canonical macros. Fuller "all 7 rows" coverage needs a
-        // seeded variant with every macro set (Calories/Protein/Carbs/Fat/Fiber/Sugar/Sodium),
+        // renders more than the eight canonical macros. Fuller "all 8 rows" coverage needs a
+        // seeded variant with every macro set (Calories/Protein/Carbs/Fat/Saturated Fat/Fiber/Sugar/Sodium),
         // which is admin-entered content not present in CIRepository.
         await GotoFirstVariantAsync();
 
         var rowCount = await Page.Locator("dl dt").CountAsync();
-        _ = await Assert.That(rowCount).IsLessThanOrEqualTo(7);
+        _ = await Assert.That(rowCount).IsLessThanOrEqualTo(8);
     }
 
     [Test]
@@ -67,7 +67,7 @@ public class VariantDetailTests : BasePageTests
         // Asserts the render contract that holds for ANY nutrition state instead of requiring
         // a partially-filled variant: the macro list (<dl>, shown only when provided) and the
         // empty state are mutually exclusive, and a zero-row card always shows the empty state.
-        // Verifying the "strictly 1..6 rows, no empty state" partial case needs a seeded
+        // Verifying the "strictly 1..7 rows, no empty state" partial case needs a seeded
         // variant with only some macros set (admin-entered content absent from CIRepository).
         await GotoFirstVariantAsync();
 
@@ -76,9 +76,9 @@ public class VariantDetailTests : BasePageTests
         var emptyStateCount = await Page.GetByText("not provided", new() { Exact = false }).CountAsync();
 
         // The <dl> renders iff at least one macro is provided (v-if="provided"), so its
-        // presence and the row count agree, and rows never exceed the seven canonical macros.
+        // presence and the row count agree, and rows never exceed the eight canonical macros.
         _ = await Assert.That(listCount).IsLessThanOrEqualTo(1);
-        _ = await Assert.That(rowCount).IsLessThanOrEqualTo(7);
+        _ = await Assert.That(rowCount).IsLessThanOrEqualTo(8);
         if (rowCount > 0)
         {
             _ = await Assert.That(listCount).IsEqualTo(1);
