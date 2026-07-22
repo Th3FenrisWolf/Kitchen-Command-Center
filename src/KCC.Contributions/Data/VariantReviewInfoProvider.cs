@@ -44,6 +44,37 @@ public partial class VariantReviewInfoProvider
             new(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, nameof(GetAverageForVariant), variantGuid));
     }
 
+    /// <summary>
+    /// Counts of ratings per whole star: index 0 = 1★ … index 4 = 5★. Half-star ratings
+    /// round DOWN to the whole star below (4.5 → 4) — a half is treated as "not yet" the
+    /// higher star. A lone 0.5 has no 0★ bucket, so it lands in 1★.
+    /// </summary>
+    internal static IReadOnlyList<int> Distribution(IReadOnlyCollection<decimal> ratings)
+    {
+        var buckets = new int[5];
+        foreach (var rating in ratings)
+        {
+            var star = Math.Clamp((int)Math.Ceiling(rating - 0.5m), 1, 5);
+            buckets[star - 1]++;
+        }
+
+        return buckets;
+    }
+
+    public IReadOnlyList<int> GetDistributionForVariant(Guid variantGuid)
+    {
+        var cache = Service.Resolve<IProgressiveCache>();
+        return cache.Load(
+            cs =>
+            {
+                cs.CacheDependency = CacheHelper.GetCacheDependency(CacheKeys);
+                var reviews = Get().WhereEquals(nameof(VariantReviewInfo.VariantGuid), variantGuid);
+                var ratings = reviews.Select(r => r.Rating);
+                return Distribution([..ratings]);
+            },
+            new(CacheMinutes, VariantReviewInfo.OBJECT_TYPE, nameof(GetDistributionForVariant), variantGuid));
+    }
+
     public IReadOnlyDictionary<Guid, RatingAggregate> GetAveragesForVariants(IReadOnlyCollection<Guid> variantGuids)
     {
         if (variantGuids.Count is 0)

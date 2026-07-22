@@ -37,6 +37,7 @@ public class ReviewApiController(
         int pageSize = 10)
     {
         var aggregate = reviews.GetAverageForVariant(variantGuid);
+        var distribution = reviews.GetDistributionForVariant(variantGuid);
         var memberGuid = await CurrentMemberGuidOrEmpty();
 
         var rows = reviews.GetForVariant(variantGuid, page, pageSize, out var total);
@@ -57,6 +58,7 @@ public class ReviewApiController(
         {
             average = aggregate.Average,
             count = aggregate.Count,
+            distribution,
             total,
             page,
             pageSize,
