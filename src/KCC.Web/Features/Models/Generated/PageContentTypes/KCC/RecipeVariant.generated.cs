@@ -108,6 +108,12 @@ namespace KCC
 
 
 		/// <summary>
+		/// SaturatedFatG.
+		/// </summary>
+		public int? SaturatedFatG { get; set; }
+
+
+		/// <summary>
 		/// FiberG.
 		/// </summary>
 		public int? FiberG { get; set; }

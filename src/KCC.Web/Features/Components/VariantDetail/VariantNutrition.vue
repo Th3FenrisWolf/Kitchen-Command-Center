@@ -9,6 +9,7 @@
     proteinG?: number | null
     carbsG?: number | null
     fatG?: number | null
+    saturatedFatG?: number | null
     fiberG?: number | null
     sugarG?: number | null
     sodiumMg?: number | null
@@ -21,6 +22,7 @@
     proteinG: props.proteinG,
     carbsG: props.carbsG,
     fatG: props.fatG,
+    saturatedFatG: props.saturatedFatG,
     fiberG: props.fiberG,
     sugarG: props.sugarG,
     sodiumMg: props.sodiumMg,
@@ -34,6 +36,7 @@
       proteinG: rs('Protein'),
       carbsG: rs('Carbs'),
       fatG: rs('Fat'),
+      saturatedFatG: rs('SaturatedFat'),
       fiberG: rs('Fiber'),
       sugarG: rs('Sugar'),
       sodiumMg: rs('Sodium'),
@@ -48,11 +51,11 @@
       <span class="text-xs text-onyx-light"><ResourceString for="PerServing" /></span>
     </div>
 
-    <dl v-if="provided" class="divide-y divide-bone-dark/60">
-      <div v-for="row in rows" :key="row.key" class="flex items-baseline justify-between py-2">
-        <dt class="text-sm text-onyx-light">{{ row.label }}</dt>
-        <dd class="font-casual text-lg leading-none">
-          {{ row.value }}<span v-if="row.unit" class="ml-0.5 text-sm text-onyx-light">{{ row.unit }}</span>
+    <dl v-if="provided" class="grid grid-cols-2 gap-3">
+      <div v-for="row in rows" :key="row.key" class="flex flex-col rounded-2xl bg-bone-dark p-2.5 text-center">
+        <dt class="order-2 mt-1 text-xs text-onyx-light">{{ row.label }}</dt>
+        <dd class="order-1 font-casual text-2xl leading-none">
+          {{ row.value }}<span v-if="row.unit" class="text-base text-onyx-light"> {{ row.unit }}</span>
         </dd>
       </div>
     </dl>

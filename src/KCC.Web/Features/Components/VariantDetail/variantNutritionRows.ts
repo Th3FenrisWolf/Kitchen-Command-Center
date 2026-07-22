@@ -6,6 +6,7 @@ const FIELDS: ReadonlyArray<{ key: keyof Nutrition; unit: string }> = [
   { key: 'proteinG', unit: 'g' },
   { key: 'carbsG', unit: 'g' },
   { key: 'fatG', unit: 'g' },
+  { key: 'saturatedFatG', unit: 'g' },
   { key: 'fiberG', unit: 'g' },
   { key: 'sugarG', unit: 'g' },
   { key: 'sodiumMg', unit: 'mg' },
