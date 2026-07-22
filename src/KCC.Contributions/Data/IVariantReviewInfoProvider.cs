@@ -6,6 +6,7 @@ public readonly record struct RatingAggregate(double Average, int Count);
 public partial interface IVariantReviewInfoProvider
 {
     RatingAggregate GetAverageForVariant(Guid variantGuid);
+    IReadOnlyList<int> GetDistributionForVariant(Guid variantGuid);
     IReadOnlyDictionary<Guid, RatingAggregate> GetAveragesForVariants(IReadOnlyCollection<Guid> variantGuids);
     RatingAggregate GetRecipeAverage(Guid recipeGuid);
     IReadOnlyList<VariantReviewInfo> GetForVariant(Guid variantGuid, int page, int pageSize, out int totalCount);

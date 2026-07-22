@@ -106,6 +106,7 @@ export interface MyReview {
 export interface ReviewsResponse {
   average: number
   count: number
+  distribution: number[]
   total: number
   page: number
   pageSize: number

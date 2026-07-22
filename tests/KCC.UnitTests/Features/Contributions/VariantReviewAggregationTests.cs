@@ -69,4 +69,42 @@ public class VariantReviewAggregationTests
         _ = await Assert.That(VariantReviewInfoProvider.CanModify(other, member)).IsFalse();
         _ = await Assert.That(VariantReviewInfoProvider.CanModify(null, member)).IsFalse();
     }
+
+    [Test]
+    public async Task Distribution_CountsWholeStarsByBucket()
+    {
+        // index 0 = 1★ … index 4 = 5★
+        var dist = VariantReviewInfoProvider.Distribution(new[] { 5m, 5m, 4m, 3m, 1m });
+        _ = await Assert.That(dist[4]).IsEqualTo(2);
+        _ = await Assert.That(dist[3]).IsEqualTo(1);
+        _ = await Assert.That(dist[2]).IsEqualTo(1);
+        _ = await Assert.That(dist[1]).IsEqualTo(0);
+        _ = await Assert.That(dist[0]).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Distribution_RoundsHalfStarsDown()
+    {
+        // 4.5 → 4★, 3.5 → 3★, 1.5 → 1★ (a half is "not yet" the higher star)
+        var dist = VariantReviewInfoProvider.Distribution(new[] { 4.5m, 3.5m, 1.5m });
+        _ = await Assert.That(dist[4]).IsEqualTo(0);
+        _ = await Assert.That(dist[3]).IsEqualTo(1);
+        _ = await Assert.That(dist[2]).IsEqualTo(1);
+        _ = await Assert.That(dist[0]).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Distribution_ClampsLoneHalfStarIntoOneStar()
+    {
+        // 0.5 has no 0★ bucket, so it lands in 1★.
+        var dist = VariantReviewInfoProvider.Distribution(new[] { 0.5m });
+        _ = await Assert.That(dist[0]).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Distribution_EmptyForNoRatings()
+    {
+        var dist = VariantReviewInfoProvider.Distribution(Array.Empty<decimal>());
+        _ = await Assert.That(dist.Sum()).IsEqualTo(0);
+    }
 }
