@@ -1,8 +1,6 @@
 <script setup lang="ts">
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import Link from '~/Components/Links/Link.Component.vue'
 
-  defineProps<{ createRecipeUrl?: string }>()
   const draft = defineModel<string>('draft', { required: true })
   const emit = defineEmits<{ submit: []; clear: [] }>()
   const t = useResourceStrings()
@@ -10,20 +8,9 @@
 </script>
 
 <template>
-  <section class="rounded-3xl bg-surface-500 p-4 text-bone">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="mb-1 text-sm tracking-wide uppercase opacity-75"><ResourceString for="BrowseTheKitchen" /></p>
-        <h1 class="font-casual text-4xl leading-tight"><ResourceString for="SearchRecipes" /></h1>
-      </div>
-      <Link
-        v-if="createRecipeUrl"
-        :href="createRecipeUrl"
-        class="inline-flex items-center gap-2 rounded-2xl bg-bone px-4 py-2 text-lg font-bold text-onyx"
-      >
-        <i class="fa-solid fa-plus"></i> <ResourceString for="CreateRecipe" />
-      </Link>
-    </div>
+  <section class="my-4 rounded-3xl bg-surface-500 p-4 text-bone">
+    <p class="mb-1 text-sm tracking-wide uppercase opacity-75"><ResourceString for="BrowseTheKitchen" /></p>
+    <h1 class="font-casual text-4xl leading-tight"><ResourceString for="SearchRecipes" /></h1>
 
     <form class="mt-4 flex gap-2" @submit.prevent="emit('submit')">
       <div class="relative min-w-0 flex-1">
