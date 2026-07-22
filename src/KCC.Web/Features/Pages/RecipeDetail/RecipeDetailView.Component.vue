@@ -64,7 +64,7 @@
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-4 pt-4">
+  <div class="mt-4 flex items-center justify-between gap-4">
     <RecipeBreadcrumb v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
     <Link

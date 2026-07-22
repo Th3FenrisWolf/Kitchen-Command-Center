@@ -11,6 +11,12 @@ import {
 
 const state = (over: Partial<RecipeSearchState> = {}): RecipeSearchState => ({ ...defaultState(), ...over })
 
+// Stand-in for the resource-string resolver the Vue tree provides at runtime.
+const t = (key: string): string => {
+  const strings: Record<string, string> = { Min: 'min', OrMore: 'or more', OrLess: 'or less' }
+  return strings[key] ?? key
+}
+
 describe('buildSearchParams', () => {
   it('serializes query, repeated facets, sort and paging', () => {
     const p = buildSearchParams(state({ query: 'chicken', categories: ['Mains'], diets: ['Vegan', 'Dairy-Free'], sort: 'rated' }), 2, 12)
@@ -37,12 +43,12 @@ describe('buildSearchParams', () => {
 
 describe('chipsFor', () => {
   it('produces a chip per active filter', () => {
-    const chips = chipsFor(state({ query: 'cake', categories: ['Cookies'], diets: ['Vegan'], timeMin: 5, timeMax: 60 }))
-    expect(chips.map((c) => c.label)).toEqual(['“cake”', 'Cookies', 'Vegan', '5–60+ min'])
+    const chips = chipsFor(state({ query: 'cake', categories: ['Cookies'], diets: ['Vegan'], timeMin: 5, timeMax: 60 }), t)
+    expect(chips.map((c) => c.label)).toEqual(['“cake”', 'Cookies', 'Vegan', '5 min or more'])
   })
 
   it('is empty with no active filters', () => {
-    expect(chipsFor(state())).toEqual([])
+    expect(chipsFor(state(), t)).toEqual([])
   })
 })
 
@@ -54,9 +60,17 @@ describe('activeFilterCount', () => {
 })
 
 describe('timeRangeLabel', () => {
-  it('labels the range', () => {
-    expect(timeRangeLabel(0, MAX_TIME)).toBe('Any')
-    expect(timeRangeLabel(10, 30)).toBe('10–30 min')
-    expect(timeRangeLabel(15, MAX_TIME)).toBe('15–60+ min')
+  it('labels a bounded range and the no-filter default', () => {
+    expect(timeRangeLabel(0, MAX_TIME, t)).toBe('Any')
+    expect(timeRangeLabel(10, 30, t)).toBe('10–30 min')
+  })
+
+  it('collapses an open-ended top to "min or more"', () => {
+    expect(timeRangeLabel(15, MAX_TIME, t)).toBe('15 min or more')
+    expect(timeRangeLabel(55, MAX_TIME, t)).toBe('55 min or more')
+  })
+
+  it('collapses an open-ended bottom to "min or less"', () => {
+    expect(timeRangeLabel(0, 40, t)).toBe('40 min or less')
   })
 })

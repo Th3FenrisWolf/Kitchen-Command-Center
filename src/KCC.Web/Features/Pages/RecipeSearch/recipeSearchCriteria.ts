@@ -27,19 +27,31 @@ export function isTimeActive(min: number, max: number): boolean {
   return min > 0 || max < MAX_TIME
 }
 
-export function timeRangeLabel(min: number, max: number): string {
+/** Resolves a resource-string key (relative to the provider's prefix) to its display text. */
+export type ResourceResolver = (key: string) => string
+
+export function timeRangeLabel(min: number, max: number, t: ResourceResolver): string {
   if (!isTimeActive(min, max)) {
     return 'Any'
   }
-  const upper = max >= MAX_TIME ? `${MAX_TIME}+` : `${max}`
-  return `${min}–${upper} min`
+  const unit = t('Min')
+  // Open-ended top (upper thumb at the ceiling): "15 min or more".
+  if (max >= MAX_TIME) {
+    return `${min} ${unit} ${t('OrMore')}`
+  }
+  // Open-ended bottom (lower thumb at 0): "40 min or less".
+  if (min <= 0) {
+    return `${max} ${unit} ${t('OrLess')}`
+  }
+  // Bounded on both ends: "15–40 min".
+  return `${min}–${max} ${unit}`
 }
 
 export function activeFilterCount(s: RecipeSearchState): number {
   return s.categories.length + s.diets.length + (isTimeActive(s.timeMin, s.timeMax) ? 1 : 0)
 }
 
-export function chipsFor(s: RecipeSearchState): FilterChip[] {
+export function chipsFor(s: RecipeSearchState, t: ResourceResolver): FilterChip[] {
   const chips: FilterChip[] = []
   if (s.query.trim()) {
     chips.push({ label: `“${s.query.trim()}”`, kind: 'query' })
@@ -47,7 +59,7 @@ export function chipsFor(s: RecipeSearchState): FilterChip[] {
   s.categories.forEach((c) => chips.push({ label: c, kind: 'category', value: c }))
   s.diets.forEach((d) => chips.push({ label: d, kind: 'diet', value: d }))
   if (isTimeActive(s.timeMin, s.timeMax)) {
-    chips.push({ label: timeRangeLabel(s.timeMin, s.timeMax), kind: 'time' })
+    chips.push({ label: timeRangeLabel(s.timeMin, s.timeMax, t), kind: 'time' })
   }
   return chips
 }

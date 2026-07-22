@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+  import Link from '~/Components/Links/Link.Component.vue'
+  import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import ComingSoonBadge from '~/Components/ComingSoon/ComingSoonBadge.vue'
   import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
@@ -13,17 +15,19 @@
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
   import { MAX_TIME, chipsFor, activeFilterCount, defaultState, type FilterChip } from './recipeSearchCriteria'
-  import type { RecipeSearchResponse } from '~/Types/Recipe'
+  import type { Breadcrumb, RecipeSearchResponse } from '~/Types/Recipe'
 
   const props = defineProps<{
     initial: RecipeSearchResponse
     createRecipeUrl?: string
+    breadcrumbs?: Breadcrumb[]
     resourceStrings?: Record<string, string>
   }>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeSearch')
 
-  const { state, results, facets, total, spotlight, loading, hasMore, loadMore } = useRecipeSearch(props.initial)
+  const { state, results, facets, categoryOptions, dietOptions, total, spotlight, loading, hasMore, loadMore } =
+    useRecipeSearch(props.initial)
 
   const draft = ref('')
   const sheetOpen = ref(false)
@@ -66,7 +70,7 @@
     }
   }
 
-  const chips = computed(() => chipsFor(state))
+  const chips = computed(() => chipsFor(state, rs))
   const activeCount = computed(() => activeFilterCount(state))
   const heading = computed(() => {
     const q = state.query.trim()
@@ -88,36 +92,61 @@
 </script>
 
 <template>
-  <div class="my-8">
-    <RecipeSearchHeader
-      v-model:draft="draft"
-      :create-recipe-url="createRecipeUrl"
-      @submit="onSubmit"
-      @clear="onClearSearch"
-    />
+  <div class="mt-4 flex items-center justify-between gap-4">
+    <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
-    <p class="mt-2 flex items-center gap-2 text-xs text-onyx-light">
-      <ComingSoonBadge /> <ResourceString for="IngredientSearchComingSoon" />
-    </p>
-
-    <button
-      class="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-onyx px-4 py-2 text-sm font-bold lg:hidden"
-      :class="sheetOpen ? 'bg-onyx text-bone' : 'text-onyx'"
-      @click="sheetOpen = !sheetOpen"
+    <Link
+      v-if="createRecipeUrl"
+      :href="createRecipeUrl"
+      class="inline-flex flex-none items-center gap-2 rounded-2xl bg-surface-500 px-4 py-2 font-bold text-bone transition-colors hover:bg-surface-400"
     >
-      <i class="fa-solid fa-sliders"></i> <ResourceString for="Filters" />
-      <span
-        v-if="activeCount"
-        class="grid min-w-5 place-items-center rounded-full px-1.5 text-xs"
-        :class="sheetOpen ? 'bg-bone text-onyx' : 'bg-onyx text-bone'"
-        >{{ activeCount }}</span
-      >
-    </button>
+      <i class="fa-solid fa-plus"></i> <ResourceString for="CreateRecipe" />
+    </Link>
+  </div>
 
-    <section v-if="sheetOpen" class="mt-3 rounded-3xl bg-bone p-4 shadow-primary lg:hidden">
+  <RecipeSearchHeader v-model:draft="draft" @submit="onSubmit" @clear="onClearSearch" />
+
+  <p class="flex items-center gap-2 text-xs text-onyx-light">
+    <ComingSoonBadge /> <ResourceString for="IngredientSearchComingSoon" />
+  </p>
+
+  <button
+    class="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-onyx px-4 py-2 text-sm font-bold lg:hidden"
+    :class="sheetOpen ? 'bg-onyx text-bone' : 'text-onyx'"
+    @click="sheetOpen = !sheetOpen"
+  >
+    <i class="fa-solid fa-sliders"></i> <ResourceString for="Filters" />
+    <span
+      v-if="activeCount"
+      class="grid min-w-5 place-items-center rounded-full px-1.5 text-xs"
+      :class="sheetOpen ? 'bg-bone text-onyx' : 'bg-onyx text-bone'"
+      >{{ activeCount }}</span
+    >
+  </button>
+
+  <section v-if="sheetOpen" class="mt-3 rounded-3xl bg-bone p-4 shadow-primary lg:hidden">
+    <RecipeFilters
+      :category-facets="facets.category"
+      :diet-facets="facets.diet"
+      :category-options="categoryOptions"
+      :diet-options="dietOptions"
+      :selected-categories="state.categories"
+      :selected-diets="state.diets"
+      v-model:time-min="state.timeMin"
+      v-model:time-max="state.timeMax"
+      @toggle-category="(c) => toggle(state.categories, c)"
+      @toggle-diet="(d) => toggle(state.diets, d)"
+      @reset="clearAll"
+    />
+  </section>
+
+  <div class="mt-6 grid items-start gap-6 lg:grid-cols-[244px_1fr]">
+    <aside class="sticky top-3 hidden rounded-3xl bg-bone p-6 shadow-primary lg:block">
       <RecipeFilters
         :category-facets="facets.category"
         :diet-facets="facets.diet"
+        :category-options="categoryOptions"
+        :diet-options="dietOptions"
         :selected-categories="state.categories"
         :selected-diets="state.diets"
         v-model:time-min="state.timeMin"
@@ -126,46 +155,30 @@
         @toggle-diet="(d) => toggle(state.diets, d)"
         @reset="clearAll"
       />
+    </aside>
+
+    <section class="min-w-0">
+      <RecipeResultsToolbar :heading="heading" v-model:sort="state.sort" v-model:view="state.view" />
+
+      <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
+
+      <RecipeSpotlight v-if="spotlight" :recipe="spotlight" />
+
+      <template v-if="listed.length || spotlight">
+        <div v-if="state.view === 'grid'" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <RecipeCard v-for="r in listed" :key="r.slug" :recipe="r" />
+        </div>
+
+        <div v-else class="flex flex-col gap-3">
+          <RecipeListRow v-for="r in listed" :key="r.slug" :recipe="r" />
+        </div>
+
+        <div v-if="hasMore()" ref="sentinel" class="flex items-center justify-center gap-2.5 py-6 text-sm text-onyx-light">
+          <i class="fa-solid fa-circle-notch fa-spin opacity-60"></i> <ResourceString for="LoadingMore" />
+        </div>
+      </template>
+
+      <RecipesEmptyState v-else @clear="clearAll" />
     </section>
-
-    <div class="mt-6 grid items-start gap-6 lg:grid-cols-[244px_1fr]">
-      <aside class="sticky top-3 hidden rounded-3xl bg-bone p-6 shadow-primary lg:block">
-        <RecipeFilters
-          :category-facets="facets.category"
-          :diet-facets="facets.diet"
-          :selected-categories="state.categories"
-          :selected-diets="state.diets"
-          v-model:time-min="state.timeMin"
-          v-model:time-max="state.timeMax"
-          @toggle-category="(c) => toggle(state.categories, c)"
-          @toggle-diet="(d) => toggle(state.diets, d)"
-          @reset="clearAll"
-        />
-      </aside>
-
-      <section class="min-w-0">
-        <RecipeResultsToolbar :heading="heading" v-model:sort="state.sort" v-model:view="state.view" />
-
-        <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
-
-        <RecipeSpotlight v-if="spotlight" :recipe="spotlight" />
-
-        <template v-if="listed.length || spotlight">
-          <div v-if="state.view === 'grid'" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <RecipeCard v-for="r in listed" :key="r.slug" :recipe="r" />
-          </div>
-
-          <div v-else class="flex flex-col gap-3">
-            <RecipeListRow v-for="r in listed" :key="r.slug" :recipe="r" />
-          </div>
-
-          <div v-if="hasMore()" ref="sentinel" class="flex items-center justify-center gap-2.5 py-6 text-sm text-onyx-light">
-            <i class="fa-solid fa-circle-notch fa-spin opacity-60"></i> <ResourceString for="LoadingMore" />
-          </div>
-        </template>
-
-        <RecipesEmptyState v-else @clear="clearAll" />
-      </section>
-    </div>
   </div>
 </template>

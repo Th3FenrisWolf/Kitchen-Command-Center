@@ -1,12 +1,14 @@
 <script setup lang="ts">
   import { computed } from 'vue'
-  import { ResourceString } from '~/Components/ResourceStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import RangeSlider from '~/Components/Forms/RangeSlider.vue'
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
   const props = defineProps<{
     categoryFacets: Record<string, number>
     dietFacets: Record<string, number>
+    categoryOptions: string[]
+    dietOptions: string[]
     selectedCategories: string[]
     selectedDiets: string[]
   }>()
@@ -14,9 +16,31 @@
   const timeMax = defineModel<number>('timeMax', { required: true })
   const emit = defineEmits<{ toggleCategory: [string]; toggleDiet: [string]; reset: [] }>()
 
-  const categories = computed(() => Object.entries(props.categoryFacets).sort(([a], [b]) => a.localeCompare(b)))
-  const diets = computed(() => Object.entries(props.dietFacets).sort(([a], [b]) => a.localeCompare(b)))
-  const rangeLabel = computed(() => timeRangeLabel(timeMin.value, timeMax.value))
+  const t = useResourceStrings()
+
+  interface FilterRow {
+    label: string
+    count: number
+    selected: boolean
+    disabled: boolean
+  }
+
+  // Render the full, stable option set on every search so the panel keeps its height as filters
+  // change (rather than dropping rows). An option with no matches in the current result set is
+  // greyed out and disabled — unless it's currently selected, which must stay toggleable so the
+  // user can clear it.
+  const toRows = (options: string[], facets: Record<string, number>, selected: string[]): FilterRow[] =>
+    [...new Set([...options, ...selected])]
+      .sort((a, b) => a.localeCompare(b))
+      .map((label) => {
+        const count = facets[label] ?? 0
+        const isSelected = selected.includes(label)
+        return { label, count, selected: isSelected, disabled: count === 0 && !isSelected }
+      })
+
+  const categories = computed(() => toRows(props.categoryOptions, props.categoryFacets, props.selectedCategories))
+  const diets = computed(() => toRows(props.dietOptions, props.dietFacets, props.selectedDiets))
+  const rangeLabel = computed(() => timeRangeLabel(timeMin.value, timeMax.value, t))
 </script>
 
 <template>
@@ -32,25 +56,29 @@
       <legend class="mb-2 text-base font-bold"><ResourceString for="Category" /></legend>
       <div class="flex flex-col gap-2">
         <label
-          v-for="[label, count] in categories"
-          :key="label"
-          class="flex cursor-pointer items-center gap-2"
-          :class="selectedCategories.includes(label) ? 'font-bold' : 'font-medium'"
+          v-for="row in categories"
+          :key="row.label"
+          class="flex items-center gap-2"
+          :class="[
+            row.selected ? 'font-bold' : 'font-medium',
+            row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
+          ]"
         >
           <input
             type="checkbox"
             class="peer sr-only"
-            :checked="selectedCategories.includes(label)"
-            @change="emit('toggleCategory', label)"
+            :checked="row.selected"
+            :disabled="row.disabled"
+            @change="emit('toggleCategory', row.label)"
           />
           <span
             class="grid size-4 flex-none place-items-center rounded-md border-2 transition-colors"
-            :class="selectedCategories.includes(label) ? 'border-onyx bg-onyx' : 'border-onyx-light'"
+            :class="row.selected ? 'border-onyx bg-onyx' : 'border-onyx-light'"
           >
-            <i class="fa-solid fa-check text-xs text-bone" :class="{ 'opacity-0': !selectedCategories.includes(label) }"></i>
+            <i class="fa-solid fa-check text-xs text-bone" :class="{ 'opacity-0': !row.selected }"></i>
           </span>
-          <span class="flex-1">{{ label }}</span>
-          <span class="text-sm" :class="count === 0 ? 'text-overlay-300' : 'text-onyx-light'">{{ count }}</span>
+          <span class="flex-1">{{ row.label }}</span>
+          <span class="text-sm" :class="row.count === 0 ? 'text-overlay-300' : 'text-onyx-light'">{{ row.count }}</span>
         </label>
       </div>
     </fieldset>
@@ -59,25 +87,29 @@
       <legend class="mb-4 text-base font-bold"><ResourceString for="Dietary" /></legend>
       <div class="flex flex-col gap-2">
         <label
-          v-for="[label, count] in diets"
-          :key="label"
-          class="flex cursor-pointer items-center gap-2"
-          :class="selectedDiets.includes(label) ? 'font-bold' : 'font-medium'"
+          v-for="row in diets"
+          :key="row.label"
+          class="flex items-center gap-2"
+          :class="[
+            row.selected ? 'font-bold' : 'font-medium',
+            row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
+          ]"
         >
           <input
             type="checkbox"
             class="sr-only"
-            :checked="selectedDiets.includes(label)"
-            @change="emit('toggleDiet', label)"
+            :checked="row.selected"
+            :disabled="row.disabled"
+            @change="emit('toggleDiet', row.label)"
           />
           <span
             class="grid size-4 flex-none place-items-center rounded-md border-2 transition-colors"
-            :class="selectedDiets.includes(label) ? 'border-onyx bg-onyx' : 'border-onyx-light'"
+            :class="row.selected ? 'border-onyx bg-onyx' : 'border-onyx-light'"
           >
-            <i class="fa-solid fa-check text-xs text-bone" :class="{ 'opacity-0': !selectedDiets.includes(label) }"></i>
+            <i class="fa-solid fa-check text-xs text-bone" :class="{ 'opacity-0': !row.selected }"></i>
           </span>
-          <span class="flex-1">{{ label }}</span>
-          <span class="text-sm" :class="count === 0 ? 'text-overlay-300' : 'text-onyx-light'">{{ count }}</span>
+          <span class="flex-1">{{ row.label }}</span>
+          <span class="text-sm" :class="row.count === 0 ? 'text-overlay-300' : 'text-onyx-light'">{{ row.count }}</span>
         </label>
       </div>
     </fieldset>
