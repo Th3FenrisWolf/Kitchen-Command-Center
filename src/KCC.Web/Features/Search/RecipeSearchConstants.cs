@@ -8,6 +8,9 @@ public static class RecipeSearchConstants
     // Full-text
     public const string FieldName = "Name";
     public const string FieldContent = "Content"; // description + ingredients + author, combined
+    // Sortable copy of the name (SortedDocValues) — the full-text FieldName is analyzed and can't be
+    // sorted on; this gives the default view a stable alphabetical tie-break.
+    public const string FieldNameSort = "NameSort";
     // Stored (for rendering a card without a second fetch)
     public const string FieldSlug = "Slug";
     public const string FieldIcon = "Icon";

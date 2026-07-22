@@ -8,6 +8,7 @@ using KCC.Web.Features.Pages.VariantDetail;
 using Kentico.Xperience.Lucene.Core.Indexing;
 using Lucene.Net.Documents;
 using Lucene.Net.Facet;
+using Lucene.Net.Util;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KCC.Web.Features.Search;
@@ -154,6 +155,7 @@ public class RecipeSearchIndexingStrategy(IServiceScopeFactory scopeFactory) : D
         var doc = new Document
         {
             new TextField(RecipeSearchConstants.FieldName, d.Name, Field.Store.YES),
+            new SortedDocValuesField(RecipeSearchConstants.FieldNameSort, new BytesRef((d.Name ?? string.Empty).ToLowerInvariant())),
             new TextField(RecipeSearchConstants.FieldContent, RecipeSearchDocument.BuildContent(d), Field.Store.NO),
             new StringField(RecipeSearchConstants.FieldSlug, d.Slug, Field.Store.YES),
             new StringField(RecipeSearchConstants.FieldIcon, d.Icon, Field.Store.YES),
