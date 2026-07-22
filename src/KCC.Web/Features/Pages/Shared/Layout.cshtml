@@ -8,6 +8,7 @@
 @inject IPreferredLanguageRetriever PreferredLanguageRetriever
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @inject KCC.ResourceStrings.Data.IResourceStringInfoProvider ResourceStrings
+@inject Vite.AspNetCore.IViteManifest ViteManifest
 
 @model BasePageViewModel
 
@@ -36,6 +37,28 @@
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
 
   <script type="application/json" id="api-config">@Html.Raw(apiConfigJson)</script>
+
+  @* Preload the brand fonts so they're fetched at high priority and ready by first paint.
+     Hazelnut/APCasual are font-display: swap, so without this the page first paints in a
+     fallback font and reflows when they load (the layout shift we were chasing). Fonts fetch
+     in CORS mode, so `crossorigin` is required for the preloaded file to be reused. Dev serves
+     the source files via Vite; prod resolves the content-hashed names from the build manifest. *@
+  @if (Env.IsDevelopment())
+  {
+    <link rel="preload" as="font" type="font/woff2" crossorigin vite-href="/Features/Styles/fonts/HazelnutMilkTeaRegular.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin vite-href="/Features/Styles/fonts/HazelnutMilkTeaBold.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin vite-href="/Features/Styles/fonts/AmericanPurposeCasualRegular.woff2" />
+  }
+  else if (ViteManifest["Features/Styles/Main.css"] is { Assets: var fontAssets } && fontAssets is not null)
+  {
+    foreach (var asset in fontAssets)
+    {
+      if (asset.Contains("HazelnutMilkTeaRegular") || asset.Contains("HazelnutMilkTeaBold-") || asset.Contains("AmericanPurposeCasualRegular"))
+      {
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="~/@asset" />
+      }
+    }
+  }
 
   <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
 
