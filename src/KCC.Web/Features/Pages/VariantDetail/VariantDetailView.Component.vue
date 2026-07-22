@@ -32,6 +32,7 @@
     proteinG?: number | null
     carbsG?: number | null
     fatG?: number | null
+    saturatedFatG?: number | null
     fiberG?: number | null
     sugarG?: number | null
     sodiumMg?: number | null
@@ -75,7 +76,7 @@
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-4 pt-4">
+  <div class="mt-4 flex items-center justify-between gap-4">
     <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
     <div class="hidden items-center gap-2 lg:flex">
       <button
@@ -83,10 +84,11 @@
         data-test="cook-mode-open-desktop"
         :disabled="!hasInstructions"
         :title="hasInstructions ? rs('CookMode') : rs('ComingSoon')"
-        class="flex-none rounded-2xl bg-surface-500 px-4 py-2.5 text-bone transition-opacity hover:bg-surface-400 disabled:cursor-not-allowed disabled:opacity-60"
+        class="inline-flex items-center gap-2 rounded-2xl bg-surface-500 px-3 py-2 text-bone transition-opacity hover:bg-surface-400 disabled:cursor-not-allowed disabled:opacity-60"
         @click="openCookMode"
       >
-        <i class="fa-solid fa-play text-sm" aria-hidden="true"></i> <ResourceString for="CookMode" />
+        <i class="fa-solid fa-play text-sm" aria-hidden="true"></i>
+        <ResourceString for="CookMode" />
       </button>
       <VariantCookedToggle
         :variant-guid="variantGuid"
@@ -114,7 +116,7 @@
 
     <template v-if="tags.length" #footer>
       <div class="mt-4 flex flex-wrap gap-2">
-        <Badge v-for="tag in tags" :key="tag" :class="`bg-${brandColorFor(tag)}`">{{ tag }}</Badge>
+        <Badge v-for="tag in tags" :key="tag" :class="`bg-${brandColorFor(tag)} text-onyx`">{{ tag }}</Badge>
       </div>
     </template>
   </DetailHero>
@@ -129,6 +131,7 @@
         :protein-g="proteinG"
         :carbs-g="carbsG"
         :fat-g="fatG"
+        :saturated-fat-g="saturatedFatG"
         :fiber-g="fiberG"
         :sugar-g="sugarG"
         :sodium-mg="sodiumMg"

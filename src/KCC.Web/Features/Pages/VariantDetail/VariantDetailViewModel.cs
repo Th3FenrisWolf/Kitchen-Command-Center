@@ -16,6 +16,7 @@ public class VariantDetailViewModel : BasePageViewModel
     public int? ProteinG { get; set; }
     public int? CarbsG { get; set; }
     public int? FatG { get; set; }
+    public int? SaturatedFatG { get; set; }
     public int? FiberG { get; set; }
     public int? SugarG { get; set; }
     public int? SodiumMg { get; set; }
@@ -57,4 +58,6 @@ public class SiblingVariantViewModel
     public string Name { get; set; }
     public string Slug { get; set; }
     public string Icon { get; set; }
+    public double Rating { get; set; }
+    public int TotalTime { get; set; }
 }

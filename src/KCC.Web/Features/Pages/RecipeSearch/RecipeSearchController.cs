@@ -1,6 +1,7 @@
 using CMS.Websites;
 using KCC;
 using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeSearch;
@@ -22,7 +23,8 @@ public class RecipeSearchController(
     IContentRetriever contentRetriever,
     IWebPageDataContextRetriever webPageDataContextRetriever,
     IRecipeSearchService recipeSearch,
-    IResourceStringInfoProvider resourceStrings
+    IResourceStringInfoProvider resourceStrings,
+    BreadcrumbService breadcrumbService
 ) : Controller
 {
     public async Task<IActionResult> Index()
@@ -41,6 +43,7 @@ public class RecipeSearchController(
         {
             CreateRecipeUrl = createRecipePage?.GetUrl().RelativePath,
             InitialResults = RecipeSearchResponseMapper.ToResponse(initial),
+            Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId)).Select(b => new RecipeSearchBreadcrumb(b.LinkText, b.Url)),
             ResourceStrings = GetStrings(),
         };
 
@@ -59,6 +62,9 @@ public class RecipeSearchController(
         "RecipeSearch.Category",
         "RecipeSearch.Dietary",
         "RecipeSearch.TotalTime",
+        "RecipeSearch.Min",
+        "RecipeSearch.OrMore",
+        "RecipeSearch.OrLess",
         "RecipeSearch.Sort",
         "RecipeSearch.SortRelevant",
         "RecipeSearch.SortTopRated",

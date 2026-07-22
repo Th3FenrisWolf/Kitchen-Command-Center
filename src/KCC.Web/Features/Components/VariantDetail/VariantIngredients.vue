@@ -70,8 +70,8 @@
             class="text-base leading-snug transition-all"
             :class="checked[i] ? 'text-onyx-light line-through opacity-60' : 'text-onyx'"
           >
-            <b v-if="amounts[i]">{{ amounts[i] }} </b>{{ ingredient.name
-            }}<span v-if="ingredient.isEyeballed" class="text-onyx-light italic"> — <ResourceString for="ToTaste" /></span>
+            <b v-if="amounts[i]">{{ amounts[i] }}</b> {{ ingredient.name }}
+            <span v-if="ingredient.isEyeballed" class="text-onyx-light italic"> — <ResourceString for="ToTaste" /></span>
           </span>
         </li>
       </ul>
