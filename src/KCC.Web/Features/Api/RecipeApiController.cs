@@ -12,10 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Api;
 
-/// <summary>
-/// API controller for creating recipes and recipe variants from the live site form.
-/// Pages are created in draft/unpublished state.
-/// </summary>
 [ApiController]
 [Route("api/recipes")]
 [Authorize]
@@ -28,17 +24,6 @@ public class RecipeApiController(
     UserManager<KCCApplicationUser> userManager
 ) : ControllerBase
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
-
-    /// <summary>
-    /// Creates a new recipe page and its first variant as a child page, both in draft state.
-    /// </summary>
-    /// <param name="request">The create recipe request payload.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>An <see cref="IActionResult"/> containing the new recipe's web page item ID.</returns>
     [HttpPost]
     public async Task<IActionResult> CreateRecipe(
         [FromBody] CreateRecipeRequest request,
@@ -71,7 +56,7 @@ public class RecipeApiController(
 
         var recipeData = new ContentItemData(BuildRecipeData(request, icon, author.MemberGuid));
 
-        var recipeContentItemParams = new ContentItemParameters(KCC.Recipe.CONTENT_TYPE_NAME, recipeData);
+        var recipeContentItemParams = new ContentItemParameters(Recipe.CONTENT_TYPE_NAME, recipeData);
 
         var recipePageParams = new CreateWebPageParameters(
             request.RecipeName,
@@ -88,7 +73,7 @@ public class RecipeApiController(
 
         var variantData = new ContentItemData(BuildVariantData(request.FirstVariant, variantIcon, author.MemberGuid));
 
-        var variantContentItemParams = new ContentItemParameters(KCC.RecipeVariant.CONTENT_TYPE_NAME, variantData);
+        var variantContentItemParams = new ContentItemParameters(RecipeVariant.CONTENT_TYPE_NAME, variantData);
 
         var variantPageParams = new CreateWebPageParameters(
             request.FirstVariant.VariantName,
@@ -103,13 +88,6 @@ public class RecipeApiController(
         return Ok(new { recipeId });
     }
 
-    /// <summary>
-    /// Adds a new variant as a child page of an existing recipe, in draft state.
-    /// </summary>
-    /// <param name="recipeWebPageId">The web page item ID of the parent recipe.</param>
-    /// <param name="request">The create variant request payload.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>An <see cref="IActionResult"/> containing the new variant's web page item ID.</returns>
     [HttpPost("{recipeWebPageId:int}/variants")]
     public async Task<IActionResult> AddVariant(
         int recipeWebPageId,
@@ -153,13 +131,6 @@ public class RecipeApiController(
         return Ok(new { variantId });
     }
 
-    /// <summary>
-    /// Builds the content item data for a new recipe page, stamping the authoring member.
-    /// </summary>
-    /// <param name="request">The create recipe request payload.</param>
-    /// <param name="icon">The resolved Font Awesome icon class for the recipe.</param>
-    /// <param name="authorMemberGuid">The GUID of the member creating the recipe.</param>
-    /// <returns>A dictionary of field name/value pairs for use in <see cref="ContentItemData"/>.</returns>
     public static Dictionary<string, object> BuildRecipeData(CreateRecipeRequest request, string icon, Guid authorMemberGuid) => new()
     {
         [nameof(Recipe.Name)] = request.RecipeName,
@@ -168,13 +139,6 @@ public class RecipeApiController(
         [nameof(Recipe.AuthorMemberGuid)] = authorMemberGuid,
     };
 
-    /// <summary>
-    /// Builds the content item data for a new recipe variant page, stamping the authoring member.
-    /// </summary>
-    /// <param name="request">The create variant request payload.</param>
-    /// <param name="icon">The resolved Font Awesome icon class for the variant.</param>
-    /// <param name="authorMemberGuid">The GUID of the member creating the variant.</param>
-    /// <returns>A dictionary of field name/value pairs for use in <see cref="ContentItemData"/>.</returns>
     public static Dictionary<string, object> BuildVariantData(CreateVariantRequest request, string icon, Guid authorMemberGuid) => new()
     {
         [nameof(RecipeVariant.Name)] = request.VariantName,
@@ -183,8 +147,8 @@ public class RecipeApiController(
         [nameof(RecipeVariant.PrepTime)] = request.PrepTime ?? 0,
         [nameof(RecipeVariant.CookTime)] = request.CookTime ?? 0,
         [nameof(RecipeVariant.ServingNumber)] = request.Servings ?? 0,
-        [nameof(RecipeVariant.Ingredients)] = JsonSerializer.Serialize(request.Ingredients, JsonOptions),
-        [nameof(RecipeVariant.Instructions)] = JsonSerializer.Serialize(request.Instructions, JsonOptions),
+        [nameof(RecipeVariant.Ingredients)] = JsonSerializer.Serialize(request.Ingredients, JsonNaming.CamelCase),
+        [nameof(RecipeVariant.Instructions)] = JsonSerializer.Serialize(request.Instructions, JsonNaming.CamelCase),
         [nameof(RecipeVariant.AuthorMemberGuid)] = authorMemberGuid,
     };
 
@@ -192,7 +156,7 @@ public class RecipeApiController(
     {
         var user = userInfoProvider.Get()
             .WhereEquals(nameof(UserInfo.UserName), "administrator")
-            .FirstOrDefault() ?? new UserInfo();
+            .FirstOrDefault() ?? new();
 
         return webPageManagerFactory.Create(websiteChannelContext.WebsiteChannelID, user.UserID);
     }
