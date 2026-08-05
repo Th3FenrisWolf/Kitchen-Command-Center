@@ -1,26 +1,21 @@
 using CMS.DataEngine;
 using CMS.Membership;
 
-namespace KCC.Web.Features.Members;
+namespace KCC.Web.Features.Providers;
 
-/// <summary>
-/// Default <see cref="IAuthorNameResolver"/> backed by the member info provider.
-/// </summary>
-public class AuthorNameResolver(IInfoProvider<MemberInfo> memberInfoProvider) : IAuthorNameResolver
+public class AuthorNameProvider(IInfoProvider<MemberInfo> memberInfoProvider)
 {
-    /// <inheritdoc />
     public async Task<string> Resolve(Guid authorMemberGuid, CancellationToken cancellationToken = default)
     {
         var names = await ResolveMany([authorMemberGuid], cancellationToken);
         return names.GetValueOrDefault(authorMemberGuid);
     }
 
-    /// <inheritdoc />
     public async Task<IReadOnlyDictionary<Guid, string>> ResolveMany(IEnumerable<Guid> authorMemberGuids, CancellationToken cancellationToken = default)
     {
-        var guids = authorMemberGuids.Where(guid => guid != Guid.Empty).Distinct().ToArray();
+        var guids = authorMemberGuids.Where(guid => guid != Guid.Empty).Distinct();
 
-        if (guids.Length is 0)
+        if (!guids.Any())
         {
             return new Dictionary<Guid, string>();
         }
@@ -42,13 +37,6 @@ public class AuthorNameResolver(IInfoProvider<MemberInfo> memberInfoProvider) : 
             .ToDictionary(member => member.MemberGuid, member => member.DisplayName);
     }
 
-    /// <summary>
-    /// Formats a member display name.
-    /// </summary>
-    /// <param name="firstName">Member first name; may be null or whitespace.</param>
-    /// <param name="lastName">Member last name; may be null or whitespace.</param>
-    /// <param name="userName">Member username, used as fallback.</param>
-    /// <returns>Full name ("First Last") when any name part exists; otherwise the username; null when nothing usable.</returns>
     public static string FormatDisplayName(string firstName, string lastName, string userName)
     {
         var fullName = $"{firstName?.Trim()} {lastName?.Trim()}".Trim();

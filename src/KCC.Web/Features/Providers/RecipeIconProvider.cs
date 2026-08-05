@@ -2,15 +2,14 @@ using System.Text.Json;
 using Anthropic;
 using Anthropic.Models.Messages;
 using KCC.Admin;
-using Microsoft.Extensions.Logging;
+using KCC.Web.Features.Models.Options;
 
-namespace KCC.Web.Features.Api;
+namespace KCC.Web.Features.Providers;
 
-/// <summary>Default <see cref="IRecipeIconService"/> backed by the Anthropic API with a deterministic fallback.</summary>
-public class RecipeIconService(
+public class RecipeIconProvider(
     AnthropicClient client,
     AnthropicOptions options,
-    ILogger<RecipeIconService> logger
+    ILogger<RecipeIconProvider> logger
 ) : IRecipeIconService
 {
     private const string ToolName = "select_icon";
@@ -25,7 +24,6 @@ public class RecipeIconService(
             }),
         };
 
-    /// <inheritdoc />
     public async Task<string> PickAsync(
         string name,
         string description,
@@ -49,7 +47,7 @@ public class RecipeIconService(
                 {
                     Type = JsonSerializer.SerializeToElement("object"),
                     Properties = IconProperty,
-                    Required = new[] { "icon" },
+                    Required = ["icon"],
                 },
             };
 
@@ -58,19 +56,19 @@ public class RecipeIconService(
                 Model = options.Model,
                 MaxTokens = 128,
                 System = "You assign a food/drink icon to a recipe. Always pick the closest match from the allowed list.",
-                Tools = new ToolUnion[] { tool },
+                Tools = [tool],
                 ToolChoice = new ToolChoiceTool(ToolName),
-                Messages = new[]
-                {
-                    new MessageParam
+                Messages =
+                [
+                    new()
                     {
                         Role = Role.User,
                         Content = userText,
                     },
-                },
+                ],
             };
 
-            var message = await client.Messages.Create(parameters);
+            var message = await client.Messages.Create(parameters, cancellationToken);
 
             foreach (var block in message.Content)
             {

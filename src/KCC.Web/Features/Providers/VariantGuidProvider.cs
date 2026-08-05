@@ -3,23 +3,23 @@ using KCC;
 using KCC.Web.Features.Extensions;
 using Kentico.Content.Web.Mvc;
 
-namespace KCC.Web.Features.Api;
+namespace KCC.Web.Features.Providers;
 
 /// <summary>Resolves a variant content-item GUID to its parent recipe content-item GUID.</summary>
-public interface IVariantGuidResolver
+public interface IVariantGuidProvider
 {
     /// <summary>Returns the parent recipe's content-item GUID, or null when the variant is unknown.</summary>
     /// <param name="variantGuid">The variant's content-item GUID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The parent recipe's content-item GUID, or null when the variant is unknown.</returns>
-    Task<Guid?> ResolveRecipeGuidAsync(Guid variantGuid, CancellationToken cancellationToken = default);
+    Task<Guid?> GetRecipeGuidAsync(Guid variantGuid, CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc />
-public class VariantGuidResolver(IContentRetriever contentRetriever) : IVariantGuidResolver
+public class VariantGuidProvider(IContentRetriever contentRetriever) : IVariantGuidProvider
 {
     /// <inheritdoc />
-    public async Task<Guid?> ResolveRecipeGuidAsync(Guid variantGuid, CancellationToken cancellationToken = default)
+    public async Task<Guid?> GetRecipeGuidAsync(Guid variantGuid, CancellationToken cancellationToken = default)
     {
         var variant = (await contentRetriever.RetrievePages<RecipeVariant>(
             new(),
@@ -27,7 +27,9 @@ public class VariantGuidResolver(IContentRetriever contentRetriever) : IVariantG
                 .Where(where => where
                     .WhereEquals(nameof(IContentQueryDataContainer.ContentItemGUID), variantGuid))
                 .TopN(1),
-            new($"{nameof(VariantGuidResolver)}|{variantGuid}"))).FirstOrDefault();
+            new($"{nameof(VariantGuidProvider)}|{variantGuid}"),
+            cancellationToken
+        )).FirstOrDefault();
 
         if (variant is null)
         {
