@@ -1,30 +1,15 @@
-// Brand accent tokens. Keep in sync with the `bg-{…}` safelist and `--color-*`
-// definitions in Features/Styles/TailwindConfig.css (the two files cannot import
-// one another).
-export const BRAND_COLORS = [
-  'rosewater',
-  'flamingo',
-  'pink',
-  'mauve',
-  'red',
-  'maroon',
-  'peach',
-  'yellow',
-  'green',
-  'teal',
-  'sky',
-  'sapphire',
-  'blue',
-  'lavender',
-] as const
+import { BRAND_BACKGROUND_COLORS, type BrandBackgroundColor } from '~/Types/DesignSystem'
 
-export type BrandColor = (typeof BRAND_COLORS)[number]
-
-/** Deterministically map any text to one of the brand accent tokens. */
-export function brandColorFor(text: string): BrandColor {
+function colorIndexFor(text: string, paletteSize: number): number {
   let hash = 0
   for (let i = 0; i < text.length; i++) {
     hash = (hash * 31 + text.charCodeAt(i)) >>> 0
   }
-  return BRAND_COLORS[hash % BRAND_COLORS.length]!
+
+  return hash % paletteSize
+}
+
+/** Deterministically map any text to one of the brand accent tokens. */
+export function backgroundColorFor(text: string): BrandBackgroundColor {
+  return BRAND_BACKGROUND_COLORS[colorIndexFor(text, BRAND_BACKGROUND_COLORS.length)]!
 }
