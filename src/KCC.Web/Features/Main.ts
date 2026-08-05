@@ -1,3 +1,5 @@
+// Must stay the first import so dev error listeners exist before hydration runs.
+import '~/DevTools/RuntimeErrorOverlay'
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'

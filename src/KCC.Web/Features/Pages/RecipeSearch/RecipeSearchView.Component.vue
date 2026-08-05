@@ -1,9 +1,8 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
-  import ComingSoonBadge from '~/Components/ComingSoon/ComingSoonBadge.vue'
   import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
   import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'
@@ -95,20 +94,16 @@
   <div class="mt-4 flex items-center justify-between gap-4">
     <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
-    <Link
+    <AppLink
       v-if="createRecipeUrl"
       :href="createRecipeUrl"
       class="inline-flex flex-none items-center gap-2 rounded-2xl bg-surface-500 px-4 py-2 font-bold text-bone transition-colors hover:bg-surface-400"
     >
       <i class="fa-solid fa-plus"></i> <ResourceString for="CreateRecipe" />
-    </Link>
+    </AppLink>
   </div>
 
   <RecipeSearchHeader v-model:draft="draft" @submit="onSubmit" @clear="onClearSearch" />
-
-  <p class="flex items-center gap-2 text-xs text-onyx-light">
-    <ComingSoonBadge /> <ResourceString for="IngredientSearchComingSoon" />
-  </p>
 
   <button
     class="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-onyx px-4 py-2 text-sm font-bold lg:hidden"
@@ -140,7 +135,7 @@
     />
   </section>
 
-  <div class="mt-6 grid items-start gap-6 lg:grid-cols-[244px_1fr]">
+  <div class="grid items-start gap-6 lg:grid-cols-[244px_1fr]">
     <aside class="sticky top-3 hidden rounded-3xl bg-bone p-6 shadow-primary lg:block">
       <RecipeFilters
         :category-facets="facets.category"

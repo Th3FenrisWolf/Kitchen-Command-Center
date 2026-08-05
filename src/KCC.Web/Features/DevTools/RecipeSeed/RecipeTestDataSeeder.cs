@@ -179,15 +179,15 @@ public static class RecipeTestDataSeeder
     {
         var fields = new Dictionary<string, object>
         {
-            [nameof(KCC.Recipe.Name)] = recipe.Name,
-            [nameof(KCC.Recipe.Description)] = recipe.Description,
-            [nameof(KCC.Recipe.Icon)] = recipe.Icon,
-            [nameof(KCC.Recipe.AuthorMemberGuid)] = authorGuid,
+            [nameof(Recipe.Name)] = recipe.Name,
+            [nameof(Recipe.Description)] = recipe.Description,
+            [nameof(Recipe.Icon)] = recipe.Icon,
+            [nameof(Recipe.AuthorMemberGuid)] = authorGuid,
         };
 
         if (categoryGuids.TryGetValue(recipe.Category, out var catGuid))
         {
-            fields[nameof(KCC.Recipe.Categories)] = TagReferenceJson(catGuid);
+            fields[nameof(Recipe.Categories)] = TagReferenceJson(catGuid);
         }
 
         return fields;
@@ -197,19 +197,19 @@ public static class RecipeTestDataSeeder
     {
         var fields = new Dictionary<string, object>
         {
-            [nameof(KCC.RecipeVariant.Name)] = variant.Name,
-            [nameof(KCC.RecipeVariant.Description)] = variant.Description,
-            [nameof(KCC.RecipeVariant.Icon)] = variant.Icon,
-            [nameof(KCC.RecipeVariant.PrepTime)] = variant.PrepMinutes,
-            [nameof(KCC.RecipeVariant.CookTime)] = variant.CookMinutes,
-            [nameof(KCC.RecipeVariant.ServingNumber)] = variant.Servings,
-            [nameof(KCC.RecipeVariant.Ingredients)] = JsonSerializer.Serialize(
+            [nameof(RecipeVariant.Name)] = variant.Name,
+            [nameof(RecipeVariant.Description)] = variant.Description,
+            [nameof(RecipeVariant.Icon)] = variant.Icon,
+            [nameof(RecipeVariant.PrepTime)] = variant.PrepMinutes,
+            [nameof(RecipeVariant.CookTime)] = variant.CookMinutes,
+            [nameof(RecipeVariant.ServingNumber)] = variant.Servings,
+            [nameof(RecipeVariant.Ingredients)] = JsonSerializer.Serialize(
                 variant.Ingredients.Select(x => new { name = x.Name, quantity = x.Quantity, unit = x.Unit, isEyeballed = x.IsEyeballed }),
                 IngredientJsonOptions),
-            [nameof(KCC.RecipeVariant.Instructions)] = JsonSerializer.Serialize(
+            [nameof(RecipeVariant.Instructions)] = JsonSerializer.Serialize(
                 variant.Instructions.Select(x => new { step = x.Step, text = x.Text }),
                 IngredientJsonOptions),
-            [nameof(KCC.RecipeVariant.AuthorMemberGuid)] = authorGuid,
+            [nameof(RecipeVariant.AuthorMemberGuid)] = authorGuid,
         };
 
         var guids = variant.Diets
@@ -218,7 +218,7 @@ public static class RecipeTestDataSeeder
             .ToArray();
         if (guids.Length > 0)
         {
-            fields[nameof(KCC.RecipeVariant.Tags)] = TagReferenceJson(guids);
+            fields[nameof(RecipeVariant.Tags)] = TagReferenceJson(guids);
         }
 
         return fields;

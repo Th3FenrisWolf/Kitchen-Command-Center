@@ -1,15 +1,13 @@
 using CMS.ContentEngine;
 using CMS.Websites;
-using KCC;
 using KCC.Contributions.Data;
 using KCC.Web.Features.Helpers;
-using KCC.Web.Features.Members;
 using KCC.Web.Features.Pages.VariantDetail;
+using KCC.Web.Features.Providers;
 using Kentico.Xperience.Lucene.Core.Indexing;
 using Lucene.Net.Documents;
 using Lucene.Net.Facet;
 using Lucene.Net.Util;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace KCC.Web.Features.Search;
 
@@ -39,7 +37,7 @@ public class RecipeSearchIndexingStrategy(IServiceScopeFactory scopeFactory) : D
         var services = scope.ServiceProvider;
         var queryExecutor = services.GetRequiredService<IContentQueryExecutor>();
         var reviews = services.GetRequiredService<IVariantReviewInfoProvider>();
-        var authors = services.GetRequiredService<IAuthorNameResolver>();
+        var authorNameProvider = services.GetRequiredService<AuthorNameProvider>();
         var taxonomy = services.GetRequiredService<ITaxonomyRetriever>();
 
         var recipe = await GetRecipe(queryExecutor, page);
@@ -68,7 +66,7 @@ public class RecipeSearchIndexingStrategy(IServiceScopeFactory scopeFactory) : D
             .Distinct()
             .ToArray();
 
-        var startedBy = await authors.Resolve(recipe.AuthorMemberGuid) ?? string.Empty;
+        var startedBy = await authorNameProvider.Resolve(recipe.AuthorMemberGuid) ?? string.Empty;
         var published = recipe.SystemFields.ContentItemCommonDataFirstPublishedWhen ?? recipe.MetadataPublishDate;
         var publishedUtc = DateTime.SpecifyKind(published, DateTimeKind.Utc);
 

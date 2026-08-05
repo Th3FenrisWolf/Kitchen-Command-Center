@@ -4,10 +4,10 @@ using KCC;
 using KCC.Contributions.Data;
 using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Components.Breadcrumbs;
-using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.RecipeDetail;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Providers;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,7 @@ public class RecipeDetailController(
     IContentRetriever contentRetriever,
     ITaxonomyRetriever taxonomyRetriever,
     IPreferredLanguageRetriever preferredLanguageRetriever,
-    IAuthorNameResolver authorNameResolver,
+    AuthorNameProvider authorNameProvider,
     IResourceStringInfoProvider resourceStrings,
     IVariantReviewInfoProvider reviewProvider,
     IVariantCookedInfoProvider cookedProvider,
@@ -77,8 +77,8 @@ public class RecipeDetailController(
             RecipeTimesCooked = recipeTimesCooked,
             AddVariantUrl = addVariantPage?.GetUrl().RelativePath,
             Variants = await RetrieveVariants(pageId, language),
-            StartedByName = await authorNameResolver.Resolve(recipe.AuthorMemberGuid),
-            Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId)).Select(b => new RecipeBreadcrumb(b.LinkText, b.Url)),
+            StartedByName = await authorNameProvider.Resolve(recipe.AuthorMemberGuid),
+            Breadcrumbs = await breadcrumbService.BuildBreadcrumbsAsync(pageId),
             ResourceStrings = GetStrings(),
         };
 
@@ -104,7 +104,7 @@ public class RecipeDetailController(
             .Distinct();
 
         var resolvedTags = await taxonomyRetriever.RetrieveTags(tagIds, language);
-        var authorNames = await authorNameResolver.ResolveMany(variants.Select(variant => variant.AuthorMemberGuid));
+        var authorNames = await authorNameProvider.ResolveMany(variants.Select(variant => variant.AuthorMemberGuid));
 
         return variants.Select(variant => new VariantSummaryViewModel
         {

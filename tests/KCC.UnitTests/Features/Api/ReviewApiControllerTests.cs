@@ -2,6 +2,7 @@ using System.Security.Claims;
 using KCC.Contributions.Data;
 using KCC.Web.Features.Api;
 using KCC.Web.Features.Models.Common;
+using KCC.Web.Features.Providers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -24,7 +25,7 @@ public class ReviewApiControllerTests
     public async Task Put_RejectsOutOfRangeRating()
     {
         var reviews = new Mock<IVariantReviewInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var user = new KCCApplicationUser { MemberGuid = Guid.NewGuid() };
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(user));
 
@@ -38,8 +39,8 @@ public class ReviewApiControllerTests
     public async Task Put_ReturnsNotFoundWhenVariantUnknown()
     {
         var reviews = new Mock<IVariantReviewInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
-        _ = resolver.Setup(r => r.ResolveRecipeGuidAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        var resolver = new Mock<IVariantGuidProvider>();
+        _ = resolver.Setup(r => r.GetRecipeGuidAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Guid?)null);
         var user = new KCCApplicationUser { MemberGuid = Guid.NewGuid() };
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(user));
@@ -53,11 +54,11 @@ public class ReviewApiControllerTests
     public async Task Put_UpsertsWithResolvedRecipeGuid()
     {
         var reviews = new Mock<IVariantReviewInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var variantGuid = Guid.NewGuid();
         var recipeGuid = Guid.NewGuid();
         var memberGuid = Guid.NewGuid();
-        _ = resolver.Setup(r => r.ResolveRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>()))
+        _ = resolver.Setup(r => r.GetRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recipeGuid);
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(new KCCApplicationUser { MemberGuid = memberGuid }));
 
@@ -71,11 +72,11 @@ public class ReviewApiControllerTests
     public async Task Put_AcceptsHalfStarRating()
     {
         var reviews = new Mock<IVariantReviewInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var variantGuid = Guid.NewGuid();
         var recipeGuid = Guid.NewGuid();
         var memberGuid = Guid.NewGuid();
-        _ = resolver.Setup(r => r.ResolveRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>()))
+        _ = resolver.Setup(r => r.GetRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recipeGuid);
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(new KCCApplicationUser { MemberGuid = memberGuid }));
 
@@ -89,7 +90,7 @@ public class ReviewApiControllerTests
     public async Task Put_RejectsNonHalfStepRating()
     {
         var reviews = new Mock<IVariantReviewInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var user = new KCCApplicationUser { MemberGuid = Guid.NewGuid() };
         var controller = new ReviewApiController(reviews.Object, resolver.Object, MockUserManager(user));
 
@@ -103,7 +104,7 @@ public class ReviewApiControllerTests
     public async Task Delete_RemovesOwnReview()
     {
         var reviews = new Mock<IVariantReviewInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var variantGuid = Guid.NewGuid();
         var memberGuid = Guid.NewGuid();
         _ = reviews.Setup(r => r.DeleteOwn(variantGuid, memberGuid)).Returns(true);

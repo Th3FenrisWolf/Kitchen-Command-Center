@@ -1,17 +1,15 @@
 <script setup lang="ts">
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
 
-  // Shared grid card for the recipe search results and the recipe-detail variant grid. Purely
-  // presentational: callers map their own type into a RecipeCardModel (see recipeCardModel.ts).
   defineProps<{ card: RecipeCardModel }>()
 </script>
 
 <template>
-  <Link
+  <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
     class="grid content-start gap-2 rounded-3xl bg-bone p-4 text-onyx no-underline shadow-primary transition-shadow focus-within:shadow-primary-raised hover:shadow-primary-raised"
@@ -40,5 +38,5 @@
     <span v-if="card.tags.length" class="mt-1 flex flex-wrap gap-1">
       <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
     </span>
-  </Link>
+  </AppLink>
 </template>

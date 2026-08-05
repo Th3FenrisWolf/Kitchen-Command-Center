@@ -2,6 +2,7 @@ using System.Security.Claims;
 using KCC.Contributions.Data;
 using KCC.Web.Features.Api;
 using KCC.Web.Features.Models.Common;
+using KCC.Web.Features.Providers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -22,11 +23,11 @@ public class VariantCookedApiControllerTests
     public async Task Post_MarksWithResolvedRecipeGuid_AndReturnsCount()
     {
         var cooked = new Mock<IVariantCookedInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var variantGuid = Guid.NewGuid();
         var recipeGuid = Guid.NewGuid();
         var memberGuid = Guid.NewGuid();
-        _ = resolver.Setup(r => r.ResolveRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>())).ReturnsAsync(recipeGuid);
+        _ = resolver.Setup(r => r.GetRecipeGuidAsync(variantGuid, It.IsAny<CancellationToken>())).ReturnsAsync(recipeGuid);
         _ = cooked.Setup(c => c.GetCookedCountForVariant(variantGuid)).Returns(3);
         var controller = new VariantCookedApiController(cooked.Object, resolver.Object, MockUserManager(new KCCApplicationUser { MemberGuid = memberGuid }));
 
@@ -40,7 +41,7 @@ public class VariantCookedApiControllerTests
     public async Task Delete_Unmarks()
     {
         var cooked = new Mock<IVariantCookedInfoProvider>();
-        var resolver = new Mock<IVariantGuidResolver>();
+        var resolver = new Mock<IVariantGuidProvider>();
         var variantGuid = Guid.NewGuid();
         var memberGuid = Guid.NewGuid();
         var controller = new VariantCookedApiController(cooked.Object, resolver.Object, MockUserManager(new KCCApplicationUser { MemberGuid = memberGuid }));

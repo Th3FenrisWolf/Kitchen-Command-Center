@@ -17,13 +17,13 @@ describe('DetailHero rating', () => {
     expect(countStars(html)).toBe(5)
   })
 
-  it('shows a single decorative star (not a 5-star row) when there are no ratings yet', async () => {
-    const html = await render({ averageRating: 0, reviewCount: 0 })
-    expect(countStars(html)).toBe(1)
-  })
-
-  it('shows a single decorative star in the coming-soon state', async () => {
-    const html = await render({})
-    expect(countStars(html)).toBe(1)
+  // An unreviewed recipe reads as text only, matching the empty state on the recipe cards.
+  // A zero count and a missing one are the same state, so both inputs must stay starless.
+  it.each([
+    ['no reviews', { averageRating: 0, reviewCount: 0 }],
+    ['no rating data at all', {}],
+  ])('renders no stars with %s', async (_label, props) => {
+    const html = await render(props)
+    expect(countStars(html)).toBe(0)
   })
 })

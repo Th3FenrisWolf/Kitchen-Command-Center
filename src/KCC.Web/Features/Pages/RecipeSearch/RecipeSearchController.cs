@@ -43,7 +43,7 @@ public class RecipeSearchController(
         {
             CreateRecipeUrl = createRecipePage?.GetUrl().RelativePath,
             InitialResults = RecipeSearchResponseMapper.ToResponse(initial),
-            Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId)).Select(b => new RecipeSearchBreadcrumb(b.LinkText, b.Url)),
+            Breadcrumbs = await breadcrumbService.BuildBreadcrumbsAsync(pageId),
             ResourceStrings = GetStrings(),
         };
 

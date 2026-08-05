@@ -47,7 +47,7 @@
   <div>
     <div class="mb-2 flex items-center justify-between">
       <h2 class="font-casual text-2xl"><ResourceString for="Filters" /></h2>
-      <button class="text-sm font-bold text-onyx-light underline" @click="emit('reset')">
+      <button class="cursor-pointer text-sm font-bold text-onyx-light underline" @click="emit('reset')">
         <ResourceString for="Reset" />
       </button>
     </div>

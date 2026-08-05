@@ -44,12 +44,12 @@
     /**
      * The content to display in the card
      */
-    default: () => void
+    default?: () => void
 
     /**
      * The content to display in the card drawer
      */
-    drawer: () => void
+    drawer?: () => void
   }
 </script>
 
@@ -79,7 +79,7 @@
   <div
     :class="[
       'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center shadow-primary transition-all',
-      !!drawer && 'focus-within:shadow-primary-raised hover:shadow-primary-raised',
+      drawer && 'focus-within:shadow-primary-raised hover:shadow-primary-raised',
       cardColor,
       cardTextColor,
       marginClasses,
@@ -88,15 +88,15 @@
     <div
       :class="[
         'relative top-1 transition-all',
-        !!drawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
-        !!drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
+        drawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
+        drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
       ]"
     >
       <slot />
     </div>
 
     <div
-      v-if="!!drawer"
+      v-if="drawer"
       :class="[
         'h-[0%] content-center overflow-hidden rounded-2xl transition-all',
         'group-hover/card:h-full focus-within:h-full',

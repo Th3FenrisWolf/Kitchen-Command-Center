@@ -72,7 +72,18 @@ export default defineConfig(({ mode }) => {
         allow: [resolve(__dirname, '../..')],
       },
     },
-    plugins: [vue(), tailwindcss(), ...(!isSSR ? [cleanAssetsPlugin(), vueDevTools()] : [])],
+    plugins: [
+      vue(),
+      tailwindcss(),
+      ...(!isSSR
+        ? [
+            cleanAssetsPlugin(),
+            // Razor emits the HTML, so the plugin's transformIndexHtml injection never
+            // runs; appendTo injects the devtools client via the entry module instead.
+            vueDevTools({ appendTo: 'Features/Main.ts' }),
+          ]
+        : []),
+    ],
     resolve: {
       dedupe: ['vue', '@vue/runtime-dom', '@vue/runtime-core', '@vue/compiler-dom', '@vue/shared'],
       alias: [

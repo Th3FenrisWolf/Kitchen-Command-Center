@@ -39,19 +39,20 @@ public class RecipeSearchTests : BasePageTests
     public async Task Search_narrows_results_by_query()
     {
         await GotoSearchAsync();
-        var unfilteredCount = await Page.Locator("[data-testid='recipe-card']").CountAsync();
+
+        // Grid cards and the optional "Top Rated" spotlight both carry data-recipe-name, so this
+        // counts every rendered recipe result regardless of which slot it renders in.
+        var results = Page.Locator("[data-recipe-name]");
+        var unfilteredCount = await results.CountAsync();
+        _ = await Assert.That(unfilteredCount).IsGreaterThan(1);
 
         await SearchForAsync("egg");
 
-        // "egg" matches only the seeded "Egg Skillet" recipe.
-        var cards = Page.Locator("[data-testid='recipe-card']");
-        await Expect(cards).ToHaveCountAsync(1);
-
-        var eggMatch = Page.Locator("[data-testid='recipe-card'][data-recipe-name*='Egg' i]");
-        await Expect(eggMatch).ToHaveCountAsync(1);
-
-        // The filtered result (1) is fewer than the unfiltered listing.
-        _ = await Assert.That(unfilteredCount).IsGreaterThan(1);
+        // "egg" matches only the seeded "Egg Skillet". When the environment has review data that
+        // lone match is promoted to the Top Rated spotlight (and drops out of the grid); without
+        // reviews it stays a normal card. Either way it is the single result, and it is the egg one.
+        await Expect(results).ToHaveCountAsync(1);
+        await Expect(Page.Locator("[data-recipe-name*='Egg' i]")).ToHaveCountAsync(1);
     }
 
     [Test]

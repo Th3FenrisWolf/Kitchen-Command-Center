@@ -27,8 +27,8 @@
 .kcc-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--color-onyx);
   border: 3px solid var(--color-bone);
@@ -40,8 +40,8 @@
   cursor: grabbing;
 }
 .kcc-range::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--color-onyx);
   border: 3px solid var(--color-bone);

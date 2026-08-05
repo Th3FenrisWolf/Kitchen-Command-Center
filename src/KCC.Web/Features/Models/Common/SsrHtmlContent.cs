@@ -37,5 +37,12 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
         }));
 
         writer.Write("</script>");
+
+        if (result.ErrorMessage is not null)
+        {
+            writer.Write("<script id=\"ssr-error\" type=\"application/json\">");
+            writer.Write(JsonSerializer.Serialize(new { message = result.ErrorMessage, stack = result.ErrorStack }));
+            writer.Write("</script>");
+        }
     }
 }

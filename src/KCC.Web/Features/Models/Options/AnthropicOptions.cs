@@ -1,4 +1,4 @@
-namespace KCC.Web.Features.Api;
+namespace KCC.Web.Features.Models.Options;
 
 /// <summary>
 /// Strongly-typed configuration for the Anthropic API integration.

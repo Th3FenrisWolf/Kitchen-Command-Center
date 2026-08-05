@@ -7,11 +7,26 @@ namespace KCC.Web.Features.Extensions;
 
 public static class PageTitleResolver
 {
-    public static async Task<string> GetTitle(this IWebPageFieldsSource page)
+    public static async Task<string> GetListingTitle(this IWebPageFieldsSource page)
     {
         if (page is IListingMetadata { ListingHeading.Length: > 0 } listing)
         {
             return listing.ListingHeading;
+        }
+
+        if (page is IMetadata { MetadataTitle.Length: > 0 } metadata)
+        {
+            return metadata.MetadataTitle;
+        }
+
+        return await GetDisplayName(page);
+    }
+
+    public static async Task<string> GetBreadcrumbTitle(this IWebPageFieldsSource page)
+    {
+        if (page is IMetadata { BreadcrumbLabel.Length: > 0 } breadcrumb)
+        {
+            return breadcrumb.BreadcrumbLabel;
         }
 
         if (page is IMetadata { MetadataTitle.Length: > 0 } metadata)
@@ -27,24 +42,6 @@ public static class PageTitleResolver
         if (page is IMetadata { MetadataTitle.Length: > 0 } metadata)
         {
             return metadata.MetadataTitle;
-        }
-
-        return await GetDisplayName(page);
-    }
-
-    public static async Task<string> GetBreadcrumbTitle(this IWebPageFieldsSource page)
-    {
-        if (page is IMetadata metadata)
-        {
-            if (!string.IsNullOrEmpty(metadata.BreadcrumbLabel))
-            {
-                return metadata.BreadcrumbLabel;
-            }
-
-            if (!string.IsNullOrEmpty(metadata.MetadataTitle))
-            {
-                return metadata.MetadataTitle;
-            }
         }
 
         return await GetDisplayName(page);

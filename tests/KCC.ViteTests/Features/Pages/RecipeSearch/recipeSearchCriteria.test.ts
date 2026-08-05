@@ -20,7 +20,7 @@ const t = (key: string): string => {
 describe('buildSearchParams', () => {
   it('serializes query, repeated facets, sort and paging', () => {
     const p = buildSearchParams(state({ query: 'chicken', categories: ['Mains'], diets: ['Vegan', 'Dairy-Free'], sort: 'rated' }), 2, 12)
-    expect(p.get('q')).toBe('chicken')
+    expect(p.get('query')).toBe('chicken')
     expect(p.getAll('category')).toEqual(['Mains'])
     expect(p.getAll('diet')).toEqual(['Vegan', 'Dairy-Free'])
     expect(p.get('sort')).toBe('rated')

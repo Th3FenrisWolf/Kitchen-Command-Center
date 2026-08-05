@@ -2,9 +2,11 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Memory;
+using Polly.CircuitBreaker;
 
 namespace KCC.Web.Features.Ssr;
 
@@ -12,6 +14,7 @@ public class VueSsrService(
     IHttpClientFactory httpClientFactory,
     IMemoryCache cache,
     IConfiguration configuration,
+    IHostEnvironment environment,
     ILogger<VueSsrService> logger)
 {
     private bool IsEnabled => configuration.GetValue("VueSsr:Enabled", true);
@@ -95,6 +98,15 @@ public class VueSsrService(
                     response.StatusCode,
                     requestId);
 
+                // SsrHtmlContent re-emits the error into the page so the dev error
+                // overlay can surface render failures that the silent client-side
+                // fallback would otherwise hide.
+                if (environment.IsDevelopment()
+                    && await TryReadErrorAsync(response, cancellationToken) is { Error: not null } error)
+                {
+                    return baseResult with { ErrorMessage = error.Error, ErrorStack = error.Stack };
+                }
+
                 return baseResult;
             }
 
@@ -133,6 +145,25 @@ public class VueSsrService(
         {
             logger.LogWarning(ex, "SSR service unavailable, falling back to client-side rendering");
             return baseResult;
+        }
+        catch (BrokenCircuitException)
+        {
+            logger.LogWarning("SSR circuit breaker is open, falling back to client-side rendering");
+            return baseResult;
+        }
+    }
+
+    private static async Task<SsrErrorResponse> TryReadErrorAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<SsrErrorResponse>(cancellationToken);
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            return null;
         }
     }
 

@@ -1,4 +1,4 @@
-using KCC.Web.Features.Members;
+using KCC.Web.Features.Providers;
 using Kentico.Web.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -71,7 +71,7 @@ public static class IntegrationTestHost
             _ = builder.Configuration.AddUserSecrets<TestsDIAttribute>(optional: true);
         }
 
-        _ = builder.Services.AddScoped<IAuthorNameResolver, AuthorNameResolver>();
+        _ = builder.Services.AddScoped<AuthorNameProvider>();
 
         _ = builder.Services.AddKentico();
 

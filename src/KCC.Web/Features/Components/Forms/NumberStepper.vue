@@ -1,3 +1,39 @@
+<!-- #region Number Stepper Component Properties -->
+<script lang="ts">
+  export interface NumberStepperProps {
+    /**
+     * The minimum value allowed in the stepper
+     */
+    min?: number
+    /**
+     * The maximum value allowed in the stepper
+     */
+    max?: number
+    /**
+     * The amount to increment or decrement the value by when stepping
+     * @default 1
+     */
+    step?: number
+    /**
+     * The unit of measurement for the value (e.g., "kg", "mL")
+     */
+    unit?: string
+    /**
+     * The label for the stepper, used for accessibility purposes
+     */
+    label?: string
+    /**
+     * Whether the stepper is disabled and cannot be interacted with
+     */
+    disabled?: boolean
+    /**
+     * Placeholder text to display when the input is empty
+     */
+    placeholder?: string
+  }
+</script>
+<!-- #endregion -->
+
 <script setup lang="ts">
   import { computed, onUnmounted } from 'vue'
 
@@ -5,23 +41,7 @@
     inheritAttrs: false,
   })
 
-  const {
-    min,
-    max,
-    step = 1,
-    unit,
-    label,
-    disabled,
-    placeholder,
-  } = defineProps<{
-    min?: number
-    max?: number
-    step?: number
-    unit?: string
-    label?: string
-    disabled?: boolean
-    placeholder?: string
-  }>()
+  const { min, max, step = 1, unit, label, disabled, placeholder } = defineProps<NumberStepperProps>()
 
   const model = defineModel<number | undefined>()
 

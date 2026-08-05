@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
 
   interface ProfileVariant {
     pageId: number
@@ -93,7 +93,7 @@
             <div class="flex flex-wrap items-center gap-2">
               <i v-if="group.recipeIcon" :class="group.recipeIcon" class="text-xl"></i>
               <component
-                :is="group.recipeUrl ? Link : 'span'"
+                :is="group.recipeUrl ? AppLink : 'span'"
                 :href="group.recipeUrl || undefined"
                 class="font-casual text-2xl"
               >
@@ -109,7 +109,7 @@
             <ul v-if="group.variants.length" class="mt-2 grid gap-1 pl-7">
               <li v-for="variant in group.variants" :key="variant.pageId" class="flex flex-wrap items-center gap-2">
                 <i v-if="variant.icon" :class="variant.icon"></i>
-                <component :is="variant.url ? Link : 'span'" :href="variant.url || undefined">
+                <component :is="variant.url ? AppLink : 'span'" :href="variant.url || undefined">
                   {{ variant.name }}
                 </component>
                 <span v-if="variant.isPending" class="rounded-full bg-yellow px-2 py-0.5 text-xs font-bold text-onyx">

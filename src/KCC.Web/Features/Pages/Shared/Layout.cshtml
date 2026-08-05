@@ -41,15 +41,12 @@
   @* Preload the brand fonts so they're fetched at high priority and ready by first paint.
      Hazelnut/APCasual are font-display: swap, so without this the page first paints in a
      fallback font and reflows when they load (the layout shift we were chasing). Fonts fetch
-     in CORS mode, so `crossorigin` is required for the preloaded file to be reused. Dev serves
-     the source files via Vite; prod resolves the content-hashed names from the build manifest. *@
-  @if (Env.IsDevelopment())
-  {
-    <link rel="preload" as="font" type="font/woff2" crossorigin vite-href="/Features/Styles/fonts/HazelnutMilkTeaRegular.woff2" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin vite-href="/Features/Styles/fonts/HazelnutMilkTeaBold.woff2" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin vite-href="/Features/Styles/fonts/AmericanPurposeCasualRegular.woff2" />
-  }
-  else if (ViteManifest["Features/Styles/Main.css"] is { Assets: var fontAssets } && fontAssets is not null)
+     in CORS mode, so `crossorigin` is required for the preloaded file to be reused. The names
+     are content-hashed, so they come from the build manifest.
+
+     Development serves the fonts off the Vite dev server in a couple of milliseconds, where a
+     preload saves nothing and browsers that decline to reuse it warn once per font per load. *@
+  @if (!Env.IsDevelopment() && ViteManifest["Features/Styles/Main.css"] is { Assets: var fontAssets } && fontAssets is not null)
   {
     foreach (var asset in fontAssets)
     {

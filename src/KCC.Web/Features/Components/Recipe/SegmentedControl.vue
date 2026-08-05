@@ -97,9 +97,8 @@
   onMounted(() => {
     place(false)
     ready.value = true
-    // Re-snap on any later reflow. With the site-wide font gate (Layout.cshtml) fonts are
-    // already loaded before paint, but this keeps the thumb correct through container
-    // resizes, zoom, or a late layout shift if the gate ever times out.
+    // Re-snap on any later reflow: container resizes, zoom, or the brand fonts landing after
+    // mount and changing the label widths.
     if (typeof ResizeObserver !== 'undefined' && track.value) {
       ro = new ResizeObserver(() => place(false))
       ro.observe(track.value)

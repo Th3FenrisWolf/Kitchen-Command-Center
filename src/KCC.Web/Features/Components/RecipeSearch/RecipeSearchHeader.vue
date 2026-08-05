@@ -8,11 +8,11 @@
 </script>
 
 <template>
-  <section class="my-4 rounded-3xl bg-surface-500 p-4 text-bone">
+  <section class="my-4 rounded-3xl bg-surface-500 p-6 text-bone">
     <p class="mb-1 text-sm tracking-wide uppercase opacity-75"><ResourceString for="BrowseTheKitchen" /></p>
     <h1 class="font-casual text-4xl leading-tight"><ResourceString for="SearchRecipes" /></h1>
 
-    <form class="mt-4 flex gap-2" @submit.prevent="emit('submit')">
+    <form class="mt-4 flex gap-4" @submit.prevent="emit('submit')">
       <div class="relative min-w-0 flex-1">
         <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-4 -translate-y-1/2 text-onyx-light"></i>
         <input
@@ -33,7 +33,7 @@
       <button
         type="submit"
         data-testid="recipe-search-submit"
-        class="flex-none rounded-2xl bg-surface-300 px-8 font-bold text-bone transition-colors hover:bg-surface-200"
+        class="flex-none cursor-pointer rounded-2xl bg-bone px-8 font-bold text-onyx transition-colors hover:bg-bone-dark"
       >
         <ResourceString for="Search" />
       </button>

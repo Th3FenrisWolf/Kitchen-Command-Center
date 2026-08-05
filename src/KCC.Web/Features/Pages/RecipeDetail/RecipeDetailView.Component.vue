@@ -5,7 +5,7 @@
   import { type SortKey, type ViewMode, filterVariants, tagOptions } from '~/Components/RecipeDetail/variantFilters.ts'
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import RecipeBreadcrumb from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
@@ -67,13 +67,13 @@
   <div class="mt-4 flex items-center justify-between gap-4">
     <RecipeBreadcrumb v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
-    <Link
+    <AppLink
       :href="addVariantHref"
       class="inline-flex items-center gap-2 rounded-2xl bg-surface-500 px-3 py-2 text-bone transition-colors hover:bg-surface-400"
     >
       <ResourceString for="AddVariant" />
       <i class="fa-solid fa-plus text-lg" />
-    </Link>
+    </AppLink>
   </div>
 
   <DetailHero

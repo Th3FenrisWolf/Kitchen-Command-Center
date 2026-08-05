@@ -2,7 +2,7 @@
   import { computed, onMounted, ref } from 'vue'
   import type { Review, ReviewsResponse } from '~/Types/Recipe'
   import { get, put, del } from '~/Utilities/Api'
-  import { brandColorFor } from '~/Utilities/BrandColor'
+  import { backgroundColorFor } from '~/Utilities/BrandColor'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
@@ -97,7 +97,9 @@
 
   const formatDate = (iso: string) => {
     const d = new Date(iso)
-    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    return Number.isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   onMounted(() => load(0))
@@ -137,7 +139,7 @@
         <li v-for="(review, i) in reviews" :key="i" class="flex gap-3">
           <span
             class="grid size-11 flex-none place-items-center rounded-full font-bold text-onyx"
-            :class="`bg-${brandColorFor(review.authorName)}`"
+            :class="backgroundColorFor(review.authorName)"
             aria-hidden="true"
             >{{ initials(review.authorName) }}</span
           >

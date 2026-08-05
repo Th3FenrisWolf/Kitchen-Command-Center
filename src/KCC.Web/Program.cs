@@ -2,9 +2,8 @@ using KCC;
 using KCC.Contributions;
 using KCC.ResourceStrings;
 using KCC.Web.Features.AdminHomePage;
-using KCC.Web.Features.Attributes;
-using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Common;
+using KCC.Web.Features.Models.Options;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
 using Kentico.Activities.Web.Mvc;
@@ -84,24 +83,19 @@ builder.Services.AddScoped<KCC.Web.Features.Search.IRecipeReindexTargetResolver,
 builder.Services.AddScoped<KCC.Web.Features.Search.IRecipeReindexer, KCC.Web.Features.Search.RecipeReindexer>();
 
 var anthropicOptions = builder.Configuration
-    .GetSection(KCC.Web.Features.Api.AnthropicOptions.SectionName)
-    .Get<KCC.Web.Features.Api.AnthropicOptions>() ?? new KCC.Web.Features.Api.AnthropicOptions();
+    .GetSection(AnthropicOptions.SectionName)
+    .Get<AnthropicOptions>() ?? new();
 builder.Services.AddSingleton(anthropicOptions);
 builder.Services.AddSingleton(new Anthropic.AnthropicClient(new Anthropic.Core.ClientOptions { ApiKey = anthropicOptions.ApiKey ?? string.Empty }));
-builder.Services.AddSingleton<KCC.Admin.IRecipeIconService, KCC.Web.Features.Api.RecipeIconService>();
+builder.Services.AddSingleton<KCC.Admin.IRecipeIconService, KCC.Web.Features.Providers.RecipeIconProvider>();
 
-builder.Services.AddControllersWithViews(options =>
-{
-    var localizedRouteConvention = new LocalizedRouteConvention();
-    options.Conventions.Add((IControllerModelConvention)localizedRouteConvention);
-    options.Conventions.Add((IActionModelConvention)localizedRouteConvention);
-})
+builder.Services.AddControllersWithViews()
 .AddApplicationPart(typeof(ResourceStringServiceExtensions).Assembly)
 .AddApplicationPart(typeof(ContributionsServiceExtensions).Assembly);
 
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
-builder.Services.AddScoped<IAuthorNameResolver, AuthorNameResolver>();
-builder.Services.AddScoped<KCC.Web.Features.Api.IVariantGuidResolver, KCC.Web.Features.Api.VariantGuidResolver>();
+builder.Services.AddScoped<KCC.Web.Features.Providers.AuthorNameProvider>();
+builder.Services.AddScoped<KCC.Web.Features.Providers.IVariantGuidProvider, KCC.Web.Features.Providers.VariantGuidProvider>();
 builder.Services.AddScoped<KCC.Web.Features.Components.Breadcrumbs.BreadcrumbService>();
 
 var app = builder.Build();

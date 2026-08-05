@@ -2,60 +2,16 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CMS.Core;
 using CMS.Websites;
-using KCC.ResourceStrings;
 using Kentico.Content.Web.Mvc;
-using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Extensions;
 
 public static class UrlHelperExtensions
 {
-    public static string ActionFor<TController>(
-        this IUrlHelper urlHelper,
-        Expression<Func<TController, object>> actionExpression
-    ) where TController : ControllerBase
-    {
-        var methodCall = GetMethodCall(actionExpression.Body);
+    public static string HomePage(this IUrlHelper _) => HomePage();
 
-        var action = GetActionName(methodCall.Method);
-        var controller = GetControllerName(typeof(TController));
-        var routeValues = GetRouteValues(methodCall);
-
-        return urlHelper.Action(action, controller, routeValues)
-            ?? throw new InvalidOperationException($"Could not generate URL for '{controller}.{action}'.");
-    }
-
-    public static string LocalizedActionFor<TController>(
-        this IUrlHelper urlHelper,
-        Expression<Func<TController, object>> actionExpression
-    ) where TController : ControllerBase
-    {
-        var methodCall = GetMethodCall(actionExpression.Body);
-
-        var action = GetActionName(methodCall.Method);
-        var controller = GetControllerName(typeof(TController));
-        var routeValues = GetRouteValues(methodCall);
-
-        return urlHelper.LocalizedAction(action, controller, routeValues);
-    }
-
-    public static string ActionFor<TController>(
-        this IUrlHelper urlHelper,
-        Expression<Action<TController>> actionExpression
-    ) where TController : ControllerBase
-    {
-        var methodCall = GetMethodCall(actionExpression.Body);
-
-        var action = GetActionName(methodCall.Method);
-        var controller = GetControllerName(typeof(TController));
-        var routeValues = GetRouteValues(methodCall);
-
-        return urlHelper.Action(action, controller, routeValues)
-            ?? throw new InvalidOperationException($"Could not generate URL for '{controller}.{action}'.");
-    }
-
-    public static string HomePage(this IUrlHelper _)
+    public static string HomePage()
     {
         var contentRetriever = Service.Resolve<IContentRetriever>();
 
@@ -68,47 +24,19 @@ public static class UrlHelperExtensions
         return page.GetUrl().RelativePath;
     }
 
-    public static string LocalizedAction(this IUrlHelper urlHelper, string action, string controller)
-        => urlHelper.LocalizedAction(action, controller, null);
-
-    public static string LocalizedAction(
+    public static string ActionFor<TController>(
         this IUrlHelper urlHelper,
-        string action,
-        string controller,
-        object routeValues
-    )
+        Expression<Func<TController, object>> actionExpression
+    ) where TController : ControllerBase
     {
-        var lang = Service.Resolve<IPreferredLanguageRetriever>().Get();
+        var methodCall = GetMethodCall(actionExpression.Body);
 
-        var path = urlHelper.Action(action, controller, routeValues);
+        var action = GetActionName(methodCall.Method);
+        var controller = GetControllerName(typeof(TController));
+        var routeValues = GetRouteValues(methodCall);
 
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return string.Empty;
-        }
-
-        // LocalizedAction is intended for page routes; API routes should never be language-prefixed.
-        if (IsApiPath(path))
-        {
-            return path.ToLowerInvariant();
-        }
-
-        if (string.IsNullOrEmpty(lang) || lang == DefaultLanguageRetriever.GetName())
-        {
-            return path.ToLowerInvariant();
-        }
-
-        return $"/{lang}{path}".ToLowerInvariant();
-    }
-
-    private static bool IsApiPath(string path)
-    {
-        var normalizedPath = path.StartsWith("~/", StringComparison.Ordinal)
-            ? path[1..]
-            : path;
-
-        return normalizedPath.StartsWith("/api", StringComparison.OrdinalIgnoreCase)
-            || normalizedPath.Equals("api", StringComparison.OrdinalIgnoreCase);
+        return urlHelper.Action(action, controller, routeValues)
+            ?? throw new InvalidOperationException($"Could not generate URL for '{controller}.{action}'.");
     }
 
     private static MethodCallExpression GetMethodCall(Expression expression)

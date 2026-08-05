@@ -3,7 +3,7 @@
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { post } from '~/Utilities/Api'
 
   const props = defineProps<{
@@ -74,10 +74,10 @@
       </template>
 
       <template #action-button>
-        <Link :href="backUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+        <AppLink :href="backUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
           <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="BackToProfile" />
-        </Link>
+        </AppLink>
       </template>
     </SmallHero>
 

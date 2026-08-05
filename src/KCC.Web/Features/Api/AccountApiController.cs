@@ -1,6 +1,7 @@
 using CMS.Core;
 using CMS.Websites;
 using KCC.ResourceStrings.Data;
+using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Models.Common;
 using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -62,7 +63,7 @@ public class AccountApiController(
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return Ok(new AuthResponse(true, null, "/"));
+        return Ok(new AuthResponse(true, null, Url.HomePage()));
     }
 
     [HttpPost("register")]
@@ -90,21 +91,13 @@ public class AccountApiController(
 
         if (!result.Succeeded)
         {
-            return Ok(new AuthResponse(false, result.Errors.Select(e => e.Description).ToArray(), null));
+            return Ok(new AuthResponse(false, [..result.Errors.Select(e => e.Description)], null));
         }
 
-        // RequireConfirmedAccount = true in Program.cs — don't auto-sign-in.
-        // Send user to the registration-complete page; email-confirmation flow is a follow-up.
-        var registrationCompletePage = (await contentRetriever.RetrievePages<RegistrationCompletePage>(
-            new(),
-            query => query.TopN(1),
-            new($"{nameof(AccountApiController)}|{nameof(Register)}")
-        )).FirstOrDefault();
-
-        // RelativePath is app-relative (~/…); strip the leading ~ so the client can navigate to it.
-        return Ok(new AuthResponse(true, null, registrationCompletePage?.GetUrl().RelativePath?.TrimStart('~')));
+        // RequireConfirmedAccount = true — don't auto-sign-in; send user to the registration-complete page
+        var registrationCompletePage = await contentRetriever.RetrieveFirstPage<RegistrationCompletePage>();
+        return Ok(new AuthResponse(true, null, registrationCompletePage?.GetUrl().RelativePath));
     }
 
-    private string SafeReturnUrl(string returnUrl) =>
-        Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
+    private string SafeReturnUrl(string returnUrl) => Url.IsLocalUrl(returnUrl) ? returnUrl : Url.HomePage();
 }
