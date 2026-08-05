@@ -62,6 +62,7 @@ describe('renderMarkdown', () => {
     expect(md).toContain('| Suite | Type | Passed | Failed | Skipped | Duration |')
     expect(md).toContain('| ❌ Unit | dotnet | 1 / 3 | 1 | 1 | 592ms |')
     expect(md).toContain('| ✅ Web Frontend | vitest | 1 / 1 | — | — | 12ms |')
+    expect(md).not.toContain('Generated') // the run page already timestamps the run
   })
 
   it('lists suites that produced no results', () => {

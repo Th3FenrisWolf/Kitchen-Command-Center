@@ -93,9 +93,7 @@ export function renderMarkdown(report) {
     }
   }
 
-  sections.push("", `<sub>Generated ${cell(report.generatedAt)}</sub>`, "");
-
-  const markdown = sections.join("\n");
+  const markdown = sections.join("\n") + "\n";
   if (Buffer.byteLength(markdown, "utf8") <= MAX_BYTES) return markdown;
 
   const trimmed = [

@@ -206,17 +206,20 @@ jobs:
           [ "$code" = "200" ] || { echo "::error::seed-recipes failed (HTTP ${code:-<none>})"; exit 1; }
 
       # ---------- Full combined test suite ----------
-      # TUnit appends its own per-project blocks to the job summary, and its HTML reporter
-      # writes there too with no switch to stop it. Pointing this step's summary file at a
-      # throwaway path discards all of it; the combined report is published below instead.
       - name: Run combined test suite
-        env:
-          GITHUB_STEP_SUMMARY: ${{ runner.temp }}/discarded-step-summary.md
-        run: node tests/scripts/run.mjs
+        run: |
+          set +e  # the summary has to be cleared even when tests fail
+          node tests/scripts/run.mjs
+          status=$?
+          # TUnit appends its own per-project tables to the job summary, and its HTML
+          # reporter adds a notice line that no setting turns off. The summary file is
+          # per-step, so deleting this step's drops all of it; the combined report is
+          # published from the step below instead.
+          rm -f "$GITHUB_STEP_SUMMARY"
+          exit $status
 
       # ---------- Publish report + clean up ----------
       - name: Upload combined test report
-        id: upload_report
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
@@ -232,10 +235,6 @@ jobs:
             exit 0
           fi
           cat tests/results/combined-report.md >> "$GITHUB_STEP_SUMMARY"
-          url="${{ steps.upload_report.outputs.artifact-url }}"
-          if [ -n "$url" ]; then
-            printf '\n[Download the full HTML report](%s)\n' "$url" >> "$GITHUB_STEP_SUMMARY"
-          fi
 
       - name: Stop background services
         if: ${{ always() }}
