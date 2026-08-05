@@ -2,7 +2,7 @@
   import type { SiblingVariant } from '~/Types/Recipe'
   import { ResourceString } from '~/Components/ResourceStrings'
   import { formatRating } from '~/Components/StarRating/starDisplay'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
 
   defineProps<{ variants: SiblingVariant[] }>()
@@ -12,7 +12,7 @@
   <section v-if="variants.length" class="mt-8">
     <h2 class="mb-4 font-casual text-2xl tracking-[1px]"><ResourceString for="OtherVariants" /></h2>
     <div class="grid gap-3 lg:grid-cols-3">
-      <Link
+      <AppLink
         v-for="sibling in variants"
         :key="sibling.slug"
         :href="sibling.slug"
@@ -33,7 +33,7 @@
           </span>
         </span>
         <i class="fa-solid fa-arrow-right flex-none text-onyx-light"></i>
-      </Link>
+      </AppLink>
     </div>
   </section>
 </template>

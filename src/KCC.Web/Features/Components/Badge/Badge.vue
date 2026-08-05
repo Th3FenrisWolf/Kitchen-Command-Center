@@ -1,4 +1,4 @@
-<!-- Badge Component Properties -->
+<!-- #region Badge Component Properties -->
 <script lang="ts">
   import type { HTMLAttributes } from 'vue'
 
@@ -25,7 +25,7 @@
     default: () => void
   }
 </script>
-<!-- End Badge Component Properties -->
+<!-- #endregion -->
 
 <script setup lang="ts">
   const { class: className = 'bg-bone-dark text-onyx-light' } = defineProps<BadgeProps>()

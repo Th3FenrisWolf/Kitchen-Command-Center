@@ -6,7 +6,7 @@
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { post } from '~/Utilities/Api'
   import { stepLabelKey, validIngredients, validInstructions } from '~/Pages/AddVariant/reviewSummary'
 
@@ -84,10 +84,10 @@
     </template>
 
     <template #action-button>
-      <Link :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+      <AppLink :href="recipeSlug" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
         <ResourceString for="Cancel" />
         <i class="fa-solid fa-close fa-sm"></i>
-      </Link>
+      </AppLink>
     </template>
   </SmallHero>
 
@@ -95,10 +95,10 @@
     <ResourceString for="VariantSubmitted" as="h2" class="font-casual text-4xl" />
     <ResourceString for="VariantSubmittedMessage" as="p" class="text-lg" />
 
-    <Link :href="recipeSlug" class="rounded-3xl bg-surface-500 px-6 py-3 text-xl text-bone">
+    <AppLink :href="recipeSlug" class="rounded-3xl bg-surface-500 px-6 py-3 text-xl text-bone">
       <ResourceString for="BackTo" class="mr-1" />
       <span>{{ recipeName }}</span>
-    </Link>
+    </AppLink>
   </section>
 
   <section v-else>

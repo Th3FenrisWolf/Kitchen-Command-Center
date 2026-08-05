@@ -2,7 +2,7 @@
   import { computed } from 'vue'
   import type { VariantSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import RecipeCardView from '~/Components/Recipe/RecipeCard.vue'
   import { variantToCard } from '~/Components/Recipe/recipeCardModel'
 
@@ -15,7 +15,7 @@
   <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
     <RecipeCardView v-for="entry in cards" :key="entry.key" :card="entry.card" />
 
-    <Link
+    <AppLink
       :href="addVariantUrl"
       class="group grid min-h-50 place-items-center content-center gap-3 rounded-3xl border-2 border-dashed border-onyx-light text-onyx-light transition-colors hover:border-onyx hover:text-onyx"
     >
@@ -25,6 +25,6 @@
         <i class="fa-solid fa-plus" />
       </span>
       <span class="font-casual text-2xl"><ResourceString for="AddVariant" /></span>
-    </Link>
+    </AppLink>
   </div>
 </template>

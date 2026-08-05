@@ -1,11 +1,28 @@
-<script setup lang="ts">
-  import { ref, onUnmounted, type TextareaHTMLAttributes } from 'vue'
+<!-- #region Text Area Field Component Properties -->
+<script lang="ts">
+  import type { TextareaHTMLAttributes } from 'vue'
 
-  const { required, readonly, placeholder } = defineProps<{
+  export interface TextAreaFieldProps {
+    /**
+     * Whether the text area is required
+     */
     required?: TextareaHTMLAttributes['required']
+    /**
+     * Whether the text area is read-only
+     */
     readonly?: TextareaHTMLAttributes['readonly']
+    /**
+     * Placeholder text to display when the input is empty
+     */
     placeholder?: TextareaHTMLAttributes['placeholder']
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  import { ref, onUnmounted } from 'vue'
+
+  const { required, readonly, placeholder } = defineProps<TextAreaFieldProps>()
 
   const model = defineModel<string>({
     required: true,

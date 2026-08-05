@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import Link from '~/Components/Links/Link.Component.vue'
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
@@ -11,7 +11,7 @@
 </script>
 
 <template>
-  <Link
+  <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
     class="flex items-center gap-4 rounded-3xl bg-bone p-4 text-onyx no-underline shadow-primary transition-shadow hover:shadow-primary-raised"
@@ -50,5 +50,5 @@
       <span class="text-xs">{{ card.trailingStat.label }}</span>
     </span>
     <i class="fa-solid fa-arrow-right flex-none text-sm text-onyx-light"></i>
-  </Link>
+  </AppLink>
 </template>
