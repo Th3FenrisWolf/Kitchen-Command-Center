@@ -46,21 +46,21 @@ jobs:
     steps:
       # ---------- Setup ----------
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: yarn
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
@@ -105,7 +105,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: playwright_cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
@@ -207,16 +207,34 @@ jobs:
 
       # ---------- Full combined test suite ----------
       - name: Run combined test suite
-        run: node tests/scripts/run.mjs
+        run: |
+          set +e  # the summary has to be cleared even when tests fail
+          node tests/scripts/run.mjs
+          status=$?
+          # TUnit appends its own per-project tables to the job summary, and its HTML
+          # reporter adds a notice line that no setting turns off. The summary file is
+          # per-step, so deleting this step's drops all of it; the combined report is
+          # published from the step below instead.
+          rm -f "$GITHUB_STEP_SUMMARY"
+          exit $status
 
       # ---------- Publish report + clean up ----------
       - name: Upload combined test report
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: combined-test-report
           path: tests/results/
           if-no-files-found: warn
+
+      - name: Publish combined report to job summary
+        if: ${{ always() }}
+        run: |
+          if [ ! -f tests/results/combined-report.md ]; then
+            echo "::warning::No combined-report.md was produced — skipping job summary."
+            exit 0
+          fi
+          cat tests/results/combined-report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Stop background services
         if: ${{ always() }}
