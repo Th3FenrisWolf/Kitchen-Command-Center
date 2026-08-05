@@ -91,7 +91,7 @@
 
 <template>
   <header class="content-grid mt-4">
-    <nav ref="navRef" class="breakout relative flex size-full items-center gap-8 rounded-3xl bg-surface-500 px-8">
+    <nav ref="navRef" class="breakout relative flex size-full items-center gap-6 rounded-3xl bg-surface-500 px-6">
       <a
         class="btn-no-style z-20 h-full shrink-0 py-4 text-bone focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bone"
         :href="homeUrl.stripTilde()"

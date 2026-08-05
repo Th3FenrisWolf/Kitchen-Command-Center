@@ -23,7 +23,7 @@
 </script>
 
 <template>
-  <div class="mb-2 flex flex-wrap items-center gap-4">
+  <div class="mb-4 flex flex-wrap items-center gap-4">
     <h2 class="min-w-40 flex-1 font-casual text-2xl">{{ heading }}</h2>
 
     <div class="flex items-center gap-2">

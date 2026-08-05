@@ -16,7 +16,7 @@
     >
       {{ chip.label }} <i class="fa-solid fa-xmark text-xs"></i>
     </button>
-    <button class="text-sm font-bold text-onyx-light underline" @click="emit('clearAll')">
+    <button class="cursor-pointer text-sm font-bold text-onyx-light underline" @click="emit('clearAll')">
       <ResourceString for="ClearAll" />
     </button>
   </div>
