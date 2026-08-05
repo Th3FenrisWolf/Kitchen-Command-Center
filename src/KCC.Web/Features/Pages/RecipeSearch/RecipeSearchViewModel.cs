@@ -8,8 +8,4 @@ public class RecipeSearchViewModel : BasePageViewModel
     public object InitialResults { get; set; }
 
     public string CreateRecipeUrl { get; set; }
-
-    public IEnumerable<RecipeSearchBreadcrumb> Breadcrumbs { get; set; } = [];
 }
-
-public record RecipeSearchBreadcrumb(string LinkText, string Url);

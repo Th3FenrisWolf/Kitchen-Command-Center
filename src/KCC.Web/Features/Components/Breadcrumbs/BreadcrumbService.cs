@@ -1,6 +1,7 @@
 using CMS.ContentEngine;
 using CMS.Websites;
 using CMS.Websites.Routing;
+using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Extensions;
 
 namespace KCC.Web.Features.Components.Breadcrumbs;
@@ -8,13 +9,12 @@ namespace KCC.Web.Features.Components.Breadcrumbs;
 public class BreadcrumbService(
     IContentQueryExecutor queryExecutor,
     IWebsiteChannelContext websiteChannelContext,
-    IWebPageManagerFactory webPageManagerFactory
+    IWebPageManagerFactory webPageManagerFactory,
+    IResourceStringInfoProvider resourceStringInfoProvider
 )
 {
     private const int RootParentId = 0;
     private const int SystemUserId = 0;
-    private const string HomePageTitle = "Home";
-    private const string HomePageUrl = "/";
 
     private readonly Lazy<IWebPageManager> webPageManager = new(() => webPageManagerFactory.Create(
         websiteChannelContext.WebsiteChannelID, userId: SystemUserId
@@ -55,7 +55,10 @@ public class BreadcrumbService(
             parentId = folderMetadata.ParentID;
         }
 
-        items.Add(new(LinkText: HomePageTitle, Url: HomePageUrl));
+        items.Add(
+            new(LinkText: resourceStringInfoProvider.GetOrDefault("Shared.Home"),
+            Url: UrlHelperExtensions.HomePage())
+        );
 
         items.Reverse();
         return items;
@@ -90,3 +93,11 @@ public class BreadcrumbService(
         return results.FirstOrDefault();
     }
 }
+
+public record BreadcrumbLink
+(
+    string LinkText,
+    string Url,
+    int? ParentId = null,
+    int? WebPageItemId = null
+);

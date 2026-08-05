@@ -33,11 +33,8 @@ public class VariantDetailViewModel : BasePageViewModel
     public int CookedCount { get; set; }
     public bool HasCooked { get; set; }
     public bool IsAuthenticated { get; set; }
-    public IEnumerable<VariantBreadcrumb> Breadcrumbs { get; set; } = [];
     public IEnumerable<SiblingVariantViewModel> SiblingVariants { get; set; } = [];
 }
-
-public record VariantBreadcrumb(string LinkText, string Url);
 
 public class IngredientViewModel
 {

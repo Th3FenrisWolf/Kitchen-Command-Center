@@ -15,11 +15,8 @@ public class RecipeDetailViewModel : BasePageViewModel
     public int RecipeTimesCooked { get; set; }
     public string AddVariantUrl { get; set; }
     public string StartedByName { get; set; }
-    public IEnumerable<RecipeBreadcrumb> Breadcrumbs { get; set; } = [];
     public IEnumerable<VariantSummaryViewModel> Variants { get; set; } = [];
 }
-
-public record RecipeBreadcrumb(string LinkText, string Url);
 
 public class VariantSummaryViewModel
 {

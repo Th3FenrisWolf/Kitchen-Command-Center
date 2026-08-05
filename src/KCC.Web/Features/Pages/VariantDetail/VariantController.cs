@@ -6,11 +6,11 @@ using KCC.ResourceStrings.Data;
 using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Extensions;
 using KCC.Web.Features.Helpers;
-using KCC.Web.Features.Members;
 using KCC.Web.Features.Models.Common;
 using KCC.Web.Features.Models.Constants;
 using KCC.Web.Features.Pages.Shared;
 using KCC.Web.Features.Pages.VariantDetail;
+using KCC.Web.Features.Providers;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Identity;
@@ -29,7 +29,7 @@ public class VariantDetailController(
     IContentRetriever contentRetriever,
     ITaxonomyRetriever taxonomyRetriever,
     IPreferredLanguageRetriever preferredLanguageRetriever,
-    IAuthorNameResolver authorNameResolver,
+    AuthorNameProvider authorNameProvider,
     IResourceStringInfoProvider resourceStrings,
     IVariantReviewInfoProvider reviewProvider,
     IVariantCookedInfoProvider cookedProvider,
@@ -101,8 +101,7 @@ public class VariantDetailController(
             VariantSlug = variantPage.GetUrl().RelativePath,
             RecipeName = recipePage.Name,
             RecipeSlug = recipePage.GetUrl().RelativePath,
-            Breadcrumbs = (await breadcrumbService.BuildBreadcrumbsAsync(pageId))
-                .Select(b => new VariantBreadcrumb(b.LinkText, b.Url)),
+            Breadcrumbs = await breadcrumbService.BuildBreadcrumbsAsync(pageId),
             SiblingVariants = siblings.Select(s => new SiblingVariantViewModel
             {
                 Name = s.Name,
@@ -111,7 +110,7 @@ public class VariantDetailController(
                 Rating = reviewProvider.GetAverageForVariant(s.SystemFields.ContentItemGUID).Average,
                 TotalTime = s.PrepTime + s.CookTime,
             }),
-            CreatedByName = await authorNameResolver.Resolve(variantPage.AuthorMemberGuid),
+            CreatedByName = await authorNameProvider.Resolve(variantPage.AuthorMemberGuid),
             VariantGuid = variantGuid,
             AverageRating = rating.Average,
             ReviewCount = rating.Count,
