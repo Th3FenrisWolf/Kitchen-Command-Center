@@ -52,7 +52,7 @@ public class ProfileApiController(
 
         return result.Succeeded
             ? Ok(new ProfileResponse(true, null))
-            : Ok(new ProfileResponse(false, result.Errors.Select(e => e.Description).ToArray()));
+            : Ok(new ProfileResponse(false, [..result.Errors.Select(e => e.Description)]));
     }
 
     [HttpPost("password")]
@@ -82,7 +82,7 @@ public class ProfileApiController(
 
         if (!result.Succeeded)
         {
-            return Ok(new ProfileResponse(false, result.Errors.Select(e => e.Description).ToArray()));
+            return Ok(new ProfileResponse(false, [..result.Errors.Select(e => e.Description)]));
         }
 
         // Re-issue the auth cookie so the security-stamp change doesn't sign the member out.

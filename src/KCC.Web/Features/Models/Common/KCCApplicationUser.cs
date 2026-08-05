@@ -25,7 +25,6 @@ public class KCCApplicationUser : ApplicationUser
 
     public Guid MemberGuid { get; set; }
 
-    /// <summary>Gets or sets the date the member account was created. Read-only/historical; not mapped back to the member on save.</summary>
     public DateTime Created { get; set; }
 
     public override void MapFromMemberInfo(MemberInfo source)

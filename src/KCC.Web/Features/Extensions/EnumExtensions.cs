@@ -9,18 +9,18 @@ public static class EnumExtensions
         var type = value.GetType();
         var name = Enum.GetName(type, value);
 
-        if (name == null)
+        if (name is null)
         {
-            return null;
+            return string.Empty;
         }
 
         var field = type.GetField(name);
 
-        return field != null
+        return field is not null
             ? Attribute.GetCustomAttribute(field, typeof(TailwindStyleAttribute))
                 is TailwindStyleAttribute attribute
                 ? attribute.GetTailwindStyle()
-                : null
-            : null;
+                : string.Empty
+            : string.Empty;
     }
 }
