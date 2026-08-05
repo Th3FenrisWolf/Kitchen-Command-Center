@@ -2,6 +2,7 @@ import { emptySummary } from "./util.mjs";
 import { extractTunitData } from "./extract.mjs";
 import { normalizeTunit, normalizeVitest } from "./normalize.mjs";
 import { renderHtml } from "./template.mjs";
+import { renderMarkdown } from "./markdown.mjs";
 
 export function aggregateSummary(suites) {
   const total = emptySummary();
@@ -35,5 +36,5 @@ export function buildReport(sources, opts = {}) {
     }
   });
   const report = { generatedAt: opts.generatedAt ?? new Date().toISOString(), summary: aggregateSummary(suites), suites };
-  return { report, html: renderHtml(report) };
+  return { report, html: renderHtml(report), markdown: renderMarkdown(report) };
 }

@@ -12,6 +12,7 @@ import { pickNewestByMtime, computeExitCode } from "./util.mjs";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const resultsDir = path.join(repoRoot, "tests", "results");
 const outFile = path.join(resultsDir, "combined-report.html");
+const summaryFile = path.join(resultsDir, "combined-report.md");
 
 function log(msg) { process.stdout.write(`\n> ${msg}\n`); }
 
@@ -85,8 +86,9 @@ const sources = SUITES.map((suite) => {
 });
 
 // 4) Build, write, open, and exit with a meaningful code.
-const { report, html } = buildReport(sources, { repoRoot });
+const { report, html, markdown } = buildReport(sources, { repoRoot });
 writeFileSync(outFile, html, "utf8");
+writeFileSync(summaryFile, markdown, "utf8");
 log(`Combined report: ${outFile}`);
 process.stdout.write(`  ${report.summary.passed} passed · ${report.summary.failed} failed · ${report.summary.skipped} skipped across ${report.suites.length} suites\n`);
 for (const s of report.suites) if (s.status !== "ok") process.stdout.write(`  ! ${s.label}: ${s.errorDetail}\n`);
