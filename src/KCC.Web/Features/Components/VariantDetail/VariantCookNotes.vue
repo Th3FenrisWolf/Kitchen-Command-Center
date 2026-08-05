@@ -30,7 +30,7 @@
   const add = async () => {
     if (!draft.value.trim()) return
     error.value = ''
-    const result = await post<{ id: number }>(`/api/variant/${props.variantGuid}/note`, { text: draft.value })
+    const result = await post<{ id: number }>(`/api/variant/${props.variantGuid}/note`, draft.value)
     if (!result.success) {
       error.value = result.errorMessage
       return

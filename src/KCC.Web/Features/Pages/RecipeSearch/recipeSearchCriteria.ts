@@ -67,7 +67,7 @@ export function chipsFor(s: RecipeSearchState, t: ResourceResolver): FilterChip[
 export function buildSearchParams(s: RecipeSearchState, page: number, pageSize: number): URLSearchParams {
   const p = new URLSearchParams()
   if (s.query.trim()) {
-    p.set('q', s.query.trim())
+    p.set('query', s.query.trim())
   }
   s.categories.forEach((c) => p.append('category', c))
   s.diets.forEach((d) => p.append('diet', d))
