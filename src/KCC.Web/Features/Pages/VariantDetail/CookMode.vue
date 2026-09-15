@@ -1,17 +1,40 @@
-<script setup lang="ts">
+<!-- #region CookMode Component Properties -->
+<script lang="ts">
   import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { useWakeLock } from './useWakeLock'
   import CookModeStep from './CookModeStep.vue'
 
-  const props = defineProps<{
+  /**
+   * Full-screen step-by-step cooking overlay that holds the screen awake.
+   */
+  export default {
+    name: 'CookMode',
+  }
+
+  export interface CookModeProps {
     open: boolean
     instructions: Instruction[]
+    /**
+     * Repeated in full under every step, so a cook never has to navigate back for it.
+     */
     ingredients: Ingredient[]
+    /**
+     * Servings the stored amounts were written for. Omit or pass 0 to hide the scaler.
+     */
     servings?: number
+    /**
+     * Localized text under the VariantDetail prefix. The overlay teleports to <body>, outside the
+     * page's provider, so it re-provides them for its own subtree.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<CookModeProps>()
 
   const emit = defineEmits<{ close: [] }>()
 

@@ -1,10 +1,29 @@
-<script setup lang="ts">
+<!-- #region VariantIngredients Component Properties -->
+<script lang="ts">
   import { computed, ref } from 'vue'
   import type { Ingredient } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import { formatIngredientAmount } from './variantScaling'
 
-  const props = defineProps<{ ingredients: Ingredient[]; baseServings?: number }>()
+  /**
+   * Checklist of ingredients whose amounts rescale with the chosen serving count.
+   */
+  export default {
+    name: 'VariantIngredients',
+  }
+
+  export interface VariantIngredientsProps {
+    ingredients: Ingredient[]
+    /**
+     * Servings the stored amounts were written for. Omit or pass 0 to hide the scaler.
+     */
+    baseServings?: number
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<VariantIngredientsProps>()
 
   const rs = useResourceStrings()
   const hasScaler = computed(() => (props.baseServings ?? 0) > 0)

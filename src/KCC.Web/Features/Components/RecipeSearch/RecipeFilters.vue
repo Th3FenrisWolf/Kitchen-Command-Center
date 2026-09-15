@@ -1,17 +1,37 @@
-<script setup lang="ts">
+<!-- #region RecipeFilters Component Properties -->
+<script lang="ts">
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import RangeSlider from '~/Components/Forms/RangeSlider.vue'
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
-  const props = defineProps<{
+  /**
+   * Filter panel for the recipe search: category and diet toggles plus a total-time range.
+   */
+  export default {
+    name: 'RecipeFilters',
+  }
+
+  export interface RecipeFiltersProps {
+    /**
+     * Result counts for the current search. Values that match nothing are absent, not zero.
+     */
     categoryFacets: Record<string, number>
     dietFacets: Record<string, number>
+    /**
+     * Every value that exists at all, captured from the initial unfiltered search so the panel
+     * can grey out dead options instead of dropping them.
+     */
     categoryOptions: string[]
     dietOptions: string[]
     selectedCategories: string[]
     selectedDiets: string[]
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<RecipeFiltersProps>()
   const timeMin = defineModel<number>('timeMin', { required: true })
   const timeMax = defineModel<number>('timeMax', { required: true })
   const emit = defineEmits<{ toggleCategory: [string]; toggleDiet: [string]; reset: [] }>()

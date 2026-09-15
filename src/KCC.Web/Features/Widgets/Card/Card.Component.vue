@@ -1,8 +1,10 @@
+<!-- #region Card Component Properties -->
 <script lang="ts">
-  import type { BackgroundColor, TextColor } from '~/Types/DesignSystem'
+  import { computed, type ComputedRef } from 'vue'
+  import { toBackgroundColor, toTextColor, type BackgroundColor, type TextColor } from '~/Types/DesignSystem'
 
   /**
-   * A card component that supports functionality for expanding via hover
+   * Widget card whose drawer expands on hover and focus.
    */
   export default {
     name: 'Card',
@@ -10,52 +12,44 @@
 
   export interface CardProps {
     /**
-     * The color of the card background
      * @default 'bg-surface-500'
      */
     cardColor?: BackgroundColor
 
     /**
-     * The color of the card text
      * @default 'text-bone'
      */
     cardTextColor?: TextColor
 
     /**
-     * The color of the card drawer background
+     * Inverts against the card by default, so the drawer reads as a cut-out.
      * @default cardTextColor
      */
     drawerColor?: BackgroundColor | null
 
     /**
-     * The color of the card drawer text
      * @default cardColor
      */
     drawerTextColor?: TextColor | null
 
     /**
-     * The margin classes to apply to the card
      * @default ''
      */
     marginClasses?: string
   }
 
   export interface CardSlots {
-    /**
-     * The content to display in the card
-     */
     default?: () => void
 
     /**
-     * The content to display in the card drawer
+     * Filling this slot is what gives the card a drawer and its hover behavior.
      */
     drawer?: () => void
   }
 </script>
+<!-- #endregion -->
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-
   const {
     cardColor = 'bg-surface-500',
     cardTextColor = 'text-bone',
@@ -66,12 +60,12 @@
 
   const { drawer } = defineSlots<CardSlots>()
 
-  const resolvedDrawerColor = computed(() => {
-    return drawerColor ?? cardTextColor
+  const resolvedDrawerColor: ComputedRef<BackgroundColor> = computed(() => {
+    return drawerColor ?? toBackgroundColor(cardTextColor)
   })
 
-  const resolvedDrawerTextColor = computed(() => {
-    return drawerTextColor ?? cardColor
+  const resolvedDrawerTextColor: ComputedRef<TextColor> = computed(() => {
+    return drawerTextColor ?? toTextColor(cardColor)
   })
 </script>
 

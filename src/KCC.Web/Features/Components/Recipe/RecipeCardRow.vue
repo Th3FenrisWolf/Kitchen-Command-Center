@@ -1,13 +1,30 @@
-<script setup lang="ts">
+<!-- #region RecipeCardRow Component Properties -->
+<script lang="ts">
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
 
-  // Shared list-row layout, the horizontal counterpart to RecipeCard. Same RecipeCardModel drives
-  // both, so the search list and the variant list stay visually identical.
-  defineProps<{ card: RecipeCardModel }>()
+  /**
+   * Horizontal counterpart to RecipeCard, driven by the same model so the search list and the
+   * variant list stay visually identical.
+   */
+  export default {
+    name: 'RecipeCardRow',
+  }
+
+  export interface RecipeCardRowProps {
+    /**
+     * Build with `hitToCard` or `variantToCard` from recipeCardModel.
+     */
+    card: RecipeCardModel
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  defineProps<RecipeCardRowProps>()
 </script>
 
 <template>

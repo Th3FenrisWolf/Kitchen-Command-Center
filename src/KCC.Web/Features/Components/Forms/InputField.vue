@@ -1,8 +1,17 @@
-<script setup lang="ts">
-  defineOptions({
+<!-- #region InputField Component -->
+<script lang="ts">
+  /**
+   * Single-line text input carrying the app's form styling.
+   */
+  export default {
+    name: 'InputField',
+    // Attributes land on the <input> itself rather than being split across the wrapper.
     inheritAttrs: false,
-  })
+  }
+</script>
+<!-- #endregion -->
 
+<script setup lang="ts">
   const model = defineModel({
     required: true,
   })

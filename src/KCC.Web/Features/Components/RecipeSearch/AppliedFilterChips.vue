@@ -1,8 +1,26 @@
-<script setup lang="ts">
+<!-- #region AppliedFilterChips Component Properties -->
+<script lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
   import type { FilterChip } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
-  defineProps<{ chips: FilterChip[] }>()
+  /**
+   * Dismissible summary of the filters currently narrowing a search.
+   */
+  export default {
+    name: 'AppliedFilterChips',
+  }
+
+  export interface AppliedFilterChipsProps {
+    /**
+     * Build with `chipsFor` from recipeSearchCriteria; an empty list renders nothing.
+     */
+    chips: FilterChip[]
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  defineProps<AppliedFilterChipsProps>()
   const emit = defineEmits<{ remove: [FilterChip]; clearAll: [] }>()
 </script>
 

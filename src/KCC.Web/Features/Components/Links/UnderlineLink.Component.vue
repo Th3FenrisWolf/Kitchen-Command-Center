@@ -1,8 +1,19 @@
-<script setup lang="ts">
-  import AppLink, { type LinkComponentProps, type LinkComponentSlots } from '~/Components/Links/AppLink.Component.vue'
+<!-- #region UnderlineLink Component -->
+<script lang="ts">
+  import AppLink, { type AppLinkProps, type AppLinkSlots } from '~/Components/Links/AppLink.Component.vue'
 
-  const { href } = defineProps<LinkComponentProps>()
-  defineSlots<LinkComponentSlots>()
+  /**
+   * AppLink whose underline wipes out from the center on hover and focus.
+   */
+  export default {
+    name: 'UnderlineLink',
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const { href } = defineProps<AppLinkProps>()
+  defineSlots<AppLinkSlots>()
 </script>
 
 <template>

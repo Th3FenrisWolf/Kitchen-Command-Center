@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region VariantReviews Component Properties -->
+<script lang="ts">
   import { computed, onMounted, ref } from 'vue'
   import type { Review, ReviewsResponse } from '~/Types/Recipe'
   import { get, put, del } from '~/Utilities/Api'
@@ -7,20 +8,40 @@
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
 
-  const props = withDefaults(
-    defineProps<{
-      variantGuid: string
-      averageRating?: number
-      reviewCount?: number
-      isAuthenticated?: boolean
-    }>(),
-    { averageRating: 0, reviewCount: 0, isAuthenticated: false },
-  )
+  /**
+   * Rating histogram and paged reviews for a variant, with the member's own review editable inline.
+   */
+  export default {
+    name: 'VariantReviews',
+  }
+
+  export interface VariantReviewsProps {
+    variantGuid: string
+    /**
+     * Server-rendered starting values; the API's response drives them once reviews load.
+     * @default 0
+     */
+    averageRating?: number
+    /**
+     * @default 0
+     */
+    reviewCount?: number
+    /**
+     * Gates the review form; existing reviews are always readable.
+     * @default false
+     */
+    isAuthenticated?: boolean
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const { variantGuid, averageRating = 0, reviewCount = 0, isAuthenticated = false } = defineProps<VariantReviewsProps>()
 
   const t = useResourceStrings()
   const reviews = ref<Review[]>([])
-  const average = ref(props.averageRating ?? 0)
-  const count = ref(props.reviewCount ?? 0)
+  const average = ref(averageRating)
+  const count = ref(reviewCount)
   const distribution = ref<number[]>([])
   const total = ref(0)
   const page = ref(0)
@@ -32,7 +53,7 @@
 
   const load = async (nextPage = 0) => {
     loading.value = true
-    const result = await get<ReviewsResponse>(`/api/variant/${props.variantGuid}/reviews`, { page: nextPage, pageSize })
+    const result = await get<ReviewsResponse>(`/api/variant/${variantGuid}/reviews`, { page: nextPage, pageSize })
     loading.value = false
     if (!result.success) {
       error.value = result.errorMessage
@@ -54,7 +75,7 @@
   const submit = async () => {
     if (myRating.value < 0.5) return
     error.value = ''
-    const result = await put(`/api/variant/${props.variantGuid}/review`, { rating: myRating.value, text: myText.value })
+    const result = await put(`/api/variant/${variantGuid}/review`, { rating: myRating.value, text: myText.value })
     if (!result.success) {
       error.value = result.errorMessage
       return
@@ -63,7 +84,7 @@
   }
 
   const remove = async () => {
-    const result = await del(`/api/variant/${props.variantGuid}/review`)
+    const result = await del(`/api/variant/${variantGuid}/review`)
     if (!result.success) {
       error.value = result.errorMessage
       return

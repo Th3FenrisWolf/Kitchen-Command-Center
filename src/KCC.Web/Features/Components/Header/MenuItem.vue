@@ -1,6 +1,14 @@
-<script setup lang="ts">
+<!-- #region MenuItem Component Properties -->
+<script lang="ts">
   import { computed, inject } from 'vue'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
+
+  /**
+   * One header entry: a flat link, or a button opening a panel of sub-links.
+   */
+  export default {
+    name: 'MenuItem',
+  }
 
   interface PageLink {
     displayText: string
@@ -20,10 +28,18 @@
     subLinks?: PageLink[]
   }
 
-  const { item, menuId } = defineProps<{
+  export interface MenuItemProps {
     item: NavItem
+    /**
+     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
+     */
     menuId: string
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const { item, menuId } = defineProps<MenuItemProps>()
 
   const controller = inject(MENU_CONTROLLER_KEY)
 

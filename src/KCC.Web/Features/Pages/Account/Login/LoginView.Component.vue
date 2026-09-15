@@ -1,16 +1,38 @@
-<script setup lang="ts">
+<!-- #region LoginView Component Properties -->
+<script lang="ts">
   import { ref, watch } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
 
-  const props = defineProps<{
+  /**
+   * Sign-in and registration, flipping between the two on one card.
+   */
+  export default {
+    name: 'LoginView',
+  }
+
+  export interface LoginViewProps {
+    /**
+     * Where to send the member after a successful sign-in.
+     */
     returnUrl?: string
+    /**
+     * Prefills the sign-in form, so a failed server-side post comes back populated.
+     */
     defaultUserName?: string
     defaultPassword?: string
     defaultRememberMe?: boolean
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<LoginViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Login')
 

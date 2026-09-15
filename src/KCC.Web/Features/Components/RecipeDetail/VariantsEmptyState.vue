@@ -1,3 +1,14 @@
+<!-- #region VariantsEmptyState Component -->
+<script lang="ts">
+  /**
+   * Shown when a recipe's variants are all filtered out, offering a way back.
+   */
+  export default {
+    name: 'VariantsEmptyState',
+  }
+</script>
+<!-- #endregion -->
+
 <script setup lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
 

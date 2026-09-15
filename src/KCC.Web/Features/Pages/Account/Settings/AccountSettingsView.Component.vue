@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region AccountSettingsView Component Properties -->
+<script lang="ts">
   import { ref } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
@@ -6,14 +7,35 @@
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { post } from '~/Utilities/Api'
 
-  const props = defineProps<{
+  /**
+   * Two independent forms: the member's profile details, and a password change.
+   */
+  export default {
+    name: 'AccountSettingsView',
+  }
+
+  export interface AccountSettingsViewProps {
+    /**
+     * Seeds the profile form; edits post to the API rather than round-tripping the page.
+     */
     firstName: string
     lastName: string
+    /**
+     * Shown read-only — the form offers no way to change it.
+     */
     email: string
     backUrl: string
     logoutUrl: string
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<AccountSettingsViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Account')
 

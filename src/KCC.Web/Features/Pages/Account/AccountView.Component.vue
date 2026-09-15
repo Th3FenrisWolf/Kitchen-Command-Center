@@ -1,7 +1,15 @@
-<script setup lang="ts">
+<!-- #region AccountView Component Properties -->
+<script lang="ts">
   import { computed } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
+
+  /**
+   * Member's profile page: identity card, contribution counts, and their recipes and variants.
+   */
+  export default {
+    name: 'AccountView',
+  }
 
   interface ProfileVariant {
     pageId: number
@@ -21,15 +29,29 @@
     variants: ProfileVariant[]
   }
 
-  const props = defineProps<{
+  export interface AccountViewProps {
     displayName: string
+    /**
+     * Seeds the avatar's monogram and its color.
+     */
     initials: string
     memberSince: string
     settingsUrl: string
     logoutUrl: string
+    /**
+     * Every recipe the member has touched, whether they started it or only added a variant.
+     */
     recipeGroups: RecipeGroup[]
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<AccountViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'Account')
 

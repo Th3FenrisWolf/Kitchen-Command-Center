@@ -1,4 +1,14 @@
+<!-- #region StatTiles Component Properties -->
 <script lang="ts">
+  import Badge from '~/Components/Badge/Badge.vue'
+
+  /**
+   * Row of at-a-glance stat cards under a detail hero.
+   */
+  export default {
+    name: 'StatTiles',
+  }
+
   export interface StatTileSpec {
     /** Font Awesome class for the top icon (ignored when `dotColor` is set). */
     icon?: string
@@ -13,12 +23,15 @@
     /** When true, render `value` as a muted "coming soon" badge. */
     comingSoon?: boolean
   }
+
+  export interface StatTilesProps {
+    tiles: StatTileSpec[]
+  }
 </script>
+<!-- #endregion -->
 
 <script setup lang="ts">
-  import Badge from '~/Components/Badge/Badge.vue'
-
-  defineProps<{ tiles: StatTileSpec[] }>()
+  defineProps<StatTilesProps>()
 </script>
 
 <template>

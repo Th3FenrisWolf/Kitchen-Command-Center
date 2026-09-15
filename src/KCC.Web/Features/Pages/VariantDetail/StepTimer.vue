@@ -1,9 +1,31 @@
-<script setup lang="ts">
+<!-- #region StepTimer Component Properties -->
+<script lang="ts">
   import { computed, onBeforeUnmount, ref } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import { remainingSeconds } from './useStepTimers'
 
-  const props = defineProps<{ seconds: number; label: string }>()
+  /**
+   * Countdown pill for a duration found in a cook-mode step.
+   */
+  export default {
+    name: 'StepTimer',
+  }
+
+  export interface StepTimerProps {
+    /**
+     * Starting duration; also what Reset returns to.
+     */
+    seconds: number
+    /**
+     * The duration phrase matched in the instruction, e.g. "10-12 minutes".
+     */
+    label: string
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<StepTimerProps>()
   const t = useResourceStrings()
 
   const left = ref(props.seconds)

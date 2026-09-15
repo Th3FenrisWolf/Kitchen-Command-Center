@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region RecipeDetailView Component Properties -->
+<script lang="ts">
   import { computed, ref } from 'vue'
   import type { Breadcrumb, VariantSummary } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
@@ -9,28 +10,53 @@
   import RecipeBreadcrumb from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
-  import FeaturedVariant from '../../Components/RecipeDetail/FeaturedVariant.vue'
-  import VariantToolbar from '../../Components/RecipeDetail/VariantToolbar.vue'
-  import VariantGrid from '../../Components/RecipeDetail/VariantGrid.vue'
-  import VariantList from '../../Components/RecipeDetail/VariantList.vue'
-  import VariantsEmptyState from '../../Components/RecipeDetail/VariantsEmptyState.vue'
+  import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
+  import VariantToolbar from '~/Components/RecipeDetail/VariantToolbar.vue'
+  import VariantGrid from '~/Components/RecipeDetail/VariantGrid.vue'
+  import VariantList from '~/Components/RecipeDetail/VariantList.vue'
+  import VariantsEmptyState from '~/Components/RecipeDetail/VariantsEmptyState.vue'
+  import { variantToFeatured } from '~/Components/Recipe/recipeCardModel.ts'
 
-  const props = defineProps<{
+  /**
+   * A recipe and every variant of it, filtered and sorted client-side.
+   */
+  export default {
+    name: 'RecipeDetailView',
+  }
+
+  export interface RecipeDetailViewProps {
     recipeName: string
     recipeDescription: string
     recipeImagePath?: string
     recipeIcon?: string
     recipeCategory?: string
+    /**
+     * Identifies the recipe to the add-variant page.
+     */
     recipeGuid: string
+    /**
+     * Aggregated across the recipe's variants, since only variants can be reviewed.
+     */
     recipeAverageRating?: number
     recipeReviewCount?: number
     recipeTimesCooked?: number
     addVariantUrl: string
+    /**
+     * Member who created the recipe, as opposed to any variant of it.
+     */
     startedByName?: string
     variants: VariantSummary[]
     breadcrumbs?: Breadcrumb[]
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<RecipeDetailViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeDetail')
 
@@ -94,7 +120,7 @@
   </DetailHero>
 
   <StatTiles :tiles="statTiles" />
-  <FeaturedVariant v-if="featured" :variant="featured" />
+  <FeaturedRecipeCard v-if="featured" :card="variantToFeatured(featured, rs)" />
 
   <section class="mt-8">
     <div class="mb-4 flex items-baseline justify-between gap-4">

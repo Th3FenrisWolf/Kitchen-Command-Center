@@ -1,10 +1,28 @@
-<script setup lang="ts">
+<!-- #region RecipeResultsToolbar Component Properties -->
+<script lang="ts">
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
   import type { RecipeSortKey, RecipeViewMode } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
-  defineProps<{ heading: string }>()
+  /**
+   * Result-count heading paired with the search sort and grid/list controls.
+   */
+  export default {
+    name: 'RecipeResultsToolbar',
+  }
+
+  export interface RecipeResultsToolbarProps {
+    /**
+     * Already localized and counted by the page, e.g. "42 recipes".
+     */
+    heading: string
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  defineProps<RecipeResultsToolbarProps>()
   const sort = defineModel<RecipeSortKey>('sort', { required: true })
   const view = defineModel<RecipeViewMode>('view', { required: true })
   const t = useResourceStrings()

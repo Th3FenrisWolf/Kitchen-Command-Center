@@ -1,27 +1,24 @@
-<!-- #region Text Area Field Component Properties -->
+<!-- #region TextAreaField Component Properties -->
 <script lang="ts">
+  import { ref, onUnmounted } from 'vue'
   import type { TextareaHTMLAttributes } from 'vue'
 
+  /**
+   * Multi-line text input with a custom drag handle for vertical resizing.
+   */
+  export default {
+    name: 'TextAreaField',
+  }
+
   export interface TextAreaFieldProps {
-    /**
-     * Whether the text area is required
-     */
     required?: TextareaHTMLAttributes['required']
-    /**
-     * Whether the text area is read-only
-     */
     readonly?: TextareaHTMLAttributes['readonly']
-    /**
-     * Placeholder text to display when the input is empty
-     */
     placeholder?: TextareaHTMLAttributes['placeholder']
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import { ref, onUnmounted } from 'vue'
-
   const { required, readonly, placeholder } = defineProps<TextAreaFieldProps>()
 
   const model = defineModel<string>({

@@ -1,12 +1,30 @@
-<script setup lang="ts">
+<!-- #region VariantCookNotes Component Properties -->
+<script lang="ts">
   import { onMounted, ref } from 'vue'
   import type { CookNote, CookNotesResponse } from '~/Types/Recipe'
   import { get, post, del } from '~/Utilities/Api'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
 
-  const props = withDefaults(defineProps<{ variantGuid: string; isAuthenticated?: boolean }>(), {
-    isAuthenticated: false,
-  })
+  /**
+   * Paged list of cooks' notes on a variant, with a compose box for signed-in members.
+   */
+  export default {
+    name: 'VariantCookNotes',
+  }
+
+  export interface VariantCookNotesProps {
+    variantGuid: string
+    /**
+     * Gates the compose box; the notes themselves are always readable.
+     * @default false
+     */
+    isAuthenticated?: boolean
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const { variantGuid, isAuthenticated = false } = defineProps<VariantCookNotesProps>()
 
   const t = useResourceStrings()
   const notes = ref<CookNote[]>([])
@@ -17,7 +35,7 @@
   const error = ref('')
 
   const load = async (nextPage = 0) => {
-    const result = await get<CookNotesResponse>(`/api/variant/${props.variantGuid}/notes`, { page: nextPage, pageSize })
+    const result = await get<CookNotesResponse>(`/api/variant/${variantGuid}/notes`, { page: nextPage, pageSize })
     if (!result.success) {
       error.value = result.errorMessage
       return
@@ -30,7 +48,7 @@
   const add = async () => {
     if (!draft.value.trim()) return
     error.value = ''
-    const result = await post<{ id: number }>(`/api/variant/${props.variantGuid}/note`, draft.value)
+    const result = await post<{ id: number }>(`/api/variant/${variantGuid}/note`, draft.value)
     if (!result.success) {
       error.value = result.errorMessage
       return

@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region VariantDetailView Component Properties -->
+<script lang="ts">
   import { computed, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
   import type { ImageItem } from '~/Types/ContentTypes'
@@ -19,14 +20,33 @@
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
 
-  const props = defineProps<{
+  /**
+   * One variant in full: hero, stats, ingredients, instructions, nutrition, reviews, and cook mode.
+   */
+  export default {
+    name: 'VariantDetailView',
+  }
+
+  export interface VariantDetailViewProps {
     variantName: string
     variantDescription: string
     icon?: string
+    /**
+     * Only the first is used, as the hero tile.
+     */
     images?: ImageItem[]
+    /**
+     * Minutes. Both feed the total-time stat tile.
+     */
     prepTime?: number
     cookTime?: number
+    /**
+     * Servings the stored ingredient amounts were written for, and the scaler's starting point.
+     */
     servings?: number
+    /**
+     * `easy`, `medium`, or `hard`; anything else drops the difficulty tile.
+     */
     difficulty?: string
     calories?: number | null
     proteinG?: number | null
@@ -43,15 +63,32 @@
     recipeSlug: string
     createdByName?: string
     breadcrumbs?: Breadcrumb[]
+    /**
+     * The recipe's other variants, excluding this one.
+     */
     siblingVariants: SiblingVariant[]
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
+    /**
+     * Identifies this variant to the reviews, notes, and cooked-toggle APIs.
+     */
     variantGuid: string
     averageRating?: number
     reviewCount?: number
     cookedCount?: number
     hasCooked?: boolean
+    /**
+     * Gates the review form, cook notes, and cooked toggle.
+     */
     isAuthenticated?: boolean
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<VariantDetailViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
 

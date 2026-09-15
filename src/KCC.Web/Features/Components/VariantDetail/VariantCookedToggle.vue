@@ -1,28 +1,54 @@
-<script setup lang="ts">
+<!-- #region VariantCookedToggle Component Properties -->
+<script lang="ts">
   import { ref } from 'vue'
   import { post, del } from '~/Utilities/Api'
   import { ResourceString } from '~/Components/ResourceStrings'
 
-  const props = withDefaults(
-    defineProps<{
-      variantGuid: string
-      cookedCount?: number
-      hasCooked?: boolean
-      isAuthenticated?: boolean
-    }>(),
-    { cookedCount: 0, hasCooked: false, isAuthenticated: false },
-  )
+  /**
+   * Button recording that the member cooked a variant, showing the running tally.
+   */
+  export default {
+    name: 'VariantCookedToggle',
+  }
 
-  const cooked = ref(props.hasCooked ?? false)
-  const cookedCount = ref(props.cookedCount ?? 0)
+  export interface VariantCookedToggleProps {
+    variantGuid: string
+    /**
+     * Server-rendered starting values; the API's response drives them from the first click on.
+     * @default 0
+     */
+    cookedCount?: number
+    /**
+     * @default false
+     */
+    hasCooked?: boolean
+    /**
+     * Hides the button entirely when false.
+     * @default false
+     */
+    isAuthenticated?: boolean
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const {
+    variantGuid,
+    cookedCount: initialCookedCount = 0,
+    hasCooked = false,
+    isAuthenticated = false,
+  } = defineProps<VariantCookedToggleProps>()
+
+  const cooked = ref(hasCooked)
+  const cookedCount = ref(initialCookedCount)
   const busy = ref(false)
 
   const toggleCooked = async () => {
     if (busy.value) return
     busy.value = true
     const result = cooked.value
-      ? await del<{ cookedCount: number; hasCooked: boolean }>(`/api/variant/${props.variantGuid}/cooked`)
-      : await post<{ cookedCount: number; hasCooked: boolean }>(`/api/variant/${props.variantGuid}/cooked`)
+      ? await del<{ cookedCount: number; hasCooked: boolean }>(`/api/variant/${variantGuid}/cooked`)
+      : await post<{ cookedCount: number; hasCooked: boolean }>(`/api/variant/${variantGuid}/cooked`)
     busy.value = false
     if (result.success) {
       cooked.value = result.data.hasCooked

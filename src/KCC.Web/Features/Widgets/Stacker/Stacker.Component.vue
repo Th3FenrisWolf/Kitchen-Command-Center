@@ -1,7 +1,31 @@
-<script setup lang="ts">
-  import type { BackgroundColor } from '~/Types/DesignSystem'
+<!-- #region Stacker Component Properties -->
+<script lang="ts">
   import { onMounted, ref } from 'vue'
+  import type { BackgroundColor } from '~/Types/DesignSystem'
 
+  /**
+   * Column of sticky cards that shrink as the next one scrolls over them.
+   */
+  export default {
+    name: 'Stacker',
+  }
+
+  export interface StackerCard {
+    heading: string
+    subHeading: string
+    backgroundColor: BackgroundColor
+  }
+
+  export interface StackerProps {
+    /**
+     * Rendered in order; each card pins 32px lower than the one before it.
+     */
+    cards: StackerCard[]
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
   const containerRef = ref<HTMLElement>()
 
   onMounted(() => {
@@ -16,13 +40,7 @@
     }
   })
 
-  const props = defineProps<{
-    cards: {
-      heading: string
-      subHeading: string
-      backgroundColor: BackgroundColor
-    }[]
-  }>()
+  const props = defineProps<StackerProps>()
 </script>
 
 <template>

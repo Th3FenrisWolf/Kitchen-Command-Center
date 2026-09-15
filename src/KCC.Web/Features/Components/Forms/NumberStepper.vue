@@ -1,48 +1,41 @@
-<!-- #region Number Stepper Component Properties -->
+<!-- #region NumberStepper Component Properties -->
 <script lang="ts">
+  import { computed, onUnmounted } from 'vue'
+
+  /**
+   * Integer field flanked by minus and plus buttons that auto-repeat while held.
+   */
+  export default {
+    name: 'NumberStepper',
+    // Attributes land on the inner <input>, not the wrapping flex row.
+    inheritAttrs: false,
+  }
+
   export interface NumberStepperProps {
-    /**
-     * The minimum value allowed in the stepper
-     */
     min?: number
-    /**
-     * The maximum value allowed in the stepper
-     */
     max?: number
     /**
-     * The amount to increment or decrement the value by when stepping
      * @default 1
      */
     step?: number
     /**
-     * The unit of measurement for the value (e.g., "kg", "mL")
+     * Rendered after the value and folded into its accessible name, e.g. 'kg'.
      */
     unit?: string
     /**
-     * The label for the stepper, used for accessibility purposes
+     * Never rendered; supplies the accessible names for the input and both buttons.
      */
     label?: string
-    /**
-     * Whether the stepper is disabled and cannot be interacted with
-     */
     disabled?: boolean
-    /**
-     * Placeholder text to display when the input is empty
-     */
     placeholder?: string
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import { computed, onUnmounted } from 'vue'
-
-  defineOptions({
-    inheritAttrs: false,
-  })
-
   const { min, max, step = 1, unit, label, disabled, placeholder } = defineProps<NumberStepperProps>()
 
+  // `undefined` only while the field is empty mid-edit; blur always resolves it back to a number.
   const model = defineModel<number | undefined>()
 
   const clamp = (value: number) => {

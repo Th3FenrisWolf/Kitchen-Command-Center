@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region CreateRecipeView Component Properties -->
+<script lang="ts">
   import { ref, computed } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import InputField from '~/Components/Forms/InputField.vue'
@@ -8,9 +9,24 @@
   import { provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
 
-  const props = defineProps<{
+  /**
+   * Five-step wizard creating a recipe together with its first variant.
+   */
+  export default {
+    name: 'CreateRecipeView',
+  }
+
+  export interface CreateRecipeViewProps {
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<CreateRecipeViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'CreateRecipe')
 

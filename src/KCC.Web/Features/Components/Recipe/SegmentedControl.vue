@@ -1,4 +1,14 @@
+<!-- #region SegmentedControl Component Properties -->
 <script lang="ts">
+  import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
+  /**
+   * Radiogroup of pills with a thumb that slides to the active segment.
+   */
+  export default {
+    name: 'SegmentedControl',
+  }
+
   /** One selectable segment. Provide `label` for text pills or `icon` for icon-only toggles. */
   export interface SegmentOption<V extends string = string> {
     /** Value bound to the control's model when this segment is active. */
@@ -14,21 +24,24 @@
     /** Optional `data-testid` hook. */
     testId?: string
   }
+
+  export interface SegmentedControlProps<T extends string> {
+    options: SegmentOption<T>[]
+    /**
+     * Accessible group name announced for the radiogroup.
+     */
+    ariaLabel?: string
+    /**
+     * `text` = padded label pills; `icon` = fixed-width icon squares.
+     * @default 'text'
+     */
+    variant?: 'text' | 'icon'
+  }
 </script>
+<!-- #endregion -->
 
 <script setup lang="ts" generic="T extends string">
-  import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-
-  const props = withDefaults(
-    defineProps<{
-      options: SegmentOption<T>[]
-      /** Accessible group name announced for the radiogroup. */
-      ariaLabel?: string
-      /** `text` = padded label pills; `icon` = fixed-width icon squares. */
-      variant?: 'text' | 'icon'
-    }>(),
-    { variant: 'text' },
-  )
+  const { options, ariaLabel, variant = 'text' } = defineProps<SegmentedControlProps<T>>()
 
   const model = defineModel<T>({ required: true })
 
@@ -41,7 +54,7 @@
   const animate = ref(false)
   let ro: ResizeObserver | undefined
 
-  const activeIndex = computed(() => props.options.findIndex((o) => o.value === model.value))
+  const activeIndex = computed(() => options.findIndex((o) => o.value === model.value))
   const showThumb = computed(() => ready.value && activeIndex.value >= 0)
 
   const buttons = () => (track.value ? Array.from(track.value.querySelectorAll<HTMLElement>('[data-seg]')) : [])
@@ -69,7 +82,7 @@
   }
 
   function onKeydown(e: KeyboardEvent, i: number) {
-    const n = props.options.length
+    const n = options.length
     const moves: Record<string, number> = {
       ArrowRight: (i + 1) % n,
       ArrowDown: (i + 1) % n,
@@ -83,14 +96,14 @@
       return
     }
     e.preventDefault()
-    model.value = props.options[next].value
+    model.value = options[next].value
     nextTick(() => buttons()[next]?.focus())
   }
 
   watch(model, () => place(true))
   // Options can change width (e.g. a relabel); re-snap without animating.
   watch(
-    () => props.options.map((o) => o.label ?? o.icon).join('|'),
+    () => options.map((o) => o.label ?? o.icon).join('|'),
     () => place(false),
   )
 
