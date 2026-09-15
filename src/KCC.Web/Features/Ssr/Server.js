@@ -5,10 +5,15 @@ import { randomUUID } from 'crypto'
 import { renderToString } from 'vue/server-renderer'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { collectCss } from './CollectCss.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SSR_BUNDLE_PATH = resolve(__dirname, '../../wwwroot/ssr/Server.Entry.js')
 const SSR_ENTRY_PATH = resolve(__dirname, 'Server.Entry.ts')
+
+// The Razor layout links this Tailwind entry itself. Inlining it would ship ~190 kB of utilities
+// per response and double-apply its @layer rules, so it stays out of the collected CSS.
+const LINKED_CSS_PATHS = [resolve(__dirname, '../Styles/Main.css')]
 
 const PORT = process.env.SSR_PORT || 3001
 const isDev = process.env.NODE_ENV !== 'production'
@@ -49,6 +54,16 @@ async function loadModule() {
     log.info('SSR bundle loaded')
   }
 }
+
+// ssrLoadModule has already populated the SSR graph by render time. Styles are a browser concern,
+// so the modules it found are compiled through the client pipeline.
+const collectStyles = () =>
+  collectCss(
+    vite.environments.ssr.moduleGraph,
+    (url) => vite.environments.client.transformRequest(url),
+    SSR_ENTRY_PATH,
+    LINKED_CSS_PATHS,
+  )
 
 async function createServer() {
   const app = express()
@@ -140,6 +155,12 @@ async function createServer() {
       const ssrApp = createApp({ headerContent, bodyContent, footerContent, isPreview: !!isPreview })
       const html = await renderToString(ssrApp)
 
+      // SFC <style> blocks reach the browser as JS style modules, so nothing links them on a
+      // server-rendered first paint. Prod solves this with a manifest <link> on the chunk CSS the
+      // client build extracts; dev has no such file, so the rendered app's compiled CSS rides along
+      // in the response and the page paints styled before Vite's client takes over.
+      const css = isDev && vite ? await collectStyles() : undefined
+
       const duration = Date.now() - startTime
       log.debug(`[${req.id}] SSR render completed in ${duration}ms`)
 
@@ -147,7 +168,7 @@ async function createServer() {
       metrics.renderCount++
       metrics.lastRenderTime = duration
 
-      res.json({ html, renderTime: duration })
+      res.json({ html, css, renderTime: duration })
     } catch (err) {
       const duration = Date.now() - startTime
       log.error(`[${req.id}] SSR render failed after ${duration}ms:`, err.message)

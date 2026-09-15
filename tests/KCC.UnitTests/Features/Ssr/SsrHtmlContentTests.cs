@@ -53,6 +53,47 @@ public class SsrHtmlContentTests
         _ = await Assert.That(doc.RootElement.GetProperty("stack").ValueKind).IsEqualTo(JsonValueKind.Null);
     }
 
+    [Test]
+    public async Task WriteTo_WithoutCss_OmitsStyleTag()
+    {
+        var html = Render(new SsrResult { HeaderContent = "h", BodyContent = "b", FooterContent = "f" });
+
+        _ = await Assert.That(html.Contains("<style")).IsFalse();
+    }
+
+    [Test]
+    public async Task WriteTo_WithCss_EmitsStyleTagBeforeApp()
+    {
+        var html = Render(new SsrResult
+        {
+            HeaderContent = "h",
+            BodyContent = "b",
+            FooterContent = "f",
+            Css = ".recipe-card-notch[data-v-1567288a]{clip-path:none}",
+        });
+
+        var styleIndex = html.IndexOf("<style data-ssr-styles>", StringComparison.Ordinal);
+
+        _ = await Assert.That(styleIndex).IsGreaterThanOrEqualTo(0);
+        _ = await Assert.That(styleIndex).IsLessThan(html.IndexOf("<div id=\"app\">", StringComparison.Ordinal));
+        _ = await Assert.That(html).Contains(".recipe-card-notch[data-v-1567288a]{clip-path:none}");
+    }
+
+    [Test]
+    public async Task WriteTo_CssContainingClosingStyleTag_NeutralizesSequence()
+    {
+        var html = Render(new SsrResult
+        {
+            HeaderContent = "h",
+            BodyContent = "b",
+            FooterContent = "f",
+            Css = "a{content:\"</style><img src=x>\"}",
+        });
+
+        _ = await Assert.That(html.Contains("</style><img")).IsFalse();
+        _ = await Assert.That(html).Contains("<\\/style><img src=x>");
+    }
+
     private static string Render(SsrResult result)
     {
         using var writer = new StringWriter();

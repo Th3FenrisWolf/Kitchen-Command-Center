@@ -34,3 +34,9 @@ const app = createSSRApp({
 registerGlobalComponents(app)
 app.provide('isPreview', isPreview ?? false)
 app.mount('#app')
+
+// Vite injected every component style into <head> during module evaluation. The server's copy sits
+// in <body>, later in document order, so leaving it would outrank HMR-updated head styles and make
+// style edits look broken until a full reload. Only reached once hydration succeeds, so a throw
+// above leaves the page styled.
+document.querySelectorAll('style[data-ssr-styles]').forEach((el) => el.remove())

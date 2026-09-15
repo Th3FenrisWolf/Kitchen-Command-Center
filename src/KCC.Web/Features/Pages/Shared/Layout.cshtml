@@ -9,6 +9,7 @@
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @inject KCC.ResourceStrings.Data.IResourceStringInfoProvider ResourceStrings
 @inject Vite.AspNetCore.IViteManifest ViteManifest
+@inject Vite.AspNetCore.IViteDevServerStatus ViteDevServer
 
 @model BasePageViewModel
 
@@ -58,6 +59,15 @@
   }
 
   <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
+
+  @* SFC <style> blocks are extracted into chunk CSS assets that the script tag helper never links.
+     A stylesheet link on the script entry makes Vite.AspNetCore emit every CSS file in that entry's
+     import graph. Dev-server mode is excluded: the link would resolve to the raw TS module, and the
+     Vite client injects component styles itself. *@
+  @if (!ViteDevServer.IsEnabled)
+  {
+    <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
+  }
 
   <page-builder-mount-preload />
   <page-builder-styles />

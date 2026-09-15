@@ -73,11 +73,11 @@ public class VueSsrService(
 
         var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent);
 
-        if (cache.TryGetValue(cacheKey, out string cachedHtml) && cachedHtml is not null)
+        if (cache.TryGetValue(cacheKey, out CachedRender cached) && cached is not null)
         {
             logger.LogDebug("SSR cache hit for key {CacheKey}", cacheKey[..16]);
 
-            return baseResult with { Html = cachedHtml };
+            return baseResult with { Html = cached.Html, Css = cached.Css };
         }
 
         try
@@ -127,9 +127,9 @@ public class VueSsrService(
                 requestId);
 
             // Cache the successful response
-            cache.Set(cacheKey, result.Html, CacheDuration);
+            cache.Set(cacheKey, new CachedRender(result.Html, result.Css), CacheDuration);
 
-            return baseResult with { Html = result.Html };
+            return baseResult with { Html = result.Html, Css = result.Css };
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -173,4 +173,6 @@ public class VueSsrService(
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(combined));
         return $"ssr:{Convert.ToHexString(hashBytes)}";
     }
+
+    private sealed record CachedRender(string Html, string Css);
 }

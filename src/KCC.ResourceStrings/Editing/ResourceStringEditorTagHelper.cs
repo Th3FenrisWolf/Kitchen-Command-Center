@@ -42,17 +42,21 @@ public sealed class ResourceStringEditorTagHelper(
         };
 
         var serializedContext = JsonSerializer.Serialize(editorContext, s_jsonOptions);
-        var scriptUrl = ResolveScriptUrl();
+        var (scriptUrl, styleUrls) = ResolveAssets();
+        var styleLinks = string.Concat(styleUrls.Select(url => $"""<link rel="stylesheet" href="{url}">"""));
 
         output.TagName = null;
         output.Content.SetHtmlContent(
             $"""
+            {styleLinks}
             <script id="kcc-rs-editor-context" type="application/json">{serializedContext}</script>
             <script type="module" src="{scriptUrl}"></script>
             """);
     }
 
-    private string ResolveScriptUrl()
+    // The editor's SFC <style> blocks are extracted into a CSS asset the script tag alone never
+    // pulls in. Dev-server mode returns no style URLs because the Vite client injects them itself.
+    private (string ScriptUrl, IEnumerable<string> StyleUrls) ResolveAssets()
     {
         if (devServer.IsEnabled)
         {
@@ -61,12 +65,13 @@ public sealed class ResourceStringEditorTagHelper(
                 System.IO.Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
             var absolutePath = System.IO.Path.GetFullPath(
                 System.IO.Path.Combine(webProjectDir, EntryKey)).Replace('\\', '/');
-            return $"{serverUrl}/@fs/{absolutePath}";
+            return ($"{serverUrl}/@fs/{absolutePath}", []);
         }
 
         var chunk = manifest[EntryKey]
             ?? throw new InvalidOperationException(
                 $"Vite manifest is missing entry '{EntryKey}'.");
-        return $"/{chunk.File}";
+
+        return ($"/{chunk.File}", chunk.Css?.Select(file => $"/{file}") ?? []);
     }
 }
