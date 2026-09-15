@@ -53,6 +53,11 @@ jobs:
         with:
           global-json-file: global.json
 
+      # Every launch profile binds an HTTPS endpoint, so Kestrel refuses to start without this.
+      # Nothing needs to trust it: the readiness curls pass -k and Playwright ignores HTTPS errors.
+      - name: Create ASP.NET Core developer certificate
+        run: dotnet dev-certs https
+
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
@@ -170,7 +175,7 @@ jobs:
         run: |
           # Any HTTP response = up (mirrors WebAppFixture: only a connection failure means "not running").
           for i in $(seq 1 60); do
-            if curl -s -o /dev/null http://localhost:58671; then echo "app up"; exit 0; fi
+            if curl -sk -o /dev/null https://localhost:58671; then echo "app up"; exit 0; fi
             sleep 2
           done
           echo "::error::Web app did not respond on :58671 within 120s"
@@ -183,7 +188,7 @@ jobs:
           # Create the member through the app's register endpoint (correct ASP.NET Identity password
           # hash), then enable it — RequireConfirmedAccount blocks sign-in until MemberEnabled=1. The
           # database is the source of truth: assert exactly one member row matched.
-          code=$(curl -sS -o /tmp/reg.out -w '%{http_code}' -X POST http://localhost:58671/api/account/register \
+          code=$(curl -sSk -o /tmp/reg.out -w '%{http_code}' -X POST https://localhost:58671/api/account/register \
             -H 'Content-Type: application/json' \
             -d "{\"UserName\":\"${KCC_E2E_MEMBER_USERNAME}\",\"Email\":\"${KCC_E2E_MEMBER_USERNAME}@example.test\",\"Password\":\"${KCC_E2E_MEMBER_PASSWORD}\"}")
           echo "register HTTP status: ${code:-<none>}"
@@ -200,7 +205,7 @@ jobs:
       - name: Seed recipe search data + index
         run: |
           set +e
-          code=$(curl -sS -o /tmp/seed.out -w '%{http_code}' -X POST "http://localhost:58671/api/dev/seed-recipes")
+          code=$(curl -sSk -o /tmp/seed.out -w '%{http_code}' -X POST "https://localhost:58671/api/dev/seed-recipes")
           echo "seed-recipes HTTP status: ${code:-<none>}"
           echo "seed-recipes response (head): $(head -c 1500 /tmp/seed.out 2>/dev/null)"
           [ "$code" = "200" ] || { echo "::error::seed-recipes failed (HTTP ${code:-<none>})"; exit 1; }

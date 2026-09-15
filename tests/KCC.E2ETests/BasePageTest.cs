@@ -17,6 +17,7 @@ public class BasePageTests : PageTest
         options.ColorScheme = ColorScheme.Light;
         options.ViewportSize = new() { Height = 1080, Width = 1920 };
         options.BaseURL = RootUri.ToString();
+        options.IgnoreHTTPSErrors = true;
 
         return options;
     }
