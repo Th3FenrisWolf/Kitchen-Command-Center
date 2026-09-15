@@ -1,62 +1,48 @@
 <!-- #region DetailHero Component Properties -->
 <script lang="ts">
+  import AccentTile from './AccentTile.vue'
+  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
+  import { ResourceString } from '~/Components/ResourceStrings'
+
+  /**
+   * Page-heading block for a recipe or a variant: tile, title, rating line, and description.
+   */
+  export default {
+    name: 'DetailHero',
+  }
+
   export interface DetailHeroProps {
-    /**
-     * The title of the recipe
-     */
     title: string
     /**
-     * The seed string to use for generating the background color
+     * Passed to the AccentTile, which derives its fallback background color from it.
      */
     seed: string
-    /**
-     * The description of the recipe
-     */
     description: string
     /**
-     * The icon class to use for the tile
+     * Font Awesome classes for the tile when there is no image.
      */
     icon?: string
-    /**
-     * The image URL to use for the tile
-     */
     image?: string
-    /**
-     * The name of the author of the recipe
-     */
     authorName?: string
     /**
-     * The average rating of the recipe (0-5)
+     * 0–5. Only shown once `reviewCount` is non-zero.
      */
     averageRating?: number
-    /**
-     * The number of reviews for the recipe
-     */
     reviewCount?: number
-    /**
-     * The number of times this recipe has been cooked by users
-     */
     timesCooked?: number
   }
 
   export interface DetailHeroSlots {
     /**
-     * Optional slot for an eyebrow above the title
+     * Small uppercase kicker above the title.
      */
     eyebrow?: () => void
-    /**
-     * Optional slot for content below the description
-     */
     footer?: () => void
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import AccentTile from './AccentTile.vue'
-  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
-  import { ResourceString } from '~/Components/ResourceStrings'
-
   const { title, seed, description, icon, image, authorName, averageRating, reviewCount, timesCooked } =
     defineProps<DetailHeroProps>()
   const { eyebrow } = defineSlots<DetailHeroSlots>()

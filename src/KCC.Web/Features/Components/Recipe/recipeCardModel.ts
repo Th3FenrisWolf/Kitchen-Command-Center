@@ -1,3 +1,4 @@
+import { formatRating } from '~/Components/StarRating/starDisplay'
 import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
 
 /**
@@ -8,9 +9,23 @@ import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
  */
 type Resolve = (key: string) => string
 
+/**
+ * A stat the grid card can promote out of its body and into the notch pill. The body then drops the
+ * matching meta chip (or the rating), so the same number never renders twice on one card.
+ */
+export type PromotedStat = 'rating' | 'time'
+
 /** One inline meta item on a card's meta line: optional leading icon + text (e.g. "🕐 30m"). */
 export interface RecipeCardMeta {
   icon?: string
+  text: string
+  key?: PromotedStat
+}
+
+/** Hero stat rendered in the notch that rises out of the grid card's content panel. */
+export interface RecipeCardNotch {
+  stat: PromotedStat
+  icon: string
   text: string
 }
 
@@ -37,6 +52,8 @@ export interface RecipeCardModel {
   eyebrow?: string
   /** Compact rating; omit to hide the rating entirely (variant cards show none today). */
   rating?: RecipeCardRating
+  /** Hero stat for the grid card's notch; the row layout ignores it and shows the stat inline. */
+  notch: RecipeCardNotch
   /** Inline meta chips on the meta line (search: variant count + fastest time). */
   meta?: RecipeCardMeta[]
   /** Secondary text line (variant: "By Alex · 30 min"). */
@@ -67,18 +84,31 @@ export interface FeaturedRecipeModel {
   dataAttrs?: Record<string, string>
 }
 
+/**
+ * The card's single headline number: its rating once it has one, and the cook time until then — so
+ * the notch is never empty and never advertises an unrated recipe as a zero.
+ */
+function notchStat(rating: RecipeCardRating | undefined, time: string): RecipeCardNotch {
+  return rating && rating.count > 0
+    ? { stat: 'rating', icon: 'fa-solid fa-star', text: formatRating(rating.average) }
+    : { stat: 'time', icon: 'fa-solid fa-clock', text: time }
+}
+
 /** Search hit → grid/list card. */
 export function hitToCard(hit: RecipeSearchHit, rs: Resolve): RecipeCardModel {
+  const rating = { average: hit.averageRating ?? 0, count: hit.reviewCount, emptyLabel: rs('NoRatingsYet') }
+  const time = `${hit.fastestTime}m`
   return {
     href: hit.slug,
     name: hit.name,
     seed: hit.name,
     icon: hit.icon,
     eyebrow: hit.category,
-    rating: { average: hit.averageRating ?? 0, count: hit.reviewCount, emptyLabel: rs('NoRatingsYet') },
+    rating,
+    notch: notchStat(rating, time),
     meta: [
       { icon: 'fa-solid fa-layer-group', text: String(hit.variantCount) },
-      { icon: 'fa-solid fa-clock', text: `${hit.fastestTime}m` },
+      { key: 'time', icon: 'fa-solid fa-clock', text: time },
     ],
     tags: hit.tags,
     dataAttrs: { 'data-testid': 'recipe-card', 'data-recipe-name': hit.name },
@@ -94,7 +124,9 @@ export function variantToCard(variant: VariantSummary, rs: Resolve): RecipeCardM
     seed: variant.name,
     icon: variant.icon,
     image: variant.image,
-    subtitle: variant.authorName ? `${rs('By')} ${variant.authorName} · ${time}` : time,
+    notch: { stat: 'time', icon: 'fa-solid fa-clock', text: time },
+    meta: [{ key: 'time', icon: 'fa-solid fa-clock', text: time }],
+    subtitle: variant.authorName ? `${rs('By')} ${variant.authorName}` : undefined,
     description: variant.description,
     tags: variant.tags,
     trailingStat: { value: `${variant.totalTime}${rs('Min')}`, label: rs('Total') },

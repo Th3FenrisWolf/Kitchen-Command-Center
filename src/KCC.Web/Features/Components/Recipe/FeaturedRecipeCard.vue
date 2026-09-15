@@ -1,10 +1,21 @@
 <!-- #region FeaturedRecipeCard Component Properties -->
 <script lang="ts">
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import Badge from '~/Components/Badge/Badge.vue'
+  import AccentTile from '~/Components/Recipe/AccentTile.vue'
+  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
+
+  /**
+   * Full-width spotlight card promoting one recipe or variant above a grid of RecipeCards.
+   */
+  export default {
+    name: 'FeaturedRecipeCard',
+  }
 
   export interface FeaturedRecipeCardProps {
     /**
-     * The recipe card data to display
+     * Build with `hitToFeatured` or `variantToFeatured` from recipeCardModel.
      */
     card: FeaturedRecipeModel
   }
@@ -12,11 +23,6 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
-  import AccentTile from '~/Components/Recipe/AccentTile.vue'
-  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
-
   const { card } = defineProps<FeaturedRecipeCardProps>()
 </script>
 
@@ -24,7 +30,7 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
-    class="group relative flex flex-col gap-4 rounded-3xl bg-bone p-4 text-onyx no-underline shadow-primary transition-all hover:-translate-y-1 hover:shadow-primary-raised sm:flex-row sm:items-center sm:gap-6"
+    class="group relative my-4 flex flex-col gap-4 rounded-3xl bg-bone p-3 text-onyx no-underline shadow-primary transition-all hover:-translate-y-1 hover:shadow-primary-raised sm:flex-row sm:items-center sm:gap-6"
   >
     <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="h-40 w-full flex-none text-5xl sm:size-40" />
 
@@ -54,7 +60,7 @@
     </div>
 
     <span
-      class="absolute right-4 bottom-4 grid size-10 place-items-center rounded-full bg-surface-500 text-bone transition-all group-hover:bottom-5 group-hover:-rotate-30"
+      class="absolute right-3 bottom-3 grid size-10 place-items-center rounded-full bg-surface-500 text-bone transition-all group-hover:bottom-5 group-hover:-rotate-30"
     >
       <i class="fa-solid fa-arrow-right"></i>
     </span>

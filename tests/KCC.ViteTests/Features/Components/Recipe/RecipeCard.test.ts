@@ -2,7 +2,8 @@ import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
-import RecipeCard from '~/Components/RecipeSearch/RecipeCard.vue'
+import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
+import { hitToCard } from '~/Components/Recipe/recipeCardModel'
 import type { RecipeSearchHit } from '~/Types/Recipe'
 
 const hit = (over: Partial<RecipeSearchHit> = {}): RecipeSearchHit => ({
@@ -19,8 +20,14 @@ const hit = (over: Partial<RecipeSearchHit> = {}): RecipeSearchHit => ({
   ...over,
 })
 
+// Matches what useResourceStrings hands the card when a key has no value: the key itself.
+const rs = (key: string) => key
+
 const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
-const render = (recipe: RecipeSearchHit) => renderToString(createSSRApp(RecipeCard, { recipe }))
+
+// Renders through the search page's own mapper, so these cover the RecipeSearchHit -> card
+// hop as well as the markup the shared card produces from it.
+const render = (recipe: RecipeSearchHit) => renderToString(createSSRApp(RecipeCard, { card: hitToCard(recipe, rs) }))
 
 describe('RecipeCard rating', () => {
   it('shows a star and the numeric rating when the recipe has reviews', async () => {

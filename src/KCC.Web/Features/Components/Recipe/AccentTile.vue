@@ -1,20 +1,26 @@
 <!-- #region AccentTile Component Properties -->
 <script lang="ts">
+  import { backgroundColorFor } from '~/Utilities/BrandColor'
+
+  /**
+   * Square thumbnail: the image when there is one, otherwise an icon on a brand-colored ground.
+   */
+  export default {
+    name: 'AccentTile',
+  }
+
   export interface AccentTileProps {
     /**
-     * The seed string to use for generating the background color
+     * Picks the fallback background color deterministically, so the same subject always tiles alike.
      */
     seed: string
     /**
-     * The icon class to use for the tile
+     * Font Awesome classes for the fallback tile.
      */
     icon?: string
-    /**
-     * The image URL to use for the tile
-     */
     image?: string
     /**
-     * The alt text to use for the image
+     * Falls back to `seed` when omitted.
      */
     alt?: string
   }
@@ -22,8 +28,6 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import { backgroundColorFor } from '~/Utilities/BrandColor'
-
   const { seed, icon, image, alt } = defineProps<AccentTileProps>()
 </script>
 

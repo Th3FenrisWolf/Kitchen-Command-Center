@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region VariantGrid Component Properties -->
+<script lang="ts">
   import { computed } from 'vue'
   import type { VariantSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
@@ -6,13 +7,31 @@
   import RecipeCardView from '~/Components/Recipe/RecipeCard.vue'
   import { variantToCard } from '~/Components/Recipe/recipeCardModel'
 
-  const props = defineProps<{ variants: VariantSummary[]; addVariantUrl: string }>()
+  /**
+   * Card grid of a recipe's variants, closing with a tile that starts a new one.
+   */
+  export default {
+    name: 'VariantGrid',
+  }
+
+  export interface VariantGridProps {
+    variants: VariantSummary[]
+    /**
+     * Already carries the parent recipe's identifier as a query string.
+     */
+    addVariantUrl: string
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<VariantGridProps>()
   const rs = useResourceStrings()
   const cards = computed(() => props.variants.map((variant) => ({ key: variant.slug, card: variantToCard(variant, rs) })))
 </script>
 
 <template>
-  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mt-6 -mb-4 grid grid-cols-1 gap-x-4 *:row-span-7 *:mb-4 sm:grid-cols-2 lg:grid-cols-3">
     <RecipeCardView v-for="entry in cards" :key="entry.key" :card="entry.card" />
 
     <AppLink
