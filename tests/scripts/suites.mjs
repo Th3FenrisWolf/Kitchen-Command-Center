@@ -6,4 +6,5 @@ export const SUITES = [
   { id: "e2e", label: "E2E", type: "dotnet", projectDir: "tests/KCC.E2ETests" },
   { id: "web-frontend", label: "Web Frontend", type: "vitest", cwd: "src/KCC.Web", outputFile: "tests/results/vitest-web-frontend.json" },
   { id: "admin-frontend", label: "Admin Frontend", type: "vitest", cwd: "src/KCC.Admin/Client", outputFile: "tests/results/vitest-admin-frontend.json" },
+  { id: "contributions-frontend", label: "Contributions Frontend", type: "vitest", cwd: "src/KCC.Contributions/Client", outputFile: "tests/results/vitest-contributions-frontend.json" },
 ];

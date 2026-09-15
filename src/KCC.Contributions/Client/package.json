@@ -1,0 +1,22 @@
+{
+  "name": "@kcc/contributions",
+  "version": "1.0.0",
+  "description": "Kentico Xperience admin components for community contribution moderation.",
+  "private": true,
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode=production",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@kcc/admin-client-config": "*",
+    "@kentico/xperience-admin-base": "31.4.4",
+    "@kentico/xperience-admin-components": "31.4.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  }
+}

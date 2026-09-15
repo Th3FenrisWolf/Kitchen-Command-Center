@@ -2,8 +2,15 @@ import { describe, it, expect } from 'vitest'
 import { SUITES } from '../../../scripts/suites.mjs'
 
 describe('SUITES registry', () => {
-  it('declares the five suites with required fields', () => {
-    expect(SUITES.map((s) => s.id)).toEqual(['unit', 'integration', 'e2e', 'web-frontend', 'admin-frontend'])
+  it('declares every suite with required fields', () => {
+    expect(SUITES.map((s) => s.id)).toEqual([
+      'unit',
+      'integration',
+      'e2e',
+      'web-frontend',
+      'admin-frontend',
+      'contributions-frontend',
+    ])
     for (const s of SUITES) {
       expect(s.label).toBeTruthy()
       expect(['dotnet', 'vitest']).toContain(s.type)

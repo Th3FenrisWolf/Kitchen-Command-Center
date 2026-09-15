@@ -12,7 +12,11 @@ public static class ContributionsServiceExtensions
         services.AddScoped<IVariantCookNoteInfoProvider, VariantCookNoteInfoProvider>();
         services.AddScoped<IVariantCookedInfoProvider, VariantCookedInfoProvider>();
         services.AddScoped<Admin.MemberNameLookup>();
-        services.AddScoped<Admin.VariantNameLookup>();
+        services.AddScoped<Admin.ContentItemNameLookup>();
+        services.AddSingleton<Admin.Overview.IRecipeRollupSource, Admin.Overview.SqlRecipeRollupSource>();
+        services.AddScoped<Admin.Overview.ContributionsOverviewService>();
+        services.AddScoped<Admin.WebPageTabs.IContributionPageLookup, Admin.WebPageTabs.ContributionPageLookup>();
+        services.AddScoped<Admin.WebPageTabs.ContributionTabService>();
         return services;
     }
 }

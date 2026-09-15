@@ -1,0 +1,99 @@
+/* Kentico's root .app container sets color: red as a sentinel, so every text
+   element here must declare its own color from the admin theme tokens. */
+.kcc-contributions__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--color-icon-default, #151515);
+}
+
+.kcc-contributions__stars svg {
+    width: 14px;
+    height: 14px;
+}
+
+.kcc-contributions__stars-label {
+    margin-left: 6px;
+    font-size: 12px;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions__muted {
+    font-size: 12px;
+    color: var(--color-text-low-emphasis, #525252);
+}
+
+.kcc-contributions__name {
+    font-weight: 600;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions__entries {
+    padding: 4px 0 8px;
+}
+
+.kcc-contributions__entries-title {
+    font-weight: 600;
+    font-size: 13px;
+    margin: 8px 0 4px;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions__entry {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-divider-default, #dfdfdf);
+}
+
+.kcc-contributions__entry:last-of-type {
+    border-bottom: none;
+}
+
+.kcc-contributions__entry-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.kcc-contributions__entry-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 12px;
+}
+
+.kcc-contributions__entry-member {
+    font-weight: 600;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+/* Reviews and notes are stored up to 4000 characters; a long one scrolls rather
+   than pushing the next entry off the screen. */
+.kcc-contributions__entry-text {
+    margin-top: 2px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    max-height: 12em;
+    overflow-y: auto;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions__entry-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.kcc-contributions__loading {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* Dialogs render through a portal outside any container above. */
+.kcc-contributions__dialog-text {
+    color: var(--color-text-default-on-light, #151515);
+}

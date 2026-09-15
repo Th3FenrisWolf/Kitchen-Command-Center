@@ -19,6 +19,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AdminClientPath Include="Client\dist\**">
+            <ProjectName>contributions</ProjectName>
+        </AdminClientPath>
+    </ItemGroup>
+
+    <ItemGroup>
         <InternalsVisibleTo Include="KCC.UnitTests" />
     </ItemGroup>
 
