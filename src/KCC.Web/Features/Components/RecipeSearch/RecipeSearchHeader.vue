@@ -21,7 +21,7 @@
 </script>
 
 <template>
-  <section class="my-4 rounded-3xl bg-paper p-6 text-ink">
+  <section v-ink="'sheet'" class="sk-sheet sk-fold my-4">
     <p class="mb-1 text-sm tracking-wide uppercase opacity-75"><ResourceString for="BrowseTheKitchen" /></p>
     <h1 class="font-casual text-4xl leading-tight"><ResourceString for="SearchRecipes" /></h1>
 
@@ -32,12 +32,12 @@
           v-model="draft"
           :placeholder="searchPlaceholder"
           data-testid="recipe-search-input"
-          class="w-full rounded-2xl border-none bg-paper-2 px-11 py-4 font-medium text-ink outline-none"
+          class="w-full rounded-2xl border border-edge-strong bg-paper-2 px-11 py-4 font-medium text-ink outline-none"
         />
         <button
           v-if="draft.length"
           type="button"
-          class="absolute top-1/2 right-4 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-desk-2 text-xs text-ink"
+          class="sk-btn sk-btn--ghost absolute top-1/2 right-4 size-8 -translate-y-1/2 text-xs"
           @click="emit('clear')"
         >
           <i class="fa-solid fa-xmark"></i>

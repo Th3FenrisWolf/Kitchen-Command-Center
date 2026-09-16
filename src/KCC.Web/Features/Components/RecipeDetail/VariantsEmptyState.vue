@@ -16,17 +16,12 @@
 </script>
 
 <template>
-  <div
-    class="mt-6 grid place-items-center gap-3 rounded-3xl border-2 border-dashed border-rule px-4 py-16 text-center text-ink-soft"
-  >
-    <i class="fa-solid fa-bowl-food text-4xl opacity-50"></i>
-    <div class="font-casual text-2xl text-ink"><ResourceString for="NoVariantsMatch" /></div>
-    <p class="text-base"><ResourceString for="TryDifferentFilter" /></p>
-    <button
-      type="button"
-      class="mt-1.5 cursor-pointer rounded-full border-2 border-ink bg-transparent px-5 py-2 text-base font-bold text-ink"
-      @click="$emit('clear')"
-    >
+  <div v-ink="{ kind: 'sheet', hatch: false }" class="sk-sheet sk-sheet--lg mt-6 grid place-items-center gap-3 text-center">
+    <span class="sk-wash" style="--c: var(--color-lavender)" aria-hidden="true"></span>
+    <i class="sk-ico fa-duotone fa-bowl-food text-4xl"></i>
+    <div class="sk-display text-2xl text-ink"><ResourceString for="NoVariantsMatch" /></div>
+    <p class="sk-body"><ResourceString for="TryDifferentFilter" /></p>
+    <button type="button" v-ink="'button'" class="sk-btn sk-btn--ghost mt-1.5" @click="'clear'">
       <ResourceString for="ClearFilters" />
     </button>
   </div>
