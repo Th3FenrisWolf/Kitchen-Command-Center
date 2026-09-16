@@ -127,7 +127,7 @@
     ref="track"
     role="radiogroup"
     :aria-label="ariaLabel"
-    class="relative inline-flex items-center rounded-2xl bg-desk-2 p-1"
+    class="relative inline-flex items-center rounded-2xl border border-edge bg-paper-2 p-1"
   >
     <span
       class="seg-thumb pointer-events-none absolute top-0 left-0 rounded-xl bg-marker"

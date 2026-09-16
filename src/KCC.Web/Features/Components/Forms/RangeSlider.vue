@@ -48,7 +48,7 @@
 
 <template>
   <div class="relative mx-0.5 h-5">
-    <div class="absolute inset-x-0 top-1.75 h-1.5 rounded-full bg-desk-2"></div>
+    <div class="absolute inset-x-0 top-1.75 h-1.5 rounded-full border border-edge bg-paper-2"></div>
     <div class="absolute top-1.75 h-1.5 rounded-full bg-marker" :style="fillStyle"></div>
     <input
       class="kcc-range"
