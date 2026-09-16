@@ -5,6 +5,19 @@ namespace KCC.Web.Features.Components.Header;
 public class HeaderViewModel
 {
     public ImageItem Logo { get; set; }
+
+    /// <summary>
+    /// Gets or sets the mark shown on the light ramp. Null falls back to <see cref="Logo"/> in both ramps.
+    /// </summary>
+    public ImageItem LogoLight { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme-toggle labels. Resolved server-side because the header renders on every
+    /// page, while the Vue ResourceString dict is assembled per page controller.
+    /// </summary>
+    public string SwitchToLightLabel { get; set; }
+
+    public string SwitchToDarkLabel { get; set; }
     public IEnumerable<HeaderNavItem> MainNavItems { get; set; }
     public IEnumerable<HeaderNavItem> UtilityNavItems { get; set; }
 }
