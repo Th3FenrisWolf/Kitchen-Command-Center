@@ -3,7 +3,7 @@
 
 @model PageBuilderViewModel
 
-<editable-area area-identifier="hero" area-options="@EditableArea.GetAreaOptions([HeroWidgetProperties.IDENTIFIER])" />
+<editable-area area-identifier="hero" area-options="@EditableArea.GetAreaOptions([SmallHeroWidgetProperties.IDENTIFIER])" />
 
 <Breadcrumbs v-if="@Vue.Prop(Model.ShowBreadcrumbs)" :items="@Vue.Prop(Model.Breadcrumbs)" />
 

@@ -24,7 +24,7 @@ public class BaseSectionViewComponent : ViewComponent
         {
             Heading = componentViewModel.Properties.Heading,
             BackgroundColor = componentViewModel.Properties.BackgroundColor,
-            TextColor = componentViewModel.Properties.TextColor,
+            TextColor = SectionColors.TextClassFor(componentViewModel.Properties.BackgroundColor),
             ContentWidth = componentViewModel.Properties.ContentWidth,
             PaddingTop = componentViewModel.Properties.GetPaddingTop(),
             PaddingBottom = componentViewModel.Properties.GetPaddingBottom(),
