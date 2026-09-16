@@ -54,6 +54,7 @@
     >
       <div data-sentinel class="absolute size-0" :style="`top: -${32 * (index + 1) + 1}px`"></div>
       <div
+        v-ink="'card'"
         :class="[
           'aspect-square origin-top rounded-3xl p-8 text-center transition-all duration-100 [.stuck]:scale-95 [.stuck]:shadow-none',
           '[.last_div]:scale-100',
