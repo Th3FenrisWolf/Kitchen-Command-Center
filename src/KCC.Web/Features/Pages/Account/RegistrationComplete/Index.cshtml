@@ -2,11 +2,13 @@
 
 @model BasePageViewModel
 
+@* Razor cannot use the Sheet.vue primitive (not a *.Component.vue, so not globally registered); it
+   composes the same look from the global kit classes plus the data-ink opt-in. *@
 <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
-  <div class="flex max-w-2xl flex-col items-center gap-6 rounded-3xl bg-paper-2 p-12 text-center text-ink">
-    <h1 class="text-4.5xl">@Html.ResourceString("RegistrationComplete.Heading")</h1>
-    <p class="text-lg">@Html.ResourceString("RegistrationComplete.Body")</p>
-    <a href="@Url.HomePage()" class="w-max cursor-pointer rounded-2xl bg-paper px-4 py-2 text-ink">
+  <div class="sk-sheet sk-sheet--lg sk-fold flex max-w-2xl flex-col items-center gap-6 text-center" data-ink="sheet">
+    <h1 class="sk-display text-4.5xl">@Html.ResourceString("RegistrationComplete.Heading")</h1>
+    <p class="sk-body text-lg">@Html.ResourceString("RegistrationComplete.Body")</p>
+    <a href="@Url.HomePage()" class="sk-btn sk-btn--marker sk-btn--lg" data-ink="button">
       @Html.ResourceString("RegistrationComplete.ContinueLink")
     </a>
   </div>
