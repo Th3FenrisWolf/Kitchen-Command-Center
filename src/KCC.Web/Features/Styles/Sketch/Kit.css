@@ -251,4 +251,36 @@
     border-color: var(--color-marker);
     opacity: 1;
   }
+
+  /* Prose and inline links. Bare `a` stays unstyled on purpose: cards and button-links are anchors too,
+     and a global rule would repaint them (umbrella B6). */
+  .link {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Chrome links sit on the desk, not on paper, so they take ink rather than the link colour. */
+  .sk-chrome-link {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  /* Switching ramps repaints every token at once; any in-flight transition would interpolate between the
+     two palettes and show stale panels for its duration (umbrella B11). ThemeToggle sets this for one frame. */
+  :root[data-theme-switching] *,
+  :root[data-theme-switching] *::before,
+  :root[data-theme-switching] *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Deliberately unlayered. The logo and the toggle glyph ship both ramps' variants and let CSS pick one,
+   because the server cannot know the ramp and a JS-picked variant would be a hydration mismatch. This must
+   beat any `display` utility on the same element, and Tailwind's utilities layer comes after components —
+   so a rule inside @layer components would lose to `flex`. Unlayered beats every layer. */
+:root[data-theme='light'] [data-ramp='dark'],
+:root:not([data-theme='light']) [data-ramp='light'] {
+  display: none;
 }
