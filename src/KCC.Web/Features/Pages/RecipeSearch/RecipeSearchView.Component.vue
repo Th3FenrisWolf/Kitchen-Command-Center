@@ -3,7 +3,6 @@
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
   import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'

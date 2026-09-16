@@ -7,7 +7,6 @@
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import RecipeBreadcrumb from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
@@ -91,7 +90,7 @@
 
 <template>
   <div class="mt-4 flex items-center justify-between gap-4">
-    <RecipeBreadcrumb v-if="breadcrumbs?.length" :items="breadcrumbs" />
+    <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
     <AppLink
       :href="addVariantHref"

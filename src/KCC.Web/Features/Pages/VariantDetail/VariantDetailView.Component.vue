@@ -8,7 +8,6 @@
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
   import Badge from '~/Components/Badge/Badge.vue'
-  import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
