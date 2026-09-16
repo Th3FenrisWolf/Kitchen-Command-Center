@@ -32,6 +32,7 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
+  import Button from '~/Components/Button/Button.vue'
   const props = defineProps<LoginViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Login')
@@ -91,7 +92,7 @@
 
 <template>
   <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
-    <div class="relative flex w-3/4 overflow-hidden rounded-3xl">
+    <div v-ink="{ kind: 'sheet' }" class="sk-sheet relative flex w-3/4 overflow-hidden" style="--pad: 0">
       <div
         :class="[
           'relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
@@ -148,19 +149,15 @@
             <ResourceString for="RememberMe" />
           </label>
 
-          <button
-            :disabled="isSubmitting"
-            class="w-max cursor-pointer justify-self-center rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
-            type="submit"
-          >
+          <Button class="justify-self-center" :disabled="isSubmitting" type="submit">
             <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
-          </button>
+          </Button>
         </form>
       </div>
 
       <div
         :class="[
-          'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-paper p-12 text-center transition-all duration-500',
+          'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-paper-2 p-12 text-center transition-all duration-500',
           swap && 'right-[60%]',
         ]"
       >
@@ -173,24 +170,16 @@
           <div class="grid h-max w-1/4 gap-8 self-center text-ink" :aria-hidden="isSignIn">
             <h3 class="font-casual text-4.5xl"><ResourceString for="HaveAccount" /></h3>
             <p><ResourceString for="HaveAccountDescription" /></p>
-            <button
-              class="w-max cursor-pointer justify-self-center rounded-2xl bg-paper-2 px-4 py-2 text-ink"
-              @click="swap = !swap"
-              type="button"
-            >
+            <Button class="justify-self-center" variant="ghost" @click="swap = !swap">
               <ResourceString for="SignIn" />
-            </button>
+            </Button>
           </div>
           <div class="grid h-max w-1/4 gap-8 self-center text-ink" :aria-hidden="swap">
             <h3 class="font-casual text-4.5xl"><ResourceString for="NewHere" /></h3>
             <p><ResourceString for="NewHereDescription" /></p>
-            <button
-              class="w-max cursor-pointer justify-self-center rounded-2xl bg-paper-2 px-4 py-2 text-ink"
-              @click="swap = !swap"
-              type="button"
-            >
+            <Button class="justify-self-center" variant="ghost" @click="swap = !swap">
               <ResourceString for="SignUp" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -35,6 +35,8 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
+  import Button from '~/Components/Button/Button.vue'
+  import Sheet from '~/Components/Sketch/Sheet.vue'
   const props = defineProps<AccountSettingsViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Account')
@@ -105,22 +107,20 @@
 
     <div class="mb-8 flex gap-8 max-lg:flex-col">
       <!-- Profile card -->
-      <form class="grid basis-full gap-4 rounded-3xl bg-paper-2 p-6" @submit.prevent="saveProfile">
+      <Sheet as="form" pad="md" class="grid basis-full gap-4" @submit.prevent="saveProfile">
         <h2 class="text-xl"><ResourceString for="Profile" /></h2>
 
         <label class="grid gap-2">
-          <span class="text-sm text-ink-soft"><ResourceString for="FirstName" /></span>
+          <span class="sk-lbl"><ResourceString for="FirstName" /></span>
           <InputField type="text" v-model="firstName" name="FirstName" autocomplete="given-name" />
         </label>
         <label class="grid gap-2">
-          <span class="text-sm text-ink-soft"><ResourceString for="LastName" /></span>
+          <span class="sk-lbl"><ResourceString for="LastName" /></span>
           <InputField type="text" v-model="lastName" name="LastName" autocomplete="family-name" />
         </label>
 
         <label class="grid gap-2">
-          <span class="text-sm text-ink-soft">
-            <ResourceString for="Email" /> &middot; <ResourceString for="EmailComingSoon" />
-          </span>
+          <span class="sk-lbl"> <ResourceString for="Email" /> &middot; <ResourceString for="EmailComingSoon" /> </span>
           <InputField readonly type="email" :model-value="email" class="cursor-default opacity-70" />
         </label>
 
@@ -130,30 +130,26 @@
 
         <div class="flex justify-between">
           <span class="text-xs text-ink-soft"><ResourceString for="EmailComingSoonNote" /></span>
-          <button
-            :disabled="profileSubmitting"
-            type="submit"
-            class="cursor-pointer justify-self-end rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
-          >
+          <Button :disabled="profileSubmitting" type="submit" class="justify-self-end">
             <ResourceString for="SaveChanges" />
-          </button>
+          </Button>
         </div>
-      </form>
+      </Sheet>
 
       <!-- Password card -->
-      <form class="grid basis-full gap-4 rounded-3xl bg-paper-2 p-6" @submit.prevent="changePassword">
+      <Sheet as="form" pad="md" class="grid basis-full gap-4" @submit.prevent="changePassword">
         <h2 class="text-xl"><ResourceString for="ChangePassword" /></h2>
 
         <label class="grid gap-2">
-          <span class="text-sm text-ink-soft"><ResourceString for="CurrentPassword" /></span>
+          <span class="sk-lbl"><ResourceString for="CurrentPassword" /></span>
           <InputField required type="password" v-model="currentPassword" autocomplete="current-password" />
         </label>
         <label class="grid gap-2">
-          <span class="text-sm text-ink-soft"><ResourceString for="NewPassword" /></span>
+          <span class="sk-lbl"><ResourceString for="NewPassword" /></span>
           <InputField required type="password" v-model="newPassword" autocomplete="new-password" />
         </label>
         <label class="grid gap-2">
-          <span class="text-sm text-ink-soft"><ResourceString for="ConfirmNewPassword" /></span>
+          <span class="sk-lbl"><ResourceString for="ConfirmNewPassword" /></span>
           <InputField required type="password" v-model="confirmPassword" autocomplete="new-password" />
         </label>
 
@@ -161,17 +157,17 @@
           {{ passwordMessage.text }}
         </p>
 
-        <button
-          :disabled="passwordSubmitting"
-          type="submit"
-          class="cursor-pointer justify-self-end rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
-        >
+        <Button :disabled="passwordSubmitting" type="submit" class="justify-self-end">
           <ResourceString for="UpdatePassword" />
-        </button>
-      </form>
+        </Button>
+      </Sheet>
     </div>
 
-    <a :href="logoutUrl" class="justify-self-end rounded-2xl border border-danger-ink px-4 py-2 text-danger-ink">
+    <a
+      :href="logoutUrl"
+      v-ink="{ kind: 'button', color: 'var(--color-danger-ink)' }"
+      class="sk-btn sk-btn--ghost justify-self-end text-danger-ink"
+    >
       <ResourceString for="SignOut" />
     </a>
   </section>
