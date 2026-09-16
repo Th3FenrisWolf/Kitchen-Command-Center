@@ -48,6 +48,20 @@
     -moz-appearance: textfield;
   }
 
+  /* Durations go to 0.01ms rather than `none` so transitionend/animationend still fire — anything waiting
+     on them keeps working, while nothing perceptibly animates. Per-component guards that already exist
+     (RecipeCard, SegmentedControl, Ink.css) are more specific and stay. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
     appearance: none;
