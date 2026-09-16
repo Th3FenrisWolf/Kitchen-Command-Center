@@ -11,7 +11,7 @@ using Kentico.Xperience.Admin.Base.FormAnnotations;
     identifier: ButtonWidgetProperties.IDENTIFIER,
     name: "Button",
     propertiesType: typeof(ButtonWidgetProperties),
-    customViewName: "~/Features/Widgets/Button/_ButtonWidget.cshtml",
+    customViewName: "~/Features/Widgets/Button/ButtonWidget.cshtml",
     IconClass = "icon-arrow-right-circle",
     AllowCache = true
 )]
