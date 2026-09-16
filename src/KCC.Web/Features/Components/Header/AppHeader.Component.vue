@@ -94,7 +94,7 @@
 
 <template>
   <header class="content-grid mt-4">
-    <nav ref="navRef" class="breakout relative flex size-full items-center gap-6 px-6 text-ink">
+    <nav ref="navRef" class="breakout relative flex size-full flex-wrap items-center gap-x-6 gap-y-2 px-4 text-ink sm:px-6">
       <a
         class="btn-no-style z-20 h-full shrink-0 py-4 text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
         :href="homeUrl.stripTilde()"
@@ -104,7 +104,7 @@
           loading="eager"
           :src="logo.asset.url.stripTilde()"
           :alt="logo.altText"
-          class="h-16 w-auto"
+          class="h-12 w-auto sm:h-16"
           height="64"
           width="90"
         />
@@ -114,7 +114,7 @@
           loading="eager"
           :src="logoLight.asset.url.stripTilde()"
           :alt="logoLight.altText"
-          class="h-16 w-auto"
+          class="h-12 w-auto sm:h-16"
           height="64"
           width="90"
         />
