@@ -20,7 +20,7 @@ describe('RatingSummary', () => {
   })
 
   it('emphasizes the number only when strong is set', async () => {
-    expect(await render({ value: 4, strong: true })).toContain('font-bold')
-    expect(await render({ value: 4 })).not.toContain('font-bold')
+    expect(await render({ value: 4, strong: true })).toContain('data-rating-strong')
+    expect(await render({ value: 4 })).not.toContain('data-rating-strong')
   })
 })

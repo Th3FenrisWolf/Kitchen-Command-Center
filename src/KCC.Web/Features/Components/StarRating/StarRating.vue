@@ -69,7 +69,7 @@
     :aria-label="`${formatRating(modelValue)} of ${max} stars`"
   >
     <span v-for="(state, i) in states" :key="i" class="text-rating-ink" :data-star="i + 1" :data-state="state">
-      <i :class="iconFor(state)" aria-hidden="true"></i>
+      <i :class="[iconFor(state), state === 'empty' && 'text-ink-soft']" aria-hidden="true"></i>
     </span>
   </div>
 
@@ -95,7 +95,7 @@
       :data-star="i + 1"
       :data-state="state"
     >
-      <i :class="iconFor(state)" aria-hidden="true"></i>
+      <i :class="[iconFor(state), state === 'empty' && 'text-ink-soft']" aria-hidden="true"></i>
       <span
         class="absolute inset-y-0 left-0 z-10 w-1/2"
         aria-hidden="true"
