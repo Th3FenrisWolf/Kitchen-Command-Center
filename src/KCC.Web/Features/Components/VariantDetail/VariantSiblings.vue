@@ -34,6 +34,7 @@
         v-for="sibling in variants"
         :key="sibling.slug"
         :href="sibling.slug"
+        v-ink="'card'"
         class="group flex items-center gap-3 rounded-3xl bg-paper-2 p-4 text-ink transition-shadow"
       >
         <AccentTile :seed="sibling.name" :icon="sibling.icon || 'fa-solid fa-utensils'" class="size-13 flex-none text-2xl" />
