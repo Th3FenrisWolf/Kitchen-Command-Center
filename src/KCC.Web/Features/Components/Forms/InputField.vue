@@ -18,5 +18,5 @@
 </script>
 
 <template>
-  <input class="h-12 w-full rounded-2xl bg-desk-2 px-4 py-2 placeholder:text-ink-soft" v-bind="$attrs" v-model="model" />
+  <input class="h-12 w-full rounded-2xl border border-edge-strong bg-paper-2 px-4 py-2 placeholder:text-ink-soft" v-bind="$attrs" v-model="model" />
 </template>

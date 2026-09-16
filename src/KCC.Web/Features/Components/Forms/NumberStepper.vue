@@ -154,7 +154,7 @@
     </button>
 
     <label
-      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl bg-desk-2 px-2 outline-focus focus-within:outline-blue"
+      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl border border-edge-strong bg-paper-2 px-2 outline-focus focus-within:outline-focus"
     >
       <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
       <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
