@@ -16,24 +16,24 @@ public enum Spacing
 
 public enum SectionBackgroundColorOptions
 {
-    [TailwindBackgroundColor(TailwindColor.Bone)]
-    Bone,
-    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.FourHundred)]
-    Surface400,
-    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.FiveHundred)]
-    Surface500,
-    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.SixHundred)]
-    Surface600,
-    [TailwindBackgroundColor(TailwindColor.Surface, TailwindShade.SevenHundred)]
-    Surface700,
-}
-
-public enum SectionTextColorOptions
-{
-    [TailwindTextColor(TailwindColor.Bone)]
-    Bone,
-    [TailwindTextColor(TailwindColor.Onyx)]
-    Onyx,
+    [TailwindBackgroundColor(TailwindColor.Desk)]
+    Desk,
+    [TailwindBackgroundColor(TailwindColor.Paper)]
+    Paper,
+    [TailwindBackgroundColor(TailwindColor.PaperTwo)]
+    PaperTwo,
+    [TailwindBackgroundColor(TailwindColor.Peach)]
+    Peach,
+    [TailwindBackgroundColor(TailwindColor.Yellow)]
+    Yellow,
+    [TailwindBackgroundColor(TailwindColor.Green)]
+    Green,
+    [TailwindBackgroundColor(TailwindColor.Teal)]
+    Teal,
+    [TailwindBackgroundColor(TailwindColor.Sky)]
+    Sky,
+    [TailwindBackgroundColor(TailwindColor.Lavender)]
+    Lavender,
 }
 
 public class BaseSectionProperties : ISectionProperties
@@ -51,15 +51,7 @@ public class BaseSectionProperties : ISectionProperties
         DataProviderType = typeof(EnumDropDownOptionsProvider<SectionBackgroundColorOptions>)
     )]
     public string BackgroundColor { get; set; } =
-        SectionBackgroundColorOptions.Bone.GetTailwindStyle();
-
-    [RequiredValidationRule]
-    [DropDownComponent(
-        Order = 2,
-        Label = "Text Color",
-        DataProviderType = typeof(EnumDropDownOptionsProvider<SectionTextColorOptions>)
-    )]
-    public string TextColor { get; set; } = SectionTextColorOptions.Onyx.GetTailwindStyle();
+        SectionBackgroundColorOptions.Desk.GetTailwindStyle();
 
     [RequiredValidationRule]
     [DropDownComponent(Order = 3, Label = "Content Width", Options = "Thin\nContainer\nBreakout\nFull Width")]

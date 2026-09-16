@@ -2,10 +2,16 @@ namespace KCC.Web.Features.Tailwind;
 
 public enum TailwindColor
 {
-    None = 0,
-    Onyx,
-    Bone,
-    Surface,
+    Desk,
+    DeskTwo,
+    Paper,
+    PaperTwo,
+    Ink,
+    InkSoft,
+    InkOnWash,
+    Marker,
+    MarkerInk,
+
     Rosewater,
     Flamingo,
     Pink,
@@ -22,19 +28,18 @@ public enum TailwindColor
     Lavender,
 }
 
-public enum TailwindShade
+public static class TailwindColorExtensions
 {
-    None = 0,
-    Fifty = 50,
-    OneHundred = 100,
-    TwoHundred = 200,
-    ThreeHundred = 300,
-    FourHundred = 400,
-    FiveHundred = 500,
-    SixHundred = 600,
-    SevenHundred = 700,
-    EightHundred = 800,
-    NineHundred = 900,
+    // Enum names cannot spell hyphens or digits, so the multi-word roles map by hand.
+    public static string ToToken(this TailwindColor color) => color switch
+    {
+        TailwindColor.DeskTwo => "desk-2",
+        TailwindColor.PaperTwo => "paper-2",
+        TailwindColor.InkSoft => "ink-soft",
+        TailwindColor.InkOnWash => "ink-on-wash",
+        TailwindColor.MarkerInk => "marker-ink",
+        _ => color.ToString().ToLowerInvariant(),
+    };
 }
 
 [AttributeUsage(AttributeTargets.Field)]
@@ -45,32 +50,7 @@ public class TailwindStyleAttribute(string tailwindStyle = "") : Attribute
     public virtual string GetTailwindStyle() => tailwindStyle;
 }
 
-public abstract class TailwindColorAttribute(
-    TailwindColor color,
-    TailwindShade shade = TailwindShade.None
-) : TailwindStyleAttribute
+public class TailwindBackgroundColorAttribute(TailwindColor color) : TailwindStyleAttribute
 {
-    private readonly TailwindColor color = color;
-    private readonly TailwindShade shade = shade;
-
-    public override string GetTailwindStyle() =>
-        shade != TailwindShade.None
-            ? $"{color.ToString().ToLowerInvariant()}-{(int)shade}"
-            : $"{color.ToString().ToLowerInvariant()}";
-}
-
-public class TailwindBackgroundColorAttribute(
-    TailwindColor color,
-    TailwindShade shade = TailwindShade.None
-) : TailwindColorAttribute(color, shade)
-{
-    public override string GetTailwindStyle() => $"bg-{base.GetTailwindStyle()}";
-}
-
-public class TailwindTextColorAttribute(
-    TailwindColor color,
-    TailwindShade shade = TailwindShade.None
-) : TailwindColorAttribute(color, shade)
-{
-    public override string GetTailwindStyle() => $"text-{base.GetTailwindStyle()}";
+    public override string GetTailwindStyle() => $"bg-{color.ToToken()}";
 }
