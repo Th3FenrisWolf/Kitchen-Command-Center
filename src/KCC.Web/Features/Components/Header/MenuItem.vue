@@ -54,7 +54,7 @@
     v-if="item.url"
     :href="item.url.stripTilde()"
     :target="item.target"
-    class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-paper-2 px-4 py-2 font-casual text-2xl font-bold uppercase"
+    class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl px-4 py-2 font-casual text-2xl font-bold text-ink uppercase"
   >
     {{ item.displayText }}
   </a>
@@ -62,13 +62,13 @@
     <button
       type="button"
       @click="toggle"
-      class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl bg-paper-2 px-4 py-2 font-casual text-2xl font-bold uppercase"
+      class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl px-4 py-2 font-casual text-2xl font-bold text-ink uppercase"
     >
       {{ item.displayText }}
     </button>
     <div
       :class="[
-        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden rounded-b-3xl bg-paper text-ink transition-all duration-500',
+        'sk-sheet absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden transition-all duration-500',
         isOpen ? 'max-h-96' : 'max-h-0',
       ]"
     >
