@@ -206,7 +206,7 @@
             data-test="cook-prev"
             :disabled="isFirst"
             v-ink="'button'"
-            class="sk-btn sk-btn--ghost disabled:cursor-not-allowed disabled:opacity-40"
+            class="sk-btn sk-btn--ghost min-h-12 disabled:cursor-not-allowed disabled:opacity-40"
             @click="prev"
           >
             <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i> <ResourceString for="Previous" />
@@ -229,7 +229,7 @@
             data-test="cook-next"
             :disabled="isLast"
             v-ink="'button'"
-            class="sk-btn sk-btn--ghost disabled:cursor-not-allowed disabled:opacity-40"
+            class="sk-btn sk-btn--ghost min-h-12 disabled:cursor-not-allowed disabled:opacity-40"
             @click="next"
           >
             <ResourceString for="Next" /> <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
