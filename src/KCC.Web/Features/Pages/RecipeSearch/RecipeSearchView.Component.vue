@@ -114,7 +114,7 @@
 
     <AppLink
       :href="createRecipeUrl"
-      class="inline-flex flex-none items-center gap-2 rounded-2xl bg-surface-500 px-4 py-2 font-bold text-bone transition-colors hover:bg-surface-400"
+      class="inline-flex flex-none items-center gap-2 rounded-2xl bg-paper px-4 py-2 font-bold text-ink transition-colors hover:bg-paper-2"
     >
       <i class="fa-solid fa-plus"></i> <ResourceString for="CreateRecipe" />
     </AppLink>
@@ -123,8 +123,8 @@
   <RecipeSearchHeader v-model:draft="draft" @submit="onSubmit" @clear="onClearSearch" />
 
   <button
-    class="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-onyx px-4 py-2 text-sm font-bold lg:hidden"
-    :class="sheetOpen ? 'bg-onyx text-bone' : 'text-onyx'"
+    class="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-ink px-4 py-2 text-sm font-bold lg:hidden"
+    :class="sheetOpen ? 'bg-marker text-marker-ink' : 'text-ink'"
     :aria-expanded="sheetOpen"
     aria-controls="recipe-filters"
     @click="sheetOpen = !sheetOpen"
@@ -133,16 +133,13 @@
     <span
       v-if="activeCount"
       class="grid min-w-5 place-items-center rounded-full px-1.5 text-xs"
-      :class="sheetOpen ? 'bg-bone text-onyx' : 'bg-onyx text-bone'"
+      :class="sheetOpen ? 'bg-paper-2 text-ink' : 'bg-marker text-marker-ink'"
       >{{ activeCount }}</span
     >
   </button>
 
   <div class="grid items-start gap-6 lg:grid-cols-[244px_1fr]">
-    <aside
-      id="recipe-filters"
-      :class="['rounded-3xl bg-bone p-6 shadow-primary lg:sticky lg:top-4 lg:block', { hidden: !sheetOpen }]"
-    >
+    <aside id="recipe-filters" :class="['rounded-3xl bg-paper-2 p-6 lg:sticky lg:top-4 lg:block', { hidden: !sheetOpen }]">
       <RecipeFilters
         :category-facets="facets.category"
         :diet-facets="facets.diet"
@@ -177,7 +174,7 @@
           <RecipeListRow v-for="recipe in listed" :key="recipe.slug" :recipe />
         </div>
 
-        <div v-if="hasMore()" :ref="sentinel" class="flex items-center justify-center py-6 text-sm text-onyx-light">
+        <div v-if="hasMore()" :ref="sentinel" class="flex items-center justify-center py-6 text-sm text-ink-soft">
           <span v-if="loading" class="flex items-center gap-2.5">
             <i class="fa-solid fa-circle-notch fa-spin opacity-60"></i> <ResourceString for="LoadingMore" />
           </span>

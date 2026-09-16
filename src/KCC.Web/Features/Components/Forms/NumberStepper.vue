@@ -142,7 +142,7 @@
   <div class="flex items-center gap-2">
     <button
       type="button"
-      class="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-surface-500 text-lg text-bone transition-colors hover:bg-surface-400 active:translate-y-px disabled:cursor-not-allowed disabled:bg-overlay-300"
+      class="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-marker text-lg text-marker-ink transition-opacity hover:opacity-90 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
       :aria-label="decreaseLabel"
       :disabled="disabled || atMin"
       @pointerdown="startHold(-1, $event)"
@@ -154,7 +154,7 @@
     </button>
 
     <label
-      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl bg-bone-dark px-2 outline-focus focus-within:outline-blue"
+      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl bg-desk-2 px-2 outline-focus focus-within:outline-blue"
     >
       <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
       <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
@@ -174,12 +174,12 @@
         @focus="onFocus"
         @blur="onBlur"
       />
-      <span v-if="unit" class="shrink-0 text-sm text-onyx-light">{{ unit }}</span>
+      <span v-if="unit" class="shrink-0 text-sm text-ink-soft">{{ unit }}</span>
     </label>
 
     <button
       type="button"
-      class="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-surface-500 text-lg text-bone transition-colors hover:bg-surface-400 active:translate-y-px disabled:cursor-not-allowed disabled:bg-overlay-300"
+      class="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-marker text-lg text-marker-ink transition-opacity hover:opacity-90 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
       :aria-label="increaseLabel"
       :disabled="disabled || atMax"
       @pointerdown="startHold(1, $event)"

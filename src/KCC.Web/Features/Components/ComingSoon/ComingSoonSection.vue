@@ -29,7 +29,7 @@
 
 <template>
   <section
-    class="mt-2 grid place-items-center gap-4 rounded-3xl border-2 border-dashed border-bone-dark px-4 py-16 text-center text-onyx-light"
+    class="mt-2 grid place-items-center gap-4 rounded-3xl border-2 border-dashed border-rule px-4 py-16 text-center text-ink-soft"
   >
     <i v-if="icon" :class="icon"></i>
     <ComingSoonBadge />

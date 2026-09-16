@@ -121,7 +121,7 @@
         data-test="cook-mode-open-desktop"
         :disabled="!hasInstructions"
         :title="hasInstructions ? rs('CookMode') : rs('ComingSoon')"
-        class="inline-flex items-center gap-2 rounded-2xl bg-surface-500 px-3 py-2 text-bone transition-opacity hover:bg-surface-400 disabled:cursor-not-allowed disabled:opacity-60"
+        class="inline-flex items-center gap-2 rounded-2xl bg-paper px-3 py-2 text-ink transition-opacity hover:bg-paper-2 disabled:cursor-not-allowed disabled:opacity-60"
         @click="openCookMode"
       >
         <i class="fa-solid fa-play text-sm" aria-hidden="true"></i>
@@ -153,7 +153,7 @@
 
     <template v-if="tags.length" #footer>
       <div class="mt-4 flex flex-wrap gap-2">
-        <Badge v-for="tag in tags" :key="tag" :class="backgroundColorFor(tag) + ' text-onyx'">{{ tag }}</Badge>
+        <Badge v-for="tag in tags" :key="tag" :class="backgroundColorFor(tag) + ' text-ink'">{{ tag }}</Badge>
       </div>
     </template>
   </DetailHero>

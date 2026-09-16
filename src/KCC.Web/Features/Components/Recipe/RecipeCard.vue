@@ -33,39 +33,39 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
-    class="recipe-card grid grid-rows-subgrid rounded-3xl bg-bone p-3 text-onyx no-underline shadow-primary transition-all focus-within:-translate-y-1 focus-within:shadow-primary-raised hover:-translate-y-1 hover:shadow-primary-raised"
+    class="recipe-card grid grid-rows-subgrid rounded-3xl bg-paper-2 p-3 text-ink no-underline transition-all focus-within:-translate-y-1 hover:-translate-y-1"
   >
     <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="recipe-card-tile w-full text-5xl" />
 
-    <span class="recipe-card-panel relative grid grid-rows-subgrid rounded-2xl bg-surface-500 px-4 pt-2 pb-4 text-bone">
-      <span class="recipe-card-notch absolute left-0 bg-surface-500">
+    <span class="recipe-card-panel relative grid grid-rows-subgrid rounded-2xl bg-paper px-4 pt-2 pb-4 text-ink">
+      <span class="recipe-card-notch absolute left-0 bg-paper">
         <span
-          class="recipe-card-notch-pill absolute flex w-full items-center justify-center gap-1.5 overflow-hidden rounded-full bg-bone px-3 font-bold whitespace-nowrap text-onyx"
+          class="recipe-card-notch-pill absolute flex w-full items-center justify-center gap-1.5 overflow-hidden rounded-full bg-paper-2 px-3 font-bold whitespace-nowrap text-ink"
           :data-testid="card.notch.stat === 'rating' ? 'recipe-card-rating' : undefined"
           :data-average-rating="card.notch.stat === 'rating' ? card.rating?.average : undefined"
         >
-          <i :class="[card.notch.icon, card.notch.stat === 'rating' && 'text-peach']"></i> {{ card.notch.text }}
+          <i :class="[card.notch.icon, card.notch.stat === 'rating' && 'text-rating-ink']"></i> {{ card.notch.text }}
         </span>
       </span>
 
-      <span v-if="card.eyebrow" class="row-start-1 mt-2 text-xs font-bold tracking-wide text-bone/60 uppercase">{{
+      <span v-if="card.eyebrow" class="row-start-1 mt-2 text-xs font-bold tracking-wide text-ink/60 uppercase">{{
         card.eyebrow
       }}</span>
       <span class="row-start-2 mt-2 font-casual text-2xl">{{ card.name }}</span>
 
       <span
         v-if="unratedLabel || bodyMeta.length"
-        class="row-start-3 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-bone/70"
+        class="row-start-3 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink/70"
       >
         <span v-if="unratedLabel" class="italic">{{ unratedLabel }}</span>
         <span v-for="(item, i) in bodyMeta" :key="i"><i v-if="item.icon" :class="item.icon"></i> {{ item.text }}</span>
       </span>
 
-      <span v-if="card.subtitle" class="row-start-4 mt-2 text-sm text-bone/70">{{ card.subtitle }}</span>
-      <p v-if="card.description" class="row-start-5 mt-2 text-sm text-bone/85">{{ card.description }}</p>
+      <span v-if="card.subtitle" class="row-start-4 mt-2 text-sm text-ink/70">{{ card.subtitle }}</span>
+      <p v-if="card.description" class="row-start-5 mt-2 text-sm text-ink/85">{{ card.description }}</p>
 
       <span v-if="card.tags.length" class="row-start-6 mt-3 flex flex-wrap gap-1">
-        <Badge v-for="tag in card.tags" :key="tag" class="bg-bone/15 text-bone">{{ tag }}</Badge>
+        <Badge v-for="tag in card.tags" :key="tag" class="bg-paper-2/15 text-ink">{{ tag }}</Badge>
       </span>
     </span>
   </AppLink>

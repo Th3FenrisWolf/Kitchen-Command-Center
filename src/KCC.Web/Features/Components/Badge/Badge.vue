@@ -11,7 +11,7 @@
 
   export interface BadgeProps {
     /**
-     * @default 'bg-bone-dark text-onyx-light'
+     * @default 'bg-desk-2 text-ink-soft'
      */
     class?: HTMLAttributes['class']
   }
@@ -23,7 +23,7 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { class: className = 'bg-bone-dark text-onyx-light' } = defineProps<BadgeProps>()
+  const { class: className = 'bg-desk-2 text-ink-soft' } = defineProps<BadgeProps>()
   defineSlots<BadgeSlots>()
 </script>
 

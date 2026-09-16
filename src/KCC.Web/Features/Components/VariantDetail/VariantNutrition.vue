@@ -62,23 +62,23 @@
 </script>
 
 <template>
-  <div class="rounded-3xl bg-bone p-6 shadow-primary">
+  <div class="rounded-3xl bg-paper-2 p-6">
     <div class="mb-3 flex items-baseline justify-between">
       <h2 class="font-casual text-xl tracking-[1px]"><ResourceString for="Nutrition" /></h2>
-      <span class="text-xs text-onyx-light"><ResourceString for="PerServing" /></span>
+      <span class="text-xs text-ink-soft"><ResourceString for="PerServing" /></span>
     </div>
 
     <dl v-if="provided" class="grid grid-cols-2 gap-3">
-      <div v-for="row in rows" :key="row.key" class="flex flex-col rounded-2xl bg-bone-dark p-2.5 text-center">
-        <dt class="order-2 mt-1 text-xs text-onyx-light">{{ row.label }}</dt>
+      <div v-for="row in rows" :key="row.key" class="flex flex-col rounded-2xl bg-desk-2 p-2.5 text-center">
+        <dt class="order-2 mt-1 text-xs text-ink-soft">{{ row.label }}</dt>
         <dd class="order-1 font-casual text-2xl leading-none">
-          {{ row.value }}<span v-if="row.unit" class="text-base text-onyx-light"> {{ row.unit }}</span>
+          {{ row.value }}<span v-if="row.unit" class="text-base text-ink-soft"> {{ row.unit }}</span>
         </dd>
       </div>
     </dl>
 
-    <div v-else class="grid place-items-center rounded-2xl bg-bone-dark/60 px-4 py-8 text-center">
-      <p class="text-sm text-onyx-light"><ResourceString for="NutritionNotProvided" /></p>
+    <div v-else class="grid place-items-center rounded-2xl bg-desk-2/60 px-4 py-8 text-center">
+      <p class="text-sm text-ink-soft"><ResourceString for="NutritionNotProvided" /></p>
     </div>
   </div>
 </template>

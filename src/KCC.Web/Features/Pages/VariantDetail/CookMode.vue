@@ -145,21 +145,21 @@
   <Teleport v-if="isMounted" to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex flex-col bg-bone"
+      class="fixed inset-0 z-50 flex flex-col bg-paper-2"
       role="dialog"
       aria-modal="true"
       :aria-label="t('CookMode')"
     >
       <div ref="panel" tabindex="-1" class="mx-auto flex h-full w-full max-w-3xl flex-col px-5 py-6 outline-none">
         <header class="flex items-center justify-between gap-4">
-          <p class="font-bold text-onyx" aria-live="polite" data-test="cook-progress">{{ progress }}</p>
+          <p class="font-bold text-ink" aria-live="polite" data-test="cook-progress">{{ progress }}</p>
           <div v-if="hasScaler" class="flex items-center gap-2">
-            <span class="text-sm font-bold text-onyx-light"><ResourceString for="Servings" /></span>
+            <span class="text-sm font-bold text-ink-soft"><ResourceString for="Servings" /></span>
             <button
               type="button"
               data-test="cook-servings-dec"
               :aria-label="t('Fewer')"
-              class="grid h-8 w-8 cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-bone"
+              class="grid h-8 w-8 cursor-pointer place-items-center rounded-full border-none bg-paper text-ink"
               @click="decServings"
             >
               <i class="fa-solid fa-minus text-xs" aria-hidden="true"></i>
@@ -169,7 +169,7 @@
               type="button"
               data-test="cook-servings-inc"
               :aria-label="t('More')"
-              class="grid h-8 w-8 cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-bone"
+              class="grid h-8 w-8 cursor-pointer place-items-center rounded-full border-none bg-paper text-ink"
               @click="incServings"
             >
               <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
@@ -179,7 +179,7 @@
             type="button"
             data-test="cook-close"
             :aria-label="t('Close')"
-            class="grid h-10 w-10 cursor-pointer place-items-center rounded-full border-none bg-surface-500 text-bone transition-colors hover:bg-surface-400"
+            class="grid h-10 w-10 cursor-pointer place-items-center rounded-full border-none bg-paper text-ink transition-colors hover:bg-paper-2"
             @click="close"
           >
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
@@ -202,7 +202,7 @@
             type="button"
             data-test="cook-prev"
             :disabled="isFirst"
-            class="flex items-center gap-2 rounded-2xl bg-surface-500 px-5 py-3 font-bold text-bone transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            class="flex items-center gap-2 rounded-2xl bg-paper px-5 py-3 font-bold text-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             @click="prev"
           >
             <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i> <ResourceString for="Previous" />
@@ -213,7 +213,7 @@
             data-test="cook-check"
             :aria-pressed="!!checked[index]"
             class="flex items-center gap-2 rounded-2xl px-5 py-3 font-bold transition-colors"
-            :class="checked[index] ? 'bg-green text-onyx' : 'bg-bone-dark text-onyx'"
+            :class="checked[index] ? 'bg-green text-ink-on-wash' : 'bg-desk-2 text-ink-on-wash'"
             @click="toggleChecked"
           >
             <i :class="checked[index] ? 'fa-solid fa-check' : 'fa-regular fa-circle'" class="text-sm" aria-hidden="true"></i>
@@ -224,7 +224,7 @@
             type="button"
             data-test="cook-next"
             :disabled="isLast"
-            class="flex items-center gap-2 rounded-2xl bg-surface-500 px-5 py-3 font-bold text-bone transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            class="flex items-center gap-2 rounded-2xl bg-paper px-5 py-3 font-bold text-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             @click="next"
           >
             <ResourceString for="Next" /> <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>

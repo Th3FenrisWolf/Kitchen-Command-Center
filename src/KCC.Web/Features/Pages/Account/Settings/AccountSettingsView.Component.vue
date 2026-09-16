@@ -96,7 +96,7 @@
       </template>
 
       <template #action-button>
-        <AppLink :href="backUrl" class="rounded-3xl bg-bone px-4 py-2 text-xl text-onyx">
+        <AppLink :href="backUrl" class="rounded-3xl bg-paper-2 px-4 py-2 text-xl text-ink">
           <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="BackToProfile" />
         </AppLink>
@@ -105,33 +105,35 @@
 
     <div class="mb-8 flex gap-8 max-lg:flex-col">
       <!-- Profile card -->
-      <form class="grid basis-full gap-4 rounded-3xl bg-bone p-6 shadow-primary" @submit.prevent="saveProfile">
+      <form class="grid basis-full gap-4 rounded-3xl bg-paper-2 p-6" @submit.prevent="saveProfile">
         <h2 class="text-xl"><ResourceString for="Profile" /></h2>
 
         <label class="grid gap-2">
-          <span class="text-sm text-onyx-light"><ResourceString for="FirstName" /></span>
+          <span class="text-sm text-ink-soft"><ResourceString for="FirstName" /></span>
           <InputField type="text" v-model="firstName" name="FirstName" autocomplete="given-name" />
         </label>
         <label class="grid gap-2">
-          <span class="text-sm text-onyx-light"><ResourceString for="LastName" /></span>
+          <span class="text-sm text-ink-soft"><ResourceString for="LastName" /></span>
           <InputField type="text" v-model="lastName" name="LastName" autocomplete="family-name" />
         </label>
 
         <label class="grid gap-2">
-          <span class="text-sm text-onyx-light">
+          <span class="text-sm text-ink-soft">
             <ResourceString for="Email" /> &middot; <ResourceString for="EmailComingSoon" />
           </span>
           <InputField readonly type="email" :model-value="email" class="cursor-default opacity-70" />
         </label>
 
-        <p v-if="profileMessage" :class="profileMessage.ok ? 'text-green' : 'text-maroon'">{{ profileMessage.text }}</p>
+        <p v-if="profileMessage" :class="profileMessage.ok ? 'text-success-ink' : 'text-danger-ink'">
+          {{ profileMessage.text }}
+        </p>
 
         <div class="flex justify-between">
-          <span class="text-xs text-onyx-light"><ResourceString for="EmailComingSoonNote" /></span>
+          <span class="text-xs text-ink-soft"><ResourceString for="EmailComingSoonNote" /></span>
           <button
             :disabled="profileSubmitting"
             type="submit"
-            class="cursor-pointer justify-self-end rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
+            class="cursor-pointer justify-self-end rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
           >
             <ResourceString for="SaveChanges" />
           </button>
@@ -139,35 +141,37 @@
       </form>
 
       <!-- Password card -->
-      <form class="grid basis-full gap-4 rounded-3xl bg-bone p-6 shadow-primary" @submit.prevent="changePassword">
+      <form class="grid basis-full gap-4 rounded-3xl bg-paper-2 p-6" @submit.prevent="changePassword">
         <h2 class="text-xl"><ResourceString for="ChangePassword" /></h2>
 
         <label class="grid gap-2">
-          <span class="text-sm text-onyx-light"><ResourceString for="CurrentPassword" /></span>
+          <span class="text-sm text-ink-soft"><ResourceString for="CurrentPassword" /></span>
           <InputField required type="password" v-model="currentPassword" autocomplete="current-password" />
         </label>
         <label class="grid gap-2">
-          <span class="text-sm text-onyx-light"><ResourceString for="NewPassword" /></span>
+          <span class="text-sm text-ink-soft"><ResourceString for="NewPassword" /></span>
           <InputField required type="password" v-model="newPassword" autocomplete="new-password" />
         </label>
         <label class="grid gap-2">
-          <span class="text-sm text-onyx-light"><ResourceString for="ConfirmNewPassword" /></span>
+          <span class="text-sm text-ink-soft"><ResourceString for="ConfirmNewPassword" /></span>
           <InputField required type="password" v-model="confirmPassword" autocomplete="new-password" />
         </label>
 
-        <p v-if="passwordMessage" :class="passwordMessage.ok ? 'text-green' : 'text-maroon'">{{ passwordMessage.text }}</p>
+        <p v-if="passwordMessage" :class="passwordMessage.ok ? 'text-success-ink' : 'text-danger-ink'">
+          {{ passwordMessage.text }}
+        </p>
 
         <button
           :disabled="passwordSubmitting"
           type="submit"
-          class="cursor-pointer justify-self-end rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
+          class="cursor-pointer justify-self-end rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
         >
           <ResourceString for="UpdatePassword" />
         </button>
       </form>
     </div>
 
-    <a :href="logoutUrl" class="justify-self-end rounded-2xl border border-red px-4 py-2 text-red">
+    <a :href="logoutUrl" class="justify-self-end rounded-2xl border border-danger-ink px-4 py-2 text-danger-ink">
       <ResourceString for="SignOut" />
     </a>
   </section>

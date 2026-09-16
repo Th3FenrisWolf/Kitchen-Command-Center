@@ -127,10 +127,10 @@
     ref="track"
     role="radiogroup"
     :aria-label="ariaLabel"
-    class="relative inline-flex items-center rounded-2xl bg-bone-dark p-1"
+    class="relative inline-flex items-center rounded-2xl bg-desk-2 p-1"
   >
     <span
-      class="seg-thumb pointer-events-none absolute top-0 left-0 rounded-xl bg-surface-500"
+      class="seg-thumb pointer-events-none absolute top-0 left-0 rounded-xl bg-marker"
       :class="{ 'is-animated': animate }"
       :style="[thumb, { opacity: showThumb ? 1 : 0 }]"
       aria-hidden="true"
@@ -147,10 +147,10 @@
       :title="opt.title"
       :data-testid="opt.testId"
       :tabindex="opt.value === model ? 0 : -1"
-      class="relative z-1 flex cursor-pointer items-center justify-center border-none font-bold whitespace-nowrap transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-onyx"
+      class="relative z-1 flex cursor-pointer items-center justify-center border-none font-bold whitespace-nowrap transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
       :class="[
         variant === 'icon' ? 'h-8 w-10 rounded-xl text-[15px]' : 'rounded-xl px-4 py-2 text-sm',
-        opt.value === model ? (ready ? 'text-bone' : 'bg-surface-500 text-bone') : 'text-onyx-light hover:text-onyx',
+        opt.value === model ? (ready ? 'text-marker-ink' : 'bg-marker text-marker-ink') : 'text-ink-soft hover:text-ink',
       ]"
       @click="model = opt.value"
       @keydown="onKeydown($event, i)"

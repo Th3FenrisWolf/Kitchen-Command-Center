@@ -45,19 +45,19 @@
 </script>
 
 <template>
-  <div class="sticky top-2 z-10 mt-4 flex flex-wrap items-center gap-3 rounded-2xl bg-bone p-3 shadow-light">
+  <div class="sticky top-2 z-10 mt-4 flex flex-wrap items-center gap-3 rounded-2xl bg-paper-2 p-3">
     <div class="relative min-w-50 flex-1">
-      <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-4 -translate-y-1/2 text-sm text-onyx-light"></i>
+      <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-4 -translate-y-1/2 text-sm text-ink-soft"></i>
       <input
         v-model="search"
         type="search"
         :placeholder="rs('SearchVariants')"
-        class="w-full rounded-2xl border-none bg-bone-dark py-2.5 pr-4 pl-10 text-base text-onyx outline-none"
+        class="w-full rounded-2xl border-none bg-desk-2 py-2.5 pr-4 pl-10 text-base text-ink outline-none"
       />
     </div>
 
     <div class="flex items-center gap-2">
-      <span class="text-sm font-bold text-onyx-light"><ResourceString for="Sort" /></span>
+      <span class="text-sm font-bold text-ink-soft"><ResourceString for="Sort" /></span>
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="rs('Sort')" />
     </div>
 
@@ -72,7 +72,7 @@
       :key="option"
       type="button"
       class="cursor-pointer rounded-full border-2 px-4 py-1.5 text-sm font-bold transition-colors"
-      :class="tag === option ? 'border-onyx bg-onyx text-bone' : 'border-bone-dark text-onyx'"
+      :class="tag === option ? 'border-marker bg-marker text-marker-ink' : 'border-rule text-ink'"
       @click="tag = option"
     >
       {{ option || rs('All') }}

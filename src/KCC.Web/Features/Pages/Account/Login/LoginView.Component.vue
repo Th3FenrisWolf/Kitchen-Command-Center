@@ -91,7 +91,7 @@
 
 <template>
   <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
-    <div class="relative flex w-3/4 overflow-hidden rounded-3xl shadow-primary">
+    <div class="relative flex w-3/4 overflow-hidden rounded-3xl">
       <div
         :class="[
           'relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
@@ -100,7 +100,7 @@
       >
         <h2 class="text-4.5xl"><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
 
-        <p :class="['overflow-hidden text-red transition-all duration-500', formError ? 'h-8' : 'h-0']">
+        <p :class="['overflow-hidden text-danger-ink transition-all duration-500', formError ? 'h-8' : 'h-0']">
           {{ formError }}
         </p>
 
@@ -150,7 +150,7 @@
 
           <button
             :disabled="isSubmitting"
-            class="w-max cursor-pointer justify-self-center rounded-2xl bg-surface-500 px-4 py-2 text-bone disabled:opacity-50"
+            class="w-max cursor-pointer justify-self-center rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
             type="submit"
           >
             <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
@@ -160,7 +160,7 @@
 
       <div
         :class="[
-          'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-surface-500 p-12 text-center transition-all duration-500',
+          'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-paper p-12 text-center transition-all duration-500',
           swap && 'right-[60%]',
         ]"
       >
@@ -170,22 +170,22 @@
             swap ? 'left-[150%]' : 'left-[-150%]',
           ]"
         >
-          <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="isSignIn">
+          <div class="grid h-max w-1/4 gap-8 self-center text-ink" :aria-hidden="isSignIn">
             <h3 class="font-casual text-4.5xl"><ResourceString for="HaveAccount" /></h3>
             <p><ResourceString for="HaveAccountDescription" /></p>
             <button
-              class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
+              class="w-max cursor-pointer justify-self-center rounded-2xl bg-paper-2 px-4 py-2 text-ink"
               @click="swap = !swap"
               type="button"
             >
               <ResourceString for="SignIn" />
             </button>
           </div>
-          <div class="grid h-max w-1/4 gap-8 self-center text-bone" :aria-hidden="swap">
+          <div class="grid h-max w-1/4 gap-8 self-center text-ink" :aria-hidden="swap">
             <h3 class="font-casual text-4.5xl"><ResourceString for="NewHere" /></h3>
             <p><ResourceString for="NewHereDescription" /></p>
             <button
-              class="w-max cursor-pointer justify-self-center rounded-2xl bg-bone px-4 py-2 text-onyx"
+              class="w-max cursor-pointer justify-self-center rounded-2xl bg-paper-2 px-4 py-2 text-ink"
               @click="swap = !swap"
               type="button"
             >

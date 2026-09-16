@@ -95,7 +95,7 @@
 
     <AppLink
       :href="addVariantHref"
-      class="inline-flex items-center gap-2 rounded-2xl bg-surface-500 px-3 py-2 text-bone transition-colors hover:bg-surface-400"
+      class="inline-flex items-center gap-2 rounded-2xl bg-paper px-3 py-2 text-ink transition-colors hover:bg-paper-2"
     >
       <ResourceString for="AddVariant" />
       <i class="fa-solid fa-plus text-lg" />
@@ -126,7 +126,7 @@
     <div class="mb-4 flex items-baseline justify-between gap-4">
       <h2>
         <ResourceString for="AllVariants" />
-        <span class="ml-2 font-hazelnut text-lg font-medium text-onyx-light">{{ resultLabel }}</span>
+        <span class="ml-2 font-hazelnut text-lg font-medium text-ink-soft">{{ resultLabel }}</span>
       </h2>
     </div>
 
