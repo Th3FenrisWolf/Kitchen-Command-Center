@@ -145,7 +145,7 @@
   <Teleport v-if="isMounted" to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex flex-col bg-paper-2"
+      class="fixed inset-0 z-50 flex flex-col bg-desk"
       role="dialog"
       aria-modal="true"
       :aria-label="t('CookMode')"
@@ -159,7 +159,8 @@
               type="button"
               data-test="cook-servings-dec"
               :aria-label="t('Fewer')"
-              class="grid h-8 w-8 cursor-pointer place-items-center rounded-full border-none bg-paper text-ink"
+              v-ink="'button'"
+              class="sk-btn sk-btn--ghost size-12"
               @click="decServings"
             >
               <i class="fa-solid fa-minus text-xs" aria-hidden="true"></i>
@@ -169,7 +170,8 @@
               type="button"
               data-test="cook-servings-inc"
               :aria-label="t('More')"
-              class="grid h-8 w-8 cursor-pointer place-items-center rounded-full border-none bg-paper text-ink"
+              v-ink="'button'"
+              class="sk-btn sk-btn--ghost size-12"
               @click="incServings"
             >
               <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
@@ -179,7 +181,8 @@
             type="button"
             data-test="cook-close"
             :aria-label="t('Close')"
-            class="grid h-10 w-10 cursor-pointer place-items-center rounded-full border-none bg-paper text-ink transition-colors hover:bg-paper-2"
+            v-ink="'button'"
+            class="sk-btn sk-btn--ghost size-12"
             @click="close"
           >
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
@@ -202,7 +205,8 @@
             type="button"
             data-test="cook-prev"
             :disabled="isFirst"
-            class="flex items-center gap-2 rounded-2xl bg-paper px-5 py-3 font-bold text-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            v-ink="'button'"
+            class="sk-btn sk-btn--ghost disabled:cursor-not-allowed disabled:opacity-40"
             @click="prev"
           >
             <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i> <ResourceString for="Previous" />
@@ -213,7 +217,7 @@
             data-test="cook-check"
             :aria-pressed="!!checked[index]"
             class="flex items-center gap-2 rounded-2xl px-5 py-3 font-bold transition-colors"
-            :class="checked[index] ? 'bg-green text-ink-on-wash' : 'bg-desk-2 text-ink-on-wash'"
+            :class="checked[index] ? 'bg-marker text-marker-ink' : 'bg-paper-2 text-ink'"
             @click="toggleChecked"
           >
             <i :class="checked[index] ? 'fa-solid fa-check' : 'fa-regular fa-circle'" class="text-sm" aria-hidden="true"></i>
@@ -224,7 +228,8 @@
             type="button"
             data-test="cook-next"
             :disabled="isLast"
-            class="flex items-center gap-2 rounded-2xl bg-paper px-5 py-3 font-bold text-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            v-ink="'button'"
+            class="sk-btn sk-btn--ghost disabled:cursor-not-allowed disabled:opacity-40"
             @click="next"
           >
             <ResourceString for="Next" /> <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
