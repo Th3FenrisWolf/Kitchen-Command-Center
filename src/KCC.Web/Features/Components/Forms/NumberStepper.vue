@@ -142,7 +142,8 @@
   <div class="flex items-center gap-2">
     <button
       type="button"
-      class="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-marker text-lg text-marker-ink transition-opacity hover:opacity-90 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
+      class="sk-btn sk-btn--ghost size-12 shrink-0 text-lg active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
+      v-ink="'button'"
       :aria-label="decreaseLabel"
       :disabled="disabled || atMin"
       @pointerdown="startHold(-1, $event)"
@@ -179,7 +180,8 @@
 
     <button
       type="button"
-      class="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-marker text-lg text-marker-ink transition-opacity hover:opacity-90 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
+      class="sk-btn sk-btn--ghost size-12 shrink-0 text-lg active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
+      v-ink="'button'"
       :aria-label="increaseLabel"
       :disabled="disabled || atMax"
       @pointerdown="startHold(1, $event)"
