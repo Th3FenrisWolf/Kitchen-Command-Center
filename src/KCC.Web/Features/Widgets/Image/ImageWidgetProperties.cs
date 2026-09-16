@@ -8,7 +8,7 @@ using Kentico.Xperience.Admin.Base.FormAnnotations;
     identifier: ImageWidgetProperties.IDENTIFIER,
     name: "Image",
     propertiesType: typeof(ImageWidgetProperties),
-    customViewName: "~/Features/Widgets/Image/_ImageWidget.cshtml",
+    customViewName: "~/Features/Widgets/Image/ImageWidget.cshtml",
     IconClass = "icon-picture",
     AllowCache = true
 )]
