@@ -10,33 +10,39 @@ const render = (props: Record<string, unknown> = {}) =>
     }),
   )
 
-const drawerClasses = (html: string) => (html.match(/class="([^"]*\brounded-2xl\b[^"]*)"/)?.[1] ?? '').split(/\s+/)
+// The drawer is found by its hook, never by a visual class, so a restyle cannot break the test. A missing
+// hook is reported here rather than as an empty class list failing some unrelated-looking color assertion.
+const drawerClasses = (html: string) => {
+  const tag = html.match(/<div[^>]*data-card-drawer[^>]*>/)?.[0]
+  expect(tag, 'no element carrying data-card-drawer was rendered').toBeDefined()
+  return (tag!.match(/class="([^"]*)"/)?.[1] ?? '').split(/\s+/)
+}
 
 describe('Card drawer colors', () => {
   it('inverts the card colors by default', async () => {
     const classes = drawerClasses(await render())
 
-    expect(classes).toContain('bg-bone')
-    expect(classes).toContain('text-surface-500')
+    expect(classes).toContain('bg-ink')
+    expect(classes).toContain('text-paper')
   })
 
   it('inverts a caller-supplied pair of card colors', async () => {
-    const classes = drawerClasses(await render({ cardColor: 'bg-peach', cardTextColor: 'text-onyx' }))
+    const classes = drawerClasses(await render({ cardColor: 'bg-peach', cardTextColor: 'text-ink-on-wash' }))
 
-    expect(classes).toContain('bg-onyx')
+    expect(classes).toContain('bg-ink-on-wash')
     expect(classes).toContain('text-peach')
   })
 
   it('prefers explicit drawer colors over the inversion', async () => {
-    const classes = drawerClasses(await render({ drawerColor: 'bg-teal', drawerTextColor: 'text-onyx' }))
+    const classes = drawerClasses(await render({ drawerColor: 'bg-teal', drawerTextColor: 'text-ink-on-wash' }))
 
     expect(classes).toContain('bg-teal')
-    expect(classes).toContain('text-onyx')
+    expect(classes).toContain('text-ink-on-wash')
   })
 
   it('omits the drawer when the slot is unfilled', async () => {
     const html = await renderToString(createSSRApp({ render: () => h(Card, null, { default: () => 'Weeknight' }) }))
 
-    expect(html).not.toContain('rounded-2xl')
+    expect(html).not.toContain('data-card-drawer')
   })
 })

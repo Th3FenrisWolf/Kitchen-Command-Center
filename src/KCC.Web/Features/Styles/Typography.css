@@ -1,6 +1,6 @@
 @layer base {
   body {
-    color: var(--color-onyx);
+    color: var(--color-ink);
     font-family: 'Hazelnut';
     font-size: 1.25rem;
     font-weight: 500;

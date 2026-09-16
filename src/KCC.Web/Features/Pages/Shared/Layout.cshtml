@@ -58,6 +58,23 @@
     }
   }
 
+  @* The ramp must be known before the first paint or light-ramp users flash the dark default. Stored choice →
+     OS preference → dark (the design's default). Phase 2 adds the toggle that writes the stored choice. *@
+  <script>
+    (function () {
+      var stored = null;
+      try {
+        stored = localStorage.getItem('kcc-theme');
+      } catch (e) {
+        /* storage blocked: fall through to the OS preference rather than losing it too */
+      }
+      var theme = stored === 'light' || stored === 'dark'
+        ? stored
+        : window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
   <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
 
   @* SFC <style> blocks are extracted into chunk CSS assets that the script tag helper never links.
@@ -74,6 +91,19 @@
 </head>
 
 <body>
+  @* Filter defs for the drawn kit's washes. Static so server-rendered washes are filtered before hydration. *@
+  <svg id="kcc-ink-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wash" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
+        <feGaussianBlur in="d" stdDeviation="1.6"></feGaussianBlur>
+      </filter>
+      <filter id="kcc-soft" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="1.4"></feGaussianBlur></filter>
+      <filter id="kcc-soft2" x="-35%" y="-35%" width="170%" height="170%"><feGaussianBlur stdDeviation="4.5"></feGaussianBlur></filter>
+    </defs>
+  </svg>
+
   @await VueSsrService.RenderVueSsrAsync(
     await Component.InvokeAsync(typeof(HeaderViewComponent)),
     RenderBody(),
