@@ -4,6 +4,7 @@
 @import '@fortawesome/fontawesome-pro/css/duotone.css';
 @import './TailwindConfig.css';
 @import './Sketch/Tokens.css';
+@import './Sketch/Ink.css';
 @import './Layout.css';
 @import './Typography.css';
 @import './RangeSlider.css';
