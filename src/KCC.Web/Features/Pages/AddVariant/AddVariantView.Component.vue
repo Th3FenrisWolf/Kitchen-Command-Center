@@ -37,6 +37,8 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
+  import Button from '~/Components/Button/Button.vue'
+  import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
   const props = defineProps<AddVariantViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'AddVariant')
@@ -113,28 +115,34 @@
     </template>
   </SmallHero>
 
-  <section v-if="submitSuccess" class="flex flex-col items-center gap-4 py-12 text-center">
+  <section
+    v-if="submitSuccess"
+    v-ink="'sheet'"
+    class="sk-sheet sk-sheet--lg sk-fold flex flex-col items-center gap-4 text-center"
+  >
+    <span class="sk-wash" style="--c: var(--color-green)" aria-hidden="true"></span>
     <ResourceString for="VariantSubmitted" as="h2" class="font-casual text-4xl" />
     <ResourceString for="VariantSubmittedMessage" as="p" class="text-lg" />
 
-    <AppLink :href="recipeSlug" class="rounded-3xl bg-paper px-6 py-3 text-xl text-ink">
+    <AppLink :href="recipeSlug" v-ink="'button'" class="sk-btn sk-btn--marker sk-btn--lg">
       <ResourceString for="BackTo" class="mr-1" />
       <span>{{ recipeName }}</span>
     </AppLink>
   </section>
 
   <section v-else>
-    <div class="mb-8 flex gap-2">
-      <div
-        v-for="stepIndex in totalSteps"
-        :key="stepIndex"
-        :class="['h-2 flex-1 rounded-full transition-colors', stepIndex <= step ? 'bg-marker' : 'bg-desk-2']"
-      />
-    </div>
+    <WizardProgress :current="step" :total="totalSteps" />
 
     <!-- Step 1: Variant Info -->
-    <form v-if="step === 1" @submit.prevent="step++" class="flex flex-col items-start gap-6">
-      <ResourceString for="VariantInfo" as="h2" class="text-2xl font-bold" />
+    <form
+      v-if="step === 1"
+      @submit.prevent="step++"
+      v-ink="'sheet'"
+      class="sk-sheet sk-tabbed relative flex flex-col items-start gap-6"
+    >
+      <h2 class="sk-tab">
+        <i class="fa-duotone fa-pen-to-square" aria-hidden="true"></i><ResourceString for="VariantInfo" />
+      </h2>
 
       <label class="flex w-full flex-col items-start gap-2">
         <ResourceString for="VariantName" class="text-lg font-bold" />
@@ -163,19 +171,20 @@
         </div>
       </div>
 
-      <button
-        type="submit"
-        :disabled="!canProceed"
-        class="cursor-pointer self-end rounded-3xl bg-paper px-6 py-2 text-xl text-ink disabled:cursor-not-allowed disabled:opacity-50"
-      >
+      <Button type="submit" class="self-end" :disabled="!canProceed">
         <ResourceString for="Next" />
         <i class="fa-solid fa-arrow-right fa-sm"></i>
-      </button>
+      </Button>
     </form>
 
     <!-- Step 2: Ingredients -->
-    <form v-if="step === 2" @submit.prevent="step++" class="flex flex-col items-start gap-6">
-      <ResourceString for="Ingredients" as="h2" class="text-2xl font-bold" />
+    <form
+      v-if="step === 2"
+      @submit.prevent="step++"
+      v-ink="'sheet'"
+      class="sk-sheet sk-tabbed relative flex flex-col items-start gap-6"
+    >
+      <h2 class="sk-tab"><i class="fa-duotone fa-list-check" aria-hidden="true"></i><ResourceString for="Ingredients" /></h2>
 
       <div class="flex w-full flex-col gap-4">
         <div v-for="(ingredient, index) in ingredientList" :key="index" class="flex gap-2">
@@ -236,25 +245,26 @@
       </button>
 
       <div class="flex w-full justify-between">
-        <button type="button" class="cursor-pointer rounded-3xl border border-ink px-6 py-2 text-xl" @click="step--">
+        <Button variant="ghost" @click="step--">
           <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="Back" class="ml-2" />
-        </button>
+        </Button>
 
-        <button
-          type="submit"
-          :disabled="!canProceed"
-          class="cursor-pointer rounded-3xl bg-paper px-6 py-2 text-xl text-ink disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button type="submit" class="self-end" :disabled="!canProceed">
           <ResourceString for="Next" class="mr-2" />
           <i class="fa-solid fa-arrow-right fa-sm"></i>
-        </button>
+        </Button>
       </div>
     </form>
 
     <!-- Step 3: Instructions -->
-    <form v-if="step === 3" @submit.prevent="step++" class="flex flex-col items-start gap-6">
-      <ResourceString for="Instructions" as="h2" class="text-2xl font-bold" />
+    <form
+      v-if="step === 3"
+      @submit.prevent="step++"
+      v-ink="'sheet'"
+      class="sk-sheet sk-tabbed relative flex flex-col items-start gap-6"
+    >
+      <h2 class="sk-tab"><i class="fa-duotone fa-list-ol" aria-hidden="true"></i><ResourceString for="Instructions" /></h2>
 
       <div class="flex w-full flex-col gap-4">
         <div class="flex items-center gap-4" v-for="(instruction, index) in instructionList" :key="index">
@@ -283,25 +293,23 @@
       </button>
 
       <div class="flex w-full justify-between">
-        <button type="button" class="cursor-pointer rounded-3xl border border-ink px-6 py-2 text-xl" @click="step--">
+        <Button variant="ghost" @click="step--">
           <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="Back" class="ml-2" />
-        </button>
+        </Button>
 
-        <button
-          type="submit"
-          :disabled="!canProceed"
-          class="cursor-pointer rounded-3xl bg-paper px-6 py-2 text-xl text-ink disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button type="submit" class="self-end" :disabled="!canProceed">
           <ResourceString for="Next" class="mr-2" />
           <i class="fa-solid fa-arrow-right fa-sm"></i>
-        </button>
+        </Button>
       </div>
     </form>
 
     <!-- Step 4: Review & Submit -->
-    <div v-if="step === 4" class="flex flex-col items-start gap-6">
-      <ResourceString for="ReviewAndSubmit" as="h2" class="text-2xl font-bold" />
+    <div v-if="step === 4" v-ink="'sheet'" class="sk-sheet sk-tabbed relative flex flex-col items-start gap-6">
+      <h2 class="sk-tab">
+        <i class="fa-duotone fa-clipboard-check" aria-hidden="true"></i><ResourceString for="ReviewAndSubmit" />
+      </h2>
 
       <div class="w-full rounded-3xl bg-paper p-4 text-ink">
         <h3 class="font-casual text-3xl">{{ variantName }}</h3>
@@ -354,19 +362,14 @@
       <p v-if="submitError" class="text-danger-ink">{{ submitError }}</p>
 
       <div class="flex w-full justify-between">
-        <button type="button" class="cursor-pointer rounded-3xl border border-ink px-6 py-2 text-xl" @click="step--">
+        <Button variant="ghost" @click="step--">
           <i class="fa-solid fa-arrow-left fa-sm"></i>
           <ResourceString for="Back" class="ml-2" />
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          :disabled="isSubmitting"
-          class="cursor-pointer rounded-3xl bg-paper px-6 py-2 text-xl text-ink disabled:cursor-not-allowed disabled:opacity-50"
-          @click="handleSubmit"
-        >
+        <Button :disabled="isSubmitting" @click="handleSubmit">
           <ResourceString :for="isSubmitting ? 'Submitting' : 'SubmitForReview'" />
-        </button>
+        </Button>
       </div>
     </div>
   </section>
