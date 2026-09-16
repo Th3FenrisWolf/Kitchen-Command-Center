@@ -1,5 +1,4 @@
-import { createSSRApp } from 'vue'
-import { renderToString } from '@vue/server-renderer'
+import { renderSsr } from '../../../support/renderSsr'
 import { describe, expect, it } from 'vitest'
 import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
 
@@ -13,19 +12,17 @@ interface Props {
 }
 
 const render = (over: Props = {}) =>
-  renderToString(
-    createSSRApp(RecipeFilters, {
-      categoryFacets: {},
-      dietFacets: {},
-      categoryOptions: [],
-      dietOptions: [],
-      selectedCategories: [],
-      selectedDiets: [],
-      timeMin: 0,
-      timeMax: 60,
-      ...over,
-    }),
-  )
+  renderSsr(RecipeFilters, {
+    categoryFacets: {},
+    dietFacets: {},
+    categoryOptions: [],
+    dietOptions: [],
+    selectedCategories: [],
+    selectedDiets: [],
+    timeMin: 0,
+    timeMax: 60,
+    ...over,
+  })
 
 // Each `:disabled` input renders the boolean attribute; range-slider inputs never do.
 const countDisabled = (html: string) => (html.match(/\sdisabled/g) ?? []).length

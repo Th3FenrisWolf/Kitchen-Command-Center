@@ -1,5 +1,4 @@
-import { createSSRApp } from 'vue'
-import { renderToString } from '@vue/server-renderer'
+import { renderSsr } from '../../../support/renderSsr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
@@ -27,7 +26,7 @@ const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
 
 // Renders through the search page's own mapper, so these cover the RecipeSearchHit -> card
 // hop as well as the markup the shared card produces from it.
-const render = (recipe: RecipeSearchHit) => renderToString(createSSRApp(RecipeCard, { card: hitToCard(recipe, rs) }))
+const render = (recipe: RecipeSearchHit) => renderSsr(RecipeCard, { card: hitToCard(recipe, rs) })
 
 describe('RecipeCard rating', () => {
   it('shows a star and the numeric rating when the recipe has reviews', async () => {
