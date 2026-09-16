@@ -33,6 +33,7 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
+    v-ink="'card'"
     class="recipe-card grid grid-rows-subgrid rounded-3xl bg-paper-2 p-3 text-ink no-underline transition-all focus-within:-translate-y-1 hover:-translate-y-1"
   >
     <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="recipe-card-tile w-full text-5xl" />
@@ -40,11 +41,11 @@
     <span class="recipe-card-panel relative grid grid-rows-subgrid rounded-2xl bg-paper px-4 pt-2 pb-4 text-ink">
       <span class="recipe-card-notch absolute left-0 bg-paper">
         <span
-          class="recipe-card-notch-pill absolute flex w-full items-center justify-center gap-1.5 overflow-hidden rounded-full bg-paper-2 px-3 font-bold whitespace-nowrap text-ink"
+          class="recipe-card-notch-pill absolute flex w-full items-center justify-center gap-1.5 overflow-hidden rounded-full bg-marker px-3 font-mono text-[0.6875rem] tracking-[0.13em] whitespace-nowrap text-marker-ink uppercase"
           :data-testid="card.notch.stat === 'rating' ? 'recipe-card-rating' : undefined"
           :data-average-rating="card.notch.stat === 'rating' ? card.rating?.average : undefined"
         >
-          <i :class="[card.notch.icon, card.notch.stat === 'rating' && 'text-rating-ink']"></i> {{ card.notch.text }}
+          <i :class="[card.notch.icon, card.notch.stat === 'rating' && 'text-marker-ink']"></i> {{ card.notch.text }}
         </span>
       </span>
 
