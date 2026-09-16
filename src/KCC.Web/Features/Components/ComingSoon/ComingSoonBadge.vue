@@ -17,5 +17,5 @@
 </script>
 
 <template>
-  <Badge class="bg-bone-dark text-onyx-light"><ResourceString shared for="ComingSoon" /></Badge>
+  <Badge class="bg-desk-2 text-ink-soft"><ResourceString shared for="ComingSoon" /></Badge>
 </template>

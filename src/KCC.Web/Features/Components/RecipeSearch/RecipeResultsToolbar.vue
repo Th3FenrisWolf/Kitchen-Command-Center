@@ -45,7 +45,7 @@
     <h2 class="min-w-40 flex-1 font-casual text-2xl">{{ heading }}</h2>
 
     <div class="flex items-center gap-2">
-      <span class="text-sm font-bold text-onyx-light"><ResourceString for="Sort" /></span>
+      <span class="text-sm font-bold text-ink-soft"><ResourceString for="Sort" /></span>
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="t('Sort')" />
     </div>
 

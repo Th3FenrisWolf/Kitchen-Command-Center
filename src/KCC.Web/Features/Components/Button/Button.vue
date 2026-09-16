@@ -5,9 +5,10 @@
    * Razor gets the same look from the `.sk-btn` classes plus `data-ink="button"`.
    */
   export default {
-    // The rule guards against a global registration shadowing <button>; this one is imported locally.
-    // eslint-disable-next-line vue/no-reserved-component-names
-    name: 'Button',
+    // Not `Button`: `resolveDynamicComponent` checks the rendering component's own name first, so
+    // `<component :is="'button'">` below would resolve this component to itself and recurse until the
+    // stack blows. Any name that is not a capitalized native tag keeps `as` resolving to the element.
+    name: 'SkButton',
   }
 
   export type ButtonVariant = 'marker' | 'paper' | 'ghost' | 'text'
