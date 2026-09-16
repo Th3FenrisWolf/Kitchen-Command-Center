@@ -14,10 +14,7 @@ const mainCss = readFileSync(
 
 describe('Main.css FontAwesome imports', () => {
   // Classic styles referenced in Features/**: `fa-solid`, `fa-regular`, `fa-duotone`.
-  it.each(['fontawesome', 'solid', 'regular', 'duotone'])(
-    'imports the "%s" FontAwesome stylesheet',
-    (style) => {
-      expect(mainCss).toContain(`@fortawesome/fontawesome-pro/css/${style}.css`)
-    },
-  )
+  it.each(['fontawesome', 'solid', 'regular', 'duotone'])('imports the "%s" FontAwesome stylesheet', (style) => {
+    expect(mainCss).toContain(`@fortawesome/fontawesome-pro/css/${style}.css`)
+  })
 })
