@@ -94,7 +94,13 @@ describe('renderMarkdown', () => {
           status: 'ok',
           summary: { total: 1, passed: 1, failed: 0, skipped: 0, cancelled: 0, timedOut: 0 },
           durationMs: 1,
-          groups: [{ name: 'G', summary: { total: 1, passed: 1, failed: 0, skipped: 0, cancelled: 0, timedOut: 0 }, tests: [{ name: 'a', status: 'passed', durationMs: 1 }] }],
+          groups: [
+            {
+              name: 'G',
+              summary: { total: 1, passed: 1, failed: 0, skipped: 0, cancelled: 0, timedOut: 0 },
+              tests: [{ name: 'a', status: 'passed', durationMs: 1 }],
+            },
+          ],
         },
       ],
     })
@@ -147,7 +153,9 @@ describe('renderMarkdown', () => {
           status: 'ok',
           summary: { total: 400, passed: 0, failed: 400, skipped: 0, cancelled: 0, timedOut: 0 },
           durationMs: 1,
-          groups: [{ name: 'G', summary: { total: 400, passed: 0, failed: 400, skipped: 0, cancelled: 0, timedOut: 0 }, tests }],
+          groups: [
+            { name: 'G', summary: { total: 400, passed: 0, failed: 400, skipped: 0, cancelled: 0, timedOut: 0 }, tests },
+          ],
         },
       ],
     })
