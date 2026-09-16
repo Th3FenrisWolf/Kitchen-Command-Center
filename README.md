@@ -241,6 +241,23 @@ yarn lint
 yarn build:all
 ```
 
+### Light and dark ramps
+
+The site ships two colour ramps. A toggle sits in the header's utility nav; it writes `'light'` or
+`'dark'` to `localStorage['kcc-theme']`, and an inline script in `Layout.cshtml` applies it to
+`<html data-theme>` before first paint so there is no flash of the wrong ramp.
+
+With no stored choice the site follows `prefers-color-scheme`, defaulting to dark. To force a ramp while
+testing, set the key by hand and reload:
+
+```js
+localStorage.setItem('kcc-theme', 'light') // or 'dark'
+localStorage.removeItem('kcc-theme') // back to following the OS
+```
+
+**Check any visual change in both ramps.** The light ramp is the binding contrast constraint, and
+`tests/KCC.ViteTests/Features/Styles/contrast.test.ts` asserts WCAG AA across every token pair in both.
+
 ### Combined Test Report
 
 Run every test suite (3 .NET/TUnit + 2 vitest) and produce one self-contained,
