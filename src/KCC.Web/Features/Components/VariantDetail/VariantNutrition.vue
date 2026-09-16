@@ -62,7 +62,7 @@
 </script>
 
 <template>
-  <div class="rounded-3xl bg-paper-2 p-6">
+  <div v-ink="'card'" class="rounded-3xl bg-paper-2 p-6">
     <div class="mb-3 flex items-baseline justify-between">
       <h2 class="font-casual text-xl tracking-[1px]"><ResourceString for="Nutrition" /></h2>
       <span class="text-xs text-ink-soft"><ResourceString for="PerServing" /></span>

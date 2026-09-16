@@ -24,7 +24,12 @@
   <div>
     <h2 class="mb-4 font-casual text-2xl tracking-[1px]"><ResourceString for="Instructions" /></h2>
     <ol class="flex flex-col gap-3">
-      <li v-for="(instruction, i) in instructions" :key="i" class="flex gap-4 rounded-2xl bg-paper-2 p-4 text-ink">
+      <li
+        v-for="(instruction, i) in instructions"
+        :key="i"
+        v-ink="'card'"
+        class="sk-ruled sk-on-rule flex gap-4 rounded-2xl bg-paper-2 p-4 text-ink"
+      >
         <span class="w-8 flex-none text-center font-casual text-3xl leading-none text-ink-soft">
           {{ instruction.step ?? i + 1 }}
         </span>

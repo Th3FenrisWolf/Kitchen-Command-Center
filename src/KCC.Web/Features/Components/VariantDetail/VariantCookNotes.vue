@@ -77,19 +77,20 @@
       <i class="fa-solid fa-lightbulb text-lg text-warning-ink"></i> <ResourceString for="CookNotes" />
     </h2>
 
-    <div v-if="isAuthenticated" class="mb-6 rounded-3xl bg-paper-2 p-4">
+    <div v-if="isAuthenticated" v-ink="'card'" class="mb-6 rounded-3xl bg-paper-2 p-4">
       <textarea
         v-model="draft"
         :placeholder="t('CookNotePlaceholder')"
         rows="3"
         data-testid="cook-note-input"
-        class="w-full rounded-2xl border-none bg-desk-2 p-3 text-ink outline-none"
+        class="w-full rounded-2xl border border-edge-strong bg-paper-2 p-3 text-ink outline-none"
       ></textarea>
       <p v-if="error" class="mt-1 text-sm text-danger-ink">{{ error }}</p>
       <button
         type="button"
         data-testid="add-cook-note"
-        class="mt-2 cursor-pointer rounded-2xl bg-paper px-4 py-2 text-ink disabled:opacity-50"
+        v-ink="'button'"
+        class="sk-btn sk-btn--marker mt-2 disabled:opacity-50"
         :disabled="!draft.trim()"
         @click="add"
       >

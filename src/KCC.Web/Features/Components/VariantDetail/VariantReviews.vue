@@ -146,7 +146,7 @@
           <li v-for="d in distRows" :key="d.star" class="flex items-center gap-2.5">
             <span class="w-[26px] flex-none text-sm text-ink-soft">{{ d.star }}★</span>
             <span class="h-2.5 flex-1 overflow-hidden rounded-full bg-desk-2">
-              <span class="block h-full rounded-full bg-paper" :style="{ width: d.pct + '%' }"></span>
+              <span class="block h-full rounded-full bg-peach" :style="{ width: d.pct + '%' }"></span>
             </span>
             <span class="w-9 flex-none text-right text-sm text-ink-soft">{{ d.count }}</span>
           </li>
