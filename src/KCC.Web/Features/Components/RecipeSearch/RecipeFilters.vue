@@ -64,10 +64,11 @@
 </script>
 
 <template>
-  <div>
-    <div class="mb-2 flex items-center justify-between">
-      <h2 class="font-casual text-2xl"><ResourceString for="Filters" /></h2>
-      <button class="cursor-pointer text-sm font-bold text-ink-soft underline" @click="emit('reset')">
+  <div v-ink="'sheet'" class="sk-sheet sk-tabbed relative">
+    <div class="mb-2 flex items-center justify-end">
+      <!-- The tab is the panel heading: sk-tab keeps the marker-tab look without dropping the landmark. -->
+      <h2 class="sk-tab"><i class="fa-duotone fa-sliders" aria-hidden="true"></i><ResourceString for="Filters" /></h2>
+      <button class="sk-btn sk-btn--text text-sm" @click="emit('reset')">
         <ResourceString for="Reset" />
       </button>
     </div>

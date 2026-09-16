@@ -18,15 +18,14 @@
 <template>
   <div
     data-testid="recipes-empty"
-    class="grid place-items-center gap-2 rounded-3xl border-2 border-dashed border-rule px-4 py-16 text-center text-ink-soft"
+    v-ink="{ kind: 'sheet', hatch: false }"
+    class="sk-sheet sk-sheet--lg grid place-items-center gap-2 text-center"
   >
-    <i class="fa-solid fa-bowl-food text-5xl opacity-50"></i>
-    <div class="font-casual text-3xl text-ink"><ResourceString for="NoRecipesMatch" /></div>
-    <p class="m-0 max-w-[60ch] text-base"><ResourceString for="NoRecipesHint" /></p>
-    <button
-      class="mt-2 rounded-full border-2 border-ink bg-transparent px-4 py-2 text-base font-bold text-ink"
-      @click="emit('clear')"
-    >
+    <span class="sk-wash" style="--c: var(--color-lavender)" aria-hidden="true"></span>
+    <i class="sk-ico fa-duotone fa-bowl-food text-5xl"></i>
+    <div class="sk-display text-3xl text-ink"><ResourceString for="NoRecipesMatch" /></div>
+    <p class="sk-body max-w-[60ch]"><ResourceString for="NoRecipesHint" /></p>
+    <button v-ink="'button'" class="sk-btn sk-btn--ghost mt-2" @click="emit('clear')">
       <ResourceString for="ClearAllFilters" />
     </button>
   </div>
