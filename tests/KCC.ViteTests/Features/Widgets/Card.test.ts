@@ -1,14 +1,12 @@
-import { createSSRApp, h } from 'vue'
-import { renderToString } from '@vue/server-renderer'
+import { h } from 'vue'
+import { renderSsr } from '../../support/renderSsr'
 import { describe, expect, it } from 'vitest'
 import Card from '~/Widgets/Card/Card.Component.vue'
 
 const render = (props: Record<string, unknown> = {}) =>
-  renderToString(
-    createSSRApp({
-      render: () => h(Card, props, { default: () => 'Weeknight', drawer: () => 'Hover to open.' }),
-    }),
-  )
+  renderSsr({
+    render: () => h(Card, props, { default: () => 'Weeknight', drawer: () => 'Hover to open.' }),
+  })
 
 // The drawer is found by its hook, never by a visual class, so a restyle cannot break the test. A missing
 // hook is reported here rather than as an empty class list failing some unrelated-looking color assertion.
@@ -41,7 +39,7 @@ describe('Card drawer colors', () => {
   })
 
   it('omits the drawer when the slot is unfilled', async () => {
-    const html = await renderToString(createSSRApp({ render: () => h(Card, null, { default: () => 'Weeknight' }) }))
+    const html = await renderSsr({ render: () => h(Card, null, { default: () => 'Weeknight' }) })
 
     expect(html).not.toContain('data-card-drawer')
   })

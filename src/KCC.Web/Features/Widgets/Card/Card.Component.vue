@@ -1,7 +1,13 @@
 <!-- #region Card Component Properties -->
 <script lang="ts">
   import { computed, type ComputedRef } from 'vue'
-  import { toBackgroundColor, toTextColor, type BackgroundColor, type TextColor } from '~/Types/DesignSystem'
+  import {
+    BRAND_BACKGROUND_COLORS,
+    toBackgroundColor,
+    toTextColor,
+    type BackgroundColor,
+    type TextColor,
+  } from '~/Types/DesignSystem'
 
   /**
    * Widget card whose drawer expands on hover and focus.
@@ -67,10 +73,17 @@
   const resolvedDrawerTextColor: ComputedRef<TextColor> = computed(() => {
     return drawerTextColor ?? toTextColor(cardColor)
   })
+
+  // Washes take the dark ink-on-wash outline; paper grounds take the ramp's ink line. Getting this
+  // backwards draws an invisible outline rather than a wrong-coloured one.
+  const inkKind = computed(() =>
+    (BRAND_BACKGROUND_COLORS as readonly string[]).includes(cardColor) ? ('tile' as const) : ('card' as const),
+  )
 </script>
 
 <template>
   <div
+    v-ink="inkKind"
     :class="[
       'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all',
       cardColor,
