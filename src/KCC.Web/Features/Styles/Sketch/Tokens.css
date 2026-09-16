@@ -1,0 +1,43 @@
+/* Kit-only properties and the light ramp. Colour tokens are declared in TailwindConfig.css (@theme static,
+   dark values); this file redefines them under data-theme="light" and holds the properties that are not
+   design tokens: wash rendering, fold size, rule geometry, the grain tile. */
+@layer base {
+  :root {
+    --wash-blend: screen;
+    --wash-opacity: 0.38;
+    --wash-saturate: 1.45;
+    --fold: 24px;
+    --rule-pitch: 28px;
+    --rule-offset: 16px;
+    --rule-weight: 1px;
+    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)'/></svg>");
+  }
+
+  /* LIGHT: cream stock on a lilac desk, ink back to purple-slate. Washes, marker and ink-on-wash do not move —
+     they are the brand constant across ramps. Pigment goes into white paper, so washes multiply instead of
+     screening. The *-ink values are pinned by desk-2, the darkest ground they are ever read on rather than by
+     cream paper, so they look darker than the sketch alone would suggest; contrast.test.ts holds them there. */
+  :root[data-theme='light'] {
+    --color-desk: oklch(0.884 0.016 288);
+    --color-desk-2: oklch(0.836 0.018 288);
+    --color-paper: oklch(0.958 0.009 92);
+    --color-paper-2: oklch(0.972 0.008 92);
+    --color-ink: oklch(0.232 0.026 288);
+    --color-ink-soft: oklch(0.432 0.024 288);
+    --color-ink-line: oklch(0.248 0.03 288 / 0.88);
+    --color-rule: oklch(0.58 0.045 288 / 0.24);
+    --color-hatch: oklch(0.35 0.04 288 / 0.38);
+    --color-edge: oklch(0.25 0.03 288 / 0.18);
+    --color-edge-strong: oklch(0.25 0.03 288 / 0.42);
+    --color-flap-1: oklch(0.88 0.012 92);
+    --color-flap-2: oklch(0.992 0.006 92);
+    --color-danger-ink: oklch(0.46 0.16 25);
+    --color-success-ink: oklch(0.42 0.11 150);
+    --color-warning-ink: oklch(0.44 0.12 70);
+    --color-rating-ink: oklch(0.44 0.13 60);
+    --color-link: oklch(0.43 0.1 150);
+    --wash-blend: multiply;
+    --wash-opacity: 0.62;
+    --wash-saturate: 1;
+  }
+}

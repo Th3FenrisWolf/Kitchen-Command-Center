@@ -8,53 +8,79 @@
 /* Safelist dynamically generated classes */
 @source inline('{pb,pt,px,mb,mt}-{0,4,8,12}');
 @source inline('{bg,text}-{rosewater,flamingo,pink,mauve,red,maroon,peach,yellow,green,teal,sky,sapphire,blue,lavender}');
-@source inline('{bg,text}-surface-{200,300,400,500,600,700}');
-@source inline('{bg,text}-overlay-{200,300,400}');
-@source inline('{bg,text}-{bone,bone-dark,onyx,onyx-light}');
+@source inline('{bg,text}-{desk,desk-2,paper,paper-2,ink,ink-soft,ink-on-wash,marker,marker-ink}');
 /* prettier-ignore-end */
 
-@theme {
-  --color-rosewater: hsl(10, 57%, 88%);
-  --color-flamingo: hsl(0, 59%, 84%);
-  --color-pink: hsl(316, 73%, 84%);
-  --color-mauve: hsl(277, 59%, 76%);
-  --color-red: hsl(359, 68%, 71%);
-  --color-maroon: hsl(358, 66%, 76%);
-  --color-peach: hsl(20, 79%, 70%);
-  --color-yellow: hsl(40, 62%, 73%);
-  --color-green: hsl(96, 44%, 68%);
-  --color-teal: hsl(172, 39%, 65%);
-  --color-sky: hsl(189, 48%, 73%);
-  --color-sapphire: hsl(199, 55%, 69%);
-  --color-blue: hsl(222, 74%, 74%);
-  --color-lavender: hsl(239, 66%, 84%);
+/* `static` keeps every token in the output even when no utility references it: the drawn kit and the light
+   ramp read these variables directly, so Tailwind's unused-variable pruning would silently break them. */
+@theme static {
+  /* Desk, paper, ink — dark ramp is the default; Sketch/Tokens.css redefines these for data-theme="light". */
+  --color-desk: oklch(0.132 0.024 288);
+  --color-desk-2: oklch(0.176 0.028 288);
+  --color-paper: oklch(0.258 0.03 288);
+  --color-paper-2: oklch(0.222 0.028 288);
+  --color-ink: oklch(0.945 0.012 92);
+  --color-ink-soft: oklch(0.735 0.018 288);
+  --color-ink-line: oklch(0.9 0.016 288 / 0.82);
+  --color-ink-on-wash: oklch(0.232 0.026 288);
+  --color-rule: oklch(0.88 0.02 288 / 0.13);
+  --color-hatch: oklch(0.62 0.05 288 / 0.55);
+  --color-edge: oklch(0.9 0.02 288 / 0.2);
+  --color-edge-strong: oklch(0.9 0.02 288 / 0.46);
+  --color-flap-1: oklch(0.212 0.026 288);
+  --color-flap-2: oklch(0.348 0.034 288);
+  /* Marker repeats green's literal rather than aliasing it: it is the primary-action role, and re-valuing
+     the green wash in a later phase must not silently move every button with it. */
+  --color-marker: oklch(0.876 0.112 126);
+  --color-marker-ink: oklch(0.26 0.03 288);
+  --color-focus: var(--color-ink);
 
-  --color-overlay-200: hsl(228, 22%, 66%);
-  --color-overlay-300: hsl(227, 17%, 58%);
-  --color-overlay-400: hsl(229, 13%, 52%);
+  /* Washes — the brand constant, identical in both ramps. */
+  --color-rosewater: oklch(0.9 0.028 40);
+  --color-flamingo: oklch(0.878 0.045 25);
+  --color-pink: oklch(0.876 0.046 345);
+  --color-mauve: oklch(0.872 0.046 300);
+  --color-red: oklch(0.79 0.085 25);
+  --color-maroon: oklch(0.77 0.075 18);
+  --color-peach: oklch(0.886 0.055 70);
+  --color-yellow: oklch(0.906 0.062 95);
+  --color-green: oklch(0.876 0.112 126);
+  --color-teal: oklch(0.886 0.045 175);
+  --color-sky: oklch(0.89 0.038 205);
+  --color-sapphire: oklch(0.866 0.044 225);
+  --color-blue: oklch(0.856 0.046 262);
+  --color-lavender: oklch(0.874 0.042 292);
 
-  --color-surface-200: hsl(228, 13%, 44%);
-  --color-surface-300: hsl(227, 15%, 37%);
-  --color-surface-400: hsl(230, 16%, 30%);
-  --color-surface-500: hsl(229, 19%, 23%);
-  --color-surface-600: hsl(231, 19%, 20%);
-  --color-surface-700: hsl(229, 20%, 17%);
+  /* Status: washes for fills, *-ink for text and glyphs. On dark paper the washes themselves pass AA. */
+  --color-danger: var(--color-red);
+  --color-success: var(--color-green);
+  --color-warning: var(--color-yellow);
+  --color-danger-ink: var(--color-red);
+  --color-success-ink: var(--color-green);
+  --color-warning-ink: var(--color-yellow);
+  --color-rating-ink: var(--color-peach);
+  --color-link: var(--color-green);
 
-  --color-bone-dark: hsl(44, 15%, 85%);
-  --color-bone: hsl(44, 48%, 95%);
-  --color-onyx-light: hsl(120, 4%, 38%);
-  --color-onyx: hsl(120, 4%, 22%);
+  /* Radius ladder: Tailwind's names, the sketch's values, so existing rounded-* classes tighten in place.
+     Every step is restated, including the three the sketch does not name: declaring any key of the radius
+     namespace here drops Tailwind's own values for the rest, while `rounded-<step>` still compiles to
+     `var(--radius-<step>)` — so an omitted step becomes a rule referencing an undefined variable, which
+     rounds nothing at all. */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.1875rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.3125rem;
+  --radius-xl: 0.4375rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
+  --radius-4xl: 0.875rem;
 
   --text-4\.5xl: 2.5rem;
   --text-4\.5xl--line-height: calc(2.75 / 2.5);
 
   --font-casual: 'APCasual', sans-serif;
   --font-hazelnut: 'Hazelnut', sans-serif;
-
-  --shadow-light: 0 0 24px 0 rgba(0, 0, 0, 0.1);
-  --shadow-primary: 0 0 24px 0 rgba(0, 0, 0, 0.25);
-  --shadow-primary-raised: 0 0 24px 0 rgba(0, 0, 0, 0.25), 8px 16px 16px rgba(0, 0, 0, 0.25);
-  --shadow-bone-small: 0 4px 8px -2px var(--color-bone-dark);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --grid-template-columns-content-aside: min(calc(50% - 16px), 24rem) minmax(calc(50% - 16px), 1fr);
 }
@@ -74,7 +100,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-blue);
+    outline: 2px solid var(--color-focus);
   }
 }
 

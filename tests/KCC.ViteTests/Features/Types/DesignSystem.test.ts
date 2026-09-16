@@ -26,7 +26,7 @@ describe('color axis mapping', () => {
   })
 
   it('round-trips a token back to itself', () => {
-    expect(toTextColor(toBackgroundColor('text-surface-500'))).toBe('text-surface-500')
+    expect(toTextColor(toBackgroundColor('text-paper'))).toBe('text-paper')
   })
 })
 

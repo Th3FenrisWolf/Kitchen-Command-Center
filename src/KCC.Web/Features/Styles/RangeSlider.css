@@ -30,9 +30,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-onyx);
-  border: 3px solid var(--color-bone);
-  box-shadow: 0 0 0 1px var(--color-onyx);
+  background: var(--color-ink);
+  border: 3px solid var(--color-paper-2);
+  box-shadow: 0 0 0 1px var(--color-ink);
   cursor: grab;
   pointer-events: auto;
 }
@@ -43,9 +43,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-onyx);
-  border: 3px solid var(--color-bone);
-  box-shadow: 0 0 0 1px var(--color-onyx);
+  background: var(--color-ink);
+  border: 3px solid var(--color-paper-2);
+  box-shadow: 0 0 0 1px var(--color-ink);
   cursor: grab;
   pointer-events: auto;
 }
