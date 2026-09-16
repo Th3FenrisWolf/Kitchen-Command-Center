@@ -16,6 +16,8 @@
 </script>
 
 <template>
+  <span class="sk-grain" aria-hidden="true"></span>
+
   <component :is="{ name: 'HeaderContent', template: headerContent }" />
 
   <main role="main" class="content-grid auto-rows-min">
