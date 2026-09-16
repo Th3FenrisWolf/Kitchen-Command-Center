@@ -49,7 +49,8 @@
 </script>
 
 <template>
-  <div class="my-4 grid gap-4 rounded-3xl bg-paper p-6 text-ink lg:grid-cols-4">
+  <div v-ink="'sheet'" class="sk-sheet sk-fold my-4 grid gap-4 lg:grid-cols-4">
+    <span class="sk-wash" style="--c: var(--color-peach)" aria-hidden="true"></span>
     <AccentTile :seed :icon :image :alt="title" class="h-40 w-full text-7xl lg:size-full" />
 
     <div class="lg:col-span-3">
