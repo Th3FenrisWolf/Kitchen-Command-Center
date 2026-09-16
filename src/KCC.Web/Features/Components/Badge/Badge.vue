@@ -28,7 +28,7 @@
 </script>
 
 <template>
-  <span :class="['inline-flex items-center rounded-full px-2 py-1 text-sm font-bold', className]">
+  <span :class="['sk-lbl inline-flex items-center rounded-full bg-paper-2 px-3 py-1 opacity-100', className]">
     <slot />
   </span>
 </template>
