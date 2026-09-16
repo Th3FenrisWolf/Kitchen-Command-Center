@@ -30,8 +30,10 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
-    class="group relative my-4 flex flex-col gap-4 rounded-3xl bg-paper-2 p-3 text-ink no-underline transition-all hover:-translate-y-1 sm:flex-row sm:items-center sm:gap-6"
+    v-ink="'sheet'"
+    class="sk-sheet sk-fold group relative my-4 flex flex-col gap-4 no-underline transition-all hover:-translate-y-1 sm:flex-row sm:items-center sm:gap-6"
   >
+    <span class="sk-wash" style="--c: var(--color-peach)" aria-hidden="true"></span>
     <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="h-40 w-full flex-none text-5xl sm:size-40" />
 
     <div class="min-w-0 flex-1">

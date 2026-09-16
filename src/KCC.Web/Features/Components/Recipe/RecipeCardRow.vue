@@ -31,6 +31,7 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
+    v-ink="'card'"
     class="flex items-center gap-4 rounded-3xl bg-paper-2 p-4 text-ink no-underline transition-shadow"
   >
     <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-20 flex-none text-3xl" />
