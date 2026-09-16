@@ -42,6 +42,12 @@ namespace KCC
 
 
 		/// <summary>
+		/// LogoLight.
+		/// </summary>
+		public IEnumerable<ImageItem> LogoLight { get; set; }
+
+
+		/// <summary>
 		/// MainNavItems.
 		/// </summary>
 		public IEnumerable<IContentItemFieldsSource> MainNavItems { get; set; }
