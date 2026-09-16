@@ -54,7 +54,8 @@
         <button
           type="button"
           :aria-label="rs('Fewer')"
-          class="grid size-8.5 cursor-pointer place-items-center rounded-full border-none bg-marker text-sm text-marker-ink transition-opacity hover:opacity-90"
+          class="sk-btn sk-btn--ghost size-8.5 text-sm"
+          v-ink="'button'"
           @click="dec"
         >
           <i class="fa-solid fa-minus"></i>
@@ -63,7 +64,8 @@
         <button
           type="button"
           :aria-label="rs('More')"
-          class="grid size-8.5 cursor-pointer place-items-center rounded-full border-none bg-marker text-sm text-marker-ink transition-opacity hover:opacity-90"
+          class="sk-btn sk-btn--ghost size-8.5 text-sm"
+          v-ink="'button'"
           @click="inc"
         >
           <i class="fa-solid fa-plus"></i>
