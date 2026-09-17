@@ -45,7 +45,11 @@
 </script>
 
 <template>
-  <button type="button" class="btn-no-style cursor-pointer px-2 py-2 text-ink" @click="toggle">
+  <button
+    type="button"
+    class="btn-no-style cursor-pointer px-2 py-2 text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
+    @click="toggle"
+  >
     <span data-ramp="dark">
       <i class="fa-duotone fa-sun-bright text-xl" aria-hidden="true"></i>
       <span class="sr-only">{{ switchToLightLabel }}</span>
