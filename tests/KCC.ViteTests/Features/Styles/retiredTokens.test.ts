@@ -96,10 +96,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Sections/Base/SectionColors.cs',
   'Features/Sections/MultipleColumn/MultipleColumnSection.cshtml',
   'Features/Styles/Sketch/',
-  // Not unconverted: the two hits are @font-face descriptors naming the Hazelnut Bold files for content that
-  // still carries <strong>, not applied weight. Deleting this entry needs the weight rule to stop matching
-  // font-face, not an edit to Typography.css.
-  'Features/Styles/Typography.css',
   'Features/TagHelpers/ButtonLinkTagHelper.cs',
   'Features/Types/DesignSystem.ts',
   'Features/Widgets/Button/ButtonWidget.cshtml',
@@ -125,11 +121,17 @@ function* files(dir: string): Generator<string> {
   }
 }
 
+// `font-weight` inside an @font-face block is a descriptor naming a face (Hazelnut Bold stays declared for
+// content that still carries <strong>), not weight applied to text. Blank those blocks out line by line so
+// line numbers in the report stay right and the weight rule only sees applied weight.
+const withoutFontFaces = (css: string) => css.replace(/@font-face\s*\{[^}]*\}/g, (block) => block.replace(/[^\n]/g, ' '))
+
 const hits = new Map<string, string[]>()
 for (const root of ROOTS) {
   for (const file of files(root)) {
     const path = relative(WEB, file).replaceAll('\\', '/')
-    const lines = readFileSync(file, 'utf8')
+    const source = readFileSync(file, 'utf8')
+    const lines = (file.endsWith('.css') ? withoutFontFaces(source) : source)
       .split('\n')
       .flatMap((line, i) => (RETIRED.test(line) ? [`${i + 1}: ${line.trim().slice(0, 120)}`] : []))
     if (lines.length) hits.set(path, lines)
