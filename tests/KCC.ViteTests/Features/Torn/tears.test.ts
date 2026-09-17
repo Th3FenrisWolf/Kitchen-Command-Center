@@ -16,6 +16,20 @@ describe('Tears.css', () => {
   it('stays within budget', () => {
     expect(tearsCss().length).toBeLessThan(120_000)
   })
+
+  it('declares every preset on :root and a class that selects it', () => {
+    const css = tearsCss()
+    for (const p of [...SHEET_TEARS, ...TILE_TEARS]) {
+      expect(css).toContain(`  --${p.name}: polygon(`)
+      expect(css).toContain(`  .kcc-${p.name} {\n    --tear: var(--${p.name});`)
+    }
+  })
+
+  it('writes each sheet tilt to --r and leaves tiles untilted', () => {
+    const css = tearsCss()
+    for (const p of SHEET_TEARS) expect(css).toContain(`--tear: var(--${p.name});\n    --r: ${p.tilt};`)
+    for (const p of TILE_TEARS) expect(css).not.toContain(`--tear: var(--${p.name});\n    --r:`)
+  })
 })
 
 describe('tear presets', () => {
@@ -28,7 +42,9 @@ describe('tear presets', () => {
   })
 
   it('leaves about one sheet in four uncut', () => {
-    expect(standard.filter((p) => p.chamfer === 0).length).toBeGreaterThanOrEqual(1)
+    const uncut = standard.filter((p) => p.chamfer === 0).length
+    expect(uncut).toBeGreaterThanOrEqual(1)
+    expect(uncut).toBeLessThanOrEqual(2)
   })
 
   it('never cuts the top-left corner and tilts within a degree', () => {

@@ -115,6 +115,8 @@ Rules of the structure:
 4. `--pad` on the sheet also positions the pencil rule: pass padding as `style="--pad: …"`, not as padding
    utilities.
 5. One wash, one label, one hand note per sheet at most.
+6. `clip-path` clips descendants too. Keep interactive children at least 4px inside the sheet edge (the
+   default 24px padding does this), or the focus ring is shaved by the tear.
 
 ## Tears
 
@@ -131,6 +133,10 @@ that select them:
 | `kcc-tear-6` | 80 | 2.4 | 17px bottom-left | −0.70 |
 | `kcc-tear-hero` | 160 | 2.4 | 28px top-right | −0.58 |
 | `kcc-tear-tile-1..3` | 24 | 1.8 | none | (tilewrap −2°) |
+
+Depth is constant but the wavelength stretches with the box, so each family has a size band: tile tears for
+48–128px tiles, the six sheet tears for sheets 170–700px wide, the hero tear for 330–1300px. A tile tear on a
+full-width sheet reads as a scallop, not a tear.
 
 **Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`; a standalone sheet takes a preset from a
 stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design names; the default is
@@ -226,8 +232,8 @@ Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs
 |---|---|
 | WCAG AA in both ramps, including ink over paper + wash | `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` |
 | No retired token, class, utility or directive in `Features/**` or CMS content | `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` (paths in `ALLOWLIST` are still unconverted) |
-| Committed `Tears.css` equals the generator | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
-| Tear geometry: deterministic, closed, inside the box, chamfer never top-left, one preset uncut | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
+| Committed `Tears.css` equals the generator; every preset declared on `:root` with a selecting class; sheet tilts written to `--r`; one or two standard sheets uncut | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
+| Tear geometry: deterministic, every vertex inside the box for every shipped preset, seam closes within a step, chamfer never top-left, amp and point-count guards | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 
