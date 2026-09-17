@@ -15,7 +15,8 @@
     "test": "vitest run",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write Features/ \"../../tests/KCC.ViteTests/**/*.{ts,vue}\""
+    "format": "prettier --write Features/ \"../../tests/KCC.ViteTests/**/*.{ts,vue}\"",
+    "tears": "node --experimental-strip-types Features/Torn/generateTears.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-pro": "^7.3.0",
