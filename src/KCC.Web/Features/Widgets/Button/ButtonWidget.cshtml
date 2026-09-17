@@ -27,7 +27,7 @@
 }
 
 <div class="flex @Model.Properties.Alignment @Model.Properties.GetMarginClasses()">
-    <button-link href="@Model.Properties.ButtonUrl" target="@Model.Properties.ButtonTarget" class="@buttonStyles @(isEditMode ? "cursor-text" : "cursor-pointer")">
+    <button-link href="@Model.Properties.ButtonUrl" target="@Model.Properties.ButtonTarget" class="@($"{buttonStyles} {(isEditMode ? "cursor-text" : "cursor-pointer")}".Trim())">
         @if (isEditMode)
         {
             Html.Kentico().RichTextEditor(nameof(Model.Properties.ButtonText));

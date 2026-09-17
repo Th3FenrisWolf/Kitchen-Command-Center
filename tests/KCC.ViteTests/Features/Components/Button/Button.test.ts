@@ -37,14 +37,20 @@ describe('KccButton', () => {
     expect(html).toContain('aria-disabled="true"')
   })
 
-  it('disables a button natively', async () => {
+  it('disables a button natively, not with aria-disabled', async () => {
     const html = await render({ disabled: true })
-    expect(html).toContain('<button')
-    expect(html).toContain('disabled')
+    expect(html).toContain('<button class="kcc-btn" type="button" disabled')
+    expect(html).not.toContain('aria-disabled')
   })
 
-  it('carries no Softbound hook', async () => {
-    const html = await render()
+  it('passes a submit type through and never gives a button an href', async () => {
+    const html = await render({ type: 'submit', href: '/ignored' })
+    expect(html).toContain('type="submit"')
+    expect(html).not.toContain('href=')
+  })
+
+  it.each(['marker', 'ghost', 'ink', 'text'] as const)('carries no Softbound hook as %s', async (variant) => {
+    const html = await render({ variant })
     expect(html).not.toContain('data-ink')
     expect(html).not.toContain('sk-')
   })
