@@ -36,6 +36,9 @@
      last child; positioning the siblings between them paints the grain under the page and the crayon over
      it. :where() keeps specificity at zero so a sticky/fixed utility on a child still wins. */
   #app {
+    /* The overlays blend with their backdrop and #app is an isolated group, so the desk must be painted
+       inside it; html keeps the same colour for overscroll. */
+    background-color: var(--color-desk);
     display: grid;
     grid-template-rows: auto 1fr auto;
     isolation: isolate;

@@ -1,11 +1,20 @@
 /* Kit-only properties and the dark ramp. Colour tokens are declared in TailwindConfig.css (@theme static,
    light values); this file redefines them under data-theme="dark" and holds the properties that are not
    design tokens: the rule, the radii of printed marks, wash rendering, the grain and crayon tiles. */
+
+/* --r is set and read on the slip itself. Registered non-inheriting so a slip nested in a sheet does not
+   compound its parent's tilt. Do not reset it with a .kcc-slip rule: Kit.css loads after Tears.css and
+   would kill every preset's tilt. */
+@property --r {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 @layer base {
   :root {
     --bl: 24px;
     --rd: 6px;
-    --rd-s: 4px;
     --wash-blend: multiply;
     --wash-op: 0.62;
     --wash-sat: 1;

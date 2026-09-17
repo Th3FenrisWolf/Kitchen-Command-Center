@@ -44,7 +44,7 @@ lilac-grey. Marker green is the one accent and the only strong fill: primary act
 | desk / desk-2 | `oklch(.884 .016 288)` / `oklch(.836 .018 288)` | `oklch(.132 .024 288)` / `oklch(.176 .028 288)` |
 | paper / paper-2 | `oklch(.958 .009 92)` / `oklch(.972 .008 92)` | `oklch(.258 .030 288)` / `oklch(.222 .028 288)` |
 | ink / ink-soft | `oklch(.232 .026 288)` / `oklch(.432 .024 288)`\* | `oklch(.945 .012 92)` / `oklch(.735 .018 288)` |
-| hair / hair-strong | ink at 16% / 52%\* | chalk at 18% / 45% |
+| hair / hair-strong | ink at 16% / 56%\* | chalk at 18% / 45% |
 | rule | `oklch(.58 .045 288 / .22)` | `oklch(.88 .02 288 / .13)` |
 | marker / marker-ink | `oklch(.876 .112 126)` / `oklch(.24 .03 288)` | same |
 | fiber / fall | `oklch(1 .006 92)` / `oklch(.25 .03 288 / .28)` | `oklch(.435 .034 288)` / `oklch(.04 .02 288 / .7)` |
@@ -52,8 +52,8 @@ lilac-grey. Marker green is the one accent and the only strong fill: primary act
 
 \* Two values are pinned by `contrast.test.ts` rather than by the mockup: `ink-soft` (the mockup's `.452`
 fails WCAG AA for small caps on desk-2) and light `hair-strong` (the mockup's 40% alpha composites to 2.4:1
-against paper; a control boundary needs 3:1, so it ships at 52%). `hair` keeps the mockup's lightness for
-dividers.
+against paper; a control boundary needs 3:1, so it ships at 56%, with headroom for the wax overlay). `hair`
+keeps the mockup's lightness for dividers.
 
 Light leads. Dark is the same identity on a dark desk: chalk for ink, washes screened instead of multiplied,
 the wax tooth soft-lit instead of multiplied. Every visual change is checked in both.

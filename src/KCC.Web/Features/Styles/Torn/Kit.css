@@ -64,8 +64,9 @@
     position: relative;
   }
 
-  /* Content sits above the wash. */
-  .kcc-sheet > :not(.kcc-wash) {
+  /* Content sits above the wash. :where() keeps this at class specificity so a kit class or a utility that
+     positions a child (kcc-stat) still wins. */
+  .kcc-sheet > :where(:not(.kcc-wash)) {
     position: relative;
     z-index: 1;
   }
@@ -141,6 +142,9 @@
 
   /* ---- a torn wax tile pinned over a sheet's corner ---- */
   .kcc-tilewrap {
+    /* --tear inherits from the slip's preset; without this reset an unclassed tile would take the sheet's
+       80-point tear on a 56px box. */
+    --tear: var(--tear-tile-1);
     left: 16px;
     position: absolute;
     top: -14px;

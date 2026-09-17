@@ -23,9 +23,10 @@
   /* The mockup's 0.452 reads at 3.5:1 for small caps on desk-2; contrast.test.ts pins this value. */
   --color-ink-soft: oklch(0.432 0.024 288);
   --color-hair: oklch(0.232 0.026 288 / 0.16);
-  /* The mockup's 0.4 alpha composites to 2.4:1 against paper; 3:1 is what a control boundary needs
-     (contrast.test.ts UI pairs). Dividers that want the mockup's lightness use `hair`. */
-  --color-hair-strong: oklch(0.232 0.026 288 / 0.52);
+  /* The mockup's 0.4 alpha composites to 2.4:1 against paper; 3:1 is what a control boundary needs, with
+     headroom for the crayon overlay that multiplies everything by ~0.97 (contrast.test.ts UI pairs; desk-2
+     is the binding ground). Dividers that want the mockup's lightness use `hair`. */
+  --color-hair-strong: oklch(0.232 0.026 288 / 0.56);
   --color-rule: oklch(0.58 0.045 288 / 0.22);
   /* Marker repeats green's literal rather than aliasing it: it is the primary-action role, and re-valuing
      the green wash must not silently move every button with it. */
