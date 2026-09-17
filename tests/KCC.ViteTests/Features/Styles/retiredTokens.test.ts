@@ -41,7 +41,6 @@ const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 const ALLOWLIST = new Set<string>([
   'Features/Components/Badge/Badge.vue',
   'Features/Components/Breadcrumbs/Breadcrumbs.Component.vue',
-  'Features/Components/Button/Button.vue',
   'Features/Components/ComingSoon/ComingSoonSection.vue',
   'Features/Components/Forms/Field.vue',
   'Features/Components/Forms/InputField.vue',
@@ -96,9 +95,7 @@ const ALLOWLIST = new Set<string>([
   'Features/Sections/Base/SectionColors.cs',
   'Features/Sections/MultipleColumn/MultipleColumnSection.cshtml',
   'Features/Styles/Sketch/',
-  'Features/TagHelpers/ButtonLinkTagHelper.cs',
   'Features/Types/DesignSystem.ts',
-  'Features/Widgets/Button/ButtonWidget.cshtml',
   'Features/Widgets/Card/Card.Component.vue',
   'Features/Widgets/Card/CardWidget.cshtml',
   'Features/Widgets/Card/Grid/CardGridWidget.cshtml',
