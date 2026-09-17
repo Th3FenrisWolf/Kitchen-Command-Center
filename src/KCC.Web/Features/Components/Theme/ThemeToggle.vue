@@ -29,7 +29,8 @@
   // deciding here would be a hydration mismatch on every light-ramp visitor.
   function toggle() {
     const root = document.documentElement
-    const next: Ramp = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'
+    // Light is the default, so a missing attribute flips to dark.
+    const next: Ramp = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
 
     // Kill in-flight transitions for one frame so nothing interpolates between the two palettes.
     root.setAttribute('data-theme-switching', '')
