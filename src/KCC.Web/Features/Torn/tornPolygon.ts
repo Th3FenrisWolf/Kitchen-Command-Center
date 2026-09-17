@@ -3,6 +3,8 @@
  * the position along the edge, the pixel term carries the inset, the chamfer and the noise along the outward
  * normal. One preset therefore clips a sheet of any size with the same 2–3px tear. Port of the mockup's
  * torn.js, which computed absolute pixels for a measured box; here the box is unknown at build time.
+ * Depth is constant; the wavelength stretches with the box, so each preset family targets a size band
+ * (see docs/brand/kit.md → Tears).
  */
 
 /** Which corner the clean chamfer cuts. Never top-left: the label lives there. */
@@ -133,6 +135,12 @@ function perimeter(pad: number, chamfer: number, corner: Corner, pointsPerSide: 
 
 /** The vertices of one tear, before formatting. */
 export function tornVertices({ seed, amp = 2.4, chamfer = 0, corner = 1, pointsPerSide = 80 }: TearOptions): Vertex[] {
+  // Outward excursions reach 1.275 × amp (|noise| ≤ 1 plus half the jitter); the inset pad = amp + 1.2
+  // contains them only while amp ≤ 4.3. Beyond that a vertex lands outside the box and coordToCss emits a
+  // bare negative length without complaint.
+  if (!(amp <= 4.3)) throw new RangeError(`amp ${amp} exceeds the 4.3px the inset can contain`)
+  // Fewer than three points per side yields polygon() with too few vertices to clip anything.
+  if (!(pointsPerSide >= 3)) throw new RangeError(`pointsPerSide ${pointsPerSide} is below 3`)
   // Inset so the outward excursions (at most 1.275 × amp) stay inside the box.
   const pad = amp + 1.2
   const segments = perimeter(pad, chamfer, corner, pointsPerSide)

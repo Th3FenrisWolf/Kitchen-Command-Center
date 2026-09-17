@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { SHEET_TEARS, TILE_TEARS } from '~/Torn/tears'
 import { coordToCss, resolveCoord, tornPolygon, tornVertices, type Corner } from '~/Torn/tornPolygon'
 
 const SIZES: [number, number][] = [
@@ -59,5 +60,48 @@ describe('tornPolygon', () => {
     const css = tornPolygon({ seed: 2 })
     expect(css.startsWith('polygon(')).toBe(true)
     expect(css.endsWith(')')).toBe(true)
+  })
+
+  it.each([...SHEET_TEARS, ...TILE_TEARS].map((p) => [p.name, p] as const))(
+    'keeps every vertex of the shipped %s inside boxes from tile to hero size',
+    (_name, preset) => {
+      for (const [w, h] of [
+        [56, 56],
+        [320, 240],
+        [1280, 400],
+      ]) {
+        for (const v of tornVertices(preset)) {
+          const x = resolveCoord(v.x, w)
+          const y = resolveCoord(v.y, h)
+          expect(x).toBeGreaterThanOrEqual(0)
+          expect(x).toBeLessThanOrEqual(w)
+          expect(y).toBeGreaterThanOrEqual(0)
+          expect(y).toBeLessThanOrEqual(h)
+        }
+      }
+    },
+  )
+
+  it('closes within one edge step plus the jitter at the seam', () => {
+    // The loop starts and ends on the left edge; polygon() closes it with a straight chord. The periodic
+    // noise makes that chord short, the per-vertex jitter (≤ .55 × amp) is the only non-periodic term.
+    for (const preset of [...SHEET_TEARS, ...TILE_TEARS]) {
+      const [w, h] = [320, 240]
+      const pts = tornVertices(preset)
+      const first = pts[0]!
+      const last = pts[pts.length - 1]!
+      const step = h / preset.pointsPerSide
+      const gap = Math.hypot(
+        resolveCoord(first.x, w) - resolveCoord(last.x, w),
+        resolveCoord(first.y, h) - resolveCoord(last.y, h),
+      )
+      expect(gap).toBeLessThanOrEqual(step + preset.amp * 0.55 + preset.amp)
+    }
+  })
+
+  it('refuses amplitudes the inset cannot contain and degenerate point counts', () => {
+    expect(() => tornVertices({ seed: 1, amp: 4.4 })).toThrow(/amp/)
+    expect(() => tornVertices({ seed: 1, pointsPerSide: 2 })).toThrow(/pointsPerSide/)
+    expect(() => tornVertices({ seed: 1, amp: 4.3, pointsPerSide: 3 })).not.toThrow()
   })
 })
