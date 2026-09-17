@@ -26,7 +26,7 @@
   const { switchToLightLabel, switchToDarkLabel } = defineProps<ThemeToggleProps>()
 
   // Both glyphs render and Kit.css shows the one for the active ramp. The server cannot know the ramp, so
-  // deciding here would be a hydration mismatch on every light-ramp visitor.
+  // deciding here would be a hydration mismatch on every dark-ramp visitor.
   function toggle() {
     const root = document.documentElement
     // Light is the default, so a missing attribute flips to dark.

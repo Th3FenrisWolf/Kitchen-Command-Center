@@ -5,12 +5,17 @@
     font-family: var(--font-hazelnut);
     font-size: 15px;
     font-weight: 400;
-    line-height: var(--bl);
+    line-height: var(--bl, 24px);
   }
 
+  /* Heading level is semantic; size comes from the kcc-h3 / kcc-h4 classes. Bare h3–h6 share the 22 / 24
+     heading size so no heading ever reads as body copy. */
   h1,
   h2,
-  h3 {
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-casual);
     font-weight: 400;
     letter-spacing: 0;
@@ -29,9 +34,20 @@
     line-height: var(--bl);
   }
 
-  h3 {
+  h3,
+  h4,
+  h5,
+  h6 {
     font-size: 22px;
     line-height: var(--bl);
+  }
+
+  /* iOS zooms the viewport into any focused field under 16px; the body is 15px. Form controls sit one pixel
+     above it, everywhere, so the kit's fields never trigger the zoom. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 

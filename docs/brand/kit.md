@@ -59,6 +59,16 @@ every `sk-*` class, `v-ink`, `data-ink`. A `TRANSITIONAL` block in `TailwindConf
 **Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px (small marks), `rounded-md` 6px (labels,
 wells, textareas), `rounded-full` (pills). Sheets, tiles and images take no radius.
 
+## Type
+
+`Features/Styles/Typography.css` is the base: `body` 15 / 24 in Hazelnut regular; `h1` 40 / 48 in APCasual;
+`h2` 24 / 24; `h3`–`h6` 22 / 24. Heading *level* is semantic and heading *size* comes from `kcc-h3` /
+`kcc-h4`, so a bare `h4` is never a thing in new markup — write `<h4 class="kcc-h4">` or a `kcc-kick`.
+Form controls (`input`, `select`, `textarea`) are 16px everywhere: iOS zooms the viewport into any focused
+field below 16px, and the kit's fields inherit this floor. Sono is a static instance (MONO 1 / 400):
+`font-variation-settings` is a no-op on it. `typography.test.ts` pins these numbers and checks every font
+file it references exists.
+
 ## Structure
 
 A labelled, taped, washed sheet:
@@ -236,6 +246,7 @@ Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs
 | Tear geometry: deterministic, every vertex inside the box for every shipped preset, seam closes within a step, chamfer never top-left, amp and point-count guards | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
+| The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 
 ## Converting a component
 
