@@ -45,7 +45,7 @@
 </script>
 
 <template>
-  <button type="button" class="btn-no-style sk-chrome-link cursor-pointer px-2 py-2" @click="toggle">
+  <button type="button" class="btn-no-style cursor-pointer px-2 py-2 text-ink" @click="toggle">
     <span data-ramp="dark">
       <i class="fa-duotone fa-sun-bright text-xl" aria-hidden="true"></i>
       <span class="sr-only">{{ switchToLightLabel }}</span>

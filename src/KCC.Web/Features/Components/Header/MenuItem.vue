@@ -54,7 +54,7 @@
     v-if="item.url"
     :href="item.url.stripTilde()"
     :target="item.target"
-    class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl px-4 py-2 font-casual text-2xl font-bold text-ink uppercase"
+    class="relative z-20 flex h-full w-full cursor-pointer items-center px-4 py-2 font-sono text-[10.5px] leading-6 tracking-[.1em] text-ink uppercase decoration-hair-strong underline-offset-[3px] hover:underline"
   >
     {{ item.displayText }}
   </a>
@@ -62,13 +62,18 @@
     <button
       type="button"
       @click="toggle"
-      class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl px-4 py-2 font-casual text-2xl font-bold text-ink uppercase"
+      :class="[
+        'relative z-20 flex h-full w-full cursor-pointer items-center font-sono text-[10.5px] leading-6 tracking-[.1em] uppercase',
+        isOpen
+          ? 'rounded-md bg-marker px-3 py-2 text-marker-ink'
+          : 'px-4 py-2 text-ink decoration-hair-strong underline-offset-[3px] hover:underline',
+      ]"
     >
       {{ item.displayText }}
     </button>
     <div
       :class="[
-        'sk-sheet absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden transition-all duration-500',
+        'absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden bg-paper text-ink transition-all duration-500',
         isOpen ? 'max-h-96' : 'max-h-0',
       ]"
     >
@@ -76,7 +81,7 @@
         <li
           v-for="subLink in item.subLinks"
           :key="subLink.displayText"
-          class="basis-full rounded-2xl bg-paper-2 text-ink transition-all will-change-transform hover:-translate-y-1"
+          class="basis-full rounded-md bg-paper-2 text-ink transition-all will-change-transform hover:-translate-y-1"
         >
           <a class="block size-full p-4 text-center" :href="subLink.url?.stripTilde()" :target="subLink.target">
             {{ subLink.displayText }}
