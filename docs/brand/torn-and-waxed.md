@@ -31,8 +31,8 @@ Three rules follow, and every other rule in this document is one of them applied
 | Accent tiles pinned to a sheet's corner | Labels, tape, stat numbers, meta lines, step numbers |
 
 Torn things are clipped to a generated tear, carry the fibre and the fall, and may tilt. Printed things are
-clean, unclipped, never shadowed, and take the only radii in the system: pills for controls, 6px for labels
-and textareas, 3px for checkboxes.
+clean, unclipped, never shadowed, and take the only radii in the system: pills for controls, 6px for labels,
+wells and textareas, 4px for small marks, 3px for checkboxes.
 
 ## Stock
 
@@ -44,15 +44,16 @@ lilac-grey. Marker green is the one accent and the only strong fill: primary act
 | desk / desk-2 | `oklch(.884 .016 288)` / `oklch(.836 .018 288)` | `oklch(.132 .024 288)` / `oklch(.176 .028 288)` |
 | paper / paper-2 | `oklch(.958 .009 92)` / `oklch(.972 .008 92)` | `oklch(.258 .030 288)` / `oklch(.222 .028 288)` |
 | ink / ink-soft | `oklch(.232 .026 288)` / `oklch(.432 .024 288)`\* | `oklch(.945 .012 92)` / `oklch(.735 .018 288)` |
-| hair / hair-strong | ink at 16% / 74%\* | chalk at 18% / 45% |
+| hair / hair-strong | ink at 16% / 52%\* | chalk at 18% / 45% |
 | rule | `oklch(.58 .045 288 / .22)` | `oklch(.88 .02 288 / .13)` |
 | marker / marker-ink | `oklch(.876 .112 126)` / `oklch(.24 .03 288)` | same |
 | fiber / fall | `oklch(1 .006 92)` / `oklch(.25 .03 288 / .28)` | `oklch(.435 .034 288)` / `oklch(.04 .02 288 / .7)` |
 | tape | `oklch(.985 .012 92 / .6)` | `oklch(.9 .012 92 / .28)` |
 
 \* Two values are pinned by `contrast.test.ts` rather than by the mockup: `ink-soft` (the mockup's `.452`
-fails WCAG AA for small caps on desk-2) and light `hair-strong` (the mockup's 40% alpha reads at 1.6:1
-against paper; a control boundary needs 3:1). `hair` keeps the mockup's lightness for dividers.
+fails WCAG AA for small caps on desk-2) and light `hair-strong` (the mockup's 40% alpha composites to 2.4:1
+against paper; a control boundary needs 3:1, so it ships at 52%). `hair` keeps the mockup's lightness for
+dividers.
 
 Light leads. Dark is the same identity on a dark desk: chalk for ink, washes screened instead of multiplied,
 the wax tooth soft-lit instead of multiplied. Every visual change is checked in both.
@@ -73,8 +74,9 @@ corner. **Never under running text.** Identical in both ramps; the blend mode ch
 | pink | dusty rose | `oklch(.876 .046 345)` |
 | red | faded red | `oklch(.790 .085 25)` |
 
-Washes are fills. Status is a wash behind ink text (red for danger, green for success, yellow for warning),
-never coloured text. Links are ink with a hair-strong underline; there is no link colour.
+Washes are fills. Status is a wash behind ink text, never coloured text: a well of paper tinted with the wash
+(red for danger, green for success, yellow for warning) carrying an ink message. See `kit.md` → Status.
+Links are ink with a hair-strong underline; there is no link colour.
 
 ## Type
 
@@ -109,7 +111,8 @@ built.
 - **Tear**: fine and dense on all four sides, 2.4px amplitude on sheets, 1.8px on tiles, with the odd deeper
   fibre nick. Six sheet tears, one hero tear and three tile tears exist; neighbours never share one.
 - **Cut corner**: one clean 16–20px chamfer through the tear at the top-right, bottom-right or bottom-left.
-  Never top-left, where the label lives. About one sheet in four is uncut. Heroes take a 28px cut.
+  Never top-left, where the label lives. At least one of the six standard tears is uncut (the mockup's "about
+  one in four"). Heroes take a 28px cut.
 - **Label**: a flat marker pill overlapping the top-left edge. Sono caps. Never torn, never shadowed, no
   grain: the one thing on the sheet that was printed. It sits outside the tear and outside the shadow.
 - **Tape**: opt-in. One translucent strip, top-centre, slightly rotated. A pinned tile takes a smaller strip.

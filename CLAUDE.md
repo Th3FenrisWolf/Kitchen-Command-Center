@@ -48,12 +48,12 @@ build or the brand silently, so they stay here as well.
 
 ### Tokens
 
-Role tokens live in `Styles/TailwindConfig.css` under **`@theme static`** with the **light** values; the dark
-ramp overrides them in `Styles/Torn/Tokens.css` under `:root[data-theme='dark']`. The `static` is
-load-bearing: Tailwind 4 prunes theme variables no utility references, and the kit CSS and the dark ramp
-read `--color-*` directly. `Layout.cshtml` runs a pre-paint inline script that sets `data-theme` from
-`localStorage['kcc-theme']`, else `prefers-color-scheme`, else **light**. **Check both ramps for any visual
-change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
+Role tokens live in `Features/Styles/TailwindConfig.css` under **`@theme static`** with the **light** values;
+the dark ramp overrides them in `Features/Styles/Torn/Tokens.css` under `:root[data-theme='dark']`. The
+`static` is load-bearing: Tailwind 4 prunes theme variables no utility references, and the kit CSS and the
+dark ramp read `--color-*` directly. `Layout.cshtml` runs a pre-paint inline script that sets `data-theme`
+from `localStorage['kcc-theme']`, else `prefers-color-scheme`, else **light**. **Check both ramps for any
+visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
 composites ink over paper plus each wash.
 
 A `TRANSITIONAL` block keeps the retired Softbound tokens alive until the conversion finishes. Nothing new
@@ -61,17 +61,17 @@ may use them; `retiredTokens.test.ts` enforces that outside its shrinking `ALLOW
 
 ### The kit, and where CSS lives
 
-`kcc-*` classes live in global `@layer components` CSS under `Styles/Torn/`, **not** in component `<style>`
-blocks: Razor-rendered widgets and Vue components share them, and Razor cannot reach a scoped block. Anything
-Razor also renders belongs in `@layer components`. A rule that must beat a Tailwind *utility* sits
-**outside** `@layer` entirely (the ramp-swap rule at the end of `Styles/Torn/Kit.css`), because the
-`utilities` layer comes after `components`.
+`kcc-*` classes live in global `@layer components` CSS under `Features/Styles/Torn/`, **not** in component
+`<style>` blocks: Razor-rendered widgets and Vue components share them, and Razor cannot reach a scoped
+block. Anything Razor also renders belongs in `@layer components`. A rule that must beat a Tailwind *utility*
+sits **outside** `@layer` entirely (the ramp-swap rule at the end of `Features/Styles/Torn/Kit.css`), because
+the `utilities` layer comes after `components`.
 
 ### The tear
 
-Sheets are clipped with `clip-path: var(--tear)`; the presets in `Styles/Torn/Tears.css` are **generated** by
-`yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit the CSS. No runtime
-JS draws anything; the SSR output is final. Two structural invariants:
+Sheets are clipped with `clip-path: var(--tear)`; the presets in `Features/Styles/Torn/Tears.css` are
+**generated** by `yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
+the CSS. No runtime JS draws anything; the SSR output is final. Two structural invariants:
 
 - The `filter` (fibre + fall) sits on `.kcc-torn`, **outside** the clipped `.kcc-sheet`, or the shadow is
   clipped away with the paper.

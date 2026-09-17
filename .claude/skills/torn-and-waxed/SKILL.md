@@ -39,19 +39,21 @@ the contract before writing markup or CSS. This file is the part you should be a
 </div>
 ```
 
-Vue: `import KccSheet from '~/Components/Sheet/KccSheet.vue'` with `label`, `icon`, `wash`, `at`, `tear`,
-`tape`, `pad`, `crisp`, `as`. Razor: write it by hand. Tear in a loop: `kcc-tear-${(i % 6) + 1}`.
+Vue: `import KccSheet from '~/Components/Sheet/KccSheet.vue'` with `label`, `icon`, `labelRight`, `wash`,
+`at`, `tear`, `tape`, `pad`, `crisp`, `as`. Razor: write it by hand. Tear in a loop:
+`kcc-tear-${(i % 6) + 1}`.
 
 ## Tokens you will reach for
 
 `bg-desk` `bg-desk-2` `bg-paper` `bg-paper-2` · `text-ink` `text-ink-soft` · `border-hair` `border-hair-strong`
 · `bg-marker` + `text-marker-ink` (accent, labels, primary) · washes `peach yellow green teal sky lavender
-pink red` as fills only. Light is the default ramp; dark overrides live in `Styles/Torn/Tokens.css`.
+pink red` as fills only. Light is the default ramp; dark overrides live in `Features/Styles/Torn/Tokens.css`.
 
 ## Type on the rule
 
 `kcc-h3` 40/48 · `kcc-h4` 22/24 · `kcc-body` 15/24 · `kcc-kick` Sono caps 10.5/24 · `kcc-num` Sono tabular ·
-`kcc-hand` italic 17/24, one per sheet. Spacing in 24px steps: `mt-6`, `gap-9` (rows), `gap-x-7` (columns).
+`kcc-hand` italic 17/24, one per sheet. Type sits on the 24px rule (`mt-6` is one rule, `mt-12` two); grid
+gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
 
 ## Before you finish
 
@@ -63,8 +65,8 @@ pink red` as fills only. Light is the default ramp; dark overrides live in `Styl
 - [ ] Numbers in `kcc-num`; meta in `kcc-kick` / `kcc-meta`; headings in APCasual.
 - [ ] Structural hooks (`data-testid`, ids, roles) untouched.
 - [ ] Path removed from `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts`.
-- [ ] From `src/KCC.Web`: `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; at a
-      phase gate `yarn build:all`.
+- [ ] Ran the checklist in `docs/brand/kit.md` → Converting a component, step 8 (tests, type-check, format;
+      `yarn build:all` at a phase gate).
 
 ## Common mistakes
 
@@ -74,8 +76,10 @@ pink red` as fills only. Light is the default ramp; dark overrides live in `Styl
   sheet margin is correct.
 - A `.kcc-label` inside `.kcc-sheet` — it gets torn and shadowed. It is a sibling of `.kcc-torn`.
 - Using a green `text-link` — links are ink with a hair-strong underline (`kcc-link`).
+- Red text for an error — status is a `kcc-well--danger` (or `kcc-field--error`) with ink text.
 - Reaching for `font-bold` for emphasis — use a `kcc-kick`, a label, or marker.
-- Hand-editing `Styles/Torn/Tears.css` — it is generated; edit `Features/Torn/tears.ts` and run `yarn tears`.
+- Hand-editing `Features/Styles/Torn/Tears.css` — it is generated; edit `Features/Torn/tears.ts` and run
+  `yarn tears`.
 
 ## Agents
 
