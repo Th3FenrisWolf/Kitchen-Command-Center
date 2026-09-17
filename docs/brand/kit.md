@@ -1,0 +1,219 @@
+# Torn & Waxed — the kit
+
+The engineering contract for [torn-and-waxed.md](torn-and-waxed.md): tokens, classes, structure, invariants,
+and the test that enforces each rule. Anything Razor also renders lives in global `@layer components` CSS,
+never in a component `<style>` block.
+
+## Files
+
+| Path | Holds |
+|---|---|
+| `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), radius ladder, fonts, safelist |
+| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties; the dark ramp under `:root[data-theme='dark']`; the TRANSITIONAL block |
+| `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
+| `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
+| `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, badge, check, stats, steps, recipe-slip parts |
+| `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
+| `src/KCC.Web/Features/Torn/tears.ts` | preset table and CSS emitter |
+| `src/KCC.Web/Features/Torn/generateTears.ts` | CLI that writes `Tears.css` |
+| `src/KCC.Web/Features/Components/Sheet/KccSheet.vue` | the sheet primitive for Vue |
+| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | pre-paint ramp script, font preloads, `#kcc-wax` / `#kcc-wax-flat` filter defs |
+
+## Tokens
+
+Reach tokens through Tailwind utilities (`bg-paper`, `text-ink-soft`) or `var(--color-*)` in kit CSS. Never
+a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Tokens.css`.
+
+| Token | Light | Dark | Use |
+|---|---|---|---|
+| `desk`, `desk-2` | `.884 .016 288`, `.836 .018 288` | `.132 .024 288`, `.176 .028 288` | page ground, raised desk |
+| `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for wells inside a sheet |
+| `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
+| `hair`, `hair-strong` | ink / .16, ink / .74 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
+| `rule` | `.58 .045 288 / .22` | `.88 .02 288 / .13` | pencil ruling |
+| `marker`, `marker-ink` | `.876 .112 126`, `.24 .03 288` | same | the accent fill and the ink that sits on it and on every wash |
+| `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-torn` |
+| `tape` | `.985 .012 92 / .6` | `.9 .012 92 / .28` | tape strips |
+| `focus` | `var(--color-ink)` | same | focus ring |
+| `peach yellow green teal sky lavender pink red` | see the identity | same | the eight washes; fills only |
+
+All values are `oklch(L C H [/ alpha])`.
+
+Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px, `--rd-s` 4px,
+`--wash-blend` (multiply / screen), `--wash-op` (.62 / .38, dark value test-pinned), `--wash-sat` (1 / 1.45),
+`--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per element: `--pad` (sheet),
+`--tear` and `--r` (set by a preset class), `--c --x --y --w --h` (wash).
+
+**Retired** and caught by `retiredTokens.test.ts`: `ink-line`, `ink-on-wash`, `hatch`, `edge`,
+`edge-strong`, `flap-1`, `flap-2`, `link`, `danger`, `success`, `warning`, `danger-ink`, `success-ink`,
+`warning-ink`, `rating-ink`, the washes `rosewater flamingo mauve maroon sapphire blue`, every `shadow-*`
+utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, `fa-primary-*`,
+`fa-secondary-*`, every `sk-*` class, `v-ink`, `data-ink`. A `TRANSITIONAL` block in `TailwindConfig.css`
+and `Torn/Tokens.css` keeps the Softbound tokens alive until the cleanup phase; nothing new may use them.
+
+**Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px, `rounded-md` 6px (labels, textareas),
+`rounded-full` (pills). Sheets, tiles and images take no radius.
+
+## Structure
+
+A labelled, taped, washed sheet:
+
+```html
+<div class="kcc-slip kcc-tear-3">                 <!-- tilt via --r; position: relative -->
+  <div class="kcc-torn">                          <!-- filter: fibre + fall -->
+    <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clip-path: var(--tear), 24px pencil rule -->
+      <span class="kcc-wash" style="--c: var(--color-peach); --x: 88%; --y: 18%; --w: 38%; --h: 60%" aria-hidden="true"></span>
+      <p class="kcc-kick">Kitchen Command Center</p>
+      <h2 class="kcc-h3">The perfect drawing, torn out and kept.</h2>
+    </div>
+  </div>
+  <span class="kcc-label"><i class="fa-duotone fa-scissors" aria-hidden="true"></i>Identity · 01</span>
+  <span class="kcc-tape" aria-hidden="true"></span>
+</div>
+```
+
+A plain sheet (no label, no tape):
+
+```html
+<div class="kcc-slip kcc-torn kcc-tear-2">
+  <div class="kcc-sheet">…</div>
+</div>
+```
+
+A recipe slip:
+
+```html
+<article class="kcc-slip kcc-recipe kcc-tear-5">
+  <div class="kcc-torn">
+    <div class="kcc-sheet">
+      <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.5</span><span class="text-ink-soft">· 28</span></span>
+      <h3 class="kcc-h4">Brown Butter Gnocchi</h3>
+      <p class="kcc-meta"><span>Pasta</span><span>6 var.</span><span class="kcc-num">25 min</span></p>
+      <div class="kcc-badges mt-6"><span class="kcc-badge">Vegetarian</span><span class="kcc-badge">One pan</span></div>
+    </div>
+  </div>
+  <div class="kcc-tilewrap">
+    <div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-2" style="--c: var(--color-peach)" aria-hidden="true"><i class="fa-duotone fa-wheat"></i></div></div>
+    <span class="kcc-tape" aria-hidden="true"></span>
+  </div>
+</article>
+```
+
+Rules of the structure:
+
+1. `clip-path` sits on `.kcc-sheet` / `.kcc-tile`. The `filter` sits on a wrapper **outside** the clipped
+   element (`.kcc-torn`), or the shadow is clipped away with it.
+2. Label, tape and tilewrap are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip **and** outside
+   the filter, so they are neither torn nor shadowed.
+3. Every direct child of `.kcc-sheet` except `.kcc-wash` is lifted above the wash by the kit
+   (`position: relative; z-index: 1`). Do not fight it.
+4. `--pad` on the sheet also positions the pencil rule: pass padding as `style="--pad: …"`, not as padding
+   utilities.
+5. One wash, one label, one hand note per sheet at most.
+
+## Tears
+
+`Tears.css` declares `--tear-1 … --tear-6`, `--tear-hero` and `--tear-tile-1 … 3` on `:root` and the classes
+that select them:
+
+| Class | Points / side | Amp | Chamfer | Tilt `--r` |
+|---|---|---|---|---|
+| `kcc-tear-1` | 80 | 2.4 | 19px top-right | +0.30 |
+| `kcc-tear-2` | 80 | 2.4 | 17px bottom-right | −0.98 |
+| `kcc-tear-3` | 80 | 2.4 | none | +0.05 |
+| `kcc-tear-4` | 80 | 2.4 | 18px bottom-left | −0.52 |
+| `kcc-tear-5` | 80 | 2.4 | 20px bottom-right | +0.63 |
+| `kcc-tear-6` | 80 | 2.4 | 17px bottom-left | −0.70 |
+| `kcc-tear-hero` | 160 | 2.4 | 28px top-right | −0.58 |
+| `kcc-tear-tile-1..3` | 24 | 1.8 | none | (tilewrap −2°) |
+
+**Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`; a standalone sheet takes a preset from a
+stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design names; the default is
+`kcc-tear-1`. Neighbours never share a tear. `yarn tears` regenerates the file; `tears.test.ts` fails if the
+committed file drifts from the generator. Need a crisp surface (a form, cook mode)? Add `style="--r: 0"`
+to the slip.
+
+## Classes
+
+| Class | What | Notes |
+|---|---|---|
+| `kcc-grain`, `kcc-crayon` | desk grain under everything, wax tooth over everything | first and last child of `#app`; `App.vue` owns them |
+| `kcc-slip` | tilt + positioning context | `--r` from the tear preset |
+| `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
+| `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px |
+| `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y --w --h` placement |
+| `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
+| `kcc-tape` | one strip, top-centre | opt-in |
+| `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink` |
+| `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
+| `kcc-body` | 15/24 body | |
+| `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | class, not element: `h1`–`h3` may carry either |
+| `kcc-hand` | APCasual italic 17/24 ink-soft | one per sheet |
+| `kcc-num` | Sono tabular | every number |
+| `kcc-hr` | dashed hair rule | |
+| `kcc-link` | ink + hair-strong underline | prose links, breadcrumbs |
+| `kcc-head`, `kcc-mark` | chrome header grid, APCasual wordmark | |
+| `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
+| `kcc-foot` | footer copy block | |
+| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large | Sono caps `.14em` |
+| `kcc-seg` › `button[aria-pressed]` | pill group, pressed = ink fill | |
+| `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = ink hairline |
+| `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
+| `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | |
+| `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, Sono 26 | `<small>` for the unit |
+| `kcc-steps` › `li` › `kcc-n` + `kcc-body` | numbered method | numbers `01`, `02`, … |
+| `kcc-recipe`, `kcc-stat`, `kcc-meta` | recipe slip modifiers | see Structure |
+
+Spacing between things uses Tailwind utilities on the 24px rule: `mt-6` (24px), `gap-9` (36px),
+`gap-x-7` (28px), `mt-12` (48px), `gap-y-[72px]` for sections.
+
+## Vue primitives
+
+- `Components/Sheet/KccSheet.vue` — props `label`, `icon`, `labelRight`, `wash`, `at { x y w h }`, `tear`
+  (`1..6 | 'hero'`), `tape`, `pad`, `crisp` (no tilt: forms, cook mode), `as` (`div | section | article | li`).
+  Default slot. Plain `.vue`: import it locally. Renders the Structure above with no client JS.
+- `Components/Button/Button.vue` — `variant: 'marker' | 'ghost' | 'ink' | 'text'`, `size: 'md' | 'lg'`,
+  `as: 'button' | 'a'`. Emits the `kcc-btn` classes; no directive.
+- Everything else composes the classes directly.
+
+## Razor
+
+Razor writes the Structure by hand. `ButtonLinkTagHelper` emits `kcc-btn` plus the modifiers in `Class`.
+Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs for the wax are inline in
+`Layout.cshtml`, so server-rendered washes are filtered before hydration.
+
+## Invariants
+
+1. **Build both bundles together**: `yarn build:all`. Scoped-style hashes must match across client and SSR.
+2. **`@theme static`**: the `static` keeps unreferenced tokens alive for the kit CSS and the dark ramp.
+3. **Razor-rendered → `@layer components`**, never a scoped `<style>`.
+4. **A rule that must beat a utility is unlayered** (the ramp-swap rule at the end of `Kit.css`).
+5. **`Tears.css` is generated.** Change `tears.ts`, run `yarn tears`, commit both.
+6. **No runtime JS draws anything.** The tear, the wash and the shadow are CSS; SSR output is final.
+7. **Both ramps, every change.** The light ramp is the default; dark is where washes and hairlines fail first.
+8. **Filter outside clip; label and tape outside both.** See Structure.
+
+## Enforcement
+
+| Rule | Test |
+|---|---|
+| WCAG AA in both ramps, including ink over paper + wash | `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` |
+| No retired token, class, utility or directive in `Features/**` or CMS content | `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` (paths in `ALLOWLIST` are still unconverted) |
+| Committed `Tears.css` equals the generator | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
+| Tear geometry: deterministic, closed, inside the box, chamfer never top-left, one preset uncut | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
+| `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
+| Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
+
+## Converting a component
+
+1. Read the component and its test. Keep every structural hook (`data-testid`, roles, ids); e2e locates by
+   hook, not markup.
+2. Replace `Sheet` / `sk-sheet` with `KccSheet` or the hand-written Structure. Pick the tear from the list
+   index or a stable hash.
+3. Replace every `sk-*` with its `kcc-*` twin from the Classes table. Drop `v-ink` and `data-ink`.
+4. Remove `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text is `text-ink` or `text-ink-soft`;
+   `text-marker-ink` only inside a tile, a label or a marker button.
+5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
+6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
+7. Delete the component's path from `ALLOWLIST` in `retiredTokens.test.ts`.
+8. `yarn test <name>`, `yarn type-check`, browser check in both ramps, `yarn format`, commit.
