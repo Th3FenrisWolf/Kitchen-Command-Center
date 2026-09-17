@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { BACKGROUND_COLORS, TEXT_COLORS, toBackgroundColor, toTextColor } from '~/Types/DesignSystem'
+import { BACKGROUND_COLORS, TEXT_COLORS, WASHES, toBackgroundColor, toTextColor } from '~/Types/DesignSystem'
 
 const tailwindConfigCss = readFileSync(
   fileURLToPath(new URL('../../../../src/KCC.Web/Features/Styles/TailwindConfig.css', import.meta.url)),
@@ -40,6 +40,26 @@ describe('TailwindConfig.css safelist', () => {
 
   it.each([...BACKGROUND_COLORS, ...TEXT_COLORS])('safelists %s', (token) => {
     expect(safelisted).toContain(token)
+  })
+})
+
+describe('WASHES', () => {
+  // TailwindConfig.css keeps the Softbound palette alive under a TRANSITIONAL marker until the
+  // conversion finishes (see CLAUDE.md); a wash declared only after it would build today but vanish
+  // once that block is deleted.
+  const head = tailwindConfigCss.slice(0, tailwindConfigCss.indexOf('TRANSITIONAL'))
+  const RETIRED = ['rosewater', 'flamingo', 'mauve', 'maroon', 'sapphire', 'blue']
+
+  it('lists the eight identity washes', () => {
+    expect(WASHES).toEqual(['peach', 'yellow', 'green', 'teal', 'sky', 'lavender', 'pink', 'red'])
+  })
+
+  it.each(WASHES)('declares --color-%s in TailwindConfig.css ahead of the retired Softbound tokens', (wash) => {
+    expect(head).toContain(`--color-${wash}:`)
+  })
+
+  it.each(WASHES)('keeps %s out of the retired Softbound list', (wash) => {
+    expect(RETIRED).not.toContain(wash)
   })
 })
 
