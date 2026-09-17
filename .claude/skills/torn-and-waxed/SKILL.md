@@ -57,7 +57,7 @@ gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
 
 ## Before you finish
 
-- [ ] Both ramps checked (light default, then `data-theme="dark"`).
+- [ ] Both ramps asserted in the unit test where markup differs; the visual check happens at the phase gate.
 - [ ] No `sk-*`, `v-ink`, `data-ink`, `shadow-*`, `rounded-lg`+, `font-bold/semibold/medium`, `fa-primary-*`,
       literal colours, retired tokens (`ink-on-wash`, `ink-line`, `link`, status inks, the six dropped washes).
 - [ ] Filter on `.kcc-torn`, not on the clipped element; label and tape outside both.
