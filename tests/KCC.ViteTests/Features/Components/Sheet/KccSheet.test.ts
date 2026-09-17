@@ -5,11 +5,12 @@ import { renderSsr } from '../../../support/renderSsr'
 const render = (props: Record<string, unknown> = {}) => renderSsr(KccSheet, props, { default: () => 'Hello' })
 
 describe('KccSheet', () => {
-  // Vue's SSR renderer always leaves a `<!--v-if-->` anchor comment for a false `v-if` with no `v-else`
-  // (needed so a later reactive toggle has somewhere to patch), and always wraps `<slot />` output in
-  // `<!--[-->`/`<!--]-->` Fragment anchors, compiled template or not — see `renderVNode`'s `Fragment` case
-  // and `createCommentVNode` in `@vue/server-renderer`. Both are invisible, harmless, and present in every
-  // real page that uses this component, so the assertions below include them rather than fight them.
+  // Two comment artifacts are baked into this markup. `<slot />` is always wrapped in `<!--[-->`/`<!--]-->`
+  // Fragment anchors — unconditional in dev and prod (`ssrRenderSlot` and the `Fragment` case in
+  // `@vue/server-renderer`), and hydration needs them. A false `v-if` leaves `<!--v-if-->` here because the
+  // `<component :is>` root resolves to an element, so `normalizeChildren` calls the slot without `_push` and
+  // the subtree renders via vnodes; a production compile writes that comment as `<!---->`. Both are
+  // invisible; the assertions include them rather than fight them.
   it('renders slip › torn › sheet with the default tear', async () => {
     const html = await render()
     expect(html).toContain(
