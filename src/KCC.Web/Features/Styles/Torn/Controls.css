@@ -72,6 +72,11 @@
     padding: 0 26px;
   }
 
+  .kcc-btn--text.kcc-btn--lg {
+    height: auto;
+    padding: 0;
+  }
+
   .kcc-btn:disabled,
   .kcc-btn[aria-disabled='true'] {
     cursor: not-allowed;
@@ -84,7 +89,6 @@
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
     display: inline-flex;
     height: 36px;
-    overflow: hidden;
   }
 
   .kcc-seg button {
@@ -142,7 +146,8 @@
     font-size: 13px;
   }
 
-  .kcc-field input {
+  .kcc-field input,
+  .kcc-field select {
     background: none;
     border: 0;
     color: inherit;
@@ -159,7 +164,7 @@
   }
 
   .kcc-field:focus-within {
-    box-shadow: inset 0 0 0 1px var(--color-ink);
+    box-shadow: inset 0 0 0 2px var(--color-ink);
   }
 
   /* A textarea cannot be a pill: it takes the label radius and grows on the rule. */
@@ -340,10 +345,12 @@
 
   /* ---- recipe slip parts: room for the pinned tile, the stat top-right, the meta line ---- */
   .kcc-recipe .kcc-sheet {
-    padding-top: calc(var(--pad, 24px) + 12px);
+    /* One full rule of headroom for the pinned tile; a 12px offset would put every baseline off the ruling. */
+    padding-top: calc(var(--pad, 24px) + var(--bl));
   }
 
-  .kcc-stat {
+  /* (0,2,0) so it beats the sheet's child-lift rule whatever the import order. */
+  .kcc-sheet > .kcc-stat {
     align-items: center;
     color: var(--color-ink);
     display: flex;
@@ -373,5 +380,14 @@
     line-height: var(--bl);
     margin: 0;
     text-transform: uppercase;
+  }
+
+  /* Windows high-contrast paints no box-shadow, so the inset rings above vanish there. */
+  @media (forced-colors: active) {
+    .kcc-field:focus-within,
+    .kcc-seg button:focus-visible {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
+    }
   }
 }

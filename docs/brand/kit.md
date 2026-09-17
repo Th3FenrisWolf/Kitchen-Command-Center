@@ -14,7 +14,7 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
-| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here |
+| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here and `#app` carries the desk colour so the overlays have a backdrop to blend with |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
 | `src/KCC.Web/Features/Torn/tears.ts` | preset table and CSS emitter |
@@ -32,7 +32,7 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 | `desk`, `desk-2` | `.884 .016 288`, `.836 .018 288` | `.132 .024 288`, `.176 .028 288` | page ground, raised desk |
 | `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for inset panels inside a sheet and the neutral `kcc-well` |
 | `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` (test-pinned; mockup .452) | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
-| `hair`, `hair-strong` | ink / .16, ink / .52 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
+| `hair`, `hair-strong` | ink / .16, ink / .56 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
 | `rule` | `.58 .045 288 / .22` | `.88 .02 288 / .13` | pencil ruling |
 | `marker`, `marker-ink` | `.876 .112 126`, `.24 .03 288` | same | the accent fill and the ink that sits on it and on every wash |
 | `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-torn` |
@@ -43,10 +43,9 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 All values are `oklch(L C H [/ alpha])`.
 
 Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px (labels, wells,
-textareas), `--rd-s` 4px (small marks), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .38, dark
-value test-pinned), `--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36),
-`--grain`, `--crayon`. Per element: `--pad` (sheet), `--tear` and `--r` (set by a preset class),
-`--c --x --y --w --h` (wash).
+textareas), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .38, dark value test-pinned),
+`--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per
+element: `--pad` (sheet), `--tear` and `--r` (set by a preset class), `--c --x --y --w --h` (wash).
 
 **Retired** and caught by `retiredTokens.test.ts`: `ink-line`, `ink-on-wash`, `hatch`, `edge`,
 `edge-strong`, `flap-1`, `flap-2`, `link`, `danger`, `success`, `warning`, `danger-ink`, `success-ink`,
@@ -120,13 +119,22 @@ Rules of the structure:
    element (`.kcc-torn`), or the shadow is clipped away with it.
 2. Label, tape and tilewrap are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip **and** outside
    the filter, so they are neither torn nor shadowed.
-3. Every direct child of `.kcc-sheet` except `.kcc-wash` is lifted above the wash by the kit
-   (`position: relative; z-index: 1`). Do not fight it.
+3. Every direct child of `.kcc-sheet` except `.kcc-wash` is lifted above the wash by the kit at class
+   specificity (`:where`). A kit class that positions a sheet child itself is written `.kcc-sheet > .kcc-x`
+   so it wins regardless of import order (see `kcc-stat`).
 4. `--pad` on the sheet also positions the pencil rule: pass padding as `style="--pad: …"`, not as padding
    utilities.
 5. One wash, one label, one hand note per sheet at most.
 6. `clip-path` clips descendants too. Keep interactive children at least 4px inside the sheet edge (the
    default 24px padding does this), or the focus ring is shaved by the tear.
+7. `transform` on `.kcc-slip` and `filter` on `.kcc-torn` each make the slip the containing block for
+   `position: fixed` descendants. Fixed UI (dialogs, cook mode, full-screen panels) is teleported to `body`
+   or kept outside sheets; never inside a slip.
+8. `clip-path` clips everything inside the sheet, including a dropdown or a sticky toolbar that moves past
+   the edge. Menus and popovers that must overflow live outside the sheet.
+9. `--tear` inherits from the slip into the sheet (wanted) and into a pinned tile (not wanted, so
+   `.kcc-tilewrap` resets it to the first tile tear); `--r` is registered non-inheriting, so nested slips
+   never compound a tilt.
 
 ## Tears
 
@@ -158,7 +166,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 
 | Class | What | Notes |
 |---|---|---|
-| `kcc-grain`, `kcc-crayon` | desk grain under everything, wax tooth over everything | first and last child of `#app`; `App.vue` owns them |
+| `kcc-grain`, `kcc-crayon` | desk grain under everything, wax tooth over everything | first and last child of `#app`; `App.vue` owns them; the crayon covers everything inside #app, so a surface teleported to body (cook mode) is deliberately untextured |
 | `kcc-slip` | tilt + positioning context | `--r` from the tear preset |
 | `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
 | `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px |
@@ -177,7 +185,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
 | `kcc-foot` | footer copy block | |
 | `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large | Sono caps `.14em` |
-| `kcc-seg` › `button[aria-pressed]` | pill group, pressed = ink fill | |
+| `kcc-seg` › `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | |
 | `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = ink hairline |
 | `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
 | `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | |
@@ -185,7 +193,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-steps` › `li` › `kcc-n` + `kcc-body` | numbered method | numbers `01`, `02`, … |
 | `kcc-well` (+`--danger`, `--success`, `--warning`) | paper tinted 28% with the wash, ink text, 6px radius | status messages; the message itself is a `kcc-kick` |
 | `kcc-field--error` | the field's own fill tinted with red | pair with a `kcc-well--danger` message below the field |
-| `kcc-recipe`, `kcc-stat`, `kcc-meta` | recipe slip modifiers | see Structure |
+| `kcc-recipe`, `kcc-stat`, `kcc-meta` | recipe slip modifiers | see Structure; the stat is `.kcc-sheet > .kcc-stat` |
 
 Spacing between things uses Tailwind utilities on the 24px rule: `mt-6` (24px), `gap-9` (36px),
 `gap-x-7` (28px), `mt-12` (48px), `gap-y-[72px]` for sections.
