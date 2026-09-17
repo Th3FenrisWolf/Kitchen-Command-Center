@@ -1,1 +1,319 @@
-/* Torn & Waxed — the paper. Filled in Task 15. */
+/* Torn & Waxed — the paper. Everything Razor also renders lives here, not in a component <style>. The tear
+   presets (--tear-*, .kcc-tear-*) come from the generated Tears.css. */
+@layer components {
+  /* ---- the desk: grain under everything, wax tooth over everything ---- */
+  .kcc-grain {
+    background-image: var(--grain);
+    background-size: 180px 180px;
+    inset: 0;
+    mix-blend-mode: multiply;
+    opacity: var(--grain-op);
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  :root[data-theme='dark'] .kcc-grain {
+    mix-blend-mode: normal;
+  }
+
+  .kcc-crayon {
+    background-image: var(--crayon), repeating-linear-gradient(107deg, oklch(1 0 0 / 0.028) 0 2px, transparent 2px 7px);
+    background-size:
+      200px 200px,
+      auto;
+    inset: 0;
+    mix-blend-mode: multiply;
+    opacity: var(--wax-op);
+    pointer-events: none;
+    position: absolute;
+    z-index: 40;
+  }
+
+  :root[data-theme='dark'] .kcc-crayon {
+    mix-blend-mode: soft-light;
+  }
+
+  /* ---- the slip: tilt → torn (fibre + fall) → sheet (clip + rule + wash) ---- */
+  .kcc-slip {
+    min-width: 0;
+    position: relative;
+    transform: rotate(calc(var(--r, 0) * 1deg));
+  }
+
+  /* The filter has to sit outside the clipped element, or the shadow is clipped away with the paper. */
+  .kcc-torn {
+    filter: drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall));
+    position: relative;
+  }
+
+  .kcc-sheet {
+    background-color: var(--color-paper);
+    /* The pencil rule, aligned to the padding so the first line of type sits on it. */
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(var(--bl) - 1px),
+      var(--color-rule) calc(var(--bl) - 1px) var(--bl)
+    );
+    background-position: 0 calc(var(--pad, 24px) - 5px);
+    clip-path: var(--tear, var(--tear-1));
+    color: var(--color-ink);
+    isolation: isolate;
+    min-width: 0;
+    padding: var(--pad, 24px);
+    position: relative;
+  }
+
+  /* Content sits above the wash. */
+  .kcc-sheet > :not(.kcc-wash) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* A pool of colour under the content. Set --c to a wash token and place it with --x --y --w --h. */
+  .kcc-wash {
+    background: radial-gradient(
+      var(--w, 52%) var(--h, 48%) at var(--x, 32%) var(--y, 38%),
+      var(--c) 0 48%,
+      color-mix(in oklab, var(--c) 38%, transparent) 70%,
+      transparent 86%
+    );
+    filter: url(#kcc-wax) saturate(var(--wash-sat));
+    inset: 0;
+    mix-blend-mode: var(--wash-blend);
+    opacity: var(--wash-op);
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  /* The label: printed, never torn, never shadowed. A sibling of .kcc-torn, overlapping the top-left edge. */
+  .kcc-label {
+    align-items: center;
+    background: var(--color-marker);
+    border-radius: var(--rd);
+    color: var(--color-marker-ink);
+    display: inline-flex;
+    font-family: var(--font-sono);
+    font-size: 10.5px;
+    gap: 8px;
+    height: 22px;
+    left: 20px;
+    letter-spacing: 0.14em;
+    line-height: 22px;
+    padding: 0 12px;
+    position: absolute;
+    text-transform: uppercase;
+    top: -11px;
+    white-space: nowrap;
+    z-index: 8;
+  }
+
+  .kcc-label i {
+    font-size: 11px;
+  }
+
+  .kcc-label--right {
+    left: auto;
+    right: 36px;
+  }
+
+  /* One strip of tape, top-centre. Opt-in. */
+  .kcc-tape {
+    background-color: var(--color-tape);
+    background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.16) 0 1px, transparent 1px 3px);
+    border-radius: 1px;
+    box-shadow: 0 1px 1.5px oklch(0.2 0.03 288 / 0.14);
+    height: 18px;
+    left: calc(50% - 31px);
+    pointer-events: none;
+    position: absolute;
+    top: -9px;
+    transform: rotate(-2.5deg);
+    width: 62px;
+    z-index: 9;
+  }
+
+  :root[data-theme='dark'] .kcc-tape {
+    background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 3px);
+    box-shadow: 0 1px 1.5px oklch(0 0 0 / 0.4);
+  }
+
+  /* ---- a torn wax tile pinned over a sheet's corner ---- */
+  .kcc-tilewrap {
+    left: 16px;
+    position: absolute;
+    top: -14px;
+    transform: rotate(-2deg);
+    z-index: 8;
+  }
+
+  .kcc-tile {
+    background: var(--c, var(--color-peach));
+    clip-path: var(--tear, var(--tear-tile-1));
+    color: var(--color-marker-ink);
+    display: grid;
+    filter: url(#kcc-wax-flat);
+    font-size: 22px;
+    height: 56px;
+    place-items: center;
+    width: 56px;
+  }
+
+  .kcc-tile--lg {
+    font-size: 38px;
+    height: 96px;
+    width: 96px;
+  }
+
+  .kcc-tilewrap .kcc-tape {
+    height: 12px;
+    left: calc(50% - 17px);
+    top: -6px;
+    transform: rotate(-3deg);
+    width: 34px;
+  }
+
+  /* ---- type on the 24px rule ---- */
+  .kcc-kick,
+  .kcc-lbl {
+    color: var(--color-ink-soft);
+    font-family: var(--font-sono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    line-height: var(--bl);
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .kcc-body {
+    font-size: 15px;
+    line-height: var(--bl);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .kcc-h3 {
+    font-family: var(--font-casual);
+    font-size: 40px;
+    letter-spacing: 0;
+    line-height: 48px;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .kcc-h4 {
+    font-family: var(--font-casual);
+    font-size: 22px;
+    line-height: var(--bl);
+    margin: 0;
+  }
+
+  .kcc-hand {
+    color: var(--color-ink-soft);
+    font-family: var(--font-casual);
+    font-size: 17px;
+    font-style: italic;
+    line-height: var(--bl);
+    margin: 0;
+  }
+
+  .kcc-num {
+    font-family: var(--font-sono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+
+  .kcc-hr {
+    border: 0;
+    border-top: 1px dashed var(--color-hair-strong);
+    height: 0;
+    margin: calc(var(--bl) - 1px) 0 0;
+  }
+
+  /* Links are ink with a hair underline. Bare `a` stays unstyled on purpose: cards and button-links are
+     anchors too. */
+  .kcc-link {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-hair-strong);
+    text-underline-offset: 3px;
+  }
+
+  .kcc-link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* ---- chrome on the desk ---- */
+  .kcc-head {
+    align-items: baseline;
+    border-bottom: 1px dashed var(--color-hair-strong);
+    display: grid;
+    gap: 0 24px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .kcc-mark {
+    font-family: var(--font-casual);
+    font-size: 24px;
+    line-height: var(--bl);
+    margin: 0;
+  }
+
+  .kcc-secname {
+    align-items: baseline;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: auto 1fr;
+    margin: 0 0 36px;
+  }
+
+  .kcc-secname h2 {
+    font-family: var(--font-casual);
+    font-size: 24px;
+    line-height: var(--bl);
+    margin: 0;
+  }
+
+  .kcc-secname .kcc-kick {
+    border-bottom: 1px dashed var(--color-hair-strong);
+    transform: translateY(-1px);
+  }
+
+  .kcc-foot {
+    color: var(--color-ink-soft);
+    max-width: 70ch;
+    padding: 0 0 48px;
+  }
+
+  /* ---- duotone glyphs: ink over a faint second layer, never coloured ---- */
+  .fa-duotone {
+    --fa-primary-color: currentColor;
+    --fa-secondary-color: currentColor;
+    --fa-secondary-opacity: 0.35;
+  }
+
+  .kcc-tile .fa-duotone,
+  .kcc-label .fa-duotone,
+  .kcc-btn:not(.kcc-btn--ghost, .kcc-btn--text) .fa-duotone {
+    --fa-secondary-opacity: 0.4;
+  }
+
+  /* Switching ramps repaints every token at once; any in-flight transition would interpolate between the
+     two palettes. ThemeToggle sets this for one frame. */
+  :root[data-theme-switching] *,
+  :root[data-theme-switching] *::before,
+  :root[data-theme-switching] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Deliberately unlayered. The logo and the toggle glyph ship both ramps' variants and let CSS pick one,
+   because the server cannot know the ramp. This must beat any `display` utility on the same element, and
+   Tailwind's utilities layer comes after components — so a rule inside @layer components would lose to
+   `flex`. Light is the default, so the dark variant hides unless the dark ramp is set. */
+:root[data-theme='dark'] [data-ramp='light'],
+:root:not([data-theme='dark']) [data-ramp='dark'] {
+  display: none;
+}
