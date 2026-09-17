@@ -3,10 +3,15 @@
 @import '@fortawesome/fontawesome-pro/css/regular.css';
 @import '@fortawesome/fontawesome-pro/css/duotone.css';
 @import './TailwindConfig.css';
-@import './Sketch/Tokens.css';
+@import './Torn/Tokens.css';
+@import './Torn/Tears.css';
+@import './Torn/Kit.css';
+@import './Torn/Controls.css';
+/* TRANSITIONAL — the Softbound kit, until every surface is converted. Removed in the cleanup phase. */
 @import './Sketch/Kit.css';
 @import './Sketch/Button.css';
 @import './Sketch/Ink.css';
+/* END TRANSITIONAL */
 @import './Layout.css';
 @import './Typography.css';
 @import './RangeSlider.css';
@@ -38,7 +43,7 @@
     position: relative;
   }
 
-  :where(#app > :not(.sk-grain)) {
+  :where(#app > :not(.sk-grain, .kcc-grain, .kcc-crayon)) {
     position: relative;
   }
 
