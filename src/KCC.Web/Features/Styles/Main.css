@@ -32,9 +32,9 @@
     color: var(--color-ink);
   }
 
-  /* Ready for the grain overlay, which arrives with the kit stylesheet as #app's absolutely-positioned first
-     child: positioning its siblings paints them above it. :where() keeps specificity at zero so a
-     sticky/fixed utility on a child still wins. */
+  /* The grain is #app's absolutely-positioned first child and the crayon tooth its absolutely-positioned
+     last child; positioning the siblings between them paints the grain under the page and the crayon over
+     it. :where() keeps specificity at zero so a sticky/fixed utility on a child still wins. */
   #app {
     display: grid;
     grid-template-rows: auto 1fr auto;
@@ -43,7 +43,7 @@
     position: relative;
   }
 
-  :where(#app > :not(.sk-grain, .kcc-grain, .kcc-crayon)) {
+  :where(#app > :not(.kcc-grain, .kcc-crayon)) {
     position: relative;
   }
 
