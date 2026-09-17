@@ -25,7 +25,7 @@
 
 <template>
   <nav class="sk-lbl flex min-w-0 flex-wrap items-center gap-2 opacity-100" aria-label="Breadcrumb">
-    <AppLink :href="items[0].url" class="text-ink-soft transition-colors hover:text-ink" :aria-label="items[0].linkText">
+    <AppLink :href="items[0]!.url" class="text-ink-soft transition-colors hover:text-ink" :aria-label="items[0]!.linkText">
       <i class="fa-duotone fa-house" />
     </AppLink>
     <span class="opacity-50" aria-hidden="true">/</span>
