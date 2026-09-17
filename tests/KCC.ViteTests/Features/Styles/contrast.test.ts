@@ -46,6 +46,12 @@ if (darkAt < 0) throw new Error("Torn/Tokens.css declares no [data-theme='dark']
 const darkBlock = blockAt(tokensCss, darkAt, 'Torn/Tokens.css')
 const dark = new Map([...light, ...parseTokens(darkBlock)])
 
+// A dark token written in a form the regex does not read (percent lightness, `deg`, color-mix) would fall
+// out of the dark map and every dark assertion would re-test light. Guard the parse itself.
+const darkOverrides = parseTokens(darkBlock)
+if (darkOverrides.size < 12) throw new Error(`only ${darkOverrides.size} dark tokens parsed from Torn/Tokens.css`)
+if (resolve(dark, 'paper').l === resolve(light, 'paper').l) throw new Error('the dark ramp did not override paper')
+
 type WashRender = { blend: 'multiply' | 'screen'; opacity: number }
 
 function washRender(css: string, base: Partial<WashRender> = {}): WashRender {
@@ -65,7 +71,7 @@ function resolve(tokens: Tokens, name: string, depth = 0): Oklch {
   const value = tokens.get(name)
   if (!value) throw new Error(`token --color-${name} is not declared`)
   if ('ref' in value) {
-    if (depth > 5) throw new Error(`token --color-${name} references itself`)
+    if (depth > 5) throw new Error(`token --color-${name} reference chain deeper than 5 (a cycle or an alias of an alias)`)
     return resolve(tokens, value.ref, depth + 1)
   }
   return value
@@ -73,9 +79,9 @@ function resolve(tokens: Tokens, name: string, depth = 0): Oklch {
 
 type Rgb = { r: number; g: number; b: number }
 
-// oklch → oklab → LMS → linear sRGB (Björn Ottosson's published matrices). Out-of-gamut channels are clipped,
-// which is what a browser does too.
-function toLinearRgb({ l, c, h }: Oklch): Rgb {
+// oklch → oklab → LMS → linear sRGB (Björn Ottosson's published matrices). Out-of-gamut channels are clipped
+// per channel here; browsers gamut-map instead, so only in-gamut tokens are ever asserted (see the gamut test).
+function toLinearRgbRaw({ l, c, h }: Oklch): Rgb {
   const a = c * Math.cos((h * Math.PI) / 180)
   const b = c * Math.sin((h * Math.PI) / 180)
   const l_ = l + 0.3963377774 * a + 0.2158037573 * b
@@ -84,12 +90,19 @@ function toLinearRgb({ l, c, h }: Oklch): Rgb {
   const L = l_ ** 3
   const M = m_ ** 3
   const S = s_ ** 3
-  const clip = (v: number) => Math.min(1, Math.max(0, v))
   return {
-    r: clip(4.0767416621 * L - 3.3077115913 * M + 0.2309699292 * S),
-    g: clip(-1.2684380046 * L + 2.6097574011 * M - 0.3413193965 * S),
-    b: clip(-0.0041960863 * L - 0.7034186147 * M + 1.707614701 * S),
+    r: 4.0767416621 * L - 3.3077115913 * M + 0.2309699292 * S,
+    g: -1.2684380046 * L + 2.6097574011 * M - 0.3413193965 * S,
+    b: -0.0041960863 * L - 0.7034186147 * M + 1.707614701 * S,
   }
+}
+
+// sRGB clip for actual rendering math; the gamut test below calls toLinearRgbRaw directly so an
+// out-of-gamut channel is measured instead of silently clamped away.
+function toLinearRgb(oklch: Oklch): Rgb {
+  const clip = (v: number) => Math.min(1, Math.max(0, v))
+  const raw = toLinearRgbRaw(oklch)
+  return { r: clip(raw.r), g: clip(raw.g), b: clip(raw.b) }
 }
 
 const luminance = ({ r, g, b }: Rgb) => 0.2126 * r + 0.7152 * g + 0.0722 * b
@@ -174,9 +187,12 @@ const TEXT_PAIRS: [string, string][] = [
 ]
 
 // Control boundaries (inset hairlines) and the focus ring, which sits 2px outside its element on the ground.
+// desk-2 is the darkest ground a hairline is read on, so it is the binding pair.
 const UI_PAIRS: [string, string][] = [
   ['hair-strong', 'paper'],
+  ['hair-strong', 'paper-2'],
   ['hair-strong', 'desk'],
+  ['hair-strong', 'desk-2'],
   ['focus', 'paper'],
   ['focus', 'desk'],
 ]
@@ -199,6 +215,10 @@ describe.each<[string, Tokens, WashRender]>([
     // read as UI on the dark ramp.
     const coreFloor = name === 'light' ? 4.5 : 3
 
+    it('reads ink as opaque, so compositing can be skipped', () => {
+      expect(resolve(tokens, 'ink').alpha).toBe(1)
+    })
+
     it.each(WASHES)('ink over paper + %s at the 38% ring reads at AA for text (≥ 4.5:1)', (w) => {
       expect(contrastOf(ink, washedPaper(tokens, w, wash, 0.38))).toBeGreaterThanOrEqual(4.5)
     })
@@ -210,5 +230,21 @@ describe.each<[string, Tokens, WashRender]>([
     it.each(STATUS_WASHES)('ink in a %s status well reads at AA for text (≥ 4.5:1)', (w) => {
       expect(contrastOf(ink, tintedPaper(tokens, w))).toBeGreaterThanOrEqual(4.5)
     })
+  })
+})
+
+// Every colour the table asserts must be inside sRGB: a channel outside [0, 1] before clipping would be
+// measured as a colour the browser never shows. fiber and fall are shadow colours and are not asserted.
+describe.each<[string, Tokens]>([
+  ['light', light],
+  ['dark', dark],
+])('%s ramp gamut', (_name, tokens) => {
+  const asserted = new Set([...TEXT_PAIRS.flat(), ...UI_PAIRS.flat(), ...WASHES, 'paper'])
+  it.each([...asserted])('%s is inside sRGB', (token) => {
+    const { r, g, b } = toLinearRgbRaw(resolve(tokens, token))
+    for (const v of [r, g, b]) {
+      expect(v).toBeGreaterThanOrEqual(-0.002)
+      expect(v).toBeLessThanOrEqual(1.002)
+    }
   })
 })
