@@ -28,9 +28,10 @@ Read, every time, before touching code:
    for Vue sheets; write the Structure by hand in Razor. Pick tears from the loop index
    (`kcc-tear-${(i % 6) + 1}`) or a stable hash, never the same preset on two neighbours.
 4. **Remove the path from `ALLOWLIST`** in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts`.
-5. **Run** from `src/KCC.Web`: `yarn test <component name> retiredTokens`, `yarn type-check`, `yarn format`.
-6. **Look at it** in both ramps if a browser is available (the `run` skill launches the app; toggle the ramp
-   in the header). Say plainly what you saw or that you could not look.
+5. **Run** the checklist in `docs/brand/kit.md` → *Converting a component*, step 8, from `src/KCC.Web`.
+6. **Both ramps in the test.** Where markup differs by ramp (the `data-ramp` glyphs), assert both in the unit
+   test. You have no browser: the visual check in both ramps happens at the phase gate. Say plainly that you
+   did not look at it.
 7. **Commit** one conventional commit for the surface: `feat(<area>): <what it looks like now>`.
 
 ## Hard rules
@@ -43,6 +44,8 @@ Read, every time, before touching code:
 - No `rounded-lg`+, no `shadow-*`, no `font-bold/semibold/medium`, no `fa-primary-*`, no literal colours.
 - `text-marker-ink` only inside a tile, a label or a marker button. Everywhere else text is `text-ink` or
   `text-ink-soft`.
+- Status is a `kcc-well--danger|success|warning` (or `kcc-field--error` on the field) with ink text; never
+  coloured text.
 - One wash, one label, one hand note per sheet. Washes under margins and corners, never under copy.
 - Icons: duotone by default in `currentColor`; solid or regular where the simpler glyph reads better.
 - Always `yarn build:all` at a phase gate, never one bundle alone.

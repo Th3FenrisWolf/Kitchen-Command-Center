@@ -13,6 +13,9 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, badge, check, stats, steps, recipe-slip parts |
+| `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h3`, every `@font-face` including Sono |
+| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here |
+| `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
 | `src/KCC.Web/Features/Torn/tears.ts` | preset table and CSS emitter |
 | `src/KCC.Web/Features/Torn/generateTears.ts` | CLI that writes `Tears.css` |
@@ -28,8 +31,8 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 |---|---|---|---|
 | `desk`, `desk-2` | `.884 .016 288`, `.836 .018 288` | `.132 .024 288`, `.176 .028 288` | page ground, raised desk |
 | `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for wells inside a sheet |
-| `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
-| `hair`, `hair-strong` | ink / .16, ink / .74 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
+| `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` (test-pinned; mockup .452) | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
+| `hair`, `hair-strong` | ink / .16, ink / .52 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
 | `rule` | `.58 .045 288 / .22` | `.88 .02 288 / .13` | pencil ruling |
 | `marker`, `marker-ink` | `.876 .112 126`, `.24 .03 288` | same | the accent fill and the ink that sits on it and on every wash |
 | `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-torn` |
@@ -39,17 +42,19 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 
 All values are `oklch(L C H [/ alpha])`.
 
-Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px, `--rd-s` 4px,
-`--wash-blend` (multiply / screen), `--wash-op` (.62 / .38, dark value test-pinned), `--wash-sat` (1 / 1.45),
-`--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per element: `--pad` (sheet),
-`--tear` and `--r` (set by a preset class), `--c --x --y --w --h` (wash).
+Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px (labels, wells,
+textareas), `--rd-s` 4px (small marks), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .38, dark
+value test-pinned), `--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36),
+`--grain`, `--crayon`. Per element: `--pad` (sheet), `--tear` and `--r` (set by a preset class),
+`--c --x --y --w --h` (wash).
 
 **Retired** and caught by `retiredTokens.test.ts`: `ink-line`, `ink-on-wash`, `hatch`, `edge`,
 `edge-strong`, `flap-1`, `flap-2`, `link`, `danger`, `success`, `warning`, `danger-ink`, `success-ink`,
 `warning-ink`, `rating-ink`, the washes `rosewater flamingo mauve maroon sapphire blue`, every `shadow-*`
-utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, `fa-primary-*`,
-`fa-secondary-*`, every `sk-*` class, `v-ink`, `data-ink`. A `TRANSITIONAL` block in `TailwindConfig.css`
-and `Torn/Tokens.css` keeps the Softbound tokens alive until the cleanup phase; nothing new may use them.
+utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, the `fa-primary-*` /
+`fa-secondary-*` Tailwind utilities (the kit sets the Font Awesome custom properties itself; see Icons),
+every `sk-*` class, `v-ink`, `data-ink`. A `TRANSITIONAL` block in `TailwindConfig.css` and
+`Torn/Tokens.css` keeps the Softbound tokens alive until the cleanup phase; nothing new may use them.
 
 **Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px, `rounded-md` 6px (labels, textareas),
 `rounded-full` (pills). Sheets, tiles and images take no radius.
@@ -130,8 +135,8 @@ that select them:
 **Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`; a standalone sheet takes a preset from a
 stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design names; the default is
 `kcc-tear-1`. Neighbours never share a tear. `yarn tears` regenerates the file; `tears.test.ts` fails if the
-committed file drifts from the generator. Need a crisp surface (a form, cook mode)? Add `style="--r: 0"`
-to the slip.
+committed file drifts from the generator. Need a crisp surface (a form, cook mode)? `KccSheet crisp` sets
+`--r: 0` on the slip; Razor writes `style="--r: 0"` on the slip itself.
 
 ## Classes
 
@@ -147,7 +152,7 @@ to the slip.
 | `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink` |
 | `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
 | `kcc-body` | 15/24 body | |
-| `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | class, not element: `h1`–`h3` may carry either |
+| `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | size and leading only; bare `h1`–`h3` already take APCasual from `Typography.css`, so these go on any element that needs display or heading size |
 | `kcc-hand` | APCasual italic 17/24 ink-soft | one per sheet |
 | `kcc-num` | Sono tabular | every number |
 | `kcc-hr` | dashed hair rule | |
@@ -162,10 +167,32 @@ to the slip.
 | `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | |
 | `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, Sono 26 | `<small>` for the unit |
 | `kcc-steps` › `li` › `kcc-n` + `kcc-body` | numbered method | numbers `01`, `02`, … |
+| `kcc-well` (+`--danger`, `--success`, `--warning`) | paper tinted 28% with the wash, ink text, 6px radius | status messages; the message itself is a `kcc-kick` |
+| `kcc-field--error` | the field's own fill tinted with red | pair with a `kcc-well--danger` message below the field |
 | `kcc-recipe`, `kcc-stat`, `kcc-meta` | recipe slip modifiers | see Structure |
 
 Spacing between things uses Tailwind utilities on the 24px rule: `mt-6` (24px), `gap-9` (36px),
 `gap-x-7` (28px), `mt-12` (48px), `gap-y-[72px]` for sections.
+
+## Status
+
+Status is never coloured text. It is a **well**: paper tinted 28% with the status wash, in oklab, carrying ink
+text.
+
+```html
+<p class="kcc-well kcc-well--danger kcc-kick" role="alert">Something we need is missing.</p>
+```
+
+`kcc-well--danger` (red), `kcc-well--success` (green), `kcc-well--warning` (yellow). A field in error adds
+`kcc-field--error` to the field and puts the message in a `kcc-well--danger` directly below it. Icons inside a
+well are duotone in ink like everywhere else. `contrast.test.ts` asserts ink on every well in both ramps.
+
+## Icons
+
+Font Awesome duotone by default; `fa-solid` / `fa-regular` where the simpler glyph reads better (empty rating
+stars are `fa-regular`). `Torn/Kit.css` sets `--fa-primary-color` and `--fa-secondary-color` to `currentColor` and
+`--fa-secondary-opacity` to `.35` globally (`.4` inside tiles, labels and marker buttons). Components never set
+the Font Awesome custom properties and never use the `fa-primary-*` / `fa-secondary-*` utilities.
 
 ## Vue primitives
 
@@ -216,4 +243,5 @@ Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs
 5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
 6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
 7. Delete the component's path from `ALLOWLIST` in `retiredTokens.test.ts`.
-8. `yarn test <name>`, `yarn type-check`, browser check in both ramps, `yarn format`, commit.
+8. Run `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; at a phase gate also
+   `yarn build:all`. The browser check in both ramps happens at the phase gate. Commit.
