@@ -10,7 +10,10 @@
 <!-- #endregion -->
 
 <template>
-  <footer class="content-grid mt-8 p-4 text-center text-sm">
-    <p class="text-ink-soft">&copy; 2025</p>
+  <footer class="content-grid mt-8 p-4 text-center">
+    <hr class="kcc-hr" />
+    <div class="kcc-foot">
+      <p class="kcc-kick">&copy; 2025</p>
+    </div>
   </footer>
 </template>
