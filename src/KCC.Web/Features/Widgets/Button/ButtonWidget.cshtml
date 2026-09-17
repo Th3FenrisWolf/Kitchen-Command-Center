@@ -7,13 +7,23 @@
     var isEditMode = Context.Kentico().PageBuilder().EditMode;
     var variant = Model.Properties.Variant switch
     {
-        "Secondary" => "paper",
+        // `paper` is gone from the kit; the secondary option now draws the same hairline pill as Outlined.
+        "Secondary" => "ghost",
         "Outlined" => "ghost",
         "Tertiary" => "text",
         _ => "marker",
     };
-    var size = Model.Properties.Size == "Small" ? "sm" : "lg";
-    var buttonStyles = $"sk-btn--{variant} sk-btn--{size}";
+    var isLarge = Model.Properties.Size != "Small";
+    var modifiers = new List<string>();
+    if (variant != "marker")
+    {
+        modifiers.Add($"kcc-btn--{variant}");
+    }
+    if (isLarge)
+    {
+        modifiers.Add("kcc-btn--lg");
+    }
+    var buttonStyles = string.Join(" ", modifiers);
 }
 
 <div class="flex @Model.Properties.Alignment @Model.Properties.GetMarginClasses()">

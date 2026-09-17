@@ -12,9 +12,7 @@ public class ButtonLinkTagHelper : TagHelper
     {
         output.TagName = "a";
 
-        // `Class` carries the sk-btn--* modifiers; the outline is drawn after hydration (data-ink).
-        output.Attributes.SetAttribute("class", $"sk-btn {Class}".Trim());
-        output.Attributes.SetAttribute("data-ink", "button");
+        output.Attributes.SetAttribute("class", $"kcc-btn {Class}".Trim());
         output.Attributes.SetAttribute("href", Href);
         output.Attributes.SetAttribute("target", Target);
     }
