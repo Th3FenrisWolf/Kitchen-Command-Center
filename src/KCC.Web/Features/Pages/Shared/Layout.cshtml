@@ -32,7 +32,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="@PreferredLanguageRetriever.Get()">
+<html lang="@PreferredLanguageRetriever.Get()" data-theme="light">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
@@ -59,7 +59,9 @@
   }
 
   @* The ramp must be known before the first paint or dark-ramp users flash the light default. Stored choice →
-     OS preference → light (the identity leads light). ThemeToggle writes the stored choice. *@
+     OS preference → light (the identity leads light). ThemeToggle writes the stored choice. The attribute is
+     pre-set to light in the markup, so a visitor without JavaScript gets a consistent light page and the
+     script only ever overwrites it. *@
   <script>
     (function () {
       var stored = null;
