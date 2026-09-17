@@ -30,7 +30,7 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 | Token | Light | Dark | Use |
 |---|---|---|---|
 | `desk`, `desk-2` | `.884 .016 288`, `.836 .018 288` | `.132 .024 288`, `.176 .028 288` | page ground, raised desk |
-| `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for wells inside a sheet |
+| `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for inset panels inside a sheet and the neutral `kcc-well` |
 | `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` (test-pinned; mockup .452) | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
 | `hair`, `hair-strong` | ink / .16, ink / .52 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
 | `rule` | `.58 .045 288 / .22` | `.88 .02 288 / .13` | pencil ruling |
@@ -56,8 +56,8 @@ utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, t
 every `sk-*` class, `v-ink`, `data-ink`. A `TRANSITIONAL` block in `TailwindConfig.css` and
 `Torn/Tokens.css` keeps the Softbound tokens alive until the cleanup phase; nothing new may use them.
 
-**Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px, `rounded-md` 6px (labels, textareas),
-`rounded-full` (pills). Sheets, tiles and images take no radius.
+**Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px (small marks), `rounded-md` 6px (labels,
+wells, textareas), `rounded-full` (pills). Sheets, tiles and images take no radius.
 
 ## Structure
 

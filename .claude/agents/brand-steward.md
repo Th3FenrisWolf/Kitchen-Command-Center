@@ -51,10 +51,9 @@ For each file, check every rule below and record hits as `path:line — rule —
 - Retired tokens or classes: `sk-`, `v-ink`, `data-ink`, `ink-line`, `ink-on-wash`, `hatch`, `edge`,
   `flap-`, `text-link`, `*-danger-ink`, `*-success-ink`, `*-warning-ink`, `*-rating-ink`, `rosewater`,
   `flamingo`, `mauve`, `maroon`, `sapphire`, `blue`, `fa-primary-*`, `fa-secondary-*`.
-- Coloured text for status or links (`text-red`, `text-green`, `text-yellow`, any wash as a text colour).
-  Status is a wash behind ink text.
-- Coloured status text (`text-red`, `text-green`, `text-yellow`, any `*-ink` status token). Status is a
-  `kcc-well--danger|success|warning` or `kcc-field--error` with ink text.
+- Coloured text for status or links (`text-red`, `text-green`, `text-yellow`, any wash as a text colour, any
+  `*-ink` status token). Links are `kcc-link` in ink; status is a `kcc-well--danger|success|warning` or
+  `kcc-field--error` with ink text.
 - `text-marker-ink` anywhere except inside `.kcc-tile`, `.kcc-label` or a marker `.kcc-btn`.
 - Running text placed over a wash core: a `.kcc-wash` whose `--x/--y` put it under the sheet's copy rather
   than under a margin or corner.
