@@ -1,3 +1,8 @@
+/** The eight washes of the identity, without their `bg-` prefix. Fills only. */
+export const WASHES = ['peach', 'yellow', 'green', 'teal', 'sky', 'lavender', 'pink', 'red'] as const
+
+export type Wash = (typeof WASHES)[number]
+
 export const BRAND_BACKGROUND_COLORS = [
   'bg-rosewater',
   'bg-flamingo',
