@@ -20,9 +20,10 @@ const RETIRED = new RegExp(
   [
     `${EDGE[0]}${VARIANTS}${UTILITY}-(?:${RETIRED_TOKEN})${EDGE[1]}`, // retired colour tokens as utilities
     `${EDGE[0]}${VARIANTS}text-(?:${WASH})${EDGE[1]}`, // washes are fills, never text
-    `${EDGE[0]}${VARIANTS}shadow-[a-z0-9-]+${EDGE[1]}`, // every shadow utility
+    // every shadow utility, including drop-/inset-/text- families and arbitrary or variable values
+    `${EDGE[0]}${VARIANTS}(?:drop-|inset-|text-)?shadow-(?:\\[[^\\]]*\\]|\\([^)]*\\)|[a-z0-9-]+)${EDGE[1]}`,
     `${EDGE[0]}${VARIANTS}rounded(?:-[trbl]{1,2})?-(?:lg|xl|2xl|3xl|4xl)${EDGE[1]}`, // radii above md
-    `${EDGE[0]}${VARIANTS}font-(?:bold|semibold|medium)${EDGE[1]}`, // one weight of everything
+    `${EDGE[0]}${VARIANTS}font-(?:bold|semibold|medium|\\[[^\\]]*\\])${EDGE[1]}`, // one weight of everything
     `${EDGE[0]}${VARIANTS}fa-(?:primary|secondary)-[a-z0-9-]+${EDGE[1]}`, // coloured icon layers
     `${EDGE[0]}sk-[a-z][a-z0-9-]*`, // the Softbound kit
     '\\bv-ink\\b|\\bdata-ink\\b', // the drawn outline
@@ -37,7 +38,8 @@ const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 
 // Unconverted Softbound surfaces, relative to src/KCC.Web with forward slashes; a trailing slash allows a
 // directory. Each conversion task deletes its entry. An entry that no longer hits fails the second test, so
-// this list can only shrink; it is empty by the cleanup phase.
+// this list can only shrink; it is empty by the cleanup phase. The scan is textual: a comment that names
+// `sk-sheet` or `font-bold` counts as a hit, so reword prose too when you convert a file.
 const ALLOWLIST = new Set<string>([
   'Features/Components/Badge/Badge.vue',
   'Features/Components/Breadcrumbs/Breadcrumbs.Component.vue',
