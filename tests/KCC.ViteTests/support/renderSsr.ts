@@ -7,9 +7,10 @@ import { vInk } from '~/Ink/vInk'
  *
  * `v-ink` is registered on the app, not globally, so a bare `renderToString(createSSRApp(C))` fails to
  * resolve it for any component that draws an outline — the component renders, but Vue logs
- * "Failed to resolve directive: ink" and the assertion sees markup the app would never produce. Kept for
- * `RecipeCard`, `FeaturedRecipeCard` and `DetailHero`, which still render `v-ink` until Phase 4/5; drop it
- * once the Softbound ink module retires.
+ * "Failed to resolve directive: ink" and the assertion sees markup the app would never produce. Kept while
+ * any tested component still carries `v-ink` (`grep -rl v-ink Features/Components` — RecipeCard,
+ * FeaturedRecipeCard, DetailHero and RecipeFilters at the time of writing); drop it once the Softbound ink
+ * module retires in the cleanup phase.
  */
 export function renderSsr(
   component: Component,

@@ -25,7 +25,10 @@
     /** Pools a wash under the content. */
     wash?: Wash
 
-    /** Where the wash sits, as percentages of the sheet. */
+    /**
+     * Where the wash sits, as percentages of the sheet. Author-supplied literals written straight into
+     * custom properties; never bind CMS or user data here.
+     */
     at?: { x?: string; y?: string; w?: string; h?: string }
 
     /**
@@ -68,7 +71,7 @@
   } = defineProps<KccSheetProps>()
 
   const washStyle = computed(() =>
-    wash ? { '--c': `var(--color-${wash})`, '--x': at.x, '--y': at.y, '--w': at.w, '--h': at.h } : undefined,
+    wash ? { '--c': `var(--color-${wash})`, '--x': at?.x, '--y': at?.y, '--w': at?.w, '--h': at?.h } : undefined,
   )
 
   // Spread via v-bind rather than :style directly: SSR always prints a `style=""` attribute whenever the
