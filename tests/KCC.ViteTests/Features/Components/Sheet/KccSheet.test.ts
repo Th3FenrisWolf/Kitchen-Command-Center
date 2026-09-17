@@ -1,0 +1,46 @@
+import { describe, expect, it } from 'vitest'
+import KccSheet from '~/Components/Sheet/KccSheet.vue'
+import { renderSsr } from '../../../support/renderSsr'
+
+const render = (props: Record<string, unknown> = {}) => renderSsr(KccSheet, props, { default: () => 'Hello' })
+
+describe('KccSheet', () => {
+  // Vue's SSR renderer always leaves a `<!--v-if-->` anchor comment for a false `v-if` with no `v-else`
+  // (needed so a later reactive toggle has somewhere to patch), and always wraps `<slot />` output in
+  // `<!--[-->`/`<!--]-->` Fragment anchors, compiled template or not — see `renderVNode`'s `Fragment` case
+  // and `createCommentVNode` in `@vue/server-renderer`. Both are invisible, harmless, and present in every
+  // real page that uses this component, so the assertions below include them rather than fight them.
+  it('renders slip › torn › sheet with the default tear', async () => {
+    const html = await render()
+    expect(html).toContain(
+      '<div class="kcc-slip kcc-tear-1"><div class="kcc-torn"><div class="kcc-sheet"><!--v-if--><!--[-->Hello<!--]--></div></div><!--v-if--><!--v-if--></div>',
+    )
+  })
+
+  it('pools the wash under the content with its placement', async () => {
+    const html = await render({ wash: 'peach', at: { x: '88%', y: '18%', w: '38%', h: '60%' } })
+    expect(html).toContain(
+      '<span class="kcc-wash" style="--c:var(--color-peach);--x:88%;--y:18%;--w:38%;--h:60%;" aria-hidden="true"></span><!--[-->Hello<!--]-->',
+    )
+  })
+
+  it('keeps the label and tape outside the torn wrapper', async () => {
+    const html = await render({ label: 'Identity · 01', icon: 'fa-duotone fa-scissors', tape: true })
+    expect(html).toContain(
+      '</div></div><span class="kcc-label"><i class="fa-duotone fa-scissors" aria-hidden="true"></i>Identity · 01</span><span class="kcc-tape" aria-hidden="true"></span></div>',
+    )
+  })
+
+  it('takes the element, tear and padding it is given', async () => {
+    const html = await render({ as: 'article', tear: 'hero', pad: '48px', labelRight: true, label: 'Method' })
+    expect(html).toContain('<article class="kcc-slip kcc-tear-hero">')
+    expect(html).toContain('<div class="kcc-sheet" style="--pad:48px;">')
+    // The `<!--v-if-->` is the icon's placeholder: this call passes no `icon`.
+    expect(html).toContain('<span class="kcc-label kcc-label--right"><!--v-if-->Method</span>')
+  })
+
+  it('lies flat when crisp', async () => {
+    const html = await render({ crisp: true, tear: 2 })
+    expect(html).toContain('<div class="kcc-slip kcc-tear-2" style="--r:0;">')
+  })
+})
