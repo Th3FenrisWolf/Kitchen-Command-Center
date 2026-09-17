@@ -96,7 +96,11 @@
       return
     }
     e.preventDefault()
-    model.value = options[next].value
+    const target = options[next]
+    if (!target) {
+      return
+    }
+    model.value = target.value
     nextTick(() => buttons()[next]?.focus())
   }
 
