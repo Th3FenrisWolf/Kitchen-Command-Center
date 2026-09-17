@@ -53,5 +53,5 @@ Read, every time, before touching code:
 ## Report
 
 State what you converted, which hooks you preserved, the test you changed and why, the commands you ran with
-their results, and anything you saw in the browser that does not match the identity. If you left something
-out, say what and why.
+their results, and say plainly that you did not view it in a browser. If you left something out, say what
+and why.

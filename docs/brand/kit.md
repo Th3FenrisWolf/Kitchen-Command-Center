@@ -176,8 +176,8 @@ Spacing between things uses Tailwind utilities on the 24px rule: `mt-6` (24px), 
 
 ## Status
 
-Status is never coloured text. It is a **well**: paper tinted 28% with the status wash, in oklab, carrying ink
-text.
+Status is never coloured text. It is a **well**: paper tinted 28% with the status wash
+(`color-mix(in oklab, var(--color-red) 28%, var(--color-paper))`), carrying ink text.
 
 ```html
 <p class="kcc-well kcc-well--danger kcc-kick" role="alert">Something we need is missing.</p>
@@ -243,5 +243,5 @@ Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs
 5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
 6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
 7. Delete the component's path from `ALLOWLIST` in `retiredTokens.test.ts`.
-8. Run `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; at a phase gate also
-   `yarn build:all`. The browser check in both ramps happens at the phase gate. Commit.
+8. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; at a
+   phase gate also `yarn build:all`. The browser check in both ramps happens at the phase gate. Commit.

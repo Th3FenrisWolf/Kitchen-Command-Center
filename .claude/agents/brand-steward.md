@@ -50,7 +50,8 @@ For each file, check every rule below and record hits as `path:line — rule —
   `Styles/Sketch/*.css` (transitional, until the cleanup phase) and the SVG filter defs in `Layout.cshtml`.
 - Retired tokens or classes: `sk-`, `v-ink`, `data-ink`, `ink-line`, `ink-on-wash`, `hatch`, `edge`,
   `flap-`, `text-link`, `*-danger-ink`, `*-success-ink`, `*-warning-ink`, `*-rating-ink`, `rosewater`,
-  `flamingo`, `mauve`, `maroon`, `sapphire`, `blue`, `fa-primary-*`, `fa-secondary-*`.
+  `flamingo`, `mauve`, `maroon`, `sapphire`, `blue`, and the `fa-primary-*` / `fa-secondary-*` utilities (the
+  `--fa-*` custom properties in `Styles/Torn/Kit.css` are the kit's own).
 - Coloured text for status or links (`text-red`, `text-green`, `text-yellow`, any wash as a text colour, any
   `*-ink` status token). Links are `kcc-link` in ink; status is a `kcc-well--danger|success|warning` or
   `kcc-field--error` with ink text.
