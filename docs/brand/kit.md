@@ -13,7 +13,7 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, badge, check, stats, steps, recipe-slip parts |
-| `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h3`, every `@font-face` including Sono |
+| `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
 | `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
