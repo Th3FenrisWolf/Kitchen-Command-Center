@@ -1,5 +1,5 @@
 import { formatRating } from '~/Components/StarRating/starDisplay'
-import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
+import type { RecipeSearchHit, SiblingVariant, VariantSummary } from '~/Types/Recipe'
 
 /**
  * Resolver returned by `provideResourceStrings` / `useResourceStrings`. Each page owns its own
@@ -131,6 +131,26 @@ export function variantToCard(variant: VariantSummary, rs: Resolve): RecipeCardM
     tags: variant.tags,
     trailingStat: { value: `${variant.totalTime}${rs('Min')}`, label: rs('Total') },
     dataAttrs: { 'data-variant-name': variant.name },
+  }
+}
+
+/**
+ * Sibling variant → grid card. A sibling arrives without a review count, so its rating can only ever be
+ * the corner stat: there is no "· N" to print beside it and no empty-rating note to fall back to.
+ */
+export function siblingToCard(sibling: SiblingVariant, rs: Resolve): RecipeCardModel {
+  const time = `${sibling.totalTime} ${rs('Min')}`
+  return {
+    href: sibling.slug,
+    name: sibling.name,
+    seed: sibling.name,
+    icon: sibling.icon,
+    notch:
+      sibling.rating > 0
+        ? { stat: 'rating', icon: 'fa-solid fa-star', text: formatRating(sibling.rating) }
+        : { stat: 'time', icon: 'fa-solid fa-clock', text: time },
+    meta: [{ key: 'time', icon: 'fa-solid fa-clock', text: time }],
+    tags: [],
   }
 }
 

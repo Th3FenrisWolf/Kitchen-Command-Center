@@ -3,10 +3,11 @@
   import { computed, onMounted, ref } from 'vue'
   import type { Review, ReviewsResponse } from '~/Types/Recipe'
   import { get, put, del } from '~/Utilities/Api'
-  import { backgroundColorFor } from '~/Utilities/BrandColor'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
+  import Button from '~/Components/Button/Button.vue'
   import StarRating from '~/Components/StarRating/StarRating.vue'
-  import { formatRating } from '~/Components/StarRating/starDisplay'
+  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
 
   /**
    * Rating histogram and paged reviews for a variant, with the member's own review editable inline.
@@ -107,14 +108,7 @@
     })
   })
 
-  // Two-letter monogram for a reviewer's avatar (no dedicated Avatar component in the web app).
-  const initials = (name: string) =>
-    name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((w) => w[0]!.toUpperCase())
-      .join('') || '?'
+  const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
 
   const formatDate = (iso: string) => {
     const d = new Date(iso)
@@ -127,110 +121,77 @@
 </script>
 
 <template>
-  <section class="mt-8">
-    <h2 class="mb-4 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-      <i class="fa-solid fa-star text-lg text-rating-ink" aria-hidden="true"></i> <ResourceString for="RatingsReviews" />
-    </h2>
+  <section>
+    <div class="kcc-secname">
+      <ResourceString for="RatingsReviews" as="h2" />
+      <p class="kcc-kick">
+        <span class="kcc-num">{{ count }}</span> <ResourceString for="Reviews" />
+      </p>
+    </div>
 
-    <div class="rounded-3xl bg-paper-2 p-6">
-      <!-- Summary: average + per-star distribution -->
-      <div v-if="count > 0" class="flex flex-wrap items-center gap-8">
-        <div class="flex-none text-center">
-          <div class="font-casual text-[3.5rem] leading-[0.9]">{{ formatRating(average) }}</div>
-          <div class="mt-1">
-            <StarRating :model-value="average" readonly />
+    <div class="space-y-9">
+      <KccSheet v-if="count > 0" :tear="5">
+        <div class="flex flex-wrap items-start gap-x-7 gap-y-6">
+          <div class="flex items-baseline gap-3">
+            <RatingSummary :value="average" />
+            <p class="kcc-kick">
+              <span class="kcc-num">{{ count }}</span> <ResourceString for="Reviews" />
+            </p>
           </div>
-          <div class="mt-1 text-sm text-ink-soft">{{ count }} <ResourceString for="Reviews" /></div>
-        </div>
-        <ul class="flex min-w-60 flex-1 flex-col gap-[7px]">
-          <li v-for="d in distRows" :key="d.star" class="flex items-center gap-2.5">
-            <span class="w-[26px] flex-none text-sm text-ink-soft">{{ d.star }}★</span>
-            <span class="h-2.5 flex-1 overflow-hidden rounded-full bg-desk-2">
-              <span class="block h-full rounded-full bg-peach" :style="{ width: d.pct + '%' }"></span>
-            </span>
-            <span class="w-9 flex-none text-right text-sm text-ink-soft">{{ d.count }}</span>
-          </li>
-        </ul>
-      </div>
 
-      <hr v-if="count > 0" class="my-6 border-0 border-t border-rule" />
-
-      <!-- Review list -->
-      <ul v-if="reviews.length" data-testid="reviews-list" class="flex flex-col gap-4">
-        <li v-for="(review, i) in reviews" :key="i" class="flex gap-3">
-          <span
-            class="grid size-11 flex-none place-items-center rounded-full font-bold text-ink"
-            :class="backgroundColorFor(review.authorName)"
-            aria-hidden="true"
-            >{{ initials(review.authorName) }}</span
-          >
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <span class="font-bold">{{ review.authorName }}</span>
-              <StarRating :model-value="review.rating" readonly />
-              <span class="text-sm text-ink-soft">{{ formatDate(review.created) }}</span>
+          <!-- Each fill is 6px centred in a 24px band, so the run of bars keeps to the rule. -->
+          <div class="min-w-60 flex-1">
+            <div v-for="row in distRows" :key="row.star">
+              <p class="kcc-kick">
+                {{ row.star }}★ <span class="kcc-num">{{ row.count }}</span>
+              </p>
+              <div class="flex h-6 items-center">
+                <span class="block h-1.5 bg-peach" :style="{ width: row.pct + '%' }"></span>
+              </div>
             </div>
-            <p v-if="review.text" class="mt-1.5 text-ink">{{ review.text }}</p>
           </div>
-        </li>
+        </div>
+      </KccSheet>
+
+      <ul v-if="reviews.length" data-testid="reviews-list" class="grid gap-9">
+        <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="tearFor(i)" pad="16px">
+          <StarRating :model-value="review.rating" readonly />
+          <p class="kcc-kick">
+            {{ review.authorName }} · <span class="kcc-num">{{ formatDate(review.created) }}</span>
+          </p>
+          <p v-if="review.text" class="kcc-body">{{ review.text }}</p>
+        </KccSheet>
       </ul>
-      <div
-        v-else
-        class="grid place-items-center gap-3 rounded-3xl border-2 border-dashed border-rule px-4 py-16 text-center text-ink-soft"
-      >
-        <i class="fa-regular fa-star text-4xl opacity-50" aria-hidden="true"></i>
-        <p class="text-base"><ResourceString for="NoReviewsYet" /></p>
-      </div>
+      <ResourceString v-else for="NoReviewsYet" as="p" class="kcc-body" />
 
-      <button
-        v-if="hasMore()"
-        type="button"
-        class="mt-6 cursor-pointer border-none bg-transparent font-bold text-ink underline underline-offset-4"
-        @click="load(page + 1)"
-      >
+      <Button v-if="hasMore()" variant="ghost" @click="load(page + 1)">
         <ResourceString for="LoadMore" />
-      </button>
+      </Button>
 
-      <hr class="my-6 border-0 border-t border-rule" />
+      <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="3" crisp>
+        <template #label><ResourceString for="YourReview" /></template>
 
-      <!-- Write a review -->
-      <div v-if="isAuthenticated" class="rounded-3xl bg-desk-2 p-6">
-        <p class="mb-3 font-casual text-xl tracking-[1px]"><ResourceString for="YourReview" /></p>
-        <div class="mb-3">
+        <div class="space-y-6">
           <StarRating v-model="myRating" />
+
+          <!-- The e2e suite fills this textarea by hook, so the hook stays on the control, not on the field. -->
+          <label class="kcc-field kcc-field--area">
+            <textarea v-model="myText" :placeholder="t('WriteReview')" rows="3" data-testid="review-input"></textarea>
+          </label>
+
+          <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
+
+          <div class="flex flex-wrap items-center justify-end gap-x-7 gap-y-3">
+            <Button v-if="myRating > 0" variant="text" data-testid="delete-review" @click="remove">
+              <ResourceString for="DeleteReview" />
+            </Button>
+            <Button data-testid="submit-review" :disabled="myRating < 0.5" @click="submit">
+              <ResourceString for="SubmitReview" />
+            </Button>
+          </div>
         </div>
-        <textarea
-          v-model="myText"
-          :placeholder="t('WriteReview')"
-          rows="3"
-          data-testid="review-input"
-          class="w-full rounded-2xl border-none bg-paper-2 p-3 text-ink outline-none"
-        ></textarea>
-        <p v-if="error" class="mt-1 text-sm text-danger-ink">{{ error }}</p>
-        <div class="mt-3 flex justify-end gap-2">
-          <button
-            v-if="myRating > 0"
-            type="button"
-            data-testid="delete-review"
-            class="cursor-pointer rounded-full bg-paper-2 px-4 py-2 font-bold text-ink"
-            @click="remove"
-          >
-            <ResourceString for="DeleteReview" />
-          </button>
-          <button
-            type="button"
-            data-testid="submit-review"
-            class="cursor-pointer rounded-full bg-paper px-6 py-2 font-bold text-ink disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="myRating < 0.5"
-            @click="submit"
-          >
-            <ResourceString for="SubmitReview" />
-          </button>
-        </div>
-      </div>
-      <div v-else class="rounded-3xl border-2 border-dashed border-rule p-4 text-center text-ink-soft">
-        <ResourceString for="LogInToReview" />
-      </div>
+      </KccSheet>
+      <ResourceString v-else for="LogInToReview" as="p" class="kcc-body" />
     </div>
   </section>
 </template>

@@ -3,6 +3,7 @@
   import { ref } from 'vue'
   import { post, del } from '~/Utilities/Api'
   import { ResourceString } from '~/Components/ResourceStrings'
+  import Button from '~/Components/Button/Button.vue'
 
   /**
    * Button recording that the member cooked a variant, showing the running tally.
@@ -58,16 +59,19 @@
 </script>
 
 <template>
-  <button
+  <Button
     v-if="isAuthenticated"
-    type="button"
+    :variant="cooked ? 'ink' : 'ghost'"
     data-testid="cooked-toggle"
-    class="flex-none rounded-2xl px-4 py-2 font-bold transition-colors"
-    :class="cooked ? 'bg-marker text-marker-ink' : 'bg-paper-2 text-ink'"
+    :aria-pressed="cooked"
     :disabled="busy"
     @click="toggleCooked"
   >
-    <i :class="cooked ? 'fa-solid fa-fire-burner' : 'fa-regular fa-fire-burner'" aria-hidden="true"></i>
-    <ResourceString for="ICookedThis" /> ({{ cookedCount }})
-  </button>
+    <i class="fa-duotone fa-fire-burner" aria-hidden="true"></i>
+    <!-- The e2e reads the tally out of the button's own text, so the brackets stay inside one flex item. -->
+    <span
+      ><ResourceString for="ICookedThis" /> (<span class="kcc-num">{{ cookedCount }}</span
+      >)</span
+    >
+  </Button>
 </template>
