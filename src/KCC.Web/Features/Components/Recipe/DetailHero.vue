@@ -63,7 +63,7 @@
       <div class="mt-2 flex flex-wrap items-center gap-4">
         <span class="inline-flex items-center gap-1">
           <template v-if="reviewCount">
-            <RatingSummary :value="averageRating ?? 0" strong />
+            <RatingSummary :value="averageRating ?? 0" />
             <span class="text-ink-soft">({{ reviewCount }} <ResourceString for="Reviews" />)</span>
           </template>
           <template v-else>

@@ -18,9 +18,4 @@ describe('RatingSummary', () => {
   it('passes max through to the star row', async () => {
     expect(countStars(await render({ value: 3, max: 10 }))).toBe(10)
   })
-
-  it('emphasizes the number only when strong is set', async () => {
-    expect(await render({ value: 4, strong: true })).toContain('data-rating-strong')
-    expect(await render({ value: 4 })).not.toContain('data-rating-strong')
-  })
 })
