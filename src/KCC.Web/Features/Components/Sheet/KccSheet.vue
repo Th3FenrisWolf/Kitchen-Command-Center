@@ -13,7 +13,7 @@
   export type Tear = 1 | 2 | 3 | 4 | 5 | 6 | 'hero'
 
   export interface KccSheetProps {
-    /** Marker pill over the top-left edge. */
+    /** `label` (string) or the `#label` slot for rich content such as a `<ResourceString>`; the icon stays a prop. */
     label?: string
 
     /** Font Awesome classes for the label's icon. */
@@ -91,8 +91,8 @@
         <slot />
       </div>
     </div>
-    <span v-if="label" class="kcc-label" :class="{ 'kcc-label--right': labelRight }">
-      <i v-if="icon" :class="icon" aria-hidden="true"></i>{{ label }}
+    <span v-if="label || $slots.label" class="kcc-label" :class="{ 'kcc-label--right': labelRight }">
+      <i v-if="icon" :class="icon" aria-hidden="true"></i><slot name="label">{{ label }}</slot>
     </span>
     <span v-if="tape" class="kcc-tape" aria-hidden="true"></span>
   </component>

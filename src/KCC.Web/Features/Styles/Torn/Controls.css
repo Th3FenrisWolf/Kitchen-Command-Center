@@ -124,6 +124,10 @@
     color: var(--color-paper);
   }
 
+  .kcc-seg button:hover:not([aria-pressed='true'], [aria-checked='true']) {
+    color: var(--color-ink);
+  }
+
   /* ---- field: 36px pill with an inset hairline and a leading icon ---- */
   .kcc-field {
     align-items: center;
