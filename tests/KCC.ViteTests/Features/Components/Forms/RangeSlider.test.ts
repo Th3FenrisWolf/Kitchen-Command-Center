@@ -12,6 +12,12 @@ describe('RangeSlider', () => {
     expect((html.match(/type="range"/g) ?? []).length).toBe(2)
   })
 
+  it('draws the track and the fill with the kit classes', async () => {
+    const html = await render({})
+    expect(html).toContain('kcc-range-track')
+    expect(html).toContain('kcc-range-fill')
+  })
+
   it('positions the fill from min% to max%', async () => {
     const html = await render({ modelMin: 15, modelMax: 30 })
     expect(html).toContain('left: 25%')
