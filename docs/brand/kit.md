@@ -135,6 +135,9 @@ Rules of the structure:
 9. `--tear` inherits from the slip into the sheet (wanted) and into a pinned tile (not wanted, so
    `.kcc-tilewrap` resets it to the first tile tear); `--r` is registered non-inheriting, so nested slips
    never compound a tilt.
+10. A slip placed directly in `main.content-grid` (or any grid) with `mx-auto max-w-*` needs `w-full` too:
+    auto margins suppress a grid item's stretch, so without it the sheet shrink-wraps its copy and the
+    wash's percentage placement drifts with content length.
 
 ## Tears
 
