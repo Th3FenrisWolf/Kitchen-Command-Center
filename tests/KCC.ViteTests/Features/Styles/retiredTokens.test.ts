@@ -47,7 +47,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Components/Recipe/FeaturedRecipeCard.vue',
   'Features/Components/Recipe/RecipeCard.vue',
   'Features/Components/Recipe/RecipeCardRow.vue',
-  'Features/Components/Recipe/StatTiles.vue',
   'Features/Components/RecipeDetail/VariantGrid.vue',
   'Features/Components/RecipeDetail/VariantToolbar.vue',
   'Features/Components/RecipeDetail/VariantsEmptyState.vue',
