@@ -42,7 +42,11 @@ describe('WizardProgress', () => {
     const html = await render(2, 5)
 
     const currentLi = html.match(/<li[^>]*aria-current="step"[^>]*>[\s\S]*?<\/li>/)?.[0] ?? ''
+    expect(currentLi).toContain('kcc-kick')
     expect(currentLi).toContain('bg-marker')
+    expect(currentLi).toContain('rounded-md')
+    expect(currentLi).toContain('px-3')
+    expect(currentLi).toContain('text-marker-ink')
   })
 
   it('leaves the last step without a connector slot, so it sits flush at the end of the rule', async () => {

@@ -250,9 +250,16 @@
     text-decoration-color: currentColor;
   }
 
-  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline; soft ink, ink on hover. */
+  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline; soft ink, ink on hover.
+     A fixed 24px box holds the target size steady no matter what font-size the surrounding kick sets. */
   .kcc-link--icon {
+    align-items: center;
     color: var(--color-ink-soft);
+    display: inline-flex;
+    font-size: 15px;
+    justify-content: center;
+    min-height: var(--bl);
+    min-width: var(--bl);
     text-decoration: none;
   }
 
