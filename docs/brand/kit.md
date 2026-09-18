@@ -113,6 +113,10 @@ A recipe slip:
 </article>
 ```
 
+When the whole slip is one link, the link **is** the `.kcc-torn` wrapper (`<a class="kcc-torn block">`): it
+sits outside the clip, so the tear never shaves its focus ring, and the click target is the whole sheet. The
+tilewrap stays a sibling of it and is pointer-transparent.
+
 Rules of the structure:
 
 1. `clip-path` sits on `.kcc-sheet` / `.kcc-tile`. The `filter` sits on a wrapper **outside** the clipped
@@ -176,7 +180,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y --w --h` placement |
 | `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
 | `kcc-tape` | one strip, top-centre | opt-in |
-| `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink` |
+| `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink`; pointer-transparent, so a link beneath it keeps the click |
 | `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
 | `kcc-body` | 15/24 body | |
 | `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | size and leading only; bare `h1`–`h3` already take APCasual from `Typography.css`, so these go on any element that needs display or heading size |

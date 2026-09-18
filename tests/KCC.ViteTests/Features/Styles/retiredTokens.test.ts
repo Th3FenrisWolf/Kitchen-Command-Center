@@ -43,8 +43,6 @@ const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 const ALLOWLIST = new Set<string>([
   'Features/Components/Recipe/DetailHero.vue',
   'Features/Components/Recipe/FeaturedRecipeCard.vue',
-  'Features/Components/Recipe/RecipeCard.vue',
-  'Features/Components/Recipe/RecipeCardRow.vue',
   'Features/Components/RecipeDetail/VariantGrid.vue',
   'Features/Components/RecipeDetail/VariantToolbar.vue',
   'Features/Components/RecipeDetail/VariantsEmptyState.vue',

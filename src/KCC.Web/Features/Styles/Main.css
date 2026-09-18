@@ -56,8 +56,8 @@
   }
 
   /* Durations go to 0.01ms rather than `none` so transitionend/animationend still fire — anything waiting
-     on them keeps working, while nothing perceptibly animates. Per-component guards that already exist
-     (RecipeCard, SegmentedControl, Ink.css) are more specific and stay. */
+     on them keeps working, while nothing perceptibly animates. The guard in Ink.css is more specific and
+     stays. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

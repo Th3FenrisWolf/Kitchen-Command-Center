@@ -31,7 +31,7 @@
 </script>
 
 <template>
-  <div class="mt-6 -mb-4 grid grid-cols-1 gap-x-4 *:row-span-7 *:mb-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mt-6 -mb-4 grid grid-cols-1 gap-x-4 *:mb-4 sm:grid-cols-2 lg:grid-cols-3">
     <RecipeCardView v-for="entry in cards" :key="entry.key" :card="entry.card" />
 
     <AppLink

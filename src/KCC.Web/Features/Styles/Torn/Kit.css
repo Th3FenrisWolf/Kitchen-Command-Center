@@ -146,6 +146,8 @@
        80-point tear on a 56px box. */
     --tear: var(--tear-tile-1);
     left: 16px;
+    /* The tile is pinned over a sheet that is often one big link; the pin must not swallow the click. */
+    pointer-events: none;
     position: absolute;
     top: -14px;
     transform: rotate(-2deg);

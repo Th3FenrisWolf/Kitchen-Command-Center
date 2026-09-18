@@ -162,10 +162,7 @@
       <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" />
 
       <template v-if="listed.length || spotlight">
-        <div
-          v-if="state.view === 'grid'"
-          class="-mb-4 grid grid-cols-1 gap-x-4 *:row-span-7 *:mb-4 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        <div v-if="state.view === 'grid'" class="-mb-4 grid grid-cols-1 gap-x-4 *:mb-4 sm:grid-cols-2 lg:grid-cols-3">
           <RecipeCard v-for="recipe in listed" :key="recipe.slug" :card="hitToCard(recipe, rs)" />
         </div>
 
