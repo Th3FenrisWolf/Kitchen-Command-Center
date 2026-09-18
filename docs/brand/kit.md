@@ -185,6 +185,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-unit` | Sono caps 11px in ink-soft | a unit beside a number (min, g, servings); the same small caps a stats row gives its `<small>` |
 | `kcc-hr` | dashed hair rule | |
 | `kcc-link` | ink + hair-strong underline | prose links, breadcrumbs |
+| `kcc-link--icon` | icon-only link (the home crumb), with `kcc-kick` on the item for size | no underline; ink-soft, ink on hover |
 | `kcc-head`, `kcc-mark` | chrome header grid, APCasual wordmark | |
 | `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
 | `kcc-foot` | footer copy block | |

@@ -248,6 +248,16 @@
     text-decoration-color: currentColor;
   }
 
+  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline; soft ink, ink on hover. */
+  .kcc-link--icon {
+    color: var(--color-ink-soft);
+    text-decoration: none;
+  }
+
+  .kcc-link--icon:hover {
+    color: var(--color-ink);
+  }
+
   /* ---- chrome on the desk ---- */
   .kcc-head {
     align-items: baseline;
