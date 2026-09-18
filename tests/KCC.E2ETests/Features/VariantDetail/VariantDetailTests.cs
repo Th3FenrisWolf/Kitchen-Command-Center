@@ -121,18 +121,19 @@ public class VariantDetailTests : BasePageTests
     public async Task DifficultyTile_Set_ShowsLabelAndDot()
     {
         // Asserts the difficulty tile's render contract structurally rather than requiring the
-        // variant to have a difficulty: StatTiles.vue renders the status dot as
-        // The dot carries data-testid="difficulty-dot" and renders only for a tile built from a set
-        // difficulty (easy/medium/hard). So if any difficulty-dot is present it sits inside a
-        // rendered stat tile (the <section> stat row is always present). Asserting "set" on a
-        // variant whose Difficulty is unset needs a seeded variant with Difficulty set.
+        // variant to have a difficulty: no dot glyph renders any more (Task 42 turns this into a
+        // status well). StatTiles.vue puts the data-testid="difficulty-dot" hook on the tile's own
+        // value, <p class="kcc-v">, and sets it only for a tile built from a set difficulty
+        // (easy/medium/hard), i.e. one with a dotColor. So if any difficulty-dot is present it sits
+        // inside a rendered stat tile (the <section> stat row is always present). Asserting "set" on
+        // a variant whose Difficulty is unset needs a seeded variant with Difficulty set.
         await GotoFirstVariantAsync();
 
         var statRow = Page.Locator("[data-testid='variant-stats']");
         await Expect(statRow).ToBeVisibleAsync();
 
-        // If a difficulty dot rendered, the stat row that contains it is visible (the dot only
-        // exists as part of a tile). This holds whether or not difficulty happens to be set.
+        // If the difficulty-dot hook rendered, the stat row that contains it is visible (the hook
+        // only exists as part of a tile). This holds whether or not difficulty happens to be set.
         var dotCount = await Page.Locator("[data-testid='difficulty-dot']").CountAsync();
         if (dotCount > 0)
         {
@@ -145,14 +146,14 @@ public class VariantDetailTests : BasePageTests
     public async Task DifficultyTile_Unset_IsOmitted()
     {
         // Asserts the unset contract structurally: with Difficulty unset, difficultyTile()
-        // returns null and the tile (its difficulty-dot) is omitted from the stat row. The
-        // seeded variant has no Difficulty, so this is the live state. The dot count and the
-        // presence of a difficulty tile must agree — there is no dot without a difficulty tile.
+        // returns null and the tile (its difficulty-dot hook) is omitted from the stat row. The
+        // seeded variant has no Difficulty, so this is the live state. The hook count and the
+        // presence of a difficulty tile must agree — there is no hook without a difficulty tile.
         await GotoFirstVariantAsync();
 
-        // The status dot is rendered only for a set difficulty, and only ever inside a stat
-        // tile in the <section> stat row. Assert that invariant: every difficulty-dot lives in
-        // the stat row (no orphan dots). With the seeded variant's Difficulty unset, both
+        // The difficulty-dot hook is set only for a set difficulty, and only ever on the value
+        // inside a stat tile in the <section> stat row. Assert that invariant: every difficulty-dot
+        // lives in the stat row (no orphans). With the seeded variant's Difficulty unset, both
         // counts are 0 — the omitted state — but the spec stays green if difficulty is later set.
         var dotCount = await Page.Locator("[data-testid='difficulty-dot']").CountAsync();
         var dotsInStatRow = await Page.Locator("[data-testid='variant-stats'] [data-testid='difficulty-dot']").CountAsync();
