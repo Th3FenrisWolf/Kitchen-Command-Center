@@ -198,7 +198,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = 2px inset ink ring |
 | `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
 | `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
-| `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | |
+| `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | the checkbox is `sr-only`, so a focused checkbox rings its box instead |
 | `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, Sono 26 | `<small>` for the unit |
 | `kcc-steps` › `li` › `kcc-n` + `kcc-body` | numbered method | numbers `01`, `02`, … |
 | `kcc-well` (+`--danger`, `--success`, `--warning`) | paper tinted 28% with the wash, ink text, 6px radius | status messages; the message itself is a `kcc-kick` |

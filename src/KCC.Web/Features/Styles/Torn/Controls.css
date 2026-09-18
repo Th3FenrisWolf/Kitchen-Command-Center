@@ -372,6 +372,14 @@
     box-shadow: none;
   }
 
+  /* The checkbox itself is sr-only, so the app's focus ring lands on a clipped 1px box and vanishes — most
+     painfully inside a focus trap, where a keyboard cannot escape the list. Ring the box the reader sees, in
+     the same 2px ink every other focusable takes. */
+  .kcc-check input:focus-visible + .kcc-box {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
   .kcc-check .kcc-q {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);

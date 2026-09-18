@@ -154,8 +154,6 @@
           crisp
           :tear="3"
           pad="clamp(24px, 6vw, 48px)"
-          wash="peach"
-          :at="{ x: '96%', y: '100%', w: '35%', h: '45%' }"
           class="mx-auto h-full max-w-3xl [&>.kcc-torn]:h-full [&>.kcc-torn>.kcc-sheet]:h-full"
         >
           <div class="flex h-full flex-col">
@@ -233,7 +231,9 @@
                   :aria-pressed="!!checked[index]"
                   @click="toggleChecked"
                 >
-                  <i :class="checked[index] ? 'fa-duotone fa-check' : 'fa-duotone fa-circle'" aria-hidden="true"></i>
+                  <!-- Regular, not duotone, for the unticked ring: duotone fa-circle paints a filled disc,
+                       which reads the same as the ticked mark. -->
+                  <i :class="checked[index] ? 'fa-duotone fa-check' : 'fa-regular fa-circle'" aria-hidden="true"></i>
                   <ResourceString :for="checked[index] ? 'Done' : 'MarkDone'" />
                 </Button>
               </div>

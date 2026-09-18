@@ -66,8 +66,8 @@
     <div>
       <ResourceString :id="uid" for="Ingredients" as="p" class="kcc-kick" />
 
-      <!-- A checklist row is three direct children of the li, so the box and the name are two labels for the
-           same checkbox rather than one wrapper around it: both stay clickable, the grid stays the kit's. -->
+      <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
+           stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
       <ul class="kcc-check mt-6" :aria-labelledby="uid">
         <li
           v-for="row in rows"

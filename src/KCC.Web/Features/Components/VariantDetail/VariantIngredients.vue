@@ -76,8 +76,8 @@
       </div>
     </div>
 
-    <!-- A checklist row is three direct children of the li, so the box and the name are two labels for the
-         same checkbox rather than one wrapper around it: both stay clickable, the grid stays the kit's. -->
+    <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
+         stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
     <ul class="kcc-check mt-6">
       <li v-for="row in rows" :key="row.id" class="cursor-pointer" :class="{ 'kcc-done': checked[row.index] }">
         <input :id="row.id" type="checkbox" class="sr-only" :checked="checked[row.index]" @change="toggle(row.index)" />
