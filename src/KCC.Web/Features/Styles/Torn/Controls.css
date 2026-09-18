@@ -163,11 +163,11 @@
     color: var(--color-ink-soft);
   }
 
-  /* A numeric field (NumberStepper) prints its digits in Sono like every other number in the kit.
-     `.kcc-field input` above is one class plus one type (0,1,1); a bare `.kcc-num` is one class
-     (0,1,0) and loses the font-family to it, so the combination needs its own, more specific rule. */
+  /* .kcc-field input sets the `font:` shorthand, which resets font-variant-numeric to normal and outranks a
+     bare .kcc-num on the same element (0,1,1 vs 0,1,0). Re-assert both halves of the number idiom. */
   .kcc-field input.kcc-num {
     font-family: var(--font-sono);
+    font-variant-numeric: tabular-nums;
   }
 
   .kcc-field:focus-within {
@@ -197,6 +197,84 @@
 
   .kcc-field--area textarea::placeholder {
     color: var(--color-ink-soft);
+  }
+
+  /* ---- range slider: paper track with an inset hairline, marker fill, ink thumbs ----
+
+     RangeSlider.vue (Features/Components/Forms) is a runtime-compiled global component, so a scoped
+     `<style>` block would be bundled into the JS-loaded GlobalComponents CSS chunk — not in <head>, and
+     applied only after hydration. During that gap the two native `<input type="range">` would paint as
+     default OS bars (the "two separate bars" flash on first paint), so the appearance reset and the custom
+     thumb belong in this render-blocking stylesheet, where SSR output is already final.
+
+     These rules sit in `@layer components`, so a Tailwind utility on the input or the track wins over them
+     (the component positions both with utilities). */
+
+  /* The track: paper with an inset hairline, same recipe as every other printed control. */
+  .kcc-range-track {
+    background: var(--color-paper-2);
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+  }
+
+  /* The selected span between the two thumbs. */
+  .kcc-range-fill {
+    background: var(--color-marker);
+    border-radius: 999px;
+  }
+
+  /* Both thumbs are native range inputs stacked over the track: the input itself is transparent and
+     pointer-transparent, and only the thumb pseudo-element takes the pointer back. */
+  .kcc-range {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    height: 20px;
+    left: 0;
+    margin: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  .kcc-range:focus {
+    outline: none;
+  }
+
+  /* Thumbs are a printed mark: flat ink, no drawn border, no fall — only the paper ring below. */
+  .kcc-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--color-ink);
+    border-radius: 999px;
+    /* A paper ring, not a fall: the thumb straddles the marker fill, and chalk on marker reads at 1.2:1 in
+       the dark ramp without it. */
+    box-shadow: 0 0 0 2px var(--color-paper-2);
+    cursor: grab;
+    height: 16px;
+    pointer-events: auto;
+    width: 16px;
+  }
+
+  .kcc-range::-webkit-slider-thumb:active {
+    cursor: grabbing;
+  }
+
+  .kcc-range::-moz-range-thumb {
+    background: var(--color-ink);
+    border-radius: 999px;
+    /* A paper ring, not a fall: the thumb straddles the marker fill, and chalk on marker reads at 1.2:1 in
+       the dark ramp without it. */
+    box-shadow: 0 0 0 2px var(--color-paper-2);
+    cursor: grab;
+    height: 16px;
+    pointer-events: auto;
+    width: 16px;
+  }
+
+  .kcc-range::-moz-range-thumb:active {
+    cursor: grabbing;
   }
 
   /* ---- status: a well of paper tinted with the wash, ink text. Never coloured text. ---- */
@@ -313,6 +391,15 @@
 
   .kcc-stats .kcc-v small {
     color: var(--color-ink-soft);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* A unit beside a number (min, g, servings): the same small caps the stats row uses for its unit. */
+  .kcc-unit {
+    color: var(--color-ink-soft);
+    font-family: var(--font-sono);
     font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;

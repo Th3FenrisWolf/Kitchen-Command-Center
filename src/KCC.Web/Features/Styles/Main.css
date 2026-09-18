@@ -14,7 +14,6 @@
 /* END TRANSITIONAL */
 @import './Layout.css';
 @import './Typography.css';
-@import './RangeSlider.css';
 
 /* Sections */
 @import './Sections/MultipleColumnSection.css';

@@ -60,7 +60,9 @@
 
 <template>
   <label class="kcc-field kcc-field--area relative w-full" :style="{ height: `${height}px` }">
-    <textarea ref="textareaRef" v-model="model" :required :readonly :placeholder class="h-full"></textarea>
+    <!-- `resize-none`: the drag handle below is this component's resize affordance, and the kit's
+         `resize: vertical` default would put a second, competing grip in the same corner. -->
+    <textarea ref="textareaRef" v-model="model" :required :readonly :placeholder class="h-full resize-none"></textarea>
     <span class="absolute right-1 bottom-0">
       <i class="fa-duotone fa-grip-lines rotate-135 cursor-ns-resize text-[15px] text-ink-soft" @mousedown="startResize"></i>
     </span>

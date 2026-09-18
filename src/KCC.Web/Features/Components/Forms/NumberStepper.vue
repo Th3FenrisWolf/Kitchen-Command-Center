@@ -156,7 +156,7 @@
     <label class="kcc-field kcc-field--noicon min-w-24 flex-1 cursor-text">
       <span class="flex items-center justify-center gap-1.5">
         <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
-        <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
+        <span v-if="unit" aria-hidden="true" class="kcc-unit invisible shrink-0">{{ unit }}</span>
         <input
           :style="{ width: inputWidth }"
           class="kcc-num shrink-0 text-center"
@@ -173,7 +173,7 @@
           @focus="onFocus"
           @blur="onBlur"
         />
-        <span v-if="unit" class="shrink-0 text-sm text-ink-soft">{{ unit }}</span>
+        <span v-if="unit" class="kcc-unit shrink-0 text-ink-soft">{{ unit }}</span>
       </span>
     </label>
 

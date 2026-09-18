@@ -12,7 +12,7 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties; the dark ramp under `:root[data-theme='dark']`; the TRANSITIONAL block |
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
-| `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, badge, check, stats, steps, recipe-slip parts |
+| `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
 | `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here and `#app` carries the desk colour so the overlays have a backdrop to blend with |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
@@ -182,6 +182,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | size and leading only; bare `h1`–`h3` already take APCasual from `Typography.css`, so these go on any element that needs display or heading size |
 | `kcc-hand` | APCasual italic 17/24 ink-soft | one per sheet |
 | `kcc-num` | Sono tabular | every number |
+| `kcc-unit` | Sono caps 11px in ink-soft | a unit beside a number (min, g, servings); the same small caps a stats row gives its `<small>` |
 | `kcc-hr` | dashed hair rule | |
 | `kcc-link` | ink + hair-strong underline | prose links, breadcrumbs |
 | `kcc-head`, `kcc-mark` | chrome header grid, APCasual wordmark | |
@@ -190,6 +191,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large | Sono caps `.14em` |
 | `kcc-seg` › `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | |
 | `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = 2px inset ink ring |
+| `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
 | `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
 | `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | |
 | `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, Sono 26 | `<small>` for the unit |

@@ -35,6 +35,21 @@ describe('Field', () => {
     expect(html).not.toContain('text-red')
   })
 
+  it('keys the hint and error ids off the control id and hands the live one to the slot', async () => {
+    // A real control binds the slot's `describedby` straight to aria-describedby; the ids have to line up
+    // or the hint and the error are invisible to a screen reader.
+    const described = (slotProps?: { describedby?: string }) =>
+      h('input', { id: 'email', 'aria-describedby': slotProps?.describedby })
+
+    const hinted = await renderSsr(Field, { ...baseProps, hint: 'We will not share this' }, { default: described })
+    expect(hinted).toContain('id="email-hint"')
+    expect(hinted).toContain('aria-describedby="email-hint"')
+
+    const errored = await renderSsr(Field, { ...baseProps, error: 'Enter an email address' }, { default: described })
+    expect(errored).toContain('id="email-error"')
+    expect(errored).toContain('aria-describedby="email-error"')
+  })
+
   it('prefers the error over the hint when both are set', async () => {
     const html = await renderSsr(Field, { ...baseProps, hint: 'ignored', error: 'Required' }, { default: control })
     expect(html).toContain('kcc-well--danger')
