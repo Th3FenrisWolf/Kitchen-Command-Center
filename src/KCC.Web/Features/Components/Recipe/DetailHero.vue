@@ -62,7 +62,7 @@
 </script>
 
 <template>
-  <div class="kcc-slip kcc-recipe kcc-tear-hero my-6">
+  <div class="kcc-slip kcc-recipe kcc-tear-hero">
     <div class="kcc-torn">
       <div class="kcc-sheet" style="--pad: 48px">
         <span class="kcc-wash" :style="wash" aria-hidden="true"></span>

@@ -3,6 +3,7 @@
   import { computed } from 'vue'
   import type { SortKey, ViewMode } from '~/Components/RecipeDetail/variantFilters'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import Button from '~/Components/Button/Button.vue'
   import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
 
   /**
@@ -14,7 +15,7 @@
 
   export interface VariantToolbarProps {
     /**
-     * Every tag across the recipe's variants, feeding the tag dropdown.
+     * Every tag across the recipe's variants, feeding the tag pills.
      */
     tags: string[]
   }
@@ -39,25 +40,26 @@
   ])
 
   const viewOptions = computed<SegmentOption<ViewMode>[]>(() => [
-    { value: 'grid', icon: 'fa-solid fa-table-cells-large', ariaLabel: rs('Grid'), title: rs('Grid'), testId: 'view-grid' },
-    { value: 'list', icon: 'fa-solid fa-list', ariaLabel: rs('List'), title: rs('List'), testId: 'view-list' },
+    {
+      value: 'grid',
+      icon: 'fa-duotone fa-table-cells-large',
+      ariaLabel: rs('Grid'),
+      title: rs('Grid'),
+      testId: 'view-grid',
+    },
+    { value: 'list', icon: 'fa-duotone fa-list', ariaLabel: rs('List'), title: rs('List'), testId: 'view-list' },
   ])
 </script>
 
 <template>
-  <div class="sticky top-2 z-10 mt-4 flex flex-wrap items-center gap-3 rounded-2xl bg-paper-2 p-3">
-    <div class="relative min-w-50 flex-1">
-      <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-4 -translate-y-1/2 text-sm text-ink-soft"></i>
-      <input
-        v-model="search"
-        type="search"
-        :placeholder="rs('SearchVariants')"
-        class="w-full rounded-2xl border-none bg-desk-2 py-2.5 pr-4 pl-10 text-base text-ink outline-none"
-      />
+  <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+    <div class="kcc-field min-w-50 flex-1">
+      <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
+      <input v-model="search" type="search" :placeholder="rs('SearchVariants')" />
     </div>
 
-    <div class="flex items-center gap-2">
-      <span class="text-sm font-bold text-ink-soft"><ResourceString for="Sort" /></span>
+    <div class="flex items-center gap-3">
+      <ResourceString for="Sort" class="kcc-kick" />
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="rs('Sort')" />
     </div>
 
@@ -66,16 +68,17 @@
     <SegmentedControl v-model="view" :options="viewOptions" variant="icon" aria-label="View" />
   </div>
 
-  <div class="mt-4 flex flex-wrap gap-2">
-    <button
+  <!-- `tagOptions` always opens with the All option, so a recipe whose variants carry no tags has
+       nothing to filter by and the row is left off. -->
+  <div v-if="tags.length > 1" class="mt-6 flex flex-wrap gap-3">
+    <Button
       v-for="option in tags"
       :key="option"
-      type="button"
-      class="cursor-pointer rounded-full border-2 px-4 py-1.5 text-sm font-bold transition-colors"
-      :class="tag === option ? 'border-marker bg-marker text-marker-ink' : 'border-rule text-ink'"
+      :variant="tag === option ? 'ink' : 'ghost'"
+      :aria-pressed="tag === option"
       @click="tag = option"
     >
       {{ option || rs('All') }}
-    </button>
+    </Button>
   </div>
 </template>

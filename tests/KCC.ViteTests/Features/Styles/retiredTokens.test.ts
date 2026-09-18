@@ -41,9 +41,6 @@ const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 // this list can only shrink; it is empty by the cleanup phase. The scan is textual: a comment that names
 // `sk-sheet` or `font-bold` counts as a hit, so reword prose too when you convert a file.
 const ALLOWLIST = new Set<string>([
-  'Features/Components/RecipeDetail/VariantGrid.vue',
-  'Features/Components/RecipeDetail/VariantToolbar.vue',
-  'Features/Components/RecipeDetail/VariantsEmptyState.vue',
   'Features/Components/Sketch/Sheet.vue',
   'Features/Components/VariantDetail/VariantCookNotes.vue',
   'Features/Components/VariantDetail/VariantCookedToggle.vue',
@@ -61,7 +58,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Pages/Account/Settings/AccountSettingsView.Component.vue',
   'Features/Pages/AddVariant/AddVariantView.Component.vue',
   'Features/Pages/CreateRecipe/CreateRecipeView.Component.vue',
-  'Features/Pages/RecipeDetail/RecipeDetailView.Component.vue',
   'Features/Pages/VariantDetail/CookMode.vue',
   'Features/Pages/VariantDetail/CookModeStep.vue',
   'Features/Pages/VariantDetail/StepTimer.vue',

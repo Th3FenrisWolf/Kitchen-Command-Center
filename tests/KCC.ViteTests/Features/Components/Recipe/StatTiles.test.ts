@@ -9,6 +9,8 @@ const tiles: StatTileSpec[] = [
   { dotColor: 'green', value: 'Easy', label: 'Difficulty' },
 ]
 
+const valueTag = (html: string) => html.match(/<p[^>]*data-testid="difficulty-dot"[^>]*>/)?.[0] ?? ''
+
 describe('StatTiles', () => {
   it('renders the kcc-stats row on the stat-row hook', async () => {
     const html = await renderSsr(StatTiles, { tiles })
@@ -19,7 +21,7 @@ describe('StatTiles', () => {
   it('renders one child per stat, each with a kcc-lbl label and a kcc-v value', async () => {
     const html = await renderSsr(StatTiles, { tiles })
     expect((html.match(/class="kcc-lbl"/g) ?? []).length).toBe(tiles.length)
-    expect((html.match(/class="kcc-v"/g) ?? []).length).toBe(tiles.length)
+    expect((html.match(/class="[^"]*\bkcc-v\b[^"]*"/g) ?? []).length).toBe(tiles.length)
     expect(html).toContain('Prep')
     expect(html).toContain('Servings')
     expect(html).toContain('Difficulty')
@@ -30,11 +32,32 @@ describe('StatTiles', () => {
     expect(html).toContain('<small>min</small>')
   })
 
-  it('puts the difficulty-dot hook on the kcc-v value element, with no fa-circle glyph', async () => {
+  it('prints a set difficulty as a status well in ink, on the difficulty-dot hook', async () => {
     const html = await renderSsr(StatTiles, { tiles })
-    const valueTag = html.match(/<p[^>]*data-testid="difficulty-dot"[^>]*>/)?.[0] ?? ''
-    expect(valueTag).toContain('class="kcc-v"')
+    const value = valueTag(html)
+    expect(value).toContain('kcc-v')
+    expect(value).toContain('kcc-well')
+    expect(value).toContain('kcc-well--success')
+    expect(html).toContain('Easy')
     expect(html).not.toContain('fa-circle')
+    expect(html).not.toMatch(/text-(?:green|yellow|red|success|warning|danger)/)
+  })
+
+  it('tints the well with the level: green success, yellow warning, red danger', async () => {
+    const wellOf = async (dotColor: string) =>
+      valueTag(await renderSsr(StatTiles, { tiles: [{ dotColor, value: dotColor, label: 'Difficulty' }] }))
+
+    expect(await wellOf('green')).toContain('kcc-well--success')
+    expect(await wellOf('yellow')).toContain('kcc-well--warning')
+    expect(await wellOf('red')).toContain('kcc-well--danger')
+  })
+
+  it('leaves a plain stat unwelled, glyph and all', async () => {
+    const html = await renderSsr(StatTiles, { tiles: [tiles[0]!] })
+    expect(html).toContain('<p class="kcc-v">')
+    expect(html).not.toContain('kcc-well')
+    expect(html).toContain('fa-duotone fa-clock')
+    expect(html).not.toContain('difficulty-dot')
   })
 
   it('renders an em dash for a null value', async () => {
