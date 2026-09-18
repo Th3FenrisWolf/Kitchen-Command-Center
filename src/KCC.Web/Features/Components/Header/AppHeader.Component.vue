@@ -96,10 +96,10 @@
   <header class="content-grid mt-4">
     <nav
       ref="navRef"
-      class="breakout relative flex size-full flex-wrap items-center gap-x-6 gap-y-2 border-b border-dashed border-hair-strong px-4 text-ink sm:px-6"
+      class="breakout relative flex w-full flex-wrap items-center gap-x-6 gap-y-2 border-b border-dashed border-hair-strong px-4 text-ink sm:px-6"
     >
       <a
-        class="btn-no-style z-20 h-full shrink-0 py-4 text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
+        class="btn-no-style z-20 shrink-0 py-4 text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
         :href="homeUrl.stripTilde()"
       >
         <img
