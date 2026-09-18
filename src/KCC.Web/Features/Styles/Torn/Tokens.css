@@ -35,7 +35,8 @@
 
   /* DARK: the same identity on a dark desk. Chalk for ink, washes screened instead of multiplied and pushed
      harder, the wax tooth soft-lit. Washes, marker and marker-ink do not move; they are the brand constant.
-     --wash-op is pinned by contrast.test.ts (chalk over a screened wash core). */
+     --wash-op is pinned by contrast.test.ts: chalk and soft chalk over a screened wash core (ink-soft is
+     the binding pair; the mockup's .38 read at 2.3:1 for kicks on a wash). */
   :root[data-theme='dark'] {
     --color-desk: oklch(0.132 0.024 288);
     --color-desk-2: oklch(0.176 0.028 288);
@@ -50,7 +51,7 @@
     --color-fall: oklch(0.04 0.02 288 / 0.7);
     --color-tape: oklch(0.9 0.012 92 / 0.28);
     --wash-blend: screen;
-    --wash-op: 0.38;
+    --wash-op: 0.26;
     --wash-sat: 1.45;
     --grain-op: 0.16;
     --wax-op: 0.36;

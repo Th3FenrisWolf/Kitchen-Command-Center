@@ -43,7 +43,7 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 All values are `oklch(L C H [/ alpha])`.
 
 Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px (labels, wells,
-textareas), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .38, dark value test-pinned),
+textareas), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .26, dark value test-pinned),
 `--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per
 element: `--pad` (sheet), `--tear` and `--r` (set by a preset class), `--c --x --y --w --h` (wash).
 
