@@ -8,8 +8,7 @@ export interface ApiStrings {
 }
 
 export type ApiResult<T> =
-  | { success: true; data: T; errorMessage: null }
-  | { success: false; data: null; errorMessage: string }
+  { success: true; data: T; errorMessage: null } | { success: false; data: null; errorMessage: string }
 
 interface ApiConfig {
   antiforgeryToken?: string
