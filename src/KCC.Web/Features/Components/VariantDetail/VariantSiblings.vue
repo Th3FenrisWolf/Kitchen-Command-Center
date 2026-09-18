@@ -3,7 +3,7 @@
   import { computed } from 'vue'
   import type { SiblingVariant } from '~/Types/Recipe'
   import type { Tear } from '~/Components/Sheet/KccSheet.vue'
-  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import { ResourceString } from '~/Components/ResourceStrings'
   import RecipeCardView from '~/Components/Recipe/RecipeCard.vue'
   import { siblingToCard } from '~/Components/Recipe/recipeCardModel'
 
@@ -26,8 +26,7 @@
 <script setup lang="ts">
   const props = defineProps<VariantSiblingsProps>()
 
-  const rs = useResourceStrings()
-  const cards = computed(() => props.variants.map((sibling) => ({ key: sibling.slug, card: siblingToCard(sibling, rs) })))
+  const cards = computed(() => props.variants.map((sibling) => ({ key: sibling.slug, card: siblingToCard(sibling) })))
 
   const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
 </script>

@@ -110,6 +110,12 @@
 
   const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
 
+  // The form sits under the last review slip and above the first sibling card, which is always a 1: a 2
+  // clears both, and a 3 clears the one case where the slip above it is itself a 2.
+  const formTear = computed<Exclude<Tear, 'hero'>>(() =>
+    reviews.value.length && tearFor(reviews.value.length - 1) === 2 ? 3 : 2,
+  )
+
   const formatDate = (iso: string) => {
     const d = new Date(iso)
     return Number.isNaN(d.getTime())
@@ -132,12 +138,7 @@
     <div class="space-y-9">
       <KccSheet v-if="count > 0" :tear="5">
         <div class="flex flex-wrap items-start gap-x-7 gap-y-6">
-          <div class="flex items-baseline gap-3">
-            <RatingSummary :value="average" />
-            <p class="kcc-kick">
-              <span class="kcc-num">{{ count }}</span> <ResourceString for="Reviews" />
-            </p>
-          </div>
+          <RatingSummary :value="average" />
 
           <!-- Each fill is 6px centred in a 24px band, so the run of bars keeps to the rule. -->
           <div class="min-w-60 flex-1">
@@ -168,7 +169,7 @@
         <ResourceString for="LoadMore" />
       </Button>
 
-      <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="3" crisp>
+      <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" crisp>
         <template #label><ResourceString for="YourReview" /></template>
 
         <div class="space-y-6">

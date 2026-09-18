@@ -35,12 +35,13 @@ describe('VariantReviews summary', () => {
     expect(html).not.toContain('kcc-wash')
   })
 
-  it('prints the average as stars and a Sono number, with the count under it', async () => {
+  it('prints the average as stars and a Sono number, and leaves the count to the section heading', async () => {
     const html = await render({ reviewCount: 12, averageRating: 4.5 })
 
     expect(html).toContain('<span class="kcc-num">4.5</span>')
     expect(html).toContain('aria-label="4.5 of 5 stars"')
     expect(html).not.toContain('font-casual text-[3.5rem]')
+    expect(html.match(/<span class="kcc-num">12<\/span>/g)).toHaveLength(1)
   })
 
   it('draws the distribution as five plain bars on the rule, 5 star down to 1', async () => {
@@ -73,11 +74,12 @@ describe('VariantReviews list', () => {
 })
 
 describe('VariantReviews form', () => {
-  it('is a crisp labelled sheet, torn apart from the summary', async () => {
+  it('is a crisp labelled sheet, torn apart from the summary and from the slip above it', async () => {
+    // No review has loaded on the server, so the form takes the tear that clears a first sibling card (1).
     const html = await render({ isAuthenticated: true })
-    const form = tagWith(html, 'kcc-tear-3')
+    const form = tagWith(html, 'kcc-tear-2')
 
-    expect(form).toContain('kcc-slip kcc-tear-3')
+    expect(form).toContain('kcc-slip kcc-tear-2')
     expect(form).toContain('--r:0')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-comment-pen" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?YourReview/s)

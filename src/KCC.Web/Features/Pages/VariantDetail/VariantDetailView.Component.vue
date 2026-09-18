@@ -166,7 +166,7 @@
       <StatTiles :tiles="statTiles" />
     </KccSheet>
 
-    <section class="grid grid-cols-[minmax(min(280px,100%),2fr)_minmax(min(280px,100%),3fr)] gap-x-7 gap-y-9">
+    <section class="grid gap-x-7 gap-y-9 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <VariantIngredients :ingredients="ingredients" :base-servings="servings" />
       <VariantInstructions :instructions="instructions" />
     </section>

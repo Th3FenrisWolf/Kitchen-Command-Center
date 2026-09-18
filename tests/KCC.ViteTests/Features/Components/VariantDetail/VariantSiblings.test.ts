@@ -40,8 +40,8 @@ describe('VariantSiblings', () => {
 
     expect(html).toContain('href="/recipes/gnocchi/0"')
     expect(html).toContain('<h3 class="kcc-h4">Crispy Edge</h3>')
-    // No page provides strings here, so the resolver hands back the bare key: the unit reads "Min".
-    expect(html).toContain('20 Min')
+    // The variant page carries no minutes string, so the card prints the same literal its stat tiles do.
+    expect(html).toContain('20 min')
   })
 
   it('renders nothing at all for a variant with no siblings', async () => {

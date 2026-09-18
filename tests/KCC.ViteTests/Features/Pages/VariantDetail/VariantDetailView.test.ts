@@ -98,10 +98,10 @@ describe('VariantDetailView', () => {
     expect(slip).toContain('data-testid="variant-stats"')
   })
 
-  it('sets the ingredients beside the method, the method the wider of the two', async () => {
+  it('stacks the ingredients over the method until 768px, then sets the method the wider of the two', async () => {
     const html = await render()
 
-    expect(html).toContain('grid grid-cols-[minmax(min(280px,100%),2fr)_minmax(min(280px,100%),3fr)] gap-x-7 gap-y-9')
+    expect(html).toContain('grid gap-x-7 gap-y-9 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]')
     expect(html.indexOf('fa-basket-shopping')).toBeLessThan(html.indexOf('fa-list-ol'))
     expect(html).not.toContain('lg:sticky')
     expect(html).not.toContain('lg:col-span-3')
@@ -120,7 +120,7 @@ describe('VariantDetailView', () => {
 
   it('holds only the two sheets in that grid, nutrition following it full width', async () => {
     const html = await render()
-    const grid = html.indexOf('minmax(min(280px,100%),2fr)')
+    const grid = html.indexOf('md:grid-cols-[minmax(0,2fr)')
 
     // Ingredients, method, then the grid itself close before the nutrition sheet opens.
     expect(html.slice(grid, html.indexOf('fa-wheat')).match(/<\/section>/g)).toHaveLength(3)

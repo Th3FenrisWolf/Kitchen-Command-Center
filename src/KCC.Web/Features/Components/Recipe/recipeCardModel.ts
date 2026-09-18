@@ -136,10 +136,11 @@ export function variantToCard(variant: VariantSummary, rs: Resolve): RecipeCardM
 
 /**
  * Sibling variant → grid card. A sibling arrives without a review count, so its rating can only ever be
- * the corner stat: there is no "· N" to print beside it and no empty-rating note to fall back to.
+ * the corner stat: there is no "· N" to print beside it and no empty-rating note to fall back to. The unit
+ * is the literal the variant page already prints on its stat tiles; that page carries no `Min` string.
  */
-export function siblingToCard(sibling: SiblingVariant, rs: Resolve): RecipeCardModel {
-  const time = `${sibling.totalTime} ${rs('Min')}`
+export function siblingToCard(sibling: SiblingVariant): RecipeCardModel {
+  const time = `${sibling.totalTime} min`
   return {
     href: sibling.slug,
     name: sibling.name,
