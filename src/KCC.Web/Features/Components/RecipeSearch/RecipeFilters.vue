@@ -1,6 +1,6 @@
 <!-- #region RecipeFilters Component Properties -->
 <script lang="ts">
-  import { computed } from 'vue'
+  import { computed, useId } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
@@ -41,27 +41,33 @@
   const t = useResourceStrings()
 
   interface FilterRow {
+    /** Ties the row's printed box and text to its native checkbox. */
+    id: string
     label: string
     count: number
     selected: boolean
     disabled: boolean
   }
 
+  const uid = useId()
+
   // Render the full, stable option set on every search so the panel keeps its height as filters
   // change (rather than dropping rows). An option with no matches in the current result set is
   // greyed out and disabled — unless it's currently selected, which must stay toggleable so the
   // user can clear it.
-  const toRows = (options: string[], facets: Record<string, number>, selected: string[]): FilterRow[] =>
+  const toRows = (group: string, options: string[], facets: Record<string, number>, selected: string[]): FilterRow[] =>
     [...new Set([...options, ...selected])]
       .sort((a, b) => a.localeCompare(b))
-      .map((label) => {
+      .map((label, i) => {
         const count = facets[label] ?? 0
         const isSelected = selected.includes(label)
-        return { label, count, selected: isSelected, disabled: count === 0 && !isSelected }
+        return { id: `${uid}-${group}-${i}`, label, count, selected: isSelected, disabled: count === 0 && !isSelected }
       })
 
-  const categories = computed(() => toRows(props.categoryOptions, props.categoryFacets, props.selectedCategories))
-  const diets = computed(() => toRows(props.dietOptions, props.dietFacets, props.selectedDiets))
+  const categories = computed(() =>
+    toRows('category', props.categoryOptions, props.categoryFacets, props.selectedCategories),
+  )
+  const diets = computed(() => toRows('diet', props.dietOptions, props.dietFacets, props.selectedDiets))
   const rangeLabel = computed(() => timeRangeLabel(timeMin.value, timeMax.value, t))
   const minUnit = t('Min')
 </script>
@@ -80,24 +86,25 @@
 
     <fieldset class="mt-6">
       <ResourceString for="Category" as="legend" class="kcc-kick" />
+      <!-- A checklist row is three direct children of the li, so the box and the text are two labels for the
+           same checkbox rather than one wrapper around it: both stay clickable, the grid stays the kit's. -->
       <ul class="kcc-check">
         <li
           v-for="row in categories"
           :key="row.label"
           :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'"
         >
-          <label class="contents">
-            <input
-              type="checkbox"
-              class="sr-only"
-              :checked="row.selected"
-              :disabled="row.disabled"
-              @change="emit('toggleCategory', row.label)"
-            />
-            <span class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></span>
-            <span>{{ row.label }}</span>
-            <span class="kcc-q">{{ row.count }}</span>
-          </label>
+          <input
+            :id="row.id"
+            type="checkbox"
+            class="sr-only"
+            :checked="row.selected"
+            :disabled="row.disabled"
+            @change="emit('toggleCategory', row.label)"
+          />
+          <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></label>
+          <label :for="row.id">{{ row.label }}</label>
+          <span class="kcc-q">{{ row.count }}</span>
         </li>
       </ul>
     </fieldset>
@@ -106,18 +113,17 @@
       <ResourceString for="Dietary" as="legend" class="kcc-kick" />
       <ul class="kcc-check">
         <li v-for="row in diets" :key="row.label" :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'">
-          <label class="contents">
-            <input
-              type="checkbox"
-              class="sr-only"
-              :checked="row.selected"
-              :disabled="row.disabled"
-              @change="emit('toggleDiet', row.label)"
-            />
-            <span class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></span>
-            <span>{{ row.label }}</span>
-            <span class="kcc-q">{{ row.count }}</span>
-          </label>
+          <input
+            :id="row.id"
+            type="checkbox"
+            class="sr-only"
+            :checked="row.selected"
+            :disabled="row.disabled"
+            @change="emit('toggleDiet', row.label)"
+          />
+          <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></label>
+          <label :for="row.id">{{ row.label }}</label>
+          <span class="kcc-q">{{ row.count }}</span>
         </li>
       </ul>
     </fieldset>

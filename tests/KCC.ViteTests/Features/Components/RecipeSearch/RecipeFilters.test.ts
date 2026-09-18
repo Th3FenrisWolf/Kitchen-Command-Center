@@ -72,6 +72,17 @@ describe('RecipeFilters sheet', () => {
     expect(rowFor(html, 'Breakfast')).toMatch(/<span class="kcc-q">4<\/span>/)
   })
 
+  it('hangs the box, the text and the count straight off the row, with nothing wrapping them', async () => {
+    const html = await render({ categoryOptions: ['Breakfast'], categoryFacets: { Breakfast: 4 } })
+
+    // The kit's row is a three-column grid of direct children of the li, and `.kcc-check li.kcc-done`
+    // excludes the box and the count by child combinator: a wrapper element breaks both.
+    expect(html).not.toContain('class="contents"')
+    expect(rowFor(html, 'Breakfast')).toMatch(
+      /^<li[^>]*><input id="([^"]+)" type="checkbox" class="sr-only"><label for="\1" class="kcc-box"><\/label><label for="\1">Breakfast<\/label><span class="kcc-q">4<\/span><\/li>$/,
+    )
+  })
+
   it('sets the chosen range in Sono and the track ends in kicks', async () => {
     const html = await render({ timeMin: 15 })
 
