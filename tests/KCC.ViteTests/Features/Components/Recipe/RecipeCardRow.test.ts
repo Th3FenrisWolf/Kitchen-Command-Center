@@ -62,6 +62,14 @@ describe('RecipeCardRow sheet', () => {
     expect(html).toContain('<div class="kcc-sheet flex items-center gap-4" style="--pad:16px;">')
   })
 
+  it('lifts under the pointer and under focus, exactly as the card does', async () => {
+    const html = await renderHit(hit())
+    const anchor = tagWith(html, 'kcc-slip')
+    expect(anchor).toContain('transition-transform')
+    expect(anchor).toContain('hover:-translate-y-1')
+    expect(anchor).toContain('focus-within:-translate-y-1')
+  })
+
   it('takes the tear a list hands it', async () => {
     const html = await renderSsr(RecipeCardRow, { card: hitToCard(hit(), rs), tear: 2 })
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-tear-2')

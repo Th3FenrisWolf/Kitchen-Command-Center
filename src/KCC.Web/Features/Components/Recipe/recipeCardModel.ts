@@ -10,8 +10,8 @@ import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
 type Resolve = (key: string) => string
 
 /**
- * A stat the grid card can promote out of its body and into the notch pill. The body then drops the
- * matching meta chip (or the rating), so the same number never renders twice on one card.
+ * A stat the card promotes out of its body into the top-right corner of its sheet. The body then drops
+ * the matching meta chip (or the rating), so the same number never renders twice on one card.
  */
 export type PromotedStat = 'rating' | 'time'
 
@@ -22,7 +22,7 @@ export interface RecipeCardMeta {
   key?: PromotedStat
 }
 
-/** Hero stat rendered in the notch that rises out of the grid card's content panel. */
+/** Hero stat printed in the top-right corner of the card's sheet. */
 export interface RecipeCardNotch {
   stat: PromotedStat
   icon: string
@@ -52,7 +52,7 @@ export interface RecipeCardModel {
   eyebrow?: string
   /** Compact rating; omit to hide the rating entirely (variant cards show none today). */
   rating?: RecipeCardRating
-  /** Hero stat for the grid card's notch; the row layout ignores it and shows the stat inline. */
+  /** Hero stat for the grid card's corner; the row layout ignores it and shows the stat on its meta line. */
   notch: RecipeCardNotch
   /** Inline meta chips on the meta line (search: variant count + fastest time). */
   meta?: RecipeCardMeta[]
@@ -63,7 +63,7 @@ export interface RecipeCardModel {
   tags: string[]
   /** Trailing stat rendered by the row layout only (variant list: total time). */
   trailingStat?: { value: string; label: string }
-  /** Attributes spread onto the root anchor — the stable E2E/unit test hooks. */
+  /** Attributes spread onto the card's link — the stable E2E/unit test hooks. */
   dataAttrs?: Record<string, string>
 }
 
@@ -85,8 +85,8 @@ export interface FeaturedRecipeModel {
 }
 
 /**
- * The card's single headline number: its rating once it has one, and the cook time until then — so
- * the notch is never empty and never advertises an unrated recipe as a zero.
+ * The card's single headline number: its rating once it has one, and the cook time until then — so the
+ * corner stat is never empty and never advertises an unrated recipe as a zero.
  */
 function notchStat(rating: RecipeCardRating | undefined, time: string): RecipeCardNotch {
   return rating && rating.count > 0

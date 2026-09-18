@@ -53,7 +53,7 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
-    class="kcc-slip kcc-torn block"
+    class="kcc-slip kcc-torn block transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
     :class="`kcc-tear-${preset}`"
     style="--r: 0"
   >
