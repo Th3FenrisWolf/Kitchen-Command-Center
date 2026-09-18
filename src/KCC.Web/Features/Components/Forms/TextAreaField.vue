@@ -59,17 +59,10 @@
 </script>
 
 <template>
-  <div class="relative w-full" :style="{ height: `${height}px` }">
-    <textarea
-      ref="textareaRef"
-      v-model="model"
-      :required
-      :readonly
-      :placeholder
-      class="h-full w-full resize-none rounded-2xl border border-edge-strong bg-paper-2 px-4 py-2 placeholder:text-ink-soft"
-    ></textarea>
-    <span class="color-base absolute right-1 bottom-0">
-      <i class="fa-solid fa-grip-lines rotate-135 cursor-ns-resize text-[15px]" @mousedown="startResize"></i>
+  <label class="kcc-field kcc-field--area relative w-full" :style="{ height: `${height}px` }">
+    <textarea ref="textareaRef" v-model="model" :required :readonly :placeholder class="h-full"></textarea>
+    <span class="absolute right-1 bottom-0">
+      <i class="fa-duotone fa-grip-lines rotate-135 cursor-ns-resize text-[15px] text-ink-soft" @mousedown="startResize"></i>
     </span>
-  </div>
+  </label>
 </template>
