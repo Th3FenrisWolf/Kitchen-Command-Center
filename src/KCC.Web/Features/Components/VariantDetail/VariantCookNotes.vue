@@ -4,6 +4,8 @@
   import type { CookNote, CookNotesResponse } from '~/Types/Recipe'
   import { get, post, del } from '~/Utilities/Api'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import Button from '~/Components/Button/Button.vue'
 
   /**
    * Paged list of cooks' notes on a variant, with a compose box for signed-in members.
@@ -72,57 +74,46 @@
 </script>
 
 <template>
-  <section class="mt-8">
-    <h2 class="mb-4 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-      <i class="fa-solid fa-lightbulb text-lg text-warning-ink"></i> <ResourceString for="CookNotes" />
-    </h2>
+  <KccSheet as="section" icon="fa-duotone fa-pen-nib" :tear="4">
+    <template #label><ResourceString for="CookNotes" /></template>
 
-    <div v-if="isAuthenticated" v-ink="'card'" class="mb-6 rounded-3xl bg-paper-2 p-4">
-      <textarea
-        v-model="draft"
-        :placeholder="t('CookNotePlaceholder')"
-        rows="3"
-        data-testid="cook-note-input"
-        class="w-full rounded-2xl border border-edge-strong bg-paper-2 p-3 text-ink outline-none"
-      ></textarea>
-      <p v-if="error" class="mt-1 text-sm text-danger-ink">{{ error }}</p>
-      <button
-        type="button"
-        data-testid="add-cook-note"
-        v-ink="'button'"
-        class="sk-btn sk-btn--marker mt-2 disabled:opacity-50"
-        :disabled="!draft.trim()"
-        @click="add"
-      >
-        <ResourceString for="AddCookNote" />
-      </button>
+    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
+    <h2 class="sr-only">{{ t('CookNotes') }}</h2>
+
+    <!-- The heading takes no room, so the rhythm is between the blocks, never above the first of them. -->
+    <div class="space-y-6">
+      <div v-if="isAuthenticated" class="space-y-6">
+        <!-- The e2e suite fills this textarea by hook, so the hook stays on the control, not on the field. -->
+        <label class="kcc-field kcc-field--area">
+          <textarea
+            v-model="draft"
+            :placeholder="t('CookNotePlaceholder')"
+            rows="3"
+            data-testid="cook-note-input"
+          ></textarea>
+        </label>
+        <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
+        <Button data-testid="add-cook-note" :disabled="!draft.trim()" @click="add">
+          <ResourceString for="AddCookNote" />
+        </Button>
+      </div>
+
+      <ul v-if="notes.length" data-testid="cook-notes-list" class="space-y-6">
+        <li v-for="note in notes" :key="note.id">
+          <div class="flex items-baseline justify-between gap-3">
+            <p class="kcc-kick">{{ note.authorName }}</p>
+            <Button v-if="note.isMine" variant="text" @click="remove(note.id)">
+              <ResourceString for="DeleteNote" />
+            </Button>
+          </div>
+          <p class="kcc-body">{{ note.text }}</p>
+        </li>
+      </ul>
+      <ResourceString v-else for="NoCookNotesYet" as="p" class="kcc-body" />
+
+      <Button v-if="hasMore()" variant="ghost" @click="load(page + 1)">
+        <ResourceString for="LoadMore" />
+      </Button>
     </div>
-
-    <ul v-if="notes.length" data-testid="cook-notes-list" class="flex flex-col gap-3">
-      <li v-for="note in notes" :key="note.id" class="rounded-2xl bg-paper-2 p-4">
-        <div class="flex items-center justify-between gap-2">
-          <span class="font-bold">{{ note.authorName }}</span>
-          <button v-if="note.isMine" type="button" class="cursor-pointer text-sm text-danger-ink" @click="remove(note.id)">
-            <ResourceString for="DeleteNote" />
-          </button>
-        </div>
-        <p class="mt-1 text-ink-soft">{{ note.text }}</p>
-      </li>
-    </ul>
-    <div
-      v-else
-      class="grid place-items-center gap-3 rounded-3xl border-2 border-dashed border-rule px-4 py-12 text-center text-ink-soft"
-    >
-      <p class="text-base"><ResourceString for="NoCookNotesYet" /></p>
-    </div>
-
-    <button
-      v-if="hasMore()"
-      type="button"
-      class="mt-4 w-full cursor-pointer rounded-2xl bg-desk-2 py-2 text-ink"
-      @click="load(page + 1)"
-    >
-      <ResourceString for="LoadMore" />
-    </button>
-  </section>
+  </KccSheet>
 </template>

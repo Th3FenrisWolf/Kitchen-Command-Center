@@ -3,6 +3,7 @@
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import type { Nutrition } from '~/Types/Recipe'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import { buildNutritionRows, hasNutrition } from './variantNutritionRows'
 
   /**
@@ -34,6 +35,9 @@
 
   const rs = useResourceStrings()
 
+  const HEADLINE: readonly string[] = ['calories', 'proteinG', 'carbsG', 'fatG']
+  const MACROS: readonly string[] = ['proteinG', 'carbsG', 'fatG']
+
   const nutrition = computed<Nutrition>(() => ({
     calories: props.calories,
     proteinG: props.proteinG,
@@ -59,26 +63,61 @@
       sodiumMg: rs('Sodium'),
     }),
   )
+
+  const headline = computed(() => rows.value.filter((row) => HEADLINE.includes(row.key)))
+  const rest = computed(() => rows.value.filter((row) => !HEADLINE.includes(row.key)))
+
+  const bars = computed(() => {
+    const macros = rows.value.filter((row) => MACROS.includes(row.key))
+    const grams = macros.reduce((sum, row) => sum + row.value, 0)
+    if (!grams) return []
+    return macros.map((row) => ({
+      key: row.key,
+      label: row.label,
+      width: `${Math.round((row.value / grams) * 1000) / 10}%`,
+    }))
+  })
 </script>
 
 <template>
-  <div v-ink="'card'" class="rounded-3xl bg-paper-2 p-6">
-    <div class="mb-3 flex items-baseline justify-between">
-      <h2 class="font-casual text-xl tracking-[1px]"><ResourceString for="Nutrition" /></h2>
-      <span class="text-xs text-ink-soft"><ResourceString for="PerServing" /></span>
-    </div>
+  <KccSheet as="section" icon="fa-duotone fa-wheat" :tear="2">
+    <template #label><ResourceString for="Nutrition" /></template>
 
-    <dl v-if="provided" class="grid grid-cols-2 gap-3">
-      <div v-for="row in rows" :key="row.key" class="flex flex-col rounded-2xl bg-desk-2 p-2.5 text-center">
-        <dt class="order-2 mt-1 text-xs text-ink-soft">{{ row.label }}</dt>
-        <dd class="order-1 font-casual text-2xl leading-none">
-          {{ row.value }}<span v-if="row.unit" class="text-base text-ink-soft"> {{ row.unit }}</span>
-        </dd>
+    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
+    <h2 class="sr-only">{{ rs('Nutrition') }}</h2>
+
+    <ResourceString for="PerServing" as="p" class="kcc-kick" />
+
+    <template v-if="provided">
+      <div class="kcc-stats mt-6">
+        <div v-for="row in headline" :key="row.key">
+          <p class="kcc-lbl">{{ row.label }}</p>
+          <p class="kcc-v">
+            {{ row.value }}<small v-if="row.unit">{{ row.unit }}</small>
+          </p>
+        </div>
       </div>
-    </dl>
 
-    <div v-else class="grid place-items-center rounded-2xl bg-desk-2/60 px-4 py-8 text-center">
-      <p class="text-sm text-ink-soft"><ResourceString for="NutritionNotProvided" /></p>
-    </div>
-  </div>
+      <!-- Each fill is 6px centred in a 24px band, so the run of bars keeps to the rule. -->
+      <div v-if="bars.length" class="mt-6">
+        <div v-for="bar in bars" :key="bar.key">
+          <p class="kcc-kick">{{ bar.label }}</p>
+          <div class="flex h-6 items-center">
+            <span class="block h-1.5 bg-peach" :style="{ width: bar.width }"></span>
+          </div>
+        </div>
+      </div>
+
+      <dl v-if="rest.length" class="mt-6 grid grid-cols-[1fr_auto] items-baseline gap-x-7">
+        <template v-for="row in rest" :key="row.key">
+          <dt class="kcc-lbl">{{ row.label }}</dt>
+          <dd class="kcc-num text-right">
+            {{ row.value }} <span v-if="row.unit" class="kcc-unit">{{ row.unit }}</span>
+          </dd>
+        </template>
+      </dl>
+    </template>
+
+    <ResourceString v-else for="NutritionNotProvided" as="p" class="kcc-body mt-6" />
+  </KccSheet>
 </template>

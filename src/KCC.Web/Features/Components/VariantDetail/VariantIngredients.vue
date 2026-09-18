@@ -1,8 +1,10 @@
 <!-- #region VariantIngredients Component Properties -->
 <script lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed, ref, useId } from 'vue'
   import type { Ingredient } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import { formatIngredientAmount } from './variantScaling'
 
   /**
@@ -26,76 +28,63 @@
   const props = defineProps<VariantIngredientsProps>()
 
   const rs = useResourceStrings()
+  const uid = useId()
+  const makesLabel = rs('Makes')
+  const toTaste = rs('ToTaste')
+
   const hasScaler = computed(() => (props.baseServings ?? 0) > 0)
-  const current = ref(props.baseServings && props.baseServings > 0 ? props.baseServings : 1)
+  const current = ref<number | undefined>(props.baseServings && props.baseServings > 0 ? props.baseServings : 1)
   const checked = ref<Record<number, boolean>>({})
 
-  const amounts = computed(() =>
-    props.ingredients.map((ingredient) => formatIngredientAmount(ingredient, props.baseServings ?? 0, current.value)),
+  // The stepper's field is briefly empty mid-edit; fall back to the written amounts rather than to one serving.
+  const servings = computed(() => current.value ?? props.baseServings ?? 1)
+
+  const rows = computed(() =>
+    props.ingredients.map((ingredient, index) => ({
+      index,
+      id: `${uid}-${index}`,
+      name: ingredient.name,
+      quantity:
+        formatIngredientAmount(ingredient, props.baseServings ?? 0, servings.value) ||
+        (ingredient.isEyeballed ? toTaste : ''),
+    })),
   )
 
-  const dec = () => {
-    current.value = Math.max(1, current.value - 1)
-  }
-  const inc = () => {
-    current.value = current.value + 1
-  }
-  const toggle = (i: number) => {
-    checked.value = { ...checked.value, [i]: !checked.value[i] }
+  const toggle = (index: number) => {
+    checked.value = { ...checked.value, [index]: !checked.value[index] }
   }
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="font-casual text-2xl tracking-[1px]"><ResourceString for="Ingredients" /></h2>
-      <div v-if="hasScaler" class="flex items-center gap-2.5">
-        <span class="text-sm font-bold text-ink-soft"><ResourceString for="Makes" /></span>
-        <button
-          type="button"
-          :aria-label="rs('Fewer')"
-          class="sk-btn sk-btn--ghost size-8.5 text-sm"
-          v-ink="'button'"
-          @click="dec"
-        >
-          <i class="fa-solid fa-minus"></i>
-        </button>
-        <span class="min-w-14.5 text-center font-casual text-xl leading-none">{{ current }}</span>
-        <button
-          type="button"
-          :aria-label="rs('More')"
-          class="sk-btn sk-btn--ghost size-8.5 text-sm"
-          v-ink="'button'"
-          @click="inc"
-        >
-          <i class="fa-solid fa-plus"></i>
-        </button>
+  <KccSheet
+    as="section"
+    icon="fa-duotone fa-basket-shopping"
+    wash="teal"
+    :at="{ x: '15%', y: '95%', w: '60%', h: '45%' }"
+    :tear="1"
+  >
+    <template #label><ResourceString for="Ingredients" /></template>
+
+    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
+    <h2 class="sr-only">{{ rs('Ingredients') }}</h2>
+
+    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">
+      <p class="kcc-kick">tick what you have</p>
+      <div v-if="hasScaler" class="flex items-center gap-3">
+        <ResourceString for="Makes" as="span" class="kcc-lbl" />
+        <NumberStepper v-model="current" :min="1" :label="makesLabel" />
       </div>
     </div>
 
-    <div class="rounded-3xl bg-paper-2 p-6">
-      <ul class="flex flex-col">
-        <li
-          v-for="(ingredient, i) in ingredients"
-          :key="i"
-          class="flex cursor-pointer items-start gap-3 border-b border-rule py-2.5 last:border-b-0"
-          @click="toggle(i)"
-        >
-          <span
-            class="mt-px grid size-5.5 flex-none place-items-center rounded-[7px] border-2 transition-all"
-            :class="checked[i] ? 'border-marker bg-marker' : 'border-ink-soft bg-transparent'"
-          >
-            <i v-if="checked[i]" class="fa-solid fa-check text-[11px] text-marker-ink"></i>
-          </span>
-          <span
-            class="text-base leading-snug transition-all"
-            :class="checked[i] ? 'text-ink-soft line-through opacity-60' : 'text-ink'"
-          >
-            <b v-if="amounts[i]">{{ amounts[i] }}</b> {{ ingredient.name }}
-            <span v-if="ingredient.isEyeballed" class="text-ink-soft italic"> — <ResourceString for="ToTaste" /></span>
-          </span>
-        </li>
-      </ul>
-    </div>
-  </div>
+    <!-- A checklist row is three direct children of the li, so the box and the name are two labels for the
+         same checkbox rather than one wrapper around it: both stay clickable, the grid stays the kit's. -->
+    <ul class="kcc-check mt-6">
+      <li v-for="row in rows" :key="row.id" class="cursor-pointer" :class="{ 'kcc-done': checked[row.index] }">
+        <input :id="row.id" type="checkbox" class="sr-only" :checked="checked[row.index]" @change="toggle(row.index)" />
+        <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': checked[row.index] }"></label>
+        <label :for="row.id">{{ row.name }}</label>
+        <span class="kcc-q">{{ row.quantity }}</span>
+      </li>
+    </ul>
+  </KccSheet>
 </template>
