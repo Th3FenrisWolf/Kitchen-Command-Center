@@ -3,7 +3,6 @@
   import { computed, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
   import type { ImageItem } from '~/Types/ContentTypes'
-  import { backgroundColorFor } from '~/Utilities/BrandColor'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
@@ -152,7 +151,7 @@
 
     <template v-if="tags.length" #footer>
       <div class="mt-4 flex flex-wrap gap-2">
-        <Badge v-for="tag in tags" :key="tag" :class="backgroundColorFor(tag) + ' text-ink'">{{ tag }}</Badge>
+        <Badge v-for="tag in tags" :key="tag">{{ tag }}</Badge>
       </div>
     </template>
   </DetailHero>

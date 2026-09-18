@@ -66,7 +66,7 @@
       <p v-if="card.description" class="row-start-5 mt-2 text-sm text-ink/85">{{ card.description }}</p>
 
       <span v-if="card.tags.length" class="row-start-6 mt-3 flex flex-wrap gap-1">
-        <Badge v-for="tag in card.tags" :key="tag" class="bg-paper-2/15 text-ink">{{ tag }}</Badge>
+        <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
       </span>
     </span>
   </AppLink>
