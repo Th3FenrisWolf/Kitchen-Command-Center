@@ -31,6 +31,7 @@ public class ErrorController(
 
         var viewModel = new ErrorViewModel
         {
+            StatusCode = int.Parse(statusCode, CultureInfo.InvariantCulture),
             Heading = page?.StatusCodeHeading ?? "Error",
             Body = page?.StatusCodeBody ?? "An unexpected error occurred.",
             Title = page?.StatusCodeHeading ?? "Error",

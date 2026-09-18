@@ -14,6 +14,10 @@ public class ButtonLinkTagHelper : TagHelper
 
         output.Attributes.SetAttribute("class", $"kcc-btn {Class}".Trim());
         output.Attributes.SetAttribute("href", Href);
-        output.Attributes.SetAttribute("target", Target);
+
+        if (!string.IsNullOrEmpty(Target))
+        {
+            output.Attributes.SetAttribute("target", Target);
+        }
     }
 }
