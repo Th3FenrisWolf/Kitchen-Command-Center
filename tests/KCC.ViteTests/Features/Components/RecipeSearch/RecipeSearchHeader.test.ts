@@ -16,6 +16,8 @@ describe('RecipeSearchHeader sheet', () => {
     expect(html).toContain('style="--pad:24px 36px 24px 24px;"')
     expect(html).toContain('--c:var(--color-green)')
     expect(html).toContain('--x:92%')
+    expect(html).toContain('--y:100%')
+    expect(html).toContain('--h:80%')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-book-open" aria-hidden="true"></i>')
     expect(html).toContain('Library')
     expect(html).not.toMatch(/sk-[a-z]/)

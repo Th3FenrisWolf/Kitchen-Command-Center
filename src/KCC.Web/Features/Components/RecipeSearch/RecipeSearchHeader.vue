@@ -38,7 +38,7 @@
     label="Library"
     icon="fa-duotone fa-book-open"
     wash="green"
-    :at="{ x: '92%', y: '50%', w: '30%', h: '120%' }"
+    :at="{ x: '92%', y: '100%', w: '30%', h: '80%' }"
     :tear="3"
     pad="24px 36px 24px 24px"
     class="my-6"
