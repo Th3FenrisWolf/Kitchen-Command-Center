@@ -5,11 +5,12 @@ import { renderSsr } from '../../../support/renderSsr'
 const render = (current: number, total: number) => renderSsr(WizardProgress, { current, total })
 
 // Completed steps read as ink, the current step is the one marker pill, and steps still ahead stay
-// ink-soft (the kcc-kick default) — counted by exact class rather than looked for anywhere in the markup,
-// so a stray class on the wrong step fails the count.
-const inkCount = (html: string) => (html.match(/class="kcc-kick text-ink"/g) ?? []).length
-const softCount = (html: string) => (html.match(/class="kcc-kick text-ink-soft"/g) ?? []).length
-const pillCount = (html: string) => (html.match(/class="kcc-kick rounded-md bg-marker px-3 text-marker-ink"/g) ?? []).length
+// ink-soft (the kcc-kick default) — counted by one distinguishing class per state rather than the whole
+// class literal, so a stray class on the wrong step still fails the count. `text-ink` is also a prefix of
+// `text-ink-soft`, so the completed-step count excludes any match immediately followed by a hyphen.
+const inkCount = (html: string) => (html.match(/\btext-ink\b(?!-)/g) ?? []).length
+const softCount = (html: string) => (html.match(/text-ink-soft/g) ?? []).length
+const pillCount = (html: string) => (html.match(/bg-marker/g) ?? []).length
 
 describe('WizardProgress', () => {
   it('reads completed steps as ink, the current step as a marker pill, and leaves the rest ink-soft', async () => {
@@ -32,7 +33,30 @@ describe('WizardProgress', () => {
     const html = await render(2, 5)
 
     expect(html).toContain('<ol')
+    expect(html).toContain('role="list"')
     expect((html.match(/<li/g) ?? []).length).toBe(5)
     expect((html.match(/aria-current="step"/g) ?? []).length).toBe(1)
+  })
+
+  it('puts the marker pill inside the current step only, not a neighbour', async () => {
+    const html = await render(2, 5)
+
+    const currentLi = html.match(/<li[^>]*aria-current="step"[^>]*>[\s\S]*?<\/li>/)?.[0] ?? ''
+    expect(currentLi).toContain('bg-marker')
+  })
+
+  it('leaves the last step without a connector slot, so it sits flush at the end of the rule', async () => {
+    const html = await render(2, 5)
+
+    const liTags = html.match(/<li[^>]*>/g) ?? []
+    expect(liTags.at(-1) ?? '').not.toContain('flex-1')
+  })
+
+  it('hides the zero-padded numeral from assistive tech behind a plain sr-only number', async () => {
+    const html = await render(2, 5)
+
+    const pairs = html.match(/<span aria-hidden="true">\d{2,}<\/span><span class="sr-only">\d+<\/span>/g) ?? []
+    expect(pairs).toHaveLength(5)
+    expect(html).toContain('<span aria-hidden="true">01</span><span class="sr-only">1</span>')
   })
 })
