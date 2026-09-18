@@ -4,32 +4,35 @@ import { renderSsr } from '../../../support/renderSsr'
 
 const render = (current: number, total: number) => renderSsr(WizardProgress, { current, total })
 
-// The fill is what tells a user where they are, so it is asserted by counting marker segments rather than
-// by looking for the class anywhere in the markup — a single stray `bg-marker` would satisfy the latter.
-const markerCount = (html: string) => (html.match(/bg-marker/g) ?? []).length
-const restCount = (html: string) => (html.match(/bg-desk-2/g) ?? []).length
+// Completed steps read as ink, the current step is the one marker pill, and steps still ahead stay
+// ink-soft (the kcc-kick default) — counted by exact class rather than looked for anywhere in the markup,
+// so a stray class on the wrong step fails the count.
+const inkCount = (html: string) => (html.match(/class="kcc-kick text-ink"/g) ?? []).length
+const softCount = (html: string) => (html.match(/class="kcc-kick text-ink-soft"/g) ?? []).length
+const pillCount = (html: string) => (html.match(/class="kcc-kick rounded-md bg-marker px-3 text-marker-ink"/g) ?? []).length
 
 describe('WizardProgress', () => {
-  it('fills one segment per completed step and leaves the rest', async () => {
+  it('reads completed steps as ink, the current step as a marker pill, and leaves the rest ink-soft', async () => {
     const html = await render(2, 5)
 
-    expect(markerCount(html)).toBe(2)
-    expect(restCount(html)).toBe(3)
+    expect(inkCount(html)).toBe(1)
+    expect(pillCount(html)).toBe(1)
+    expect(softCount(html)).toBe(3)
   })
 
-  it('fills every segment on the last step', async () => {
+  it('marks every earlier step ink on the last step, with none left ink-soft', async () => {
     const html = await render(4, 4)
 
-    expect(markerCount(html)).toBe(4)
-    expect(restCount(html)).toBe(0)
+    expect(inkCount(html)).toBe(3)
+    expect(pillCount(html)).toBe(1)
+    expect(softCount(html)).toBe(0)
   })
 
-  it('announces position to assistive tech', async () => {
+  it('announces the current step to assistive tech on a numbered list', async () => {
     const html = await render(2, 5)
 
-    expect(html).toContain('role="progressbar"')
-    expect(html).toContain('aria-valuenow="2"')
-    expect(html).toContain('aria-valuemin="1"')
-    expect(html).toContain('aria-valuemax="5"')
+    expect(html).toContain('<ol')
+    expect((html.match(/<li/g) ?? []).length).toBe(5)
+    expect((html.match(/aria-current="step"/g) ?? []).length).toBe(1)
   })
 })
