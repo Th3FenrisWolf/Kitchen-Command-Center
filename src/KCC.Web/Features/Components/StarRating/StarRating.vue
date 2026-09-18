@@ -68,7 +68,7 @@
     role="img"
     :aria-label="`${formatRating(modelValue)} of ${max} stars`"
   >
-    <span v-for="(state, i) in states" :key="i" class="text-rating-ink" :data-star="i + 1" :data-state="state">
+    <span v-for="(state, i) in states" :key="i" class="text-ink" :data-star="i + 1" :data-state="state">
       <i :class="[iconFor(state), state === 'empty' && 'text-ink-soft']" aria-hidden="true"></i>
     </span>
   </div>
@@ -77,7 +77,7 @@
        pointer-only hit areas per star let a mouse/touch pick a half or whole. -->
   <div
     v-else
-    class="inline-flex items-center gap-0.5 text-rating-ink"
+    class="inline-flex items-center gap-0.5 text-ink"
     role="slider"
     tabindex="0"
     aria-label="Rating"

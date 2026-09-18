@@ -57,8 +57,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Components/RecipeSearch/RecipeSearchHeader.vue',
   'Features/Components/RecipeSearch/RecipesEmptyState.vue',
   'Features/Components/Sketch/Sheet.vue',
-  'Features/Components/StarRating/RatingSummary.vue',
-  'Features/Components/StarRating/StarRating.vue',
   'Features/Components/VariantDetail/VariantCookNotes.vue',
   'Features/Components/VariantDetail/VariantCookedToggle.vue',
   'Features/Components/VariantDetail/VariantIngredients.vue',

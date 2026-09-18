@@ -18,7 +18,8 @@
      */
     max?: number
     /**
-     * Bolds the numeric average.
+     * Marks the numeric average for extra emphasis. The identity has one weight, so this only
+     * toggles the `data-rating-strong` hook; it no longer changes the rendered markup.
      * @default false
      */
     strong?: boolean
@@ -33,6 +34,6 @@
 <template>
   <span class="inline-flex items-center gap-1.5">
     <StarRating :model-value="value" :max readonly />
-    <span :data-rating-strong="strong ? '' : undefined" :class="{ 'font-bold': strong }">{{ formatRating(value) }}</span>
+    <span :data-rating-strong="strong ? '' : undefined" class="kcc-num">{{ formatRating(value) }}</span>
   </span>
 </template>
