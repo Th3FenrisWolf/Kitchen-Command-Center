@@ -50,6 +50,18 @@ describe('Field', () => {
     expect(errored).toContain('aria-describedby="email-error"')
   })
 
+  it('takes rich label content from the slot so a resource string keeps its editor hooks', async () => {
+    const html = await renderSsr(
+      Field,
+      { controlId: 'email', required: true },
+      { default: control, label: () => h('span', { 'data-resource-key': 'Account.Email' }, 'Email') },
+    )
+
+    expect(html).toContain('<label for="email" class="kcc-lbl">')
+    expect(html).toContain('<span data-resource-key="Account.Email">Email</span>')
+    expect(html).toContain('<span aria-hidden="true"> *</span>')
+  })
+
   it('prefers the error over the hint when both are set', async () => {
     const html = await renderSsr(Field, { ...baseProps, hint: 'ignored', error: 'Required' }, { default: control })
     expect(html).toContain('kcc-well--danger')

@@ -10,7 +10,8 @@
   }
 
   export interface FieldProps {
-    label: string
+    /** `label` (string) or the `#label` slot for rich content such as a `<ResourceString>`. */
+    label?: string
 
     /** The control's id; also keys the hint and error ids. */
     controlId: string
@@ -30,7 +31,10 @@
 
 <template>
   <div class="flex flex-col gap-2">
-    <label :for="controlId" class="kcc-lbl"> {{ label }}<span v-if="required" aria-hidden="true"> *</span> </label>
+    <label :for="controlId" class="kcc-lbl">
+      <slot name="label">{{ label }}</slot>
+      <span v-if="required" aria-hidden="true"> *</span>
+    </label>
     <slot :describedby="error ? `${controlId}-error` : hint ? `${controlId}-hint` : undefined" :error="!!error" />
     <p v-if="error" :id="`${controlId}-error`" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
     <p v-else-if="hint" :id="`${controlId}-hint`" class="kcc-kick text-ink">{{ hint }}</p>

@@ -34,8 +34,9 @@ const wizardOf = (html: string) => html.slice(html.indexOf('aria-label="Steps"')
 
 const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
+// Field prints its label through a slot, so SSR wraps the text in Vue's fragment markers.
 const controlIdFor = (html: string, label: string) =>
-  html.match(new RegExp(`<label for="([^"]+)" class="kcc-lbl">${label}`))?.[1] ?? ''
+  html.match(new RegExp(`<label for="([^"]+)" class="kcc-lbl">(?:<!--\\[-->)?(?:<span>)?${label}`))?.[1] ?? ''
 
 describe('AddVariantView', () => {
   it('counts the four steps on the desk and marks the one being filled', async () => {
