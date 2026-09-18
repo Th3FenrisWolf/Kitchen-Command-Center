@@ -42,7 +42,6 @@ const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 // `sk-sheet` or `font-bold` counts as a hit, so reword prose too when you convert a file.
 const ALLOWLIST = new Set<string>([
   'Features/Components/Recipe/DetailHero.vue',
-  'Features/Components/Recipe/FeaturedRecipeCard.vue',
   'Features/Components/RecipeDetail/VariantGrid.vue',
   'Features/Components/RecipeDetail/VariantToolbar.vue',
   'Features/Components/RecipeDetail/VariantsEmptyState.vue',

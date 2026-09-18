@@ -1,13 +1,16 @@
 <!-- #region FeaturedRecipeCard Component Properties -->
 <script lang="ts">
+  import { computed } from 'vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
-  import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
+  import { formatRating } from '~/Components/StarRating/starDisplay'
+  import { washFor } from '~/Utilities/BrandColor'
   import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
 
   /**
-   * Full-width spotlight card promoting one recipe or variant above a grid of RecipeCards.
+   * The library's spotlight above a grid of RecipeCards: one recipe or variant on a hero-torn slip, the
+   * recipe's wash under the left margin and a large tile pinned over the corner.
    */
   export default {
     name: 'FeaturedRecipeCard',
@@ -24,47 +27,77 @@
 
 <script setup lang="ts">
   const { card } = defineProps<FeaturedRecipeCardProps>()
+
+  const wash = computed(() => ({
+    '--c': `var(--color-${washFor(card.seed)})`,
+    '--x': '10%',
+    '--y': '15%',
+    '--w': '45%',
+    '--h': '80%',
+  }))
+
+  const rating = computed(() =>
+    card.rating && card.rating.count > 0
+      ? { average: card.rating.average, text: formatRating(card.rating.average), count: card.rating.count }
+      : undefined,
+  )
+
+  // The model's prose meta (who started it) carries no icon; its numeric chips all carry one.
+  const notes = computed(() =>
+    [card.eyebrow, ...(card.meta ?? []).filter((item) => !item.icon).map((item) => item.text)].filter(
+      (note): note is string => !!note,
+    ),
+  )
+  const chips = computed(() => (card.meta ?? []).filter((item) => item.icon))
 </script>
 
 <template>
-  <AppLink
-    :href="card.href"
-    v-bind="card.dataAttrs"
-    v-ink="'sheet'"
-    class="sk-sheet sk-fold group relative my-4 flex flex-col gap-4 no-underline transition-all hover:-translate-y-1 sm:flex-row sm:items-center sm:gap-6"
+  <article
+    class="kcc-slip kcc-recipe kcc-tear-hero my-6 transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
   >
-    <span class="sk-wash" style="--c: var(--color-peach)" aria-hidden="true"></span>
-    <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="h-40 w-full flex-none text-5xl sm:size-40" />
+    <AppLink :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
+      <div class="kcc-sheet" style="--pad: 48px">
+        <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
 
-    <div class="min-w-0 flex-1">
-      <div class="mb-2 flex flex-wrap items-center gap-2">
-        <span class="inline-flex items-center gap-2 rounded-full bg-peach px-2 py-1 text-xs font-bold text-ink-on-wash">
-          <i v-if="card.pill.icon" :class="card.pill.icon"></i> {{ card.pill.label }}
-        </span>
-        <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+        <p v-if="notes.length" class="kcc-kick">
+          <template v-for="(note, i) in notes" :key="note"><span v-if="i" aria-hidden="true"> · </span>{{ note }}</template>
+        </p>
+
+        <h3 class="kcc-h3">{{ card.name }}</h3>
+
+        <p v-if="rating || chips.length" class="kcc-kick flex flex-wrap items-center gap-x-4 text-ink">
+          <span
+            v-if="rating"
+            class="inline-flex items-center gap-2"
+            data-testid="recipe-card-rating"
+            :data-average-rating="rating.average"
+          >
+            <i class="fa-duotone fa-star" aria-hidden="true"></i>
+            <span class="kcc-num">{{ rating.text }}</span>
+            <span class="kcc-num text-ink-soft">· {{ rating.count }}</span>
+          </span>
+          <span v-for="(chip, i) in chips" :key="i" class="kcc-num">
+            <i :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}
+          </span>
+        </p>
+
+        <p v-if="card.description" class="kcc-body">{{ card.description }}</p>
+
+        <div v-if="card.tags?.length" class="kcc-badges mt-6">
+          <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+        </div>
       </div>
+    </AppLink>
 
-      <div class="font-casual text-4xl leading-tight">{{ card.name }}</div>
+    <span class="kcc-label kcc-label--right">
+      <i v-if="card.pill.icon" :class="card.pill.icon" aria-hidden="true"></i>{{ card.pill.label }}
+    </span>
 
-      <p v-if="card.description" class="mt-2 max-w-[80ch] text-lg">{{ card.description }}</p>
-
-      <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-ink-soft">
-        <span v-if="card.eyebrow" class="text-xs font-bold tracking-wide uppercase">{{ card.eyebrow }}</span>
-        <span
-          v-if="card.rating && card.rating.count > 0"
-          data-testid="recipe-card-rating"
-          :data-average-rating="card.rating.average"
-        >
-          <RatingSummary :value="card.rating.average" />
-        </span>
-        <span v-for="(item, i) in card.meta" :key="i"><i v-if="item.icon" :class="item.icon"></i> {{ item.text }}</span>
-      </div>
+    <div class="kcc-tilewrap" style="top: -22px; left: 40px">
+      <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" large class="size-24" />
+      <span class="kcc-tape" aria-hidden="true"></span>
     </div>
 
-    <span
-      class="absolute right-3 bottom-3 grid size-10 place-items-center rounded-full bg-paper text-ink transition-all group-hover:bottom-5 group-hover:-rotate-30"
-    >
-      <i class="fa-solid fa-arrow-right"></i>
-    </span>
-  </AppLink>
+    <span class="kcc-tape" aria-hidden="true"></span>
+  </article>
 </template>
