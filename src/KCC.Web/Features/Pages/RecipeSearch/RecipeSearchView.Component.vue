@@ -2,7 +2,6 @@
 <script lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
   import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'
@@ -110,16 +109,11 @@
 <template>
   <div class="mt-4 flex items-center justify-between gap-4">
     <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
-
-    <AppLink
-      :href="createRecipeUrl"
-      class="inline-flex flex-none items-center gap-2 rounded-2xl bg-paper px-4 py-2 font-bold text-ink transition-colors hover:bg-paper-2"
-    >
-      <i class="fa-solid fa-plus"></i> <ResourceString for="CreateRecipe" />
-    </AppLink>
   </div>
 
-  <RecipeSearchHeader v-model:draft="draft" @submit="onSubmit" @clear="onClearSearch" />
+  <RecipeSearchHeader v-model:draft="draft" :create-recipe-url="createRecipeUrl" @submit="onSubmit" @clear="onClearSearch">
+    <RecipeResultsToolbar :heading="heading" v-model:sort="state.sort" v-model:view="state.view" />
+  </RecipeSearchHeader>
 
   <button
     class="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-ink px-4 py-2 text-sm font-bold lg:hidden"
@@ -155,8 +149,6 @@
     </aside>
 
     <section class="min-w-0" :aria-busy="loading ? 'true' : 'false'" aria-live="polite">
-      <RecipeResultsToolbar :heading="heading" v-model:sort="state.sort" v-model:view="state.view" />
-
       <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
 
       <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" />

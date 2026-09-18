@@ -35,17 +35,17 @@
   ])
 
   const viewOptions = computed<SegmentOption<RecipeViewMode>[]>(() => [
-    { value: 'grid', icon: 'fa-solid fa-table-cells-large', ariaLabel: t('Grid'), testId: 'view-grid' },
-    { value: 'list', icon: 'fa-solid fa-list', ariaLabel: t('List'), testId: 'view-list' },
+    { value: 'grid', icon: 'fa-duotone fa-table-cells-large', ariaLabel: t('Grid'), testId: 'view-grid' },
+    { value: 'list', icon: 'fa-duotone fa-list', ariaLabel: t('List'), testId: 'view-list' },
   ])
 </script>
 
 <template>
-  <div class="mb-4 flex flex-wrap items-center gap-4">
-    <h2 class="min-w-40 flex-1 font-casual text-2xl">{{ heading }}</h2>
+  <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+    <h2 class="kcc-h4 min-w-40 flex-1">{{ heading }}</h2>
 
-    <div class="flex items-center gap-2">
-      <span class="text-sm font-bold text-ink-soft"><ResourceString for="Sort" /></span>
+    <div class="flex items-center gap-3">
+      <ResourceString for="Sort" class="kcc-kick" />
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="t('Sort')" />
     </div>
 
