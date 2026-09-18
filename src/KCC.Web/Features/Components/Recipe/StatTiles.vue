@@ -1,7 +1,5 @@
 <!-- #region StatTiles Component Properties -->
 <script lang="ts">
-  import Badge from '~/Components/Badge/Badge.vue'
-
   /**
    * Row of at-a-glance stats under a detail hero.
    */
@@ -13,18 +11,16 @@
     /** Font Awesome class for the leading icon (ignored when `dotColor` is set). */
     icon?: string
     /**
-     * Renders a plain status dot instead of an icon (e.g. 'green' for a difficulty level). The
-     * value only selects the dot; icons are never coloured, so it no longer tints anything.
+     * Marks the tile as a status indicator (e.g. 'green' for a difficulty level). Currently only
+     * sets the `difficulty-dot` hook on the value element; Task 42 turns it into a status well.
      */
     dotColor?: string
     /** The big value. `null`/`undefined` renders as an em dash. */
     value?: string | number | null
     /** Small unit suffix shown after the value (e.g. 'min'). */
     unit?: string
-    /** Caption under the value. */
+    /** Caption above the value. */
     label: string
-    /** When true, render `value` as a muted "coming soon" badge. */
-    comingSoon?: boolean
   }
 
   export interface StatTilesProps {
@@ -41,13 +37,9 @@
   <div data-testid="variant-stats" class="kcc-stats">
     <div v-for="(tile, index) in tiles" :key="index">
       <p class="kcc-lbl">{{ tile.label }}</p>
-      <p class="kcc-v">
-        <i v-if="tile.dotColor" data-testid="difficulty-dot" class="fa-solid fa-circle" aria-hidden="true"></i>
-        <i v-else :class="tile.icon" aria-hidden="true"></i>
-        <Badge v-if="tile.comingSoon">{{ tile.value }}</Badge>
-        <template v-else
-          >{{ tile.value ?? '—' }}<small v-if="tile.unit && tile.value != null">{{ tile.unit }}</small></template
-        >
+      <p class="kcc-v" :data-testid="tile.dotColor ? 'difficulty-dot' : undefined">
+        <i v-if="tile.icon && !tile.dotColor" :class="tile.icon" aria-hidden="true"></i>
+        {{ tile.value ?? '—' }}<small v-if="tile.unit && tile.value != null">{{ tile.unit }}</small>
       </p>
     </div>
   </div>

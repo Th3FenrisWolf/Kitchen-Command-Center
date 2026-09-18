@@ -17,23 +17,17 @@
      * @default 5
      */
     max?: number
-    /**
-     * Marks the numeric average for extra emphasis. The identity has one weight, so this only
-     * toggles the `data-rating-strong` hook; it no longer changes the rendered markup.
-     * @default false
-     */
-    strong?: boolean
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { value, max = 5, strong = false } = defineProps<RatingSummaryProps>()
+  const { value, max = 5 } = defineProps<RatingSummaryProps>()
 </script>
 
 <template>
   <span class="inline-flex items-center gap-1.5">
     <StarRating :model-value="value" :max readonly />
-    <span :data-rating-strong="strong ? '' : undefined" class="kcc-num">{{ formatRating(value) }}</span>
+    <span class="kcc-num">{{ formatRating(value) }}</span>
   </span>
 </template>

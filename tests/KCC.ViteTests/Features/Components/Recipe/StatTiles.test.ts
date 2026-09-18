@@ -30,19 +30,16 @@ describe('StatTiles', () => {
     expect(html).toContain('<small>min</small>')
   })
 
-  it('keeps the difficulty-dot hook on a dot-coloured tile', async () => {
+  it('puts the difficulty-dot hook on the kcc-v value element, with no fa-circle glyph', async () => {
     const html = await renderSsr(StatTiles, { tiles })
-    expect(html).toContain('data-testid="difficulty-dot"')
+    const valueTag = html.match(/<p[^>]*data-testid="difficulty-dot"[^>]*>/)?.[0] ?? ''
+    expect(valueTag).toContain('class="kcc-v"')
+    expect(html).not.toContain('fa-circle')
   })
 
   it('renders an em dash for a null value', async () => {
     const html = await renderSsr(StatTiles, { tiles: [{ label: 'Contributors', value: null }] })
     expect(html).toContain('—')
-  })
-
-  it('renders a coming-soon value as a kcc-badge', async () => {
-    const html = await renderSsr(StatTiles, { tiles: [{ label: 'Cooked', value: 'Soon', comingSoon: true }] })
-    expect(html).toContain('kcc-badge')
   })
 
   it('carries no Softbound hook', async () => {
