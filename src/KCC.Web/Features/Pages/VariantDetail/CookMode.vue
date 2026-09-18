@@ -3,6 +3,8 @@
   import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import Button from '~/Components/Button/Button.vue'
   import { useWakeLock } from './useWakeLock'
   import CookModeStep from './CookModeStep.vue'
 
@@ -54,7 +56,6 @@
   const current = computed(() => props.instructions[index.value])
   const isFirst = computed(() => index.value === 0)
   const isLast = computed(() => index.value >= total.value - 1)
-  const progress = computed(() => `${t('Step')} ${index.value + 1} ${t('Of')} ${total.value}`)
   const hasScaler = computed(() => (props.servings ?? 0) > 0)
 
   const next = () => {
@@ -143,98 +144,106 @@
 
 <template>
   <Teleport v-if="isMounted" to="body">
-    <div
-      v-if="open"
-      class="fixed inset-0 z-50 flex flex-col bg-desk"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="t('CookMode')"
-    >
-      <div ref="panel" tabindex="-1" class="mx-auto flex h-full w-full max-w-3xl flex-col px-5 py-6 outline-none">
-        <header class="flex items-center justify-between gap-4">
-          <p class="font-bold text-ink" aria-live="polite" data-test="cook-progress">{{ progress }}</p>
-          <div v-if="hasScaler" class="flex items-center gap-2">
-            <span class="text-sm font-bold text-ink-soft"><ResourceString for="Servings" /></span>
-            <button
-              type="button"
-              data-test="cook-servings-dec"
-              :aria-label="t('Fewer')"
-              v-ink="'button'"
-              class="sk-btn sk-btn--ghost size-12"
-              @click="decServings"
-            >
-              <i class="fa-solid fa-minus text-xs" aria-hidden="true"></i>
-            </button>
-            <span class="min-w-[40px] text-center font-casual text-lg">{{ currentServings }}</span>
-            <button
-              type="button"
-              data-test="cook-servings-inc"
-              :aria-label="t('More')"
-              v-ink="'button'"
-              class="sk-btn sk-btn--ghost size-12"
-              @click="incServings"
-            >
-              <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
-            </button>
+    <div v-if="open" class="fixed inset-0 z-50 bg-desk" role="dialog" aria-modal="true" :aria-label="t('CookMode')">
+      <!-- The trap cycles the focusables of this element, so it stays a plain div wrapping the whole sheet:
+           a ref on the sheet component would resolve to its instance, not to a node to query. -->
+      <div ref="panel" tabindex="-1" class="h-full outline-none">
+        <!-- The sheet is the viewport: height flows down the slip and the torn wrapper into the paper, and
+             the step column scrolls inside the padding rather than past the tear. -->
+        <KccSheet
+          crisp
+          :tear="3"
+          pad="clamp(24px, 6vw, 48px)"
+          wash="peach"
+          :at="{ x: '96%', y: '100%', w: '35%', h: '45%' }"
+          class="mx-auto h-full max-w-3xl [&>.kcc-torn]:h-full [&>.kcc-torn>.kcc-sheet]:h-full"
+        >
+          <div class="flex h-full flex-col">
+            <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+              <!-- Interpolated rather than two <ResourceString>: a whitespace-only text node between two
+                   elements is dropped by the template compiler, and the count would read "STEP 1OF 2". -->
+              <p class="kcc-kick" aria-live="polite" data-test="cook-progress">
+                {{ t('Step') }} <span class="kcc-num">{{ index + 1 }}</span> {{ t('Of') }}
+                <span class="kcc-num">{{ total }}</span>
+              </p>
+
+              <!-- Narrow screens give the scaler a rule of its own so the count and the close button keep
+                   their 48px targets side by side. -->
+              <div v-if="hasScaler" class="order-last flex w-full flex-col items-center sm:order-none sm:w-auto">
+                <ResourceString for="Servings" as="span" class="kcc-kick" />
+                <div class="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    class="w-12 shrink-0 px-0"
+                    data-test="cook-servings-dec"
+                    :aria-label="t('Fewer')"
+                    @click="decServings"
+                  >
+                    <i class="fa-duotone fa-minus" aria-hidden="true"></i>
+                  </Button>
+                  <span class="kcc-num min-w-10 text-center text-[22px] leading-6">{{ currentServings }}</span>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    class="w-12 shrink-0 px-0"
+                    data-test="cook-servings-inc"
+                    :aria-label="t('More')"
+                    @click="incServings"
+                  >
+                    <i class="fa-duotone fa-plus" aria-hidden="true"></i>
+                  </Button>
+                </div>
+              </div>
+
+              <Button
+                variant="ghost"
+                size="lg"
+                class="w-12 shrink-0 px-0"
+                data-test="cook-close"
+                :aria-label="t('Close')"
+                @click="close"
+              >
+                <i class="fa-duotone fa-xmark" aria-hidden="true"></i>
+              </Button>
+            </header>
+
+            <main class="min-h-0 flex-1 overflow-y-auto py-6">
+              <CookModeStep
+                v-if="current"
+                :instruction="current"
+                :ingredients="ingredients"
+                :base-servings="servings"
+                :current-servings="currentServings"
+              />
+            </main>
+
+            <footer class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+              <Button variant="ghost" size="lg" data-test="cook-prev" :disabled="isFirst" @click="prev">
+                <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Previous" />
+              </Button>
+
+              <!-- Same rule as the header: below sm the three pills do not fit on one line, so the step
+                   check takes a rule of its own between the two navigation pills. -->
+              <div class="order-last flex w-full justify-center sm:order-none sm:w-auto">
+                <Button
+                  :variant="checked[index] ? 'ink' : 'ghost'"
+                  size="lg"
+                  data-test="cook-check"
+                  :aria-pressed="!!checked[index]"
+                  @click="toggleChecked"
+                >
+                  <i :class="checked[index] ? 'fa-duotone fa-check' : 'fa-duotone fa-circle'" aria-hidden="true"></i>
+                  <ResourceString :for="checked[index] ? 'Done' : 'MarkDone'" />
+                </Button>
+              </div>
+
+              <Button variant="ghost" size="lg" data-test="cook-next" :disabled="isLast" @click="next">
+                <ResourceString for="Next" /><i class="fa-duotone fa-arrow-right" aria-hidden="true"></i>
+              </Button>
+            </footer>
           </div>
-          <button
-            type="button"
-            data-test="cook-close"
-            :aria-label="t('Close')"
-            v-ink="'button'"
-            class="sk-btn sk-btn--ghost size-12"
-            @click="close"
-          >
-            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          </button>
-        </header>
-
-        <main class="flex flex-1 items-center overflow-y-auto py-8">
-          <CookModeStep
-            v-if="current"
-            :instruction="current"
-            :step-number="current.step ?? index + 1"
-            :ingredients="ingredients"
-            :base-servings="servings"
-            :current-servings="currentServings"
-          />
-        </main>
-
-        <footer class="flex items-center justify-between gap-4">
-          <button
-            type="button"
-            data-test="cook-prev"
-            :disabled="isFirst"
-            v-ink="'button'"
-            class="sk-btn sk-btn--ghost min-h-12 disabled:cursor-not-allowed disabled:opacity-40"
-            @click="prev"
-          >
-            <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i> <ResourceString for="Previous" />
-          </button>
-
-          <button
-            type="button"
-            data-test="cook-check"
-            :aria-pressed="!!checked[index]"
-            class="flex items-center gap-2 rounded-2xl px-5 py-3 font-bold transition-colors"
-            :class="checked[index] ? 'bg-marker text-marker-ink' : 'bg-paper-2 text-ink'"
-            @click="toggleChecked"
-          >
-            <i :class="checked[index] ? 'fa-solid fa-check' : 'fa-regular fa-circle'" class="text-sm" aria-hidden="true"></i>
-            <ResourceString :for="checked[index] ? 'Done' : 'MarkDone'" />
-          </button>
-
-          <button
-            type="button"
-            data-test="cook-next"
-            :disabled="isLast"
-            v-ink="'button'"
-            class="sk-btn sk-btn--ghost min-h-12 disabled:cursor-not-allowed disabled:opacity-40"
-            @click="next"
-          >
-            <ResourceString for="Next" /> <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
-          </button>
-        </footer>
+        </KccSheet>
       </div>
     </div>
   </Teleport>
