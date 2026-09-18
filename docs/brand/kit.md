@@ -189,7 +189,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
 | `kcc-foot` | footer copy block | |
 | `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large | Sono caps `.14em` |
-| `kcc-seg` › `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | |
+| `kcc-seg` › `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | pressed = ink fill; an unpressed segment goes from ink-soft to ink on hover |
 | `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = 2px inset ink ring |
 | `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
 | `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
@@ -225,9 +225,10 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 
 ## Vue primitives
 
-- `Components/Sheet/KccSheet.vue` — props `label`, `icon`, `labelRight`, `wash`, `at { x y w h }`, `tear`
-  (`1..6 | 'hero'`), `tape`, `pad`, `crisp` (no tilt: forms, cook mode), `as` (`div | section | article | li`).
-  Default slot. Plain `.vue`: import it locally. Renders the Structure above with no client JS.
+- `Components/Sheet/KccSheet.vue` — props `label` or a `#label` slot for rich content (a `<ResourceString>`
+  keeps its editor hooks that way), `icon`, `labelRight`, `wash`, `at { x y w h }`, `tear` (`1..6 | 'hero'`),
+  `tape`, `pad`, `crisp` (no tilt: forms, cook mode), `as` (`div | section | article | li`). Default slot.
+  Plain `.vue`: import it locally. Renders the Structure above with no client JS.
 - `Components/Button/Button.vue` — `variant: 'marker' | 'ghost' | 'ink' | 'text'`, `size: 'md' | 'lg'`,
   `as: 'button' | 'a'`. Emits the `kcc-btn` classes; no directive.
 - Everything else composes the classes directly.
