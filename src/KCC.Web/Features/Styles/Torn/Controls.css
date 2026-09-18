@@ -77,6 +77,17 @@
     padding: 0;
   }
 
+  /* A square pill for a button whose glyph is its whole label. After --lg, so the width and the dropped
+     padding win over the large pill's own. */
+  .kcc-btn--icon {
+    padding: 0;
+    width: 36px;
+  }
+
+  .kcc-btn--lg.kcc-btn--icon {
+    width: 48px;
+  }
+
   .kcc-btn:disabled,
   .kcc-btn[aria-disabled='true'] {
     cursor: not-allowed;

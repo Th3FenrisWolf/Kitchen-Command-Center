@@ -1,7 +1,8 @@
 <!-- #region CreateRecipeView Component Properties -->
 <script lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, useId } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
+  import Field from '~/Components/Forms/Field.vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
@@ -27,10 +28,14 @@
 
 <script setup lang="ts">
   import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
   const props = defineProps<CreateRecipeViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'CreateRecipe')
+
+  // 7.5vw reaches the 48px a sheet read this closely wants at 640px, and floors at the sheet's own 24px.
+  const STEP_PAD = 'clamp(24px, 7.5vw, 48px)'
 
   const step = ref(1)
   const totalSteps = 5
@@ -55,6 +60,17 @@
   // Step 4: Instructions
   const instructionList = ref<Instruction[]>([{ text: '' }])
 
+  const uid = useId()
+  const ids = {
+    recipeName: `${uid}-recipe-name`,
+    recipeDescription: `${uid}-recipe-description`,
+    variantName: `${uid}-variant-name`,
+    variantDescription: `${uid}-variant-description`,
+    prepTime: `${uid}-prep-time`,
+    cookTime: `${uid}-cook-time`,
+    servings: `${uid}-servings`,
+  }
+
   /* eslint-disable vue/script-indent */
   const canProceed = computed(() => {
     switch (step.value) {
@@ -71,6 +87,14 @@
     }
   })
   /* eslint-enable vue/script-indent */
+
+  const reviewIngredients = computed(() => ingredientList.value.filter((i) => i.name.trim() !== ''))
+  const reviewInstructions = computed(() => instructionList.value.filter((i) => i.text.trim() !== ''))
+
+  const stepNumber = (index: number) => String(index + 1).padStart(2, '0')
+
+  const reviewAmount = (ingredient: Ingredient) =>
+    !ingredient.isEyeballed && ingredient.quantity ? `${ingredient.quantity} ${ingredient.unit}`.trim() : 'to taste'
 
   const handleSubmit = async () => {
     isSubmitting.value = true
@@ -107,196 +131,264 @@
     <template #title><ResourceString for="CreateRecipe" /></template>
   </SmallHero>
 
-  <section
-    v-if="submitSuccess"
-    v-ink="'sheet'"
-    class="sk-sheet sk-sheet--lg sk-fold flex flex-col items-center gap-4 text-center"
-  >
-    <span class="sk-wash" style="--c: var(--color-green)" aria-hidden="true"></span>
-    <h2 class="font-casual text-4xl">Recipe Submitted!</h2>
-    <p class="sk-hand text-lg">Your recipe has been submitted for review. An admin will review and publish it.</p>
-    <a href="/recipes" v-ink="'button'" class="sk-btn sk-btn--marker sk-btn--lg">Back to Recipes</a>
-  </section>
+  <KccSheet v-if="submitSuccess" class="mt-6" wash="green" :at="{ x: '88%', y: '18%', w: '38%', h: '60%' }" :tear="2" tape>
+    <div class="grid justify-items-center gap-6 text-center">
+      <h2 class="kcc-h3">Recipe Submitted!</h2>
+      <p class="kcc-hand">Your recipe has been submitted for review. An admin will review and publish it.</p>
+      <Button as="a" href="/recipes" variant="marker" size="lg">Back to Recipes</Button>
+    </div>
+  </KccSheet>
 
-  <section v-else>
-    <!-- Progress bar -->
+  <section v-else class="mt-6">
     <WizardProgress :current="step" :total="totalSteps" />
 
-    <!-- Step 1: Recipe Basics -->
-    <form v-if="step === 1" @submit.prevent="step++" v-ink="'sheet'" class="sk-sheet sk-tabbed relative flex flex-col gap-6">
-      <h2 class="sk-tab"><i class="fa-duotone fa-pen-to-square" aria-hidden="true"></i>Recipe Basics</h2>
-      <label class="flex flex-col gap-2">
-        <span class="text-lg font-bold">Recipe Name</span>
-        <InputField v-model="recipeName" required type="text" placeholder="e.g., Mac & Cheese" />
-      </label>
-      <label class="flex flex-col gap-2">
-        <span class="text-lg font-bold">Description</span>
-        <TextAreaField v-model="recipeDescription" required placeholder="A short description of this dish" />
-      </label>
-      <Button type="submit" class="self-end" :disabled="!canProceed"> Next → </Button>
-    </form>
+    <KccSheet v-if="step === 1" crisp :tear="1" :pad="STEP_PAD" icon="fa-duotone fa-pen-to-square" label="Recipe Basics">
+      <!-- The sheet's label carries the step's name in print; the heading carries it in the document. -->
+      <h2 class="sr-only">Recipe Basics</h2>
 
-    <!-- Step 2: Variant Info -->
-    <form v-if="step === 2" @submit.prevent="step++" v-ink="'sheet'" class="sk-sheet sk-tabbed relative flex flex-col gap-6">
-      <h2 class="sk-tab"><i class="fa-duotone fa-layer-group" aria-hidden="true"></i>First Variant</h2>
-      <p class="text-ink-soft">Each recipe needs at least one variant — a specific way to make it.</p>
-      <label class="flex flex-col gap-2">
-        <span class="text-lg font-bold">Variant Name</span>
-        <InputField v-model="variantName" required type="text" placeholder="e.g., Classic Stovetop" />
-      </label>
-      <label class="flex flex-col gap-2">
-        <span class="text-lg font-bold">Description</span>
-        <TextAreaField v-model="variantDescription" placeholder="What makes this variant special?" />
-      </label>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div class="flex flex-col gap-2">
-          <span class="text-lg font-bold">Prep Time</span>
-          <NumberStepper v-model="prepTime" :min="0" unit="min" label="Prep Time" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <span class="text-lg font-bold">Cook Time</span>
-          <NumberStepper v-model="cookTime" :min="0" unit="min" label="Cook Time" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <span class="text-lg font-bold">Servings</span>
-          <NumberStepper v-model="servings" :min="0" label="Servings" />
-        </div>
-      </div>
-      <div class="flex justify-between">
-        <Button variant="ghost" @click="step--"> ← Back </Button>
-        <Button type="submit" class="self-end" :disabled="!canProceed"> Next → </Button>
-      </div>
-    </form>
+      <form class="flex flex-col gap-6" @submit.prevent="step++">
+        <Field label="Recipe Name" :control-id="ids.recipeName" required>
+          <InputField :id="ids.recipeName" v-model="recipeName" required type="text" placeholder="e.g., Mac & Cheese" />
+        </Field>
 
-    <!-- Step 3: Ingredients -->
-    <form v-if="step === 3" @submit.prevent="step++" v-ink="'sheet'" class="sk-sheet sk-tabbed relative flex flex-col gap-6">
-      <h2 class="sk-tab"><i class="fa-duotone fa-list-check" aria-hidden="true"></i>Ingredients</h2>
-      <div class="flex flex-col gap-4">
-        <div class="flex gap-2" v-for="(ingredient, index) in ingredientList" :key="index">
-          <InputField class="shrink grow basis-1/3" v-model="ingredient.name" placeholder="Ingredient name" type="text" />
-          <button
-            type="button"
-            class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-paper p-2 text-ink"
-            @click="ingredient.isEyeballed = !ingredient.isEyeballed"
-          >
-            <i :class="ingredient.isEyeballed ? 'fa-duotone fa-eye' : 'fa-duotone fa-eye-slash'"></i>
-          </button>
-          <InputField
-            class="shrink basis-1/6"
-            v-model="ingredient.quantity"
-            placeholder="Qty"
-            type="number"
-            inputmode="decimal"
-            step="0.01"
-            :disabled="ingredient.isEyeballed"
+        <Field label="Description" :control-id="ids.recipeDescription" required>
+          <TextAreaField
+            :id="ids.recipeDescription"
+            v-model="recipeDescription"
+            required
+            placeholder="A short description of this dish"
           />
+        </Field>
+
+        <div class="flex justify-end">
+          <Button type="submit" :disabled="!canProceed"
+            >Next<i class="fa-duotone fa-arrow-right" aria-hidden="true"></i
+          ></Button>
+        </div>
+      </form>
+    </KccSheet>
+
+    <KccSheet v-if="step === 2" crisp :tear="2" :pad="STEP_PAD" icon="fa-duotone fa-layer-group" label="First Variant">
+      <h2 class="sr-only">First Variant</h2>
+
+      <form class="flex flex-col gap-6" @submit.prevent="step++">
+        <p class="kcc-body text-ink-soft">Each recipe needs at least one variant — a specific way to make it.</p>
+
+        <Field label="Variant Name" :control-id="ids.variantName" required>
           <InputField
-            class="shrink basis-1/6"
-            v-model="ingredient.unit"
-            placeholder="Unit"
+            :id="ids.variantName"
+            v-model="variantName"
+            required
             type="text"
-            :disabled="ingredient.isEyeballed"
+            placeholder="e.g., Classic Stovetop"
           />
-          <button
-            type="button"
-            :disabled="ingredientList.length <= 1"
-            class="h-12 max-w-12 basis-1/12 cursor-pointer rounded-2xl bg-marker p-2 text-marker-ink disabled:cursor-not-allowed disabled:opacity-45"
-            @click="ingredientList.splice(index, 1)"
-          >
-            <i class="fa-duotone fa-trash"></i>
-          </button>
+        </Field>
+
+        <Field label="Description" :control-id="ids.variantDescription">
+          <TextAreaField
+            :id="ids.variantDescription"
+            v-model="variantDescription"
+            placeholder="What makes this variant special?"
+          />
+        </Field>
+
+        <div class="grid gap-x-7 gap-y-6 md:grid-cols-3">
+          <Field label="Prep Time" :control-id="ids.prepTime">
+            <NumberStepper :id="ids.prepTime" v-model="prepTime" :min="0" unit="min" label="Prep Time" />
+          </Field>
+
+          <Field label="Cook Time" :control-id="ids.cookTime">
+            <NumberStepper :id="ids.cookTime" v-model="cookTime" :min="0" unit="min" label="Cook Time" />
+          </Field>
+
+          <Field label="Servings" :control-id="ids.servings">
+            <NumberStepper :id="ids.servings" v-model="servings" :min="0" label="Servings" />
+          </Field>
         </div>
-      </div>
-      <button
-        type="button"
-        class="cursor-pointer self-start rounded-3xl bg-paper px-4 py-2 text-ink"
-        @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })"
-      >
-        Add Ingredient
-      </button>
-      <div class="flex justify-between">
-        <Button variant="ghost" @click="step--"> ← Back </Button>
-        <Button type="submit" class="self-end" :disabled="!canProceed"> Next → </Button>
-      </div>
-    </form>
 
-    <!-- Step 4: Instructions -->
-    <form v-if="step === 4" @submit.prevent="step++" v-ink="'sheet'" class="sk-sheet sk-tabbed relative flex flex-col gap-6">
-      <h2 class="sk-tab"><i class="fa-duotone fa-list-ol" aria-hidden="true"></i>Instructions</h2>
-      <div class="flex flex-col gap-4">
-        <div class="flex gap-4" v-for="(instruction, index) in instructionList" :key="index">
-          <p class="max-w-12 pt-1.5 text-end text-2xl">{{ index + 1 }}.</p>
-          <TextAreaField class="shrink grow" v-model="instruction.text" placeholder="Describe this step" />
-          <button
-            type="button"
-            :disabled="instructionList.length <= 1"
-            class="h-12 max-w-12 cursor-pointer self-center rounded-2xl bg-marker p-2 text-marker-ink disabled:cursor-not-allowed disabled:opacity-45"
-            @click="instructionList.splice(index, 1)"
-          >
-            <i class="fa-duotone fa-trash"></i>
-          </button>
+        <div class="flex flex-wrap justify-between gap-3">
+          <Button variant="ghost" @click="step--"><i class="fa-duotone fa-arrow-left" aria-hidden="true"></i>Back</Button>
+          <Button type="submit" :disabled="!canProceed"
+            >Next<i class="fa-duotone fa-arrow-right" aria-hidden="true"></i
+          ></Button>
         </div>
-      </div>
-      <button
-        type="button"
-        class="cursor-pointer self-start rounded-3xl bg-paper px-4 py-2 text-ink"
-        @click="instructionList.push({ text: '' })"
-      >
-        Add Step
-      </button>
-      <div class="flex justify-between">
-        <Button variant="ghost" @click="step--"> ← Back </Button>
-        <Button type="submit" class="self-end" :disabled="!canProceed"> Next → </Button>
-      </div>
-    </form>
+      </form>
+    </KccSheet>
 
-    <!-- Step 5: Review & Submit -->
-    <div v-if="step === 5" v-ink="'sheet'" class="sk-sheet sk-tabbed relative flex flex-col gap-6">
-      <h2 class="sk-tab"><i class="fa-duotone fa-clipboard-check" aria-hidden="true"></i>Review & Submit</h2>
+    <KccSheet v-if="step === 3" crisp :tear="3" :pad="STEP_PAD" icon="fa-duotone fa-list-check" label="Ingredients">
+      <h2 class="sr-only">Ingredients</h2>
 
-      <div class="rounded-3xl bg-paper-2 p-6 text-ink">
-        <h3 class="font-casual text-3xl">{{ recipeName }}</h3>
-        <p>{{ recipeDescription }}</p>
-      </div>
+      <form class="flex flex-col gap-6" @submit.prevent="step++">
+        <ul class="flex flex-col gap-3">
+          <li v-for="(ingredient, index) in ingredientList" :key="index" class="flex flex-wrap items-center gap-2">
+            <InputField
+              v-model="ingredient.name"
+              class="min-w-40 shrink grow basis-1/3"
+              type="text"
+              placeholder="Ingredient name"
+            />
 
-      <div class="rounded-3xl bg-paper-2 p-6 text-ink">
-        <h3 class="text-xl font-bold">{{ variantName }}</h3>
-        <p v-if="variantDescription">{{ variantDescription }}</p>
-        <div class="mt-2 flex gap-4 text-sm text-ink-soft">
-          <span v-if="prepTime">Prep: {{ prepTime }} min</span>
-          <span v-if="cookTime">Cook: {{ cookTime }} min</span>
-          <span v-if="servings">Serves: {{ servings }}</span>
-        </div>
-      </div>
+            <Button
+              :variant="ingredient.isEyeballed ? 'ink' : 'ghost'"
+              class="kcc-btn--icon shrink-0"
+              aria-label="Eyeball this ingredient"
+              :aria-pressed="ingredient.isEyeballed"
+              @click="ingredient.isEyeballed = !ingredient.isEyeballed"
+            >
+              <i :class="ingredient.isEyeballed ? 'fa-duotone fa-eye' : 'fa-duotone fa-eye-slash'" aria-hidden="true"></i>
+            </Button>
 
-      <div class="rounded-3xl bg-paper-2 p-6 text-ink">
-        <h4 class="mb-2 font-bold">Ingredients ({{ ingredientList.filter((i) => i.name.trim()).length }})</h4>
-        <ul>
-          <li v-for="(ing, i) in ingredientList.filter((i) => i.name.trim())" :key="i">
-            <span v-if="!ing.isEyeballed && ing.quantity">{{ ing.quantity }} {{ ing.unit }}</span>
-            <span v-else>to taste</span>
-            — {{ ing.name }}
+            <InputField
+              v-model="ingredient.quantity"
+              class="shrink basis-20"
+              type="number"
+              inputmode="decimal"
+              step="0.01"
+              placeholder="Qty"
+              :disabled="ingredient.isEyeballed"
+            />
+
+            <InputField
+              v-model="ingredient.unit"
+              class="shrink basis-20"
+              type="text"
+              placeholder="Unit"
+              :disabled="ingredient.isEyeballed"
+            />
+
+            <Button
+              variant="ghost"
+              class="kcc-btn--icon shrink-0"
+              aria-label="Remove Ingredient"
+              :disabled="ingredientList.length <= 1"
+              @click="ingredientList.splice(index, 1)"
+            >
+              <i class="fa-duotone fa-xmark" aria-hidden="true"></i>
+            </Button>
           </li>
         </ul>
-      </div>
 
-      <div class="rounded-3xl bg-paper-2 p-6 text-ink">
-        <h4 class="mb-2 font-bold">Instructions ({{ instructionList.filter((i) => i.text.trim()).length }} steps)</h4>
-        <ol class="list-inside list-decimal">
-          <li v-for="(inst, i) in instructionList.filter((i) => i.text.trim())" :key="i">
-            {{ inst.text }}
+        <Button
+          class="kcc-btn--icon self-start"
+          aria-label="Add Ingredient"
+          @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })"
+        >
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i>
+        </Button>
+
+        <div class="flex flex-wrap justify-between gap-3">
+          <Button variant="ghost" @click="step--"><i class="fa-duotone fa-arrow-left" aria-hidden="true"></i>Back</Button>
+          <Button type="submit" :disabled="!canProceed"
+            >Next<i class="fa-duotone fa-arrow-right" aria-hidden="true"></i
+          ></Button>
+        </div>
+      </form>
+    </KccSheet>
+
+    <KccSheet v-if="step === 4" crisp :tear="4" :pad="STEP_PAD" icon="fa-duotone fa-list-ol" label="Instructions">
+      <h2 class="sr-only">Instructions</h2>
+
+      <form class="flex flex-col gap-6" @submit.prevent="step++">
+        <ol class="kcc-steps">
+          <li v-for="(instruction, index) in instructionList" :key="index" class="grid-cols-[28px_minmax(0,1fr)_auto]">
+            <span class="kcc-n">{{ stepNumber(index) }}</span>
+
+            <TextAreaField v-model="instruction.text" placeholder="Describe this step" />
+
+            <Button
+              variant="ghost"
+              class="kcc-btn--icon"
+              aria-label="Remove Step"
+              :disabled="instructionList.length <= 1"
+              @click="instructionList.splice(index, 1)"
+            >
+              <i class="fa-duotone fa-xmark" aria-hidden="true"></i>
+            </Button>
           </li>
         </ol>
-      </div>
 
-      <p v-if="submitError" class="text-danger-ink">{{ submitError }}</p>
-
-      <div class="flex justify-between">
-        <Button variant="ghost" @click="step--"> ← Back </Button>
-        <Button :disabled="isSubmitting" @click="handleSubmit">
-          {{ isSubmitting ? 'Submitting...' : 'Submit for Review' }}
+        <Button class="kcc-btn--icon self-start" aria-label="Add Step" @click="instructionList.push({ text: '' })">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i>
         </Button>
+
+        <div class="flex flex-wrap justify-between gap-3">
+          <Button variant="ghost" @click="step--"><i class="fa-duotone fa-arrow-left" aria-hidden="true"></i>Back</Button>
+          <Button type="submit" :disabled="!canProceed"
+            >Next<i class="fa-duotone fa-arrow-right" aria-hidden="true"></i
+          ></Button>
+        </div>
+      </form>
+    </KccSheet>
+
+    <KccSheet v-if="step === 5" crisp :tear="5" :pad="STEP_PAD" icon="fa-duotone fa-clipboard-check" label="Review & Submit">
+      <h2 class="sr-only">Review & Submit</h2>
+
+      <div class="space-y-12">
+        <div>
+          <p class="kcc-kick">Recipe</p>
+          <h3 class="kcc-h4 mt-6">{{ recipeName }}</h3>
+          <p class="kcc-body mt-6">{{ recipeDescription }}</p>
+        </div>
+
+        <div>
+          <p class="kcc-kick">First variant</p>
+          <h3 class="kcc-h4 mt-6">{{ variantName }}</h3>
+          <p v-if="variantDescription" class="kcc-body mt-6">{{ variantDescription }}</p>
+
+          <div v-if="prepTime || cookTime || servings" class="kcc-stats mt-6">
+            <div v-if="prepTime">
+              <p class="kcc-lbl">Prep</p>
+              <p class="kcc-v">{{ prepTime }}<small>min</small></p>
+            </div>
+
+            <div v-if="cookTime">
+              <p class="kcc-lbl">Cook</p>
+              <p class="kcc-v">{{ cookTime }}<small>min</small></p>
+            </div>
+
+            <div v-if="servings">
+              <p class="kcc-lbl">Serves</p>
+              <p class="kcc-v">{{ servings }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="kcc-kick flex items-baseline gap-2">
+            Ingredients<span class="kcc-num">{{ reviewIngredients.length }}</span>
+          </h4>
+
+          <ul class="kcc-check mt-6">
+            <li v-for="(ing, i) in reviewIngredients" :key="i" class="grid-cols-[1fr_auto]">
+              <span>{{ ing.name }}</span>
+              <span class="kcc-q">{{ reviewAmount(ing) }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="kcc-kick flex items-baseline gap-2">
+            Instructions<span class="kcc-num">{{ reviewInstructions.length }}</span
+            >steps
+          </h4>
+
+          <ol class="kcc-steps mt-6">
+            <li v-for="(inst, i) in reviewInstructions" :key="i">
+              <span class="kcc-n">{{ stepNumber(i) }}</span>
+              <p class="kcc-body">{{ inst.text }}</p>
+            </li>
+          </ol>
+        </div>
       </div>
-    </div>
+
+      <p v-if="submitError" class="kcc-well kcc-well--danger kcc-kick mt-6" role="alert">{{ submitError }}</p>
+
+      <div class="mt-12 flex flex-wrap justify-between gap-3">
+        <Button variant="ghost" @click="step--"><i class="fa-duotone fa-arrow-left" aria-hidden="true"></i>Back</Button>
+        <Button :disabled="isSubmitting" @click="handleSubmit">{{
+          isSubmitting ? 'Submitting...' : 'Submit for Review'
+        }}</Button>
+      </div>
+    </KccSheet>
   </section>
 </template>

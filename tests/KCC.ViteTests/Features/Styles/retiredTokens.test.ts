@@ -49,8 +49,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Pages/Account/AccountView.Component.vue',
   'Features/Pages/Account/Login/LoginView.Component.vue',
   'Features/Pages/Account/Settings/AccountSettingsView.Component.vue',
-  'Features/Pages/AddVariant/AddVariantView.Component.vue',
-  'Features/Pages/CreateRecipe/CreateRecipeView.Component.vue',
   'Features/Sections/Base/BaseSection.cshtml',
   'Features/Sections/Base/SectionColors.cs',
   'Features/Sections/MultipleColumn/MultipleColumnSection.cshtml',

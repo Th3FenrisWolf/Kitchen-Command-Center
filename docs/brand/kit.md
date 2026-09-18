@@ -193,7 +193,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-head`, `kcc-mark` | chrome header grid, APCasual wordmark | |
 | `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
 | `kcc-foot` | footer copy block | |
-| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large | Sono caps `.14em` |
+| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large; `--icon` squares the pill (36px, 48px with `--lg`) | Sono caps `.14em`; an `--icon` button is all glyph, so its name goes in `aria-label` |
 | `kcc-seg` › `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | pressed = ink fill; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments |
 | `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = 2px inset ink ring |
 | `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
