@@ -142,8 +142,7 @@
   <div class="flex items-center gap-2">
     <button
       type="button"
-      class="sk-btn sk-btn--ghost size-12 shrink-0 text-lg active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
-      v-ink="'button'"
+      class="kcc-btn kcc-btn--ghost w-9 shrink-0 px-0"
       :aria-label="decreaseLabel"
       :disabled="disabled || atMin"
       @pointerdown="startHold(-1, $event)"
@@ -151,37 +150,36 @@
       @pointercancel="stopHold"
       @click="onButtonClick(-1, $event)"
     >
-      <i class="fa-solid fa-minus" aria-hidden="true"></i>
+      <i class="fa-duotone fa-minus" aria-hidden="true"></i>
     </button>
 
-    <label
-      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl border border-edge-strong bg-paper-2 px-2 outline-focus focus-within:outline-focus"
-    >
-      <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
-      <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
-      <input
-        :style="{ width: inputWidth }"
-        class="shrink-0 bg-transparent p-0 text-center text-lg font-semibold tabular-nums focus-visible:outline-transparent"
-        type="number"
-        :min="min"
-        :max="max"
-        :step="step"
-        :aria-label="valueLabel"
-        :disabled="disabled"
-        :placeholder="placeholder"
-        :value="model"
-        v-bind="$attrs"
-        @input="onInput"
-        @focus="onFocus"
-        @blur="onBlur"
-      />
-      <span v-if="unit" class="shrink-0 text-sm text-ink-soft">{{ unit }}</span>
+    <label class="kcc-field kcc-field--noicon min-w-24 flex-1 cursor-text">
+      <span class="flex items-center justify-center gap-1.5">
+        <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
+        <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
+        <input
+          :style="{ width: inputWidth }"
+          class="kcc-num shrink-0 text-center"
+          type="number"
+          :min="min"
+          :max="max"
+          :step="step"
+          :aria-label="valueLabel"
+          :disabled="disabled"
+          :placeholder="placeholder"
+          :value="model"
+          v-bind="$attrs"
+          @input="onInput"
+          @focus="onFocus"
+          @blur="onBlur"
+        />
+        <span v-if="unit" class="shrink-0 text-sm text-ink-soft">{{ unit }}</span>
+      </span>
     </label>
 
     <button
       type="button"
-      class="sk-btn sk-btn--ghost size-12 shrink-0 text-lg active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
-      v-ink="'button'"
+      class="kcc-btn kcc-btn--ghost w-9 shrink-0 px-0"
       :aria-label="increaseLabel"
       :disabled="disabled || atMax"
       @pointerdown="startHold(1, $event)"
@@ -189,7 +187,7 @@
       @pointercancel="stopHold"
       @click="onButtonClick(1, $event)"
     >
-      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      <i class="fa-duotone fa-plus" aria-hidden="true"></i>
     </button>
   </div>
 </template>
