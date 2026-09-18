@@ -44,8 +44,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Components/Badge/Badge.vue',
   'Features/Components/Breadcrumbs/Breadcrumbs.Component.vue',
   'Features/Components/ComingSoon/ComingSoonSection.vue',
-  'Features/Components/Forms/NumberStepper.vue',
-  'Features/Components/Forms/RangeSlider.vue',
   'Features/Components/Recipe/AccentTile.vue',
   'Features/Components/Recipe/DetailHero.vue',
   'Features/Components/Recipe/FeaturedRecipeCard.vue',

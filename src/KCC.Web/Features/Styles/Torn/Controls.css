@@ -163,6 +163,13 @@
     color: var(--color-ink-soft);
   }
 
+  /* A numeric field (NumberStepper) prints its digits in Sono like every other number in the kit.
+     `.kcc-field input` above is one class plus one type (0,1,1); a bare `.kcc-num` is one class
+     (0,1,0) and loses the font-family to it, so the combination needs its own, more specific rule. */
+  .kcc-field input.kcc-num {
+    font-family: var(--font-sono);
+  }
+
   .kcc-field:focus-within {
     box-shadow: inset 0 0 0 2px var(--color-ink);
   }
