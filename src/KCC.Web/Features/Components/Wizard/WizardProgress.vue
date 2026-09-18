@@ -22,12 +22,24 @@
 </script>
 
 <template>
-  <div class="mb-8 flex gap-2" role="progressbar" :aria-valuenow="current" aria-valuemin="1" :aria-valuemax="total">
-    <div
+  <ol class="mb-8 flex items-center gap-2" aria-label="Steps">
+    <li
       v-for="s in total"
       :key="s"
-      class="h-2 flex-1 rounded-full transition-colors"
-      :class="s <= current ? 'bg-marker' : 'bg-desk-2'"
-    />
-  </div>
+      class="flex flex-1 items-center gap-2"
+      :aria-current="s === current ? 'step' : undefined"
+    >
+      <span
+        :class="
+          s === current
+            ? 'kcc-kick rounded-md bg-marker px-3 text-marker-ink'
+            : s < current
+              ? 'kcc-kick text-ink'
+              : 'kcc-kick text-ink-soft'
+        "
+        >{{ String(s).padStart(2, '0') }}</span
+      >
+      <span v-if="s < total" class="h-0 flex-1 border-t border-dashed border-hair-strong" aria-hidden="true"></span>
+    </li>
+  </ol>
 </template>
