@@ -227,6 +227,16 @@ describe.each<[string, Tokens, WashRender]>([
       expect(contrastOf(ink, washedPaper(tokens, w, wash, 1))).toBeGreaterThanOrEqual(coreFloor)
     })
 
+    const inkSoft = toLinearRgb(resolve(tokens, 'ink-soft'))
+
+    it.each(WASHES)('ink-soft over paper + %s at the 38% ring reads at AA for text (≥ 4.5:1)', (w) => {
+      expect(contrastOf(inkSoft, washedPaper(tokens, w, wash, 0.38))).toBeGreaterThanOrEqual(4.5)
+    })
+
+    it.each(WASHES)(`ink-soft over paper + %s at the core reads at ≥ ${coreFloor}:1`, (w) => {
+      expect(contrastOf(inkSoft, washedPaper(tokens, w, wash, 1))).toBeGreaterThanOrEqual(coreFloor)
+    })
+
     it.each(STATUS_WASHES)('ink in a %s status well reads at AA for text (≥ 4.5:1)', (w) => {
       expect(contrastOf(ink, tintedPaper(tokens, w))).toBeGreaterThanOrEqual(4.5)
     })
