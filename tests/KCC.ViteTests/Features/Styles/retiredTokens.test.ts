@@ -41,7 +41,6 @@ const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 // this list can only shrink; it is empty by the cleanup phase. The scan is textual: a comment that names
 // `sk-sheet` or `font-bold` counts as a hit, so reword prose too when you convert a file.
 const ALLOWLIST = new Set<string>([
-  'Features/Components/Breadcrumbs/Breadcrumbs.Component.vue',
   'Features/Components/Recipe/AccentTile.vue',
   'Features/Components/Recipe/DetailHero.vue',
   'Features/Components/Recipe/FeaturedRecipeCard.vue',
