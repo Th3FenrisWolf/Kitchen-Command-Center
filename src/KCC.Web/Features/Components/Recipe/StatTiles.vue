@@ -47,7 +47,7 @@
         <i v-else :class="tile.icon" class="text-ink-soft"></i>
 
         <div v-if="tile.comingSoon">
-          <Badge class="bg-desk-2 text-ink-soft">{{ tile.value }}</Badge>
+          <Badge>{{ tile.value }}</Badge>
         </div>
         <div v-else class="mt-1.5 font-casual text-2xl lg:text-3xl">
           {{ tile.value ?? '—' }}<span v-if="tile.unit && tile.value != null" class="ml-1 text-base">{{ tile.unit }}</span>

@@ -1,10 +1,12 @@
 <!-- #region ComingSoonSection Component Properties -->
 <script lang="ts">
+  import { computed, inject } from 'vue'
+  import { resourceStringsKey } from '~/Components/ResourceStrings/UseResourceStrings'
   import { ResourceString } from '~/Components/ResourceStrings'
-  import ComingSoonBadge from './ComingSoonBadge.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
   /**
-   * Dashed-outline placeholder standing in for a feature that has not shipped yet.
+   * Lavender-washed sheet standing in for a feature that has not shipped yet.
    */
   export default {
     name: 'ComingSoonSection',
@@ -15,26 +17,28 @@
      * Resource string key, resolved against the Shared prefix.
      */
     textKey: string
-    /**
-     * Font Awesome classes, e.g. 'fa-duotone fa-utensils'.
-     */
-    icon?: string
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { textKey, icon } = defineProps<ComingSoonSectionProps>()
+  const { textKey } = defineProps<ComingSoonSectionProps>()
+
+  // Imperative lookup: KccSheet's `label` takes a plain string, not a slot, so the shared
+  // "ComingSoon" string is resolved here the same way <ResourceString shared for="ComingSoon">
+  // does internally — falling back to the raw key when the string hasn't been entered yet.
+  const ctx = inject(resourceStringsKey, { strings: {}, prefix: undefined })
+  const comingSoonLabel = computed(() => ctx.strings['Shared.ComingSoon'] ?? 'Shared.ComingSoon')
 </script>
 
 <template>
-  <section
-    v-ink="{ kind: 'sheet', hatch: false }"
-    class="sk-sheet sk-sheet--lg mt-2 grid place-items-center gap-4 text-center"
+  <KccSheet
+    wash="lavender"
+    :at="{ x: '85%', y: '15%', w: '50%', h: '55%' }"
+    :label="comingSoonLabel"
+    icon="fa-duotone fa-hourglass-half"
+    :tear="3"
   >
-    <span class="sk-wash" style="--c: var(--color-lavender)" aria-hidden="true"></span>
-    <i v-if="icon" :class="['sk-ico', icon]"></i>
-    <ComingSoonBadge />
-    <ResourceString shared :for="textKey" as="p" class="sk-body" />
-  </section>
+    <ResourceString shared :for="textKey" as="p" class="kcc-body" />
+  </KccSheet>
 </template>
