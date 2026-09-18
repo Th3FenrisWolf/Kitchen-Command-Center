@@ -63,7 +63,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Pages/AddVariant/AddVariantView.Component.vue',
   'Features/Pages/CreateRecipe/CreateRecipeView.Component.vue',
   'Features/Pages/RecipeDetail/RecipeDetailView.Component.vue',
-  'Features/Pages/RecipeSearch/RecipeSearchView.Component.vue',
   'Features/Pages/VariantDetail/CookMode.vue',
   'Features/Pages/VariantDetail/CookModeStep.vue',
   'Features/Pages/VariantDetail/StepTimer.vue',

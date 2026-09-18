@@ -11,13 +11,19 @@ import { vInk } from '~/Ink/vInk'
  * any tested component still carries `v-ink` (`grep -rl v-ink Features/Components` — RecipeCard,
  * FeaturedRecipeCard, DetailHero and RecipeFilters at the time of writing); drop it once the Softbound ink
  * module retires in the cleanup phase.
+ *
+ * `globals` covers the same ground for components: the app registers every `*.Component.vue` under
+ * `Features/` app-wide (`GlobalComponents.ts`), so a page template can name one without importing it. Pass
+ * the ones a page under test uses, or Vue warns and renders nothing where the tag was.
  */
 export function renderSsr(
   component: Component,
   props?: Record<string, unknown>,
   slots?: Record<string, () => unknown>,
+  globals?: Record<string, Component>,
 ): Promise<string> {
   const app = createSSRApp({ render: () => h(component, props ?? {}, slots as unknown as Slots) })
   app.directive('ink', vInk)
+  Object.entries(globals ?? {}).forEach(([name, global]) => app.component(name, global))
   return renderToString(app)
 }

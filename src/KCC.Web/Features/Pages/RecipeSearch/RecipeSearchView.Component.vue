@@ -2,6 +2,7 @@
 <script lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+  import Button from '~/Components/Button/Button.vue'
   import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
   import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'
@@ -13,6 +14,7 @@
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
   import { MAX_TIME, chipsFor, activeFilterCount, defaultState, type FilterChip } from './recipeSearchCriteria'
+  import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { Breadcrumb, RecipeSearchResponse } from '~/Types/Recipe'
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
 
@@ -90,12 +92,12 @@
 
   const chips = computed(() => chipsFor(state, rs))
   const activeCount = computed(() => activeFilterCount(state))
-  const heading = computed(() => {
+  const countNote = computed(() => {
     const q = state.query.trim()
     if (q) {
-      return `${total.value} ${rs('ResultsFor')} “${q}”`
+      return `${rs('ResultsFor')} “${q}”`
     }
-    return `${total.value} ${total.value === 1 ? rs('Recipe') : rs('Recipes')}`
+    return total.value === 1 ? rs('Recipe') : rs('Recipes')
   })
 
   // Don't repeat the spotlight recipe in the grid/list.
@@ -103,36 +105,32 @@
     spotlight.value ? results.value.filter((r) => r.slug !== spotlight.value!.slug) : results.value,
   )
 
+  const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
+
   const { sentinel } = useInfiniteScroll(loadMore)
 </script>
 
 <template>
-  <div class="mt-4 flex items-center justify-between gap-4">
-    <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
-  </div>
+  <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" class="mt-6" />
 
   <RecipeSearchHeader v-model:draft="draft" :create-recipe-url="createRecipeUrl" @submit="onSubmit" @clear="onClearSearch">
-    <RecipeResultsToolbar :heading="heading" v-model:sort="state.sort" v-model:view="state.view" />
+    <RecipeResultsToolbar v-model:sort="state.sort" v-model:view="state.view" />
   </RecipeSearchHeader>
 
-  <button
-    class="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-ink px-4 py-2 text-sm font-bold lg:hidden"
-    :class="sheetOpen ? 'bg-marker text-marker-ink' : 'text-ink'"
+  <Button
+    :variant="sheetOpen ? 'ink' : 'ghost'"
+    class="mb-6 lg:hidden"
     :aria-expanded="sheetOpen"
     aria-controls="recipe-filters"
     @click="sheetOpen = !sheetOpen"
   >
-    <i class="fa-solid fa-sliders"></i> <ResourceString for="Filters" />
-    <span
-      v-if="activeCount"
-      class="grid min-w-5 place-items-center rounded-full px-1.5 text-xs"
-      :class="sheetOpen ? 'bg-paper-2 text-ink' : 'bg-marker text-marker-ink'"
-      >{{ activeCount }}</span
-    >
-  </button>
+    <i class="fa-duotone fa-sliders" aria-hidden="true"></i>
+    <ResourceString for="Filters" />
+    <span v-if="activeCount" class="kcc-num">{{ activeCount }}</span>
+  </Button>
 
-  <div class="grid items-start gap-6 lg:grid-cols-[244px_1fr]">
-    <aside id="recipe-filters" :class="['rounded-3xl bg-paper-2 p-6 lg:sticky lg:top-4 lg:block', { hidden: !sheetOpen }]">
+  <div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-[244px_1fr]">
+    <aside id="recipe-filters" :class="['lg:sticky lg:top-6 lg:block', { hidden: !sheetOpen }]">
       <RecipeFilters
         :category-facets="facets.category"
         :diet-facets="facets.diet"
@@ -149,22 +147,37 @@
     </aside>
 
     <section class="min-w-0" :aria-busy="loading ? 'true' : 'false'" aria-live="polite">
+      <div class="kcc-secname">
+        <ResourceString for="Recipes" as="h2" />
+        <p class="kcc-kick">
+          <span class="kcc-num">{{ total }}</span> {{ countNote }}
+        </p>
+      </div>
+
       <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
 
-      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" />
+      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" class="mt-12" />
 
       <template v-if="listed.length || spotlight">
-        <div v-if="state.view === 'grid'" class="-mb-4 grid grid-cols-1 gap-x-4 *:mb-4 sm:grid-cols-2 lg:grid-cols-3">
-          <RecipeCard v-for="recipe in listed" :key="recipe.slug" :card="hitToCard(recipe, rs)" />
+        <div
+          v-if="state.view === 'grid'"
+          class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-9"
+        >
+          <RecipeCard
+            v-for="(recipe, index) in listed"
+            :key="recipe.slug"
+            :card="hitToCard(recipe, rs)"
+            :tear="tearFor(index)"
+          />
         </div>
 
-        <div v-else class="flex flex-col gap-4">
+        <div v-else class="flex flex-col gap-y-9">
           <RecipeListRow v-for="recipe in listed" :key="recipe.slug" :recipe />
         </div>
 
-        <div v-if="hasMore()" :ref="sentinel" class="flex items-center justify-center py-6 text-sm text-ink-soft">
+        <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-6">
           <span v-if="loading" class="flex items-center gap-2.5">
-            <i class="fa-solid fa-circle-notch fa-spin opacity-60"></i> <ResourceString for="LoadingMore" />
+            <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i> <ResourceString for="LoadingMore" />
           </span>
         </div>
       </template>

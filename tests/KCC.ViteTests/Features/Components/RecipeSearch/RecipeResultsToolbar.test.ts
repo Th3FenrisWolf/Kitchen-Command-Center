@@ -3,15 +3,15 @@ import { describe, expect, it } from 'vitest'
 import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'
 
 const render = (over: Record<string, unknown> = {}) =>
-  renderSsr(RecipeResultsToolbar, { heading: '42 Recipes', sort: 'relevant', view: 'grid', ...over })
+  renderSsr(RecipeResultsToolbar, { sort: 'relevant', view: 'grid', ...over })
 
 const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipeResultsToolbar', () => {
-  it('sets the count line at heading size and keeps it an h2', async () => {
+  it('carries no heading: the result count belongs to the results section, not the library sheet', async () => {
     const html = await render()
 
-    expect(html).toMatch(/<h2 class="kcc-h4[^"]*">42 Recipes<\/h2>/)
+    expect(html).not.toContain('<h2')
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 
