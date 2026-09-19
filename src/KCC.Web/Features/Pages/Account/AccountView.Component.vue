@@ -50,6 +50,7 @@
 <script setup lang="ts">
   import Badge from '~/Components/Badge/Badge.vue'
   import Button from '~/Components/Button/Button.vue'
+  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<AccountViewProps>()
 
@@ -61,11 +62,6 @@
   // The profile sheet beside the list takes the first tear, so the list starts at the second and no two
   // neighbours are torn alike.
   const tearFor = (index: number) => (((index + 1) % 6) + 1) as 1 | 2 | 3 | 4 | 5 | 6
-
-  const comingSoonSections = [
-    { key: 'Favorites', tear: 3 },
-    { key: 'RecentActivity', tear: 5 },
-  ] as const
 </script>
 
 <template>
@@ -144,20 +140,10 @@
       </ul>
     </section>
 
-    <!-- Kitchen sections the app has not built yet; the lavender sheet says so in the kit's own words. -->
+    <!-- Favorites/RecentActivity have no Shared.* counterpart, so sharedText resolves them against this page's own prefix instead. -->
     <div class="grid gap-y-9 md:col-start-1 md:row-start-2">
-      <KccSheet
-        v-for="section in comingSoonSections"
-        :key="section.key"
-        as="section"
-        wash="lavender"
-        :at="{ x: '85%', y: '15%', w: '50%', h: '55%' }"
-        icon="fa-duotone fa-hourglass-half"
-        :tear="section.tear"
-      >
-        <template #label><ResourceString for="ComingSoon" /></template>
-        <ResourceString :for="section.key" as="p" class="kcc-body" />
-      </KccSheet>
+      <ComingSoonSection text-key="Favorites" :shared-text="false" :tear="3" />
+      <ComingSoonSection text-key="RecentActivity" :shared-text="false" :tear="5" />
     </div>
   </div>
 </template>

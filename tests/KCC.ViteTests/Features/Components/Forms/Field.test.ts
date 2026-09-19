@@ -62,6 +62,21 @@ describe('Field', () => {
     expect(html).toContain('<span aria-hidden="true"> *</span>')
   })
 
+  it('takes rich hint content from the slot, still describedby-ing the same id', async () => {
+    const described = (slotProps?: { describedby?: string }) =>
+      h('input', { id: 'email', 'aria-describedby': slotProps?.describedby })
+
+    const html = await renderSsr(Field, baseProps, {
+      default: described,
+      hint: () => h('span', { 'data-resource-key': 'Account.EmailComingSoon' }, 'Coming soon'),
+    })
+
+    expect(html).toContain('aria-describedby="email-hint"')
+    expect(html).toContain('<p id="email-hint" class="kcc-kick text-ink">')
+    expect(html).toContain('<span data-resource-key="Account.EmailComingSoon">Coming soon</span>')
+    expect(html).not.toContain('kcc-well')
+  })
+
   it('prefers the error over the hint when both are set', async () => {
     const html = await renderSsr(Field, { ...baseProps, hint: 'ignored', error: 'Required' }, { default: control })
     expect(html).toContain('kcc-well--danger')

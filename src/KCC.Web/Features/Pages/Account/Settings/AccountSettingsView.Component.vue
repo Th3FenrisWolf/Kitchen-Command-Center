@@ -67,8 +67,6 @@
     confirmPassword: `${uid}-confirm-password`,
   }
 
-  const emailHint = computed(() => `${rs('EmailComingSoon')} · ${rs('EmailComingSoonNote')}`)
-
   const backHref = computed(() => props.backUrl.stripTilde())
 
   const saveProfile = async () => {
@@ -138,8 +136,9 @@
           <InputField :id="ids.lastName" v-model="lastName" type="text" name="LastName" autocomplete="family-name" />
         </Field>
 
-        <Field :control-id="ids.email" :hint="emailHint">
+        <Field :control-id="ids.email">
           <template #label><ResourceString for="Email" /></template>
+          <template #hint><ResourceString for="EmailComingSoon" /> · <ResourceString for="EmailComingSoonNote" /></template>
           <template #default="{ describedby }">
             <InputField
               :id="ids.email"

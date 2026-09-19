@@ -95,7 +95,7 @@ describe('AccountSettingsView', () => {
     )
   })
 
-  it('reads the email out with the coming-soon note as its hint', async () => {
+  it('reads the email out with the coming-soon note as its hint, each half its own resource string', async () => {
     const html = await render()
     const emailId = controlIdFor(html, 'Email')
     const email = tagWith(html, `id="${emailId}"`)
@@ -104,8 +104,8 @@ describe('AccountSettingsView', () => {
     expect(email).toContain('type="email"')
     expect(email).toContain(`aria-describedby="${emailId}-hint"`)
     expect(html).toContain(`<p id="${emailId}-hint" class="kcc-kick text-ink">`)
-    expect(html).toContain('Coming soon')
-    expect(html).toContain('Changing your email is on the way.')
+    // Two <ResourceString>s, not one interpolated string: each keeps its own in-context editor hook.
+    expect(html).toContain('<span>Coming soon</span> · <span>Changing your email is on the way.</span>')
   })
 
   it('keeps both status wells off the page until a form answers', async () => {
