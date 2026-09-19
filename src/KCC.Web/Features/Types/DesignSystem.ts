@@ -3,6 +3,12 @@ export const WASHES = ['peach', 'yellow', 'green', 'teal', 'sky', 'lavender', 'p
 
 export type Wash = (typeof WASHES)[number]
 
+/** `bg-peach` → `peach`; grounds map to `undefined` (no wash). */
+export function washOf(background: BackgroundColor): Wash | undefined {
+  const name = background.slice(3)
+  return (WASHES as readonly string[]).includes(name) ? (name as Wash) : undefined
+}
+
 export const BRAND_BACKGROUND_COLORS = [
   'bg-rosewater',
   'bg-flamingo',

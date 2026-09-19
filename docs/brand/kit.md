@@ -174,7 +174,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | Class | What | Notes |
 |---|---|---|
 | `kcc-grain`, `kcc-crayon` | desk grain under everything, wax tooth over everything | first and last child of `#app`; `App.vue` owns them; the crayon covers everything inside #app, so a surface teleported to body (cook mode) is deliberately untextured |
-| `kcc-slip` | tilt + positioning context | `--r` from the tear preset |
+| `kcc-slip` (+`--fill`) | tilt + positioning context; `--fill` stretches slip, torn and sheet to the grid cell | `--r` from the tear preset; a child sized in percentages (the card drawer) needs `--fill` to have a definite box |
 | `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
 | `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px |
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y --w --h` placement |

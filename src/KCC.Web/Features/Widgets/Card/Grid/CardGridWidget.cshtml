@@ -5,25 +5,21 @@
 
 @if (Model.Cards.Any())
 {
-  <div class="grid gap-8 lg:grid-cols-2 @Model.Properties.GetMarginClasses()" data-vue-mount>
+  var i = 0;
+
+  <div class="grid gap-x-7 gap-y-9 lg:grid-cols-2 @Model.Properties.GetMarginClasses()" data-vue-mount>
     @foreach (var card in Model.Cards)
     {
-      <Card
-        key="@card.Heading"
-        card-color="@card.BackgroundColor"
-        card-text-color="text-ink-on-wash"
-        drawer-color="bg-paper-2"
-        drawer-text-color="text-ink"
-      >
+      <Card key="@card.Heading" card-color="@card.BackgroundColor" :tear="@((i % 6) + 1)">
         <div>
-          <h2 class="text-4.5xl">@card.Heading</h2>
-          <h3>@card.SubHeading</h3>
+          <h2 class="kcc-h4">@card.Heading</h2>
+          <h3 class="kcc-body text-ink-soft">@card.SubHeading</h3>
         </div>
 
         @if (!string.IsNullOrEmpty(card.Body))
         {
           <template #drawer>
-            <p class="text-balance">@card.Body</p>
+            <p class="kcc-body">@card.Body</p>
 
             @if (card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
             {
@@ -34,6 +30,8 @@
           </template>
         }
       </Card>
+
+      i++;
     }
   </div>
 }

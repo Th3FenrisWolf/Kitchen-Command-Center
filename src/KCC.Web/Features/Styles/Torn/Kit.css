@@ -41,6 +41,15 @@
     transform: rotate(calc(var(--r, 0) * 1deg));
   }
 
+  /* Stretches a slip to its grid cell, paper and all: a row of cards then reads as one height, and a child
+     sized in percentages (the card widget's drawer) has a definite box to collapse against — a percentage
+     height against an auto-height parent computes to auto, which leaves every drawer open. */
+  .kcc-slip--fill,
+  .kcc-slip--fill > .kcc-torn,
+  .kcc-slip--fill > .kcc-torn > .kcc-sheet {
+    height: 100%;
+  }
+
   /* The filter has to sit outside the clipped element, or the shadow is clipped away with the paper. */
   .kcc-torn {
     filter: drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall));

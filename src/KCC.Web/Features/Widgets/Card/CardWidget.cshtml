@@ -9,18 +9,16 @@
     data-vue-mount
     key="@Model.Card.Heading"
     card-color="@Model.Card.BackgroundColor"
-    card-text-color="text-ink-on-wash"
-    drawer-color="bg-paper-2"
-    drawer-text-color="text-ink"
+    seed="@Model.Card.Heading"
     margin-classes="@Model.Properties.GetMarginClasses()"
   >
     <div>
-      <h2 class="text-4.5xl">@Model.Card.Heading</h2>
-      <h3>@Model.Card.SubHeading</h3>
+      <h2 class="kcc-h4">@Model.Card.Heading</h2>
+      <h3 class="kcc-body text-ink-soft">@Model.Card.SubHeading</h3>
     </div>
 
     <template #drawer v-if="@Vue.Prop(!string.IsNullOrEmpty(Model.Card.Body) || Model.Card.Link.Any())">
-      <p class="text-balance">@Model.Card.Body</p>
+      <p class="kcc-body">@Model.Card.Body</p>
 
       @if (Model.Card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
       {

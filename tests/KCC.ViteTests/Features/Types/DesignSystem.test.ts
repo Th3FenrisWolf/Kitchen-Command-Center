@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { BACKGROUND_COLORS, TEXT_COLORS, WASHES, toBackgroundColor, toTextColor } from '~/Types/DesignSystem'
+import { BACKGROUND_COLORS, TEXT_COLORS, WASHES, toBackgroundColor, toTextColor, washOf } from '~/Types/DesignSystem'
 
 const tailwindConfigCss = readFileSync(
   fileURLToPath(new URL('../../../../src/KCC.Web/Features/Styles/TailwindConfig.css', import.meta.url)),
@@ -74,3 +74,19 @@ function expand(pattern: string): string[] {
 
   return options.split(',').flatMap((option) => expand(pattern.replace(placeholder, option)))
 }
+
+describe('washOf', () => {
+  it('reads the wash name out of a wash background', () => {
+    expect(washOf('bg-peach')).toBe('peach')
+  })
+
+  it('gives a ground no wash', () => {
+    expect(washOf('bg-paper')).toBeUndefined()
+  })
+
+  // CMS content still carries Softbound hues until they are migrated; the sheet then renders bare paper
+  // rather than a `var(--color-rosewater)` that resolves to nothing.
+  it('gives a retired hue no wash', () => {
+    expect(washOf('bg-rosewater')).toBeUndefined()
+  })
+})
