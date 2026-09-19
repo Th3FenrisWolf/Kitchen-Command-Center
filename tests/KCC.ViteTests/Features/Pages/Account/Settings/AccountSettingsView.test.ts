@@ -37,9 +37,9 @@ const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-
 const controlIdFor = (html: string, label: string) =>
   html.match(new RegExp(`<label for="([^"]+)" class="kcc-lbl"><!--\\[--><span>${label}`))?.[1] ?? ''
 
-// The hero above the forms is still Softbound — SmallHero keeps its place on the retired-token allowlist —
-// so every assertion about the sheets reads the markup from the first slip down.
-const sheetsOf = (html: string) => html.slice(html.indexOf('kcc-slip'))
+// The hero is a sheet of its own; these assertions count and describe the form's three sheets, so they read
+// the markup from the grid below it down.
+const sheetsOf = (html: string) => html.slice(html.indexOf('<div class="mt-6 grid'))
 
 describe('AccountSettingsView', () => {
   it('sets each group on its own crisp sheet, tears that never repeat', async () => {
@@ -135,8 +135,8 @@ describe('AccountSettingsView', () => {
     expect(html).not.toContain('text-danger-ink')
   })
 
-  it('leaves no Softbound remnant below the hero', async () => {
-    const sheets = sheetsOf(await render())
+  it('leaves no Softbound remnant on the page', async () => {
+    const sheets = await render()
 
     expect(sheets).not.toMatch(/sk-[a-z]/)
     expect(sheets).not.toMatch(/\bv-ink\b/)

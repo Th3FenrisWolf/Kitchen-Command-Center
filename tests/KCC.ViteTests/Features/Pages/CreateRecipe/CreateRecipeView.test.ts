@@ -7,8 +7,8 @@ import { renderSsr } from '../../../support/renderSsr'
 // summary and the submitted sheet are client state this suite cannot reach.
 const render = () => renderSsr(CreateRecipeView, { resourceStrings: {} }, undefined, { ResourceString })
 
-// The hero above the wizard is still Softbound — SmallHero keeps its place on the retired-token
-// allowlist — so every assertion reads the markup from the progress list down.
+// The hero above the wizard is its own sheet, with its own suite; every assertion below reads the markup
+// from the progress list down.
 const wizardOf = (html: string) => html.slice(html.indexOf('aria-label="Steps"'))
 
 const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''

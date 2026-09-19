@@ -2,11 +2,11 @@
 
 @model ComponentViewModel<ImageWidgetProperties>
 
-<div class="sk-fold relative @Model.Properties.GetMarginClasses()">
-    @if (!(Model.Properties.Image?.Any() ?? false))
-    {
-        <strong>@WidgetConstants.ConfigHeading</strong>
-        <p>@WidgetConstants.ConfigSubHeading</p>
-    }
-    <image item="@Model.Properties.Image?.FirstOrDefault()" />
+<div class="@Model.Properties.GetMarginClasses()">
+  @if (!(Model.Properties.Image?.Any() ?? false))
+  {
+    <strong>@WidgetConstants.ConfigHeading</strong>
+    <p>@WidgetConstants.ConfigSubHeading</p>
+  }
+  <image item="@Model.Properties.Image?.FirstOrDefault()" class="block w-full object-cover" />
 </div>

@@ -2,33 +2,33 @@
 
 @model SmallHeroWidgetViewModel
 
-@{
-  var buttonClasses = Model.Dark
-    ? "rounded-3xl bg-paper-2 px-4 py-2 text-xl text-ink"
-    : "rounded-3xl bg-paper px-4 py-2 text-xl text-ink";
-}
-
 <SmallHero
   data-vue-mount
   :dark="@(Model.Dark ? "true" : "false")"
   class="@Model.Properties.GetMarginClasses()"
 >
-  <template #eyebrow>@Model.Eyebrow</template>
+  @if (!string.IsNullOrWhiteSpace(Model.Eyebrow))
+  {
+    <template #eyebrow>@Model.Eyebrow</template>
+  }
 
   <template #title>@Model.Title</template>
 
-  <template #action-button>
-    @if (Model.ActionLink is not null)
-    {
-      <a
+  @if (Model.ActionLink is not null)
+  {
+    <template #action-button>
+      <button-link
+        class="kcc-btn--ghost"
         href="@Model.ActionLink.Url"
         target="@Model.ActionLink.Target"
-        class="@buttonClasses"
       >
         @Model.ActionLink.DisplayText
-      </a>
-    }
-  </template>
+      </button-link>
+    </template>
+  }
 
-  <template #description>@Model.Description</template>
+  @if (!string.IsNullOrWhiteSpace(Model.Description))
+  {
+    <template #description>@Model.Description</template>
+  }
 </SmallHero>

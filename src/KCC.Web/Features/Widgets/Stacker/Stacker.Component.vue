@@ -1,7 +1,8 @@
 <!-- #region Stacker Component Properties -->
 <script lang="ts">
   import { onMounted, ref } from 'vue'
-  import type { BackgroundColor } from '~/Types/DesignSystem'
+  import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
+  import { washOf, type BackgroundColor } from '~/Types/DesignSystem'
 
   /**
    * Column of sticky cards that shrink as the next one scrolls over them.
@@ -28,6 +29,8 @@
 <script setup lang="ts">
   const containerRef = ref<HTMLElement>()
 
+  // The slip is the sentinel's next sibling, so it is the slip that takes `.stuck` and shrinks. `scale-*`
+  // sets the `scale` property, which composes with the slip's `rotate` rather than replacing it.
   onMounted(() => {
     const observer = new IntersectionObserver(
       ([e]) => e?.target.nextElementSibling?.classList.toggle('stuck', e.boundingClientRect.top < 0),
@@ -41,10 +44,12 @@
   })
 
   const props = defineProps<StackerProps>()
+
+  const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
 </script>
 
 <template>
-  <div ref="containerRef" class="grid items-center gap-8">
+  <div ref="containerRef" class="grid items-center gap-9">
     <div
       v-for="(card, index) in props.cards"
       :key="card.heading"
@@ -53,17 +58,15 @@
       :style="`top: ${32 * (index + 1)}px`"
     >
       <div data-sentinel class="absolute size-0" :style="`top: -${32 * (index + 1) + 1}px`"></div>
-      <div
-        v-ink="'card'"
-        :class="[
-          'aspect-square origin-top rounded-3xl p-8 text-center transition-all duration-100 [.stuck]:scale-95 [.stuck]:shadow-none',
-          '[.last_div]:scale-100',
-          card.backgroundColor,
-        ]"
+      <KccSheet
+        :tear="tearFor(index)"
+        :wash="washOf(card.backgroundColor)"
+        :at="{ x: '85%', y: '90%', w: '55%', h: '50%' }"
+        class="origin-top transition-all duration-100 [.last_div]:scale-100 [.stuck]:scale-95"
       >
-        <h2 class="text-4.5xl">{{ card.heading }}</h2>
-        <p class="text-balance">{{ card.subHeading }}</p>
-      </div>
+        <h2 class="kcc-h4">{{ card.heading }}</h2>
+        <p class="kcc-body">{{ card.subHeading }}</p>
+      </KccSheet>
     </div>
   </div>
 </template>

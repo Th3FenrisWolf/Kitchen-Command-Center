@@ -51,11 +51,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Sections/MultipleColumn/MultipleColumnSection.cshtml',
   'Features/Styles/Sketch/',
   'Features/Types/DesignSystem.ts',
-  'Features/Widgets/Hero/SmallHero.Component.vue',
-  'Features/Widgets/Hero/SmallHeroWidget.cshtml',
-  'Features/Widgets/Image/ImageWidget.cshtml',
-  'Features/Widgets/Stacker/Stacker.Component.vue',
-  'Features/Widgets/Stacker/StackerWidget.cshtml',
   'App_Data/CIRepository/@global/cms.contenttype/kcc.carditem.xml',
   'App_Data/CIRepository/@global/contentitemdata.kcc.carditem/',
 ])

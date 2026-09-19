@@ -2,17 +2,17 @@
 
 @model StackerWidgetViewModel
 
-<div class="grid items-start gap-8 lg:grid-cols-2">
+<div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-2">
   <div class="grid gap-4 lg:sticky lg:top-8">
-    <h2 class="text-4.5xl">@Model.Heading</h2>
+    <h2 class="kcc-h3">@Model.Heading</h2>
 
-    <div class="text-pretty">
+    <div class="kcc-body">
       @Html.Raw(Html.Kentico().ResolveRichText(Model.Body))
     </div>
 
     @if (Model.Image is not null)
     {
-      <img class="w-full rounded-3xl" src="@Model.Image.Asset.Url.StripTilde()" alt="@Model.Image.AltText" />
+      <img class="block w-full object-cover" src="@Model.Image.Asset.Url.StripTilde()" alt="@Model.Image.AltText" />
     }
   </div>
 
