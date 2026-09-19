@@ -12,7 +12,7 @@
 
   export interface ComingSoonSectionProps {
     /**
-     * Resource string key, resolved against the Shared prefix unless `sharedText` is false.
+     * Resource string key for the body text, resolved under the same prefix as the label.
      */
     textKey: string
 
@@ -23,18 +23,17 @@
     tear?: Tear
 
     /**
-     * Resolve `textKey` against the Shared prefix. A caller whose copy lives under its own page
-     * prefix instead — no matching `Shared.*` key exists — sets this false; the `ComingSoon` label
-     * itself stays Shared regardless.
+     * Resolve the label and `textKey` against the Shared prefix. A page whose copy lives under its
+     * own prefix instead — no matching `Shared.*` keys exist — opts out once for the whole section.
      * @default true
      */
-    sharedText?: boolean
+    shared?: boolean
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { textKey, tear = 3, sharedText = true } = defineProps<ComingSoonSectionProps>()
+  const { textKey, tear = 3, shared = true } = defineProps<ComingSoonSectionProps>()
 </script>
 
 <template>
@@ -44,7 +43,7 @@
     icon="fa-duotone fa-hourglass-half"
     :tear="tear"
   >
-    <template #label><ResourceString shared for="ComingSoon" /></template>
-    <ResourceString :shared="sharedText" :for="textKey" as="p" class="kcc-body" />
+    <template #label><ResourceString :shared="shared" for="ComingSoon" /></template>
+    <ResourceString :shared="shared" :for="textKey" as="p" class="kcc-body" />
   </KccSheet>
 </template>

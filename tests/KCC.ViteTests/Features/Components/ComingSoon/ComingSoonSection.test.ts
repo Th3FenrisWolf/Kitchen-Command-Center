@@ -12,7 +12,7 @@ describe('ComingSoonSection', () => {
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-hourglass-half" aria-hidden="true">')
     // No resource-strings provider in this render: <ResourceString> falls back to its own resolved key.
     expect(html).toContain('Shared.ComingSoon')
-    // sharedText defaults true, so the body key resolves against Shared too.
+    // shared defaults true, so the body key resolves against Shared too.
     expect(html).toContain('Shared.RankingComingSoon')
   })
 
@@ -22,13 +22,14 @@ describe('ComingSoonSection', () => {
     expect(html).toContain('kcc-slip kcc-tear-5')
   })
 
-  it('resolves the body text against the page prefix when sharedText is false, but keeps the label shared', async () => {
-    const html = await renderSsr(ComingSoonSection, { textKey: 'Favorites', sharedText: false })
+  it('resolves both the label and the body against the page prefix when shared is false', async () => {
+    const html = await renderSsr(ComingSoonSection, { textKey: 'Favorites', shared: false })
 
-    // No resource-strings provider or page prefix in this render, so the un-shared body falls back to
-    // its own raw key, not 'Shared.Favorites'.
+    // No resource-strings provider or page prefix in this render, so the un-shared label and body fall
+    // back to their own raw keys, not 'Shared.ComingSoon' / 'Shared.Favorites'.
+    expect(html).toContain('>ComingSoon<')
     expect(html).toContain('>Favorites<')
+    expect(html).not.toContain('Shared.ComingSoon')
     expect(html).not.toContain('Shared.Favorites')
-    expect(html).toContain('Shared.ComingSoon')
   })
 })

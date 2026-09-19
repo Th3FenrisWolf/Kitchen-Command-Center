@@ -147,14 +147,12 @@ describe('AccountView', () => {
     const comingSoon = comingSoonOf(await render())
 
     expect(comingSoon).toContain('fa-duotone fa-hourglass-half')
+    expect(comingSoon.match(/Coming soon/g)).toHaveLength(2)
     expect(comingSoon).toContain('Favorites')
     expect(comingSoon).toContain('Recent activity')
     expect(comingSoon).toContain('kcc-tear-3')
     expect(comingSoon).toContain('kcc-tear-5')
     expect(comingSoon.match(/kcc-wash/g)).toHaveLength(2)
-    // AccountController doesn't request Shared.ComingSoon (only Account.ComingSoon, which the shared
-    // label no longer reads), so it falls back to its own key here the same as it would in production.
-    expect(comingSoon.match(/Shared\.ComingSoon/g)).toHaveLength(2)
   })
 
   it('leaves no Softbound remnant on the profile', async () => {

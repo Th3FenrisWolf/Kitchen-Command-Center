@@ -140,10 +140,10 @@
       </ul>
     </section>
 
-    <!-- Favorites/RecentActivity have no Shared.* counterpart, so sharedText resolves them against this page's own prefix instead. -->
+    <!-- No Shared.ComingSoon/Favorites/RecentActivity keys exist, so shared resolves the whole section against this page's own Account prefix. -->
     <div class="grid gap-y-9 md:col-start-1 md:row-start-2">
-      <ComingSoonSection text-key="Favorites" :shared-text="false" :tear="3" />
-      <ComingSoonSection text-key="RecentActivity" :shared-text="false" :tear="5" />
+      <ComingSoonSection text-key="Favorites" :shared="false" :tear="3" />
+      <ComingSoonSection text-key="RecentActivity" :shared="false" :tear="5" />
     </div>
   </div>
 </template>
