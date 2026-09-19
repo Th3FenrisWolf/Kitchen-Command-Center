@@ -56,15 +56,15 @@
 <template>
   <KccSheet
     :wash="washOf(cardColor)"
-    :at="{ x: '85%', y: '90%', w: '55%', h: '50%' }"
+    :at="{ x: '88%', y: '18%', w: '38%', h: '60%' }"
     :tear="resolvedTear"
     :class="['group/card kcc-slip--fill', marginClasses]"
   >
     <div class="flex h-full flex-col">
       <div
         :class="[
-          'relative top-1 transition-all',
-          drawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
+          'relative transition-all',
+          drawer && 'top-1 group-focus-within/card:top-0 group-hover/card:top-0',
           drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
         ]"
       >

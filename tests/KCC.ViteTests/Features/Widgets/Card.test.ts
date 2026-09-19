@@ -19,6 +19,8 @@ const drawerClasses = (html: string) => classesOf(html, /<div[^>]*data-card-draw
 
 const slipClasses = (html: string) => classesOf(html, /<div class="kcc-slip[^"]*"[^>]*>/, 'kcc-slip')
 
+const headingClasses = (html: string) => classesOf(html, /<div class="relative[^"]*"[^>]*>/, 'the heading wrapper')
+
 describe('Card structure', () => {
   it('is a slip whose group and margins ride on the tilt', async () => {
     const html = await render({ marginClasses: 'mt-12 mb-4' })
@@ -29,11 +31,11 @@ describe('Card structure', () => {
   })
 
   // Two rules keep the drawer's percentage height working now that the card is paper. `kcc-slip--fill`
-  // carries the grid cell's height down to the sheet, so the percentage has a definite box — against an
+  // carries the parent's height down to the sheet, so the percentage has a definite box — against an
   // auto-height parent it computes to auto and every drawer renders open. The flex column then lets the
   // open drawer shrink into what the heading leaves, rather than running 100% of the sheet past its
   // bottom edge, where the tear cuts the link off.
-  it('fills its grid cell so the drawer has a box to collapse against', async () => {
+  it('passes its parent height down so the drawer has a box to collapse against', async () => {
     const html = await render()
 
     expect(slipClasses(html)).toContain('kcc-slip--fill')
@@ -41,26 +43,47 @@ describe('Card structure', () => {
   })
 
   it('nudges the heading up as the drawer opens', async () => {
-    const classes = classesOf(await render(), /<div class="relative top-1[^"]*"[^>]*>/, 'the heading wrapper')
+    const classes = headingClasses(await render())
 
     expect(classes).toEqual(
       expect.arrayContaining(['relative', 'top-1', 'group-hover/card:top-0', 'group-focus-within/card:top-0']),
     )
   })
+
+  // The nudge only pays for itself when there is a drawer to return from. With none, nothing would ever
+  // set `top-0` again, so the heading would sit 4px under the sheet's rule for good.
+  it('leaves a drawerless heading on the rule', async () => {
+    const classes = headingClasses(await renderSsr(Card, {}, { default: () => 'Weeknight' }))
+
+    expect(classes).toContain('relative')
+    expect(classes).not.toContain('top-1')
+  })
 })
 
 describe('Card wash', () => {
-  it('pools the editor colour under the bottom-right corner', async () => {
+  // Top-right: clear of the left-aligned heading, and clear of the opaque drawer that fills everything
+  // below it on hover, so the card keeps its colour while it is being read.
+  it('pools the editor colour under the top-right corner', async () => {
     const html = await render({ cardColor: 'bg-peach' })
 
     expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:85%;--y:90%;--w:55%;--h:50%;" aria-hidden="true">',
+      '<span class="kcc-wash" style="--c:var(--color-peach);--x:88%;--y:18%;--w:38%;--h:60%;" aria-hidden="true">',
     )
     expect(html.match(/kcc-wash/g)).toHaveLength(1)
   })
 
   it('leaves a paper ground unwashed', async () => {
     expect(await render({ cardColor: 'bg-paper' })).not.toContain('kcc-wash')
+  })
+
+  it('leaves a card the editor gave no colour unwashed', async () => {
+    expect(await render()).not.toContain('kcc-wash')
+  })
+
+  // Razor writes `card-color=""` for a content item with no BackgroundColor, which never reaches the
+  // prop default.
+  it('leaves an empty colour unwashed', async () => {
+    expect(await render({ cardColor: '' })).not.toContain('kcc-wash')
   })
 
   // Content still carries Softbound hues until the CMS migration; an unknown name is no wash rather than

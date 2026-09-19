@@ -5,29 +5,33 @@
 
 @if (Model.Card is not null)
 {
-  <Card
-    data-vue-mount
-    key="@Model.Card.Heading"
-    card-color="@Model.Card.BackgroundColor"
-    seed="@Model.Card.Heading"
-    margin-classes="@Model.Properties.GetMarginClasses()"
-  >
-    <div>
-      <h2 class="kcc-h4">@Model.Card.Heading</h2>
-      <h3 class="kcc-body text-ink-soft">@Model.Card.SubHeading</h3>
-    </div>
+  @* The grid is what gives the slip a definite height, which its drawer collapses against; a lone card has
+     no other stretching ancestor on a live page. *@
+  <div class="grid">
+    <Card
+      data-vue-mount
+      key="@Model.Card.Heading"
+      card-color="@Model.Card.BackgroundColor"
+      seed="@Model.Card.Heading"
+      margin-classes="@Model.Properties.GetMarginClasses()"
+    >
+      <div>
+        <h2 class="kcc-h4">@Model.Card.Heading</h2>
+        <h3 class="kcc-body text-ink-soft">@Model.Card.SubHeading</h3>
+      </div>
 
-    <template #drawer v-if="@Vue.Prop(!string.IsNullOrEmpty(Model.Card.Body) || Model.Card.Link.Any())">
-      <p class="kcc-body">@Model.Card.Body</p>
+      <template #drawer v-if="@Vue.Prop(!string.IsNullOrEmpty(Model.Card.Body) || Model.Card.Link.Any())">
+        <p class="kcc-body">@Model.Card.Body</p>
 
-      @if (Model.Card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
-      {
-        <UnderlineLink href="@link.Url">
-          @link.DisplayText
-        </UnderlineLink>
-      }
-    </template>
-  </Card>
+        @if (Model.Card.Link.FirstOrDefault()?.MapToPageLink() is PageLink link)
+        {
+          <UnderlineLink href="@link.Url">
+            @link.DisplayText
+          </UnderlineLink>
+        }
+      </template>
+    </Card>
+  </div>
 }
 else
 {

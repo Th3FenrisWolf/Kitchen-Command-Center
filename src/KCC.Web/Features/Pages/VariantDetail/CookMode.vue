@@ -150,12 +150,7 @@
       <div ref="panel" tabindex="-1" class="h-full outline-none">
         <!-- The sheet is the viewport: height flows down the slip and the torn wrapper into the paper, and
              the step column scrolls inside the padding rather than past the tear. -->
-        <KccSheet
-          crisp
-          :tear="3"
-          pad="clamp(24px, 6vw, 48px)"
-          class="mx-auto h-full max-w-3xl [&>.kcc-torn]:h-full [&>.kcc-torn>.kcc-sheet]:h-full"
-        >
+        <KccSheet crisp :tear="3" pad="clamp(24px, 6vw, 48px)" class="kcc-slip--fill mx-auto max-w-3xl">
           <div class="flex h-full flex-col">
             <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
               <!-- Interpolated rather than two <ResourceString>: a whitespace-only text node between two

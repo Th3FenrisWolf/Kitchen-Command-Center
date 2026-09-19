@@ -41,9 +41,9 @@
     transform: rotate(calc(var(--r, 0) * 1deg));
   }
 
-  /* Stretches a slip to its grid cell, paper and all: a row of cards then reads as one height, and a child
-     sized in percentages (the card widget's drawer) has a definite box to collapse against — a percentage
-     height against an auto-height parent computes to auto, which leaves every drawer open. */
+  /* Passes a definite-height parent down through the torn wrapper into the paper, so a child sized in
+     percentages has a box to resolve against: against an auto-height parent a percentage height computes
+     to auto instead. */
   .kcc-slip--fill,
   .kcc-slip--fill > .kcc-torn,
   .kcc-slip--fill > .kcc-torn > .kcc-sheet {
