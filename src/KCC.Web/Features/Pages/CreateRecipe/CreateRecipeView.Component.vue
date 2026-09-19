@@ -225,6 +225,7 @@
               v-model="ingredient.name"
               class="min-w-40 shrink grow basis-1/3"
               type="text"
+              aria-label="Ingredient name"
               placeholder="Ingredient name"
             />
 
@@ -244,6 +245,7 @@
               type="number"
               inputmode="decimal"
               step="0.01"
+              aria-label="Quantity"
               placeholder="Qty"
               :disabled="ingredient.isEyeballed"
             />
@@ -252,6 +254,7 @@
               v-model="ingredient.unit"
               class="shrink basis-20"
               type="text"
+              aria-label="Unit"
               placeholder="Unit"
               :disabled="ingredient.isEyeballed"
             />
@@ -268,12 +271,8 @@
           </li>
         </ul>
 
-        <Button
-          class="kcc-btn--icon self-start"
-          aria-label="Add Ingredient"
-          @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })"
-        >
-          <i class="fa-duotone fa-plus" aria-hidden="true"></i>
+        <Button variant="ghost" class="self-start" @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i>Add Ingredient
         </Button>
 
         <div class="flex flex-wrap justify-between gap-3">
@@ -293,7 +292,7 @@
           <li v-for="(instruction, index) in instructionList" :key="index" class="grid-cols-[28px_minmax(0,1fr)_auto]">
             <span class="kcc-n">{{ stepNumber(index) }}</span>
 
-            <TextAreaField v-model="instruction.text" placeholder="Describe this step" />
+            <TextAreaField v-model="instruction.text" aria-label="Describe this step" placeholder="Describe this step" />
 
             <Button
               variant="ghost"
@@ -307,8 +306,8 @@
           </li>
         </ol>
 
-        <Button class="kcc-btn--icon self-start" aria-label="Add Step" @click="instructionList.push({ text: '' })">
-          <i class="fa-duotone fa-plus" aria-hidden="true"></i>
+        <Button variant="ghost" class="self-start" @click="instructionList.push({ text: '' })">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i>Add Step
         </Button>
 
         <div class="flex flex-wrap justify-between gap-3">

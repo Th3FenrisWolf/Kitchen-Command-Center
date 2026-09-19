@@ -156,11 +156,13 @@
       <h2 class="sr-only">{{ rs('VariantInfo') }}</h2>
 
       <form class="flex flex-col gap-6" @submit.prevent="step++">
-        <Field :label="rs('VariantName')" :control-id="ids.variantName" required>
+        <Field :control-id="ids.variantName" required>
+          <template #label><ResourceString for="VariantName" /></template>
           <InputField :id="ids.variantName" v-model="variantName" required type="text" />
         </Field>
 
-        <Field :label="rs('Description')" :control-id="ids.variantDescription">
+        <Field :control-id="ids.variantDescription">
+          <template #label><ResourceString for="Description" /></template>
           <TextAreaField
             :id="ids.variantDescription"
             v-model="variantDescription"
@@ -169,15 +171,18 @@
         </Field>
 
         <div class="grid gap-x-7 gap-y-6 md:grid-cols-3">
-          <Field :label="rs('PrepTime')" :control-id="ids.prepTime">
+          <Field :control-id="ids.prepTime">
+            <template #label><ResourceString for="PrepTime" /></template>
             <NumberStepper :id="ids.prepTime" v-model="prepTime" :min="0" :unit="rs('Min')" :label="rs('PrepTime')" />
           </Field>
 
-          <Field :label="rs('CookTime')" :control-id="ids.cookTime">
+          <Field :control-id="ids.cookTime">
+            <template #label><ResourceString for="CookTime" /></template>
             <NumberStepper :id="ids.cookTime" v-model="cookTime" :min="0" :unit="rs('Min')" :label="rs('CookTime')" />
           </Field>
 
-          <Field :label="rs('Servings')" :control-id="ids.servings">
+          <Field :control-id="ids.servings">
+            <template #label><ResourceString for="Servings" /></template>
             <NumberStepper :id="ids.servings" v-model="servings" :min="0" :label="rs('Servings')" />
           </Field>
         </div>
@@ -248,12 +253,8 @@
           </li>
         </ul>
 
-        <Button
-          class="kcc-btn--icon self-start"
-          :aria-label="rs('AddIngredient')"
-          @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })"
-        >
-          <i class="fa-duotone fa-plus" aria-hidden="true"></i>
+        <Button variant="ghost" class="self-start" @click="ingredientList.push({ name: '', unit: '', isEyeballed: false })">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddIngredient" />
         </Button>
 
         <div class="flex flex-wrap justify-between gap-3">
@@ -278,7 +279,11 @@
           <li v-for="(instruction, index) in instructionList" :key="index" class="grid-cols-[28px_minmax(0,1fr)_auto]">
             <span class="kcc-n">{{ stepNumber(index) }}</span>
 
-            <TextAreaField v-model="instruction.text" :placeholder="rs('DescribeThisStep')" />
+            <TextAreaField
+              v-model="instruction.text"
+              :aria-label="rs('DescribeThisStep')"
+              :placeholder="rs('DescribeThisStep')"
+            />
 
             <Button
               variant="ghost"
@@ -292,8 +297,8 @@
           </li>
         </ol>
 
-        <Button class="kcc-btn--icon self-start" :aria-label="rs('AddStep')" @click="instructionList.push({ text: '' })">
-          <i class="fa-duotone fa-plus" aria-hidden="true"></i>
+        <Button variant="ghost" class="self-start" @click="instructionList.push({ text: '' })">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddStep" />
         </Button>
 
         <div class="flex flex-wrap justify-between gap-3">

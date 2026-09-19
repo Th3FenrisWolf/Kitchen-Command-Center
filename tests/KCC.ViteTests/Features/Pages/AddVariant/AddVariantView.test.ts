@@ -84,6 +84,17 @@ describe('AddVariantView', () => {
     expect(wizard).toContain('<span aria-hidden="true"> *</span>')
   })
 
+  it('takes the field label from a ResourceString, not a bare prop', async () => {
+    const wizard = wizardOf(await render())
+
+    // `data-resource-key`/`kcc-rs-editable` (ResourceString.Component.vue) only render in preview mode,
+    // which this suite doesn't inject, so they can't be the signal here. What SSR without preview can
+    // show is the wrapping element ResourceString always renders (`as` defaults to `span`): a `label`
+    // string prop interpolates as bare text with no wrapper, so the `<span>` proves the field went
+    // through the slot.
+    expect(wizard).toMatch(/<label for="[^"]+" class="kcc-lbl">(?:<!--\[-->)?<span>Variant name<\/span>/)
+  })
+
   it('leaves the stepper its own accessible names beside the visible label', async () => {
     const wizard = wizardOf(await render())
 
