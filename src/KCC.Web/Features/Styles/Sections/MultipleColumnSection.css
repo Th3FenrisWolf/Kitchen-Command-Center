@@ -1,15 +1,16 @@
 @layer components {
   .multiple-column-section {
-    --grid-layout-gap: calc(var(--spacing) * 8);
+    --grid-layout-gap: 28px;
     --min-column-width: 100px;
     --column-count: 1;
     --gap-count: calc(var(--column-count) - 1);
     --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
     --max-column-width: calc((100% - var(--total-gap-width)) / var(--column-count));
+    column-gap: var(--grid-layout-gap);
 
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(max(var(--min-column-width), var(--max-column-width)), 1fr));
-    grid-gap: var(--grid-layout-gap);
+    row-gap: 36px;
 
     &.left-two-thirds {
       grid-template-columns: minmax(var(--min-column-width), 2fr) minmax(var(--min-column-width), 1fr);

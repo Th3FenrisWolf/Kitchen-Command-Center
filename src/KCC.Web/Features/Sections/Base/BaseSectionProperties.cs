@@ -18,22 +18,12 @@ public enum SectionBackgroundColorOptions
 {
     [TailwindBackgroundColor(TailwindColor.Desk)]
     Desk,
+    [TailwindBackgroundColor(TailwindColor.DeskTwo)]
+    DeskTwo,
     [TailwindBackgroundColor(TailwindColor.Paper)]
     Paper,
     [TailwindBackgroundColor(TailwindColor.PaperTwo)]
     PaperTwo,
-    [TailwindBackgroundColor(TailwindColor.Peach)]
-    Peach,
-    [TailwindBackgroundColor(TailwindColor.Yellow)]
-    Yellow,
-    [TailwindBackgroundColor(TailwindColor.Green)]
-    Green,
-    [TailwindBackgroundColor(TailwindColor.Teal)]
-    Teal,
-    [TailwindBackgroundColor(TailwindColor.Sky)]
-    Sky,
-    [TailwindBackgroundColor(TailwindColor.Lavender)]
-    Lavender,
 }
 
 public class BaseSectionProperties : ISectionProperties
