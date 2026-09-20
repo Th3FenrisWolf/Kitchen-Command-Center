@@ -69,11 +69,22 @@
         </div>
 
         <p v-if="rating || notes.length || chips.length" class="kcc-meta">
-          <span v-if="rating" class="kcc-num" data-testid="recipe-card-rating" :data-average-rating="rating.average">
+          <span
+            v-if="rating"
+            class="kcc-num"
+            role="img"
+            :aria-label="`${rating.text} of 5 stars`"
+            data-testid="recipe-card-rating"
+            :data-average-rating="rating.average"
+          >
             <i class="fa-duotone fa-star" aria-hidden="true"></i> {{ rating.text }}
           </span>
           <span v-for="note in notes" :key="note">{{ note }}</span>
-          <span v-for="(chip, i) in chips" :key="i" class="kcc-num">
+          <span
+            v-for="(chip, i) in chips"
+            :key="i"
+            :class="['kcc-num', card.trailingStat && chip.key === 'time' && 'sm:hidden']"
+          >
             <i v-if="chip.icon" :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}
           </span>
         </p>

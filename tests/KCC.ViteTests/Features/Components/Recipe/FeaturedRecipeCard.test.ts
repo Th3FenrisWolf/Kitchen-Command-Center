@@ -139,7 +139,9 @@ describe('FeaturedRecipeCard from a search hit', () => {
     const line = openTag(html, 'recipe-card-rating')
     expect(line).toContain('data-average-rating="4.9"')
     expect(inner(html, 'recipe-card-rating')).toContain('fa-duotone fa-star')
-    expect(sonoValues(html)).toEqual(['4.9', '· 20', '6 Variants', '45 min'])
+    expect(openTag(html, '4.9 of 5 stars')).toContain('role="img"')
+    expect(sonoValues(html)).toEqual(['4.9', '20', '6 Variants', '45 min'])
+    expect(html).toContain('<span aria-hidden="true">· </span><span class="kcc-num">20</span>')
   })
 })
 

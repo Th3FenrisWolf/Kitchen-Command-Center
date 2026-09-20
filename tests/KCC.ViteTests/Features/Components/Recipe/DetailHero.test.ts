@@ -109,8 +109,10 @@ describe('DetailHero rating line', () => {
     const html = await render({ averageRating: 4.5, reviewCount: 5 })
     expect(openTag(html, 'fa-star')).toBe('<i class="fa-duotone fa-star" aria-hidden="true">')
     expect(countStars(html)).toBe(1)
-    expect(sonoValues(html)).toEqual(['4.5', '· 5'])
+    expect(sonoValues(html)).toEqual(['4.5', '5'])
     expect(text(html)).toContain('· 5 Reviews')
+    // The separator is decoration: hidden from assistive tech, still read as it prints.
+    expect(html).toContain('<span aria-hidden="true">· </span><span class="kcc-num">5</span>')
   })
 
   it('keeps the readonly star rating’s accessible name on the average', async () => {

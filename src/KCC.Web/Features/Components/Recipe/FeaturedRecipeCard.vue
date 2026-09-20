@@ -53,9 +53,7 @@
 </script>
 
 <template>
-  <article
-    class="kcc-slip kcc-recipe kcc-tear-hero my-6 transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
-  >
+  <article class="kcc-slip kcc-recipe kcc-tear-hero transition-transform focus-within:-translate-y-1 hover:-translate-y-1">
     <AppLink :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet" style="--pad: 48px">
         <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
@@ -74,8 +72,10 @@
             :data-average-rating="rating.average"
           >
             <i class="fa-duotone fa-star" aria-hidden="true"></i>
-            <span class="kcc-num">{{ rating.text }}</span>
-            <span class="kcc-num text-ink-soft">· {{ rating.count }}</span>
+            <span class="kcc-num" role="img" :aria-label="`${rating.text} of 5 stars`">{{ rating.text }}</span>
+            <span class="text-ink-soft"
+              ><span aria-hidden="true">· </span><span class="kcc-num">{{ rating.count }}</span></span
+            >
           </span>
           <span v-for="(chip, i) in chips" :key="i" class="kcc-num">
             <i :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}

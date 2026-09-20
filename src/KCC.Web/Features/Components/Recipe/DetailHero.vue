@@ -79,7 +79,8 @@
                 <i class="fa-duotone fa-star" aria-hidden="true"></i>
                 <span class="kcc-num" role="img" :aria-label="`${ratingText} of 5 stars`">{{ ratingText }}</span>
                 <span class="text-ink-soft">
-                  <span class="kcc-num">· {{ reviewCount }}</span> <ResourceString for="Reviews" />
+                  <span aria-hidden="true">· </span>
+                  <span class="kcc-num">{{ reviewCount }}</span> <ResourceString for="Reviews" />
                 </span>
               </span>
               <span v-else class="text-ink-soft"><ResourceString for="NoRatingsYet" /></span>
@@ -96,7 +97,7 @@
           </div>
 
           <div>
-            <p class="kcc-body max-w-[80ch]">{{ description }}</p>
+            <p v-if="description" class="kcc-body max-w-[80ch]">{{ description }}</p>
             <slot name="footer" />
           </div>
         </div>

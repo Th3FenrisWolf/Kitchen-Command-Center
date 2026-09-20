@@ -22,10 +22,9 @@ export interface RecipeCardMeta {
   key?: PromotedStat
 }
 
-/** Hero stat printed in the top-right corner of the card's sheet. */
+/** Hero stat printed in the top-right corner of the card's sheet; the card picks the glyph from `stat`. */
 export interface RecipeCardNotch {
   stat: PromotedStat
-  icon: string
   text: string
 }
 
@@ -61,7 +60,10 @@ export interface RecipeCardModel {
   /** Longer description paragraph (variant grid). */
   description?: string
   tags: string[]
-  /** Trailing stat rendered by the row layout only (variant list: total time). */
+  /**
+   * Trailing stat rendered by the row layout only (variant list: total time). The row hides the `time` meta
+   * chip at the widths that show it, so the same number never prints twice.
+   */
   trailingStat?: { value: string; label: string }
   /** Attributes spread onto the card's link — the stable E2E/unit test hooks. */
   dataAttrs?: Record<string, string>
@@ -89,9 +91,7 @@ export interface FeaturedRecipeModel {
  * corner stat is never empty and never advertises an unrated recipe as a zero.
  */
 function notchStat(rating: RecipeCardRating | undefined, time: string): RecipeCardNotch {
-  return rating && rating.count > 0
-    ? { stat: 'rating', icon: 'fa-solid fa-star', text: formatRating(rating.average) }
-    : { stat: 'time', icon: 'fa-solid fa-clock', text: time }
+  return rating && rating.count > 0 ? { stat: 'rating', text: formatRating(rating.average) } : { stat: 'time', text: time }
 }
 
 /** Search hit → grid/list card. */
@@ -124,7 +124,7 @@ export function variantToCard(variant: VariantSummary, rs: Resolve): RecipeCardM
     seed: variant.name,
     icon: variant.icon,
     image: variant.image,
-    notch: { stat: 'time', icon: 'fa-solid fa-clock', text: time },
+    notch: { stat: 'time', text: time },
     meta: [{ key: 'time', icon: 'fa-solid fa-clock', text: time }],
     subtitle: variant.authorName ? `${rs('By')} ${variant.authorName}` : undefined,
     description: variant.description,
@@ -146,10 +146,7 @@ export function siblingToCard(sibling: SiblingVariant): RecipeCardModel {
     name: sibling.name,
     seed: sibling.name,
     icon: sibling.icon,
-    notch:
-      sibling.rating > 0
-        ? { stat: 'rating', icon: 'fa-solid fa-star', text: formatRating(sibling.rating) }
-        : { stat: 'time', icon: 'fa-solid fa-clock', text: time },
+    notch: sibling.rating > 0 ? { stat: 'rating', text: formatRating(sibling.rating) } : { stat: 'time', text: time },
     meta: [{ key: 'time', icon: 'fa-solid fa-clock', text: time }],
     tags: [],
   }

@@ -57,8 +57,13 @@
           :data-average-rating="rated ? card.rating?.average : undefined"
         >
           <i :class="rated ? 'fa-duotone fa-star' : 'fa-duotone fa-clock'" aria-hidden="true"></i>
-          <span class="kcc-num">{{ card.notch.text }}</span>
-          <span v-if="reviewCount" class="text-ink-soft">· {{ reviewCount }}</span>
+          <span
+            class="kcc-num"
+            :role="rated ? 'img' : undefined"
+            :aria-label="rated ? `${card.notch.text} of 5 stars` : undefined"
+            >{{ card.notch.text }}</span
+          >
+          <span v-if="reviewCount" class="text-ink-soft"><span aria-hidden="true">· </span>{{ reviewCount }}</span>
         </span>
 
         <h3 class="kcc-h4">{{ card.name }}</h3>
