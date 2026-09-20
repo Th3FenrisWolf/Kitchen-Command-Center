@@ -1,5 +1,5 @@
-/* Torn & Waxed — the paper. Everything Razor also renders lives here, not in a component <style>. The tear
-   presets (--tear-*, .kcc-tear-*) come from the generated Tears.css. */
+/* Torn & Waxed — the paper. Everything Razor also renders lives here, not in a component style block.
+   The tear presets (--tear-*, .kcc-tear-*) come from the generated Tears.css. */
 @layer components {
   /* ---- the desk: grain under everything, wax tooth over everything ---- */
   .kcc-grain {

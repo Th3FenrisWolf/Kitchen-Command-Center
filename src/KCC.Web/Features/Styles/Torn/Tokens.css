@@ -22,15 +22,6 @@
     --wax-op: 0.3;
     --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)'/></svg>");
     --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.85'/></svg>");
-
-    /* TRANSITIONAL — read by Styles/Sketch/Kit.css until the cleanup phase. */
-    --fold: 24px;
-    --rule-pitch: 28px;
-    --rule-offset: 16px;
-    --rule-weight: 1px;
-    --wash-opacity: var(--wash-op);
-    --wash-saturate: var(--wash-sat);
-    /* END TRANSITIONAL */
   }
 
   /* DARK: the same identity on a dark desk. Chalk for ink, washes screened instead of multiplied and pushed
@@ -55,19 +46,5 @@
     --wash-sat: 1.45;
     --grain-op: 0.16;
     --wax-op: 0.36;
-
-    /* TRANSITIONAL */
-    --color-ink-line: oklch(0.9 0.016 288 / 0.82);
-    --color-hatch: oklch(0.62 0.05 288 / 0.55);
-    --color-edge: oklch(0.9 0.02 288 / 0.2);
-    --color-edge-strong: oklch(0.9 0.02 288 / 0.46);
-    --color-flap-1: oklch(0.212 0.026 288);
-    --color-flap-2: oklch(0.348 0.034 288);
-    --color-danger-ink: var(--color-red);
-    --color-success-ink: var(--color-green);
-    --color-warning-ink: var(--color-yellow);
-    --color-rating-ink: var(--color-peach);
-    --color-link: var(--color-green);
-    /* END TRANSITIONAL */
   }
 }

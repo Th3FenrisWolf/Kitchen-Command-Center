@@ -47,31 +47,6 @@
   --color-pink: oklch(0.876 0.046 345);
   --color-red: oklch(0.79 0.085 25);
 
-  /* TRANSITIONAL — Softbound tokens the unconverted components still read. Nothing new may use them;
-     retiredTokens.test.ts enforces that outside its ALLOWLIST. Deleted in the cleanup phase. */
-  --color-ink-line: oklch(0.248 0.03 288 / 0.88);
-  --color-ink-on-wash: oklch(0.232 0.026 288);
-  --color-hatch: oklch(0.35 0.04 288 / 0.38);
-  --color-edge: oklch(0.25 0.03 288 / 0.18);
-  --color-edge-strong: oklch(0.25 0.03 288 / 0.42);
-  --color-flap-1: oklch(0.88 0.012 92);
-  --color-flap-2: oklch(0.992 0.006 92);
-  --color-danger: var(--color-red);
-  --color-success: var(--color-green);
-  --color-warning: var(--color-yellow);
-  --color-danger-ink: oklch(0.46 0.16 25);
-  --color-success-ink: oklch(0.42 0.11 150);
-  --color-warning-ink: oklch(0.44 0.12 70);
-  --color-rating-ink: oklch(0.44 0.13 60);
-  --color-link: oklch(0.43 0.1 150);
-  --color-rosewater: oklch(0.9 0.028 40);
-  --color-flamingo: oklch(0.878 0.045 25);
-  --color-mauve: oklch(0.872 0.046 300);
-  --color-maroon: oklch(0.77 0.075 18);
-  --color-sapphire: oklch(0.866 0.044 225);
-  --color-blue: oklch(0.856 0.046 262);
-  /* END TRANSITIONAL */
-
   /* Radius ladder: only printed marks are rounded. xs checkbox, sm small marks, md labels and textareas,
      full pills. lg and above are declared at md so a stray utility cannot round a sheet; they are retired.
      Every step is restated because declaring any key of the namespace drops Tailwind's values for the rest. */
@@ -83,9 +58,6 @@
   --radius-2xl: 0.375rem;
   --radius-3xl: 0.375rem;
   --radius-4xl: 0.375rem;
-
-  --text-4\.5xl: 2.5rem;
-  --text-4\.5xl--line-height: calc(2.75 / 2.5);
 
   --font-casual: 'APCasual', sans-serif;
   --font-hazelnut: 'Hazelnut', sans-serif;
@@ -137,14 +109,4 @@
   transition:
     outline-color 0.2s,
     outline-offset 0.2s;
-}
-
-@utility fa-primary-* {
-  --fa-primary-color: --value(--color-*);
-  --fa-primary-opacity: 1; /* FA's default; kept explicit for symmetry with fa-secondary-* */
-}
-
-@utility fa-secondary-* {
-  --fa-secondary-color: --value(--color-*);
-  --fa-secondary-opacity: 1; /* a distinct secondary color implies full strength (no 40% wash-out); override --fa-secondary-opacity inline for a translucent colored secondary */
 }

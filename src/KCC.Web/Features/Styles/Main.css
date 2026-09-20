@@ -7,11 +7,6 @@
 @import './Torn/Tears.css';
 @import './Torn/Kit.css';
 @import './Torn/Controls.css';
-/* TRANSITIONAL — the Softbound kit, until every surface is converted. Removed in the cleanup phase. */
-@import './Sketch/Kit.css';
-@import './Sketch/Button.css';
-@import './Sketch/Ink.css';
-/* END TRANSITIONAL */
 @import './Layout.css';
 @import './Typography.css';
 
@@ -56,8 +51,7 @@
   }
 
   /* Durations go to 0.01ms rather than `none` so transitionend/animationend still fire — anything waiting
-     on them keeps working, while nothing perceptibly animates. The guard in Ink.css is more specific and
-     stays. */
+     on them keeps working, while nothing perceptibly animates. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

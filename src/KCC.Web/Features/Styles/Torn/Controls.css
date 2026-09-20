@@ -227,7 +227,7 @@
   /* ---- range slider: paper track with an inset hairline, marker fill, ink thumbs ----
 
      RangeSlider.vue (Features/Components/Forms) is a runtime-compiled global component, so a scoped
-     `<style>` block would be bundled into the JS-loaded GlobalComponents CSS chunk — not in <head>, and
+     style block would be bundled into the JS-loaded GlobalComponents CSS chunk — not in <head>, and
      applied only after hydration. During that gap the two native `<input type="range">` would paint as
      default OS bars (the "two separate bars" flash on first paint), so the appearance reset and the custom
      thumb belong in this render-blocking stylesheet, where SSR output is already final.

@@ -1,20 +1,13 @@
 import { createSSRApp, h, type Component, type Slots } from 'vue'
 import { renderToString } from '@vue/server-renderer'
-import { vInk } from '~/Ink/vInk'
 
 /**
  * Renders a component the way the real entries would.
  *
- * `v-ink` is registered on the app, not globally, so a bare `renderToString(createSSRApp(C))` fails to
- * resolve it for any component that draws an outline — the component renders, but Vue logs
- * "Failed to resolve directive: ink" and the assertion sees markup the app would never produce. Kept while
- * any tested component still carries `v-ink` (`grep -rl v-ink Features/Components` — RecipeCard,
- * FeaturedRecipeCard, DetailHero and RecipeFilters at the time of writing); drop it once the Softbound ink
- * module retires in the cleanup phase.
- *
- * `globals` covers the same ground for components: the app registers every `*.Component.vue` under
- * `Features/` app-wide (`GlobalComponents.ts`), so a page template can name one without importing it. Pass
- * the ones a page under test uses, or Vue warns and renders nothing where the tag was.
+ * The app registers every `*.Component.vue` under `Features/` app-wide (`GlobalComponents.ts`), so a page
+ * template can name one without importing it. A bare `renderToString(createSSRApp(C))` has no such
+ * registry: pass the ones a page under test uses as `globals`, or Vue warns and renders nothing where the
+ * tag was.
  */
 export function renderSsr(
   component: Component,
@@ -23,7 +16,6 @@ export function renderSsr(
   globals?: Record<string, Component>,
 ): Promise<string> {
   const app = createSSRApp({ render: () => h(component, props ?? {}, slots as unknown as Slots) })
-  app.directive('ink', vInk)
   Object.entries(globals ?? {}).forEach(([name, global]) => app.component(name, global))
   return renderToString(app)
 }
