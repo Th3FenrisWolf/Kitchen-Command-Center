@@ -47,9 +47,6 @@ const ALLOWLIST = new Set<string>([
   'Features/Main.ts',
   'Features/PageBuilderMount.ts',
   'Features/Styles/Sketch/',
-  'Features/Types/DesignSystem.ts',
-  'App_Data/CIRepository/@global/cms.contenttype/kcc.carditem.xml',
-  'App_Data/CIRepository/@global/contentitemdata.kcc.carditem/',
 ])
 
 const covers = (entry: string, path: string) => (entry.endsWith('/') ? path.startsWith(entry) : path === entry)

@@ -8,24 +8,17 @@ public enum TailwindColor
     PaperTwo,
     Ink,
     InkSoft,
-    InkOnWash,
     Marker,
     MarkerInk,
 
-    Rosewater,
-    Flamingo,
-    Pink,
-    Mauve,
-    Red,
-    Maroon,
     Peach,
     Yellow,
     Green,
     Teal,
     Sky,
-    Sapphire,
-    Blue,
     Lavender,
+    Pink,
+    Red,
 }
 
 public static class TailwindColorExtensions
@@ -36,7 +29,6 @@ public static class TailwindColorExtensions
         TailwindColor.DeskTwo => "desk-2",
         TailwindColor.PaperTwo => "paper-2",
         TailwindColor.InkSoft => "ink-soft",
-        TailwindColor.InkOnWash => "ink-on-wash",
         TailwindColor.MarkerInk => "marker-ink",
         _ => color.ToString().ToLowerInvariant(),
     };

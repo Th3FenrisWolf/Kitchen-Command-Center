@@ -1,4 +1,4 @@
-import { BRAND_BACKGROUND_COLORS, WASHES, type BrandBackgroundColor, type Wash } from '~/Types/DesignSystem'
+import { WASHES, type Wash } from '~/Types/DesignSystem'
 import type { Tear } from '~/Components/Sheet/KccSheet.vue'
 
 // Preset counts, matching SHEET_TEARS (minus the hero) and TILE_TEARS in Features/Torn/tears.ts; kept as
@@ -13,11 +13,6 @@ function colorIndexFor(text: string, paletteSize: number): number {
   }
 
   return hash % paletteSize
-}
-
-/** Deterministically map any text to one of the brand accent tokens. */
-export function backgroundColorFor(text: string): BrandBackgroundColor {
-  return BRAND_BACKGROUND_COLORS[colorIndexFor(text, BRAND_BACKGROUND_COLORS.length)]!
 }
 
 /** Deterministically map any text to one of the eight washes. */

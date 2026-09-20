@@ -1,28 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { backgroundColorFor, sheetTearFor, tileTearFor, washFor } from '~/Utilities/BrandColor'
-import { BRAND_BACKGROUND_COLORS, WASHES } from '~/Types/DesignSystem'
-
-describe('backgroundColorFor', () => {
-  it('is deterministic for the same input', () => {
-    expect(backgroundColorFor('Espresso')).toBe(backgroundColorFor('Espresso'))
-  })
-
-  it('always returns a token from the brand palette', () => {
-    expect(BRAND_BACKGROUND_COLORS).toContain(backgroundColorFor('Espresso'))
-    expect(BRAND_BACKGROUND_COLORS).toContain(backgroundColorFor(''))
-    expect(BRAND_BACKGROUND_COLORS).toContain(backgroundColorFor('a long name with spaces'))
-  })
-
-  it('spreads different inputs across more than one color', () => {
-    const colors = new Set(['Mocha', 'Latte', 'Espresso', 'Vanilla', 'Caramel'].map(backgroundColorFor))
-    expect(colors.size).toBeGreaterThan(1)
-  })
-})
+import { sheetTearFor, tileTearFor, washFor } from '~/Utilities/BrandColor'
+import { WASHES } from '~/Types/DesignSystem'
 
 describe('washFor', () => {
   it('is deterministic and always one of the eight washes', () => {
     expect(washFor('Brown Butter Gnocchi')).toBe(washFor('Brown Butter Gnocchi'))
     for (const seed of ['a', 'gnocchi', 'Sunday Roast Chicken', '']) expect(WASHES).toContain(washFor(seed))
+  })
+
+  it('spreads different inputs across more than one wash', () => {
+    const washes = new Set(['Mocha', 'Latte', 'Espresso', 'Vanilla', 'Caramel'].map(washFor))
+    expect(washes.size).toBeGreaterThan(1)
   })
 })
 
