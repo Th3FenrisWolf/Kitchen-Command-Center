@@ -86,11 +86,13 @@ public class BaseSectionProperties : ISectionProperties
             ? result
             : Spacing.None);
 
+    // Tailwind spacing units (4px each) on the identity's 24px rule: 24 / 48 / 72px. The safelist in
+    // TailwindConfig.css must emit every class these produce.
     public static int GetSpacing(Spacing spacing) => spacing switch
     {
-        Spacing.Small => 4,
-        Spacing.Medium => 8,
-        Spacing.Large => 12,
+        Spacing.Small => 6,
+        Spacing.Medium => 12,
+        Spacing.Large => 18,
         Spacing.None or _ => 0,
     };
 }

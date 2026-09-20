@@ -6,7 +6,8 @@
 
 /* prettier-ignore-start */
 /* Safelist dynamically generated classes */
-@source inline('{pb,pt,px,mb,mt}-{0,4,8,12}');
+@source inline('{pt,pb,px}-{0,6,12,18}');
+@source inline('{mt,mb}-{0,4,8,12}');
 @source inline('bg-{peach,yellow,green,teal,sky,lavender,pink,red,desk,desk-2,paper,paper-2,marker}');
 @source inline('text-{ink,ink-soft,marker-ink}');
 /* prettier-ignore-end */
