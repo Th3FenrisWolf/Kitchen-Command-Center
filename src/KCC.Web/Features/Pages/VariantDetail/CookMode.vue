@@ -168,7 +168,7 @@
                   <Button
                     variant="ghost"
                     size="lg"
-                    class="w-12 shrink-0 px-0"
+                    class="kcc-btn--icon shrink-0"
                     data-test="cook-servings-dec"
                     :aria-label="t('Fewer')"
                     @click="decServings"
@@ -179,7 +179,7 @@
                   <Button
                     variant="ghost"
                     size="lg"
-                    class="w-12 shrink-0 px-0"
+                    class="kcc-btn--icon shrink-0"
                     data-test="cook-servings-inc"
                     :aria-label="t('More')"
                     @click="incServings"
@@ -192,7 +192,7 @@
               <Button
                 variant="ghost"
                 size="lg"
-                class="w-12 shrink-0 px-0"
+                class="kcc-btn--icon shrink-0"
                 data-test="cook-close"
                 :aria-label="t('Close')"
                 @click="close"

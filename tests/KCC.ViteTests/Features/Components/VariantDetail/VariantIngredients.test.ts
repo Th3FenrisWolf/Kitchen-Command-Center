@@ -81,8 +81,10 @@ describe('VariantIngredients sheet', () => {
     const html = await render()
 
     expect(html).toContain('aria-label="Makes"')
-    expect(html).toContain('aria-label="Decrease Makes"')
-    expect(html).toContain('aria-label="Increase Makes"')
+    // The page's own Fewer / More strings name the buttons, not the stepper's composed English.
+    expect(html).toContain('aria-label="Fewer"')
+    expect(html).toContain('aria-label="More"')
+    expect(html).not.toContain('Decrease Makes')
     expect(html).toContain('min="1"')
     expect(html).toContain('value="4"')
     expect(html).toMatch(/class="kcc-lbl">\s*Makes\s*</)

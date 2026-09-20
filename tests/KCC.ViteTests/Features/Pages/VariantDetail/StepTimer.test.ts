@@ -41,7 +41,7 @@ describe('StepTimer', () => {
     const toggle = tagWith(await render(), 'data-test="timer-toggle"')
 
     expect(toggle).toMatch(/^<button /)
-    expect(toggle).toContain('kcc-btn kcc-btn--ghost kcc-btn--lg w-12 shrink-0 px-0')
+    expect(toggle).toContain('kcc-btn kcc-btn--ghost kcc-btn--lg kcc-btn--icon shrink-0')
     expect(toggle).toContain('aria-label="StartTimer"')
     expect(await render()).toContain('<i class="fa-duotone fa-play" aria-hidden="true"></i>')
   })
@@ -50,7 +50,7 @@ describe('StepTimer', () => {
     const reset = tagWith(await render(), 'data-test="timer-reset"')
 
     expect(reset).toMatch(/^<button /)
-    expect(reset).toContain('kcc-btn kcc-btn--ghost kcc-btn--lg w-12 shrink-0 px-0')
+    expect(reset).toContain('kcc-btn kcc-btn--ghost kcc-btn--lg kcc-btn--icon shrink-0')
     expect(reset).toContain('aria-label="Reset"')
     expect(await render()).toContain('<i class="fa-duotone fa-rotate-left" aria-hidden="true"></i>')
   })

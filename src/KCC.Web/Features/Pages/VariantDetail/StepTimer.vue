@@ -97,7 +97,7 @@
       <Button
         variant="ghost"
         size="lg"
-        class="w-12 shrink-0 px-0"
+        class="kcc-btn--icon shrink-0"
         data-test="timer-toggle"
         :aria-label="running ? t('Pause') : t('StartTimer')"
         @click="toggle"
@@ -107,7 +107,7 @@
       <Button
         variant="ghost"
         size="lg"
-        class="w-12 shrink-0 px-0"
+        class="kcc-btn--icon shrink-0"
         data-test="timer-reset"
         :aria-label="t('Reset')"
         @click="reset"

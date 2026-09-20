@@ -26,6 +26,14 @@
      * Never rendered; supplies the accessible names for the input and both buttons.
      */
     label?: string
+    /**
+     * Accessible name for the minus button; composed from `label` in English when omitted.
+     */
+    decreaseLabel?: string
+    /**
+     * Accessible name for the plus button; composed from `label` in English when omitted.
+     */
+    increaseLabel?: string
     disabled?: boolean
     placeholder?: string
   }
@@ -33,7 +41,17 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { min, max, step = 1, unit, label, disabled, placeholder } = defineProps<NumberStepperProps>()
+  const {
+    min,
+    max,
+    step = 1,
+    unit,
+    label,
+    decreaseLabel,
+    increaseLabel,
+    disabled,
+    placeholder,
+  } = defineProps<NumberStepperProps>()
 
   // `undefined` only while the field is empty mid-edit; blur always resolves it back to a number.
   const model = defineModel<number | undefined>()
@@ -85,8 +103,8 @@
     const name = label ?? 'Value'
     return unit ? `${name} in ${unit}` : name
   })
-  const decreaseLabel = computed(() => (label ? `Decrease ${label}` : 'Decrease'))
-  const increaseLabel = computed(() => (label ? `Increase ${label}` : 'Increase'))
+  const decreaseName = computed(() => decreaseLabel ?? (label ? `Decrease ${label}` : 'Decrease'))
+  const increaseName = computed(() => increaseLabel ?? (label ? `Increase ${label}` : 'Increase'))
 
   // --- Press-and-hold auto-repeat -------------------------------------------
   const HOLD_DELAY = 400 // ms held before auto-repeat begins
@@ -142,8 +160,8 @@
   <div class="flex items-center gap-2">
     <button
       type="button"
-      class="kcc-btn kcc-btn--ghost w-9 shrink-0 px-0"
-      :aria-label="decreaseLabel"
+      class="kcc-btn kcc-btn--ghost kcc-btn--icon shrink-0"
+      :aria-label="decreaseName"
       :disabled="disabled || atMin"
       @pointerdown="startHold(-1, $event)"
       @pointerup="stopHold"
@@ -179,8 +197,8 @@
 
     <button
       type="button"
-      class="kcc-btn kcc-btn--ghost w-9 shrink-0 px-0"
-      :aria-label="increaseLabel"
+      class="kcc-btn kcc-btn--ghost kcc-btn--icon shrink-0"
+      :aria-label="increaseName"
       :disabled="disabled || atMax"
       @pointerdown="startHold(1, $event)"
       @pointerup="stopHold"

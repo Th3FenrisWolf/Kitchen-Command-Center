@@ -72,7 +72,13 @@
       <p class="kcc-kick">tick what you have</p>
       <div v-if="hasScaler" class="flex items-center gap-3">
         <ResourceString for="Makes" as="span" class="kcc-lbl" />
-        <NumberStepper v-model="current" :min="1" :label="makesLabel" />
+        <NumberStepper
+          v-model="current"
+          :min="1"
+          :label="makesLabel"
+          :decrease-label="rs('Fewer')"
+          :increase-label="rs('More')"
+        />
       </div>
     </div>
 
