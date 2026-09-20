@@ -5,7 +5,7 @@
 <div class="@Model.Properties.GetMarginClasses()">
   @if (!(Model.Properties.Image?.Any() ?? false))
   {
-    <strong>@WidgetConstants.ConfigHeading</strong>
+    <p class="kcc-kick">@WidgetConstants.ConfigHeading</p>
     <p>@WidgetConstants.ConfigSubHeading</p>
   }
   <image item="@Model.Properties.Image?.FirstOrDefault()" class="block w-full object-cover" />

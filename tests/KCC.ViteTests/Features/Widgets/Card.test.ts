@@ -6,9 +6,9 @@ import { renderSsr } from '../../support/renderSsr'
 const render = (props: Record<string, unknown> = {}) =>
   renderSsr(Card, props, { default: () => 'Weeknight', drawer: () => 'Hover to open.' })
 
-// Both elements are found by a hook — the drawer by `data-card-drawer`, the slip by the kit class the
-// widget wrapper's `:has()` rule also selects. A missing hook is reported here rather than as an empty
-// class list failing some unrelated-looking colour assertion.
+// Both elements are found by a hook — the drawer by `data-card-drawer`, the slip by its kit class. A
+// missing hook is reported here rather than as an empty class list failing some unrelated-looking colour
+// assertion.
 const classesOf = (html: string, pattern: RegExp, what: string) => {
   const tag = html.match(pattern)?.[0]
   expect(tag, `no element carrying ${what} was rendered`).toBeDefined()

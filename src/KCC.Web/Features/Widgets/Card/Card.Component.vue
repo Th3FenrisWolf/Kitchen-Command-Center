@@ -83,9 +83,3 @@
     </div>
   </KccSheet>
 </template>
-
-<style lang="css">
-  .ktc-widget-body-wrapper:has(> .group\/card) {
-    display: grid;
-  }
-</style>
