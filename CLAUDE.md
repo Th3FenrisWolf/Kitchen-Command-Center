@@ -56,12 +56,6 @@ from `localStorage['kcc-theme']`, else `prefers-color-scheme`, else **light**. *
 visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
 composites ink over paper plus each wash.
 
-A `TRANSITIONAL` block keeps the retired Softbound tokens alive until the conversion finishes. Nothing new
-may use them; `retiredTokens.test.ts` enforces that outside its shrinking `ALLOWLIST`. The Softbound ink
-module (`Features/Ink`) also stays until then, with its two rules: `inkDom.ts` never touches the DOM at
-module scope (it is in the SSR bundle), and any test rendering a component that still uses `v-ink` goes
-through `tests/KCC.ViteTests/support/renderSsr.ts`.
-
 ### The kit, and where CSS lives
 
 `kcc-*` classes live in global `@layer components` CSS under `Features/Styles/Torn/`, **not** in component

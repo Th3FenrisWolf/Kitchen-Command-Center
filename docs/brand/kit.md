@@ -9,7 +9,7 @@ never in a component `<style>` block.
 | Path | Holds |
 |---|---|
 | `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), radius ladder, fonts, safelist |
-| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties; the dark ramp under `:root[data-theme='dark']`; the TRANSITIONAL block |
+| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties; the dark ramp under `:root[data-theme='dark']` |
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
@@ -52,8 +52,9 @@ element: `--pad` (sheet), `--tear` and `--r` (set by a preset class), `--c --x -
 `warning-ink`, `rating-ink`, the washes `rosewater flamingo mauve maroon sapphire blue`, every `shadow-*`
 utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, the `fa-primary-*` /
 `fa-secondary-*` Tailwind utilities (the kit sets the Font Awesome custom properties itself; see Icons),
-every `sk-*` class, `v-ink`, `data-ink`. A `TRANSITIONAL` block in `TailwindConfig.css` and
-`Torn/Tokens.css` keeps the Softbound tokens alive until the cleanup phase; nothing new may use them.
+every `sk-*` class, `v-ink`, `data-ink`. Nothing keeps them alive: the Softbound tokens, the ink module and
+the `TRANSITIONAL` blocks are gone, and the test's `ALLOWLIST` is empty. A new entry there needs a reason in
+the commit message.
 
 **Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px (small marks), `rounded-md` 6px (labels,
 wells, textareas), `rounded-full` (pills). Sheets, tiles and images take no radius.
@@ -260,24 +261,25 @@ Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs
 | Rule | Test |
 |---|---|
 | WCAG AA in both ramps, including ink over paper + wash | `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` |
-| No retired token, class, utility or directive in `Features/**` or CMS content | `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` (paths in `ALLOWLIST` are still unconverted) |
+| No retired token, class, utility or directive in `Features/**` or CMS content | `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` (`ALLOWLIST` is empty; a new entry needs a reason in the commit message) |
 | Committed `Tears.css` equals the generator; every preset declared on `:root` with a selecting class; sheet tilts written to `--r`; one or two standard sheets uncut | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
 | Tear geometry: deterministic, every vertex inside the box for every shipped preset, seam closes within a step, chamfer never top-left, amp and point-count guards | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 | The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 
-## Converting a component
+## Building a surface
 
-1. Read the component and its test. Keep every structural hook (`data-testid`, roles, ids); e2e locates by
-   hook, not markup.
-2. Replace `Sheet` / `sk-sheet` with `KccSheet` or the hand-written Structure. Pick the tear from the list
-   index or a stable hash.
-3. Replace every `sk-*` with its `kcc-*` twin from the Classes table. Drop `v-ink` and `data-ink`.
-4. Remove `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text is `text-ink` or `text-ink-soft`;
+1. Read the neighbouring component and its test. Keep every structural hook (`data-testid`, roles, ids); e2e
+   locates by hook, not markup.
+2. Sheets are `KccSheet` or the hand-written Structure. Pick the tear from the list index or a stable hash.
+3. Every class comes from the Classes table or Tailwind; no component `<style>` rule for anything Razor
+   also renders.
+4. No `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text is `text-ink` or `text-ink-soft`;
    `text-marker-ink` only inside a tile, a label or a marker button.
 5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
 6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
-7. Delete the component's path from `ALLOWLIST` in `retiredTokens.test.ts`.
-8. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; at a
-   phase gate also `yarn build:all`. The browser check in both ramps happens at the phase gate. Commit.
+7. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
+   message says why.
+8. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; before
+   merging also `yarn build:all` and the browser check in both ramps. Commit.
