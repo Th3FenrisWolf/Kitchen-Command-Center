@@ -71,6 +71,24 @@ describe('VariantNutrition sheet', () => {
     expect(html).toContain('520')
   })
 
+  it('draws no bar for a zero-gram macro, so no kick label sits over an empty band', async () => {
+    const html = await render({ fatG: 0 })
+
+    expect(bars(html)).toHaveLength(2)
+    expect(bars(html)[0]).toContain('width:37.5%')
+    expect(bars(html)[1]).toContain('width:62.5%')
+    expect(html).not.toMatch(/<p class="kcc-kick">Fat<\/p>/)
+    expect(html).toContain('<p class="kcc-lbl">Fat</p>')
+  })
+
+  it('skips the stats row when only a secondary figure was recorded', async () => {
+    const html = await renderSsr(VariantNutrition, { sodiumMg: 480 })
+
+    expect(html).not.toContain('kcc-stats')
+    expect(bars(html)).toHaveLength(0)
+    expect(html).toMatch(/<dt class="kcc-lbl">Sodium<\/dt>/)
+  })
+
   it('lists the remaining figures two-column, values in Sono with a small-caps unit', async () => {
     const html = await render()
 

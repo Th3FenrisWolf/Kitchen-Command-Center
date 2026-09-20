@@ -35,8 +35,8 @@
 
   const rs = useResourceStrings()
 
-  const HEADLINE: readonly string[] = ['calories', 'proteinG', 'carbsG', 'fatG']
-  const MACROS: readonly string[] = ['proteinG', 'carbsG', 'fatG']
+  const HEADLINE: readonly (keyof Nutrition)[] = ['calories', 'proteinG', 'carbsG', 'fatG']
+  const MACROS: readonly (keyof Nutrition)[] = ['proteinG', 'carbsG', 'fatG']
 
   const nutrition = computed<Nutrition>(() => ({
     calories: props.calories,
@@ -68,7 +68,8 @@
   const rest = computed(() => rows.value.filter((row) => !HEADLINE.includes(row.key)))
 
   const bars = computed(() => {
-    const macros = rows.value.filter((row) => MACROS.includes(row.key))
+    // A zero-gram macro would draw a kick label over an empty band.
+    const macros = rows.value.filter((row) => MACROS.includes(row.key) && row.value > 0)
     const grams = macros.reduce((sum, row) => sum + row.value, 0)
     if (!grams) return []
     return macros.map((row) => ({
@@ -89,7 +90,7 @@
     <ResourceString for="PerServing" as="p" class="kcc-kick" />
 
     <template v-if="provided">
-      <div class="kcc-stats mt-6">
+      <div v-if="headline.length" class="kcc-stats mt-6">
         <div v-for="row in headline" :key="row.key">
           <p class="kcc-lbl">{{ row.label }}</p>
           <p class="kcc-v">
