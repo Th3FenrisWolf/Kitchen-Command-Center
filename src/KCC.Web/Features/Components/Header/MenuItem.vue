@@ -71,9 +71,7 @@
       @click="toggle"
       :class="[
         'kcc-kick relative z-20 flex h-full w-full cursor-pointer items-center px-3 py-2',
-        isOpen
-          ? 'rounded-md bg-marker text-marker-ink'
-          : 'text-ink decoration-hair-strong underline-offset-[3px] hover:underline',
+        isOpen ? 'kcc-pill' : 'text-ink decoration-hair-strong underline-offset-[3px] hover:underline',
       ]"
     >
       {{ item.displayText }}

@@ -30,12 +30,7 @@
       :class="['flex items-center gap-2', s < total && 'flex-1']"
       :aria-current="s === current ? 'step' : undefined"
     >
-      <span
-        :class="[
-          'kcc-kick',
-          s === current ? 'rounded-md bg-marker px-3 text-marker-ink' : s < current ? 'text-ink' : 'text-ink-soft',
-        ]"
-      >
+      <span :class="['kcc-kick', s === current ? 'kcc-pill px-3' : s < current ? 'text-ink' : 'text-ink-soft']">
         <span aria-hidden="true">{{ String(s).padStart(2, '0') }}</span
         ><span class="sr-only">{{ s }}</span>
       </span>

@@ -52,14 +52,16 @@ describe('DetailHero as a slip', () => {
     expect(html).not.toContain('sk-')
   })
 
-  it('pools the recipe wash under the left margin', async () => {
+  // Bottom-right: the kick lines (soft ink) run along the left, and soft ink over a wash core fails AA in
+  // the dark ramp, so the pool must not sit under them.
+  it('pools the recipe wash in the bottom-right corner, clear of the kick lines', async () => {
     const html = await render()
     const wash = openTag(html, 'kcc-wash').replace(/\s/g, '')
     expect(wash).toContain(`--c:var(--color-${washFor(TITLE)})`)
-    expect(wash).toContain('--x:10%')
-    expect(wash).toContain('--y:15%')
-    expect(wash).toContain('--w:45%')
-    expect(wash).toContain('--h:80%')
+    expect(wash).toContain('--x:100%')
+    expect(wash).toContain('--y:100%')
+    expect(wash).toContain('--w:34%')
+    expect(wash).toContain('--h:60%')
   })
 
   it('pins the large tile and its tape outside the tear, with a strip on the sheet', async () => {

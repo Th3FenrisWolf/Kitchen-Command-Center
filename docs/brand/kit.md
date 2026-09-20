@@ -180,6 +180,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px |
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y --w --h` placement |
 | `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
+| `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; type comes from `kcc-kick` on the same element |
 | `kcc-tape` | one strip, top-centre | opt-in |
 | `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink`; pointer-transparent, so a link beneath it keeps the click |
 | `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |

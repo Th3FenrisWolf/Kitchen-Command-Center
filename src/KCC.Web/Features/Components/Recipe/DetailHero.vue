@@ -7,8 +7,9 @@
   import { ResourceString } from '~/Components/ResourceStrings'
 
   /**
-   * Page-heading block for a recipe or a variant: a hero-torn slip with the subject's wash under the left
-   * margin, a large tile pinned over the corner, and the description beside the title.
+   * Page-heading block for a recipe or a variant: a hero-torn slip with the subject's wash pooled in the
+   * bottom-right corner (the kick lines run along the left, and soft ink over a wash core fails AA in the dark
+   * ramp), a large tile pinned over the top-left corner, and the description beside the title.
    */
   export default {
     name: 'DetailHero',
@@ -52,10 +53,10 @@
 
   const wash = computed(() => ({
     '--c': `var(--color-${washFor(seed)})`,
-    '--x': '10%',
-    '--y': '15%',
-    '--w': '45%',
-    '--h': '80%',
+    '--x': '100%',
+    '--y': '100%',
+    '--w': '34%',
+    '--h': '60%',
   }))
 
   const ratingText = computed(() => formatRating(averageRating ?? 0))

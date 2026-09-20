@@ -10,7 +10,8 @@
 
   /**
    * The library's spotlight above a grid of RecipeCards: one recipe or variant on a hero-torn slip, the
-   * recipe's wash under the left margin and a large tile pinned over the corner.
+   * recipe's wash pooled in the bottom-right corner away from the kick lines, and a large tile pinned over
+   * the top-left corner.
    */
   export default {
     name: 'FeaturedRecipeCard',
@@ -30,10 +31,10 @@
 
   const wash = computed(() => ({
     '--c': `var(--color-${washFor(card.seed)})`,
-    '--x': '10%',
-    '--y': '15%',
-    '--w': '45%',
-    '--h': '80%',
+    '--x': '100%',
+    '--y': '100%',
+    '--w': '34%',
+    '--h': '60%',
   }))
 
   const rating = computed(() =>

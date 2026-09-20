@@ -128,12 +128,19 @@
     right: 36px;
   }
 
+  /* The label's fill and ink for something that stays in the flow (a current step, an open menu button),
+     where the absolutely positioned label cannot go. */
+  .kcc-pill {
+    background: var(--color-marker);
+    border-radius: var(--rd);
+    color: var(--color-marker-ink);
+  }
+
   /* One strip of tape, top-centre. Opt-in. */
   .kcc-tape {
     background-color: var(--color-tape);
     background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.16) 0 1px, transparent 1px 3px);
     border-radius: 1px;
-    box-shadow: 0 1px 1.5px oklch(0.2 0.03 288 / 0.14);
     height: 18px;
     left: calc(50% - 31px);
     pointer-events: none;
@@ -146,7 +153,6 @@
 
   :root[data-theme='dark'] .kcc-tape {
     background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 3px);
-    box-shadow: 0 1px 1.5px oklch(0 0 0 / 0.4);
   }
 
   /* ---- a torn wax tile pinned over a sheet's corner ---- */

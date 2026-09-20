@@ -61,13 +61,14 @@ describe('Card structure', () => {
 })
 
 describe('Card wash', () => {
-  // Top-right: clear of the left-aligned heading, and clear of the opaque drawer that fills everything
-  // below it on hover, so the card keeps its colour while it is being read.
-  it('pools the editor colour under the top-right corner', async () => {
+  // Top-right, tucked into the corner: clear of the left-aligned heading and of the soft-ink subheading on
+  // the line below it (soft ink over a wash core fails AA in the dark ramp), and clear of the opaque drawer
+  // that fills everything below on hover, so the card keeps its colour while it is being read.
+  it('pools the editor colour into the top-right corner', async () => {
     const html = await render({ cardColor: 'bg-peach' })
 
     expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:88%;--y:18%;--w:38%;--h:60%;" aria-hidden="true">',
+      '<span class="kcc-wash" style="--c:var(--color-peach);--x:100%;--y:0%;--w:38%;--h:40%;" aria-hidden="true">',
     )
     expect(html.match(/kcc-wash/g)).toHaveLength(1)
   })

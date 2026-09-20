@@ -92,14 +92,14 @@ describe('FeaturedRecipeCard from a search hit', () => {
     expect(count(html, 'data-recipe-name')).toBe(1)
   })
 
-  it('pools the recipe wash under the left margin', async () => {
+  it('pools the recipe wash in the bottom-right corner, clear of the kick lines', async () => {
     const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
     const wash = openTag(html, 'kcc-wash').replace(/\s/g, '')
     expect(wash).toContain(`--c:var(--color-${washFor(recipe.name)})`)
-    expect(wash).toContain('--x:10%')
-    expect(wash).toContain('--y:15%')
-    expect(wash).toContain('--w:45%')
-    expect(wash).toContain('--h:80%')
+    expect(wash).toContain('--x:100%')
+    expect(wash).toContain('--y:100%')
+    expect(wash).toContain('--w:34%')
+    expect(wash).toContain('--h:60%')
   })
 
   it('pins the large tile and its tape outside the tear, with a strip on the sheet', async () => {

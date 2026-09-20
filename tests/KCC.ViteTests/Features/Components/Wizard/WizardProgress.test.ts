@@ -10,7 +10,7 @@ const render = (current: number, total: number) => renderSsr(WizardProgress, { c
 // `text-ink-soft`, so the completed-step count excludes any match immediately followed by a hyphen.
 const inkCount = (html: string) => (html.match(/\btext-ink\b(?!-)/g) ?? []).length
 const softCount = (html: string) => (html.match(/text-ink-soft/g) ?? []).length
-const pillCount = (html: string) => (html.match(/bg-marker/g) ?? []).length
+const pillCount = (html: string) => (html.match(/kcc-pill/g) ?? []).length
 
 describe('WizardProgress', () => {
   it('reads completed steps as ink, the current step as a marker pill, and leaves the rest ink-soft', async () => {
@@ -43,10 +43,10 @@ describe('WizardProgress', () => {
 
     const currentLi = html.match(/<li[^>]*aria-current="step"[^>]*>[\s\S]*?<\/li>/)?.[0] ?? ''
     expect(currentLi).toContain('kcc-kick')
-    expect(currentLi).toContain('bg-marker')
-    expect(currentLi).toContain('rounded-md')
+    expect(currentLi).toContain('kcc-pill')
     expect(currentLi).toContain('px-3')
-    expect(currentLi).toContain('text-marker-ink')
+    // A colour utility would outrank the pill's ink: the utilities layer comes after components.
+    expect(currentLi).not.toMatch(/text-ink/)
   })
 
   it('leaves the last step without a connector slot, so it sits flush at the end of the rule', async () => {

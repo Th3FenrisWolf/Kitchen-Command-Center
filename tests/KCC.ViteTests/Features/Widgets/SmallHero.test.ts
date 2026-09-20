@@ -43,11 +43,11 @@ describe('SmallHero structure', () => {
 })
 
 describe('SmallHero wash', () => {
-  it('pools peach under the left margin', async () => {
+  it('pools peach in the bottom-right corner, clear of the eyebrow', async () => {
     const html = await render()
 
     expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:10%;--y:15%;--w:45%;--h:80%;" aria-hidden="true">',
+      '<span class="kcc-wash" style="--c:var(--color-peach);--x:100%;--y:100%;--w:34%;--h:60%;" aria-hidden="true">',
     )
     expect(html.match(/kcc-wash/g)).toHaveLength(1)
   })

@@ -59,3 +59,21 @@ describe('the kit classes and kit.md agree', () => {
     expect(undocumented.sort(), 'defined in the kit CSS but missing from docs/brand/kit.md').toEqual([])
   })
 })
+
+// Nothing is shadowed except the sheet's fall, which is a filter on .kcc-torn. box-shadow survives in the kit
+// only as a device that draws no shadow: the inset hairline and ring on controls, and the paper ring that
+// keeps a range thumb off the marker fill. Anything else here is a drawn shadow on a printed thing.
+const SHADOW_DEVICES = [
+  /^inset 0 0 0 [12]px var\(--color-(?:hair-strong|ink)\)$/,
+  /^0 0 0 2px var\(--color-paper-2\)$/,
+  /^none$/,
+]
+
+describe('the kit draws no shadow but the fall', () => {
+  it('uses box-shadow only for hairlines and rings', () => {
+    const declarations = [...css.matchAll(/box-shadow:\s*([^;]+);/g)].map(([, value]) => value!.trim())
+    expect(declarations.length).toBeGreaterThan(5)
+    const drawn = declarations.filter((value) => !SHADOW_DEVICES.some((device) => device.test(value)))
+    expect(drawn, 'a box-shadow in the Torn CSS that is not a hairline or a ring').toEqual([])
+  })
+})
