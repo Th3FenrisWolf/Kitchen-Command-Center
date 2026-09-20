@@ -128,7 +128,9 @@ Rules of the structure:
    specificity (`:where`). A kit class that positions a sheet child itself is written `.kcc-sheet > .kcc-x`
    so it wins regardless of import order (see `kcc-stat`).
 4. `--pad` on the sheet also positions the pencil rule: pass padding as `style="--pad: …"`, not as padding
-   utilities.
+   utilities. It is **one length**: the rule's offset is `calc(var(--pad) - 5px)`, and a shorthand
+   (`24px 36px 24px 24px`) makes that invalid, so the ruling silently falls back to the top edge. Asymmetric
+   room comes from a utility on the content, never from `--pad`.
 5. One wash, one label, one hand note per sheet at most.
 6. `clip-path` clips descendants too. Keep interactive children at least 4px inside the sheet edge (the
    default 24px padding does this), or the focus ring is shaved by the tear.

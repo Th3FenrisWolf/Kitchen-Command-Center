@@ -40,7 +40,7 @@
     wash="green"
     :at="{ x: '92%', y: '100%', w: '30%', h: '80%' }"
     :tear="3"
-    pad="24px 36px 24px 24px"
+    pad="24px"
     class="my-6"
   >
     <ResourceString for="BrowseTheKitchen" as="p" class="kcc-kick" />

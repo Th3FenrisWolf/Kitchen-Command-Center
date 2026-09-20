@@ -13,7 +13,9 @@ describe('RecipeSearchHeader sheet', () => {
     const html = await render()
 
     expect(html).toContain('<section class="kcc-slip kcc-tear-3 my-6">')
-    expect(html).toContain('style="--pad:24px 36px 24px 24px;"')
+    // One length: the sheet derives the pencil rule's offset from --pad, and a shorthand makes that calc()
+    // invalid, so the ruling would fall back to the top edge.
+    expect(html).toContain('style="--pad:24px;"')
     expect(html).toContain('--c:var(--color-green)')
     expect(html).toContain('--x:92%')
     expect(html).toContain('--y:100%')
