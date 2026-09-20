@@ -33,4 +33,11 @@ describe('RecipeListRow', () => {
     expect(html).toContain(`<h3 class="kcc-h4">${NAME}</h3>`)
     expect(html).not.toMatch(/sk-[a-z]/)
   })
+
+  // A hash of the name can give two neighbours the same tear; the list view hands each row its cycle index.
+  it('takes the tear the list hands it over its own hash', async () => {
+    const html = await renderSsr(RecipeListRow, { recipe: hit, tear: 4 })
+
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-tear-4')
+  })
 })

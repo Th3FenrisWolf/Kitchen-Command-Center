@@ -14,9 +14,9 @@
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
   import { MAX_TIME, chipsFor, activeFilterCount, defaultState, type FilterChip } from './recipeSearchCriteria'
-  import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { Breadcrumb, RecipeSearchResponse } from '~/Types/Recipe'
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
+  import { listTearFor } from '~/Utilities/BrandColor'
 
   /**
    * Recipe search: query, facet filters, and an infinite-scrolling result grid or list.
@@ -105,8 +105,6 @@
     spotlight.value ? results.value.filter((r) => r.slug !== spotlight.value!.slug) : results.value,
   )
 
-  const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
-
   const { sentinel } = useInfiniteScroll(loadMore)
 </script>
 
@@ -156,7 +154,7 @@
 
       <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
 
-      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" class="mt-12" />
+      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" class="mt-12 mb-9" />
 
       <template v-if="listed.length || spotlight">
         <div
@@ -167,12 +165,12 @@
             v-for="(recipe, index) in listed"
             :key="recipe.slug"
             :card="hitToCard(recipe, rs)"
-            :tear="tearFor(index)"
+            :tear="listTearFor(index)"
           />
         </div>
 
         <div v-else class="flex flex-col gap-y-9">
-          <RecipeListRow v-for="recipe in listed" :key="recipe.slug" :recipe />
+          <RecipeListRow v-for="(recipe, index) in listed" :key="recipe.slug" :recipe :tear="listTearFor(index)" />
         </div>
 
         <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-6">

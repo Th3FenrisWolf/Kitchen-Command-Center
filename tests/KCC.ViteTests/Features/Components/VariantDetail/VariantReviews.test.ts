@@ -46,9 +46,14 @@ describe('VariantReviews summary', () => {
 
   it('draws the distribution as five plain bars on the rule, 5 star down to 1', async () => {
     const html = await render({ reviewCount: 12, averageRating: 4.5 })
-    const rows = [...html.matchAll(/<p class="kcc-kick">(\d)★/g)].map((match) => match[1])
+    const rows = [...html.matchAll(/aria-label="(\d) of 5 stars: \d+"/g)].map((match) => match[1])
 
     expect(rows).toEqual(['5', '4', '3', '2', '1'])
+    // The star is the kit's glyph, not a text codepoint set in Sono.
+    expect(html).not.toContain('★')
+    expect(
+      (html.match(/<span class="kcc-num">\d<\/span><i class="fa-solid fa-star" aria-hidden="true"><\/i>/g) ?? []).length,
+    ).toBe(5)
     expect((html.match(/class="block h-1\.5 bg-peach"/g) ?? []).length).toBe(5)
     expect(html).not.toContain('bg-desk-2')
     expect(html).not.toContain('rounded-full')

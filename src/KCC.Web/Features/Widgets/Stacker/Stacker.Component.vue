@@ -1,8 +1,9 @@
 <!-- #region Stacker Component Properties -->
 <script lang="ts">
   import { onMounted, ref } from 'vue'
-  import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import { washOf, type BackgroundColor } from '~/Types/DesignSystem'
+  import { listTearFor } from '~/Utilities/BrandColor'
 
   /**
    * Column of sticky cards that shrink as the next one scrolls over them.
@@ -44,8 +45,6 @@
   })
 
   const props = defineProps<StackerProps>()
-
-  const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
 </script>
 
 <template>
@@ -59,7 +58,7 @@
     >
       <div data-sentinel class="absolute size-0" :style="`top: -${32 * (index + 1) + 1}px`"></div>
       <KccSheet
-        :tear="tearFor(index)"
+        :tear="listTearFor(index)"
         :wash="washOf(card.backgroundColor)"
         :at="{ x: '85%', y: '90%', w: '55%', h: '50%' }"
         class="origin-top transition-all duration-100 [.last_div]:scale-100 [.stuck]:scale-95"

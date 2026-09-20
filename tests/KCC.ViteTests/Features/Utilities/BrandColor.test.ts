@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sheetTearFor, tileTearFor, washFor } from '~/Utilities/BrandColor'
+import { listTearFor, sheetTearFor, tileTearFor, washFor } from '~/Utilities/BrandColor'
 import { WASHES } from '~/Types/DesignSystem'
 
 describe('washFor', () => {
@@ -11,6 +11,14 @@ describe('washFor', () => {
   it('spreads different inputs across more than one wash', () => {
     const washes = new Set(['Mocha', 'Latte', 'Espresso', 'Vanilla', 'Caramel'].map(washFor))
     expect(washes.size).toBeGreaterThan(1)
+  })
+})
+
+describe('listTearFor', () => {
+  it('cycles the six sheet tears from the list index, so neighbours never share one', () => {
+    expect([0, 1, 2, 3, 4, 5].map(listTearFor)).toEqual([1, 2, 3, 4, 5, 6])
+    expect(listTearFor(6)).toBe(1)
+    expect(listTearFor(13)).toBe(2)
   })
 })
 

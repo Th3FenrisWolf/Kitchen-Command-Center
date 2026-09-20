@@ -25,6 +25,11 @@ export function sheetTearFor(text: string): Exclude<Tear, 'hero'> {
   return (colorIndexFor(`sheet:${text}`, SHEET_TEAR_COUNT) + 1) as Exclude<Tear, 'hero'>
 }
 
+/** The tear for the item at `index` of a list: the six presets cycle, so neighbours never share one. */
+export function listTearFor(index: number): Exclude<Tear, 'hero'> {
+  return ((index % SHEET_TEAR_COUNT) + 1) as Exclude<Tear, 'hero'>
+}
+
 /** A stable tile tear (1–3). */
 export function tileTearFor(text: string): 1 | 2 | 3 {
   return (colorIndexFor(`tile:${text}`, TILE_TEAR_COUNT) + 1) as 1 | 2 | 3

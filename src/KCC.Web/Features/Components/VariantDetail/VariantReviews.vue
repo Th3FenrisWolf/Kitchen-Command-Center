@@ -8,6 +8,7 @@
   import Button from '~/Components/Button/Button.vue'
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
+  import { listTearFor } from '~/Utilities/BrandColor'
 
   /**
    * Rating histogram and paged reviews for a variant, with the member's own review editable inline.
@@ -108,12 +109,10 @@
     })
   })
 
-  const tearFor = (index: number) => ((index % 6) + 1) as Exclude<Tear, 'hero'>
-
   // The form sits under the last review slip and above the first sibling card, which is always a 1: a 2
   // clears both, and a 3 clears the one case where the slip above it is itself a 2.
   const formTear = computed<Exclude<Tear, 'hero'>>(() =>
-    reviews.value.length && tearFor(reviews.value.length - 1) === 2 ? 3 : 2,
+    reviews.value.length && listTearFor(reviews.value.length - 1) === 2 ? 3 : 2,
   )
 
   const formatDate = (iso: string) => {
@@ -143,8 +142,10 @@
           <!-- Each fill is 6px centred in a 24px band, so the run of bars keeps to the rule. -->
           <div class="min-w-60 flex-1">
             <div v-for="row in distRows" :key="row.star">
-              <p class="kcc-kick">
-                {{ row.star }}★ <span class="kcc-num">{{ row.count }}</span>
+              <p class="kcc-kick" role="img" :aria-label="`${row.star} of 5 stars: ${row.count}`">
+                <span class="kcc-num">{{ row.star }}</span
+                ><i class="fa-solid fa-star" aria-hidden="true"></i>
+                <span class="kcc-num">{{ row.count }}</span>
               </p>
               <div class="flex h-6 items-center">
                 <span class="block h-1.5 bg-peach" :style="{ width: row.pct + '%' }"></span>
@@ -155,7 +156,7 @@
       </KccSheet>
 
       <ul v-if="reviews.length" data-testid="reviews-list" class="grid gap-9">
-        <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="tearFor(i)" pad="16px">
+        <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="listTearFor(i)" pad="16px">
           <StarRating :model-value="review.rating" readonly />
           <p class="kcc-kick">
             {{ review.authorName }} · <span class="kcc-num">{{ formatDate(review.created) }}</span>

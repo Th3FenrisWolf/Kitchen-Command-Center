@@ -3,6 +3,7 @@
   import { computed } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import { listTearFor } from '~/Utilities/BrandColor'
 
   /**
    * Member's profile page: identity sheet, contribution counts, and their recipes and variants.
@@ -58,10 +59,6 @@
 
   const recipesStartedCount = computed(() => props.recipeGroups.filter((group) => group.startedByYou).length)
   const variantsCount = computed(() => props.recipeGroups.reduce((sum, group) => sum + group.variants.length, 0))
-
-  // The profile sheet beside the list takes the first tear, so the list starts at the second and no two
-  // neighbours are torn alike.
-  const tearFor = (index: number) => (((index + 1) % 6) + 1) as 1 | 2 | 3 | 4 | 5 | 6
 </script>
 
 <template>
@@ -104,8 +101,16 @@
 
       <ResourceString v-if="!recipeGroups.length" for="NoCreationsYet" as="p" class="kcc-body" />
 
+      <!-- The profile sheet beside the list takes the first tear, so the list starts at the second and no two
+           neighbours are torn alike. -->
       <ul v-else class="grid gap-9">
-        <KccSheet v-for="(group, index) in recipeGroups" :key="group.pageId" as="li" :tear="tearFor(index)" pad="16px">
+        <KccSheet
+          v-for="(group, index) in recipeGroups"
+          :key="group.pageId"
+          as="li"
+          :tear="listTearFor(index + 1)"
+          pad="16px"
+        >
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <i v-if="group.recipeIcon" :class="group.recipeIcon" aria-hidden="true"></i>
             <h3 class="kcc-h4">
