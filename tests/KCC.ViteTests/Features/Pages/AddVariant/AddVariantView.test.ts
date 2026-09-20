@@ -39,6 +39,12 @@ const controlIdFor = (html: string, label: string) =>
   html.match(new RegExp(`<label for="([^"]+)" class="kcc-lbl">(?:<!--\\[-->)?(?:<span>)?${label}`))?.[1] ?? ''
 
 describe('AddVariantView', () => {
+  // Nothing above the hero supplies a margin: without its own the sheet and its tape sit flush under the
+  // header's dashed rule.
+  it('sets the hero a rule below the header', async () => {
+    expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
+  })
+
   it('counts the four steps on the desk and marks the one being filled', async () => {
     const wizard = wizardOf(await render())
 

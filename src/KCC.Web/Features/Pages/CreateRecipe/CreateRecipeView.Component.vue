@@ -127,14 +127,14 @@
 </script>
 
 <template>
-  <SmallHero dark>
+  <SmallHero dark class="mt-6">
     <template #title><ResourceString for="CreateRecipe" /></template>
   </SmallHero>
 
   <KccSheet v-if="submitSuccess" class="mt-6" wash="green" :at="{ x: '88%', y: '18%', w: '38%', h: '60%' }" :tear="2" tape>
     <div class="grid justify-items-center gap-6 text-center">
       <h2 class="kcc-h3">Recipe Submitted!</h2>
-      <p class="kcc-hand">Your recipe has been submitted for review. An admin will review and publish it.</p>
+      <p class="kcc-body">Your recipe has been submitted for review. An admin will review and publish it.</p>
       <Button as="a" href="/recipes" variant="marker" size="lg">Back to Recipes</Button>
     </div>
   </KccSheet>

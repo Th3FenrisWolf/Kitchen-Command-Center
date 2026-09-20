@@ -42,6 +42,12 @@ const controlIdFor = (html: string, label: string) =>
 const sheetsOf = (html: string) => html.slice(html.indexOf('<div class="mt-6 grid'))
 
 describe('AccountSettingsView', () => {
+  // Nothing above the hero supplies a margin: without its own the sheet and its tape sit flush under the
+  // header's dashed rule.
+  it('sets the hero a rule below the header', async () => {
+    expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
+  })
+
   it('sets each group on its own crisp sheet, tears that never repeat', async () => {
     const sheets = sheetsOf(await render())
 

@@ -106,7 +106,7 @@
 </script>
 
 <template>
-  <SmallHero dark>
+  <SmallHero dark class="mt-6">
     <template #title>
       <ResourceString for="AccountSettings" />
     </template>

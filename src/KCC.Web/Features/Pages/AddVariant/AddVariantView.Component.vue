@@ -123,7 +123,7 @@
 </script>
 
 <template>
-  <SmallHero dark>
+  <SmallHero dark class="mt-6">
     <template #title>
       <ResourceString for="AddVariantFor" class="mr-2" /><span>{{ recipeName }}</span>
     </template>
@@ -138,7 +138,7 @@
   <KccSheet v-if="submitSuccess" class="mt-6" wash="green" :at="{ x: '88%', y: '18%', w: '38%', h: '60%' }" :tear="2" tape>
     <div class="grid justify-items-center gap-6 text-center">
       <ResourceString for="VariantSubmitted" as="h2" class="kcc-h3" />
-      <ResourceString for="VariantSubmittedMessage" as="p" class="kcc-hand" />
+      <ResourceString for="VariantSubmittedMessage" as="p" class="kcc-body" />
 
       <Button as="a" :href="recipeHref" variant="marker" size="lg">
         <ResourceString for="BackTo" /><span>{{ recipeName }}</span>
