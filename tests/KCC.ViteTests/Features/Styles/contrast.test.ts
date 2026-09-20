@@ -240,6 +240,35 @@ describe.each<[string, Tokens, WashRender]>([
     it.each(STATUS_WASHES)('ink in a %s status well reads at AA for text (≥ 4.5:1)', (w) => {
       expect(contrastOf(ink, tintedPaper(tokens, w))).toBeGreaterThanOrEqual(4.5)
     })
+
+    // Measured and not yet met in the dark ramp: soft ink inside a tinted well reads 3.3–3.9:1. Kit.css forces
+    // ink for a kick inside a well for this reason, and no stats tile today carries both a well and a `<small>`
+    // unit. `fails` keeps the number on record until the tokens move.
+    const softInWell = name === 'dark' ? it.fails : it
+    softInWell(
+      `ink-soft in a status well reads at AA for text (≥ 4.5:1)${name === 'dark' ? ', measured 3.3–3.9:1' : ''}`,
+      () => {
+        for (const w of STATUS_WASHES) expect(contrastOf(inkSoft, tintedPaper(tokens, w))).toBeGreaterThanOrEqual(4.5)
+      },
+    )
+
+    // Ghost buttons, badges, fields and checklist boxes draw their hairline on washed sheets too (the Library,
+    // the ingredients sheet, the empty states). On the ring it reads; over a dark-ramp core it measures
+    // 2.6–2.9:1, so controls stay off the core the way copy does.
+    const hairStrong = resolve(tokens, 'hair-strong')
+    const hairOver = (ground: Rgb) => contrastOf(over(toLinearRgb(hairStrong), ground, hairStrong.alpha), ground)
+
+    it.each(WASHES)('hair-strong over paper + %s at the 38% ring reads at AA for UI (≥ 3:1)', (w) => {
+      expect(hairOver(washedPaper(tokens, w, wash, 0.38))).toBeGreaterThanOrEqual(3)
+    })
+
+    const hairOnCore = name === 'dark' ? it.fails : it
+    hairOnCore(
+      `hair-strong over a wash core reads at AA for UI (≥ 3:1)${name === 'dark' ? ', measured 2.6–2.9:1' : ''}`,
+      () => {
+        for (const w of WASHES) expect(hairOver(washedPaper(tokens, w, wash, 1))).toBeGreaterThanOrEqual(3)
+      },
+    )
   })
 })
 
