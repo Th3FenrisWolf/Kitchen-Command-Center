@@ -265,8 +265,8 @@
     text-decoration-color: currentColor;
   }
 
-  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline; soft ink, ink on hover.
-     A fixed 24px box holds the target size steady no matter what font-size the surrounding kick sets. */
+  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline. A fixed 24px box holds the
+     target size steady no matter what font-size the surrounding kick sets. */
   .kcc-link--icon {
     align-items: center;
     color: var(--color-ink-soft);
@@ -283,21 +283,6 @@
   }
 
   /* ---- chrome on the desk ---- */
-  .kcc-head {
-    align-items: baseline;
-    border-bottom: 1px dashed var(--color-hair-strong);
-    display: grid;
-    gap: 0 24px;
-    grid-template-columns: 1fr auto;
-  }
-
-  .kcc-mark {
-    font-family: var(--font-casual);
-    font-size: 24px;
-    line-height: var(--bl);
-    margin: 0;
-  }
-
   .kcc-secname {
     align-items: baseline;
     display: grid;

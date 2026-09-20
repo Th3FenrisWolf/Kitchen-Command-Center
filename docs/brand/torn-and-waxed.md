@@ -132,7 +132,8 @@ a section heading 36px above its content. Margins between blocks are multiples o
   hairline badges. The tile's wash is the recipe's colour.
 - **Library**: a green-washed sheet holding search, sort and view controls; below it a grid of slips cycling
   through the six tears.
-- **Detail**: a hero slip with a 28px cut, the recipe's wash under the left margin, a large pinned tile; then an
+- **Detail**: a hero slip with a 28px cut, the recipe's wash pooled in the bottom-right corner (the kick lines
+  run along the left, and soft ink never sits on a core), a large pinned tile; then an
   "At a glance" stats sheet; then ingredients (checklist, teal wash) beside method (numbered steps, peach
   wash). One hand note at most.
 - **Lists**: checklists on the rule: 12px box, quantity in Sono right-aligned, done rows struck through.
@@ -141,7 +142,8 @@ a section heading 36px above its content. Margins between blocks are multiples o
 
 - Don't stroke anything: no `border`, no outline on paper, no drawn frames. Inset hairlines on printed
   controls are the one exception.
-- Don't shadow anything except the sheet's fall. No `shadow-*` utilities; no shadow on labels, tape or tiles.
+- Don't shadow anything except the sheet's fall. No `shadow-*` utilities; no shadow on labels or tape. (Tiles
+  are torn paper and carry the fall like any sheet.)
 - Don't round paper. No radius on sheets, tiles or images.
 - Don't put text on a wash core. Washes go under margins and corners.
 - Don't colour icons, links or status text.

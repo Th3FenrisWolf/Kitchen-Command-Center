@@ -14,6 +14,8 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
+| `src/KCC.Web/Features/Styles/Layout.css` | the `.content-grid` breakout system: content, breakout and full-width columns for pages and sections |
+| `src/KCC.Web/Features/Styles/Sections/MultipleColumnSection.css` | the page-builder column grid for `MultipleColumnSection`, in `@layer components` because Razor renders it |
 | `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here and `#app` carries the desk colour so the overlays have a backdrop to blend with |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
@@ -67,7 +69,8 @@ wells, textareas), `rounded-full` (pills). Sheets, tiles and images take no radi
 Form controls (`input`, `select`, `textarea`) are 16px everywhere: iOS zooms the viewport into any focused
 field below 16px, and the kit's fields inherit this floor. Sono is a static instance (MONO 1 / 400):
 `font-variation-settings` is a no-op on it. `typography.test.ts` pins these numbers and checks every font
-file it references exists.
+file it references exists. Nothing the kit renders sets a weight, but editor rich text may still carry
+`<strong>`, so `Typography.css` keeps the Hazelnut Bold faces declared for it.
 
 ## Structure
 
@@ -168,8 +171,9 @@ full-width sheet reads as a scallop, not a tear.
 
 **Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`; a standalone sheet takes a preset from a
 stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design names; the default is
-`kcc-tear-1`. Neighbours never share a tear. `yarn tears` regenerates the file; `tears.test.ts` fails if the
-committed file drifts from the generator. Need a crisp surface (a form, cook mode)? `KccSheet crisp` sets
+`kcc-tear-1`. Neighbours never share a tear. The kit ships one hero tear, so two hero sheets on one page
+(RecipeDetail's hero and its featured variant) do share it; keep at least one standard sheet between them.
+`yarn tears` regenerates the file; `tears.test.ts` fails if the committed file drifts from the generator. Need a crisp surface (a form, cook mode)? `KccSheet crisp` sets
 `--r: 0` on the slip; Razor writes `style="--r: 0"` on the slip itself.
 
 ## Classes
@@ -179,7 +183,7 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-grain`, `kcc-crayon` | desk grain under everything, wax tooth over everything | first and last child of `#app`; `App.vue` owns them; the crayon covers everything inside #app, so a surface teleported to body (cook mode) is deliberately untextured |
 | `kcc-slip` (+`--fill`) | tilt + positioning context; `--fill` stretches slip, torn and sheet to a definite-height parent | `--r` from the tear preset; without `--fill` a child sized in percentages computes to auto |
 | `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
-| `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px |
+| `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px, heroes 48px; compact rows (recipe rows, review slips, the account sheet) take 16px and accept a ruling 8px off a 24px neighbour's |
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y --w --h` placement |
 | `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
 | `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; type comes from `kcc-kick` on the same element |
@@ -194,7 +198,6 @@ committed file drifts from the generator. Need a crisp surface (a form, cook mod
 | `kcc-hr` | dashed hair rule | |
 | `kcc-link` | ink + hair-strong underline | prose links, breadcrumbs |
 | `kcc-link--icon` | icon-only link (the home crumb), with `kcc-kick` on the item for size | body-size icon (15px) in a 24px min-height/min-width box, no underline; ink-soft, ink on hover |
-| `kcc-head`, `kcc-mark` | chrome header grid, APCasual wordmark | |
 | `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
 | `kcc-foot` | footer copy block | |
 | `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large; `--icon` squares the pill (36px, 48px with `--lg`) | Sono caps `.14em`; an `--icon` button is all glyph, so its name goes in `aria-label` |
@@ -270,6 +273,7 @@ Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 | The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
+| Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
 
 ## Building a surface
 
