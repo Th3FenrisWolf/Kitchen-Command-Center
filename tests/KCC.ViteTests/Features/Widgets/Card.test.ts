@@ -87,8 +87,8 @@ describe('Card wash', () => {
     expect(await render({ cardColor: '' })).not.toContain('kcc-wash')
   })
 
-  // Content still carries Softbound hues until the CMS migration; an unknown name is no wash rather than
-  // a `var(--color-rosewater)` that resolves to nothing.
+  // Until the migrated content is restored into the database, a stored card can still name a retired
+  // hue. The sheet then renders bare paper rather than a `var(--color-rosewater)` that resolves to nothing.
   it('leaves a retired hue unwashed', async () => {
     expect(await render({ cardColor: 'bg-rosewater' })).not.toContain('kcc-wash')
   })

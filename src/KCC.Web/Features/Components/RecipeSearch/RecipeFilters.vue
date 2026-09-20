@@ -86,8 +86,8 @@
 
     <fieldset class="mt-6">
       <ResourceString for="Category" as="legend" class="kcc-kick" />
-      <!-- A checklist row is three direct children of the li, so the box and the text are two labels for the
-           same checkbox rather than one wrapper around it: both stay clickable, the grid stays the kit's. -->
+      <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
+           stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
       <ul class="kcc-check">
         <li
           v-for="row in categories"

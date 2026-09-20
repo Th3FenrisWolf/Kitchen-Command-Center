@@ -9,9 +9,10 @@ const tailwindConfigCss = readFileSync(
 )
 
 describe('TailwindConfig.css safelist', () => {
-  // Tailwind scans .cshtml, .vue and .css only, so a token this file does not safelist is emitted
-  // only when it happens to appear in markup. Card builds its wash from the arrays above, and an
-  // unemitted class is a silent no-op rather than a build error.
+  // Tailwind scans .cshtml, .vue and .css only. The C# side (`TailwindStyleAttribute`, `SectionColors`, the
+  // section padding ladder) builds class strings the scanner never sees, so a token this file does not
+  // safelist is emitted only when it happens to appear in markup, and an unemitted class is a silent no-op
+  // rather than a build error.
   const safelisted = [...tailwindConfigCss.matchAll(/@source inline\('([^']+)'\)/g)].flatMap(([, pattern]) =>
     expand(pattern),
   )

@@ -36,10 +36,10 @@ const WEB = fileURLToPath(new URL('../../../../src/KCC.Web/', import.meta.url))
 const ROOTS = ['Features', 'App_Data/CIRepository'].map((dir) => join(WEB, dir))
 const SCAN = /\.(vue|cshtml|ts|cs|css|xml|json)$/
 
-// Unconverted Softbound surfaces, relative to src/KCC.Web with forward slashes; a trailing slash allows a
-// directory. Each conversion task deletes its entry. An entry that no longer hits fails the second test, so
-// this list can only shrink; it is empty by the cleanup phase. The scan is textual: a comment that names
-// `sk-sheet` or `font-bold` counts as a hit, so reword prose too when you convert a file.
+// Paths exempt from the scan, relative to src/KCC.Web with forward slashes; a trailing slash allows a
+// directory. The set is a ratchet: an entry that no longer hits fails the second test, and a new entry needs a
+// reason in the commit message. The scan is textual: a comment that names `sk-sheet` or `font-bold` counts as a
+// hit, so reword prose too.
 const ALLOWLIST = new Set<string>([])
 
 const covers = (entry: string, path: string) => (entry.endsWith('/') ? path.startsWith(entry) : path === entry)

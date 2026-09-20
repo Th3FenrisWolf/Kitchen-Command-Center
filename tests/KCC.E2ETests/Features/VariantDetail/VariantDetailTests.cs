@@ -75,8 +75,9 @@ public class VariantDetailTests : BasePageTests
         var rowCount = await Page.Locator("dl dt").CountAsync();
         var emptyStateCount = await Page.GetByText("not provided", new() { Exact = false }).CountAsync();
 
-        // The <dl> renders iff at least one macro is provided (v-if="provided"), so its
-        // presence and the row count agree, and rows never exceed the eight canonical macros.
+        // The headline macros render in the kcc-stats row; the <dl> holds only the secondary rows and
+        // renders iff there is at least one, so its presence and the row count agree, and rows never
+        // exceed the eight canonical macros.
         _ = await Assert.That(listCount).IsLessThanOrEqualTo(1);
         _ = await Assert.That(rowCount).IsLessThanOrEqualTo(8);
         if (rowCount > 0)
@@ -121,8 +122,8 @@ public class VariantDetailTests : BasePageTests
     public async Task DifficultyTile_Set_ShowsLabelAndDot()
     {
         // Asserts the difficulty tile's render contract structurally rather than requiring the
-        // variant to have a difficulty: no dot glyph renders any more (Task 42 turns this into a
-        // status well). StatTiles.vue puts the data-testid="difficulty-dot" hook on the tile's own
+        // variant to have a difficulty: no dot glyph renders any more; the difficulty is a status
+        // well. StatTiles.vue puts the data-testid="difficulty-dot" hook on the tile's own
         // value, <p class="kcc-v">, and sets it only for a tile built from a set difficulty
         // (easy/medium/hard), i.e. one with a dotColor. So if any difficulty-dot is present it sits
         // inside a rendered stat tile (the <section> stat row is always present). Asserting "set" on
