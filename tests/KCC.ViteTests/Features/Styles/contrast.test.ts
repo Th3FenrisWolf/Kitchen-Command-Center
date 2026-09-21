@@ -243,7 +243,7 @@ describe.each<[string, Tokens, WashRender]>([
 
     // Measured and not yet met in the dark ramp: soft ink inside a tinted well reads 3.3–3.9:1. Kit.css forces
     // ink for a kick inside a well for this reason, and no stats tile today carries both a well and a `<small>`
-    // unit. `fails` keeps the number on record until the tokens move.
+    // unit. `fails` keeps the measured number on record.
     const softInWell = name === 'dark' ? it.fails : it
     softInWell(
       `ink-soft in a status well reads at AA for text (≥ 4.5:1)${name === 'dark' ? ', measured 3.3–3.9:1' : ''}`,
