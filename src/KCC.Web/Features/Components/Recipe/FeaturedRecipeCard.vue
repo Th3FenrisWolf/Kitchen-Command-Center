@@ -34,7 +34,8 @@
     '--x': '100%',
     '--y': '100%',
     '--w': '34%',
-    '--h': '60%',
+    // Capped like DetailHero's: the ring ends inside the bottom padding, so the badge row never meets the core.
+    '--h': 'min(60%, 68px)',
   }))
 
   const rating = computed(() =>

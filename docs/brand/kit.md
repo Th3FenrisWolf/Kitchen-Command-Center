@@ -184,7 +184,7 @@ stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design
 | `kcc-slip` (+`--fill`) | tilt + positioning context; `--fill` stretches slip, torn and sheet to a definite-height parent | `--r` from the tear preset; without `--fill` a child sized in percentages computes to auto |
 | `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
 | `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px, heroes 48px; compact rows (recipe rows, review slips, the account sheet) take 16px and accept a ruling 8px off a 24px neighbour's |
-| `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y --w --h` placement |
+| `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y` the centre, `--w --h` the radii (any length-percentage). Copy may sit on the 70% ring, never on the core: a corner pool caps the radius that points at the copy in px (`min(60%, 68px)` keeps the ring inside a 48px padding at any sheet height) |
 | `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
 | `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; type comes from `kcc-kick` on the same element |
 | `kcc-tape` | one strip, top-centre | opt-in |

@@ -46,7 +46,7 @@
     pad="48px"
     tape
     wash="peach"
-    :at="{ x: '100%', y: '100%', w: '34%', h: '60%' }"
+    :at="{ x: '100%', y: '100%', w: '34%', h: 'min(60%, 68px)' }"
     v-bind="$attrs"
   >
     <p v-if="eyebrow" class="kcc-kick">

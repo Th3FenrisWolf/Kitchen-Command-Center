@@ -69,6 +69,15 @@ const SHADOW_DEVICES = [
   /^none$/,
 ]
 
+// Both classes sit on one element and share a specificity, so only source order decides whose colour wins:
+// the pill must be declared after the type classes or the current step reads soft ink on marker.
+describe('the pill outranks the kick', () => {
+  it('is declared after kcc-kick in Kit.css', () => {
+    const kit = read('src/KCC.Web/Features/Styles/Torn/Kit.css')
+    expect(kit.indexOf('.kcc-pill {')).toBeGreaterThan(kit.indexOf('.kcc-kick,'))
+  })
+})
+
 describe('the kit draws no shadow but the fall', () => {
   it('uses box-shadow only for hairlines and rings', () => {
     const declarations = [...css.matchAll(/box-shadow:\s*([^;]+);/g)].map(([, value]) => value!.trim())

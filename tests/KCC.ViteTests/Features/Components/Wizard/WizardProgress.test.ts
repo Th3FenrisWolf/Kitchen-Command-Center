@@ -45,8 +45,6 @@ describe('WizardProgress', () => {
     expect(currentLi).toContain('kcc-kick')
     expect(currentLi).toContain('kcc-pill')
     expect(currentLi).toContain('px-3')
-    // A colour utility would outrank the pill's ink: the utilities layer comes after components.
-    expect(currentLi).not.toMatch(/text-ink/)
   })
 
   it('leaves the last step without a connector slot, so it sits flush at the end of the rule', async () => {

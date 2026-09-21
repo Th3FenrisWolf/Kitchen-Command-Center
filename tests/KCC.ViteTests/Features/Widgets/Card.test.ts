@@ -68,7 +68,7 @@ describe('Card wash', () => {
     const html = await render({ cardColor: 'bg-peach' })
 
     expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:100%;--y:0%;--w:38%;--h:40%;" aria-hidden="true">',
+      '<span class="kcc-wash" style="--c:var(--color-peach);--x:100%;--y:0%;--w:38%;--h:min(40%, 68px);" aria-hidden="true">',
     )
     expect(html.match(/kcc-wash/g)).toHaveLength(1)
   })

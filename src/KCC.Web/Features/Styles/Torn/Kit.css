@@ -128,14 +128,6 @@
     right: 36px;
   }
 
-  /* The label's fill and ink for something that stays in the flow (a current step, an open menu button),
-     where the absolutely positioned label cannot go. */
-  .kcc-pill {
-    background: var(--color-marker);
-    border-radius: var(--rd);
-    color: var(--color-marker-ink);
-  }
-
   /* One strip of tape, top-centre. Opt-in. */
   .kcc-tape {
     background-color: var(--color-tape);
@@ -205,6 +197,15 @@
     line-height: var(--bl);
     margin: 0;
     text-transform: uppercase;
+  }
+
+  /* The label's fill and ink for something that stays in the flow (a current step, an open menu button),
+     where the absolutely positioned label cannot go. Declared after the type classes: it shares an element
+     with kcc-kick, whose soft ink would otherwise win by source order. */
+  .kcc-pill {
+    background: var(--color-marker);
+    border-radius: var(--rd);
+    color: var(--color-marker-ink);
   }
 
   .kcc-body {

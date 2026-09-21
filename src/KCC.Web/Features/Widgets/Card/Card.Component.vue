@@ -56,7 +56,7 @@
 <template>
   <KccSheet
     :wash="washOf(cardColor)"
-    :at="{ x: '100%', y: '0%', w: '38%', h: '40%' }"
+    :at="{ x: '100%', y: '0%', w: '38%', h: 'min(40%, 68px)' }"
     :tear="resolvedTear"
     :class="['group/card kcc-slip--fill', marginClasses]"
   >

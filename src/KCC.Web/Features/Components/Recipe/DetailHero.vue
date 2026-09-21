@@ -56,7 +56,9 @@
     '--x': '100%',
     '--y': '100%',
     '--w': '34%',
-    '--h': '60%',
+    // The vertical radius is capped so the pool's 70% ring ends inside the 48px bottom padding: whatever
+    // the footer holds (badges are soft ink) meets at most the ring, at any sheet height.
+    '--h': 'min(60%, 68px)',
   }))
 
   const ratingText = computed(() => formatRating(averageRating ?? 0))

@@ -61,7 +61,8 @@ describe('DetailHero as a slip', () => {
     expect(wash).toContain('--x:100%')
     expect(wash).toContain('--y:100%')
     expect(wash).toContain('--w:34%')
-    expect(wash).toContain('--h:60%')
+    // Capped so the ring ends inside the bottom padding whatever the sheet's height.
+    expect(wash).toContain('--h:min(60%,68px)')
   })
 
   it('pins the large tile and its tape outside the tear, with a strip on the sheet', async () => {
