@@ -3,11 +3,12 @@
   import { computed, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
   import type { ImageItem } from '~/Types/ContentTypes'
-  import { backgroundColorFor } from '~/Utilities/BrandColor'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
   import Badge from '~/Components/Badge/Badge.vue'
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
@@ -112,87 +113,94 @@
 </script>
 
 <template>
-  <div class="mt-4 flex items-center justify-between gap-4">
-    <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
-    <div class="hidden items-center gap-2 lg:flex">
-      <button
-        type="button"
-        data-test="cook-mode-open-desktop"
-        :disabled="!hasInstructions"
-        :title="hasInstructions ? rs('CookMode') : rs('ComingSoon')"
-        class="inline-flex items-center gap-2 rounded-2xl bg-paper px-3 py-2 text-ink transition-opacity hover:bg-paper-2 disabled:cursor-not-allowed disabled:opacity-60"
-        @click="openCookMode"
-      >
-        <i class="fa-solid fa-play text-sm" aria-hidden="true"></i>
-        <ResourceString for="CookMode" />
-      </button>
-      <VariantCookedToggle
-        :variant-guid="variantGuid"
-        :cooked-count="cookedCount"
-        :has-cooked="hasCooked"
-        :is-authenticated="isAuthenticated"
-      />
-    </div>
-  </div>
+  <div class="mt-6 space-y-[72px]">
+    <!-- The trail and the controls read as one head with the hero, so they sit 24px off it, not 72px. -->
+    <div class="space-y-6">
+      <div class="flex items-center justify-between gap-4">
+        <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
-  <DetailHero
-    :title="variantName"
-    :seed="variantName"
-    :description="variantDescription"
-    :icon="icon"
-    :image="coverImage"
-    :authorName="createdByName"
-    :average-rating="averageRating"
-    :review-count="reviewCount"
-    :times-cooked="cookedCount"
-  >
-    <template #eyebrow>
-      <span><ResourceString for="VariantOf" /> {{ recipeName }}</span>
-    </template>
+        <div class="hidden items-center gap-3 lg:flex">
+          <Button
+            variant="ghost"
+            data-test="cook-mode-open-desktop"
+            :disabled="!hasInstructions"
+            :title="hasInstructions ? rs('CookMode') : rs('ComingSoon')"
+            @click="openCookMode"
+          >
+            <i class="fa-duotone fa-play" aria-hidden="true"></i><ResourceString for="CookMode" />
+          </Button>
 
-    <template v-if="tags.length" #footer>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <Badge v-for="tag in tags" :key="tag" :class="backgroundColorFor(tag) + ' text-ink'">{{ tag }}</Badge>
+          <VariantCookedToggle
+            :variant-guid="variantGuid"
+            :cooked-count="cookedCount"
+            :has-cooked="hasCooked"
+            :is-authenticated="isAuthenticated"
+          />
+        </div>
       </div>
-    </template>
-  </DetailHero>
 
-  <StatTiles :tiles="statTiles" />
+      <DetailHero
+        :title="variantName"
+        :seed="variantName"
+        :description="variantDescription"
+        :icon="icon"
+        :image="coverImage"
+        :authorName="createdByName"
+        :average-rating="averageRating"
+        :review-count="reviewCount"
+        :times-cooked="cookedCount"
+      >
+        <template #eyebrow>
+          <span><ResourceString for="VariantOf" /> {{ recipeName }}</span>
+        </template>
 
-  <section class="mt-8 grid items-start gap-4 lg:mx-4 lg:grid-cols-4">
-    <div class="flex flex-col gap-4 lg:sticky lg:top-4">
-      <VariantIngredients :ingredients="ingredients" :base-servings="servings" />
-      <VariantNutrition
-        :calories="calories"
-        :protein-g="proteinG"
-        :carbs-g="carbsG"
-        :fat-g="fatG"
-        :saturated-fat-g="saturatedFatG"
-        :fiber-g="fiberG"
-        :sugar-g="sugarG"
-        :sodium-mg="sodiumMg"
-      />
+        <template v-if="tags.length" #footer>
+          <div class="kcc-badges mt-6">
+            <Badge v-for="tag in tags" :key="tag">{{ tag }}</Badge>
+          </div>
+        </template>
+      </DetailHero>
     </div>
 
-    <VariantInstructions class="lg:col-span-3" :instructions="instructions" />
-  </section>
+    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3">
+      <StatTiles :tiles="statTiles" />
+    </KccSheet>
 
-  <VariantCookNotes :variant-guid="variantGuid" :is-authenticated="isAuthenticated" />
+    <section class="grid gap-x-7 gap-y-9 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <VariantIngredients :ingredients="ingredients" :base-servings="servings" />
+      <VariantInstructions :instructions="instructions" />
+    </section>
 
-  <VariantReviews
-    :variant-guid="variantGuid"
-    :average-rating="averageRating"
-    :review-count="reviewCount"
-    :is-authenticated="isAuthenticated"
-  />
-  <VariantSiblings :variants="siblingVariants" />
+    <VariantNutrition
+      :calories="calories"
+      :protein-g="proteinG"
+      :carbs-g="carbsG"
+      :fat-g="fatG"
+      :saturated-fat-g="saturatedFatG"
+      :fiber-g="fiberG"
+      :sugar-g="sugarG"
+      :sodium-mg="sodiumMg"
+    />
 
-  <CookMode
-    :open="cookModeOpen"
-    :instructions="instructions"
-    :ingredients="ingredients"
-    :servings="servings"
-    :resource-strings="resourceStrings"
-    @close="cookModeOpen = false"
-  />
+    <VariantCookNotes :variant-guid="variantGuid" :is-authenticated="isAuthenticated" />
+
+    <VariantReviews
+      :variant-guid="variantGuid"
+      :average-rating="averageRating"
+      :review-count="reviewCount"
+      :is-authenticated="isAuthenticated"
+    />
+
+    <VariantSiblings :variants="siblingVariants" />
+
+    <!-- Fixed UI never lives inside a slip: the tilt and the fibre filter would become its containing block. -->
+    <CookMode
+      :open="cookModeOpen"
+      :instructions="instructions"
+      :ingredients="ingredients"
+      :servings="servings"
+      :resource-strings="resourceStrings"
+      @close="cookModeOpen = false"
+    />
+  </div>
 </template>

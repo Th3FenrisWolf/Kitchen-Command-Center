@@ -45,6 +45,10 @@
 
   const isOpen = computed(() => controller?.openId.value === menuId)
 
+  // menuId carries the CMS display text, so it can hold spaces and punctuation. `aria-controls` is a
+  // space-separated IDREF list, so an id with whitespace in it would resolve to nothing.
+  const panelId = computed(() => `menu-${menuId.replace(/[^\w-]+/g, '-')}`)
+
   const toggle = () => {
     controller?.setOpen(isOpen.value ? null : menuId)
   }
@@ -54,35 +58,51 @@
     v-if="item.url"
     :href="item.url.stripTilde()"
     :target="item.target"
-    class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl px-4 py-2 font-casual text-2xl font-bold text-ink uppercase"
+    class="kcc-kick relative z-20 flex h-full w-full cursor-pointer items-center px-4 py-2 text-ink decoration-hair-strong underline-offset-[3px] hover:underline"
   >
     {{ item.displayText }}
   </a>
   <template v-else>
     <button
       type="button"
+      aria-haspopup="true"
+      :aria-expanded="isOpen"
+      :aria-controls="panelId"
       @click="toggle"
-      class="relative z-20 flex h-full w-full cursor-pointer items-center rounded-2xl px-4 py-2 font-casual text-2xl font-bold text-ink uppercase"
+      :class="[
+        'kcc-kick relative z-20 flex h-full w-full cursor-pointer items-center px-3 py-2',
+        isOpen ? 'kcc-pill' : 'text-ink decoration-hair-strong underline-offset-[3px] hover:underline',
+      ]"
     >
       {{ item.displayText }}
     </button>
     <div
+      :id="panelId"
+      :inert="!isOpen"
       :class="[
-        'sk-sheet absolute top-[calc(100%-1.5rem)] left-0 z-10 max-h-0 w-full overflow-hidden transition-all duration-500',
+        'absolute top-full left-0 z-10 mt-1.5 w-full overflow-hidden pb-4 transition-all duration-500',
         isOpen ? 'max-h-96' : 'max-h-0',
       ]"
     >
-      <ul class="flex gap-8 p-8">
-        <li
-          v-for="subLink in item.subLinks"
-          :key="subLink.displayText"
-          class="basis-full rounded-2xl bg-paper-2 text-ink transition-all will-change-transform hover:-translate-y-1"
-        >
-          <a class="block size-full p-4 text-center" :href="subLink.url?.stripTilde()" :target="subLink.target">
-            {{ subLink.displayText }}
-          </a>
-        </li>
-      </ul>
+      <div class="kcc-slip kcc-torn kcc-tear-4" style="--r: 0">
+        <div class="kcc-sheet" style="--pad: 24px">
+          <ul class="flex gap-8">
+            <li
+              v-for="subLink in item.subLinks"
+              :key="subLink.displayText"
+              class="basis-full rounded-md bg-paper-2 text-ink"
+            >
+              <a
+                class="block size-full p-4 text-center decoration-hair-strong underline-offset-[3px] hover:underline"
+                :href="subLink.url?.stripTilde()"
+                :target="subLink.target"
+              >
+                {{ subLink.displayText }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </template>
 </template>

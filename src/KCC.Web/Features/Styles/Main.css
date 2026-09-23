@@ -3,13 +3,12 @@
 @import '@fortawesome/fontawesome-pro/css/regular.css';
 @import '@fortawesome/fontawesome-pro/css/duotone.css';
 @import './TailwindConfig.css';
-@import './Sketch/Tokens.css';
-@import './Sketch/Kit.css';
-@import './Sketch/Button.css';
-@import './Sketch/Ink.css';
+@import './Torn/Tokens.css';
+@import './Torn/Tears.css';
+@import './Torn/Kit.css';
+@import './Torn/Controls.css';
 @import './Layout.css';
 @import './Typography.css';
-@import './RangeSlider.css';
 
 /* Sections */
 @import './Sections/MultipleColumnSection.css';
@@ -27,10 +26,13 @@
     color: var(--color-ink);
   }
 
-  /* Ready for the grain overlay, which arrives with the kit stylesheet as #app's absolutely-positioned first
-     child: positioning its siblings paints them above it. :where() keeps specificity at zero so a
-     sticky/fixed utility on a child still wins. */
+  /* The grain is #app's absolutely-positioned first child and the crayon tooth its absolutely-positioned
+     last child; positioning the siblings between them paints the grain under the page and the crayon over
+     it. :where() keeps specificity at zero so a sticky/fixed utility on a child still wins. */
   #app {
+    /* The overlays blend with their backdrop and #app is an isolated group, so the desk must be painted
+       inside it; html keeps the same colour for overscroll. */
+    background-color: var(--color-desk);
     display: grid;
     grid-template-rows: auto 1fr auto;
     isolation: isolate;
@@ -38,7 +40,7 @@
     position: relative;
   }
 
-  :where(#app > :not(.sk-grain)) {
+  :where(#app > :not(.kcc-grain, .kcc-crayon)) {
     position: relative;
   }
 
@@ -49,8 +51,7 @@
   }
 
   /* Durations go to 0.01ms rather than `none` so transitionend/animationend still fire — anything waiting
-     on them keeps working, while nothing perceptibly animates. Per-component guards that already exist
-     (RecipeCard, SegmentedControl, Ink.css) are more specific and stay. */
+     on them keeps working, while nothing perceptibly animates. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

@@ -1,13 +1,9 @@
 <!-- #region Card Component Properties -->
 <script lang="ts">
-  import { computed, type ComputedRef } from 'vue'
-  import {
-    BRAND_BACKGROUND_COLORS,
-    toBackgroundColor,
-    toTextColor,
-    type BackgroundColor,
-    type TextColor,
-  } from '~/Types/DesignSystem'
+  import { computed } from 'vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import { washOf, type BackgroundColor } from '~/Types/DesignSystem'
+  import { sheetTearFor } from '~/Utilities/BrandColor'
 
   /**
    * Widget card whose drawer expands on hover and focus.
@@ -18,25 +14,19 @@
 
   export interface CardProps {
     /**
+     * The editor's colour, pooled as the sheet's wash. A ground carries none.
      * @default 'bg-paper'
      */
     cardColor?: BackgroundColor
 
-    /**
-     * @default 'text-ink'
-     */
-    cardTextColor?: TextColor
+    /** Neighbours never share a tear: a grid passes `(index % 6) + 1`. Unset, the tear comes from `seed`. */
+    tear?: 1 | 2 | 3 | 4 | 5 | 6
 
     /**
-     * Inverts against the card by default, so the drawer reads as a cut-out.
-     * @default cardTextColor
+     * Hashed into a stable tear when no grid index supplies one; usually the card's heading.
+     * @default ''
      */
-    drawerColor?: BackgroundColor | null
-
-    /**
-     * @default cardColor
-     */
-    drawerTextColor?: TextColor | null
+    seed?: string
 
     /**
      * @default ''
@@ -56,70 +46,40 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const {
-    cardColor = 'bg-paper',
-    cardTextColor = 'text-ink',
-    drawerColor = null,
-    drawerTextColor = null,
-    marginClasses = '',
-  } = defineProps<CardProps>()
+  const { cardColor = 'bg-paper', tear, seed = '', marginClasses = '' } = defineProps<CardProps>()
 
   const { drawer } = defineSlots<CardSlots>()
 
-  const resolvedDrawerColor: ComputedRef<BackgroundColor> = computed(() => {
-    return drawerColor ?? toBackgroundColor(cardTextColor)
-  })
-
-  const resolvedDrawerTextColor: ComputedRef<TextColor> = computed(() => {
-    return drawerTextColor ?? toTextColor(cardColor)
-  })
-
-  // Washes take the dark ink-on-wash outline; paper grounds take the ramp's ink line. Getting this
-  // backwards draws an invisible outline rather than a wrong-coloured one.
-  const inkKind = computed(() =>
-    (BRAND_BACKGROUND_COLORS as readonly string[]).includes(cardColor) ? ('tile' as const) : ('card' as const),
-  )
+  const resolvedTear = computed(() => tear ?? sheetTearFor(seed))
 </script>
 
 <template>
-  <div
-    v-ink="inkKind"
-    :class="[
-      'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all',
-      cardColor,
-      cardTextColor,
-      marginClasses,
-    ]"
+  <KccSheet
+    :wash="washOf(cardColor)"
+    :at="{ x: '100%', y: '0%', w: '38%', h: 'min(40%, 68px)' }"
+    :tear="resolvedTear"
+    :class="['group/card kcc-slip--fill', marginClasses]"
   >
-    <div
-      :class="[
-        'relative top-1 transition-all',
-        drawer && 'group-focus-within/card:top-0 group-hover/card:top-0',
-        drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
-      ]"
-    >
-      <slot />
-    </div>
+    <div class="flex h-full flex-col">
+      <div
+        :class="[
+          'relative transition-all',
+          drawer && 'top-1 group-focus-within/card:top-0 group-hover/card:top-0',
+          drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
+        ]"
+      >
+        <slot />
+      </div>
 
-    <div
-      v-if="drawer"
-      data-card-drawer
-      :class="[
-        'h-[0%] content-center overflow-hidden rounded-2xl transition-all',
-        'group-hover/card:h-full focus-within:h-full',
-        resolvedDrawerColor,
-        resolvedDrawerTextColor,
-      ]"
-    >
-      <div class="p-4">
-        <slot name="drawer" />
+      <div
+        v-if="drawer"
+        data-card-drawer
+        class="h-[0%] overflow-hidden rounded-md bg-paper-2 text-ink transition-all group-hover/card:h-full focus-within:h-full"
+      >
+        <div class="p-4">
+          <slot name="drawer" />
+        </div>
       </div>
     </div>
-  </div>
+  </KccSheet>
 </template>
-
-<style lang="css">
-  .ktc-widget-body-wrapper:has(> .group\/card) {
-    display: grid;
-  }
-</style>

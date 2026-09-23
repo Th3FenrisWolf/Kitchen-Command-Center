@@ -1,8 +1,9 @@
 <!-- #region WizardProgress Component Properties -->
 <script lang="ts">
   /**
-   * Step position for a multi-step form. Segmented rather than a continuous bar: N segments say
-   * "step 2 of 5", which a single fill cannot.
+   * Step position for a multi-step form: numbered kick labels on the rule joined by a dashed hair
+   * connector, the current step a marker pill. An ordered list with `aria-current="step"`, so
+   * assistive tech gets the count from the list itself.
    */
   export default {
     name: 'WizardProgress',
@@ -22,12 +23,18 @@
 </script>
 
 <template>
-  <div class="mb-8 flex gap-2" role="progressbar" :aria-valuenow="current" aria-valuemin="1" :aria-valuemax="total">
-    <div
+  <ol class="mb-6 flex items-center gap-2" role="list" aria-label="Steps">
+    <li
       v-for="s in total"
       :key="s"
-      class="h-2 flex-1 rounded-full transition-colors"
-      :class="s <= current ? 'bg-marker' : 'bg-desk-2'"
-    />
-  </div>
+      :class="['flex items-center gap-2', s < total && 'flex-1']"
+      :aria-current="s === current ? 'step' : undefined"
+    >
+      <span :class="['kcc-kick', s === current ? 'kcc-pill px-3' : s < current ? 'text-ink' : 'text-ink-soft']">
+        <span aria-hidden="true">{{ String(s).padStart(2, '0') }}</span
+        ><span class="sr-only">{{ s }}</span>
+      </span>
+      <span v-if="s < total" class="h-0 flex-1 border-t border-dashed border-hair-strong" aria-hidden="true"></span>
+    </li>
+  </ol>
 </template>

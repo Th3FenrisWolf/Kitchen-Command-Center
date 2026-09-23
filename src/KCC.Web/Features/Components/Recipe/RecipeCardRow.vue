@@ -1,9 +1,12 @@
 <!-- #region RecipeCardRow Component Properties -->
 <script lang="ts">
+  import { computed } from 'vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
+  import { sheetTearFor } from '~/Utilities/BrandColor'
+  import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
 
   /**
@@ -19,54 +22,80 @@
      * Build with `hitToCard` or `variantToCard` from recipeCardModel.
      */
     card: RecipeCardModel
+    /**
+     * Neighbours must never share one: a list passes `(index % 6) + 1`.
+     */
+    tear?: Exclude<Tear, 'hero'>
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  defineProps<RecipeCardRowProps>()
+  const { card, tear } = defineProps<RecipeCardRowProps>()
+
+  const preset = computed(() => tear ?? sheetTearFor(card.seed))
+  const rating = computed(() =>
+    card.rating && card.rating.count > 0
+      ? { average: card.rating.average, text: formatRating(card.rating.average) }
+      : undefined,
+  )
+
+  // Prose opens the meta line; the model's own chips are all numbers, so they close it set in Sono tabular.
+  const notes = computed(() =>
+    [card.eyebrow, card.rating?.count === 0 ? card.rating.emptyLabel : undefined, card.subtitle].filter(
+      (note): note is string => !!note,
+    ),
+  )
+  const chips = computed(() => card.meta ?? [])
 </script>
 
 <template>
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
-    v-ink="'card'"
-    class="flex items-center gap-4 rounded-3xl bg-paper-2 p-4 text-ink no-underline transition-shadow"
+    class="kcc-slip kcc-torn block transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
+    :class="`kcc-tear-${preset}`"
+    style="--r: 0"
   >
-    <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-20 flex-none text-3xl" />
+    <div class="kcc-sheet flex items-center gap-4" style="--pad: 16px">
+      <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14 flex-none" />
 
-    <span class="min-w-0 flex-1">
-      <span v-if="card.eyebrow" class="block text-xs font-bold tracking-wide text-ink-soft uppercase">{{
-        card.eyebrow
-      }}</span>
-      <span class="my-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <span class="font-casual text-2xl">{{ card.name }}</span>
-        <span v-if="card.tags.length" class="inline-flex flex-wrap gap-1">
-          <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
-        </span>
-      </span>
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-x-3">
+          <h3 class="kcc-h4">{{ card.name }}</h3>
+          <div v-if="card.tags.length" class="kcc-badges">
+            <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+          </div>
+        </div>
 
-      <span
-        v-if="card.rating || card.meta?.length"
-        class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-soft"
-      >
-        <template v-if="card.rating">
-          <span v-if="card.rating.count > 0" data-testid="recipe-card-rating" :data-average-rating="card.rating.average">
-            <i class="fa-solid fa-star text-rating-ink"></i> {{ formatRating(card.rating.average) }}
+        <p v-if="rating || notes.length || chips.length" class="kcc-meta">
+          <span
+            v-if="rating"
+            class="kcc-num"
+            role="img"
+            :aria-label="`${rating.text} of 5 stars`"
+            data-testid="recipe-card-rating"
+            :data-average-rating="rating.average"
+          >
+            <i class="fa-duotone fa-star" aria-hidden="true"></i> {{ rating.text }}
           </span>
-          <span v-else class="italic">{{ card.rating.emptyLabel }}</span>
-        </template>
-        <span v-for="(item, i) in card.meta" :key="i"><i v-if="item.icon" :class="item.icon"></i> {{ item.text }}</span>
-      </span>
+          <span v-for="note in notes" :key="note">{{ note }}</span>
+          <span
+            v-for="(chip, i) in chips"
+            :key="i"
+            :class="['kcc-num', card.trailingStat && chip.key === 'time' && 'sm:hidden']"
+          >
+            <i v-if="chip.icon" :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}
+          </span>
+        </p>
+      </div>
 
-      <span v-if="card.subtitle" class="mt-1 block text-sm text-ink-soft">{{ card.subtitle }}</span>
-    </span>
+      <div v-if="card.trailingStat" class="hidden flex-none text-center sm:block">
+        <span class="kcc-num block">{{ card.trailingStat.value }}</span>
+        <span class="kcc-kick block">{{ card.trailingStat.label }}</span>
+      </div>
 
-    <span v-if="card.trailingStat" class="hidden flex-none text-center text-ink-soft sm:block">
-      <span class="block font-casual text-2xl text-ink">{{ card.trailingStat.value }}</span>
-      <span class="text-xs">{{ card.trailingStat.label }}</span>
-    </span>
-    <i class="fa-solid fa-arrow-right flex-none text-sm text-ink-soft"></i>
+      <i class="fa-duotone fa-arrow-right flex-none text-ink-soft" aria-hidden="true"></i>
+    </div>
   </AppLink>
 </template>

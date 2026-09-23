@@ -5,6 +5,7 @@
   import { useResourceStrings } from '~/Components/ResourceStrings'
   import RecipeCardRow from '~/Components/Recipe/RecipeCardRow.vue'
   import { variantToCard } from '~/Components/Recipe/recipeCardModel'
+  import { listTearFor } from '~/Utilities/BrandColor'
 
   /**
    * Row-per-variant counterpart to VariantGrid.
@@ -26,7 +27,7 @@
 </script>
 
 <template>
-  <div class="mt-6 flex flex-col gap-3">
-    <RecipeCardRow v-for="entry in cards" :key="entry.key" :card="entry.card" />
+  <div class="flex flex-col gap-y-9">
+    <RecipeCardRow v-for="(entry, index) in cards" :key="entry.key" :card="entry.card" :tear="listTearFor(index)" />
   </div>
 </template>

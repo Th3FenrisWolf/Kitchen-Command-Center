@@ -6,7 +6,8 @@
   import { type SortKey, type ViewMode, filterVariants, tagOptions } from '~/Components/RecipeDetail/variantFilters.ts'
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
@@ -59,7 +60,7 @@
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeDetail')
 
-  const addVariantHref = computed(() => `${props.addVariantUrl}?recipe=${encodeURIComponent(props.recipeGuid)}`)
+  const addVariantHref = computed(() => `${props.addVariantUrl.stripTilde()}?recipe=${encodeURIComponent(props.recipeGuid)}`)
 
   const search = ref('')
   const tag = ref('')
@@ -80,8 +81,6 @@
     { icon: 'fa-duotone fa-users', value: contributorCount(props.variants), label: rs('Contributors') },
   ])
 
-  const resultLabel = computed(() => `${filtered.value.length} ${rs('Of')} ${props.variants.length}`)
-
   const clearFilters = () => {
     search.value = ''
     tag.value = ''
@@ -89,49 +88,52 @@
 </script>
 
 <template>
-  <div class="mt-4 flex items-center justify-between gap-4">
-    <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
+  <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" class="mt-6" />
 
-    <AppLink
-      :href="addVariantHref"
-      class="inline-flex items-center gap-2 rounded-2xl bg-paper px-3 py-2 text-ink transition-colors hover:bg-paper-2"
+  <div class="mt-6 space-y-[72px]">
+    <DetailHero
+      :title="recipeName"
+      :seed="recipeName"
+      :description="recipeDescription"
+      :icon="recipeIcon"
+      :image="recipeImagePath"
+      :average-rating="recipeAverageRating"
+      :review-count="recipeReviewCount"
+      :times-cooked="recipeTimesCooked"
     >
-      <ResourceString for="AddVariant" />
-      <i class="fa-solid fa-plus text-lg" />
-    </AppLink>
+      <template v-if="recipeCategory || startedByName" #eyebrow>
+        <span v-if="recipeCategory">{{ recipeCategory }}</span>
+        <span v-if="recipeCategory && startedByName" aria-hidden="true"> · </span>
+        <span v-if="startedByName"><ResourceString for="StartedBy" /> {{ startedByName }}</span>
+      </template>
+
+      <template #footer>
+        <Button as="a" :href="addVariantHref" class="mt-6">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddVariant" />
+        </Button>
+      </template>
+    </DetailHero>
+
+    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3">
+      <StatTiles :tiles="statTiles" />
+    </KccSheet>
+
+    <section>
+      <div class="kcc-secname">
+        <ResourceString for="AllVariants" as="h2" />
+        <p class="kcc-kick">
+          <span class="kcc-num">{{ filtered.length }}</span> {{ rs('Of') }}
+          <span class="kcc-num">{{ variants.length }}</span>
+        </p>
+      </div>
+
+      <div class="space-y-9">
+        <FeaturedRecipeCard v-if="featured" :card="variantToFeatured(featured, rs)" />
+        <VariantToolbar v-model:search="search" v-model:sort="sort" v-model:tag="tag" v-model:view="view" :tags="tags" />
+        <VariantGrid v-if="view === 'grid' && filtered.length" :variants="filtered" :add-variant-url="addVariantHref" />
+        <VariantList v-else-if="view === 'list' && filtered.length" :variants="filtered" />
+        <VariantsEmptyState v-else-if="!filtered.length" @clear="clearFilters" />
+      </div>
+    </section>
   </div>
-
-  <DetailHero
-    :title="recipeName"
-    :seed="recipeName"
-    :description="recipeDescription"
-    :icon="recipeIcon"
-    :image="recipeImagePath"
-    :average-rating="recipeAverageRating"
-    :review-count="recipeReviewCount"
-    :times-cooked="recipeTimesCooked"
-  >
-    <template v-if="recipeCategory || startedByName" #eyebrow>
-      <span v-if="recipeCategory">{{ recipeCategory }}</span>
-      <span v-if="recipeCategory && startedByName"> <i class="fa-solid fa-dot"></i> </span>
-      <span v-if="startedByName"><ResourceString for="StartedBy" /> {{ startedByName }}</span>
-    </template>
-  </DetailHero>
-
-  <StatTiles :tiles="statTiles" />
-  <FeaturedRecipeCard v-if="featured" :card="variantToFeatured(featured, rs)" />
-
-  <section class="mt-8">
-    <div class="mb-4 flex items-baseline justify-between gap-4">
-      <h2>
-        <ResourceString for="AllVariants" />
-        <span class="ml-2 font-hazelnut text-lg font-medium text-ink-soft">{{ resultLabel }}</span>
-      </h2>
-    </div>
-
-    <VariantToolbar v-model:search="search" v-model:sort="sort" v-model:tag="tag" v-model:view="view" :tags="tags" />
-    <VariantGrid v-if="view === 'grid' && filtered.length" :variants="filtered" :add-variant-url="addVariantHref" />
-    <VariantList v-else-if="view === 'list' && filtered.length" :variants="filtered" />
-    <VariantsEmptyState v-else-if="!filtered.length" @clear="clearFilters" />
-  </section>
 </template>

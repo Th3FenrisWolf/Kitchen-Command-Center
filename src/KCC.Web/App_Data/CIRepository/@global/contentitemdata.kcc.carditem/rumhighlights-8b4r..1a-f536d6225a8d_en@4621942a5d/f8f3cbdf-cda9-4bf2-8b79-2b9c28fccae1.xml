@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <contentitemdata.kcc.carditem>
-  <BackgroundColor>bg-maroon</BackgroundColor>
+  <BackgroundColor>bg-red</BackgroundColor>
   <ContentItemDataCommonDataID>
     <GUID>7e00dedf-3467-4e9f-9e1a-f536d6225a8d</GUID>
     <ObjectType>cms.contentitemcommondata</ObjectType>

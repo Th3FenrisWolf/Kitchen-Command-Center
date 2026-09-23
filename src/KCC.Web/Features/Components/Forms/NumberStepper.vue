@@ -26,6 +26,14 @@
      * Never rendered; supplies the accessible names for the input and both buttons.
      */
     label?: string
+    /**
+     * Accessible name for the minus button; composed from `label` in English when omitted.
+     */
+    decreaseLabel?: string
+    /**
+     * Accessible name for the plus button; composed from `label` in English when omitted.
+     */
+    increaseLabel?: string
     disabled?: boolean
     placeholder?: string
   }
@@ -33,7 +41,17 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { min, max, step = 1, unit, label, disabled, placeholder } = defineProps<NumberStepperProps>()
+  const {
+    min,
+    max,
+    step = 1,
+    unit,
+    label,
+    decreaseLabel,
+    increaseLabel,
+    disabled,
+    placeholder,
+  } = defineProps<NumberStepperProps>()
 
   // `undefined` only while the field is empty mid-edit; blur always resolves it back to a number.
   const model = defineModel<number | undefined>()
@@ -85,8 +103,8 @@
     const name = label ?? 'Value'
     return unit ? `${name} in ${unit}` : name
   })
-  const decreaseLabel = computed(() => (label ? `Decrease ${label}` : 'Decrease'))
-  const increaseLabel = computed(() => (label ? `Increase ${label}` : 'Increase'))
+  const decreaseName = computed(() => decreaseLabel ?? (label ? `Decrease ${label}` : 'Decrease'))
+  const increaseName = computed(() => increaseLabel ?? (label ? `Increase ${label}` : 'Increase'))
 
   // --- Press-and-hold auto-repeat -------------------------------------------
   const HOLD_DELAY = 400 // ms held before auto-repeat begins
@@ -142,54 +160,52 @@
   <div class="flex items-center gap-2">
     <button
       type="button"
-      class="sk-btn sk-btn--ghost size-12 shrink-0 text-lg active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
-      v-ink="'button'"
-      :aria-label="decreaseLabel"
+      class="kcc-btn kcc-btn--ghost kcc-btn--icon shrink-0"
+      :aria-label="decreaseName"
       :disabled="disabled || atMin"
       @pointerdown="startHold(-1, $event)"
       @pointerup="stopHold"
       @pointercancel="stopHold"
       @click="onButtonClick(-1, $event)"
     >
-      <i class="fa-solid fa-minus" aria-hidden="true"></i>
+      <i class="fa-duotone fa-minus" aria-hidden="true"></i>
     </button>
 
-    <label
-      class="flex h-12 min-w-24 flex-1 cursor-text items-center justify-center gap-1.5 rounded-2xl border border-edge-strong bg-paper-2 px-2 outline-focus focus-within:outline-focus"
-    >
-      <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
-      <span v-if="unit" aria-hidden="true" class="invisible shrink-0 text-sm">{{ unit }}</span>
-      <input
-        :style="{ width: inputWidth }"
-        class="shrink-0 bg-transparent p-0 text-center text-lg font-semibold tabular-nums focus-visible:outline-transparent"
-        type="number"
-        :min="min"
-        :max="max"
-        :step="step"
-        :aria-label="valueLabel"
-        :disabled="disabled"
-        :placeholder="placeholder"
-        :value="model"
-        v-bind="$attrs"
-        @input="onInput"
-        @focus="onFocus"
-        @blur="onBlur"
-      />
-      <span v-if="unit" class="shrink-0 text-sm text-ink-soft">{{ unit }}</span>
+    <label class="kcc-field kcc-field--noicon min-w-24 flex-1 cursor-text">
+      <span class="flex items-center justify-center gap-1.5">
+        <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
+        <span v-if="unit" aria-hidden="true" class="kcc-unit invisible shrink-0">{{ unit }}</span>
+        <input
+          :style="{ width: inputWidth }"
+          class="kcc-num shrink-0 text-center"
+          type="number"
+          :min="min"
+          :max="max"
+          :step="step"
+          :aria-label="valueLabel"
+          :disabled="disabled"
+          :placeholder="placeholder"
+          :value="model"
+          v-bind="$attrs"
+          @input="onInput"
+          @focus="onFocus"
+          @blur="onBlur"
+        />
+        <span v-if="unit" class="kcc-unit shrink-0 text-ink-soft">{{ unit }}</span>
+      </span>
     </label>
 
     <button
       type="button"
-      class="sk-btn sk-btn--ghost size-12 shrink-0 text-lg active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45"
-      v-ink="'button'"
-      :aria-label="increaseLabel"
+      class="kcc-btn kcc-btn--ghost kcc-btn--icon shrink-0"
+      :aria-label="increaseName"
       :disabled="disabled || atMax"
       @pointerdown="startHold(1, $event)"
       @pointerup="stopHold"
       @pointercancel="stopHold"
       @click="onButtonClick(1, $event)"
     >
-      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      <i class="fa-duotone fa-plus" aria-hidden="true"></i>
     </button>
   </div>
 </template>

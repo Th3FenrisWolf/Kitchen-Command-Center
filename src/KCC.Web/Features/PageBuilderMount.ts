@@ -1,6 +1,5 @@
 import { createApp, type App } from 'vue'
 import { registerGlobalComponents, registeredTagNames } from '~/GlobalComponents'
-import { mountInk } from '~/Ink/inkDom'
 
 // Edit-mode adapter for Kentico Page Builder.
 //
@@ -63,13 +62,6 @@ function mountMarker(marker: Element): void {
   const rendered = Array.from(container.childNodes)
   rendered.forEach((child) => parent.insertBefore(child, marker))
   parent.removeChild(marker)
-
-  // Main.ts sweeps for data-ink once at hydration; this file is a separate deferred entry, so widgets
-  // Kentico injects later — and sometimes this very first render — land after that sweep. v-ink survives
-  // because Vue re-runs its directive hooks; data-ink has no such trigger. Scanned here rather than on
-  // `container` so the first measurement sees real geometry instead of the detached div's zeros, and
-  // scoped to `parent` so a rendered root carrying data-ink is itself in range. Idempotent per element.
-  mountInk(parent)
 
   // Vue forwards the data-vue-mount attribute (not a declared prop) to the
   // component's root element, so the rendered output keeps the marker attr.

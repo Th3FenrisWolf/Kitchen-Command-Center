@@ -1,5 +1,9 @@
 <!-- #region VariantsEmptyState Component -->
 <script lang="ts">
+  import { ResourceString } from '~/Components/ResourceStrings'
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+
   /**
    * Shown when a recipe's variants are all filtered out, offering a way back.
    */
@@ -10,19 +14,18 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import { ResourceString } from '~/Components/ResourceStrings'
-
-  defineEmits<{ clear: [] }>()
+  const emit = defineEmits<{ clear: [] }>()
 </script>
 
 <template>
-  <div v-ink="{ kind: 'sheet', hatch: false }" class="sk-sheet sk-sheet--lg mt-6 grid place-items-center gap-3 text-center">
-    <span class="sk-wash" style="--c: var(--color-lavender)" aria-hidden="true"></span>
-    <i class="sk-ico fa-duotone fa-bowl-food text-4xl"></i>
-    <div class="sk-display text-2xl text-ink"><ResourceString for="NoVariantsMatch" /></div>
-    <p class="sk-body"><ResourceString for="TryDifferentFilter" /></p>
-    <button type="button" v-ink="'button'" class="sk-btn sk-btn--ghost mt-1.5" @click="'clear'">
-      <ResourceString for="ClearFilters" />
-    </button>
-  </div>
+  <KccSheet wash="sky" :at="{ x: '88%', y: '14%', w: '40%', h: '66%' }" :tear="4" tape>
+    <div class="grid justify-items-center gap-6 text-center">
+      <i class="fa-duotone fa-bowl-food text-5xl text-ink-soft" aria-hidden="true"></i>
+      <ResourceString for="NoVariantsMatch" as="p" class="kcc-h4" />
+      <ResourceString for="TryDifferentFilter" as="p" class="kcc-hand" />
+      <Button variant="ghost" @click="emit('clear')">
+        <ResourceString for="ClearFilters" />
+      </Button>
+    </div>
+  </KccSheet>
 </template>

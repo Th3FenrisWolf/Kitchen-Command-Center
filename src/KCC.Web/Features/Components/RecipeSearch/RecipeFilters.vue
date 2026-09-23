@@ -1,7 +1,9 @@
 <!-- #region RecipeFilters Component Properties -->
 <script lang="ts">
-  import { computed } from 'vue'
+  import { computed, useId } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import RangeSlider from '~/Components/Forms/RangeSlider.vue'
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
@@ -39,112 +41,111 @@
   const t = useResourceStrings()
 
   interface FilterRow {
+    /** Ties the row's printed box and text to its native checkbox. */
+    id: string
     label: string
     count: number
     selected: boolean
     disabled: boolean
   }
 
+  const uid = useId()
+
   // Render the full, stable option set on every search so the panel keeps its height as filters
   // change (rather than dropping rows). An option with no matches in the current result set is
   // greyed out and disabled — unless it's currently selected, which must stay toggleable so the
   // user can clear it.
-  const toRows = (options: string[], facets: Record<string, number>, selected: string[]): FilterRow[] =>
+  const toRows = (group: string, options: string[], facets: Record<string, number>, selected: string[]): FilterRow[] =>
     [...new Set([...options, ...selected])]
       .sort((a, b) => a.localeCompare(b))
-      .map((label) => {
+      .map((label, i) => {
         const count = facets[label] ?? 0
         const isSelected = selected.includes(label)
-        return { label, count, selected: isSelected, disabled: count === 0 && !isSelected }
+        return { id: `${uid}-${group}-${i}`, label, count, selected: isSelected, disabled: count === 0 && !isSelected }
       })
 
-  const categories = computed(() => toRows(props.categoryOptions, props.categoryFacets, props.selectedCategories))
-  const diets = computed(() => toRows(props.dietOptions, props.dietFacets, props.selectedDiets))
+  const categories = computed(() =>
+    toRows('category', props.categoryOptions, props.categoryFacets, props.selectedCategories),
+  )
+  const diets = computed(() => toRows('diet', props.dietOptions, props.dietFacets, props.selectedDiets))
   const rangeLabel = computed(() => timeRangeLabel(timeMin.value, timeMax.value, t))
+  const minUnit = t('Min')
 </script>
 
 <template>
-  <div v-ink="'sheet'" class="sk-sheet sk-tabbed relative">
-    <div class="mb-2 flex items-center justify-end">
-      <!-- The tab is the panel heading: sk-tab keeps the marker-tab look without dropping the landmark. -->
-      <h2 class="sk-tab"><i class="fa-duotone fa-sliders" aria-hidden="true"></i><ResourceString for="Filters" /></h2>
-      <button class="sk-btn sk-btn--text text-sm" @click="emit('reset')">
+  <KccSheet icon="fa-duotone fa-sliders" :tear="5" crisp>
+    <template #label><ResourceString for="Filters" /></template>
+
+    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
+    <ResourceString for="Filters" as="h2" class="sr-only" />
+    <div class="flex justify-end">
+      <Button variant="text" @click="emit('reset')">
         <ResourceString for="Reset" />
-      </button>
+      </Button>
     </div>
 
-    <fieldset class="mt-4 border-t border-rule pt-4">
-      <legend class="mb-2 text-base font-bold"><ResourceString for="Category" /></legend>
-      <div class="flex flex-col gap-2">
-        <label
+    <fieldset class="mt-6">
+      <ResourceString for="Category" as="legend" class="kcc-kick" />
+      <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
+           stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
+      <ul class="kcc-check">
+        <li
           v-for="row in categories"
           :key="row.label"
-          class="flex items-center gap-2"
-          :class="[
-            row.selected ? 'font-bold' : 'font-medium',
-            row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
-          ]"
+          :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'"
         >
           <input
+            :id="row.id"
             type="checkbox"
-            class="peer sr-only"
+            class="sr-only"
             :checked="row.selected"
             :disabled="row.disabled"
             @change="emit('toggleCategory', row.label)"
           />
-          <span
-            class="grid size-4 flex-none place-items-center rounded-md border-2 transition-colors"
-            :class="row.selected ? 'border-marker bg-marker' : 'border-ink-soft'"
-          >
-            <i class="fa-solid fa-check text-xs text-marker-ink" :class="{ 'opacity-0': !row.selected }"></i>
-          </span>
-          <span class="flex-1">{{ row.label }}</span>
-          <span class="text-sm" :class="row.count === 0 ? 'text-ink-soft' : 'text-ink-soft'">{{ row.count }}</span>
-        </label>
-      </div>
+          <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></label>
+          <label :for="row.id">{{ row.label }}</label>
+          <span class="kcc-q">{{ row.count }}</span>
+        </li>
+      </ul>
     </fieldset>
 
-    <fieldset class="mt-4 border-t border-rule pt-4">
-      <legend class="mb-4 text-base font-bold"><ResourceString for="Dietary" /></legend>
-      <div class="flex flex-col gap-2">
-        <label
-          v-for="row in diets"
-          :key="row.label"
-          class="flex items-center gap-2"
-          :class="[
-            row.selected ? 'font-bold' : 'font-medium',
-            row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
-          ]"
-        >
+    <fieldset class="mt-6">
+      <ResourceString for="Dietary" as="legend" class="kcc-kick" />
+      <ul class="kcc-check">
+        <li v-for="row in diets" :key="row.label" :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'">
           <input
+            :id="row.id"
             type="checkbox"
             class="sr-only"
             :checked="row.selected"
             :disabled="row.disabled"
             @change="emit('toggleDiet', row.label)"
           />
-          <span
-            class="grid size-4 flex-none place-items-center rounded-md border-2 transition-colors"
-            :class="row.selected ? 'border-marker bg-marker' : 'border-ink-soft'"
-          >
-            <i class="fa-solid fa-check text-xs text-marker-ink" :class="{ 'opacity-0': !row.selected }"></i>
-          </span>
-          <span class="flex-1">{{ row.label }}</span>
-          <span class="text-sm" :class="row.count === 0 ? 'text-ink-soft' : 'text-ink-soft'">{{ row.count }}</span>
-        </label>
-      </div>
+          <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></label>
+          <label :for="row.id">{{ row.label }}</label>
+          <span class="kcc-q">{{ row.count }}</span>
+        </li>
+      </ul>
     </fieldset>
 
-    <fieldset class="mt-4 border-t border-rule pt-4">
-      <div class="mb-4 flex items-baseline justify-between">
-        <legend class="text-base font-bold"><ResourceString for="TotalTime" /></legend>
-        <span class="text-sm font-bold text-ink">{{ rangeLabel }}</span>
-      </div>
-      <RangeSlider v-model:model-min="timeMin" v-model:model-max="timeMax" :min="0" :max="MAX_TIME" :step="5" />
-      <div class="mt-2 flex items-baseline justify-between text-sm text-ink-soft">
-        <span>0 min</span>
-        <span>{{ MAX_TIME }}+ min</span>
-      </div>
+    <fieldset class="mt-6">
+      <ResourceString for="TotalTime" as="legend" class="kcc-kick" />
+      <p class="kcc-num">{{ rangeLabel }}</p>
+      <!-- The 20px track plus 2px of air on each side is exactly one 24px rule. -->
+      <RangeSlider
+        v-model:model-min="timeMin"
+        v-model:model-max="timeMax"
+        :min="0"
+        :max="MAX_TIME"
+        :step="5"
+        class="my-0.5"
+      />
+      <p class="kcc-kick flex justify-between">
+        <span><span class="kcc-num">0</span> {{ minUnit }}</span>
+        <span
+          ><span class="kcc-num">{{ MAX_TIME }}+</span> {{ minUnit }}</span
+        >
+      </p>
     </fieldset>
-  </div>
+  </KccSheet>
 </template>

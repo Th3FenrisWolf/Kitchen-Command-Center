@@ -1,8 +1,8 @@
 <!-- #region CookModeStep Component Properties -->
 <script lang="ts">
-  import { computed } from 'vue'
+  import { computed, ref, useId } from 'vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
-  import { ResourceString } from '~/Components/ResourceStrings'
+  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import { formatIngredientAmount } from '~/Components/VariantDetail/variantScaling'
   import { parseDurations } from './useStepTimers'
   import StepTimer from './StepTimer.vue'
@@ -16,10 +16,6 @@
 
   export interface CookModeStepProps {
     instruction: Instruction
-    /**
-     * Displayed position, one-based.
-     */
-    stepNumber: number
     ingredients: Ingredient[]
     /**
      * Servings the stored amounts were written for; amounts scale by `currentServings / baseServings`.
@@ -33,39 +29,57 @@
 <script setup lang="ts">
   const props = defineProps<CookModeStepProps>()
 
+  const rs = useResourceStrings()
+  const uid = useId()
+  const toTaste = rs('ToTaste')
+
   const timers = computed(() => parseDurations(props.instruction.text))
 
-  const amounts = computed(() =>
-    props.ingredients.map((ingredient) =>
-      formatIngredientAmount(ingredient, props.baseServings ?? 0, props.currentServings),
-    ),
+  // This component outlives every step change while the overlay is open, so what the cook has already
+  // gathered stays ticked as they move through the method, and clears when the overlay closes.
+  const checked = ref<Record<number, boolean>>({})
+
+  const rows = computed(() =>
+    props.ingredients.map((ingredient, index) => ({
+      index,
+      id: `${uid}-${index}`,
+      name: ingredient.name,
+      quantity:
+        formatIngredientAmount(ingredient, props.baseServings ?? 0, props.currentServings) ||
+        (ingredient.isEyeballed ? toTaste : ''),
+    })),
   )
+
+  const toggle = (index: number) => {
+    checked.value = { ...checked.value, [index]: !checked.value[index] }
+  }
 </script>
 
 <template>
   <div class="flex flex-col gap-6">
-    <div class="flex items-start gap-4">
-      <span class="grid h-12 w-12 flex-none place-items-center rounded-full bg-paper font-casual text-2xl text-ink">
-        {{ stepNumber }}
-      </span>
-      <p class="min-w-0 flex-1 text-2xl leading-relaxed text-ink">{{ instruction.text }}</p>
-    </div>
+    <p class="kcc-h3">{{ instruction.text }}</p>
 
-    <div v-if="timers.length" class="flex flex-wrap gap-2">
+    <div v-if="timers.length" class="flex flex-wrap gap-9">
       <StepTimer v-for="timer in timers" :key="timer.id" :seconds="timer.seconds" :label="timer.label" />
     </div>
 
-    <div class="rounded-3xl bg-paper-2 p-5">
-      <h3 class="mb-3 font-casual text-lg tracking-[1px] text-ink"><ResourceString for="Ingredients" /></h3>
-      <ul class="flex flex-col">
+    <div>
+      <ResourceString :id="uid" for="Ingredients" as="p" class="kcc-kick" />
+
+      <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
+           stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
+      <ul class="kcc-check mt-6" :aria-labelledby="uid">
         <li
-          v-for="(ingredient, i) in ingredients"
-          :key="i"
+          v-for="row in rows"
+          :key="row.id"
           data-test="cook-ingredient"
-          class="border-b border-rule py-2 text-base text-ink last:border-b-0"
+          class="cursor-pointer"
+          :class="{ 'kcc-done': checked[row.index] }"
         >
-          <b v-if="amounts[i]">{{ amounts[i] }} </b>{{ ingredient.name
-          }}<span v-if="ingredient.isEyeballed" class="text-ink-soft italic"> — <ResourceString for="ToTaste" /></span>
+          <input :id="row.id" type="checkbox" class="sr-only" :checked="checked[row.index]" @change="toggle(row.index)" />
+          <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': checked[row.index] }"></label>
+          <label :for="row.id">{{ row.name }}</label>
+          <span class="kcc-q">{{ row.quantity }}</span>
         </li>
       </ul>
     </div>

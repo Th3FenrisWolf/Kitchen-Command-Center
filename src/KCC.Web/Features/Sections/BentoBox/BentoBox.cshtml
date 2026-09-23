@@ -1,18 +1,22 @@
-﻿@using KCC.Web.Features.Sections.BentoBox
+@using KCC.Web.Features.Sections.BentoBox
 
 @model BentoBoxSectionViewModel
 
-@{
-    // var isContainer = Model.ContentWidth == "Container";
-    // @(isContainer ? "container mx-auto" : "w-full")
-}
+<section
+  data-section-guid="@Model.SectionGuid"
+  class="@Html.Clsx(
+    Model.ContainerClass,
+    Model.BackgroundColor,
+    Model.TextColor,
+    $"pb-{Model.PaddingBottom}",
+    $"pt-{Model.PaddingTop}",
+    $"px-{Model.HorizontalPadding}"
+  )"
+>
+  @if (!string.IsNullOrEmpty(Model.Heading))
+  {
+    <div class="kcc-secname"><h2>@Model.Heading</h2></div>
+  }
 
-<div data-section-guid="@Model.SectionGuid" class="@Html.Clsx(Model.BackgroundColor, Model.TextColor)">
-    <div class="variable-section-wrapper">
-        <div class="variable-section pb-@Model.PaddingBottom pt-@Model.PaddingTop">
-            <div>
-                <widget-zone />
-            </div>
-        </div>
-    </div>
-</div>
+  <widget-zone />
+</section>

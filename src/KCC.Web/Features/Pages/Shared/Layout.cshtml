@@ -32,7 +32,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="@PreferredLanguageRetriever.Get()">
+<html lang="@PreferredLanguageRetriever.Get()" data-theme="light">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
@@ -40,7 +40,7 @@
   <script type="application/json" id="api-config">@Html.Raw(apiConfigJson)</script>
 
   @* Preload the brand fonts so they're fetched at high priority and ready by first paint.
-     Hazelnut/APCasual are font-display: swap, so without this the page first paints in a
+     Hazelnut, APCasual and Sono are font-display: swap, so without this the page first paints in a
      fallback font and reflows when they load (the layout shift we were chasing). Fonts fetch
      in CORS mode, so `crossorigin` is required for the preloaded file to be reused. The names
      are content-hashed, so they come from the build manifest.
@@ -51,15 +51,17 @@
   {
     foreach (var asset in fontAssets)
     {
-      if (asset.Contains("HazelnutMilkTeaRegular") || asset.Contains("HazelnutMilkTeaBold-") || asset.Contains("AmericanPurposeCasualRegular"))
+      if (asset.Contains("HazelnutMilkTeaRegular") || asset.Contains("AmericanPurposeCasualRegular") || (asset.Contains("Sono-Regular-latin") && !asset.Contains("latin-ext")))
       {
         <link rel="preload" as="font" type="font/woff2" crossorigin href="~/@asset" />
       }
     }
   }
 
-  @* The ramp must be known before the first paint or light-ramp users flash the dark default. Stored choice →
-     OS preference → dark (the design's default). Phase 2 adds the toggle that writes the stored choice. *@
+  @* The ramp must be known before the first paint or dark-ramp users flash the light default. Stored choice →
+     OS preference → light (the identity leads light). ThemeToggle writes the stored choice. The attribute is
+     pre-set to light in the markup, so a visitor without JavaScript gets a consistent light page and the
+     script only ever overwrites it. *@
   <script>
     (function () {
       var stored = null;
@@ -70,7 +72,7 @@
       }
       var theme = stored === 'light' || stored === 'dark'
         ? stored
-        : window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
@@ -91,16 +93,20 @@
 </head>
 
 <body>
-  @* Filter defs for the drawn kit's washes. Static so server-rendered washes are filtered before hydration. *@
-  <svg id="kcc-ink-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+  @* Filter defs for the kit's washes and tiles. Static so server-rendered washes are filtered before hydration. *@
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
     <defs>
-      <filter id="kcc-wash" x="-30%" y="-30%" width="160%" height="160%">
+      <filter id="kcc-wax" x="-30%" y="-30%" width="160%" height="160%">
         <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
-        <feGaussianBlur in="d" stdDeviation="1.6"></feGaussianBlur>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
+        <feGaussianBlur in="d" stdDeviation="1.8" result="b"></feGaussianBlur>
+        <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="9" result="w"></feTurbulence>
+        <feComposite in="b" in2="w" operator="arithmetic" k1="0.62" k2="0.62" k3="0" k4="0"></feComposite>
       </filter>
-      <filter id="kcc-soft" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="1.4"></feGaussianBlur></filter>
-      <filter id="kcc-soft2" x="-35%" y="-35%" width="170%" height="170%"><feGaussianBlur stdDeviation="4.5"></feGaussianBlur></filter>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
     </defs>
   </svg>
 

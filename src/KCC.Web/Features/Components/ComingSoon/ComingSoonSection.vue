@@ -1,10 +1,10 @@
 <!-- #region ComingSoonSection Component Properties -->
 <script lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
-  import ComingSoonBadge from './ComingSoonBadge.vue'
+  import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
 
   /**
-   * Dashed-outline placeholder standing in for a feature that has not shipped yet.
+   * Lavender-washed sheet standing in for a feature that has not shipped yet.
    */
   export default {
     name: 'ComingSoonSection',
@@ -12,29 +12,38 @@
 
   export interface ComingSoonSectionProps {
     /**
-     * Resource string key, resolved against the Shared prefix.
+     * Resource string key for the body text, resolved under the same prefix as the label.
      */
     textKey: string
+
     /**
-     * Font Awesome classes, e.g. 'fa-duotone fa-utensils'.
+     * Neighbours never share a tear; pass a different preset when two sections sit together.
+     * @default 3
      */
-    icon?: string
+    tear?: Tear
+
+    /**
+     * Resolve the label and `textKey` against the Shared prefix. A page whose copy lives under its
+     * own prefix instead — no matching `Shared.*` keys exist — opts out once for the whole section.
+     * @default true
+     */
+    shared?: boolean
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { textKey, icon } = defineProps<ComingSoonSectionProps>()
+  const { textKey, tear = 3, shared = true } = defineProps<ComingSoonSectionProps>()
 </script>
 
 <template>
-  <section
-    v-ink="{ kind: 'sheet', hatch: false }"
-    class="sk-sheet sk-sheet--lg mt-2 grid place-items-center gap-4 text-center"
+  <KccSheet
+    wash="lavender"
+    :at="{ x: '85%', y: '15%', w: '50%', h: '55%' }"
+    icon="fa-duotone fa-hourglass-half"
+    :tear="tear"
   >
-    <span class="sk-wash" style="--c: var(--color-lavender)" aria-hidden="true"></span>
-    <i v-if="icon" :class="['sk-ico', icon]"></i>
-    <ComingSoonBadge />
-    <ResourceString shared :for="textKey" as="p" class="sk-body" />
-  </section>
+    <template #label><ResourceString :shared="shared" for="ComingSoon" /></template>
+    <ResourceString :shared="shared" :for="textKey" as="p" class="kcc-body" />
+  </KccSheet>
 </template>

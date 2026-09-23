@@ -1,0 +1,520 @@
+/* Torn & Waxed — printed controls. Clean, unclipped, one inset hairline at most, never shadowed. Razor uses
+   these classes directly (ButtonLinkTagHelper, the Button widget); Vue components compose the same ones. */
+@layer components {
+  /* ---- button: marker pill; ghost hairline; ink fill; underlined text ---- */
+  .kcc-btn {
+    align-items: center;
+    background: var(--color-marker);
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-marker-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font: 400 10.5px/36px var(--font-sono);
+    gap: 10px;
+    height: 36px;
+    justify-content: center;
+    letter-spacing: 0.14em;
+    padding: 0 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .kcc-btn i {
+    font-size: 12px;
+  }
+
+  .kcc-btn:hover:not(:disabled, [aria-disabled='true']) {
+    background: color-mix(in oklab, var(--color-marker) 88%, var(--color-marker-ink));
+  }
+
+  .kcc-btn--ghost {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    color: var(--color-ink);
+  }
+
+  .kcc-btn--ghost:hover:not(:disabled, [aria-disabled='true']) {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+
+  .kcc-btn--ink {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .kcc-btn--ink:hover:not(:disabled, [aria-disabled='true']) {
+    background: color-mix(in oklab, var(--color-ink) 88%, var(--color-paper));
+  }
+
+  .kcc-btn--text {
+    background: transparent;
+    color: var(--color-ink);
+    height: auto;
+    line-height: var(--bl);
+    padding: 0;
+    text-decoration: underline;
+    text-decoration-color: var(--color-hair-strong);
+    text-underline-offset: 3px;
+  }
+
+  .kcc-btn--text:hover:not(:disabled, [aria-disabled='true']) {
+    background: transparent;
+    text-decoration-color: currentColor;
+  }
+
+  .kcc-btn--lg {
+    font-size: 12px;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 26px;
+  }
+
+  .kcc-btn--text.kcc-btn--lg {
+    height: auto;
+    padding: 0;
+  }
+
+  /* A square pill for a button whose glyph is its whole label. After --lg, so the width and the dropped
+     padding win over the large pill's own. */
+  .kcc-btn--icon {
+    padding: 0;
+    width: 36px;
+  }
+
+  .kcc-btn--lg.kcc-btn--icon {
+    width: 48px;
+  }
+
+  .kcc-btn:disabled,
+  .kcc-btn[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  /* ---- segmented control: pill group, pressed = ink fill ---- */
+  .kcc-seg {
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    display: inline-flex;
+    height: 36px;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .kcc-seg::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kcc-seg button {
+    align-items: center;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-ink-soft);
+    cursor: pointer;
+    display: inline-flex;
+    flex: none;
+    font: 400 10.5px/36px var(--font-sono);
+    gap: 8px;
+    letter-spacing: 0.12em;
+    padding: 0 14px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .kcc-seg button:first-child {
+    padding-left: 16px;
+  }
+
+  .kcc-seg button:last-child {
+    padding-right: 16px;
+  }
+
+  .kcc-seg button i {
+    font-size: 12px;
+  }
+
+  .kcc-seg button[aria-pressed='true'],
+  .kcc-seg button[aria-checked='true'] {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .kcc-seg button:hover:not([aria-pressed='true'], [aria-checked='true']) {
+    color: var(--color-ink);
+  }
+
+  /* ---- field: 36px pill with an inset hairline and a leading icon ---- */
+  .kcc-field {
+    align-items: center;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    color: var(--color-ink);
+    display: grid;
+    gap: 10px;
+    grid-template-columns: auto 1fr;
+    height: 36px;
+    padding: 0 14px;
+  }
+
+  .kcc-field--noicon {
+    grid-template-columns: 1fr;
+  }
+
+  .kcc-field i {
+    color: var(--color-ink-soft);
+    font-size: 13px;
+  }
+
+  .kcc-field input,
+  .kcc-field select {
+    background: none;
+    border: 0;
+    color: inherit;
+    /* 16px, not the body's 15: iOS zooms the viewport into any focused field below 16px. */
+    font: 400 16px/36px var(--font-hazelnut);
+    min-width: 0;
+    outline: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .kcc-field input::placeholder {
+    color: var(--color-ink-soft);
+  }
+
+  /* .kcc-field input sets the `font:` shorthand, which resets font-variant-numeric to normal and outranks a
+     bare .kcc-num on the same element (0,1,1 vs 0,1,0). Re-assert both halves of the number idiom. */
+  .kcc-field input.kcc-num {
+    font-family: var(--font-sono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kcc-field:focus-within {
+    box-shadow: inset 0 0 0 2px var(--color-ink);
+  }
+
+  /* A textarea cannot be a pill: it takes the label radius and grows on the rule. */
+  .kcc-field--area {
+    border-radius: var(--rd);
+    display: block;
+    height: auto;
+    padding: 6px 14px;
+  }
+
+  .kcc-field--area textarea {
+    background: none;
+    border: 0;
+    color: inherit;
+    display: block;
+    font: 400 16px/24px var(--font-hazelnut);
+    min-width: 0;
+    outline: 0;
+    padding: 0;
+    resize: vertical;
+    width: 100%;
+  }
+
+  .kcc-field--area textarea::placeholder {
+    color: var(--color-ink-soft);
+  }
+
+  /* ---- range slider: paper track with an inset hairline, marker fill, ink thumbs ----
+
+     RangeSlider.vue (Features/Components/Forms) is a runtime-compiled global component, so a scoped
+     style block would be bundled into the JS-loaded GlobalComponents CSS chunk — not in <head>, and
+     applied only after hydration. During that gap the two native `<input type="range">` would paint as
+     default OS bars (the "two separate bars" flash on first paint), so the appearance reset and the custom
+     thumb belong in this render-blocking stylesheet, where SSR output is already final.
+
+     These rules sit in `@layer components`, so a Tailwind utility on the input or the track wins over them
+     (the component positions both with utilities). */
+
+  /* The track: paper with an inset hairline, same recipe as every other printed control. */
+  .kcc-range-track {
+    background: var(--color-paper-2);
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+  }
+
+  /* The selected span between the two thumbs. */
+  .kcc-range-fill {
+    background: var(--color-marker);
+    border-radius: 999px;
+  }
+
+  /* Both thumbs are native range inputs stacked over the track: the input itself is transparent and
+     pointer-transparent, and only the thumb pseudo-element takes the pointer back. */
+  .kcc-range {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    height: 20px;
+    left: 0;
+    margin: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  .kcc-range:focus {
+    outline: none;
+  }
+
+  /* Thumbs are a printed mark: flat ink, no drawn border, no fall — only the paper ring below. */
+  .kcc-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--color-ink);
+    border-radius: 999px;
+    /* A paper ring, not a fall: the thumb straddles the marker fill, and chalk on marker reads at 1.2:1 in
+       the dark ramp without it. */
+    box-shadow: 0 0 0 2px var(--color-paper-2);
+    cursor: grab;
+    height: 16px;
+    pointer-events: auto;
+    width: 16px;
+  }
+
+  .kcc-range::-webkit-slider-thumb:active {
+    cursor: grabbing;
+  }
+
+  .kcc-range::-moz-range-thumb {
+    background: var(--color-ink);
+    border-radius: 999px;
+    /* A paper ring, not a fall: the thumb straddles the marker fill, and chalk on marker reads at 1.2:1 in
+       the dark ramp without it. */
+    box-shadow: 0 0 0 2px var(--color-paper-2);
+    cursor: grab;
+    height: 16px;
+    pointer-events: auto;
+    width: 16px;
+  }
+
+  .kcc-range::-moz-range-thumb:active {
+    cursor: grabbing;
+  }
+
+  /* ---- status: a well of paper tinted with the wash, ink text. Never coloured text. ---- */
+  .kcc-well {
+    background: var(--color-paper-2);
+    border-radius: var(--rd);
+    color: var(--color-ink);
+    display: block;
+    line-height: var(--bl);
+    padding: 0 12px;
+  }
+
+  /* The message is usually a kick (`kcc-well kcc-kick`), and .kcc-kick sets ink-soft. Ink must win on a
+     well regardless of which stylesheet loads later: ink-soft on a tinted well measures 3.3:1 in dark. */
+  .kcc-well.kcc-kick,
+  .kcc-well .kcc-kick {
+    color: var(--color-ink);
+  }
+
+  .kcc-well--danger {
+    background: color-mix(in oklab, var(--color-red) 28%, var(--color-paper));
+  }
+
+  .kcc-well--success {
+    background: color-mix(in oklab, var(--color-green) 28%, var(--color-paper));
+  }
+
+  .kcc-well--warning {
+    background: color-mix(in oklab, var(--color-yellow) 28%, var(--color-paper));
+  }
+
+  .kcc-field--error {
+    background: color-mix(in oklab, var(--color-red) 28%, var(--color-paper));
+  }
+
+  /* ---- badge: hairline pill ---- */
+  .kcc-badge {
+    align-items: center;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    color: var(--color-ink-soft);
+    display: inline-flex;
+    font: 400 10px/22px var(--font-sono);
+    height: 22px;
+    letter-spacing: 0.12em;
+    padding: 0 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .kcc-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* ---- checklist on the rule ---- */
+  .kcc-check {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .kcc-check li {
+    align-items: center;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 12px 1fr auto;
+    min-height: var(--bl);
+  }
+
+  .kcc-box {
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    height: 12px;
+    width: 12px;
+  }
+
+  .kcc-box--on {
+    background: var(--color-ink);
+    box-shadow: none;
+  }
+
+  /* The checkbox itself is sr-only, so the app's focus ring lands on a clipped 1px box and vanishes — most
+     painfully inside a focus trap, where a keyboard cannot escape the list. Ring the box the reader sees, in
+     the same 2px ink every other focusable takes. */
+  .kcc-check input:focus-visible + .kcc-box {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .kcc-check .kcc-q {
+    color: var(--color-ink-soft);
+    font-family: var(--font-sono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kcc-check li.kcc-done > :not(.kcc-q, .kcc-box) {
+    color: var(--color-ink-soft);
+    text-decoration: line-through;
+  }
+
+  /* ---- stats: Sono numbers over kick labels ---- */
+  .kcc-stats {
+    display: grid;
+    gap: 0 24px;
+    grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));
+  }
+
+  .kcc-stats .kcc-v {
+    align-items: baseline;
+    display: flex;
+    font-family: var(--font-sono);
+    font-size: 26px;
+    font-variant-numeric: tabular-nums;
+    gap: 6px;
+    letter-spacing: -0.01em;
+    line-height: var(--bl);
+    margin: 0;
+  }
+
+  .kcc-stats .kcc-v small {
+    color: var(--color-ink-soft);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* A unit beside a number (min, g, servings): the same small caps the stats row uses for its unit. */
+  .kcc-unit {
+    color: var(--color-ink-soft);
+    font-family: var(--font-sono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .kcc-stats .kcc-v i {
+    color: var(--color-ink-soft);
+    font-size: 15px;
+    transform: translateY(-1px);
+  }
+
+  /* ---- numbered method ---- */
+  .kcc-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .kcc-steps li {
+    align-items: start;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 28px 1fr;
+  }
+
+  .kcc-steps li + li {
+    margin-top: var(--bl);
+  }
+
+  .kcc-steps .kcc-n {
+    color: var(--color-ink-soft);
+    font-family: var(--font-sono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    line-height: var(--bl);
+  }
+
+  /* ---- recipe slip parts: room for the pinned tile, the stat top-right, the meta line ---- */
+  .kcc-recipe .kcc-sheet {
+    /* One full rule of headroom for the pinned tile; a 12px offset would put every baseline off the ruling. */
+    padding-top: calc(var(--pad, 24px) + var(--bl));
+  }
+
+  /* (0,2,0) so it beats the sheet's child-lift rule whatever the import order. */
+  .kcc-sheet > .kcc-stat {
+    align-items: center;
+    color: var(--color-ink);
+    display: flex;
+    font-family: var(--font-sono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    gap: 8px;
+    line-height: var(--bl);
+    position: absolute;
+    right: var(--pad, 24px);
+    top: var(--pad, 24px);
+  }
+
+  .kcc-stat i {
+    color: var(--color-ink-soft);
+    font-size: 11px;
+  }
+
+  .kcc-meta {
+    color: var(--color-ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    font-family: var(--font-sono);
+    font-size: 10.5px;
+    gap: 10px;
+    letter-spacing: 0.08em;
+    line-height: var(--bl);
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  /* Windows high-contrast paints no box-shadow, so the inset rings above vanish there. */
+  @media (forced-colors: active) {
+    .kcc-field:focus-within,
+    .kcc-seg button:focus-visible {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
+    }
+  }
+}

@@ -1,11 +1,12 @@
 <!-- #region StepTimer Component Properties -->
 <script lang="ts">
   import { computed, onBeforeUnmount, ref } from 'vue'
-  import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
+  import { useResourceStrings } from '~/Components/ResourceStrings'
+  import Button from '~/Components/Button/Button.vue'
   import { remainingSeconds } from './useStepTimers'
 
   /**
-   * Countdown pill for a duration found in a cook-mode step.
+   * Countdown for a duration found in a cook-mode step, set large enough to read from the stove.
    */
   export default {
     name: 'StepTimer',
@@ -84,33 +85,35 @@
 </script>
 
 <template>
-  <div
-    role="timer"
-    aria-live="off"
-    :aria-label="`${label}: ${formatted}`"
-    class="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-1.5 text-sm text-ink"
-  >
-    <i class="fa-solid fa-stopwatch text-rating-ink" aria-hidden="true"></i>
-    <span class="font-bold">{{ label }}</span>
-    <span class="tabular-nums" data-test="timer-display">{{ formatted }}</span>
-    <button
-      type="button"
-      data-test="timer-toggle"
-      :aria-label="running ? t('Pause') : t('StartTimer')"
-      class="grid h-6 w-6 cursor-pointer place-items-center rounded-full border-none bg-paper-2 text-ink transition-colors hover:bg-desk-2"
-      @click="toggle"
-    >
-      <i :class="running ? 'fa-solid fa-pause' : 'fa-solid fa-play'" class="text-[10px]" aria-hidden="true"></i>
-    </button>
-    <button
-      type="button"
-      data-test="timer-reset"
-      :aria-label="t('Reset')"
-      class="grid h-6 w-6 cursor-pointer place-items-center rounded-full border-none bg-transparent text-ink transition-colors hover:text-rating-ink"
-      @click="reset"
-    >
-      <i class="fa-solid fa-rotate-left text-[10px]" aria-hidden="true"></i>
-      <span class="sr-only"><ResourceString for="Reset" /></span>
-    </button>
+  <div role="timer" aria-live="off" :aria-label="`${label}: ${formatted}`" class="flex flex-wrap items-center gap-6">
+    <div>
+      <p class="kcc-kick">{{ label }}</p>
+      <p class="flex items-center gap-3">
+        <i class="fa-duotone fa-stopwatch text-2xl" aria-hidden="true"></i>
+        <span class="kcc-num text-[64px] leading-[72px]" data-test="timer-display">{{ formatted }}</span>
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <Button
+        variant="ghost"
+        size="lg"
+        class="kcc-btn--icon shrink-0"
+        data-test="timer-toggle"
+        :aria-label="running ? t('Pause') : t('StartTimer')"
+        @click="toggle"
+      >
+        <i :class="running ? 'fa-duotone fa-pause' : 'fa-duotone fa-play'" aria-hidden="true"></i>
+      </Button>
+      <Button
+        variant="ghost"
+        size="lg"
+        class="kcc-btn--icon shrink-0"
+        data-test="timer-reset"
+        :aria-label="t('Reset')"
+        @click="reset"
+      >
+        <i class="fa-duotone fa-rotate-left" aria-hidden="true"></i>
+      </Button>
+    </div>
   </div>
 </template>

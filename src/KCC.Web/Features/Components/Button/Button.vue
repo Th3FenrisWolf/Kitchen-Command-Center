@@ -1,18 +1,19 @@
 <!-- #region Button Component Properties -->
 <script lang="ts">
   /**
-   * Drawn pill button. `marker` is the primary action, `paper` and `ghost` are secondary, `text` is a link.
-   * Razor gets the same look from the `.sk-btn` classes plus `data-ink="button"`.
+   * Torn & Waxed pill button. `marker` (default) is the filled primary action; `ghost` is a hairline
+   * secondary pill; `ink` is a filled dark pill; `text` is an underlined link, no pill at all. Razor gets
+   * the same look from `ButtonLinkTagHelper`, which emits the same `kcc-btn` classes.
    */
   export default {
     // Not `Button`: `resolveDynamicComponent` checks the rendering component's own name first, so
     // `<component :is="'button'">` below would resolve this component to itself and recurse until the
     // stack blows. Any name that is not a capitalized native tag keeps `as` resolving to the element.
-    name: 'SkButton',
+    name: 'KccButton',
   }
 
-  export type ButtonVariant = 'marker' | 'paper' | 'ghost' | 'text'
-  export type ButtonSize = 'sm' | 'md' | 'lg'
+  export type ButtonVariant = 'marker' | 'ghost' | 'ink' | 'text'
+  export type ButtonSize = 'md' | 'lg'
 
   export interface ButtonProps {
     /**
@@ -44,8 +45,6 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-
   const {
     variant = 'marker',
     size = 'md',
@@ -54,21 +53,13 @@
     href,
     disabled = false,
   } = defineProps<ButtonProps>()
-
-  // Filled pills take the fixed ink that sits on washes; unfilled ones are drawn in the ramp's ink line.
-  const inkBinding = computed(() =>
-    variant === 'text'
-      ? null
-      : { kind: 'button' as const, color: variant === 'marker' ? undefined : 'var(--color-ink-line)' },
-  )
 </script>
 
 <template>
   <component
     :is="as"
-    v-ink="inkBinding"
-    class="sk-btn"
-    :class="[`sk-btn--${variant}`, `sk-btn--${size}`]"
+    class="kcc-btn"
+    :class="[variant !== 'marker' && `kcc-btn--${variant}`, size === 'lg' && 'kcc-btn--lg']"
     :type="as === 'button' ? type : undefined"
     :href="as === 'a' ? href : undefined"
     :disabled="as === 'button' && disabled ? true : undefined"

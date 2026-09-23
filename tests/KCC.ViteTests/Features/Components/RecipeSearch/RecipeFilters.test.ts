@@ -27,6 +27,71 @@ const render = (over: Props = {}) =>
 // Each `:disabled` input renders the boolean attribute; range-slider inputs never do.
 const countDisabled = (html: string) => (html.match(/\sdisabled/g) ?? []).length
 
+const rowFor = (html: string, label: string) =>
+  html.match(new RegExp(`<li[^>]*>(?:(?!</li>).)*${label}.*?</li>`, 's'))?.[0] ?? ''
+
+describe('RecipeFilters sheet', () => {
+  it('is a crisp labelled sheet on its own tear', async () => {
+    const html = await render()
+
+    expect(html).toContain('kcc-slip kcc-tear-5')
+    // Crisp: a panel read at arm's length while ticking boxes does not tilt.
+    expect(html).toContain('--r:0')
+    expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-sliders" aria-hidden="true"></i>')
+    expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('keeps the panel heading for assistive tech and resets through a text button', async () => {
+    const html = await render()
+
+    expect(html).toMatch(/<h2 class="sr-only">\s*Filters\s*<\/h2>/)
+    expect(html).toContain('kcc-btn kcc-btn--text')
+    expect(html).toContain('Reset')
+  })
+
+  it('titles each group with a kick legend', async () => {
+    const html = await render()
+
+    expect(html).toMatch(/<legend class="kcc-kick">\s*Category\s*<\/legend>/)
+    expect(html).toMatch(/<legend class="kcc-kick">\s*Dietary\s*<\/legend>/)
+    expect(html).toMatch(/<legend class="kcc-kick">\s*TotalTime\s*<\/legend>/)
+  })
+
+  it('prints the options as a checklist on the rule, ticked boxes filled', async () => {
+    const html = await render({
+      categoryOptions: ['Breakfast', 'Dessert'],
+      categoryFacets: { Breakfast: 4, Dessert: 2 },
+      selectedCategories: ['Dessert'],
+    })
+
+    expect(html).toContain('<ul class="kcc-check">')
+    expect(rowFor(html, 'Breakfast')).toContain('class="kcc-box"')
+    expect(rowFor(html, 'Dessert')).toContain('kcc-box kcc-box--on')
+    // The native checkbox stays for behaviour and assistive tech; the box is the printed mark.
+    expect(rowFor(html, 'Dessert')).toContain('type="checkbox"')
+    expect(rowFor(html, 'Breakfast')).toMatch(/<span class="kcc-q">4<\/span>/)
+  })
+
+  it('hangs the box, the text and the count straight off the row, with nothing wrapping them', async () => {
+    const html = await render({ categoryOptions: ['Breakfast'], categoryFacets: { Breakfast: 4 } })
+
+    // The kit's row is a three-column grid of direct children of the li, and `.kcc-check li.kcc-done`
+    // excludes the box and the count by child combinator: a wrapper element breaks both.
+    expect(html).not.toContain('class="contents"')
+    expect(rowFor(html, 'Breakfast')).toMatch(
+      /^<li[^>]*><input id="([^"]+)" type="checkbox" class="sr-only"><label for="\1" class="kcc-box"><\/label><label for="\1">Breakfast<\/label><span class="kcc-q">4<\/span><\/li>$/,
+    )
+  })
+
+  it('sets the chosen range in Sono and the track ends in kicks', async () => {
+    const html = await render({ timeMin: 15 })
+
+    expect(html).toContain('kcc-num')
+    expect(html).toContain('15 Min OrMore')
+    expect(html).toContain('kcc-range-track')
+  })
+})
+
 describe('RecipeFilters zero-result options', () => {
   it('renders every option even when the current results omit some (no rows dropped)', async () => {
     const html = await render({
@@ -46,6 +111,7 @@ describe('RecipeFilters zero-result options', () => {
     // Dessert and Dinner are greyed out + disabled; Breakfast stays interactive.
     expect(countDisabled(html)).toBe(2)
     expect(html).toContain('cursor-not-allowed')
+    expect(rowFor(html, 'Dinner')).toContain('opacity-40')
   })
 
   it('does not disable options that still have matches', async () => {

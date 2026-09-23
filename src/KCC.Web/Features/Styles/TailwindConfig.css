@@ -6,81 +6,64 @@
 
 /* prettier-ignore-start */
 /* Safelist dynamically generated classes */
-@source inline('{pb,pt,px,mb,mt}-{0,4,8,12}');
-@source inline('{bg,text}-{rosewater,flamingo,pink,mauve,red,maroon,peach,yellow,green,teal,sky,sapphire,blue,lavender}');
-@source inline('{bg,text}-{desk,desk-2,paper,paper-2,ink,ink-soft,ink-on-wash,marker,marker-ink}');
+@source inline('{pt,pb,px}-{0,6,12,18}');
+@source inline('{mt,mb}-{0,4,8,12}');
+@source inline('bg-{peach,yellow,green,teal,sky,lavender,pink,red,desk,desk-2,paper,paper-2,marker}');
+@source inline('text-{ink,ink-soft,marker-ink}');
 /* prettier-ignore-end */
 
-/* `static` keeps every token in the output even when no utility references it: the drawn kit and the light
+/* `static` keeps every token in the output even when no utility references it: the kit CSS and the dark
    ramp read these variables directly, so Tailwind's unused-variable pruning would silently break them. */
 @theme static {
-  /* Desk, paper, ink — dark ramp is the default; Sketch/Tokens.css redefines these for data-theme="light". */
-  --color-desk: oklch(0.132 0.024 288);
-  --color-desk-2: oklch(0.176 0.028 288);
-  --color-paper: oklch(0.258 0.03 288);
-  --color-paper-2: oklch(0.222 0.028 288);
-  --color-ink: oklch(0.945 0.012 92);
-  --color-ink-soft: oklch(0.735 0.018 288);
-  --color-ink-line: oklch(0.9 0.016 288 / 0.82);
-  --color-ink-on-wash: oklch(0.232 0.026 288);
-  --color-rule: oklch(0.88 0.02 288 / 0.13);
-  --color-hatch: oklch(0.62 0.05 288 / 0.55);
-  --color-edge: oklch(0.9 0.02 288 / 0.2);
-  --color-edge-strong: oklch(0.9 0.02 288 / 0.46);
-  --color-flap-1: oklch(0.212 0.026 288);
-  --color-flap-2: oklch(0.348 0.034 288);
+  /* Desk, paper, ink — light is the default ramp; Torn/Tokens.css redefines these for data-theme="dark". */
+  --color-desk: oklch(0.884 0.016 288);
+  --color-desk-2: oklch(0.836 0.018 288);
+  --color-paper: oklch(0.958 0.009 92);
+  --color-paper-2: oklch(0.972 0.008 92);
+  --color-ink: oklch(0.232 0.026 288);
+  /* The mockup's 0.452 reads at 3.5:1 for small caps on desk-2; contrast.test.ts pins this value. */
+  --color-ink-soft: oklch(0.432 0.024 288);
+  --color-hair: oklch(0.232 0.026 288 / 0.16);
+  /* The mockup's 0.4 alpha composites to 2.4:1 against paper; 3:1 is what a control boundary needs, with
+     headroom for the crayon overlay that multiplies everything by ~0.97 (contrast.test.ts UI pairs; desk-2
+     is the binding ground). Dividers that want the mockup's lightness use `hair`. */
+  --color-hair-strong: oklch(0.232 0.026 288 / 0.56);
+  --color-rule: oklch(0.58 0.045 288 / 0.22);
   /* Marker repeats green's literal rather than aliasing it: it is the primary-action role, and re-valuing
-     the green wash in a later phase must not silently move every button with it. */
+     the green wash must not silently move every button with it. */
   --color-marker: oklch(0.876 0.112 126);
-  --color-marker-ink: oklch(0.26 0.03 288);
+  --color-marker-ink: oklch(0.24 0.03 288);
+  --color-fiber: oklch(1 0.006 92);
+  --color-fall: oklch(0.25 0.03 288 / 0.28);
+  --color-tape: oklch(0.985 0.012 92 / 0.6);
   --color-focus: var(--color-ink);
 
-  /* Washes — the brand constant, identical in both ramps. */
-  --color-rosewater: oklch(0.9 0.028 40);
-  --color-flamingo: oklch(0.878 0.045 25);
-  --color-pink: oklch(0.876 0.046 345);
-  --color-mauve: oklch(0.872 0.046 300);
-  --color-red: oklch(0.79 0.085 25);
-  --color-maroon: oklch(0.77 0.075 18);
+  /* Washes — eight, identical in both ramps. Fills only, never text. */
   --color-peach: oklch(0.886 0.055 70);
   --color-yellow: oklch(0.906 0.062 95);
   --color-green: oklch(0.876 0.112 126);
   --color-teal: oklch(0.886 0.045 175);
   --color-sky: oklch(0.89 0.038 205);
-  --color-sapphire: oklch(0.866 0.044 225);
-  --color-blue: oklch(0.856 0.046 262);
   --color-lavender: oklch(0.874 0.042 292);
+  --color-pink: oklch(0.876 0.046 345);
+  --color-red: oklch(0.79 0.085 25);
 
-  /* Status: washes for fills, *-ink for text and glyphs. On dark paper the washes themselves pass AA. */
-  --color-danger: var(--color-red);
-  --color-success: var(--color-green);
-  --color-warning: var(--color-yellow);
-  --color-danger-ink: var(--color-red);
-  --color-success-ink: var(--color-green);
-  --color-warning-ink: var(--color-yellow);
-  --color-rating-ink: var(--color-peach);
-  --color-link: var(--color-green);
-
-  /* Radius ladder: Tailwind's names, the sketch's values, so existing rounded-* classes tighten in place.
-     Every step is restated, including the three the sketch does not name: declaring any key of the radius
-     namespace here drops Tailwind's own values for the rest, while `rounded-<step>` still compiles to
-     `var(--radius-<step>)` — so an omitted step becomes a rule referencing an undefined variable, which
-     rounds nothing at all. */
-  --radius-xs: 0.125rem;
-  --radius-sm: 0.1875rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.3125rem;
-  --radius-xl: 0.4375rem;
-  --radius-2xl: 0.625rem;
-  --radius-3xl: 0.75rem;
-  --radius-4xl: 0.875rem;
-
-  --text-4\.5xl: 2.5rem;
-  --text-4\.5xl--line-height: calc(2.75 / 2.5);
+  /* Radius ladder: only printed marks are rounded. xs checkbox, sm small marks, md labels and textareas,
+     full pills. lg and above are declared at md so a stray utility cannot round a sheet; they are retired.
+     Every step is restated because declaring any key of the namespace drops Tailwind's values for the rest. */
+  --radius-xs: 0.1875rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.375rem;
+  --radius-2xl: 0.375rem;
+  --radius-3xl: 0.375rem;
+  --radius-4xl: 0.375rem;
 
   --font-casual: 'APCasual', sans-serif;
   --font-hazelnut: 'Hazelnut', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sono: 'Sono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: var(--font-sono);
 
   --grid-template-columns-content-aside: min(calc(50% - 16px), 24rem) minmax(calc(50% - 16px), 1fr);
 }
@@ -127,14 +110,4 @@
   transition:
     outline-color 0.2s,
     outline-offset 0.2s;
-}
-
-@utility fa-primary-* {
-  --fa-primary-color: --value(--color-*);
-  --fa-primary-opacity: 1; /* FA's default; kept explicit for symmetry with fa-secondary-* */
-}
-
-@utility fa-secondary-* {
-  --fa-secondary-color: --value(--color-*);
-  --fa-secondary-opacity: 1; /* a distinct secondary color implies full strength (no 40% wash-out); override --fa-secondary-opacity inline for a translucent colored secondary */
 }

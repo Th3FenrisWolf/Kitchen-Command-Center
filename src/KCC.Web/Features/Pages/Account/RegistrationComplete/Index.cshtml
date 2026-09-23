@@ -1,15 +1,19 @@
-@using KCC.Web.Features.Pages.Shared
-
 @model BasePageViewModel
 
 @* Razor cannot use the Sheet.vue primitive (not a *.Component.vue, so not globally registered); it
-   composes the same look from the global kit classes plus the data-ink opt-in. *@
-<section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
-  <div class="sk-sheet sk-sheet--lg sk-fold flex max-w-2xl flex-col items-center gap-6 text-center" data-ink="sheet">
-    <h1 class="sk-display text-4.5xl">@Html.ResourceString("RegistrationComplete.Heading")</h1>
-    <p class="sk-body text-lg">@Html.ResourceString("RegistrationComplete.Body")</p>
-    <a href="@Url.HomePage()" class="sk-btn sk-btn--marker sk-btn--lg" data-ink="button">
-      @Html.ResourceString("RegistrationComplete.ContinueLink")
-    </a>
+   hand-writes the same Structure from the global kit classes in Kit.css. *@
+<div class="kcc-slip kcc-tear-2 mx-auto mt-12 w-full max-w-2xl">
+  <div class="kcc-torn">
+    <div class="kcc-sheet" style="--pad: 48px">
+      <span class="kcc-wash" style="--c: var(--color-green); --x: 85%; --y: 90%; --w: 55%; --h: 50%" aria-hidden="true"></span>
+      <p class="kcc-kick">Registered</p>
+      <h1 class="kcc-h3 mt-6">@Html.ResourceString("RegistrationComplete.Heading")</h1>
+      <p class="kcc-body mt-6">@Html.ResourceString("RegistrationComplete.Body")</p>
+      <div class="mt-6 flex flex-wrap gap-4">
+        <button-link class="kcc-btn--lg" href="@Url.HomePage()">@Html.ResourceString("RegistrationComplete.ContinueLink")</button-link>
+      </div>
+    </div>
   </div>
-</section>
+  <span class="kcc-label"><i class="fa-duotone fa-envelope-open" aria-hidden="true"></i>Registered</span>
+  <span class="kcc-tape" aria-hidden="true"></span>
+</div>

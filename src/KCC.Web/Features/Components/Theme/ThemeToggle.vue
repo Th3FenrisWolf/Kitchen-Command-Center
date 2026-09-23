@@ -26,10 +26,11 @@
   const { switchToLightLabel, switchToDarkLabel } = defineProps<ThemeToggleProps>()
 
   // Both glyphs render and Kit.css shows the one for the active ramp. The server cannot know the ramp, so
-  // deciding here would be a hydration mismatch on every light-ramp visitor.
+  // deciding here would be a hydration mismatch on every dark-ramp visitor.
   function toggle() {
     const root = document.documentElement
-    const next: Ramp = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'
+    // Light is the default, so a missing attribute flips to dark.
+    const next: Ramp = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
 
     // Kill in-flight transitions for one frame so nothing interpolates between the two palettes.
     root.setAttribute('data-theme-switching', '')
@@ -44,7 +45,11 @@
 </script>
 
 <template>
-  <button type="button" class="btn-no-style sk-chrome-link cursor-pointer px-2 py-2" @click="toggle">
+  <button
+    type="button"
+    class="btn-no-style cursor-pointer px-2 py-2 text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
+    @click="toggle"
+  >
     <span data-ramp="dark">
       <i class="fa-duotone fa-sun-bright text-xl" aria-hidden="true"></i>
       <span class="sr-only">{{ switchToLightLabel }}</span>

@@ -9,7 +9,6 @@
 <section
   data-section-guid="@Model.SectionGuid"
   class="@Html.Clsx(
-    "rounded-4xl",
     Model.ContainerClass,
     Model.BackgroundColor,
     Model.TextColor,
@@ -20,12 +19,12 @@
 >
   @if (!string.IsNullOrEmpty(Model.Heading))
   {
-    <p class="mb-8 text-center text-4.5xl">@Model.Heading</p>
+    <div class="kcc-secname"><h2>@Model.Heading</h2></div>
   }
 
   <div
     class="@Html.Clsx(
-      "multiple-column-section rounded-4xl",
+      "multiple-column-section",
       sectionClass
     )"
   >

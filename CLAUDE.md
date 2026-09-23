@@ -37,61 +37,40 @@ each component's path *and* its content, so a client bundle built against differ
 the SSR bundle emits `data-v-` attributes the CSS has no selectors for, and every scoped component
 silently loses its styles.
 
-## Softbound Sketch design language
+## Torn & Waxed design language
 
-The public site uses the Softbound Sketch language: a dark-first purple-slate **desk / paper / ink**
-palette with 14 pale accent "washes", a `marker` green as the one strong fill, tightened radii, and **no
-shadows** — elevation is a hand-drawn SVG outline plus a hatched shadow strip.
+The public site uses the Torn & Waxed identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight
+wax washes, marker green as the one strong fill, Sono for every number and label. **The brand lives in
+`docs/brand/torn-and-waxed.md`; the engineering contract in `docs/brand/kit.md`.** Read the contract before
+styling anything; use the `torn-and-waxed` skill for the quick reference, the `kit-builder` agent to convert
+a surface and the `brand-steward` agent to review one. The invariants below are the ones that break the
+build or the brand silently, so they stay here as well.
 
 ### Tokens
 
-Role tokens live in `Styles/TailwindConfig.css` under **`@theme static`**. The `static` is load-bearing:
-Tailwind 4 prunes theme variables no utility references, and the kit CSS and light ramp read `--color-*`
-directly, so pruning would silently empty them.
+Role tokens live in `Features/Styles/TailwindConfig.css` under **`@theme static`** with the **light** values;
+the dark ramp overrides them in `Features/Styles/Torn/Tokens.css` under `:root[data-theme='dark']`. The
+`static` is load-bearing: Tailwind 4 prunes theme variables no utility references, and the kit CSS and the
+dark ramp read `--color-*` directly. `Layout.cshtml` runs a pre-paint inline script that sets `data-theme`
+from `localStorage['kcc-theme']`, else `prefers-color-scheme`, else **light**. **Check both ramps for any
+visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
+composites ink over paper plus each wash.
 
-- Grounds: `desk`, `desk-2`, `paper`, `paper-2`
-- Inks: `ink`, `ink-soft`, `ink-line`, `ink-on-wash`
-- Fills: `marker` / `marker-ink` — the *only* strong fill; use it for selected, checked and primary
-- Status pigments: `danger-ink`, `success-ink`, `warning-ink`, `rating-ink`, `link` (text and glyphs);
-  the washes themselves are for fills
-- The 14 washes, `marker`, `marker-ink` and `ink-on-wash` are **identical in both ramps** — the brand constant
+### The kit, and where CSS lives
 
-**Text on a wash is always `text-ink-on-wash`, never `text-ink`.** `ink` is near-white in the dark ramp, so
-`text-ink` on a pale wash measures about 1.2:1. This bit three separate components during the restyle.
+`kcc-*` classes live in global `@layer components` CSS under `Features/Styles/Torn/`, **not** in component
+`<style>` blocks: Razor-rendered widgets and Vue components share them, and Razor cannot reach a scoped
+block. Anything Razor also renders belongs in `@layer components`. A rule that must beat a Tailwind *utility*
+sits **outside** `@layer` entirely (the ramp-swap rule at the end of `Features/Styles/Torn/Kit.css`), because
+the `utilities` layer comes after `components`.
 
-### Two ramps
+### The tear
 
-Dark is the default. Light values live in `Styles/Sketch/Tokens.css` under `:root[data-theme='light']`.
-`Layout.cshtml` runs a pre-paint inline script that sets `data-theme` from `localStorage['kcc-theme']`,
-else `prefers-color-scheme`, else dark. **Check both ramps for any visual change** — the light ramp is the
-binding contrast constraint. `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` converts every token
-pair to sRGB and asserts WCAG AA in both ramps; it is the living contrast table, not a static doc.
+Sheets are clipped with `clip-path: var(--tear)`; the presets in `Features/Styles/Torn/Tears.css` are
+**generated** by `yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
+the CSS. No runtime JS draws anything; the SSR output is final. Two structural invariants:
 
-### The drawn kit, and where CSS lives
-
-`sk-*` classes (`sk-sheet`, `sk-wash`, `sk-tab`, `sk-fold`, `sk-ruled`, `sk-hand`, `sk-btn`, …) live in
-global `@layer components` CSS under `Styles/Sketch/`, **not** in component `<style>` blocks — Razor-rendered
-widgets and Vue components share them, and Razor cannot reach a scoped block. That is the rule: anything
-Razor also renders belongs in `@layer components`.
-
-One exception worth knowing: a rule that must beat a Tailwind *utility* has to sit **outside** `@layer`
-entirely, because the `utilities` layer comes after `components`. The ramp-swap rule at the end of
-`Styles/Sketch/Kit.css` is deliberately unlayered for that reason.
-
-### Ink API
-
-Outlines are real SVG paths generated client-side. Vue uses the `v-ink` directive; Razor markup opts in
-with `data-ink="sheet|card|tile|button"`.
-
-Pick the kind by the **ground**, not the element: `card` (ink-line) on paper, `sheet` (ink-line + hatch) on
-panels, `tile` (ink-on-wash) on washes. The wrong kind draws an *invisible* outline rather than a
-wrong-coloured one.
-
-Two invariants:
-
-- **`Features/Ink/inkDom.ts` must never touch the DOM at module scope.** It is pulled into the SSR bundle
-  via `vInk → GlobalComponents → Server.Entry`; a top-level `document`/`window` reference breaks SSR at
-  import time, not call time.
-- **Any vitest rendering a component that uses `v-ink` must go through
-  `tests/KCC.ViteTests/support/renderSsr.ts`.** The directive is app-scoped, so a bare
-  `renderToString(createSSRApp(C))` fails to resolve it.
+- The `filter` (fibre + fall) sits on `.kcc-torn`, **outside** the clipped `.kcc-sheet`, or the shadow is
+  clipped away with the paper.
+- `.kcc-label`, `.kcc-tape` and `.kcc-tilewrap` are siblings of `.kcc-torn` inside `.kcc-slip`: outside the
+  clip and outside the filter, so they are neither torn nor shadowed.

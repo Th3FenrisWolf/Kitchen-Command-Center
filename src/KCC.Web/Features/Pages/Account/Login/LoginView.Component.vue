@@ -1,12 +1,12 @@
 <!-- #region LoginView Component Properties -->
 <script lang="ts">
-  import { ref, watch } from 'vue'
+  import { ref, useId } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
 
   /**
-   * Sign-in and registration, flipping between the two on one card.
+   * Sign-in and registration, flipping between the two on one sheet.
    */
   export default {
     name: 'LoginView',
@@ -33,11 +33,11 @@
 
 <script setup lang="ts">
   import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<LoginViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Login')
 
-  const swap = ref(false)
   const isSignIn = ref(true)
   const isSubmitting = ref(false)
 
@@ -48,21 +48,16 @@
   const rememberMe = ref(props.defaultRememberMe ?? false)
   const formError = ref<string | null>(null)
 
-  const clearForm = () => {
+  const rememberMeId = `${useId()}-remember-me`
+
+  const switchMode = () => {
+    isSignIn.value = !isSignIn.value
     userName.value = ''
     email.value = ''
     password.value = ''
     passwordConfirmation.value = ''
     formError.value = null
   }
-
-  watch(swap, () => {
-    formError.value = null
-    setTimeout(() => {
-      clearForm()
-      isSignIn.value = !isSignIn.value
-    }, 250)
-  })
 
   const handleSubmit = async () => {
     formError.value = null
@@ -91,98 +86,82 @@
 </script>
 
 <template>
-  <section class="no-margin fixed top-[50dvh] left-[50dvw] grid w-3/4 -translate-x-1/2 -translate-y-1/2 place-items-center">
-    <div v-ink="{ kind: 'sheet' }" class="sk-sheet relative flex w-3/4 overflow-hidden" style="--pad: 0">
-      <div
-        :class="[
-          'relative left-[0%] flex basis-[60%] flex-col justify-center gap-4 p-12 text-center transition-all duration-500',
-          swap && 'left-[40%]',
-        ]"
-      >
-        <h2 class="text-4.5xl"><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></h2>
+  <KccSheet crisp :tear="4" pad="clamp(24px, 7.5vw, 48px)" icon="fa-duotone fa-key" class="mx-auto my-12 w-full max-w-md">
+    <template #label><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></template>
 
-        <p :class="['overflow-hidden text-danger-ink transition-all duration-500', formError ? 'h-8' : 'h-0']">
-          {{ formError }}
-        </p>
+    <!-- The sheet's label carries the mode in print; the heading carries it in the document. -->
+    <h2 class="sr-only">{{ isSignIn ? rs('SignIn') : rs('SignUp') }}</h2>
 
-        <form @submit.prevent="handleSubmit" class="grid grow-0 gap-8">
-          <InputField
-            required
-            type="text"
-            v-model="userName"
-            autocomplete="username"
-            :placeholder="rs('UsernamePlaceholder')"
-            name="UserName"
-          />
+    <form class="flex flex-col gap-6" @submit.prevent="handleSubmit">
+      <!-- The placeholder is the field's name here: the page has no printed labels to bind to. -->
+      <InputField
+        v-model="userName"
+        required
+        type="text"
+        name="UserName"
+        autocomplete="username"
+        :placeholder="rs('UsernamePlaceholder')"
+        :aria-label="rs('UsernamePlaceholder')"
+      />
 
-          <InputField
-            v-if="!isSignIn"
-            required
-            type="email"
-            v-model="email"
-            autocomplete="email"
-            :placeholder="rs('EmailPlaceholder')"
-            name="Email"
-          />
+      <InputField
+        v-if="!isSignIn"
+        v-model="email"
+        required
+        type="email"
+        name="Email"
+        autocomplete="email"
+        :placeholder="rs('EmailPlaceholder')"
+        :aria-label="rs('EmailPlaceholder')"
+      />
 
-          <InputField
-            required
-            type="password"
-            v-model="password"
-            :autocomplete="!isSignIn ? 'new-password' : 'current-password'"
-            :placeholder="rs('PasswordPlaceholder')"
-            name="Password"
-          />
+      <InputField
+        v-model="password"
+        required
+        type="password"
+        name="Password"
+        :autocomplete="isSignIn ? 'current-password' : 'new-password'"
+        :placeholder="rs('PasswordPlaceholder')"
+        :aria-label="rs('PasswordPlaceholder')"
+      />
 
-          <InputField
-            v-if="!isSignIn"
-            required
-            type="password"
-            v-model="passwordConfirmation"
-            autocomplete="new-password"
-            :placeholder="rs('ConfirmPasswordPlaceholder')"
-            name="PasswordConfirmation"
-          />
+      <InputField
+        v-if="!isSignIn"
+        v-model="passwordConfirmation"
+        required
+        type="password"
+        name="PasswordConfirmation"
+        autocomplete="new-password"
+        :placeholder="rs('ConfirmPasswordPlaceholder')"
+        :aria-label="rs('ConfirmPasswordPlaceholder')"
+      />
 
-          <label v-if="isSignIn" class="flex items-center gap-2 justify-self-center">
-            <input type="checkbox" v-model="rememberMe" name="RememberMe" value="true" />
-            <ResourceString for="RememberMe" />
-          </label>
+      <ul v-if="isSignIn" class="kcc-check">
+        <li class="cursor-pointer">
+          <input :id="rememberMeId" v-model="rememberMe" type="checkbox" class="sr-only" name="RememberMe" value="true" />
+          <label :for="rememberMeId" class="kcc-box" :class="{ 'kcc-box--on': rememberMe }"></label>
+          <label :for="rememberMeId"><ResourceString for="RememberMe" /></label>
+        </li>
+      </ul>
 
-          <Button class="justify-self-center" :disabled="isSubmitting" type="submit">
-            <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
-          </Button>
-        </form>
-      </div>
+      <p v-if="formError" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ formError }}</p>
 
-      <div
-        :class="[
-          'relative right-[0%] grid basis-[40%] justify-items-center overflow-hidden bg-paper-2 p-12 text-center transition-all duration-500',
-          swap && 'right-[60%]',
-        ]"
-      >
-        <div
-          :class="[
-            'relative flex h-full w-[400%] justify-between transition-all duration-500',
-            swap ? 'left-[150%]' : 'left-[-150%]',
-          ]"
-        >
-          <div class="grid h-max w-1/4 gap-8 self-center text-ink" :aria-hidden="isSignIn">
-            <h3 class="font-casual text-4.5xl"><ResourceString for="HaveAccount" /></h3>
-            <p><ResourceString for="HaveAccountDescription" /></p>
-            <Button class="justify-self-center" variant="ghost" @click="swap = !swap">
-              <ResourceString for="SignIn" />
-            </Button>
-          </div>
-          <div class="grid h-max w-1/4 gap-8 self-center text-ink" :aria-hidden="swap">
-            <h3 class="font-casual text-4.5xl"><ResourceString for="NewHere" /></h3>
-            <p><ResourceString for="NewHereDescription" /></p>
-            <Button class="justify-self-center" variant="ghost" @click="swap = !swap">
-              <ResourceString for="SignUp" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Button type="submit" :disabled="isSubmitting">
+        <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
+      </Button>
+    </form>
+
+    <div class="mt-12">
+      <ResourceString :for="isSignIn ? 'NewHere' : 'HaveAccount'" as="p" class="kcc-kick" />
+      <ResourceString
+        :for="isSignIn ? 'NewHereDescription' : 'HaveAccountDescription'"
+        as="p"
+        class="kcc-body text-ink-soft"
+      />
+
+      <Button variant="text" class="mt-6" @click="switchMode">
+        <ResourceString :for="isSignIn ? 'SignUp' : 'SignIn'" />
+      </Button>
     </div>
-  </section>
+  </KccSheet>
 </template>

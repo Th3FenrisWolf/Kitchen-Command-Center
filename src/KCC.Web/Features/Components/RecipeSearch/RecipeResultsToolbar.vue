@@ -6,23 +6,15 @@
   import type { RecipeSortKey, RecipeViewMode } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
   /**
-   * Result-count heading paired with the search sort and grid/list controls.
+   * The search's sort and grid/list controls, printed inside the library sheet.
    */
   export default {
     name: 'RecipeResultsToolbar',
-  }
-
-  export interface RecipeResultsToolbarProps {
-    /**
-     * Already localized and counted by the page, e.g. "42 recipes".
-     */
-    heading: string
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  defineProps<RecipeResultsToolbarProps>()
   const sort = defineModel<RecipeSortKey>('sort', { required: true })
   const view = defineModel<RecipeViewMode>('view', { required: true })
   const t = useResourceStrings()
@@ -35,17 +27,15 @@
   ])
 
   const viewOptions = computed<SegmentOption<RecipeViewMode>[]>(() => [
-    { value: 'grid', icon: 'fa-solid fa-table-cells-large', ariaLabel: t('Grid'), testId: 'view-grid' },
-    { value: 'list', icon: 'fa-solid fa-list', ariaLabel: t('List'), testId: 'view-list' },
+    { value: 'grid', icon: 'fa-duotone fa-table-cells-large', ariaLabel: t('Grid'), testId: 'view-grid' },
+    { value: 'list', icon: 'fa-duotone fa-list', ariaLabel: t('List'), testId: 'view-list' },
   ])
 </script>
 
 <template>
-  <div class="mb-4 flex flex-wrap items-center gap-4">
-    <h2 class="min-w-40 flex-1 font-casual text-2xl">{{ heading }}</h2>
-
-    <div class="flex items-center gap-2">
-      <span class="text-sm font-bold text-ink-soft"><ResourceString for="Sort" /></span>
+  <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+    <div class="flex max-w-full min-w-0 items-center gap-3">
+      <ResourceString for="Sort" class="kcc-kick" />
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="t('Sort')" />
     </div>
 

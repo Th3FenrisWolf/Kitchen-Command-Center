@@ -23,11 +23,13 @@ public class BentoBoxSectionViewComponent : ViewComponent
     {
         var viewModel = new BentoBoxSectionViewModel
         {
+            Heading = componentViewModel.Properties.Heading,
             BackgroundColor = componentViewModel.Properties.BackgroundColor,
             TextColor = SectionColors.TextClassFor(componentViewModel.Properties.BackgroundColor),
             ContentWidth = componentViewModel.Properties.ContentWidth,
             PaddingTop = componentViewModel.Properties.GetPaddingTop(),
             PaddingBottom = componentViewModel.Properties.GetPaddingBottom(),
+            HorizontalPadding = componentViewModel.Properties.GetHorizontalPadding(),
         };
 
         return View("~/Features/Sections/BentoBox/BentoBox.cshtml", viewModel);
