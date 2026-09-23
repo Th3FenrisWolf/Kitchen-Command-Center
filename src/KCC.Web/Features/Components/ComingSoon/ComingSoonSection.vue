@@ -29,10 +29,12 @@
 
 <template>
   <section
-    class="mt-2 grid place-items-center gap-4 rounded-3xl border-2 border-dashed border-bone-dark px-4 py-16 text-center text-onyx-light"
+    v-ink="{ kind: 'sheet', hatch: false }"
+    class="sk-sheet sk-sheet--lg mt-2 grid place-items-center gap-4 text-center"
   >
-    <i v-if="icon" :class="icon"></i>
+    <span class="sk-wash" style="--c: var(--color-lavender)" aria-hidden="true"></span>
+    <i v-if="icon" :class="['sk-ico', icon]"></i>
     <ComingSoonBadge />
-    <ResourceString shared :for="textKey" as="p" class="text-base" />
+    <ResourceString shared :for="textKey" as="p" class="sk-body" />
   </section>
 </template>

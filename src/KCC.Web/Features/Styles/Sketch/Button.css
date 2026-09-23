@@ -1,0 +1,67 @@
+/* Drawn pill buttons. Razor uses these classes directly (ButtonLinkTagHelper, Button widget) with
+   data-ink="button"; Components/Button/Button.vue composes the same classes with v-ink. */
+@layer components {
+  .sk-btn {
+    align-items: center;
+    background: var(--color-marker);
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-marker-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-weight: 700;
+    gap: 0.5rem;
+    isolation: isolate;
+    justify-content: center;
+    line-height: 1.2;
+    padding: 11px 20px;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .sk-btn--marker {
+    background: var(--color-marker);
+    color: var(--color-marker-ink);
+  }
+
+  .sk-btn--paper {
+    background: var(--color-paper-2);
+    color: var(--color-ink);
+  }
+
+  .sk-btn--ghost {
+    background: transparent;
+    color: var(--color-ink);
+  }
+
+  .sk-btn--text {
+    background: transparent;
+    color: var(--color-link);
+    padding-inline: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .sk-btn--sm {
+    font-size: 0.875rem;
+    padding: 7px 14px;
+  }
+
+  .sk-btn--lg {
+    font-size: 1.125rem;
+    padding: 14px 26px;
+  }
+
+  .sk-btn:disabled,
+  .sk-btn[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  /* Hover is a heavier line, never a fill change (umbrella spec §7). */
+  .sk-btn:hover > .sk-inkframe path,
+  .sk-btn:focus-visible > .sk-inkframe path {
+    stroke-width: calc(var(--sw, 4.4) * 1.25);
+  }
+}

@@ -282,3 +282,12 @@ body.kcc-rs-preview .kcc-rs-editable.kcc-rs-editing:hover {
   stroke: currentColor;
   stroke-width: 0.5px;
 }
+
+/* The brand purple is too dark to read as an affordance on the site's dark ramp: measured 2.51:1 on desk
+   and 1.97:1 on paper at full strength, and 1.91 / 1.58 at the 60% hover alpha, against a 3:1 UI minimum.
+   A lighter tint of the same hue clears every state (4.36 desk, 3.50 paper at 60%). This library keeps its
+   own palette deliberately — it reacts to the host's data-theme contract, not to the host's tokens. */
+:root[data-theme='dark'] {
+  --kcc-color-product: #c46bff;
+  --kcc-color-product-ring: 196 107 255;
+}

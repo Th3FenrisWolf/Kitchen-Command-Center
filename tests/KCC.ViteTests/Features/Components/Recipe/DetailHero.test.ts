@@ -1,5 +1,4 @@
-import { createSSRApp } from 'vue'
-import { renderToString } from '@vue/server-renderer'
+import { renderSsr } from '../../../support/renderSsr'
 import { describe, expect, it } from 'vitest'
 import DetailHero from '~/Components/Recipe/DetailHero.vue'
 
@@ -9,7 +8,7 @@ import DetailHero from '~/Components/Recipe/DetailHero.vue'
 const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
 
 const render = (props: Record<string, unknown>) =>
-  renderToString(createSSRApp(DetailHero, { title: 'T', seed: 's', description: 'd', ...props }))
+  renderSsr(DetailHero, { title: 'T', seed: 's', description: 'd', ...props })
 
 describe('DetailHero rating', () => {
   it('renders exactly five stars when a rating exists (no stray decorative star)', async () => {

@@ -17,22 +17,21 @@ export const BRAND_BACKGROUND_COLORS = [
 
 export type BrandBackgroundColor = (typeof BRAND_BACKGROUND_COLORS)[number]
 
-export const BACKGROUND_COLORS = [
-  ...BRAND_BACKGROUND_COLORS,
-  'bg-surface-200',
-  'bg-surface-300',
-  'bg-surface-400',
-  'bg-surface-500',
-  'bg-surface-600',
-  'bg-surface-700',
-  'bg-overlay-200',
-  'bg-overlay-300',
-  'bg-overlay-400',
-  'bg-bone',
-  'bg-bone-dark',
-  'bg-onyx',
-  'bg-onyx-light',
+// Grounds and inks of the sketch language. Both axes list them so a caller can move a colour between
+// background and text with the index helpers below.
+export const SURFACE_BACKGROUND_COLORS = [
+  'bg-desk',
+  'bg-desk-2',
+  'bg-paper',
+  'bg-paper-2',
+  'bg-ink',
+  'bg-ink-soft',
+  'bg-ink-on-wash',
+  'bg-marker',
+  'bg-marker-ink',
 ] as const
+
+export const BACKGROUND_COLORS = [...BRAND_BACKGROUND_COLORS, ...SURFACE_BACKGROUND_COLORS] as const
 
 export type BackgroundColor = (typeof BACKGROUND_COLORS)[number]
 
@@ -55,22 +54,19 @@ export const BRAND_TEXT_COLORS = [
 
 export type BrandTextColor = (typeof BRAND_TEXT_COLORS)[number]
 
-export const TEXT_COLORS = [
-  ...BRAND_TEXT_COLORS,
-  'text-surface-200',
-  'text-surface-300',
-  'text-surface-400',
-  'text-surface-500',
-  'text-surface-600',
-  'text-surface-700',
-  'text-overlay-200',
-  'text-overlay-300',
-  'text-overlay-400',
-  'text-bone',
-  'text-bone-dark',
-  'text-onyx',
-  'text-onyx-light',
+export const SURFACE_TEXT_COLORS = [
+  'text-desk',
+  'text-desk-2',
+  'text-paper',
+  'text-paper-2',
+  'text-ink',
+  'text-ink-soft',
+  'text-ink-on-wash',
+  'text-marker',
+  'text-marker-ink',
 ] as const
+
+export const TEXT_COLORS = [...BRAND_TEXT_COLORS, ...SURFACE_TEXT_COLORS] as const
 
 export type TextColor = (typeof TEXT_COLORS)[number]
 

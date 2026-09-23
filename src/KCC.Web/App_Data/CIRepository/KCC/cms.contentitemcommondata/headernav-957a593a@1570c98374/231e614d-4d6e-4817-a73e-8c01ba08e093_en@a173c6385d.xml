@@ -68,5 +68,18 @@
         <ObjectType>cms.contentitem</ObjectType>
       </ContentItemReferenceTargetItemID>
     </cms.contentitemreference>
+    <cms.contentitemreference>
+      <ContentItemReferenceGroupGUID>a225f8c6-74e8-4e0d-be19-2253c9ab7fb2</ContentItemReferenceGroupGUID>
+      <ContentItemReferenceGUID>86bed0d7-3987-4006-b274-07f3e6b867ba</ContentItemReferenceGUID>
+      <ContentItemReferenceSourceCommonDataID>
+        <GUID>231e614d-4d6e-4817-a73e-8c01ba08e093</GUID>
+        <ObjectType>cms.contentitemcommondata</ObjectType>
+      </ContentItemReferenceSourceCommonDataID>
+      <ContentItemReferenceTargetItemID>
+        <CodeName>Logo-9bd7tcfl</CodeName>
+        <GUID>3e10d95b-9184-4f95-bdb8-d19d142c77aa</GUID>
+        <ObjectType>cms.contentitem</ObjectType>
+      </ContentItemReferenceTargetItemID>
+    </cms.contentitemreference>
   </ContentItemReferences>
 </cms.contentitemcommondata>

@@ -7,7 +7,6 @@
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import RecipeBreadcrumb from '~/Components/Breadcrumbs/Breadcrumb.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
   import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
@@ -91,11 +90,11 @@
 
 <template>
   <div class="mt-4 flex items-center justify-between gap-4">
-    <RecipeBreadcrumb v-if="breadcrumbs?.length" :items="breadcrumbs" />
+    <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
     <AppLink
       :href="addVariantHref"
-      class="inline-flex items-center gap-2 rounded-2xl bg-surface-500 px-3 py-2 text-bone transition-colors hover:bg-surface-400"
+      class="inline-flex items-center gap-2 rounded-2xl bg-paper px-3 py-2 text-ink transition-colors hover:bg-paper-2"
     >
       <ResourceString for="AddVariant" />
       <i class="fa-solid fa-plus text-lg" />
@@ -126,7 +125,7 @@
     <div class="mb-4 flex items-baseline justify-between gap-4">
       <h2>
         <ResourceString for="AllVariants" />
-        <span class="ml-2 font-hazelnut text-lg font-medium text-onyx-light">{{ resultLabel }}</span>
+        <span class="ml-2 font-hazelnut text-lg font-medium text-ink-soft">{{ resultLabel }}</span>
       </h2>
     </div>
 

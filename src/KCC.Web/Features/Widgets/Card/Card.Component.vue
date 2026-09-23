@@ -1,7 +1,13 @@
 <!-- #region Card Component Properties -->
 <script lang="ts">
   import { computed, type ComputedRef } from 'vue'
-  import { toBackgroundColor, toTextColor, type BackgroundColor, type TextColor } from '~/Types/DesignSystem'
+  import {
+    BRAND_BACKGROUND_COLORS,
+    toBackgroundColor,
+    toTextColor,
+    type BackgroundColor,
+    type TextColor,
+  } from '~/Types/DesignSystem'
 
   /**
    * Widget card whose drawer expands on hover and focus.
@@ -12,12 +18,12 @@
 
   export interface CardProps {
     /**
-     * @default 'bg-surface-500'
+     * @default 'bg-paper'
      */
     cardColor?: BackgroundColor
 
     /**
-     * @default 'text-bone'
+     * @default 'text-ink'
      */
     cardTextColor?: TextColor
 
@@ -51,8 +57,8 @@
 
 <script setup lang="ts">
   const {
-    cardColor = 'bg-surface-500',
-    cardTextColor = 'text-bone',
+    cardColor = 'bg-paper',
+    cardTextColor = 'text-ink',
     drawerColor = null,
     drawerTextColor = null,
     marginClasses = '',
@@ -67,13 +73,19 @@
   const resolvedDrawerTextColor: ComputedRef<TextColor> = computed(() => {
     return drawerTextColor ?? toTextColor(cardColor)
   })
+
+  // Washes take the dark ink-on-wash outline; paper grounds take the ramp's ink line. Getting this
+  // backwards draws an invisible outline rather than a wrong-coloured one.
+  const inkKind = computed(() =>
+    (BRAND_BACKGROUND_COLORS as readonly string[]).includes(cardColor) ? ('tile' as const) : ('card' as const),
+  )
 </script>
 
 <template>
   <div
+    v-ink="inkKind"
     :class="[
-      'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center shadow-primary transition-all',
-      drawer && 'focus-within:shadow-primary-raised hover:shadow-primary-raised',
+      'group/card flex flex-col justify-center gap-2 rounded-3xl p-4 text-center transition-all',
       cardColor,
       cardTextColor,
       marginClasses,
@@ -91,6 +103,7 @@
 
     <div
       v-if="drawer"
+      data-card-drawer
       :class="[
         'h-[0%] content-center overflow-hidden rounded-2xl transition-all',
         'group-hover/card:h-full focus-within:h-full',

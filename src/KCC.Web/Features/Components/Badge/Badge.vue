@@ -11,7 +11,7 @@
 
   export interface BadgeProps {
     /**
-     * @default 'bg-bone-dark text-onyx-light'
+     * @default 'bg-desk-2 text-ink-soft'
      */
     class?: HTMLAttributes['class']
   }
@@ -23,12 +23,12 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { class: className = 'bg-bone-dark text-onyx-light' } = defineProps<BadgeProps>()
+  const { class: className = 'bg-desk-2 text-ink-soft' } = defineProps<BadgeProps>()
   defineSlots<BadgeSlots>()
 </script>
 
 <template>
-  <span :class="['inline-flex items-center rounded-full px-2 py-1 text-sm font-bold', className]">
+  <span :class="['sk-lbl inline-flex items-center rounded-full bg-paper-2 px-3 py-1 opacity-100', className]">
     <slot />
   </span>
 </template>

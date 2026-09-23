@@ -1,4 +1,5 @@
-﻿using KCC.Web.Features.Sections.BentoBox;
+﻿using KCC.Web.Features.Sections.Base;
+using KCC.Web.Features.Sections.BentoBox;
 using Kentico.PageBuilder.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ public class BentoBoxSectionViewComponent : ViewComponent
         var viewModel = new BentoBoxSectionViewModel
         {
             BackgroundColor = componentViewModel.Properties.BackgroundColor,
+            TextColor = SectionColors.TextClassFor(componentViewModel.Properties.BackgroundColor),
             ContentWidth = componentViewModel.Properties.ContentWidth,
             PaddingTop = componentViewModel.Properties.GetPaddingTop(),
             PaddingBottom = componentViewModel.Properties.GetPaddingBottom(),

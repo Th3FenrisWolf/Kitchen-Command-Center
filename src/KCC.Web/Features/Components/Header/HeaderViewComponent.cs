@@ -1,4 +1,5 @@
 using CMS.ContentEngine;
+using KCC.ResourceStrings.Data;
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace KCC.Web.Features.Components.Header;
 
 public class HeaderViewComponent(
     IContentRetriever contentRetriever,
+    IResourceStringInfoProvider resourceStringInfoProvider,
     ITaxonomyRetriever taxonomyRetriever,
     IPreferredLanguageRetriever preferredLanguageRetriever
 ) : ViewComponent
@@ -31,6 +33,9 @@ public class HeaderViewComponent(
         var viewModel = new HeaderViewModel
         {
             Logo = headerNav.Logo.FirstOrDefault(),
+            LogoLight = headerNav.LogoLight?.FirstOrDefault(),
+            SwitchToLightLabel = resourceStringInfoProvider.GetOrDefault("Theme.SwitchToLight"),
+            SwitchToDarkLabel = resourceStringInfoProvider.GetOrDefault("Theme.SwitchToDark"),
             MainNavItems = MapPageLinks(mainNavItems),
             UtilityNavItems = MapPageLinks(utilityNavItems),
         };

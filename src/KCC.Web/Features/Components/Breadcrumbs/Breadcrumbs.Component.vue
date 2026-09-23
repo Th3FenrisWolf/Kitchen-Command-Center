@@ -7,7 +7,7 @@
    * Slash-separated trail of ancestor links, starting from a home icon.
    */
   export default {
-    name: 'Breadcrumb',
+    name: 'Breadcrumbs',
   }
 
   export interface BreadcrumbProps {
@@ -24,8 +24,8 @@
 </script>
 
 <template>
-  <nav class="flex min-w-0 flex-wrap items-center gap-2 text-base text-onyx-light" aria-label="Breadcrumb">
-    <AppLink :href="items[0].url" class="text-onyx-light transition-colors hover:text-onyx" :aria-label="items[0].linkText">
+  <nav class="sk-lbl flex min-w-0 flex-wrap items-center gap-2 opacity-100" aria-label="Breadcrumb">
+    <AppLink :href="items[0].url" class="text-ink-soft transition-colors hover:text-ink" :aria-label="items[0].linkText">
       <i class="fa-duotone fa-house" />
     </AppLink>
     <span class="opacity-50" aria-hidden="true">/</span>
@@ -35,11 +35,11 @@
       <AppLink
         v-if="item.url && index < items.slice(1).length - 1"
         :href="item.url"
-        class="text-onyx-light transition-colors hover:text-onyx"
+        class="text-ink-soft transition-colors hover:text-ink"
       >
         {{ item.linkText }}
       </AppLink>
-      <span v-else class="font-bold text-onyx">{{ item.linkText }}</span>
+      <span v-else class="font-bold text-ink">{{ item.linkText }}</span>
     </template>
   </nav>
 </template>

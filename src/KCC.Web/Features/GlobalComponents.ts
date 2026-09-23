@@ -1,4 +1,5 @@
 import type { App, Component } from 'vue'
+import { vInk } from '~/Ink/vInk'
 
 // Auto-discover global components using Vite's glob import.
 // Only files matching *.Component.vue are registered globally.
@@ -14,7 +15,10 @@ function getComponentName(path: string): string | null {
 // Register all global components.
 // Components are registered with both PascalCase and lowercase names
 // HTML parsers lowercase custom element tags, but Vue templates use PascalCase.
-export const registerGlobalComponents = (app: App) =>
+export const registerGlobalComponents = (app: App) => {
+  // The one global directive; Razor templates compiled at runtime can use it as well.
+  app.directive('ink', vInk)
+
   Object.entries(componentModules).forEach(([path, module]) => {
     const name = getComponentName(path)
     if (!name || !module.default) return
@@ -22,6 +26,7 @@ export const registerGlobalComponents = (app: App) =>
     app.component(name, module.default)
     app.component(name.toLowerCase(), module.default)
   })
+}
 
 // Lowercase tag names for every registered global component.
 // Useful for detecting raw Vue component tags in HTML

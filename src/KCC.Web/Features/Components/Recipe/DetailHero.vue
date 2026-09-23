@@ -49,11 +49,12 @@
 </script>
 
 <template>
-  <div class="my-4 grid gap-4 rounded-3xl bg-surface-500 p-6 text-bone shadow-primary lg:grid-cols-4">
+  <div v-ink="'sheet'" class="sk-sheet sk-fold my-4 grid gap-4 lg:grid-cols-4">
+    <span class="sk-wash" style="--c: var(--color-peach)" aria-hidden="true"></span>
     <AccentTile :seed :icon :image :alt="title" class="h-40 w-full text-7xl lg:size-full" />
 
     <div class="lg:col-span-3">
-      <p v-if="eyebrow" class="mb-1 text-sm text-bone-dark uppercase">
+      <p v-if="eyebrow" class="mb-1 text-sm text-ink-soft uppercase">
         <slot name="eyebrow" />
       </p>
 
@@ -63,19 +64,19 @@
         <span class="inline-flex items-center gap-1">
           <template v-if="reviewCount">
             <RatingSummary :value="averageRating ?? 0" strong />
-            <span class="text-bone-dark">({{ reviewCount }} <ResourceString for="Reviews" />)</span>
+            <span class="text-ink-soft">({{ reviewCount }} <ResourceString for="Reviews" />)</span>
           </template>
           <template v-else>
-            <span class="text-bone-dark"><ResourceString for="NoRatingsYet" /></span>
+            <span class="text-ink-soft"><ResourceString for="NoRatingsYet" /></span>
           </template>
         </span>
 
         <span v-if="timesCooked" data-testid="times-cooked" class="inline-flex items-center gap-1">
-          <i class="fa-duotone fa-fire-burner text-maroon"></i>
+          <i class="fa-duotone fa-fire-burner text-danger-ink"></i>
           <span>{{ timesCooked }} <ResourceString for="TimesCooked" /></span>
         </span>
 
-        <span v-if="authorName" class="text-bone-dark"><ResourceString for="By" /> {{ authorName }}</span>
+        <span v-if="authorName" class="text-ink-soft"><ResourceString for="By" /> {{ authorName }}</span>
       </div>
 
       <p class="mt-4 max-w-[80ch] text-lg">{{ description }}</p>

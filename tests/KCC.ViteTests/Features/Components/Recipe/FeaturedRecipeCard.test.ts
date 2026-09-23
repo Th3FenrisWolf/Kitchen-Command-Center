@@ -1,5 +1,4 @@
-import { createSSRApp } from 'vue'
-import { renderToString } from '@vue/server-renderer'
+import { renderSsr } from '../../../support/renderSsr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
@@ -24,7 +23,7 @@ const rs = (key: string) => key
 
 describe('FeaturedRecipeCard from a search hit', () => {
   it('renders the recipe name and its numeric rating', async () => {
-    const html = await renderToString(createSSRApp(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) }))
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
     expect(html).toContain('Sourdough Focaccia')
     expect(html).toContain('4.9')
     expect(html).toContain(recipe.slug)

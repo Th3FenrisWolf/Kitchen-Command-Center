@@ -33,7 +33,7 @@
 
 <template>
   <img v-if="image" :src="image" :alt="alt ?? seed" class="rounded-2xl object-cover" />
-  <div v-else class="grid place-items-center rounded-2xl text-onyx" :class="backgroundColorFor(seed)" aria-hidden="true">
+  <div v-else class="sk-tile grid place-items-center rounded-2xl" :class="backgroundColorFor(seed)" aria-hidden="true">
     <i :class="icon"></i>
   </div>
 </template>

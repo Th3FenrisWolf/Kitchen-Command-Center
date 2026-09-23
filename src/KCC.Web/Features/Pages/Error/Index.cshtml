@@ -2,7 +2,11 @@
 
 @model ErrorViewModel
 
-<section class="flex flex-col items-center my-10">
-    <h1 class="mb-5">@Model.Heading</h1>
-    @Html.Raw(Model.Body)
+@* Razor cannot use the Sheet.vue primitive (not a *.Component.vue, so not globally registered); it
+   composes the same look from the global kit classes plus the data-ink opt-in. *@
+<section class="my-10 grid place-items-center">
+    <div class="sk-sheet sk-sheet--lg sk-fold max-w-2xl text-center" data-ink="sheet">
+        <h1 class="sk-display mb-5 text-4.5xl">@Model.Heading</h1>
+        <div class="sk-body">@Html.Raw(Model.Body)</div>
+    </div>
 </section>

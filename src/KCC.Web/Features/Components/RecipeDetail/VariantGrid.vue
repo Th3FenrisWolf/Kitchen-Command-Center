@@ -36,10 +36,10 @@
 
     <AppLink
       :href="addVariantUrl"
-      class="group grid min-h-50 place-items-center content-center gap-3 rounded-3xl border-2 border-dashed border-onyx-light text-onyx-light transition-colors hover:border-onyx hover:text-onyx"
+      class="group grid min-h-50 place-items-center content-center gap-3 rounded-3xl border-2 border-dashed border-ink-soft text-ink-soft transition-colors hover:border-ink hover:text-ink"
     >
       <span
-        class="grid h-14 w-14 place-items-center rounded-full bg-onyx-light text-2xl text-bone transition-colors group-hover:bg-onyx"
+        class="grid h-14 w-14 place-items-center rounded-full bg-marker text-2xl text-marker-ink transition-opacity group-hover:opacity-90"
       >
         <i class="fa-solid fa-plus" />
       </span>

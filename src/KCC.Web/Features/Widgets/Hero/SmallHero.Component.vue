@@ -27,13 +27,16 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { dark = false } = defineProps<SmallHeroProps>()
+  // `dark` is still accepted so persisted widget configuration keeps deserialising, but it no longer
+  // branches the ground: the dual ramp replaced the old two-ground world it was built for.
+  defineProps<SmallHeroProps>()
   defineSlots<SmallHeroSlots>()
 </script>
 
 <template>
-  <section class="my-8 rounded-3xl bg-surface-200/50 p-4">
-    <div :class="['content rounded-2xl p-4', dark ? 'bg-surface-500 text-bone' : 'bg-bone text-onyx']">
+  <section v-ink="'sheet'" class="sk-sheet sk-fold my-8">
+    <span class="sk-wash" style="--c: var(--color-peach)" aria-hidden="true"></span>
+    <div class="content rounded-2xl p-4 text-ink">
       <p class="eyebrow">
         <slot name="eyebrow"></slot>
       </p>

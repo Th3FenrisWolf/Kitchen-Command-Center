@@ -3,6 +3,7 @@ import '~/DevTools/RuntimeErrorOverlay'
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
 import { registerGlobalComponents } from '~/GlobalComponents'
+import { mountInk } from '~/Ink/inkDom'
 import type { SsrPayload } from '~/Types/ContentRegions'
 
 import '~/Utilities/StringExtensions'
@@ -34,6 +35,9 @@ const app = createSSRApp({
 registerGlobalComponents(app)
 app.provide('isPreview', isPreview ?? false)
 app.mount('#app')
+
+// Razor-rendered markup (widgets, tag helpers) cannot use v-ink; it opts in with data-ink instead.
+mountInk(document.body)
 
 // Vite injected every component style into <head> during module evaluation. The server's copy sits
 // in <body>, later in document order, so leaving it would outrank HMR-updated head styles and make

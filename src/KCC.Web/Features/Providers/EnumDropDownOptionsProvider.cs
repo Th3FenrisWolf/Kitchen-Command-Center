@@ -17,7 +17,9 @@ public partial class EnumDropDownOptionsProvider<T> : IDropDownOptionsProvider
                 .Select(item => new DropDownOptionItem
                 {
                     Text = TitleCase().Replace(Enum.GetName(type, item), "$1 $2"),
-                    Value = item.GetTailwindStyle() ?? item.ToString(),
+                    // GetTailwindStyle returns an empty string, not null, for enums without an attribute
+                    // (Spacing), so the coalesce never fell back to the name.
+                    Value = item.GetTailwindStyle() is { Length: > 0 } style ? style : item.ToString(),
                 })
         );
     }

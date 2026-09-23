@@ -30,13 +30,15 @@
   <AppLink
     :href="card.href"
     v-bind="card.dataAttrs"
-    class="group relative my-4 flex flex-col gap-4 rounded-3xl bg-bone p-3 text-onyx no-underline shadow-primary transition-all hover:-translate-y-1 hover:shadow-primary-raised sm:flex-row sm:items-center sm:gap-6"
+    v-ink="'sheet'"
+    class="sk-sheet sk-fold group relative my-4 flex flex-col gap-4 no-underline transition-all hover:-translate-y-1 sm:flex-row sm:items-center sm:gap-6"
   >
+    <span class="sk-wash" style="--c: var(--color-peach)" aria-hidden="true"></span>
     <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="h-40 w-full flex-none text-5xl sm:size-40" />
 
     <div class="min-w-0 flex-1">
       <div class="mb-2 flex flex-wrap items-center gap-2">
-        <span class="inline-flex items-center gap-2 rounded-full bg-peach px-2 py-1 text-xs font-bold text-onyx">
+        <span class="inline-flex items-center gap-2 rounded-full bg-peach px-2 py-1 text-xs font-bold text-ink-on-wash">
           <i v-if="card.pill.icon" :class="card.pill.icon"></i> {{ card.pill.label }}
         </span>
         <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
@@ -46,7 +48,7 @@
 
       <p v-if="card.description" class="mt-2 max-w-[80ch] text-lg">{{ card.description }}</p>
 
-      <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-onyx-light">
+      <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-ink-soft">
         <span v-if="card.eyebrow" class="text-xs font-bold tracking-wide uppercase">{{ card.eyebrow }}</span>
         <span
           v-if="card.rating && card.rating.count > 0"
@@ -60,7 +62,7 @@
     </div>
 
     <span
-      class="absolute right-3 bottom-3 grid size-10 place-items-center rounded-full bg-surface-500 text-bone transition-all group-hover:bottom-5 group-hover:-rotate-30"
+      class="absolute right-3 bottom-3 grid size-10 place-items-center rounded-full bg-paper text-ink transition-all group-hover:bottom-5 group-hover:-rotate-30"
     >
       <i class="fa-solid fa-arrow-right"></i>
     </span>

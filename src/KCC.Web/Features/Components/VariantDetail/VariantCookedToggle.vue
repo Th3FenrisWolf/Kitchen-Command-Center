@@ -63,7 +63,7 @@
     type="button"
     data-testid="cooked-toggle"
     class="flex-none rounded-2xl px-4 py-2 font-bold transition-colors"
-    :class="cooked ? 'bg-maroon text-bone' : 'bg-bone text-onyx'"
+    :class="cooked ? 'bg-marker text-marker-ink' : 'bg-paper-2 text-ink'"
     :disabled="busy"
     @click="toggleCooked"
   >

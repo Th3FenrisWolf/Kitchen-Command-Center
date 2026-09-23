@@ -29,12 +29,12 @@
     <button
       v-for="(chip, i) in chips"
       :key="`${chip.kind}-${chip.value ?? i}`"
-      class="inline-flex items-center gap-2 rounded-full border-2 border-onyx bg-onyx px-2 py-1 text-sm font-bold text-bone"
+      class="inline-flex items-center gap-2 rounded-full border-2 border-marker bg-marker px-2 py-1 text-sm font-bold text-marker-ink"
       @click="emit('remove', chip)"
     >
       {{ chip.label }} <i class="fa-solid fa-xmark text-xs"></i>
     </button>
-    <button class="cursor-pointer text-sm font-bold text-onyx-light underline" @click="emit('clearAll')">
+    <button class="cursor-pointer text-sm font-bold text-ink-soft underline" @click="emit('clearAll')">
       <ResourceString for="ClearAll" />
     </button>
   </div>

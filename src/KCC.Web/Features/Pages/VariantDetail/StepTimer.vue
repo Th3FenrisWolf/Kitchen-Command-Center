@@ -88,16 +88,16 @@
     role="timer"
     aria-live="off"
     :aria-label="`${label}: ${formatted}`"
-    class="inline-flex items-center gap-2 rounded-full bg-surface-500 px-3 py-1.5 text-sm text-bone"
+    class="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-1.5 text-sm text-ink"
   >
-    <i class="fa-solid fa-stopwatch text-peach" aria-hidden="true"></i>
+    <i class="fa-solid fa-stopwatch text-rating-ink" aria-hidden="true"></i>
     <span class="font-bold">{{ label }}</span>
     <span class="tabular-nums" data-test="timer-display">{{ formatted }}</span>
     <button
       type="button"
       data-test="timer-toggle"
       :aria-label="running ? t('Pause') : t('StartTimer')"
-      class="grid h-6 w-6 cursor-pointer place-items-center rounded-full border-none bg-bone text-onyx transition-colors hover:bg-bone-dark"
+      class="grid h-6 w-6 cursor-pointer place-items-center rounded-full border-none bg-paper-2 text-ink transition-colors hover:bg-desk-2"
       @click="toggle"
     >
       <i :class="running ? 'fa-solid fa-pause' : 'fa-solid fa-play'" class="text-[10px]" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
       type="button"
       data-test="timer-reset"
       :aria-label="t('Reset')"
-      class="grid h-6 w-6 cursor-pointer place-items-center rounded-full border-none bg-transparent text-bone transition-colors hover:text-peach"
+      class="grid h-6 w-6 cursor-pointer place-items-center rounded-full border-none bg-transparent text-ink transition-colors hover:text-rating-ink"
       @click="reset"
     >
       <i class="fa-solid fa-rotate-left text-[10px]" aria-hidden="true"></i>

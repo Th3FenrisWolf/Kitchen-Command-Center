@@ -33,6 +33,6 @@
 <template>
   <span class="inline-flex items-center gap-1.5">
     <StarRating :model-value="value" :max readonly />
-    <span :class="{ 'font-bold': strong }">{{ formatRating(value) }}</span>
+    <span :data-rating-strong="strong ? '' : undefined" :class="{ 'font-bold': strong }">{{ formatRating(value) }}</span>
   </span>
 </template>

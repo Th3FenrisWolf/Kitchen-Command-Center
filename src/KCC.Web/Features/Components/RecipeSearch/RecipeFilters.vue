@@ -64,15 +64,16 @@
 </script>
 
 <template>
-  <div>
-    <div class="mb-2 flex items-center justify-between">
-      <h2 class="font-casual text-2xl"><ResourceString for="Filters" /></h2>
-      <button class="cursor-pointer text-sm font-bold text-onyx-light underline" @click="emit('reset')">
+  <div v-ink="'sheet'" class="sk-sheet sk-tabbed relative">
+    <div class="mb-2 flex items-center justify-end">
+      <!-- The tab is the panel heading: sk-tab keeps the marker-tab look without dropping the landmark. -->
+      <h2 class="sk-tab"><i class="fa-duotone fa-sliders" aria-hidden="true"></i><ResourceString for="Filters" /></h2>
+      <button class="sk-btn sk-btn--text text-sm" @click="emit('reset')">
         <ResourceString for="Reset" />
       </button>
     </div>
 
-    <fieldset class="mt-4 border-t border-bone-dark pt-4">
+    <fieldset class="mt-4 border-t border-rule pt-4">
       <legend class="mb-2 text-base font-bold"><ResourceString for="Category" /></legend>
       <div class="flex flex-col gap-2">
         <label
@@ -93,17 +94,17 @@
           />
           <span
             class="grid size-4 flex-none place-items-center rounded-md border-2 transition-colors"
-            :class="row.selected ? 'border-onyx bg-onyx' : 'border-onyx-light'"
+            :class="row.selected ? 'border-marker bg-marker' : 'border-ink-soft'"
           >
-            <i class="fa-solid fa-check text-xs text-bone" :class="{ 'opacity-0': !row.selected }"></i>
+            <i class="fa-solid fa-check text-xs text-marker-ink" :class="{ 'opacity-0': !row.selected }"></i>
           </span>
           <span class="flex-1">{{ row.label }}</span>
-          <span class="text-sm" :class="row.count === 0 ? 'text-overlay-300' : 'text-onyx-light'">{{ row.count }}</span>
+          <span class="text-sm" :class="row.count === 0 ? 'text-ink-soft' : 'text-ink-soft'">{{ row.count }}</span>
         </label>
       </div>
     </fieldset>
 
-    <fieldset class="mt-4 border-t border-bone-dark pt-4">
+    <fieldset class="mt-4 border-t border-rule pt-4">
       <legend class="mb-4 text-base font-bold"><ResourceString for="Dietary" /></legend>
       <div class="flex flex-col gap-2">
         <label
@@ -124,23 +125,23 @@
           />
           <span
             class="grid size-4 flex-none place-items-center rounded-md border-2 transition-colors"
-            :class="row.selected ? 'border-onyx bg-onyx' : 'border-onyx-light'"
+            :class="row.selected ? 'border-marker bg-marker' : 'border-ink-soft'"
           >
-            <i class="fa-solid fa-check text-xs text-bone" :class="{ 'opacity-0': !row.selected }"></i>
+            <i class="fa-solid fa-check text-xs text-marker-ink" :class="{ 'opacity-0': !row.selected }"></i>
           </span>
           <span class="flex-1">{{ row.label }}</span>
-          <span class="text-sm" :class="row.count === 0 ? 'text-overlay-300' : 'text-onyx-light'">{{ row.count }}</span>
+          <span class="text-sm" :class="row.count === 0 ? 'text-ink-soft' : 'text-ink-soft'">{{ row.count }}</span>
         </label>
       </div>
     </fieldset>
 
-    <fieldset class="mt-4 border-t border-bone-dark pt-4">
+    <fieldset class="mt-4 border-t border-rule pt-4">
       <div class="mb-4 flex items-baseline justify-between">
         <legend class="text-base font-bold"><ResourceString for="TotalTime" /></legend>
-        <span class="text-sm font-bold text-onyx">{{ rangeLabel }}</span>
+        <span class="text-sm font-bold text-ink">{{ rangeLabel }}</span>
       </div>
       <RangeSlider v-model:model-min="timeMin" v-model:model-max="timeMax" :min="0" :max="MAX_TIME" :step="5" />
-      <div class="mt-2 flex items-baseline justify-between text-sm text-onyx-light">
+      <div class="mt-2 flex items-baseline justify-between text-sm text-ink-soft">
         <span>0 min</span>
         <span>{{ MAX_TIME }}+ min</span>
       </div>

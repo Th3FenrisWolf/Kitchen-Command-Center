@@ -34,23 +34,24 @@
         v-for="sibling in variants"
         :key="sibling.slug"
         :href="sibling.slug"
-        class="group flex items-center gap-3 rounded-3xl bg-bone p-4 text-onyx shadow-primary transition-shadow hover:shadow-primary-raised"
+        v-ink="'card'"
+        class="group flex items-center gap-3 rounded-3xl bg-paper-2 p-4 text-ink transition-shadow"
       >
         <AccentTile :seed="sibling.name" :icon="sibling.icon || 'fa-solid fa-utensils'" class="size-13 flex-none text-2xl" />
         <span class="min-w-0 flex-1">
           <span class="block font-casual text-xl leading-tight tracking-[1px]">{{ sibling.name }}</span>
           <span
             v-if="sibling.rating > 0 || sibling.totalTime > 0"
-            class="mt-0.5 flex items-center gap-1.5 text-sm text-onyx-light"
+            class="mt-0.5 flex items-center gap-1.5 text-sm text-ink-soft"
           >
             <span v-if="sibling.rating > 0" class="inline-flex items-center gap-1">
-              <i class="fa-solid fa-star text-peach" aria-hidden="true"></i>{{ formatRating(sibling.rating) }}
+              <i class="fa-solid fa-star text-rating-ink" aria-hidden="true"></i>{{ formatRating(sibling.rating) }}
             </span>
             <span v-if="sibling.rating > 0 && sibling.totalTime > 0" aria-hidden="true">·</span>
             <span v-if="sibling.totalTime > 0">{{ sibling.totalTime }} min</span>
           </span>
         </span>
-        <i class="fa-solid fa-arrow-right flex-none text-onyx-light"></i>
+        <i class="fa-solid fa-arrow-right flex-none text-ink-soft"></i>
       </AppLink>
     </div>
   </section>

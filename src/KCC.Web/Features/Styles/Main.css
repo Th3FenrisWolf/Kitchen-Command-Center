@@ -3,6 +3,10 @@
 @import '@fortawesome/fontawesome-pro/css/regular.css';
 @import '@fortawesome/fontawesome-pro/css/duotone.css';
 @import './TailwindConfig.css';
+@import './Sketch/Tokens.css';
+@import './Sketch/Kit.css';
+@import './Sketch/Button.css';
+@import './Sketch/Ink.css';
 @import './Layout.css';
 @import './Typography.css';
 @import './RangeSlider.css';
@@ -12,26 +16,50 @@
 
 @layer base {
   :root {
-    accent-color: var(--color-blue);
+    accent-color: var(--color-focus);
 
     /* Tailwind Overrides */
     --default-transition-duration: 300ms;
   }
 
   html {
-    background-color: var(--color-bone);
+    background-color: var(--color-desk);
+    color: var(--color-ink);
   }
 
+  /* Ready for the grain overlay, which arrives with the kit stylesheet as #app's absolutely-positioned first
+     child: positioning its siblings paints them above it. :where() keeps specificity at zero so a
+     sticky/fixed utility on a child still wins. */
   #app {
     display: grid;
     grid-template-rows: auto 1fr auto;
+    isolation: isolate;
     min-height: 100dvh;
+    position: relative;
+  }
+
+  :where(#app > :not(.sk-grain)) {
+    position: relative;
   }
 
   /* Strip the native number-input spinner everywhere; numeric fields style their own controls. */
   input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
+  }
+
+  /* Durations go to 0.01ms rather than `none` so transitionend/animationend still fire — anything waiting
+     on them keeps working, while nothing perceptibly animates. Per-component guards that already exist
+     (RecipeCard, SegmentedControl, Ink.css) are more specific and stay. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   input[type='number']::-webkit-inner-spin-button,

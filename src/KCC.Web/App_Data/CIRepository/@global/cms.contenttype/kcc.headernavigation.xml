@@ -29,6 +29,22 @@
           </ValidationRuleConfiguration>
         </validationrulesdata>
       </field>
+      <field allowempty="true" column="LogoLight" columnprecision="0" columntype="contentitemreference" enabled="true" guid="a225f8c6-74e8-4e0d-be19-2253c9ab7fb2" visible="true">
+        <properties>
+          <explanationtextashtml>False</explanationtextashtml>
+          <fieldcaption>Logo (light ramp)</fieldcaption>
+          <fielddescriptionashtml>False</fielddescriptionashtml>
+        </properties>
+        <settings>
+          <AllowedContentItemTypeIdentifiers>
+            <![CDATA[["4e9ad697-eb04-41b3-9da0-8a8a40a95791"]]]>
+          </AllowedContentItemTypeIdentifiers>
+          <controlname>Kentico.Administration.ContentItemSelector</controlname>
+          <MaximumItems>1</MaximumItems>
+          <MinimumItems>0</MinimumItems>
+          <SelectionType>contentTypes</SelectionType>
+        </settings>
+      </field>
       <field allowempty="true" column="MainNavItems" columnprecision="0" columntype="contentitemreference" enabled="true" guid="37c02854-abbc-48c9-b86d-1ae9d6609f55" visible="true">
         <properties>
           <explanationtextashtml>False</explanationtextashtml>

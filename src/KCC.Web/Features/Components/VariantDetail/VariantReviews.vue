@@ -129,10 +129,10 @@
 <template>
   <section class="mt-8">
     <h2 class="mb-4 flex items-center gap-2.5 font-casual text-2xl tracking-[1px]">
-      <i class="fa-solid fa-star text-lg text-peach" aria-hidden="true"></i> <ResourceString for="RatingsReviews" />
+      <i class="fa-solid fa-star text-lg text-rating-ink" aria-hidden="true"></i> <ResourceString for="RatingsReviews" />
     </h2>
 
-    <div class="rounded-3xl bg-bone p-6 shadow-primary">
+    <div class="rounded-3xl bg-paper-2 p-6">
       <!-- Summary: average + per-star distribution -->
       <div v-if="count > 0" class="flex flex-wrap items-center gap-8">
         <div class="flex-none text-center">
@@ -140,26 +140,26 @@
           <div class="mt-1">
             <StarRating :model-value="average" readonly />
           </div>
-          <div class="mt-1 text-sm text-onyx-light">{{ count }} <ResourceString for="Reviews" /></div>
+          <div class="mt-1 text-sm text-ink-soft">{{ count }} <ResourceString for="Reviews" /></div>
         </div>
         <ul class="flex min-w-60 flex-1 flex-col gap-[7px]">
           <li v-for="d in distRows" :key="d.star" class="flex items-center gap-2.5">
-            <span class="w-[26px] flex-none text-sm text-onyx-light">{{ d.star }}★</span>
-            <span class="h-2.5 flex-1 overflow-hidden rounded-full bg-bone-dark">
-              <span class="block h-full rounded-full bg-surface-500" :style="{ width: d.pct + '%' }"></span>
+            <span class="w-[26px] flex-none text-sm text-ink-soft">{{ d.star }}★</span>
+            <span class="h-2.5 flex-1 overflow-hidden rounded-full bg-desk-2">
+              <span class="block h-full rounded-full bg-peach" :style="{ width: d.pct + '%' }"></span>
             </span>
-            <span class="w-9 flex-none text-right text-sm text-onyx-light">{{ d.count }}</span>
+            <span class="w-9 flex-none text-right text-sm text-ink-soft">{{ d.count }}</span>
           </li>
         </ul>
       </div>
 
-      <hr v-if="count > 0" class="my-6 border-0 border-t border-bone-dark" />
+      <hr v-if="count > 0" class="my-6 border-0 border-t border-rule" />
 
       <!-- Review list -->
       <ul v-if="reviews.length" data-testid="reviews-list" class="flex flex-col gap-4">
         <li v-for="(review, i) in reviews" :key="i" class="flex gap-3">
           <span
-            class="grid size-11 flex-none place-items-center rounded-full font-bold text-onyx"
+            class="grid size-11 flex-none place-items-center rounded-full font-bold text-ink"
             :class="backgroundColorFor(review.authorName)"
             aria-hidden="true"
             >{{ initials(review.authorName) }}</span
@@ -168,15 +168,15 @@
             <div class="flex flex-wrap items-center gap-2.5">
               <span class="font-bold">{{ review.authorName }}</span>
               <StarRating :model-value="review.rating" readonly />
-              <span class="text-sm text-onyx-light">{{ formatDate(review.created) }}</span>
+              <span class="text-sm text-ink-soft">{{ formatDate(review.created) }}</span>
             </div>
-            <p v-if="review.text" class="mt-1.5 text-onyx">{{ review.text }}</p>
+            <p v-if="review.text" class="mt-1.5 text-ink">{{ review.text }}</p>
           </div>
         </li>
       </ul>
       <div
         v-else
-        class="grid place-items-center gap-3 rounded-3xl border-2 border-dashed border-bone-dark px-4 py-16 text-center text-onyx-light"
+        class="grid place-items-center gap-3 rounded-3xl border-2 border-dashed border-rule px-4 py-16 text-center text-ink-soft"
       >
         <i class="fa-regular fa-star text-4xl opacity-50" aria-hidden="true"></i>
         <p class="text-base"><ResourceString for="NoReviewsYet" /></p>
@@ -185,16 +185,16 @@
       <button
         v-if="hasMore()"
         type="button"
-        class="mt-6 cursor-pointer border-none bg-transparent font-bold text-onyx underline underline-offset-4"
+        class="mt-6 cursor-pointer border-none bg-transparent font-bold text-ink underline underline-offset-4"
         @click="load(page + 1)"
       >
         <ResourceString for="LoadMore" />
       </button>
 
-      <hr class="my-6 border-0 border-t border-bone-dark" />
+      <hr class="my-6 border-0 border-t border-rule" />
 
       <!-- Write a review -->
-      <div v-if="isAuthenticated" class="rounded-3xl bg-bone-dark p-6">
+      <div v-if="isAuthenticated" class="rounded-3xl bg-desk-2 p-6">
         <p class="mb-3 font-casual text-xl tracking-[1px]"><ResourceString for="YourReview" /></p>
         <div class="mb-3">
           <StarRating v-model="myRating" />
@@ -204,15 +204,15 @@
           :placeholder="t('WriteReview')"
           rows="3"
           data-testid="review-input"
-          class="w-full rounded-2xl border-none bg-bone p-3 text-onyx outline-none"
+          class="w-full rounded-2xl border-none bg-paper-2 p-3 text-ink outline-none"
         ></textarea>
-        <p v-if="error" class="mt-1 text-sm text-maroon">{{ error }}</p>
+        <p v-if="error" class="mt-1 text-sm text-danger-ink">{{ error }}</p>
         <div class="mt-3 flex justify-end gap-2">
           <button
             v-if="myRating > 0"
             type="button"
             data-testid="delete-review"
-            class="cursor-pointer rounded-full bg-bone px-4 py-2 font-bold text-onyx"
+            class="cursor-pointer rounded-full bg-paper-2 px-4 py-2 font-bold text-ink"
             @click="remove"
           >
             <ResourceString for="DeleteReview" />
@@ -220,7 +220,7 @@
           <button
             type="button"
             data-testid="submit-review"
-            class="cursor-pointer rounded-full bg-surface-500 px-6 py-2 font-bold text-bone disabled:cursor-not-allowed disabled:opacity-50"
+            class="cursor-pointer rounded-full bg-paper px-6 py-2 font-bold text-ink disabled:cursor-not-allowed disabled:opacity-50"
             :disabled="myRating < 0.5"
             @click="submit"
           >
@@ -228,7 +228,7 @@
           </button>
         </div>
       </div>
-      <div v-else class="rounded-3xl border-2 border-dashed border-bone-dark p-4 text-center text-onyx-light">
+      <div v-else class="rounded-3xl border-2 border-dashed border-rule p-4 text-center text-ink-soft">
         <ResourceString for="LogInToReview" />
       </div>
     </div>

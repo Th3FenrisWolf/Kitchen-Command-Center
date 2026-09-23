@@ -5,7 +5,15 @@
 
 @{
     var isEditMode = Context.Kentico().PageBuilder().EditMode;
-    var buttonStyles = $"{Model.Properties.Variant} {Model.Properties.Size}".ToLower();
+    var variant = Model.Properties.Variant switch
+    {
+        "Secondary" => "paper",
+        "Outlined" => "ghost",
+        "Tertiary" => "text",
+        _ => "marker",
+    };
+    var size = Model.Properties.Size == "Small" ? "sm" : "lg";
+    var buttonStyles = $"sk-btn--{variant} sk-btn--{size}";
 }
 
 <div class="flex @Model.Properties.Alignment @Model.Properties.GetMarginClasses()">

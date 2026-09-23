@@ -1,3 +1,4 @@
+using KCC.Web.Features.Sections.Base;
 using KCC.Web.Features.Sections.MultipleColumn;
 using Kentico.PageBuilder.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ public class MultipleColumnSectionViewComponent : ViewComponent
             ColumnCount = columnCount,
             Heading = componentViewModel.Properties.Heading,
             BackgroundColor = componentViewModel.Properties.BackgroundColor,
-            TextColor = componentViewModel.Properties.TextColor,
+            TextColor = SectionColors.TextClassFor(componentViewModel.Properties.BackgroundColor),
             ContentWidth = componentViewModel.Properties.ContentWidth,
             PaddingTop = componentViewModel.Properties.GetPaddingTop(),
             PaddingBottom = componentViewModel.Properties.GetPaddingBottom(),

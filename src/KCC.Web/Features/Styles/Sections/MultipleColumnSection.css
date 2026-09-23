@@ -1,6 +1,6 @@
 @layer components {
   .multiple-column-section {
-    --grid-layout-gap: theme('spacing.8');
+    --grid-layout-gap: calc(var(--spacing) * 8);
     --min-column-width: 100px;
     --column-count: 1;
     --gap-count: calc(var(--column-count) - 1);
