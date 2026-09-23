@@ -14,8 +14,11 @@ using Kentico.Xperience.Admin.Base;
 
 namespace KCC.Contributions.Admin;
 
-public class CookNotesSectionPage : EditSectionPage<VariantCookNoteInfo>
+public class CookNotesSectionPage(ContentItemNameLookup contentItemNameLookup, MemberNameLookup memberNameLookup)
+    : EditSectionPage<VariantCookNoteInfo>
 {
     protected override Task<string> GetObjectDisplayName(BaseInfo infoObject) =>
-        Task.FromResult(infoObject is VariantCookNoteInfo note ? $"Note #{note.VariantCookNoteID}" : infoObject?.ToString() ?? "Note");
+        Task.FromResult(infoObject is VariantCookNoteInfo note
+            ? ContributionTitles.Note(contentItemNameLookup.DisplayNames(), memberNameLookup.Displays(), note.VariantGuid, note.MemberGuid)
+            : infoObject?.ToString() ?? "Note");
 }

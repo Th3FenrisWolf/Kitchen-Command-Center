@@ -14,8 +14,11 @@ using Kentico.Xperience.Admin.Base;
 
 namespace KCC.Contributions.Admin;
 
-public class ReviewsSectionPage : EditSectionPage<VariantReviewInfo>
+public class ReviewsSectionPage(ContentItemNameLookup contentItemNameLookup, MemberNameLookup memberNameLookup)
+    : EditSectionPage<VariantReviewInfo>
 {
     protected override Task<string> GetObjectDisplayName(BaseInfo infoObject) =>
-        Task.FromResult(infoObject is VariantReviewInfo review ? $"Review #{review.VariantReviewID}" : infoObject?.ToString() ?? "Review");
+        Task.FromResult(infoObject is VariantReviewInfo review
+            ? ContributionTitles.Review(contentItemNameLookup.DisplayNames(), memberNameLookup.Displays(), review.VariantGuid, review.MemberGuid)
+            : infoObject?.ToString() ?? "Review");
 }

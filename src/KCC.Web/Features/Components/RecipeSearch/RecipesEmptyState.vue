@@ -1,3 +1,14 @@
+<!-- #region RecipesEmptyState Component -->
+<script lang="ts">
+  /**
+   * Shown when a search returns nothing, offering a way back.
+   */
+  export default {
+    name: 'RecipesEmptyState',
+  }
+</script>
+<!-- #endregion -->
+
 <script setup lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
 

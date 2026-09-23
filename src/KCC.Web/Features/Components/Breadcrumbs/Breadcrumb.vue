@@ -1,10 +1,18 @@
 <!-- #region Breadcrumb Component Properties -->
 <script lang="ts">
+  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import type { Breadcrumb } from '~/Types/Recipe'
+
+  /**
+   * Slash-separated trail of ancestor links, starting from a home icon.
+   */
+  export default {
+    name: 'Breadcrumb',
+  }
 
   export interface BreadcrumbProps {
     /**
-     * The list of breadcrumbs to display
+     * Ordered root-first; the first entry becomes the home icon and the last renders unlinked.
      */
     items: Breadcrumb[]
   }
@@ -12,8 +20,6 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
-
   const { items } = defineProps<BreadcrumbProps>()
 </script>
 

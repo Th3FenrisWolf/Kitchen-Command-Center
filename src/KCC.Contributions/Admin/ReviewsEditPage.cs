@@ -1,7 +1,7 @@
+using CMS.Core;
+using KCC.Contributions.Admin;
 using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.Base.Forms;
-using KCC.Contributions.Admin;
-using KCC.Contributions.Data;
 
 [assembly: UIPage(
     parentType: typeof(ReviewsSectionPage),
@@ -14,8 +14,13 @@ using KCC.Contributions.Data;
 
 namespace KCC.Contributions.Admin;
 
-public class ReviewsEditPage(IFormComponentMapper formComponentMapper, IFormDataBinder formDataBinder)
-    : InfoEditPage<VariantReviewInfo>(formComponentMapper, formDataBinder)
+public class ReviewsEditPage(
+    IFormComponentMapper formComponentMapper,
+    IFormDataBinder formDataBinder,
+    ILocalizationService localizationService,
+    ContentItemNameLookup contentItemNameLookup,
+    MemberNameLookup memberNameLookup)
+    : ReviewEditPageBase(formComponentMapper, formDataBinder, localizationService, contentItemNameLookup, memberNameLookup)
 {
     [PageParameter(typeof(IntPageModelBinder), typeof(ReviewsSectionPage))]
     public override int ObjectId { get; set; }

@@ -73,3 +73,14 @@ export const TEXT_COLORS = [
 ] as const
 
 export type TextColor = (typeof TEXT_COLORS)[number]
+
+// BACKGROUND_COLORS and TEXT_COLORS name the same tokens in the same order, so moving a color
+// between the two axes is an index lookup. Crossing the axes by hand fails silently instead — a
+// `text-*` class sets no background, and a `bg-*` class no color.
+export function toBackgroundColor(textColor: TextColor): BackgroundColor {
+  return BACKGROUND_COLORS[TEXT_COLORS.indexOf(textColor)]!
+}
+
+export function toTextColor(backgroundColor: BackgroundColor): TextColor {
+  return TEXT_COLORS[BACKGROUND_COLORS.indexOf(backgroundColor)]!
+}

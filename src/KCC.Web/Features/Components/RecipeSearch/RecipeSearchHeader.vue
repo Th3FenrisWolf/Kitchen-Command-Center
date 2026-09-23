@@ -1,6 +1,19 @@
-<script setup lang="ts">
+<!-- #region RecipeSearchHeader Component -->
+<script lang="ts">
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
 
+  /**
+   * Search page masthead wrapping the query field and its submit/clear buttons.
+   */
+  export default {
+    name: 'RecipeSearchHeader',
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  // Uncommitted query text: the page only searches once `submit` fires, so this stays separate
+  // from the search state itself.
   const draft = defineModel<string>('draft', { required: true })
   const emit = defineEmits<{ submit: []; clear: [] }>()
   const t = useResourceStrings()

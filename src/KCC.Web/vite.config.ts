@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url'
-import { existsSync, rmSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync } from 'node:fs'
 
 import { defineConfig, type Plugin } from 'vite'
 import { resolve } from 'path'
@@ -23,9 +24,42 @@ function cleanAssetsPlugin(): Plugin {
   }
 }
 
+// Kestrel serves the channel domain over HTTPS, so a browser rejects dev-server assets fetched
+// over plain HTTP as mixed content and the app never hydrates. Reusing ASP.NET Core's developer
+// certificate keeps this origin trusted wherever the app's own origin already is.
+function aspNetCoreDevCertificate() {
+  const certificateDirectory = resolve(__dirname, 'node_modules/.dev-cert')
+  const certificate = resolve(certificateDirectory, 'localhost.pem')
+  const key = resolve(certificateDirectory, 'localhost.key')
+
+  // dev:all runs the client and SSR dev servers as concurrent processes that both load this
+  // config, so the export is staged per process and moved into place; sharing the destination
+  // lets one export read what the other is still writing.
+  if (!existsSync(certificate) || !existsSync(key)) {
+    const staging = resolve(certificateDirectory, `staging-${process.pid}`)
+
+    mkdirSync(staging, { recursive: true })
+    execFileSync('dotnet', [
+      'dev-certs',
+      'https',
+      '--export-path',
+      resolve(staging, 'localhost.pem'),
+      '--format',
+      'PEM',
+      '--no-password',
+    ])
+    renameSync(resolve(staging, 'localhost.pem'), certificate)
+    renameSync(resolve(staging, 'localhost.key'), key)
+    rmSync(staging, { recursive: true, force: true })
+  }
+
+  return { cert: readFileSync(certificate), key: readFileSync(key) }
+}
+
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isSSR = mode === 'ssr'
+  const servesBrowserAssets = command === 'serve' && !process.env.VITEST
 
   return {
     test: {
@@ -68,6 +102,7 @@ export default defineConfig(({ mode }) => {
           },
         },
     server: {
+      https: servesBrowserAssets ? aspNetCoreDevCertificate() : undefined,
       fs: {
         allow: [resolve(__dirname, '../..')],
       },

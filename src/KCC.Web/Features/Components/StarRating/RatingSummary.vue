@@ -1,17 +1,33 @@
-<script setup lang="ts">
+<!-- #region RatingSummary Component Properties -->
+<script lang="ts">
   import StarRating from './StarRating.vue'
   import { formatRating } from './starDisplay'
 
-  // Read-only "stars + numeric average" pair shared by rating displays (recipe hero,
-  // featured-variant card). Callers keep their own review-count / empty-state markup.
-  withDefaults(
-    defineProps<{
-      value: number
-      max?: number
-      strong?: boolean
-    }>(),
-    { max: 5, strong: false },
-  )
+  /**
+   * Read-only stars paired with the numeric average. Callers supply their own review-count
+   * and empty-state markup.
+   */
+  export default {
+    name: 'RatingSummary',
+  }
+
+  export interface RatingSummaryProps {
+    value: number
+    /**
+     * @default 5
+     */
+    max?: number
+    /**
+     * Bolds the numeric average.
+     * @default false
+     */
+    strong?: boolean
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const { value, max = 5, strong = false } = defineProps<RatingSummaryProps>()
 </script>
 
 <template>

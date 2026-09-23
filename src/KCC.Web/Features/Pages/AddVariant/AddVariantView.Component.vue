@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region AddVariantView Component Properties -->
+<script lang="ts">
   import { ref, computed } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import InputField from '~/Components/Forms/InputField.vue'
@@ -10,12 +11,33 @@
   import { post } from '~/Utilities/Api'
   import { stepLabelKey, validIngredients, validInstructions } from '~/Pages/AddVariant/reviewSummary'
 
-  const props = defineProps<{
+  /**
+   * Four-step wizard adding a variant to an existing recipe.
+   */
+  export default {
+    name: 'AddVariantView',
+  }
+
+  export interface AddVariantViewProps {
+    /**
+     * GUID of the parent recipe, submitted with the finished variant.
+     */
     recipeId: string
     recipeName: string
+    /**
+     * Where to return once the variant is submitted.
+     */
     recipeSlug: string
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<AddVariantViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'AddVariant')
 

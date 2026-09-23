@@ -14,6 +14,17 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
 
     public void WriteTo(TextWriter writer, HtmlEncoder encoder)
     {
+        // Razor has already flushed <head> by the time this runs in the body, and browsers apply
+        // body styles at parse time, so the app markup never paints unstyled either way.
+        if (!string.IsNullOrEmpty(result.Css))
+        {
+            writer.Write("<style data-ssr-styles>");
+
+            // A literal "</style" in the CSS would close the tag early.
+            writer.Write(result.Css.Replace("</style", "<\\/style", StringComparison.OrdinalIgnoreCase));
+            writer.Write("</style>");
+        }
+
         writer.Write("<div id=\"app\">");
 
         if (result.Html is not null)

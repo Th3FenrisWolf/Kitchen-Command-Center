@@ -1,11 +1,29 @@
-<script setup lang="ts">
+<!-- #region VariantSiblings Component Properties -->
+<script lang="ts">
   import type { SiblingVariant } from '~/Types/Recipe'
   import { ResourceString } from '~/Components/ResourceStrings'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
 
-  defineProps<{ variants: SiblingVariant[] }>()
+  /**
+   * Cross-links to the other variants of the same recipe.
+   */
+  export default {
+    name: 'VariantSiblings',
+  }
+
+  export interface VariantSiblingsProps {
+    /**
+     * Excludes the variant being viewed; an empty list renders nothing.
+     */
+    variants: SiblingVariant[]
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  defineProps<VariantSiblingsProps>()
 </script>
 
 <template>

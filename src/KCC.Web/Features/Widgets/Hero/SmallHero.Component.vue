@@ -1,5 +1,34 @@
+<!-- #region SmallHero Component Properties -->
+<script lang="ts">
+  /**
+   * Compact page header framing an eyebrow, title, action button, and description.
+   */
+  export default {
+    name: 'SmallHero',
+  }
+
+  export interface SmallHeroProps {
+    /**
+     * @default false
+     */
+    dark?: boolean
+  }
+
+  export interface SmallHeroSlots {
+    eyebrow?: () => void
+    title?: () => void
+    /**
+     * Sits inline with the title, right-aligned.
+     */
+    'action-button'?: () => void
+    description?: () => void
+  }
+</script>
+<!-- #endregion -->
+
 <script setup lang="ts">
-  const { dark = false } = defineProps<{ dark?: boolean }>()
+  const { dark = false } = defineProps<SmallHeroProps>()
+  defineSlots<SmallHeroSlots>()
 </script>
 
 <template>

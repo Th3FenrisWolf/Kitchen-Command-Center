@@ -3,6 +3,10 @@ namespace KCC.Web.Features.Models.Common;
 public record SsrResult
 {
     public string Html { get; set; }
+
+    // Development only: the SSR service inlines the rendered app's compiled style-block CSS,
+    // which has no extracted stylesheet to link before the client bundle runs.
+    public string Css { get; set; }
     public string HeaderContent { get; set; }
     public string BodyContent { get; set; }
     public string FooterContent { get; set; }
@@ -17,6 +21,7 @@ public record SsrResult
 public class SsrResponse
 {
     public string Html { get; set; }
+    public string Css { get; set; }
     public int RenderTime { get; set; }
 }
 

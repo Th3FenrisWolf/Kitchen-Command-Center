@@ -7,8 +7,10 @@
 /* prettier-ignore-start */
 /* Safelist dynamically generated classes */
 @source inline('{pb,pt,px,mb,mt}-{0,4,8,12}');
-@source inline('bg-surface-{200,300,400,500,600,700}');
-@source inline('bg-{rosewater,flamingo,pink,mauve,red,maroon,peach,yellow,green,teal,sky,sapphire,blue,lavender}');
+@source inline('{bg,text}-{rosewater,flamingo,pink,mauve,red,maroon,peach,yellow,green,teal,sky,sapphire,blue,lavender}');
+@source inline('{bg,text}-surface-{200,300,400,500,600,700}');
+@source inline('{bg,text}-overlay-{200,300,400}');
+@source inline('{bg,text}-{bone,bone-dark,onyx,onyx-light}');
 /* prettier-ignore-end */
 
 @theme {

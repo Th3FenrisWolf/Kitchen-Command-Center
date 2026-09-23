@@ -1,24 +1,28 @@
-<!-- #region Link Component Properties -->
+<!-- #region AppLink Component Properties -->
 <script lang="ts">
-  export interface LinkComponentProps {
+  /**
+   * Anchor that resolves Kentico's tilde-relative paths before rendering.
+   */
+  export default {
+    name: 'AppLink',
+  }
+
+  export interface AppLinkProps {
     /**
-     * The URL the link should navigate to
+     * A leading `~/` is stripped on render, so content-tree paths can be passed through as-is.
      */
     href: string
   }
 
-  export interface LinkComponentSlots {
-    /**
-     * The content to display in the link
-     */
+  export interface AppLinkSlots {
     default: () => void
   }
 </script>
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { href } = defineProps<LinkComponentProps>()
-  defineSlots<LinkComponentSlots>()
+  const { href } = defineProps<AppLinkProps>()
+  defineSlots<AppLinkSlots>()
 </script>
 
 <template>

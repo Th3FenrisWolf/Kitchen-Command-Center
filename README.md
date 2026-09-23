@@ -279,7 +279,7 @@ The commands below reuse the same env vars so no credentials are written down:
 1. Register the member via the public API:
 
    ```bash
-   curl -X POST http://localhost:58671/api/account/register \
+   curl -k -X POST https://localhost:58671/api/account/register \
      -H "Content-Type: application/json" \
      -d "{\"UserName\":\"$KCC_E2E_MEMBER_USERNAME\",\"Email\":\"$KCC_E2E_MEMBER_USERNAME@example.test\",\"Password\":\"$KCC_E2E_MEMBER_PASSWORD\"}"
    ```

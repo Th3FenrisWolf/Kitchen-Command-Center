@@ -1,10 +1,22 @@
-<script setup lang="ts">
+<!-- #region VariantNutrition Component Properties -->
+<script lang="ts">
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import type { Nutrition } from '~/Types/Recipe'
   import { buildNutritionRows, hasNutrition } from './variantNutritionRows'
 
-  const props = defineProps<{
+  /**
+   * Nutrition panel, replaced by an empty state when no figure has been recorded.
+   */
+  export default {
+    name: 'VariantNutrition',
+  }
+
+  /**
+   * Flattened rather than a single `Nutrition` object so the server can hydrate each figure as its
+   * own prop. Individually optional: a missing one is left out of the table.
+   */
+  export interface VariantNutritionProps {
     calories?: number | null
     proteinG?: number | null
     carbsG?: number | null
@@ -13,7 +25,12 @@
     fiberG?: number | null
     sugarG?: number | null
     sodiumMg?: number | null
-  }>()
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  const props = defineProps<VariantNutritionProps>()
 
   const rs = useResourceStrings()
 

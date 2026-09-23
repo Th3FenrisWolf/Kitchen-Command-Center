@@ -1,0 +1,153 @@
+/* Kentico's root .app container sets color: red as a sentinel, so every text
+   element here must declare its own color from the admin theme tokens. */
+.kcc-contributions-tab {
+    padding: 24px;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions-tab__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.kcc-contributions-tab__summary {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin: 16px 0 24px;
+}
+
+.kcc-contributions-tab__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kcc-contributions-tab__stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-low-emphasis, #525252);
+}
+
+.kcc-contributions-tab__stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions-tab__stat-value--small {
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.kcc-contributions-tab__distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 280px;
+    margin-bottom: 16px;
+}
+
+.kcc-contributions-tab__distribution-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
+    align-items: center;
+    gap: 8px;
+}
+
+.kcc-contributions-tab__bar {
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-divider-default, #dfdfdf);
+}
+
+.kcc-contributions-tab__bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--color-icon-default, #151515);
+}
+
+.kcc-contributions-tab__note {
+    margin-top: 16px;
+}
+
+/*
+ * Platform surfaces inside the tab.
+ *
+ * The attribute selectors reach into shared components, which name their parts with hashed class
+ * suffixes. Scoping them under the tab is what makes that safe: a platform rename costs these two
+ * screens their treatment and nothing else in the administration. It is also what keeps them off the
+ * content tree and the navigation panel, which use the same component names outside this subtree.
+ *
+ * A dialog renders through a portal outside the tab, so it keeps its own elevation — which it should.
+ */
+
+/*
+ * The tinted band is meant to read as the header of the surface beneath it. Sitting on the tab's own
+ * white it reads as a grey block instead — true of the variant table's column header and of the
+ * action bar the edit form puts its Save button in.
+ *
+ * The edit form's card is raised for the same reason and lands the same way: an elevation looks like
+ * depth against a page, and like an artefact against a panel that is already one.
+ */
+.kcc-contributions-tab [class*="header___"] {
+    background-image: none;
+}
+
+.kcc-contributions-tab [class*="paper___"] {
+    box-shadow: none;
+}
+
+/*
+ * The edit template insets its form by 32px, on top of the 24px the tab already insets everything, so
+ * the fields sat a step in from the headline and the Save button above them.
+ *
+ * The template writes that inset as an inline style, which no selector can outrank however specific —
+ * this is the case the keyword exists for, not a shortcut past one.
+ */
+.kcc-contributions-tab [class*="edit-template-content"] {
+    padding: 0 !important;
+}
+
+/*
+ * The form's grid column opens with a 24px gutter above the first field, which reads as a gap once the
+ * actions move off that row. Only the top comes off — the horizontal gutter is what keeps the fields
+ * off the panel edge.
+ *
+ * The template writes that gutter inline too, but from a design-system variable, so redefining the
+ * variable on the column changes what the inline rule resolves to. No override is needed, and the
+ * horizontal gutter, which reads a different variable, is untouched.
+ *
+ * The variant table's layout column carries the same class, so the form's is picked out by the
+ * responsive col-* classes only it has.
+ */
+.kcc-contributions-tab [class*="column___"][class*="col-12"] {
+    --kxp-row-component-spacing-y: 0px;
+}
+
+/*
+ * The edit template stacks its headline, then its actions, then the form. Lifting the actions onto the
+ * headline's row and sending them right puts Save where the eye ends up rather than a step below where
+ * it started, and gives the form back the row they occupied. The 48px is the band between the
+ * headline's top and the action row's — 24px of headline and 24px of spacing under it.
+ *
+ * Done with a margin rather than by taking the block out of flow, so it keeps the sticky positioning
+ * that holds Save in view once a form grows long enough to scroll.
+ */
+.kcc-contributions-tab [class*="sticky___"] {
+    margin-top: -48px;
+}
+
+.kcc-contributions-tab [class*="actions-wrapper"] {
+    justify-content: flex-end;
+}

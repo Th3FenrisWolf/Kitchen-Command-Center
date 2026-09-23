@@ -1,8 +1,23 @@
-<script setup lang="ts">
+<!-- #region VariantInstructions Component Properties -->
+<script lang="ts">
   import type { Instruction } from '~/Types/Recipe'
   import { ResourceString } from '~/Components/ResourceStrings'
 
-  defineProps<{ instructions: Instruction[] }>()
+  /**
+   * Numbered walkthrough of a variant's steps.
+   */
+  export default {
+    name: 'VariantInstructions',
+  }
+
+  export interface VariantInstructionsProps {
+    instructions: Instruction[]
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  defineProps<VariantInstructionsProps>()
 </script>
 
 <template>

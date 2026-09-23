@@ -1,12 +1,12 @@
+<!-- #region AppHeader Component Properties -->
 <script lang="ts">
-  /**
-   * A header component that displays a logo and navigation items
-   *
-   * @param {ImageItem} logo - The logo to display
-   * @param {NavItem[]} mainNavItems - The main navigation items
-   * @param {NavItem[]} utilityNavItems - The utility navigation items
-   */
+  import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
+  import MenuItem from '~/Components/Header/MenuItem.vue'
+  import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
+  /**
+   * Site header: logo, main navigation, and a right-aligned utility navigation.
+   */
   export default {
     name: 'AppHeader',
   }
@@ -42,26 +42,17 @@
      * HTML and hydration JSON both carry the same decorated value in preview.
      */
     homeUrl: string
-    /**
-     * The logo to display
-     */
     logo: ImageItem
-    /**
-     * The main navigation items
-     */
     mainNavItems: NavItem[]
     /**
-     * The utility navigation items
+     * Pushed to the right of the bar, after the main items.
      */
     utilityNavItems: NavItem[]
   }
 </script>
+<!-- #endregion -->
 
 <script setup lang="ts">
-  import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
-  import MenuItem from '~/Components/Header/MenuItem.vue'
-  import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
-
   const { homeUrl, logo, mainNavItems, utilityNavItems } = defineProps<AppHeaderProps>()
 
   const navRef = ref<HTMLElement | null>(null)

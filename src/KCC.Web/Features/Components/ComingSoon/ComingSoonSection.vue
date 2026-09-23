@@ -1,12 +1,22 @@
-<!-- #region Coming Soon Section Component Properties -->
+<!-- #region ComingSoonSection Component Properties -->
 <script lang="ts">
+  import { ResourceString } from '~/Components/ResourceStrings'
+  import ComingSoonBadge from './ComingSoonBadge.vue'
+
+  /**
+   * Dashed-outline placeholder standing in for a feature that has not shipped yet.
+   */
+  export default {
+    name: 'ComingSoonSection',
+  }
+
   export interface ComingSoonSectionProps {
     /**
-     * The key for the text to display in the coming soon section
+     * Resource string key, resolved against the Shared prefix.
      */
     textKey: string
     /**
-     * The icon to display in the coming soon section
+     * Font Awesome classes, e.g. 'fa-duotone fa-utensils'.
      */
     icon?: string
   }
@@ -14,9 +24,6 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  import { ResourceString } from '~/Components/ResourceStrings'
-  import ComingSoonBadge from './ComingSoonBadge.vue'
-
   const { textKey, icon } = defineProps<ComingSoonSectionProps>()
 </script>
 

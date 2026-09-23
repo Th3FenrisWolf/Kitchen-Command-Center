@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<!-- #region RecipeSearchView Component Properties -->
+<script lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
@@ -7,26 +8,46 @@
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
   import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'
   import AppliedFilterChips from '~/Components/RecipeSearch/AppliedFilterChips.vue'
-  import RecipeSpotlight from '~/Components/RecipeSearch/RecipeSpotlight.vue'
-  import RecipeCard from '~/Components/RecipeSearch/RecipeCard.vue'
+  import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
+  import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
   import RecipeListRow from '~/Components/RecipeSearch/RecipeListRow.vue'
   import RecipesEmptyState from '~/Components/RecipeSearch/RecipesEmptyState.vue'
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
   import { MAX_TIME, chipsFor, activeFilterCount, defaultState, type FilterChip } from './recipeSearchCriteria'
   import type { Breadcrumb, RecipeSearchResponse } from '~/Types/Recipe'
+  import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
 
-  const props = defineProps<{
+  /**
+   * Recipe search: query, facet filters, and an infinite-scrolling result grid or list.
+   */
+  export default {
+    name: 'RecipeSearchView',
+  }
+
+  export interface RecipeSearchViewProps {
+    /**
+     * Server-rendered first page. Its unfiltered facets also fix the filter panel's option set,
+     * which later filtered responses can only narrow.
+     */
     initial: RecipeSearchResponse
-    createRecipeUrl?: string
+    createRecipeUrl: string
     breadcrumbs?: Breadcrumb[]
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
     resourceStrings?: Record<string, string>
-  }>()
+  }
+</script>
+<!-- #endregion -->
 
-  const rs = provideResourceStrings(props.resourceStrings, 'RecipeSearch')
+<script setup lang="ts">
+  const { initial, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
+
+  const rs = provideResourceStrings(resourceStrings, 'RecipeSearch')
 
   const { state, results, facets, categoryOptions, dietOptions, total, spotlight, loading, hasMore, loadMore } =
-    useRecipeSearch(props.initial)
+    useRecipeSearch(initial)
 
   const draft = ref('')
   const sheetOpen = ref(false)
@@ -84,9 +105,6 @@
     spotlight.value ? results.value.filter((r) => r.slug !== spotlight.value!.slug) : results.value,
   )
 
-  // `loading` is surfaced for future use (e.g. a busy affordance); referenced to satisfy the linter.
-  void loading
-
   const { sentinel } = useInfiniteScroll(loadMore)
 </script>
 
@@ -95,7 +113,6 @@
     <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
     <AppLink
-      v-if="createRecipeUrl"
       :href="createRecipeUrl"
       class="inline-flex flex-none items-center gap-2 rounded-2xl bg-surface-500 px-4 py-2 font-bold text-bone transition-colors hover:bg-surface-400"
     >
@@ -106,8 +123,10 @@
   <RecipeSearchHeader v-model:draft="draft" @submit="onSubmit" @clear="onClearSearch" />
 
   <button
-    class="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-onyx px-4 py-2 text-sm font-bold lg:hidden"
+    class="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-onyx px-4 py-2 text-sm font-bold lg:hidden"
     :class="sheetOpen ? 'bg-onyx text-bone' : 'text-onyx'"
+    :aria-expanded="sheetOpen"
+    aria-controls="recipe-filters"
     @click="sheetOpen = !sheetOpen"
   >
     <i class="fa-solid fa-sliders"></i> <ResourceString for="Filters" />
@@ -119,24 +138,11 @@
     >
   </button>
 
-  <section v-if="sheetOpen" class="mt-3 rounded-3xl bg-bone p-4 shadow-primary lg:hidden">
-    <RecipeFilters
-      :category-facets="facets.category"
-      :diet-facets="facets.diet"
-      :category-options="categoryOptions"
-      :diet-options="dietOptions"
-      :selected-categories="state.categories"
-      :selected-diets="state.diets"
-      v-model:time-min="state.timeMin"
-      v-model:time-max="state.timeMax"
-      @toggle-category="(c) => toggle(state.categories, c)"
-      @toggle-diet="(d) => toggle(state.diets, d)"
-      @reset="clearAll"
-    />
-  </section>
-
   <div class="grid items-start gap-6 lg:grid-cols-[244px_1fr]">
-    <aside class="sticky top-3 hidden rounded-3xl bg-bone p-6 shadow-primary lg:block">
+    <aside
+      id="recipe-filters"
+      :class="['rounded-3xl bg-bone p-6 shadow-primary lg:sticky lg:top-4 lg:block', { hidden: !sheetOpen }]"
+    >
       <RecipeFilters
         :category-facets="facets.category"
         :diet-facets="facets.diet"
@@ -152,24 +158,29 @@
       />
     </aside>
 
-    <section class="min-w-0">
+    <section class="min-w-0" :aria-busy="loading ? 'true' : 'false'" aria-live="polite">
       <RecipeResultsToolbar :heading="heading" v-model:sort="state.sort" v-model:view="state.view" />
 
       <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
 
-      <RecipeSpotlight v-if="spotlight" :recipe="spotlight" />
+      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" />
 
       <template v-if="listed.length || spotlight">
-        <div v-if="state.view === 'grid'" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <RecipeCard v-for="r in listed" :key="r.slug" :recipe="r" />
+        <div
+          v-if="state.view === 'grid'"
+          class="-mb-4 grid grid-cols-1 gap-x-4 *:row-span-7 *:mb-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <RecipeCard v-for="recipe in listed" :key="recipe.slug" :card="hitToCard(recipe, rs)" />
         </div>
 
-        <div v-else class="flex flex-col gap-3">
-          <RecipeListRow v-for="r in listed" :key="r.slug" :recipe="r" />
+        <div v-else class="flex flex-col gap-4">
+          <RecipeListRow v-for="recipe in listed" :key="recipe.slug" :recipe />
         </div>
 
-        <div v-if="hasMore()" ref="sentinel" class="flex items-center justify-center gap-2.5 py-6 text-sm text-onyx-light">
-          <i class="fa-solid fa-circle-notch fa-spin opacity-60"></i> <ResourceString for="LoadingMore" />
+        <div v-if="hasMore()" :ref="sentinel" class="flex items-center justify-center py-6 text-sm text-onyx-light">
+          <span v-if="loading" class="flex items-center gap-2.5">
+            <i class="fa-solid fa-circle-notch fa-spin opacity-60"></i> <ResourceString for="LoadingMore" />
+          </span>
         </div>
       </template>
 

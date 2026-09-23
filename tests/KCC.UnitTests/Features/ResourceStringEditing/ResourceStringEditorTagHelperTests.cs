@@ -11,6 +11,7 @@ public class ResourceStringEditorTagHelperTests
 {
     private static readonly IViteManifest Manifest = new StubViteManifest();
     private static readonly IViteDevServerStatus DevServerOff = new StubViteDevServerStatus(false);
+    private static readonly IViteDevServerStatus DevServerOn = new StubViteDevServerStatus(true, "http://localhost:5173");
 
     [Test]
     public async Task Process_CannotEdit_SuppressesOutput()
@@ -79,17 +80,46 @@ public class ResourceStringEditorTagHelperTests
         _ = await Assert.That(html).Contains("src=\"/assets/resourceStringEditor-abc123.js\"");
     }
 
+    [Test]
+    public async Task Process_CanEdit_LinksEntryStylesheetsBeforeScripts()
+    {
+        var sut = CreateTagHelper(canEdit: true);
+        var (context, output) = CreateTagHelperArgs();
+
+        sut.Process(context, output);
+
+        var html = GetOutputHtml(output);
+        var linkIndex = html.IndexOf(
+            "<link rel=\"stylesheet\" href=\"/assets/resourceStringEditor-abc123.css\">",
+            StringComparison.Ordinal);
+
+        _ = await Assert.That(linkIndex).IsGreaterThanOrEqualTo(0);
+        _ = await Assert.That(linkIndex).IsLessThan(html.IndexOf("<script", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public async Task Process_CanEdit_DevServerEnabled_OmitsStylesheetLinks()
+    {
+        var sut = CreateTagHelper(canEdit: true, devServer: DevServerOn);
+        var (context, output) = CreateTagHelperArgs();
+
+        sut.Process(context, output);
+
+        _ = await Assert.That(GetOutputHtml(output).Contains("<link")).IsFalse();
+    }
+
     private static ResourceStringEditorTagHelper CreateTagHelper(
         bool canEdit,
         bool isPreview = false,
         string currentLanguage = "en",
-        ContentLanguageOption[] languages = null) =>
+        ContentLanguageOption[] languages = null,
+        IViteDevServerStatus devServer = null) =>
         new(
             new StubEditorAccess(canEdit, isPreview),
             new StubPreferredLanguageRetriever(currentLanguage),
             new StubContentLanguageRepository(languages ?? []),
             Manifest,
-            DevServerOff);
+            devServer ?? DevServerOff);
 
     private static (TagHelperContext context, TagHelperOutput output) CreateTagHelperArgs()
     {
@@ -143,13 +173,13 @@ public class ResourceStringEditorTagHelperTests
         public IReadOnlyList<ContentLanguageOption> ListAll() => languages;
     }
 
-    private sealed class StubViteChunk(string file) : IViteChunk
+    private sealed class StubViteChunk(string file, params string[] css) : IViteChunk
     {
         public string File => file;
         public string Src => null;
         public bool? IsEntry => true;
         public bool? IsDynamicEntry => false;
-        public IEnumerable<string> Css => null;
+        public IEnumerable<string> Css => css;
         public IEnumerable<string> DynamicImports => null;
         public IEnumerable<string> Imports => null;
         public IEnumerable<string> Assets => null;
@@ -157,7 +187,9 @@ public class ResourceStringEditorTagHelperTests
 
     private sealed class StubViteManifest : IViteManifest
     {
-        public IViteChunk this[string key] => new StubViteChunk("assets/resourceStringEditor-abc123.js");
+        public IViteChunk this[string key] => new StubViteChunk(
+            "assets/resourceStringEditor-abc123.js",
+            "assets/resourceStringEditor-abc123.css");
         public IEnumerable<string> Keys => ["../KCC.ResourceStrings/Editing/ResourceStringEditor.ts"];
         public bool ContainsKey(string key) => true;
         public IEnumerator<IViteChunk> GetEnumerator() => ((IEnumerable<IViteChunk>)[this[""]!]).GetEnumerator();

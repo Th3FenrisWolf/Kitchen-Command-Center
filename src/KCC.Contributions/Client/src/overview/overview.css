@@ -1,0 +1,49 @@
+.kcc-contributions-overview {
+    padding: 24px;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    color: var(--color-text-default-on-light, #151515);
+}
+
+.kcc-contributions-overview__controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+
+.kcc-contributions-overview__search {
+    flex: 0 1 320px;
+}
+
+.kcc-contributions-overview__filters {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.kcc-contributions-overview__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kcc-contributions-overview__variants {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0 8px 16px;
+}
+
+/* Entry lists sit inside a variant panel here, indented under its header. */
+.kcc-contributions-overview__variants .kcc-contributions__entries {
+    padding-left: 16px;
+}
+
+.kcc-contributions-overview__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}

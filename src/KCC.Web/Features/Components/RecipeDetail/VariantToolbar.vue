@@ -1,11 +1,30 @@
-<script setup lang="ts">
+<!-- #region VariantToolbar Component Properties -->
+<script lang="ts">
   import { computed } from 'vue'
   import type { SortKey, ViewMode } from '~/Components/RecipeDetail/variantFilters'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
 
-  defineProps<{ tags: string[] }>()
+  /**
+   * Search, tag, sort, and grid/list controls above a recipe's variants.
+   */
+  export default {
+    name: 'VariantToolbar',
+  }
 
+  export interface VariantToolbarProps {
+    /**
+     * Every tag across the recipe's variants, feeding the tag dropdown.
+     */
+    tags: string[]
+  }
+</script>
+<!-- #endregion -->
+
+<script setup lang="ts">
+  defineProps<VariantToolbarProps>()
+
+  // Filters apply as they change; there is no submit step.
   const search = defineModel<string>('search', { required: true })
   const sort = defineModel<SortKey>('sort', { required: true })
   const tag = defineModel<string>('tag', { required: true })

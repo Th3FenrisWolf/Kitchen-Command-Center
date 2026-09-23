@@ -17,6 +17,7 @@ public static class VueSsrExtensions
             options.Server.AutoRun = true;
             options.Server.PackageManager = "yarn";
             options.Server.ScriptName = "dev:all";
+            options.Server.Https = true;
         });
 
         services.AddHttpClient("VueSsr", client =>

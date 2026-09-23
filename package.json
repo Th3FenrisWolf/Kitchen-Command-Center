@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/*",
     "src/KCC.Admin/Client",
+    "src/KCC.Contributions/Client",
     "src/KCC.ResourceStrings/Client",
     "src/KCC.Web"
   ],
@@ -18,8 +19,9 @@
   },
   "scripts": {
     "build:admin": "yarn workspace @kcc/admin build",
+    "build:contributions": "yarn workspace @kcc/contributions build",
     "build:resource-strings": "yarn workspace @kcc/resource-strings build",
     "build:web": "yarn workspace kitchen-command-center build:all",
-    "build:all": "yarn build:admin && yarn build:resource-strings && yarn build:web"
+    "build:all": "yarn build:admin && yarn build:contributions && yarn build:resource-strings && yarn build:web"
   }
 }

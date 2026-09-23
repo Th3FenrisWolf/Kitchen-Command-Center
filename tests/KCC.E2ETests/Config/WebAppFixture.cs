@@ -15,7 +15,7 @@ public static class WebAppFixture
     [Before(Assembly)]
     public static async Task StartWebApp()
     {
-        using var client = new HttpClient();
+        using var client = CreateDevCertificateTolerantClient();
 
         if (await IsAlreadyRunning(client))
         {
@@ -80,6 +80,15 @@ public static class WebAppFixture
 
         webAppProcess?.Dispose();
     }
+
+    private static HttpClient CreateDevCertificateTolerantClient() =>
+        new(
+            new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+            }
+        );
 
     private static async Task<bool> IsAlreadyRunning(HttpClient client)
     {
