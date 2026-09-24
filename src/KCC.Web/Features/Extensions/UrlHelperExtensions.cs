@@ -1,29 +1,11 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using CMS.Core;
-using CMS.Websites;
-using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Extensions;
 
 public static class UrlHelperExtensions
 {
-    public static string HomePage(this IUrlHelper _) => HomePage();
-
-    public static string HomePage()
-    {
-        var contentRetriever = Service.Resolve<IContentRetriever>();
-
-        var page = contentRetriever.RetrievePages<HomePage>(
-            new(),
-            query => query.TopN(1),
-            new($"{nameof(UrlHelperExtensions)}|{nameof(HomePage)}")
-        ).GetAwaiter().GetResult().FirstOrDefault();
-
-        return page.GetUrl().RelativePath;
-    }
-
     public static string ActionFor<TController>(
         this IUrlHelper urlHelper,
         Expression<Func<TController, object>> actionExpression

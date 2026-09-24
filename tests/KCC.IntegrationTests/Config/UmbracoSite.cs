@@ -1,0 +1,129 @@
+using Examine.Lucene.Directories;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography;
+using TUnit.Core.Interfaces;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Infrastructure.Examine;
+
+namespace KCC.IntegrationTests.Config;
+
+public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitializer
+{
+    private readonly string imagingHmacSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+    private string runDirectory = string.Empty;
+    private string localTempPath = string.Empty;
+    private string examineTempPath = string.Empty;
+
+    public string DatabasePath => Path.Combine(runDirectory, "Umbraco.sqlite.db");
+
+    public async Task InitializeAsync()
+    {
+        RequireFrontEndBuild();
+        runDirectory = Directory.CreateTempSubdirectory("kcc-it-").FullName;
+
+        // The factory builds its host synchronously on first access; TUnit can touch it from parallel tests.
+        await Task.Run(() => _ = Server);
+
+        var state = Services.GetRequiredService<IRuntimeState>();
+        for (var attempt = 0; state.Level == RuntimeLevel.Upgrading && attempt < 600; attempt++)
+        {
+            await Task.Delay(100);
+        }
+
+        if (state.Level != RuntimeLevel.Run)
+        {
+            throw new InvalidOperationException($"Umbraco stopped at {state.Level} ({state.Reason}).", state.BootFailedException);
+        }
+
+        // LocalTempStorageLocation=EnvironmentTemp and LuceneDirectoryFactory=TempFileSystemDirectoryFactory each
+        // hash SiteName into a folder name under Path.GetTempPath(), independently of runDirectory and of each
+        // other; capturing the real, booted values is the only way to clean them up without reimplementing
+        // Umbraco's own hashing.
+        var hostingEnvironment = Services.GetRequiredService<Umbraco.Cms.Core.Hosting.IHostingEnvironment>();
+        localTempPath = hostingEnvironment.LocalTempPath;
+        examineTempPath = UmbracoTempEnvFileSystemDirectoryFactory.GetTempPath(
+            Services.GetRequiredService<IApplicationIdentifier>(),
+            hostingEnvironment);
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await base.DisposeAsync();
+        SqliteConnection.ClearAllPools();
+        DeleteIfPresent(runDirectory);
+        DeleteIfPresent(localTempPath);
+        DeleteIfPresent(examineTempPath);
+    }
+
+    private static void DeleteIfPresent(string path)
+    {
+        if (path.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            Directory.Delete(path, recursive: true);
+        }
+        catch (IOException)
+        {
+            // A log file can still be flushing; the temp folder is disposable either way.
+        }
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+        foreach (var (key, value) in Settings())
+        {
+            builder.UseSetting(key, value);
+        }
+    }
+
+    private static void RequireFrontEndBuild()
+    {
+        var manifest = Path.Combine(WebProjectDirectory(), "wwwroot", ".vite", "manifest.json");
+        if (!File.Exists(manifest))
+        {
+            throw new InvalidOperationException("Integration tests render real pages, which need the Vite manifest. Run `yarn build:all` in src/KCC.Web first.");
+        }
+    }
+
+    private static string WebProjectDirectory()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
+        {
+            directory = directory.Parent;
+        }
+
+        return Path.Combine(directory?.FullName ?? throw new InvalidOperationException("Repository root not found."), "src", "KCC.Web");
+    }
+
+    private Dictionary<string, string> Settings() => new()
+    {
+        ["ConnectionStrings:umbracoDbDSN"] = $"Data Source={DatabasePath};Cache=Private;Foreign Keys=True;Pooling=True",
+        ["ConnectionStrings:umbracoDbDSN_ProviderName"] = "Microsoft.Data.Sqlite",
+        ["Umbraco:CMS:Unattended:InstallUnattended"] = "true",
+        ["Umbraco:CMS:Unattended:UpgradeUnattended"] = "true",
+        ["Umbraco:CMS:Unattended:UnattendedUserName"] = "Integration Admin",
+        ["Umbraco:CMS:Unattended:UnattendedUserEmail"] = "admin@example.test",
+        ["Umbraco:CMS:Unattended:UnattendedUserPassword"] = "Integration-Passw0rd-2026",
+        ["Umbraco:CMS:Unattended:UnattendedTelemetryLevel"] = "Minimal",
+        ["Umbraco:CMS:ModelsBuilder:ModelsMode"] = "Nothing",
+        ["Umbraco:CMS:Hosting:LocalTempStorageLocation"] = "EnvironmentTemp",
+        ["Umbraco:CMS:Hosting:SiteName"] = Path.GetFileName(runDirectory),
+        ["Umbraco:CMS:Examine:LuceneDirectoryFactory"] = "TempFileSystemDirectoryFactory",
+        ["Umbraco:CMS:Logging:Directory"] = Path.Combine(runDirectory, "logs"),
+        ["Umbraco:CMS:Imaging:HMACSecretKey"] = imagingHmacSecretKey,
+        ["DataProtection:KeysDirectory"] = Path.Combine(runDirectory, "keys"),
+        ["uSync:Settings:ExportOnSave"] = "None",
+        ["VueSsr:Enabled"] = "false",
+    };
+}
