@@ -1,13 +1,14 @@
 @using KCC.Web.Features.Components.Footer
 @using KCC.Web.Features.Components.Header
-@using Kentico.Content.Web.Mvc.Routing
+@using KCC.Web.Features.Dictionary
 @using Microsoft.AspNetCore.Hosting
+@using Umbraco.Cms.Core.Web
 
 @inject IWebHostEnvironment Env
 @inject VueSsrService VueSsrService
-@inject IPreferredLanguageRetriever PreferredLanguageRetriever
+@inject IUmbracoContextAccessor UmbracoContextAccessor
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-@inject KCC.ResourceStrings.Data.IResourceStringInfoProvider ResourceStrings
+@inject IResourceStringProvider ResourceStrings
 @inject Vite.AspNetCore.IViteManifest ViteManifest
 @inject Vite.AspNetCore.IViteDevServerStatus ViteDevServer
 
@@ -29,10 +30,11 @@
         {
             PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
         });
+    var isPreview = UmbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) && umbracoContext.InPreviewMode;
 }
 
 <!DOCTYPE html>
-<html lang="@PreferredLanguageRetriever.Get()" data-theme="light">
+<html lang="en" data-theme="light">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
@@ -112,13 +114,11 @@
     await Component.InvokeAsync(typeof(HeaderViewComponent)),
     RenderBody(),
     await Component.InvokeAsync(typeof(FooterViewComponent)),
-    Context.IsPreview() || Context.IsPageBuilder(),
+    isPreview,
     Context.RequestAborted
   )
 
   <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>
-
-  <resource-string-editor />
 </body>
 
 </html>

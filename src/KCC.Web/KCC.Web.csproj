@@ -30,27 +30,23 @@
     <ItemGroup Label="Unported slices">
         <Compile Remove="Features/Api/**" />
         <Compile Remove="Features/Components/Breadcrumbs/BreadcrumbService.cs" />
-        <Compile Remove="Features/Components/Header/HeaderViewComponent.cs" />
-        <Compile Remove="Features/Components/Header/HeaderViewModel.cs" />
         <Compile Remove="Features/DevTools/RecipeSeed/**" />
         <Compile Remove="Features/Models/Api/**" />
         <Compile Remove="Features/Models/Common/KCCApplicationUser.cs" />
         <Compile Remove="Features/Pages/Account/**" />
         <Compile Remove="Features/Pages/AddVariant/**" />
         <Compile Remove="Features/Pages/CreateRecipe/**" />
-        <Compile Remove="Features/Pages/Error/ErrorController.cs" />
-        <Compile Remove="Features/Pages/Home/HomeController.cs" />
         <Compile Remove="Features/Pages/RecipeDetail/**" />
         <Compile Remove="Features/Pages/RecipeSearch/**" />
-        <Compile Remove="Features/Pages/Shared/PageMappingExtensions.cs" />
         <Compile Remove="Features/Pages/VariantDetail/**" />
         <Compile Remove="Features/Providers/**" />
         <Compile Remove="Features/Search/**" />
-        <Compile Remove="Features/Sitemap/**" />
-        <Content Remove="Features/_ViewImports.cshtml" />
-        <Content Remove="Features/Components/Footer/Footer.cshtml" />
-        <Content Remove="Features/Components/Header/Header.cshtml" />
-        <Content Remove="Features/Pages/**/*.cshtml" />
+        <Content Remove="Features/Pages/Account/**/*.cshtml" />
+        <Content Remove="Features/Pages/AddVariant/**/*.cshtml" />
+        <Content Remove="Features/Pages/CreateRecipe/**/*.cshtml" />
+        <Content Remove="Features/Pages/RecipeDetail/**/*.cshtml" />
+        <Content Remove="Features/Pages/RecipeSearch/**/*.cshtml" />
+        <Content Remove="Features/Pages/VariantDetail/**/*.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

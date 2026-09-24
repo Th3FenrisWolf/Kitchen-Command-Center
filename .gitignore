@@ -520,6 +520,7 @@ src/KCC.Contributions/Client/node_modules/
 src/KCC.Web/umbraco/Data/
 src/KCC.Web/umbraco/Logs/
 src/KCC.Web/umbraco/models/
+src/KCC.Web/Features/Models/Generated/ood.flag
 src/KCC.Web/wwwroot/media/
 # JSON schemas the Umbraco and uSync build targets copy into every project that references them
 appsettings-schema*.json

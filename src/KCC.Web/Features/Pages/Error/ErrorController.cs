@@ -1,42 +1,18 @@
-using System.Globalization;
-using Kentico.Content.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Pages.Error;
 
-[Route("Error")]
-public class ErrorController(
-    IContentRetriever contentRetriever
-) : Controller
+[Route("error")]
+public class ErrorController(IStatusCodePages statusCodePages) : Controller
 {
-    public async Task<IActionResult> Index()
+    // No verb attribute: the exception handler re-executes with the failed request's method, POST included.
+    [Route("")]
+    [Route("{statusCode:int:range(400,599)}")]
+    public IActionResult Index(int statusCode = StatusCodes.Status500InternalServerError)
     {
-        return await HandleStatusCode(
-            HttpContext.Response.StatusCode.ToString(CultureInfo.InvariantCulture)
-        );
-    }
+        var page = statusCodePages.Find(statusCode);
+        Response.StatusCode = statusCode;
 
-    [Route("{statusCode}")]
-    public async Task<IActionResult> HandleStatusCode(string statusCode)
-    {
-        var page = (await contentRetriever.RetrievePages<StatusCodePage>(
-            new(),
-            query => query
-                .Where(where => where
-                    .WhereEquals(nameof(StatusCodePage.StatusCode), statusCode)
-                )
-                .TopN(1),
-            new($"{nameof(ErrorController)}|{nameof(HandleStatusCode)}|{statusCode}")
-        )).FirstOrDefault();
-
-        var viewModel = new ErrorViewModel
-        {
-            StatusCode = int.Parse(statusCode, CultureInfo.InvariantCulture),
-            Heading = page?.StatusCodeHeading ?? "Error",
-            Body = page?.StatusCodeBody ?? "An unexpected error occurred.",
-            Title = page?.StatusCodeHeading ?? "Error",
-        };
-
-        return View("~/Features/Pages/Error/Index.cshtml", viewModel);
+        return View("~/Features/Pages/Error/Index.cshtml", ErrorViewModel.For(statusCode, page?.Heading, page?.Body?.ToHtmlString()));
     }
 }

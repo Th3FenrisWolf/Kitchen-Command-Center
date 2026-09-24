@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest'
 // Retired outright, no alias layer: the pre-sketch tokens (bone / onyx / surface / overlay), the Softbound kit
 // (sk-*, v-ink, data-ink, its tokens) and every rule the Torn & Waxed identity forbids (shadows, radii above
 // md, weight, coloured icon layers, washes as text). A hit means an unstyled or off-brand element in
-// production, silently: Tailwind emits nothing for an unknown class, and CMS content, which uSync commits,
-// carries class strings too. See docs/brand/kit.md → Tokens.
+// production, silently: Tailwind emits nothing for an unknown class, and CMS content, which uSync exports into
+// the repo, carries class strings too. See docs/brand/kit.md → Tokens.
 const RETIRED_TOKEN =
   'bone(?:-dark)?|onyx(?:-light)?|surface-\\d{3}|overlay-\\d{3}|ink-line|ink-on-wash|hatch|edge(?:-strong)?|flap-[12]|link|danger(?:-ink)?|success(?:-ink)?|warning(?:-ink)?|rating-ink|rosewater|flamingo|mauve|maroon|sapphire|blue'
 const WASH = 'peach|yellow|green|teal|sky|lavender|pink|red'

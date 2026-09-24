@@ -26,7 +26,7 @@ const render = () =>
     firstName: 'Ada',
     lastName: 'Lovelace',
     email: 'ada@example.com',
-    backUrl: '~/account',
+    backUrl: '/account',
     logoutUrl: '/account/logout',
     resourceStrings: STRINGS,
   })
