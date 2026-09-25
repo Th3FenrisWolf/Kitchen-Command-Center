@@ -36,6 +36,21 @@ public static class SiteDatabase
         }
     }
 
+    public static async Task DeleteDictionaryItemAsync(string databasePath, string key)
+    {
+        await using var connection = await OpenAsync(databasePath);
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            DELETE FROM cmsLanguageText WHERE UniqueId = (SELECT id FROM cmsDictionary WHERE "key" = $key);
+            DELETE FROM cmsDictionary WHERE "key" = $key;
+            """;
+        command.Parameters.AddWithValue("$key", key);
+        if (await command.ExecuteNonQueryAsync() != 2)
+        {
+            throw new InvalidOperationException($"Dictionary item {key} has no single translation and item row to delete.");
+        }
+    }
+
     public static async Task<long> FindDocumentIdAsync(string databasePath, string name)
     {
         await using var connection = await OpenAsync(databasePath);

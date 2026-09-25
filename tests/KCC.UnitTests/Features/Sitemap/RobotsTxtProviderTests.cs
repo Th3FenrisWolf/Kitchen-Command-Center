@@ -14,7 +14,7 @@ public class RobotsTxtProviderTests
 
         foreach (var path in new[] { "/umbraco", "/api", "/account", "/error" })
         {
-            _ = await Assert.That(content.Contains($"Disallow: {path}", StringComparison.Ordinal)).IsTrue();
+            _ = await Assert.That(Lines(content)).Contains($"Disallow: {path}");
         }
 
         _ = await Assert.That(content.Contains("Sitemap: https://kcc.test/sitemap.xml", StringComparison.Ordinal)).IsTrue();
@@ -25,9 +25,11 @@ public class RobotsTxtProviderTests
     {
         var content = Provider(denyAll: true).GetContent();
 
-        _ = await Assert.That(content.Contains("Disallow: /", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(Lines(content)).Contains("Disallow: /");
         _ = await Assert.That(content.Contains("Disallow: /umbraco", StringComparison.Ordinal)).IsFalse();
     }
+
+    private static string[] Lines(string content) => content.Split('\n', StringSplitOptions.TrimEntries);
 
     private static RobotsTxtProvider Provider(bool denyAll)
     {

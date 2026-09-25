@@ -24,7 +24,8 @@ public class SitemapTests
         using var client = Site.CreateClient();
         var robots = await client.GetStringAsync("/robots.txt");
 
-        _ = await Assert.That(robots.Contains("Disallow: /", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(robots.Split('\n', StringSplitOptions.TrimEntries)).Contains("Disallow: /");
+        _ = await Assert.That(robots.Contains("/umbraco", StringComparison.Ordinal)).IsFalse();
         _ = await Assert.That(robots.Contains("sitemap.xml", StringComparison.Ordinal)).IsTrue();
     }
 }

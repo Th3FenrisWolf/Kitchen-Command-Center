@@ -7,6 +7,7 @@ public class RestartTests
 {
     private const string DictionaryKey = "Login.SignIn";
     private const string EditedValue = "Edited on the live site";
+    private const string MissingDictionaryKey = "Login.SignUp";
     private const string BaselineDocument = "Recipe Tags";
     private const string EditedDocumentName = "Tags renamed on the live site";
 
@@ -19,6 +20,8 @@ public class RestartTests
 
         var imported = await SiteDatabase.ReadDictionaryValueAsync(site.DatabasePath, DictionaryKey);
         await SiteDatabase.WriteDictionaryValueAsync(site.DatabasePath, DictionaryKey, EditedValue);
+        var committed = await SiteDatabase.ReadDictionaryValueAsync(site.DatabasePath, MissingDictionaryKey);
+        await SiteDatabase.DeleteDictionaryItemAsync(site.DatabasePath, MissingDictionaryKey);
         var documentId = await SiteDatabase.FindDocumentIdAsync(site.DatabasePath, BaselineDocument);
         await SiteDatabase.RenameDocumentAsync(site.DatabasePath, documentId, EditedDocumentName);
 
@@ -28,6 +31,8 @@ public class RestartTests
         _ = await Assert.That(imported).IsNotNull();
         _ = await Assert.That(imported).IsNotEqualTo(EditedValue);
         _ = await Assert.That(await SiteDatabase.ReadDictionaryValueAsync(site.DatabasePath, DictionaryKey)).IsEqualTo(EditedValue);
+        _ = await Assert.That(committed).IsNotNull();
+        _ = await Assert.That(await SiteDatabase.ReadDictionaryValueAsync(site.DatabasePath, MissingDictionaryKey)).IsEqualTo(committed);
         _ = await Assert.That(await SiteDatabase.ReadDocumentNameAsync(site.DatabasePath, documentId)).IsEqualTo(EditedDocumentName);
     }
 }

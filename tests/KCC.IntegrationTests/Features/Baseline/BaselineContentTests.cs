@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using KCC.IntegrationTests.Config;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Models;
@@ -9,9 +8,6 @@ namespace KCC.IntegrationTests.Features.Baseline;
 
 public class BaselineContentTests
 {
-    private static readonly Regex BackofficeUuidPattern =
-        new("^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$");
-
     [ClassDataSource<UmbracoSite>(Shared = SharedType.PerTestSession)]
     public UmbracoSite Site { get; init; } = null!;
 
@@ -68,7 +64,7 @@ public class BaselineContentTests
     public async Task BaselineKeys_AreUuidsTheBackofficeAccepts()
     {
         var keys = Content.GetRootContent().SelectMany(TreeKeys).ToList();
-        var rejected = keys.Where(key => !BackofficeUuidPattern.IsMatch(key.ToString())).ToList();
+        var rejected = keys.Where(key => !BackofficeUuid.IsAccepted(key)).ToList();
 
         _ = await Assert.That(keys).IsNotEmpty();
         _ = await Assert.That(rejected).IsEmpty();

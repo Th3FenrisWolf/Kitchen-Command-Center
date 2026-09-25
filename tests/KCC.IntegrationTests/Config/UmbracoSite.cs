@@ -1,4 +1,5 @@
 using Examine.Lucene.Directories;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
@@ -13,6 +14,9 @@ namespace KCC.IntegrationTests.Config;
 
 public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitializer
 {
+    // The file extension keeps Umbraco's content routing off this path, so the request reaches the end of the pipeline.
+    public const string ThrowingPath = "/integration-tests-throw.txt";
+
     private readonly string imagingHmacSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
     private string runDirectory = string.Empty;
@@ -84,6 +88,8 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         {
             builder.UseSetting(key, value);
         }
+
+        builder.ConfigureServices(services => services.AddTransient<IStartupFilter, ThrowingPathFilter>());
     }
 
     private static void RequireFrontEndBuild()
@@ -126,4 +132,22 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         ["uSync:Settings:ExportOnSave"] = "None",
         ["VueSsr:Enabled"] = "false",
     };
+
+    // Appended after the app's own middleware, so an exception thrown here has to pass through its exception handler.
+    private sealed class ThrowingPathFilter : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+        {
+            next(app);
+            app.Use(async (context, nextMiddleware) =>
+            {
+                if (context.Request.Path == ThrowingPath)
+                {
+                    throw new InvalidOperationException("Thrown on purpose by the integration test host.");
+                }
+
+                await nextMiddleware(context);
+            });
+        };
+    }
 }

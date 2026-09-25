@@ -4,7 +4,8 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** Task 1. **Requires Phase 0 done** (it is, 2026-09-23): tag
+**Status:** done (2026-09-24). **Resume point:** the Phase 2 plan in this folder; read **Findings from Phase 1** at
+the end of this file first. **Requires Phase 0 done** (it is, 2026-09-23): tag
 `xperience-final` on origin, branch `replatform` checked out, `src/KCC.Web/Features/Dictionary/ui-strings.json`
 committed, reference screenshots in `docs/replatform/reference/xperience-final/`. Read **Findings from Phase 0**
 below before Task 1.
@@ -4947,3 +4948,61 @@ Expected: all green.
 
 Set this file's **Status** line to `done (<date>)`. Phase 2 (Recipes) is planned next, in this folder, against the code
 as it now stands.
+
+## Findings from Phase 1
+
+Found during Phase 1 (2026-09-24). The Phase 2–4 plans predate them.
+
+- **Config writes.** Umbraco writes generated values into the content root's `appsettings.json`: the imaging HMAC key
+  on every fresh unattended install, `Umbraco:CMS:Global:Id` about 5 minutes into a run. `Global:Id` is pinned in
+  `appsettings.json`; the key comes from user-secrets in development, a per-run key in `UmbracoSite` and
+  `SiteProcess`, and (Phase 7) the Pi's `.env`. `ConfigFileWritesTests` guards both.
+- **Deterministic keys.** The backoffice rejects GUIDs without RFC 9562 version and variant bits (`UmbId.validate`).
+  The baseline's keys were made version 8 before export, and any future deterministic key must set those bits too.
+  `SchemaTests` and `BaselineContentTests` guard the committed keys.
+- **Baseline export.** `BaselineExport` must not use uSync's `StartupExportAsync`, which rewrites the tracked
+  `usync.config` with an HMAC of the imaging key. It calls `GetValidHandlers` + `ExportAsync` for the Content group.
+- **ModelsBuilder.** `IncludeVersionNumberInGeneratedModels` is off, so an Umbraco upgrade doesn't rewrite every
+  model; `Features/Models/Generated/ood.flag` is gitignored.
+- **Console log.** Serilog writes to the console in every environment (base `appsettings.json`), which is also what
+  `SiteProcess`'s failure log tail reads.
+- **Test hosts.** `UmbracoSite` deletes Umbraco's `LocalTempPath` and Examine temp folder on dispose; `SiteProcess`
+  points `TMPDIR`/`TMP`/`TEMP` into its run folder and owns one log writer across restarts.
+- **Paths with a file extension** (e.g. `/sitemap.xml`) get no UmbracoContext. Code reading published content there
+  wraps the read in `IUmbracoContextFactory.EnsureUmbracoContext()` (`SitemapController`, `BaselineExport`).
+- **Spec §19.** Row 1 is proven without a template (integration `HomePageTests`). Both halves of row 2, the
+  create-only dictionary import and content imported on first boot only, are proven by
+  `RestartTests.LiveEdits_SurviveARestart`.
+- **Cache-instruction stall.** If instructions are pending at Umbraco's first cache-instruction sync, about 2 minutes
+  after boot (a fresh database's first-boot backlog, or any edit made before that sync), Umbraco logs `ERR Cache
+  instruction sync did not complete within 00:01:00 … Cache updates are paused on this server` and recovers about
+  20 minutes later: it reads, then writes `umbracoLastSynced` without a write lock, racing its job poller, which
+  commits every 5 s. Later edits can collide with that poller too. It is harmless on one server. The fix belongs to
+  Phase 4: a write-locked cache-instruction service, plus a regression check that runs a fresh boot and an early
+  edit past the 2-minute mark.
+- **Output caching.** Route-hijacked page controllers inherit Umbraco's output-cache attribute on `Index()`; website
+  output caching must stay off while pages carry antiforgery tokens.
+- **Dates.** Umbraco 17 stores content dates in UTC; SQLite materialises them as `Unspecified`, while the published
+  cache returns `Utc`. `PageMetadata.AsUtc` treats `Unspecified` as UTC.
+- **Error route.** `/error/{statusCode}` accepts only 400–599; anything else falls through to the 404 page.
+- **Umbraco version.** 17.7.0, because 17.8.0 (scheduled 2026-10-29) is not yet on NuGet; the bump remains pending
+  (Global Constraints).
+- **Phase 2 keys.** R9's key rule applies to Phase 2's `RecipeSchemaBootstrap.Key` and `SeedKeys`, and the Phase 2
+  plan's checklist says so. The widened `SchemaTests` guard enumerates every document, media, member and data type,
+  and each type's property and group (container) keys.
+- **Nodes without a template or controller** are re-routed through the last-chance finder and serve the 404 node with
+  status 404, so unported pages such as `/recipes/` and `/account/…` answer 404 until their phase.
+- **Top-level segments.** Taxonomy and status-code nodes route as top-level segments (`/breakfast/`, `/vegan/`,
+  `/404/`), because `HideTopLevelNodeFromPath` applies to every root. They serve the 404 page today, but a category or
+  tag name can collide with a future page under Home: a spec §7 point for Phases 2–3.
+- **uSync's first-boot import runs once.** `FirstBootMigration` logs a failure and still marks itself done, so a
+  failed or partial first production boot is never retried. Phase 7's runbook must check the log for "uSync First
+  boot complete".
+- **§19 row 2 negative controls.** Turning CreateOnly off and importing All at startup were run by hand, not
+  automated. The dictionary handler's Settings-group override is automated: `RestartTests` deletes a dictionary item
+  while the site is stopped and expects the restart to bring it back.
+- **For Phase 7.** Consider `Umbraco:CMS:Runtime:Mode=Production` (its boot validators enforce HTTPS, the application
+  URL and the ModelsBuilder mode). Point `Umbraco:CMS:Logging:Directory` at the data volume, mount a tmpfs for
+  SQLite's temp files, use a base image with ICU (`en-US` culture) and restrict `AllowedHosts`. Remove the unattended
+  admin credentials from the Pi's `.env` after the first boot: with `InstallUnattended` true, a missing database would
+  silently install an empty site.

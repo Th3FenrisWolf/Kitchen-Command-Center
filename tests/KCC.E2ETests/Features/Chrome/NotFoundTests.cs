@@ -11,5 +11,6 @@ public class NotFoundTests : BasePageTests
 
         _ = await Assert.That(response!.Status).IsEqualTo(404);
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToContainTextAsync("find that page");
+        await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "home page", Exact = true })).ToHaveCSSAsync("text-decoration-line", "underline");
     }
 }

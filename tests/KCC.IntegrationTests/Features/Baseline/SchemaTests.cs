@@ -1,37 +1,13 @@
-using System.Text.RegularExpressions;
 using KCC.IntegrationTests.Config;
 using Microsoft.Extensions.DependencyInjection;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 
 namespace KCC.IntegrationTests.Features.Baseline;
 
 public class SchemaTests
 {
-    private static readonly string[] BaselineContentTypeAliases =
-    [
-        "homePage",
-        "recipeListingPage",
-        "createRecipePage",
-        "addVariantPage",
-        "accountPage",
-        "loginPage",
-        "accountSettingsPage",
-        "registrationCompletePage",
-        "siteSettings",
-        "contentFolder",
-        "recipeCategory",
-        "recipeTag",
-        "statusCodePage",
-        "metadata",
-        "navLink",
-        "navGroup",
-    ];
-
-    private static readonly string[] BaselineDataTypeNames =
-        ["KCC Show When", "KCC Single Link", "KCC Links", "KCC Nav Items"];
-
-    private static readonly Regex BackofficeUuidPattern =
-        new("^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$");
+    private static readonly string[] SchemaKeyKinds = ["document type", "media type", "member type", "data type", "property", "group"];
 
     [ClassDataSource<UmbracoSite>(Shared = SharedType.PerTestSession)]
     public UmbracoSite Site { get; init; } = null!;
@@ -61,6 +37,18 @@ public class SchemaTests
     }
 
     [Test]
+    [Arguments("KCC Show When")]
+    [Arguments("KCC Single Link")]
+    [Arguments("KCC Links")]
+    [Arguments("KCC Nav Items")]
+    public async Task DataType_IsImportedOnFirstBoot(string name)
+    {
+        var dataTypes = Site.Services.GetRequiredService<IDataTypeService>();
+
+        _ = await Assert.That(await dataTypes.GetAsync(name)).IsNotNull();
+    }
+
+    [Test]
     public async Task HomePage_ComposesMetadata()
     {
         var home = Site.Services.GetRequiredService<IContentTypeService>().Get("homePage")!;
@@ -78,22 +66,30 @@ public class SchemaTests
     }
 
     [Test]
-    public async Task BaselineKeys_AreUuidsTheBackofficeAccepts()
+    public async Task SchemaKeys_AreUuidsTheBackofficeAccepts()
     {
-        var contentTypes = Site.Services.GetRequiredService<IContentTypeService>();
-        var dataTypes = Site.Services.GetRequiredService<IDataTypeService>();
-
-        var keys = BaselineContentTypeAliases.Select(alias => (Name: alias, contentTypes.Get(alias)!.Key)).ToList();
-        foreach (var name in BaselineDataTypeNames)
-        {
-            keys.Add((name, (await dataTypes.GetAsync(name))!.Key));
-        }
-
+        var keys = await SchemaKeysAsync();
         var rejected = keys
-            .Where(entry => !BackofficeUuidPattern.IsMatch(entry.Key.ToString()))
-            .Select(entry => $"{entry.Name} {entry.Key}")
-            .ToList();
+            .Where(entry => !BackofficeUuid.IsAccepted(entry.Key))
+            .Select(entry => $"{entry.Kind} {entry.Owner} {entry.Key}");
 
-        _ = await Assert.That(rejected).IsEmpty();
+        _ = await Assert.That(keys.Select(entry => entry.Kind).Distinct()).IsEquivalentTo(SchemaKeyKinds);
+        _ = await Assert.That(string.Join(Environment.NewLine, rejected)).IsEmpty();
+    }
+
+    private static IEnumerable<(string Kind, string Owner, Guid Key)> TypeKeys(string kind, IContentTypeComposition type) =>
+        type.PropertyGroups.Select(group => ("group", $"{type.Alias}/{group.Alias}", group.Key))
+            .Concat(type.PropertyTypes.Select(property => ("property", $"{type.Alias}.{property.Alias}", property.Key)))
+            .Prepend((kind, type.Alias, type.Key));
+
+    private async Task<List<(string Kind, string Owner, Guid Key)>> SchemaKeysAsync()
+    {
+        var types = Site.Services.GetRequiredService<IContentTypeService>().GetAll().Select(type => TypeKeys("document type", type))
+            .Concat(Site.Services.GetRequiredService<IMediaTypeService>().GetAll().Select(type => TypeKeys("media type", type)))
+            .Concat(Site.Services.GetRequiredService<IMemberTypeService>().GetAll().Select(type => TypeKeys("member type", type)))
+            .SelectMany(typeKeys => typeKeys);
+        var dataTypes = await Site.Services.GetRequiredService<IDataTypeService>().GetAllAsync();
+
+        return types.Concat(dataTypes.Select(dataType => ("data type", $"{dataType.Name}", dataType.Key))).ToList();
     }
 }

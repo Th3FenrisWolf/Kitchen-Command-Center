@@ -22,13 +22,16 @@ builder.Services.AddScoped<PageMetadata>();
 builder.Services.AddScoped<ISitemapPages, SitemapPages>();
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 
-// Umbraco never persists data-protection keys, so without this every restart signs everyone out and
-// invalidates the anti-forgery tokens in open forms.
+// ASP.NET Core keeps data-protection keys in the user profile when it can, but only in memory where the home
+// directory isn't writable (as in the container), where every restart would sign everyone out and invalidate the
+// anti-forgery tokens in open forms. An unset Compose variable arrives as an empty string rather than a missing one.
+var keysDirectory = builder.Configuration["DataProtection:KeysDirectory"];
 builder.Services.AddDataProtection()
     .SetApplicationName("kcc")
     .PersistKeysToFileSystem(new DirectoryInfo(
-        builder.Configuration["DataProtection:KeysDirectory"]
-            ?? Path.Combine(builder.Environment.ContentRootPath, "umbraco", "Data", "keys")));
+        string.IsNullOrWhiteSpace(keysDirectory)
+            ? Path.Combine(builder.Environment.ContentRootPath, "umbraco", "Data", "keys")
+            : keysDirectory));
 
 var app = builder.Build();
 
