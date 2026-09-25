@@ -88,6 +88,13 @@ describe('VariantDetailView', () => {
     expect(html).toMatch(/<p class="kcc-kick">[\s\S]*?Variant of[\s\S]*?Brown Butter Gnocchi/)
   })
 
+  it('shows the cover image in the hero tile', async () => {
+    const html = await render({ coverImage: '/media/gnocchi.webp' })
+
+    expect(html).toContain('src="/media/gnocchi.webp"')
+    expect(html).toContain('alt="Crispy Edge Gnocchi"')
+  })
+
   it('keeps the stats on an At a glance sheet of their own', async () => {
     const html = await render()
 

@@ -18,10 +18,12 @@
     </ItemGroup>
     <ItemGroup Label="Unported slices">
         <Compile Remove="Admin/**" />
-        <Compile Remove="Features/Api/**" />
+        <Compile Remove="Features/Api/CookNoteApiControllerTests.cs" />
+        <Compile Remove="Features/Api/ProfileApiControllerTests.cs" />
+        <Compile Remove="Features/Api/RecipeApiControllerTests.cs" />
+        <Compile Remove="Features/Api/ReviewApiControllerTests.cs" />
+        <Compile Remove="Features/Api/VariantCookedApiControllerTests.cs" />
         <Compile Remove="Features/Pages/Account/**" />
-        <Compile Remove="Features/Pages/RecipeDetail/**" />
-        <Compile Remove="Features/Pages/VariantDetail/**" />
         <Compile Remove="Features/Search/**" />
     </ItemGroup>
     <ItemGroup>

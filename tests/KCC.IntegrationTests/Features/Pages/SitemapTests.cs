@@ -19,6 +19,16 @@ public class SitemapTests
     }
 
     [Test]
+    public async Task Sitemap_ListsSeededRecipesAndVariants()
+    {
+        using var client = Site.CreateClient();
+        var xml = await client.GetStringAsync("/sitemap.xml");
+
+        _ = await Assert.That(xml.Contains("/recipes/fluffy-buttermilk-pancakes/", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(xml.Contains("/recipes/fluffy-buttermilk-pancakes/classic-stack/", StringComparison.Ordinal)).IsTrue();
+    }
+
+    [Test]
     public async Task RobotsTxt_DeniesEverythingUntilLaunch()
     {
         using var client = Site.CreateClient();
