@@ -1,46 +1,26 @@
-using CMS.DataEngine;
-using CMS.Membership;
+using Microsoft.Extensions.Caching.Memory;
+using Umbraco.Cms.Core.Services;
 
 namespace KCC.Web.Features.Providers;
 
-public class AuthorNameProvider(IInfoProvider<MemberInfo> memberInfoProvider)
+public interface IAuthorNameProvider
 {
-    public async Task<string> Resolve(Guid authorMemberGuid, CancellationToken cancellationToken = default)
-    {
-        var names = await ResolveMany([authorMemberGuid], cancellationToken);
-        return names.GetValueOrDefault(authorMemberGuid);
-    }
+    Task<string> Resolve(Guid memberKey);
 
-    public async Task<IReadOnlyDictionary<Guid, string>> ResolveMany(IEnumerable<Guid> authorMemberGuids, CancellationToken cancellationToken = default)
-    {
-        var guids = authorMemberGuids.Where(guid => guid != Guid.Empty).Distinct();
+    Task<IReadOnlyDictionary<Guid, string>> ResolveMany(IEnumerable<Guid> memberKeys);
 
-        if (!guids.Any())
-        {
-            return new Dictionary<Guid, string>();
-        }
+    void Forget(IEnumerable<Guid> memberKeys);
+}
 
-        var members = await memberInfoProvider.Get()
-            .WhereIn(nameof(MemberInfo.MemberGuid), guids)
-            .GetEnumerableTypedResultAsync(cancellationToken: cancellationToken);
+public class AuthorNameProvider(IMemberService memberService, IMemoryCache cache) : IAuthorNameProvider
+{
+    public const string DeletedMemberName = "(deleted)";
 
-        return members
-            .Select(member => new
-            {
-                member.MemberGuid,
-                DisplayName = FormatDisplayName(
-                    member.GetValue("MemberFirstName", string.Empty),
-                    member.GetValue("MemberLastName", string.Empty),
-                    member.MemberName),
-            })
-            .Where(member => member.DisplayName is not null)
-            .ToDictionary(member => member.MemberGuid, member => member.DisplayName);
-    }
+    private static readonly TimeSpan CacheLifetime = TimeSpan.FromHours(1);
 
     public static string FormatDisplayName(string firstName, string lastName, string userName)
     {
         var fullName = $"{firstName?.Trim()} {lastName?.Trim()}".Trim();
-
         if (fullName.Length > 0)
         {
             return fullName;
@@ -49,4 +29,58 @@ public class AuthorNameProvider(IInfoProvider<MemberInfo> memberInfoProvider)
         var fallback = userName?.Trim();
         return string.IsNullOrEmpty(fallback) ? null : fallback;
     }
+
+    public static string NameFor(IReadOnlyDictionary<Guid, string> names, Guid? memberKey) =>
+        memberKey is { } key ? names.GetValueOrDefault(key) : null;
+
+    public async Task<string> Resolve(Guid memberKey) => NameFor(await ResolveMany([memberKey]), memberKey);
+
+    public async Task<IReadOnlyDictionary<Guid, string>> ResolveMany(IEnumerable<Guid> memberKeys)
+    {
+        var names = new Dictionary<Guid, string>();
+        var uncached = new List<Guid>();
+        foreach (var key in memberKeys.Where(key => key != Guid.Empty).Distinct())
+        {
+            if (!cache.TryGetValue(CacheKey(key), out string cached))
+            {
+                uncached.Add(key);
+            }
+            else if (cached.Length > 0)
+            {
+                names[key] = cached;
+            }
+        }
+
+        if (uncached.Count == 0)
+        {
+            return names;
+        }
+
+        var members = (await memberService.GetByKeysAsync([.. uncached])).ToDictionary(member => member.Key);
+        foreach (var key in uncached)
+        {
+            var name = members.TryGetValue(key, out var member)
+                ? FormatDisplayName(member.GetValue<string>("firstName"), member.GetValue<string>("lastName"), member.Username)
+                : null;
+
+            // A missing name is cached as empty too, so reviews by deleted members cost one lookup, not one a page view.
+            cache.Set(CacheKey(key), name ?? string.Empty, CacheLifetime);
+            if (name is not null)
+            {
+                names[key] = name;
+            }
+        }
+
+        return names;
+    }
+
+    public void Forget(IEnumerable<Guid> memberKeys)
+    {
+        foreach (var key in memberKeys)
+        {
+            cache.Remove(CacheKey(key));
+        }
+    }
+
+    private static string CacheKey(Guid memberKey) => $"kcc:author-name:{memberKey}";
 }

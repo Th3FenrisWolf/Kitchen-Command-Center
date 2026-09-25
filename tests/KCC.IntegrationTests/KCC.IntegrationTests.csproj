@@ -18,9 +18,6 @@
         <PackageReference Include="Moq" />
         <PackageReference Include="TUnit" />
     </ItemGroup>
-    <ItemGroup Label="Unported slices">
-        <Compile Remove="Features/Providers/**" />
-    </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />
     </ItemGroup>

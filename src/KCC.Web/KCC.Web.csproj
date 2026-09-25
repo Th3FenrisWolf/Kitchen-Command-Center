@@ -16,6 +16,10 @@
     <ItemGroup>
         <PackageReference Include="Anthropic" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="RobotsTxtCore" />
         <PackageReference Include="SimpleMvcSitemap" />
         <PackageReference Include="StyleCop.Analyzers">
@@ -29,8 +33,6 @@
 
     <ItemGroup Label="Unported slices">
         <Compile Remove="Features/Api/**" />
-        <Compile Remove="Features/Components/Breadcrumbs/BreadcrumbService.cs" />
-        <Compile Remove="Features/DevTools/RecipeSeed/**" />
         <Compile Remove="Features/Models/Api/**" />
         <Compile Remove="Features/Models/Common/KCCApplicationUser.cs" />
         <Compile Remove="Features/Pages/Account/**" />
@@ -39,7 +41,7 @@
         <Compile Remove="Features/Pages/RecipeDetail/**" />
         <Compile Remove="Features/Pages/RecipeSearch/**" />
         <Compile Remove="Features/Pages/VariantDetail/**" />
-        <Compile Remove="Features/Providers/**" />
+        <Compile Remove="Features/Providers/RecipeIconProvider.cs" />
         <Compile Remove="Features/Search/**" />
         <Content Remove="Features/Pages/Account/**/*.cshtml" />
         <Content Remove="Features/Pages/AddVariant/**/*.cshtml" />
@@ -47,6 +49,10 @@
         <Content Remove="Features/Pages/RecipeDetail/**/*.cshtml" />
         <Content Remove="Features/Pages/RecipeSearch/**/*.cshtml" />
         <Content Remove="Features/Pages/VariantDetail/**/*.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\KCC.Contributions\KCC.Contributions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

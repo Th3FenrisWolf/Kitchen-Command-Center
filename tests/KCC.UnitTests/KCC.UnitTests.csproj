@@ -19,11 +19,9 @@
     <ItemGroup Label="Unported slices">
         <Compile Remove="Admin/**" />
         <Compile Remove="Features/Api/**" />
-        <Compile Remove="Features/Contributions/**" />
         <Compile Remove="Features/Pages/Account/**" />
         <Compile Remove="Features/Pages/RecipeDetail/**" />
         <Compile Remove="Features/Pages/VariantDetail/**" />
-        <Compile Remove="Features/Providers/**" />
         <Compile Remove="Features/Search/**" />
     </ItemGroup>
     <ItemGroup>

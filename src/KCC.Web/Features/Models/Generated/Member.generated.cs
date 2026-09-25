@@ -50,6 +50,22 @@ namespace KCC.Web.Features.Models.Generated
 		// properties
 
 		///<summary>
+		/// First name
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("firstName")]
+		public virtual string FirstName => this.Value<string>(_publishedValueFallback, "firstName");
+
+		///<summary>
+		/// Last name
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("lastName")]
+		public virtual string LastName => this.Value<string>(_publishedValueFallback, "lastName");
+
+		///<summary>
 		/// Comments
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
