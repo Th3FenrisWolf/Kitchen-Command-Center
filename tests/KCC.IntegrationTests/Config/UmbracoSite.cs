@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
 using TUnit.Core.Interfaces;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Events;
+using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Infrastructure.Examine;
 
@@ -97,6 +99,13 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         }
 
         builder.ConfigureServices(services => services.AddTransient<IStartupFilter, ThrowingPathFilter>());
+
+        builder.ConfigureServices(services =>
+        {
+            services.AddSingleton<PublishedCacheProbe>();
+            services.AddSingleton<INotificationHandler<ContentCacheRefresherNotification>>(
+                provider => provider.GetRequiredService<PublishedCacheProbe>());
+        });
     }
 
     private static void RequireFrontEndBuild()
@@ -155,6 +164,9 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         ["DataProtection:KeysDirectory"] = Path.Combine(runDirectory, "keys"),
         ["uSync:Settings:ExportOnSave"] = "None",
         ["VueSsr:Enabled"] = "false",
+
+        // Tests wait for each rebuild, so a short quiet period keeps the suite quick.
+        ["RecipeSearch:RebuildDelay"] = "00:00:00.100",
     };
 
     // Appended after the app's own middleware, so an exception thrown here has to pass through its exception handler.

@@ -1,5 +1,6 @@
 using KCC.Contributions.Data;
 using Microsoft.EntityFrameworkCore;
+using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Persistence.EFCore.Scoping;
 
 namespace KCC.Contributions;
@@ -9,7 +10,10 @@ public interface IContributionWrites
     Task UpsertReviewAsync(Guid variantKey, Guid memberKey, decimal rating, string text);
 }
 
-public sealed class ContributionWrites(IEFCoreScopeProvider<ContributionsDbContext> scopes, IContributionStats stats) : IContributionWrites
+public sealed class ContributionWrites(
+    IEFCoreScopeProvider<ContributionsDbContext> scopes,
+    IContributionStats stats,
+    IEventAggregator eventAggregator) : IContributionWrites
 {
     public async Task UpsertReviewAsync(Guid variantKey, Guid memberKey, decimal rating, string text)
     {
@@ -42,5 +46,6 @@ public sealed class ContributionWrites(IEFCoreScopeProvider<ContributionsDbConte
         }
 
         stats.Invalidate();
+        await eventAggregator.PublishAsync(new ReviewsChangedNotification());
     }
 }

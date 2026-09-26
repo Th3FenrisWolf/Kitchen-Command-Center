@@ -1,6 +1,4 @@
 using System.Globalization;
-using Kentico.Xperience.Lucene.Core.Indexing;
-using Kentico.Xperience.Lucene.Core.Search;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Documents;
@@ -16,9 +14,7 @@ namespace KCC.Web.Features.Search;
 /// range), applies the selected category/diet facets as a drill-down, and reads cross-aware (drill-sideways) facet
 /// counts alongside a sorted, paged slice of hits and an optional highest-rated spotlight.
 /// </summary>
-public class RecipeSearchService(
-    ILuceneIndexManager indexManager,
-    ILuceneSearchService searchService) : IRecipeSearchService
+public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
 {
     // Suffix under which the average rating is stored (the un-suffixed key is the sort-only DoubleDocValuesField).
     private const string AverageRatingStoredSuffix = "_v";
@@ -35,8 +31,7 @@ public class RecipeSearchService(
     public RecipeSearchResults Search(RecipeSearchCriteria rawCriteria)
     {
         var criteria = rawCriteria.Normalized();
-        var index = indexManager.GetRequiredIndex(RecipeSearchConstants.IndexName);
-        var facetsConfig = BuildFacetsConfig();
+        var facetsConfig = RecipeFacets.Config();
         var baseQuery = BuildQuery(criteria);
 
         var drill = new DrillDownQuery(facetsConfig, baseQuery);
@@ -52,8 +47,10 @@ public class RecipeSearchService(
 
         var sort = BuildSort(criteria);
 
-        return searchService.UseSearcherWithDrillSideways(index, (searcher, drillSideways) =>
+        return index.Search((searcher, taxonomy) =>
         {
+            var drillSideways = new DrillSideways(searcher, facetsConfig, taxonomy);
+
             // Request the whole index so the returned TopDocs holds every match: both paging and the spotlight
             // scan need the complete hit set, and DrillSideways clamps the requested count to MaxDoc anyway.
             var topN = Math.Max(searcher.IndexReader.MaxDoc, 1);
@@ -98,16 +95,6 @@ public class RecipeSearchService(
                 Spotlight = spotlight,
             };
         });
-    }
-
-    private static FacetsConfig BuildFacetsConfig()
-    {
-        // Must mirror RecipeSearchIndexingStrategy.FacetsConfigFactory so the drill-down terms are encoded the
-        // same way they were indexed; both dimensions were declared multi-valued there.
-        var config = new FacetsConfig();
-        config.SetMultiValued(RecipeSearchConstants.FacetCategory, true);
-        config.SetMultiValued(RecipeSearchConstants.FacetDiet, true);
-        return config;
     }
 
     private static Query BuildQuery(RecipeSearchCriteria criteria)

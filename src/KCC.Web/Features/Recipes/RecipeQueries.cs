@@ -1,4 +1,5 @@
 using KCC.Web.Features.Models.Generated;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Extensions;
 
@@ -9,9 +10,13 @@ public interface IRecipeQueries
     RecipePageData GetRecipePage(Recipe recipe);
 
     VariantPageData GetVariantPage(RecipeVariant variant);
+
+    IReadOnlyList<RecipePageData> GetPublishedRecipes();
+
+    string GetCreateRecipeUrl(RecipeListingPage listing);
 }
 
-public class RecipeQueries : IRecipeQueries
+public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
 {
     public RecipePageData GetRecipePage(Recipe recipe) => new(
         RecipeFrom(recipe),
@@ -31,6 +36,17 @@ public class RecipeQueries : IRecipeQueries
             RecipeFrom(recipe),
             recipe.Children<RecipeVariant>().Where(sibling => sibling.Key != variant.Key).Select(VariantFrom).ToList());
     }
+
+    public IReadOnlyList<RecipePageData> GetPublishedRecipes() =>
+        contentQuery.ContentAtRoot()
+            .OfType<HomePage>()
+            .SelectMany(home => home.Children<RecipeListingPage>())
+            .SelectMany(listing => listing.Children<Recipe>())
+            .Select(GetRecipePage)
+            .ToList();
+
+    public string GetCreateRecipeUrl(RecipeListingPage listing) =>
+        listing.Children<CreateRecipePage>().FirstOrDefault()?.Url();
 
     private static RecipeRecord RecipeFrom(Recipe recipe) => new(
         recipe.Key,

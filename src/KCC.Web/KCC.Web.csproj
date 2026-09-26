@@ -44,7 +44,6 @@
         <Compile Remove="Features/Pages/CreateRecipe/**" />
         <Compile Remove="Features/Pages/RecipeSearch/**" />
         <Compile Remove="Features/Providers/RecipeIconProvider.cs" />
-        <Compile Remove="Features/Search/**" />
         <Content Remove="Features/Pages/Account/**/*.cshtml" />
         <Content Remove="Features/Pages/AddVariant/**/*.cshtml" />
         <Content Remove="Features/Pages/CreateRecipe/**/*.cshtml" />
