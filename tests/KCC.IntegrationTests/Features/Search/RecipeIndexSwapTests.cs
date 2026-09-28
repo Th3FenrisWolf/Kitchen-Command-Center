@@ -27,13 +27,19 @@ public class RecipeIndexSwapTests
             }
         })).ToList();
 
-        for (var rebuild = 0; rebuild < 10; rebuild++)
+        try
         {
-            rebuilder.Signal();
-            await rebuilder.WhenCurrentAsync(CancellationToken.None);
+            for (var rebuild = 0; rebuild < 10; rebuild++)
+            {
+                rebuilder.Signal();
+                await rebuilder.WhenCurrentAsync(CancellationToken.None);
+            }
+        }
+        finally
+        {
+            await stop.CancelAsync();
         }
 
-        await stop.CancelAsync();
         await Task.WhenAll(searchers);
 
         _ = await Assert.That(string.Join(",", totals.Keys)).IsEqualTo("5");

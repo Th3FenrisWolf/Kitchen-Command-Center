@@ -4,8 +4,9 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** "Before you start", then Task 1. **Requires Phase 2 done:** its Status
-line reads `done (<date>)` and `node tests/scripts/run.mjs` is green on `replatform`.
+**Status:** done (2026-09-27), on branch `replatform-phase-3`, which is based on `replatform-phase-2`. **Resume
+point:** the Phase 4 plan in this folder; read **Findings from Phase 3** at the end of this file first. **Requires
+Phase 2 done** (it is, 2026-09-25).
 
 **Goal:** The recipe listing page and `GET /api/recipes/search` answer from a first-party Lucene index held in
 memory. The index is rebuilt whole shortly after any content, member or review change, and the search E2E suite is
@@ -3095,3 +3096,46 @@ git commit -m "Close Replatform Phase 3"
 
 Phase 4 (Members and writes) is planned next, in this folder, against the code as it then stands. It brings back
 `RecipeSearchLiveRatingTests`, and every review write it adds publishes `ReviewsChangedNotification`.
+
+## Findings from Phase 3
+
+Found during Phase 3 (2026-09-25 to 2026-09-27). The Phase 4 to 7 plans predate them.
+
+- **The branch.** Phase 3 ran on `replatform-phase-3`, based on `replatform-phase-2`, because Phase 2 was not merged
+  into `replatform`. Neither branch is merged yet. The owner committed the Phase 5 and 6 plans on this branch
+  (`6a1cbcb`).
+- **`WhenCurrentAsync` also fails late callers.** Suppose a caller's changes were covered by a rebuild that failed,
+  and no signal has come in since. The caller gets that failure at once; the plan's code left it waiting forever. A
+  later successful build supersedes the failure.
+- **Failed rebuilds retry on their own.** The first retry comes after `RecipeSearch:RetryDelay` (30 s). The delay
+  doubles after each failure, up to 10 minutes, and resets after a success. The index starts empty, so without this
+  a failed startup build left search empty until some unrelated change.
+- **Dates.** Search documents read a create date with no `DateTimeKind` as UTC (`PageMetadata.AsUtc`), the way
+  `article:published_time` does. `ToUniversalTime()` shifted such a date by the server's offset.
+- **Tests that add nodes under seeded folders remove them.** `BaselineContentTests` expects exactly 6 children under
+  Recipe Categories, 11 under Recipe Tags and 2 under Status Codes. `RecipeIndexTriggerTests` moves the category and
+  tag it adds to the recycle bin in a `finally`. Any Phase 4 test that adds taxonomy nodes must do the same.
+- **`RecipeSearchLiveRatingTests` needs rework before Phase 4 brings it back.** It gives the first card 5 stars and
+  expects that card to become the single top-rated recipe. The seed's Legendary Lasagna is already rated 5.0, so that
+  premise fails. While it runs, it also changes the spotlight and first card that
+  `RecipeSearchTests.Search_page_lists_recipe_cards` asserts, so the two can't run concurrently as written.
+- **A cold-start race in the header.** On a freshly booted site, concurrent first requests can read the site
+  settings utility nav's `NavLink.Link` as null. This is an Umbraco first-conversion race, and the header drops the
+  Login link for that request. It made `ChromeTests.Home_RendersTheHeaderInEachRamp` flaky once this phase's five
+  parallel search tests enlarged the first burst of requests. `SiteProcess` now requests `/` once after seeding, and
+  30 concurrent requests right after boot lost the link in 2 of 10 boots before that warm-up. The live site can show
+  the same blip on the first burst of requests after a restart.
+- **The rebuild debounce has no maximum wait.** Every signal restarts the 2 s quiet period. In Phase 4, sign-ins,
+  sign-outs and failed-login counters all save the member, and each save signals, so a steady stream of them could
+  postpone rebuilds. Cap the wait if that traffic arrives. `RecipeSearch:RebuildDelay` and `RetryDelay` are not
+  validated: `"2"` binds as two days, and a zero `RetryDelay` retries without pause.
+- **The seed icon.** Matcha Panna Cotta's icon was `fa-duotone fa-pudding`, which Font Awesome Pro does not have, so
+  its tile rendered blank. It is `fa-duotone fa-custard` now.
+- **Dev loop.** In two short smoke boots, `dotnet run --launch-profile Local` did not bring Vite and the SSR service
+  up: the dev-cert bootstrap was still running. `dotnet watch --non-interactive`, the README's loop, starts both.
+- **The gate** ran from a fresh clone of `replatform-phase-3` on a new database.
+  - The seed summary, the tahini search and the rebuild log lines match Task 8.
+  - `/recipes/` is server-rendered and hydrates with no warning in either ramp, and scrolling loads the second page.
+  - All four captures match the reference apart from the differences `NOTES.md` now lists.
+  - The owner's backoffice check was handed to the owner: rename a category and see the filter follow about two
+    seconds later.

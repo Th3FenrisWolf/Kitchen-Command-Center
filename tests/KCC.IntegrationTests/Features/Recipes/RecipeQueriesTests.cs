@@ -96,6 +96,7 @@ public class RecipeQueriesTests
 
         _ = await Assert.That(recipes.Count(page => page.Recipe.Key == SeedKeys.Recipe("Spicy Ramen Flight"))).IsEqualTo(1);
         _ = await Assert.That(recipes.Single(page => page.Recipe.Key == SeedKeys.Recipe("Spicy Ramen Flight")).Variants.Count).IsEqualTo(4);
+        _ = await Assert.That(recipes.Single(page => page.Recipe.Key == SeedKeys.Recipe("Spicy Ramen Flight")).AddVariantUrl).IsEqualTo("/recipes/add-variant/");
         _ = await Assert.That(recipes.Count(page => SeedKeys.Recipe(page.Recipe.Name) == page.Recipe.Key)).IsEqualTo(25);
         _ = await Assert.That(recipes.Any(page => page.Recipe.Key == withdrawn)).IsFalse();
     }

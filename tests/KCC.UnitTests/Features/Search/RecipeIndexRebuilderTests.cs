@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Threading.Channels;
 using KCC.Web.Features.Search;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -10,6 +12,8 @@ namespace KCC.UnitTests.Features.Search;
 
 public class RecipeIndexRebuilderTests
 {
+    private static readonly TimeSpan RetryDelay = TimeSpan.FromMilliseconds(50);
+
     [Test]
     public async Task Start_BuildsTheIndexUnasked()
     {
@@ -92,6 +96,43 @@ public class RecipeIndexRebuilderTests
     }
 
     [Test]
+    public async Task AFailedStartupBuild_IsRetriedWithoutASignal()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var source = new FakeSource("Chili") { Failure = new InvalidOperationException("The published cache is unavailable.") };
+        await using var site = await StartAsync(source);
+        _ = await Assert.That(async () => await site.Rebuilder.WhenCurrentAsync(timeout.Token))
+            .Throws<InvalidOperationException>();
+
+        source.Failure = null;
+        await source.Succeeded.WaitAsync(timeout.Token);
+        await site.Rebuilder.WhenCurrentAsync(timeout.Token);
+
+        _ = await Assert.That(site.RecipeCount()).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task ConsecutiveFailures_BackOff()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var source = new FakeSource("Chili") { Failure = new InvalidOperationException("The published cache is unavailable.") };
+        await using var site = await StartAsync(source);
+
+        var loadTimes = new List<TimeSpan>();
+        while (loadTimes.Count < 5)
+        {
+            loadTimes.Add(await source.LoadTimes.ReadAsync(timeout.Token));
+        }
+
+        // The retries should come RetryDelay × 1, 2, 4 and 8 apart. Only lower bounds, at half those, are asserted: a
+        // busy machine stretches a gap, but no timer fires that early.
+        for (var gap = 0; gap < 4; gap++)
+        {
+            _ = await Assert.That(loadTimes[gap + 1] - loadTimes[gap]).IsGreaterThanOrEqualTo(RetryDelay * (1 << gap) / 2);
+        }
+    }
+
+    [Test]
     public async Task BeforeInstall_BuildsNothing()
     {
         var source = new FakeSource("Chili");
@@ -112,7 +153,7 @@ public class RecipeIndexRebuilderTests
             services.GetRequiredService<IServiceScopeFactory>(),
             index,
             runtimeState.Object,
-            Options.Create(new RecipeSearchOptions { RebuildDelay = TimeSpan.FromMilliseconds(50) }),
+            Options.Create(new RecipeSearchOptions { RebuildDelay = TimeSpan.FromMilliseconds(50), RetryDelay = RetryDelay }),
             NullLogger<RecipeIndexRebuilder>.Instance);
         await rebuilder.StartAsync(CancellationToken.None);
         return new RunningRebuilder(rebuilder, index, services);
@@ -135,6 +176,9 @@ public class RecipeIndexRebuilderTests
 
     private sealed class FakeSource(params string[] names) : IRecipeIndexSource
     {
+        private readonly long created = Stopwatch.GetTimestamp();
+        private readonly Channel<TimeSpan> loadTimes = Channel.CreateUnbounded<TimeSpan>();
+        private readonly TaskCompletionSource succeeded = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private int loads;
 
         public string[] Names { get; set; } = names;
@@ -143,12 +187,22 @@ public class RecipeIndexRebuilderTests
 
         public int Loads => Volatile.Read(ref loads);
 
+        public ChannelReader<TimeSpan> LoadTimes => loadTimes.Reader;
+
+        public Task Succeeded => succeeded.Task;
+
         public Task<IReadOnlyList<RecipeSearchDocument>> LoadAsync()
         {
             Interlocked.Increment(ref loads);
-            return Failure is not null
-                ? Task.FromException<IReadOnlyList<RecipeSearchDocument>>(Failure)
-                : Task.FromResult<IReadOnlyList<RecipeSearchDocument>>(Names.Select(name => new RecipeSearchDocument { Name = name }).ToList());
+            _ = loadTimes.Writer.TryWrite(Stopwatch.GetElapsedTime(created));
+            var failure = Failure;
+            if (failure is not null)
+            {
+                return Task.FromException<IReadOnlyList<RecipeSearchDocument>>(failure);
+            }
+
+            _ = succeeded.TrySetResult();
+            return Task.FromResult<IReadOnlyList<RecipeSearchDocument>>(Names.Select(name => new RecipeSearchDocument { Name = name }).ToList());
         }
     }
 }

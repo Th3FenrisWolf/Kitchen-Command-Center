@@ -18,10 +18,8 @@ public interface IRecipeQueries
 
 public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
 {
-    public RecipePageData GetRecipePage(Recipe recipe) => new(
-        RecipeFrom(recipe),
-        recipe.Children<RecipeVariant>().Select(VariantFrom).ToList(),
-        recipe.Parent<RecipeListingPage>()?.Children<AddVariantPage>().FirstOrDefault()?.Url());
+    public RecipePageData GetRecipePage(Recipe recipe) =>
+        RecipePageFrom(recipe, AddVariantUrl(recipe.Parent<RecipeListingPage>()));
 
     public VariantPageData GetVariantPage(RecipeVariant variant)
     {
@@ -41,12 +39,23 @@ public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
         contentQuery.ContentAtRoot()
             .OfType<HomePage>()
             .SelectMany(home => home.Children<RecipeListingPage>())
-            .SelectMany(listing => listing.Children<Recipe>())
-            .Select(GetRecipePage)
+            .SelectMany(listing =>
+            {
+                var addVariantUrl = AddVariantUrl(listing);
+                return listing.Children<Recipe>().Select(recipe => RecipePageFrom(recipe, addVariantUrl));
+            })
             .ToList();
 
     public string GetCreateRecipeUrl(RecipeListingPage listing) =>
         listing.Children<CreateRecipePage>().FirstOrDefault()?.Url();
+
+    private static RecipePageData RecipePageFrom(Recipe recipe, string addVariantUrl) => new(
+        RecipeFrom(recipe),
+        recipe.Children<RecipeVariant>().Select(VariantFrom).ToList(),
+        addVariantUrl);
+
+    private static string AddVariantUrl(RecipeListingPage listing) =>
+        listing?.Children<AddVariantPage>().FirstOrDefault()?.Url();
 
     private static RecipeRecord RecipeFrom(Recipe recipe) => new(
         recipe.Key,

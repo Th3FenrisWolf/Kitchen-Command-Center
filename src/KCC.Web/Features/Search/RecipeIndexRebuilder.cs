@@ -19,6 +19,8 @@ public sealed class RecipeIndexRebuilder(
     IOptions<RecipeSearchOptions> options,
     ILogger<RecipeIndexRebuilder> logger) : BackgroundService, IRecipeIndexRebuilder
 {
+    private static readonly TimeSpan MaxRetryDelay = TimeSpan.FromMinutes(10);
+
     private readonly SemaphoreSlim wake = new(0);
     private readonly Lock gate = new();
     private readonly List<(long Generation, TaskCompletionSource Done)> waiters = [];
@@ -26,6 +28,7 @@ public sealed class RecipeIndexRebuilder(
     private long built;
     private long? failedGeneration;
     private Exception failedException;
+    private TimeSpan retryDelay = Timeout.InfiniteTimeSpan;
 
     public void Signal()
     {
@@ -74,12 +77,19 @@ public sealed class RecipeIndexRebuilder(
         var quietPeriod = TimeSpan.Zero;
         while (!stoppingToken.IsCancellationRequested)
         {
-            await wake.WaitAsync(stoppingToken);
-
-            // Saves arrive in bursts (a publish with descendants, the seeder); each new signal restarts the quiet
-            // period, so a burst costs one rebuild.
-            while (await wake.WaitAsync(quietPeriod, stoppingToken))
+            if (await wake.WaitAsync(retryDelay, stoppingToken))
             {
+                // Saves arrive in bursts (a publish with descendants, the seeder); each new signal restarts the quiet
+                // period, so a burst costs one rebuild.
+                while (await wake.WaitAsync(quietPeriod, stoppingToken))
+                {
+                }
+            }
+            else
+            {
+                // Counted as a signal, so a waiter from here on waits for the retry instead of failing on the build
+                // before it.
+                Interlocked.Increment(ref requested);
             }
 
             quietPeriod = options.Value.RebuildDelay;
@@ -104,12 +114,20 @@ public sealed class RecipeIndexRebuilder(
                     Stopwatch.GetElapsedTime(started).TotalMilliseconds);
             }
 
+            retryDelay = Timeout.InfiniteTimeSpan;
             Complete(generation, null);
         }
         catch (Exception exception) when (!stoppingToken.IsCancellationRequested)
         {
-            // An unhandled exception would stop the host. The previous index keeps serving, and the next change retries.
-            logger.LogError(exception, "Rebuilding the recipe index failed");
+            // An unhandled exception would stop the host. The previous index keeps serving until a retry or the next
+            // change rebuilds it.
+            retryDelay = retryDelay == Timeout.InfiniteTimeSpan ? options.Value.RetryDelay : retryDelay * 2;
+            if (retryDelay > MaxRetryDelay)
+            {
+                retryDelay = MaxRetryDelay;
+            }
+
+            logger.LogError(exception, "Rebuilding the recipe index failed; retrying in {RetryDelay}", retryDelay);
             Complete(generation, exception);
         }
     }
@@ -124,7 +142,7 @@ public sealed class RecipeIndexRebuilder(
             }
             else
             {
-                // A later call for this generation would otherwise wait forever: only a new Signal wakes another Complete.
+                // A later call for this generation fails at once instead of waiting out the retry's backoff.
                 failedGeneration = generation;
                 failedException = failure;
             }

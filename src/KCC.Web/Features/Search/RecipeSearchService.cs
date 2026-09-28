@@ -172,11 +172,8 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
         var (field, descending, byScore) = RecipeSearchCriteria.SortSpec(criteria.Sort);
         if (byScore)
         {
-            // Relevance first (drives keyword queries); then a stable name tie-break. A no-query
-            // "browse" matches every recipe under MatchAllDocs with an identical score, so without a
-            // tie-break Lucene falls back to doc order — which tracks the (CI-restore-dependent) index
-            // build order and shuffles between deploys. The alphabetical tie-break makes the default
-            // listing deterministic.
+            // A no-query browse gives every recipe the same score under MatchAllDocs. Without the name tie-break, tied
+            // hits fall back to document order, which is only the order documents reached RecipeIndexBuilder.Build.
             return new Sort(
                 SortField.FIELD_SCORE,
                 new SortField(RecipeSearchConstants.FieldNameSort, SortFieldType.STRING));
