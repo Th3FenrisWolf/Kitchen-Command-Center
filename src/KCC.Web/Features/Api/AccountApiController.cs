@@ -1,103 +1,71 @@
-using CMS.Core;
-using CMS.Websites;
-using KCC.ResourceStrings.Data;
-using KCC.Web.Features.Extensions;
-using KCC.Web.Features.Models.Common;
-using Kentico.Content.Web.Mvc;
-using Microsoft.AspNetCore.Identity;
+using KCC.Web.Features.Dictionary;
+using KCC.Web.Features.Pages.Account;
+using KCC.Web.Features.Security;
+using KCC.Web.Features.Sqlite;
 using Microsoft.AspNetCore.Mvc;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using Microsoft.AspNetCore.RateLimiting;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Web.Common.Security;
 
 namespace KCC.Web.Features.Api;
 
 [ApiController]
 [Route("api/account")]
+[AutoValidateAntiforgeryToken]
+[EnableRateLimiting(RateLimits.Account)]
 public class AccountApiController(
-    SignInManager<KCCApplicationUser> signInManager,
-    UserManager<KCCApplicationUser> userManager,
-    IEventLogService eventLogService,
-    IResourceStringInfoProvider resourceStrings,
-    IContentRetriever contentRetriever
-) : ControllerBase
+    IMemberSignInManager signInManager,
+    IMemberManager memberManager,
+    IMemberWriteLock memberWriteLock,
+    IAccountPageQueries accountPages,
+    IResourceStringProvider resourceStrings) : ControllerBase
 {
-    public record LoginRequest(string UserName, string Password, bool RememberMe, string ReturnUrl);
-    public record RegisterRequest(string UserName, string Email, string Password);
-    public record AuthResponse(bool Success, string[] Errors, string RedirectUrl);
-
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request?.UserName) || string.IsNullOrWhiteSpace(request.Password))
         {
             return BadRequest(new AuthResponse(false, ["Username and password are required."], null));
         }
 
-        var result = SignInResult.Failed;
-        try
-        {
-            result = await signInManager.PasswordSignInAsync(
-                request.UserName, request.Password, request.RememberMe, lockoutOnFailure: false);
-        }
-        catch (Exception ex)
-        {
-            eventLogService.LogException(nameof(AccountApiController), nameof(Login), ex);
-            return StatusCode(500, new AuthResponse(false, ["An error occurred during sign in."], null));
-        }
-
+        var result = await memberWriteLock.RunAsync(() =>
+            signInManager.PasswordSignInAsync(request.UserName, request.Password, request.RememberMe, lockoutOnFailure: true));
         if (result.Succeeded)
         {
-            return Ok(new AuthResponse(true, null, SafeReturnUrl(request.ReturnUrl)));
+            return Ok(new AuthResponse(true, null, Url.IsLocalUrl(request.ReturnUrl) ? request.ReturnUrl : "/"));
         }
 
         var error = result switch
         {
             { IsLockedOut: true } => resourceStrings.GetOrDefault("Login.LockedOutError"),
             { IsNotAllowed: true } => resourceStrings.GetOrDefault("Login.NotAllowedError"),
-            { RequiresTwoFactor: true } => resourceStrings.GetOrDefault("Login.TwoFactorRequiredError"),
             _ => resourceStrings.GetOrDefault("Login.InvalidCredentialsError"),
         };
         return Ok(new AuthResponse(false, [error], null));
     }
 
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
-    {
-        await signInManager.SignOutAsync();
-        return Ok(new AuthResponse(true, null, Url.HomePage()));
-    }
-
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.UserName) ||
-            string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request?.UserName) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         {
             return BadRequest(new AuthResponse(false, ["Username, email and password are required."], null));
         }
 
-        var user = new KCCApplicationUser { UserName = request.UserName, Email = request.Email };
+        // Every new member waits for the owner's approval before they can sign in.
+        var userName = request.UserName.Trim();
+        var member = MemberIdentityUser.CreateNew(userName, request.Email.Trim(), Constants.Security.DefaultMemberTypeAlias, isApproved: false, userName);
+        var result = await memberWriteLock.RunAsync(() => memberManager.CreateAsync(member, request.Password));
 
-        IdentityResult result;
-        try
-        {
-            result = await userManager.CreateAsync(user, request.Password);
-        }
-        catch (Exception ex)
-        {
-            eventLogService.LogException(nameof(AccountApiController), nameof(Register), ex);
-            return StatusCode(500, new AuthResponse(false, ["An error occurred during registration."], null));
-        }
-
-        if (!result.Succeeded)
-        {
-            return Ok(new AuthResponse(false, [..result.Errors.Select(e => e.Description)], null));
-        }
-
-        // RequireConfirmedAccount = true — don't auto-sign-in; send user to the registration-complete page
-        var registrationCompletePage = await contentRetriever.RetrieveFirstPage<RegistrationCompletePage>();
-        return Ok(new AuthResponse(true, null, registrationCompletePage?.GetUrl().RelativePath));
+        return result.Succeeded
+            ? Ok(new AuthResponse(true, null, accountPages.GetUrls().RegistrationComplete))
+            : Ok(new AuthResponse(false, [.. result.Errors.Select(error => error.Description)], null));
     }
-
-    private string SafeReturnUrl(string returnUrl) => Url.IsLocalUrl(returnUrl) ? returnUrl : Url.HomePage();
 }
+
+public sealed record LoginRequest(string UserName, string Password, bool RememberMe, string ReturnUrl);
+
+public sealed record RegisterRequest(string UserName, string Email, string Password);
+
+public sealed record AuthResponse(bool Success, string[] Errors, string RedirectUrl);

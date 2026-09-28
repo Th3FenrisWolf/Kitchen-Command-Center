@@ -148,9 +148,11 @@ dotnet dotnet-ef migrations add <Name> --project src/KCC.Contributions --startup
 #### Recipe search
 
 The recipe index is a Lucene index held in memory and rebuilt whole: at startup, and two seconds
-(`RecipeSearch:RebuildDelay`) after the last of any burst of content, member or review changes. Nothing needs
-rebuilding by hand and nothing is written to disk. Each rebuild logs `Rebuilt the recipe index with N recipes`; a
-failed one retries on its own after `RecipeSearch:RetryDelay` (30 seconds), backing off to at most ten minutes.
+(`RecipeSearch:RebuildDelay`) after the last of any burst of content, member or review changes. A burst that never
+goes quiet — a steady stream of sign-ins, say — still rebuilds within `RecipeSearch:MaxRebuildWait` (10 seconds) of
+its first change. Nothing needs rebuilding by hand and nothing is written to disk. Each rebuild logs `Rebuilt the
+recipe index with N recipes`; a failed one retries on its own after `RecipeSearch:RetryDelay` (30 seconds), backing
+off to at most ten minutes.
 Code that writes reviews publishes `ReviewsChangedNotification`, and tests wait for a rebuild with
 `IRecipeIndexRebuilder.WhenCurrentAsync`.
 

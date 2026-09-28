@@ -1,6 +1,7 @@
 <!-- #region MenuItem Component Properties -->
 <script lang="ts">
   import { computed, inject } from 'vue'
+  import SignOutForm, { isSignOutUrl } from '~/Components/Account/SignOutForm.vue'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
   /**
@@ -54,8 +55,16 @@
   }
 </script>
 <template>
+  <SignOutForm v-if="isSignOutUrl(item.url)" :action="item.url">
+    <button
+      type="submit"
+      class="kcc-kick relative z-20 flex h-full w-full cursor-pointer items-center px-4 py-2 text-ink decoration-hair-strong underline-offset-[3px] hover:underline"
+    >
+      {{ item.displayText }}
+    </button>
+  </SignOutForm>
   <a
-    v-if="item.url"
+    v-else-if="item.url"
     :href="item.url"
     :target="item.target"
     class="kcc-kick relative z-20 flex h-full w-full cursor-pointer items-center px-4 py-2 text-ink decoration-hair-strong underline-offset-[3px] hover:underline"
@@ -92,7 +101,16 @@
               :key="subLink.displayText"
               class="basis-full rounded-md bg-paper-2 text-ink"
             >
+              <SignOutForm v-if="isSignOutUrl(subLink.url)" :action="subLink.url">
+                <button
+                  type="submit"
+                  class="block size-full cursor-pointer p-4 text-center decoration-hair-strong underline-offset-[3px] hover:underline"
+                >
+                  {{ subLink.displayText }}
+                </button>
+              </SignOutForm>
               <a
+                v-else
                 class="block size-full p-4 text-center decoration-hair-strong underline-offset-[3px] hover:underline"
                 :href="subLink.url"
                 :target="subLink.target"

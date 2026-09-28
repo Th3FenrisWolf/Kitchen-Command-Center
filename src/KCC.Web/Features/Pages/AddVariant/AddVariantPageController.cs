@@ -1,70 +1,59 @@
-using CMS.ContentEngine;
-using CMS.Websites;
-using KCC;
-using KCC.ResourceStrings.Data;
-using KCC.Web.Features.Extensions;
-using KCC.Web.Features.Models.Constants;
-using KCC.Web.Features.Pages.AddVariant;
-using Kentico.Content.Web.Mvc;
-using Kentico.Content.Web.Mvc.Routing;
-using Microsoft.AspNetCore.Authorization;
+using KCC.Web.Features.Dictionary;
+using KCC.Web.Features.Models.Generated;
+using KCC.Web.Features.Pages.Account;
+using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Recipes;
 using Microsoft.AspNetCore.Mvc;
-
-[assembly: RegisterWebPageRoute(
-    AddVariantPage.CONTENT_TYPE_NAME,
-    typeof(AddVariantController),
-    WebsiteChannelNames = [XperienceConstants.WebsiteChannelName]
-)]
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace KCC.Web.Features.Pages.AddVariant;
 
-[Authorize]
-public class AddVariantController(
-    IContentRetriever contentRetriever,
-    IResourceStringInfoProvider resourceStrings
-) : Controller
+public class AddVariantPageController(
+    ILogger<RenderController> logger,
+    ICompositeViewEngine compositeViewEngine,
+    IUmbracoContextAccessor umbracoContextAccessor,
+    IMemberManager memberManager,
+    IAccountPageQueries accountPages,
+    IRecipeQueries recipes,
+    IResourceStringProvider resourceStrings,
+    PageMetadata pageMetadata)
+    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    public async Task<IActionResult> Index([FromQuery(Name = "recipe")] Guid? recipeGuid)
+    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
+    [NonAction]
+    public sealed override IActionResult Index() => throw new NotSupportedException();
+
+    public async Task<IActionResult> Index([FromQuery(Name = "recipe")] Guid? recipeKey, CancellationToken cancellationToken)
     {
-        if (recipeGuid is null || recipeGuid == Guid.Empty)
+        if (CurrentPage is not AddVariantPage page)
         {
-            return HttpContext.IsAdmin() ? StubView() : NotFound();
+            return NotFound();
         }
 
-        var recipe = (await contentRetriever.RetrievePages<Recipe>(
-            new(),
-            query => query
-                .Where(where => where
-                    .WhereEquals(nameof(IContentQueryDataContainer.ContentItemGUID), recipeGuid.Value))
-                .TopN(1),
-            new($"{nameof(AddVariantController)}|{nameof(Index)}|{recipeGuid}")
-        )).FirstOrDefault();
-
-        if (recipe is null)
+        if (await memberManager.GetCurrentMemberAsync() is null)
         {
-            return HttpContext.IsAdmin() ? StubView() : NotFound();
+            return SignInRedirect.To(accountPages.GetUrls().Login, Request);
+        }
+
+        if (recipeKey is not { } key || recipes.FindPublishedRecipe(key) is not { } recipe)
+        {
+            return NotFound();
         }
 
         var viewModel = new AddVariantViewModel
         {
-            RecipeId = recipe.SystemFields.WebPageItemID,
+            RecipeId = recipe.Key,
             RecipeName = recipe.Name,
-            RecipeSlug = recipe.GetUrl().RelativePath,
+            RecipeSlug = recipe.Url,
             ResourceStrings = GetStrings(),
         };
+        pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/AddVariant/Index.cshtml", viewModel);
     }
-
-    private ViewResult StubView() => View(
-        "~/Features/Pages/AddVariant/Index.cshtml",
-        new AddVariantViewModel
-        {
-            RecipeId = 0,
-            RecipeName = "Sample Recipe",
-            RecipeSlug = "/recipes/sample-recipe",
-            ResourceStrings = GetStrings(),
-        });
 
     private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
         // Hero + shared navigation
@@ -109,6 +98,5 @@ public class AddVariantController(
         "AddVariant.VariantSubmittedMessage",
         "AddVariant.BackTo",
         "AddVariant.FailedToAddVariant",
-        "AddVariant.UnexpectedError"
-    );
+        "AddVariant.UnexpectedError");
 }

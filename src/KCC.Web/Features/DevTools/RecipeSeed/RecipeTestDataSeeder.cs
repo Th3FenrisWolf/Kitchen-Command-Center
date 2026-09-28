@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using KCC.Contributions;
+using Microsoft.Extensions.Configuration;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
 using Umbraco.Cms.Core.Models.ContentPublishing;
@@ -21,7 +22,8 @@ public class RecipeTestDataSeeder(
     IMemberTypeService memberTypeService,
     IMemberEditingService memberEditingService,
     IUserService userService,
-    IContributionWrites contributionWrites)
+    IContributionWrites contributionWrites,
+    IConfiguration configuration)
 {
     private static readonly JsonSerializerOptions CamelCase = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
@@ -34,6 +36,7 @@ public class RecipeTestDataSeeder(
         var categories = KeysByName("recipeCategory");
         var tags = KeysByName("recipeTag");
         var authors = await EnsureAuthorsAsync(summary, log);
+        await EnsureE2EMemberAsync(summary, log);
         var today = DateTime.UtcNow.Date;
 
         foreach (var recipe in RecipeSeedData.Recipes)
@@ -189,10 +192,6 @@ public class RecipeTestDataSeeder(
 
     private async Task<Dictionary<string, Guid>> EnsureAuthorsAsync(SeedSummary summary, TextWriter log)
     {
-        var memberTypeKey = memberTypeService.Get(Constants.Security.DefaultMemberTypeAlias)?.Key
-            ?? throw new InvalidOperationException("The default member type is missing.");
-        var superUser = await userService.GetAsync(Constants.Security.SuperUserKey)
-            ?? throw new InvalidOperationException("The super user is missing.");
         var keys = new Dictionary<string, Guid>(StringComparer.Ordinal);
 
         foreach (var author in RecipeSeedData.Authors)
@@ -203,37 +202,72 @@ public class RecipeTestDataSeeder(
                 continue;
             }
 
-            var created = await memberEditingService.CreateAsync(
-                new MemberCreateModel
-                {
-                    Key = SeedKeys.Author(author.UserName),
-                    ContentTypeKey = memberTypeKey,
-                    Username = author.UserName,
-                    Email = author.Email,
-
-                    // Seeded authors never sign in, so their password is random.
-                    Password = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
-                    IsApproved = true,
-                    Variants = [new VariantModel { Name = $"{author.FirstName} {author.LastName}" }],
-                    Properties =
-                    [
-                        new PropertyValueModel { Alias = "firstName", Value = author.FirstName },
-                        new PropertyValueModel { Alias = "lastName", Value = author.LastName },
-                    ],
-                },
-                superUser);
-            if (!created.Success)
-            {
-                throw new InvalidOperationException(
-                    $"Creating author {author.UserName} failed: {created.Status.MemberEditingOperationStatus}, {created.Status.ContentEditingOperationStatus}.");
-            }
-
-            keys[author.Key] = created.Result.Content.Key;
+            // Seeded authors never sign in, so their password is random.
+            keys[author.Key] = await CreateApprovedMemberAsync(
+                author.UserName,
+                author.Email,
+                Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
+                author.FirstName,
+                author.LastName);
             summary.AuthorsCreated++;
             log.WriteLine($"  author created: {author.FirstName} {author.LastName} ({author.UserName})");
         }
 
         return keys;
+    }
+
+    // The E2E suite and the reference capture sign in as this member. Its credentials come from the environment, so
+    // none is committed; without them there is no member to create.
+    private async Task EnsureE2EMemberAsync(SeedSummary summary, TextWriter log)
+    {
+        var userName = configuration["KCC_E2E_MEMBER_USERNAME"];
+        var password = configuration["KCC_E2E_MEMBER_PASSWORD"];
+        if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
+        {
+            log.WriteLine("  E2E member skipped: KCC_E2E_MEMBER_USERNAME and KCC_E2E_MEMBER_PASSWORD are not both set.");
+            return;
+        }
+
+        if (memberService.GetByUsername(userName) is not null)
+        {
+            return;
+        }
+
+        _ = await CreateApprovedMemberAsync(userName, $"{userName}@example.test", password, "E2E", "Member");
+        summary.E2EMembersCreated++;
+        log.WriteLine($"  E2E member created: {userName}");
+    }
+
+    private async Task<Guid> CreateApprovedMemberAsync(string userName, string email, string password, string firstName, string lastName)
+    {
+        var memberTypeKey = memberTypeService.Get(Constants.Security.DefaultMemberTypeAlias)?.Key
+            ?? throw new InvalidOperationException("The default member type is missing.");
+        var superUser = await userService.GetAsync(Constants.Security.SuperUserKey)
+            ?? throw new InvalidOperationException("The super user is missing.");
+        var created = await memberEditingService.CreateAsync(
+            new MemberCreateModel
+            {
+                Key = SeedKeys.Author(userName),
+                ContentTypeKey = memberTypeKey,
+                Username = userName,
+                Email = email,
+                Password = password,
+                IsApproved = true,
+                Variants = [new VariantModel { Name = $"{firstName} {lastName}" }],
+                Properties =
+                [
+                    new PropertyValueModel { Alias = "firstName", Value = firstName },
+                    new PropertyValueModel { Alias = "lastName", Value = lastName },
+                ],
+            },
+            superUser);
+        if (!created.Success)
+        {
+            throw new InvalidOperationException(
+                $"Creating member {userName} failed: {created.Status.MemberEditingOperationStatus}, {created.Status.ContentEditingOperationStatus}.");
+        }
+
+        return created.Result.Content.Key;
     }
 
     private async Task CreatePublishedAsync(Guid key, string name, Guid contentTypeKey, Guid parentKey, DateTime createDate, IEnumerable<PropertyValueModel> values)
@@ -286,7 +320,9 @@ public sealed class SeedSummary
 
     public int ReviewsWritten { get; set; }
 
+    public int E2EMembersCreated { get; set; }
+
     public override string ToString() =>
         $"Seed complete: recipes +{RecipesCreated} (skipped {RecipesSkipped}), variants +{VariantsCreated}, " +
-        $"reviews +{ReviewsWritten}, authors +{AuthorsCreated}.";
+        $"reviews +{ReviewsWritten}, authors +{AuthorsCreated}, E2E member +{E2EMembersCreated}.";
 }

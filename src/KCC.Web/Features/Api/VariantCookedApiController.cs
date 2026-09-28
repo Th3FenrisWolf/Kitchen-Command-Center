@@ -1,50 +1,48 @@
-using KCC.Contributions.Data;
-using KCC.Web.Features.Models.Common;
-using KCC.Web.Features.Providers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using KCC.Contributions;
+using KCC.Web.Features.Recipes;
+using KCC.Web.Features.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Umbraco.Cms.Core.Security;
 
 namespace KCC.Web.Features.Api;
 
 [ApiController]
 [Route("api/variant")]
-[Authorize]
+[AutoValidateAntiforgeryToken]
+[EnableRateLimiting(RateLimits.Contributions)]
 public class VariantCookedApiController(
-    IVariantCookedInfoProvider cooked,
-    IVariantGuidProvider variantGuidProvider,
-    UserManager<KCCApplicationUser> userManager
-) : ControllerBase
+    IContributionWrites contributionWrites,
+    IContributionStats contributionStats,
+    IRecipeQueries recipes,
+    IMemberManager memberManager) : ControllerBase
 {
     [HttpPost("{variantGuid:guid}/cooked")]
-    public async Task<IActionResult> MarkCooked(Guid variantGuid, CancellationToken cancellationToken)
+    public async Task<IActionResult> MarkCooked(Guid variantGuid)
     {
-        var user = await userManager.GetUserAsync(User);
-        if (user is null)
+        if (await memberManager.GetCurrentMemberAsync() is not { } member)
         {
             return Unauthorized();
         }
 
-        var recipeGuid = await variantGuidProvider.GetRecipeGuidAsync(variantGuid, cancellationToken);
-        if (recipeGuid is null)
+        if (!recipes.IsPublishedVariant(variantGuid))
         {
             return NotFound(new { error = "Variant not found." });
         }
 
-        cooked.MarkCooked(variantGuid, recipeGuid.Value, user.MemberGuid);
-        return Ok(new { cookedCount = cooked.GetCookedCountForVariant(variantGuid), hasCooked = true });
+        await contributionWrites.MarkCookedAsync(variantGuid, member.Key);
+        return Ok(new CookedResponse((await contributionStats.GetAsync()).For(variantGuid).CookedCount, HasCooked: true));
     }
 
     [HttpDelete("{variantGuid:guid}/cooked")]
     public async Task<IActionResult> UnmarkCooked(Guid variantGuid)
     {
-        var user = await userManager.GetUserAsync(User);
-        if (user is null)
+        if (await memberManager.GetCurrentMemberAsync() is not { } member)
         {
             return Unauthorized();
         }
 
-        cooked.UnmarkCooked(variantGuid, user.MemberGuid);
-        return Ok(new { cookedCount = cooked.GetCookedCountForVariant(variantGuid), hasCooked = false });
+        await contributionWrites.UnmarkCookedAsync(variantGuid, member.Key);
+        return Ok(new CookedResponse((await contributionStats.GetAsync()).For(variantGuid).CookedCount, HasCooked: false));
     }
 }

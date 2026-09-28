@@ -2,7 +2,9 @@ using System.Net;
 using KCC.Contributions;
 using KCC.IntegrationTests.Config;
 using KCC.Web.Features.DevTools.RecipeSeed;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.Navigation;
 
@@ -51,6 +53,19 @@ public class RecipeSeederTests
         _ = await Assert.That(priya.IsApproved).IsTrue();
         _ = await Assert.That(priya.GetValue<string>("firstName")).IsEqualTo("Priya");
         _ = await Assert.That(priya.GetValue<string>("lastName")).IsEqualTo("Balan");
+    }
+
+    [Test]
+    public async Task Seeder_CreatesTheApprovedE2EMember_WhoCanSignIn()
+    {
+        using var scope = Site.Services.CreateScope();
+        var member = await scope.ServiceProvider.GetRequiredService<IMemberManager>().FindByNameAsync("e2e-member");
+
+        var signIn = await scope.ServiceProvider.GetRequiredService<SignInManager<MemberIdentityUser>>()
+            .CheckPasswordSignInAsync(member!, "E2E-Member-Passw0rd", lockoutOnFailure: false);
+
+        _ = await Assert.That(member!.IsApproved).IsTrue();
+        _ = await Assert.That(signIn.Succeeded).IsTrue();
     }
 
     [Test]

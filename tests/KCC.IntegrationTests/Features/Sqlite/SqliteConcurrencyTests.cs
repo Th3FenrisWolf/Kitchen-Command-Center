@@ -15,13 +15,13 @@ using Umbraco.Cms.Core.Services.OperationStatus;
 namespace KCC.IntegrationTests.Features.Sqlite;
 
 // Spec §14: parallel review writes, a content save and an index rebuild, repeated, with no lock errors and consistent
-// counts. Members signing up, signing in and being approved race the same writes, because a member save is followed
-// by Umbraco's relations update, which is the write that stalled on SQLite.
+// counts. Cooked marks, cook notes and deletes race alongside, and so do members signing up, signing in and being
+// approved, because a member save is followed by Umbraco's relations update, which is the write that stalled on SQLite.
 public class SqliteConcurrencyTests
 {
     private const int Rounds = 5;
-    private const int ReviewWriters = 4;
-    private const int ReviewsPerWriter = 50;
+    private const int Writers = 4;
+    private const int WritesPerWriter = 50;
     private const int MemberRepeats = 5;
 
     // Every write here takes well under a second. A transaction stuck on a stale snapshot retries for minutes, so a
@@ -44,14 +44,16 @@ public class SqliteConcurrencyTests
             members.Add(userName);
         }
 
-        var reviewers = new ConcurrentBag<Guid>();
+        var reviewers = new ConcurrentDictionary<Guid, bool>();
+        var cooks = new ConcurrentDictionary<Guid, bool>();
+        var notes = new ConcurrentBag<int>();
         var rebuilder = Site.Services.GetRequiredService<IRecipeIndexRebuilder>();
 
         for (var round = 0; round < Rounds; round++)
         {
             var edit = round;
             var work = new List<Task>();
-            work.AddRange(Enumerable.Range(0, ReviewWriters).Select(_ => Task.Run(() => WriteReviewsAsync(variant, reviewers))));
+            work.AddRange(Enumerable.Range(0, Writers).Select(_ => Task.Run(() => WriteContributionsAsync(variant, reviewers, cooks, notes))));
             work.AddRange(members.Select(userName => Task.Run(() => SignInRepeatedlyAsync(userName))));
             work.Add(Task.Run(() => SignUpAndApproveAsync()));
             work.Add(Task.Run(() => EditAndPublishAsync(recipe, $"Edited in round {edit}.")));
@@ -60,23 +62,39 @@ public class SqliteConcurrencyTests
             await Task.WhenAll(work).WaitAsync(RoundLimit);
             await rebuilder.WhenCurrentAsync(CancellationToken.None);
 
-            var stored = (await Site.Services.GetRequiredService<IContributionReads>().ReviewsAsync(variant, 0, 1)).Total;
-            var cached = (await Site.Services.GetRequiredService<IContributionStats>().GetAsync()).For(variant).ReviewCount;
-            var indexed = IndexedReviewCount("axolotl");
-            _ = await Assert.That(stored).IsEqualTo(reviewers.Count);
-            _ = await Assert.That(cached).IsEqualTo(reviewers.Count);
-            _ = await Assert.That(indexed).IsEqualTo(reviewers.Count);
+            var reads = Site.Services.GetRequiredService<IContributionReads>();
+            var stats = (await Site.Services.GetRequiredService<IContributionStats>().GetAsync()).For(variant);
+            _ = await Assert.That((await reads.ReviewsAsync(variant, 0, 1)).Total).IsEqualTo(reviewers.Count);
+            _ = await Assert.That(stats.ReviewCount).IsEqualTo(reviewers.Count);
+            _ = await Assert.That(IndexedReviewCount("axolotl")).IsEqualTo(reviewers.Count);
+            _ = await Assert.That(stats.CookedCount).IsEqualTo(cooks.Count);
+            _ = await Assert.That((await reads.NotesAsync(variant, 0, 1)).Total).IsEqualTo(notes.Count);
         }
     }
 
-    private async Task WriteReviewsAsync(Guid variant, ConcurrentBag<Guid> reviewers)
+    // Every fourth member takes their review and their cooked mark back, so deletes race the inserts too.
+    private async Task WriteContributionsAsync(
+        Guid variant,
+        ConcurrentDictionary<Guid, bool> reviewers,
+        ConcurrentDictionary<Guid, bool> cooks,
+        ConcurrentBag<int> notes)
     {
         var writes = Site.Services.GetRequiredService<IContributionWrites>();
-        for (var index = 0; index < ReviewsPerWriter; index++)
+        for (var index = 0; index < WritesPerWriter; index++)
         {
-            var reviewer = Guid.NewGuid();
-            await writes.UpsertReviewAsync(variant, reviewer, 4.5m, "Held up under load.");
-            reviewers.Add(reviewer);
+            var member = Guid.NewGuid();
+            await writes.UpsertReviewAsync(variant, member, 4.5m, "Held up under load.");
+            reviewers[member] = true;
+            await writes.MarkCookedAsync(variant, member);
+            cooks[member] = true;
+            notes.Add(await writes.AddNoteAsync(variant, member, "Noted under load."));
+            if (index % 4 == 0)
+            {
+                _ = await writes.DeleteReviewAsync(variant, member);
+                reviewers.TryRemove(member, out _);
+                await writes.UnmarkCookedAsync(variant, member);
+                cooks.TryRemove(member, out _);
+            }
         }
     }
 

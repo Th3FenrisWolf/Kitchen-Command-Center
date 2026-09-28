@@ -1,31 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using KCC.Web.Features.Pages.Account;
 
 namespace KCC.UnitTests.Features.Pages.Account;
 
 public class AccountViewModelTests
 {
+    private static readonly Guid MacAndCheeseKey = Guid.NewGuid();
+    private static readonly Guid TacosKey = Guid.NewGuid();
+    private static readonly Guid ClassicKey = Guid.NewGuid();
+    private static readonly Guid CarnitasKey = Guid.NewGuid();
+    private static readonly Guid SpicyKey = Guid.NewGuid();
+
     private static readonly AccountViewModel.AuthoredRecipeInput MacAndCheese =
-        new(PageId: 1, Name: "Mac & Cheese", Icon: "fa-pot", Url: "/recipes/mac-and-cheese", StartedByMe: true);
+        new(Key: MacAndCheeseKey, Name: "Mac & Cheese", Icon: "fa-pot", Url: "/recipes/mac-and-cheese", StartedByMe: true);
 
     private static readonly AccountViewModel.AuthoredRecipeInput Tacos =
-        new(PageId: 2, Name: "Tacos", Icon: "fa-taco", Url: "/recipes/tacos", StartedByMe: false);
+        new(Key: TacosKey, Name: "Tacos", Icon: "fa-taco", Url: "/recipes/tacos", StartedByMe: false);
 
     [Test]
     public async Task BuildRecipeGroups_GroupsVariantsUnderTheirRecipe()
     {
         var variants = new[]
         {
-            new AccountViewModel.AuthoredVariantInput(PageId: 10, ParentPageId: 1, Name: "Classic", Icon: "fa-pot", Url: "/recipes/mac-and-cheese/classic"),
-            new AccountViewModel.AuthoredVariantInput(PageId: 11, ParentPageId: 2, Name: "Carnitas", Icon: "fa-taco", Url: "/recipes/tacos/carnitas"),
+            new AccountViewModel.AuthoredVariantInput(Key: ClassicKey, ParentKey: MacAndCheeseKey, Name: "Classic", Icon: "fa-pot", Url: "/recipes/mac-and-cheese/classic"),
+            new AccountViewModel.AuthoredVariantInput(Key: CarnitasKey, ParentKey: TacosKey, Name: "Carnitas", Icon: "fa-taco", Url: "/recipes/tacos/carnitas"),
         };
 
         var groups = AccountViewModel.BuildRecipeGroups(
-            [MacAndCheese, Tacos], variants,
-            publishedRecipeIds: new HashSet<int> { 1, 2 },
-            publishedVariantIds: new HashSet<int> { 10, 11 });
+            [MacAndCheese, Tacos],
+            variants,
+            publishedRecipeKeys: new HashSet<Guid> { MacAndCheeseKey, TacosKey },
+            publishedVariantKeys: new HashSet<Guid> { ClassicKey, CarnitasKey });
 
         _ = await Assert.That(groups.Count()).IsEqualTo(2);
         _ = await Assert.That(groups.ElementAt(0).RecipeName).IsEqualTo("Mac & Cheese");
@@ -40,13 +44,10 @@ public class AccountViewModelTests
     {
         var variants = new[]
         {
-            new AccountViewModel.AuthoredVariantInput(PageId: 10, ParentPageId: 1, Name: "Classic", Icon: "fa-pot", Url: "/recipes/mac-and-cheese/classic"),
+            new AccountViewModel.AuthoredVariantInput(Key: ClassicKey, ParentKey: MacAndCheeseKey, Name: "Classic", Icon: "fa-pot", Url: "/recipes/mac-and-cheese/classic"),
         };
 
-        var groups = AccountViewModel.BuildRecipeGroups(
-            [MacAndCheese], variants,
-            publishedRecipeIds: new HashSet<int>(),
-            publishedVariantIds: new HashSet<int>());
+        var groups = AccountViewModel.BuildRecipeGroups([MacAndCheese], variants, new HashSet<Guid>(), new HashSet<Guid>());
 
         _ = await Assert.That(groups.ElementAt(0).IsPending).IsTrue();
         _ = await Assert.That(groups.ElementAt(0).RecipeUrl).IsNull();
@@ -59,13 +60,14 @@ public class AccountViewModelTests
     {
         var variants = new[]
         {
-            new AccountViewModel.AuthoredVariantInput(PageId: 10, ParentPageId: 1, Name: "Classic", Icon: "fa-pot", Url: "/recipes/mac-and-cheese/classic"),
+            new AccountViewModel.AuthoredVariantInput(Key: ClassicKey, ParentKey: MacAndCheeseKey, Name: "Classic", Icon: "fa-pot", Url: "/recipes/mac-and-cheese/classic"),
         };
 
         var groups = AccountViewModel.BuildRecipeGroups(
-            [MacAndCheese], variants,
-            publishedRecipeIds: new HashSet<int> { 1 },
-            publishedVariantIds: new HashSet<int> { 10 });
+            [MacAndCheese],
+            variants,
+            publishedRecipeKeys: new HashSet<Guid> { MacAndCheeseKey },
+            publishedVariantKeys: new HashSet<Guid> { ClassicKey });
 
         _ = await Assert.That(groups.ElementAt(0).IsPending).IsFalse();
         _ = await Assert.That(groups.ElementAt(0).RecipeUrl).IsEqualTo("/recipes/mac-and-cheese");
@@ -76,10 +78,7 @@ public class AccountViewModelTests
     [Test]
     public async Task BuildRecipeGroups_KeepsStartedRecipesWithNoVariantsOfMine()
     {
-        var groups = AccountViewModel.BuildRecipeGroups(
-            [MacAndCheese], [],
-            publishedRecipeIds: new HashSet<int> { 1 },
-            publishedVariantIds: new HashSet<int>());
+        var groups = AccountViewModel.BuildRecipeGroups([MacAndCheese], [], new HashSet<Guid> { MacAndCheeseKey }, new HashSet<Guid>());
 
         _ = await Assert.That(groups.Count()).IsEqualTo(1);
         _ = await Assert.That(groups.ElementAt(0).Variants.Count()).IsEqualTo(0);
@@ -88,12 +87,9 @@ public class AccountViewModelTests
     [Test]
     public async Task BuildRecipeGroups_DropsForeignRecipesWithNoVariantsAndSkipsOrphanVariants()
     {
-        var orphan = new AccountViewModel.AuthoredVariantInput(PageId: 99, ParentPageId: 42, Name: "Orphan", Icon: "fa-x", Url: "/nowhere");
+        var orphan = new AccountViewModel.AuthoredVariantInput(Key: Guid.NewGuid(), ParentKey: Guid.NewGuid(), Name: "Orphan", Icon: "fa-x", Url: "/nowhere");
 
-        var groups = AccountViewModel.BuildRecipeGroups(
-            [Tacos], [orphan],
-            publishedRecipeIds: new HashSet<int> { 2 },
-            publishedVariantIds: new HashSet<int> { 99 });
+        var groups = AccountViewModel.BuildRecipeGroups([Tacos], [orphan], new HashSet<Guid> { TacosKey }, new HashSet<Guid> { orphan.Key });
 
         _ = await Assert.That(groups.Count()).IsEqualTo(0);
     }
@@ -103,14 +99,15 @@ public class AccountViewModelTests
     {
         var variants = new[]
         {
-            new AccountViewModel.AuthoredVariantInput(PageId: 12, ParentPageId: 1, Name: "Spicy", Icon: "fa-pot", Url: "/b"),
-            new AccountViewModel.AuthoredVariantInput(PageId: 10, ParentPageId: 1, Name: "Classic", Icon: "fa-pot", Url: "/a"),
+            new AccountViewModel.AuthoredVariantInput(Key: SpicyKey, ParentKey: MacAndCheeseKey, Name: "Spicy", Icon: "fa-pot", Url: "/b"),
+            new AccountViewModel.AuthoredVariantInput(Key: ClassicKey, ParentKey: MacAndCheeseKey, Name: "Classic", Icon: "fa-pot", Url: "/a"),
         };
 
         var groups = AccountViewModel.BuildRecipeGroups(
-            [Tacos with { StartedByMe = true }, MacAndCheese], variants,
-            publishedRecipeIds: new HashSet<int> { 1, 2 },
-            publishedVariantIds: new HashSet<int> { 10, 12 });
+            [Tacos with { StartedByMe = true }, MacAndCheese],
+            variants,
+            publishedRecipeKeys: new HashSet<Guid> { MacAndCheeseKey, TacosKey },
+            publishedVariantKeys: new HashSet<Guid> { ClassicKey, SpicyKey });
 
         _ = await Assert.That(groups.Select(group => group.RecipeName)).IsEquivalentTo(new[] { "Mac & Cheese", "Tacos" });
         _ = await Assert.That(groups.ElementAt(0).Variants.Select(variant => variant.Name)).IsEquivalentTo(new[] { "Classic", "Spicy" });
@@ -119,7 +116,7 @@ public class AccountViewModelTests
     [Test]
     public async Task BuildRecipeGroups_ReturnsEmptyForNoInputs()
     {
-        var groups = AccountViewModel.BuildRecipeGroups([], [], new HashSet<int>(), new HashSet<int>());
+        var groups = AccountViewModel.BuildRecipeGroups([], [], new HashSet<Guid>(), new HashSet<Guid>());
 
         _ = await Assert.That(groups.Count()).IsEqualTo(0);
     }

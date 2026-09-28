@@ -170,6 +170,10 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
 
         // Tests wait for each rebuild, so a short quiet period keeps the suite quick.
         ["RecipeSearch:RebuildDelay"] = "00:00:00.100",
+
+        // The seeder creates the approved member the E2E suite signs in as, from these two settings.
+        ["KCC_E2E_MEMBER_USERNAME"] = "e2e-member",
+        ["KCC_E2E_MEMBER_PASSWORD"] = "E2E-Member-Passw0rd",
     };
 
     // Appended after the app's own middleware, so an exception thrown here has to pass through its exception handler.

@@ -35,6 +35,7 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<AccountSettingsViewProps>()
@@ -225,9 +226,11 @@
     <h2 class="sr-only">{{ rs('SignOut') }}</h2>
 
     <div class="flex justify-end">
-      <Button as="a" :href="logoutUrl" variant="ghost">
-        <ResourceString for="SignOut" />
-      </Button>
+      <SignOutForm :action="logoutUrl">
+        <Button type="submit" variant="ghost">
+          <ResourceString for="SignOut" />
+        </Button>
+      </SignOutForm>
     </div>
   </KccSheet>
 </template>

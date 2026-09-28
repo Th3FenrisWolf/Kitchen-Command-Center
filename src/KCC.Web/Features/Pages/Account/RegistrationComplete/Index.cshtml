@@ -1,4 +1,9 @@
-@model BasePageViewModel
+@using KCC.Web.Features.Dictionary
+@using KCC.Web.Features.Pages.Account.RegistrationComplete
+
+@inject IResourceStringProvider ResourceStrings
+
+@model RegistrationCompleteViewModel
 
 @* Razor cannot use the Sheet.vue primitive (not a *.Component.vue, so not globally registered); it
    hand-writes the same Structure from the global kit classes in Kit.css. *@
@@ -7,13 +12,13 @@
     <div class="kcc-sheet" style="--pad: 48px">
       <span class="kcc-wash" style="--c: var(--color-green); --x: 85%; --y: 90%; --w: 55%; --h: 50%" aria-hidden="true"></span>
       <p class="kcc-kick">Registered</p>
-      <h1 class="kcc-h3 mt-6">@Html.ResourceString("RegistrationComplete.Heading")</h1>
-      <p class="kcc-body mt-6">@Html.ResourceString("RegistrationComplete.Body")</p>
+      <h1 class="kcc-h3 mt-6">@ResourceStrings.GetOrDefault("RegistrationComplete.Heading")</h1>
+      <p class="kcc-body mt-6">@ResourceStrings.GetOrDefault("RegistrationComplete.Body")</p>
       <div class="mt-6 flex flex-wrap gap-4">
-        <button-link class="kcc-btn--lg" href="@Url.HomePage()">@Html.ResourceString("RegistrationComplete.ContinueLink")</button-link>
+        <button-link class="kcc-btn--lg" href="@Model.LoginUrl">@ResourceStrings.GetOrDefault("RegistrationComplete.ContinueLink")</button-link>
       </div>
     </div>
   </div>
-  <span class="kcc-label"><i class="fa-duotone fa-envelope-open" aria-hidden="true"></i>Registered</span>
+  <span class="kcc-label"><i class="fa-duotone fa-hourglass-half" aria-hidden="true"></i>Registered</span>
   <span class="kcc-tape" aria-hidden="true"></span>
 </div>

@@ -23,6 +23,10 @@ public class ContributionsComposer : IComposer
             shareUmbracoConnection: true);
 
         builder.AddNotificationAsyncHandler<UmbracoApplicationStartedNotification, RunContributionsMigrations>();
+        builder
+            .AddNotificationAsyncHandler<ContentDeletedNotification, ContributionCascades>()
+            .AddNotificationAsyncHandler<MemberDeletedNotification, ContributionCascades>();
+
         builder.Services.AddSingleton<IContributionStats, ContributionStatsSource>();
         builder.Services.AddSingleton<IContributionReads, ContributionReads>();
         builder.Services.AddSingleton<IContributionWrites, ContributionWrites>();
