@@ -105,6 +105,9 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
             services.AddSingleton<PublishedCacheProbe>();
             services.AddSingleton<INotificationHandler<ContentCacheRefresherNotification>>(
                 provider => provider.GetRequiredService<PublishedCacheProbe>());
+            services.AddSingleton<TrashRelationProbe>();
+            services.AddSingleton<INotificationHandler<RelationSavingNotification>>(
+                provider => provider.GetRequiredService<TrashRelationProbe>());
         });
     }
 
