@@ -1,1 +1,4 @@
-{ "extends": "@kcc/admin-client-config/tsconfig.base.json" }
+{
+  "extends": "@kcc/admin-client-config/tsconfig.base.json",
+  "include": ["src"]
+}

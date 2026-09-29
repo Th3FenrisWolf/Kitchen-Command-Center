@@ -498,10 +498,10 @@ $RECYCLE.BIN/
 **/vite.config.d.ts
 **/vite.config.js
 
-# Kentico admin client module build artifacts
-src/KCC.Admin/Client/dist/
+# Backoffice client build output
+src/KCC.Admin/wwwroot/App_Plugins/
 src/KCC.Admin/Client/node_modules/
-src/KCC.Contributions/Client/dist/
+src/KCC.Contributions/wwwroot/App_Plugins/
 src/KCC.Contributions/Client/node_modules/
 
 # Claude Code — local settings stay private; agents and skills are versioned

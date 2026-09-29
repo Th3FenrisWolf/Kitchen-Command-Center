@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsNotAsErrors>NU1608;NU1901;NU1902;NU1903</WarningsNotAsErrors>
+        <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
     </PropertyGroup>
-    <ItemGroup Label="Unported slices">
-        <Compile Remove="FormComponents/IngredientsEditor/**" />
-        <Compile Remove="FormComponents/InstructionsEditor/**" />
-        <Compile Remove="FormComponents/RecipeIconSelector/**" />
-        <Compile Remove="Module.cs" />
-        <Compile Remove="UIPages/**" />
+    <ItemGroup>
+        <PackageReference Include="Umbraco.Cms.Api.Management" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="Client/**" />
     </ItemGroup>
 </Project>
