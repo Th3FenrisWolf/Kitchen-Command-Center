@@ -14,11 +14,15 @@ An Umbraco 17 application with Vue 3 server-side rendering (SSR), on SQLite.
 
 ### Quick Development Workflow
 
-1. **Install frontend dependencies** from the repo root (needs the Font Awesome token, see below):
+1. **Install and build the frontend** from the repo root (needs the Font Awesome token, see below):
 
    ```bash
    yarn install
+   yarn build:all
    ```
+
+   The build includes the backoffice bundles; without them the backoffice has no editors for ingredients,
+   instructions and the icon, and no dashboard (see [Backoffice extensions](#backoffice-extensions)).
 
 2. **Set the backoffice admin account** once per machine. Umbraco creates it on the first boot of a new database.
    The password needs at least 10 characters; keep it in 1Password.
@@ -50,9 +54,9 @@ The site is at `https://localhost:58671`; the backoffice is at `/umbraco`.
 
 ### Font Awesome Pro
 
-This project renders icons with **Font Awesome Pro** (webfont / CSS), installed from Font Awesome's private npm registry. The registry is configured in committed `.npmrc` files (`src/KCC.Web/.npmrc` and `src/KCC.Admin/Client/.npmrc`); the auth token is **not** committed — it is read from the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
+This project renders icons with **Font Awesome Pro** (webfont / CSS), installed from Font Awesome's private npm registry. The registry is configured in the committed root `.npmrc`; the auth token is **not** committed — it is read from the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
 
-Before running `yarn install` in **either** `src/KCC.Web` or `src/KCC.Admin/Client`:
+Before running `yarn install` at the repository root, which installs every workspace:
 
 1. Get a token from your Font Awesome account (Account → Tokens).
 2. Set `FONTAWESOME_NPM_AUTH_TOKEN` in your environment:
@@ -60,7 +64,7 @@ Before running `yarn install` in **either** `src/KCC.Web` or `src/KCC.Admin/Clie
    - PowerShell (current session only): `$env:FONTAWESOME_NPM_AUTH_TOKEN = "<token>"`
    - bash / zsh: `export FONTAWESOME_NPM_AUTH_TOKEN=<token>`
 
-The same variable must be set wherever the production frontend is built. Never commit the token or any Font Awesome font files — `node_modules/`, `**/wwwroot/assets`, `**/wwwroot/webfonts`, and `src/KCC.Admin/Client/dist/` are all git-ignored.
+The same variable must be set wherever the production frontend is built. Never commit the token or any Font Awesome font files — `node_modules/`, `**/wwwroot/assets`, `**/wwwroot/webfonts`, and the backoffice bundles in `src/KCC.*/wwwroot/App_Plugins/` are all git-ignored.
 
 ---
 
@@ -155,10 +159,16 @@ Code that writes reviews publishes `ReviewsChangedNotification`, and tests wait 
 
 #### Members
 
-Anyone can sign up, and the account waits until the owner approves it in the backoffice: Members → the member →
-**Approved** → **Save**. Five failed sign-ins lock a member out for 15 minutes (`Umbraco:CMS:Security` in
-`appsettings.json`). The account, contribution and submission endpoints check the anti-forgery token the layout hands
-out. Rate limits apply per client, keyed on the `CF-Connecting-IP` header, else the socket address:
+Anyone can sign up, and the account waits until the owner approves it: Content → **Contributions** → **Waiting** →
+**Approve** (the member's **Approved** toggle in the Members section, then **Save**, does the same). A member's recipe
+or variant is saved as a draft under Recipes, and **Waiting** lists it: open it, fill in anything it lacks, then **Save
+and publish**. The **Reviews** and **Cook notes** tabs edit or delete what members have written.
+
+A new recipe arrives with its first variant as a second draft; publish the recipe first, then that variant.
+
+Five failed sign-ins lock a member out for 15 minutes (`Umbraco:CMS:Security` in `appsettings.json`). The account,
+contribution and submission endpoints check the anti-forgery token the layout hands out. Rate limits apply per client,
+keyed on the `CF-Connecting-IP` header, else the socket address:
 
 - sign-in, sign-up and password changes: 10 a minute (`RateLimits:AccountPerMinute`)
 - review, cook-note and cooked writes: 30 a minute (`RateLimits:ContributionsPerMinute`)
@@ -167,8 +177,14 @@ out. Rate limits apply per client, keyed on the `CF-Connecting-IP` header, else 
 These are the defaults in `RateLimitOptions` (`src/KCC.Web/Features/Security/RateLimits.cs`); a `RateLimits` section in
 the configuration overrides them.
 
-A member's recipe or variant is saved as a draft under Recipes: open it, fill in anything it lacks, then **Save and
-publish**. A new recipe arrives with its first variant as a second draft; publish the recipe first, then that variant.
+#### Backoffice extensions
+
+The recipe editors (ingredients, instructions and the icon, with **Suggest with AI**) and the Contributions dashboard
+are Lit + TypeScript clients in `src/KCC.Admin/Client` and `src/KCC.Contributions/Client`, on the shared Vite base in
+`packages/admin-client-config`. `yarn build:all` at the repository root builds them into their projects'
+`wwwroot/App_Plugins/`, which the site serves to the backoffice; without that build the backoffice has no editors
+for those fields and no dashboard. Rebuilding a client needs no .NET build: restart the site and reload the
+backoffice. Run a client's tests with `yarn workspace @kcc/admin test` or `yarn workspace @kcc/contributions test`.
 
 ---
 
@@ -231,7 +247,7 @@ CI-friendly. The individual per-suite reports are still produced alongside it.
 #### E2E tests
 
 The E2E suite starts its own copy of the site on a free port, with a fresh SQLite database and its own SSR process.
-Run `dotnet build` and `yarn build:all` (in `src/KCC.Web`) first, and set `KCC_E2E_MEMBER_USERNAME` and
+Run `dotnet build` and `yarn build:all` (at the repository root) first, and set `KCC_E2E_MEMBER_USERNAME` and
 `KCC_E2E_MEMBER_PASSWORD` (a password of at least 8 characters; on macOS/zsh, in `~/.zshenv`). The site's seeder
 creates that member, approved, before any test runs.
 

@@ -103,6 +103,11 @@ public class BackofficeTests : BasePageTests
             await review.GetByRole(AriaRole.Button, new() { Name = "Delete" }).ClickAsync();
             await Page.Locator("umb-confirm-modal").GetByRole(AriaRole.Button, new() { Name = "Delete" }).ClickAsync();
             await Expect(review).ToHaveCountAsync(0);
+
+            _ = await Page.RunAndWaitForResponseAsync(
+                () => Page.GotoAsync(MemberTestVariant.Path),
+                response => response.Url.Contains("/reviews", StringComparison.Ordinal));
+            await Expect(Page.Locator("[data-testid='reviews-list']").GetByText(edited)).ToHaveCountAsync(0);
         }
         catch
         {

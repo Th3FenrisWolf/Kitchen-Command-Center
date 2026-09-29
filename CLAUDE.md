@@ -89,6 +89,21 @@ the above, with `dotnet run --project tests/KCC.IntegrationTests/KCC.Integration
   relations update's own race deterministically. Without that guard, `SqliteConcurrencyTests` stalls in some full-suite
   runs but passes when run alone.
 
+## Backoffice extensions
+
+The backoffice's recipe editors and the Contributions dashboard are Lit clients in `src/KCC.Admin/Client` and
+`src/KCC.Contributions/Client`, built by Vite from `packages/admin-client-config` into gitignored
+`wwwroot/App_Plugins/` folders. Build them with the root `yarn build:all`. Three things fail silently or
+misleadingly:
+
+- A Management API call through `umbHttpClient` sends no token unless it passes
+  `security: [{ scheme: 'bearer', type: 'http' }]`. The endpoint answers 401, and the backoffice reads that as an
+  expired session: it shows its "session timed out" login prompt, with no error toast.
+- When a library `KCC.Web` already references gains its first controller, an incremental build keeps a stale
+  `src/KCC.Web/obj/*/net10.0/KCC.Web.MvcApplicationPartsAssemblyInfo.cs` and every new route answers 404. Delete
+  `KCC.Web.MvcApplicationPartsAssemblyInfo.*` (the `.cs` and its `.cache`) and rebuild.
+- Never name a file or folder `icon`: `.gitignore`'s macOS `Icon` rule ignores it.
+
 ## Torn & Waxed design language
 
 The public site uses the Torn & Waxed identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight

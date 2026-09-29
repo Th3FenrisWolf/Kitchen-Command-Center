@@ -354,7 +354,7 @@ through Umbraco's EF Core scope so it shares Umbraco's single-writer lock (§19)
 - **Contributions dashboard** (`KCC.Contributions`), in the Content section, administrators only, behind one
   Management API controller:
   - **Waiting** (the default tab): unapproved members (name, username, email, registered date) with **Approve**;
-    never-published recipes and variants, newest first, each linking to its node.
+    recipes and variants that are not published, newest first, each linking to its node.
   - **Reviews**: newest first, paged; recipe and variant, member, rating, text, date. **Edit** changes the rating
     (half steps) and the text (≤ 4,000); **Delete** asks first.
   - **Cook notes**: the same without a rating; text is required.

@@ -45,7 +45,7 @@ export class KccRecipeIconEditorElement
     }
   }
 
-  // Sends the name and description as they are in the editor, saved or not.
+  // Reads the workspace's unsaved values, not the saved document.
   async #suggest() {
     this.suggesting = true
     try {
