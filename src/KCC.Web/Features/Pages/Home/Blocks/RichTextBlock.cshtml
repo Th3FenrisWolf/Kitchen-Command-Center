@@ -1,0 +1,13 @@
+@using KCC.Web.Features.Pages.Home
+
+@model RichTextSection
+
+@* App.vue compiles the body as a Vue template; v-pre keeps an editor's {{ }} and v-* text from running. The width
+   keeps a line of body copy readable and the sheet inside the standard tears' size band. *@
+<div class="kcc-slip kcc-tear-@Model.Tear mx-auto w-full max-w-2xl">
+  <div class="kcc-torn">
+    <div class="kcc-sheet" style="--pad: 48px">
+      <div class="kcc-body kcc-prose" v-pre>@Html.Raw(Model.Html)</div>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import Stacker from '~/Widgets/Stacker/Stacker.Component.vue'
+import Stacker, { markStuckCards } from '~/Widgets/Stacker/Stacker.Component.vue'
 import { renderSsr } from '../../support/renderSsr'
 
-const card = (heading: string, backgroundColor: string) => ({
+const card = (heading: string, backgroundColor: string, tear?: 1 | 2 | 3 | 4 | 5 | 6) => ({
   heading,
   subHeading: `${heading}, in one line.`,
   backgroundColor,
+  tear,
 })
 
 const render = (cards: ReturnType<typeof card>[]) => renderSsr(Stacker, { cards })
@@ -14,6 +15,24 @@ const tagsOf = (html: string, hook: string) => [...html.matchAll(new RegExp(`<di
 
 const slipClasses = (html: string) =>
   [...html.matchAll(/<div class="(kcc-slip[^"]*)"/g)].map(([, classes]) => classes!.split(/\s+/))
+
+const fakeSlip = (...startingClasses: string[]) => {
+  const classes = new Set(startingClasses)
+  const classList = {
+    toggle: (name: string, force?: boolean) => {
+      const on = force ?? !classes.has(name)
+      if (on) classes.add(name)
+      else classes.delete(name)
+      return on
+    },
+  }
+  return { classes, classList }
+}
+
+const sentinelEntry = (top: number, slip: ReturnType<typeof fakeSlip>) => ({
+  target: { nextElementSibling: slip },
+  boundingClientRect: { top },
+})
 
 describe('Stacker structure', () => {
   it('tears one sheet per card, cycling the six presets', async () => {
@@ -25,10 +44,16 @@ describe('Stacker structure', () => {
     expect([...html.matchAll(/kcc-tear-(\d)/g)].map(([, preset]) => Number(preset))).toEqual([1, 2, 3, 4, 5, 6, 1])
   })
 
+  it("takes a card's own tear when the page hands it one", async () => {
+    const html = await render([card('Prep', 'bg-paper', 5), card('Cook', 'bg-paper', 6)])
+
+    expect([...html.matchAll(/kcc-tear-(\d)/g)].map(([, preset]) => Number(preset))).toEqual([5, 6])
+  })
+
   it('sets the heading and its line on the sheet', async () => {
     const html = await render([card('Prep', 'bg-paper')])
 
-    expect(html).toContain('<h2 class="kcc-h4">Prep</h2>')
+    expect(html).toContain('<h3 class="kcc-h4">Prep</h3>')
     expect(html).toContain('<p class="kcc-body">Prep, in one line.</p>')
   })
 })
@@ -63,6 +88,28 @@ describe('Stacker sticky mechanics', () => {
     expect(slipClasses(html)[0]).toEqual(
       expect.arrayContaining(['origin-top', 'transition-all', 'duration-100', '[.stuck]:scale-95', '[.last_div]:scale-100']),
     )
+  })
+})
+
+describe('Stacker stuck marking', () => {
+  it('marks every card in a batch whose sentinel is above the viewport', () => {
+    const first = fakeSlip()
+    const second = fakeSlip()
+
+    markStuckCards([sentinelEntry(-1, first), sentinelEntry(-120, second)])
+
+    expect(first.classes.has('stuck')).toBe(true)
+    expect(second.classes.has('stuck')).toBe(true)
+  })
+
+  it('marks one card and clears another in a single batch', () => {
+    const pinned = fakeSlip()
+    const released = fakeSlip('stuck')
+
+    markStuckCards([sentinelEntry(-1, pinned), sentinelEntry(0, released)])
+
+    expect(pinned.classes.has('stuck')).toBe(true)
+    expect(released.classes.has('stuck')).toBe(false)
   })
 })
 

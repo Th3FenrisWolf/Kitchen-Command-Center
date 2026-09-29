@@ -16,8 +16,9 @@ public class HomePageController(
 {
     public override IActionResult Index()
     {
-        var viewModel = new HomeViewModel();
-        pageMetadata.Apply((HomePage)CurrentPage, viewModel);
+        var page = (HomePage)CurrentPage;
+        var viewModel = new HomeViewModel { Sections = HomeSections.From(page.Sections) };
+        pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/Home/Index.cshtml", viewModel);
     }

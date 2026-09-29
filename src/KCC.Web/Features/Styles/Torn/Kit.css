@@ -215,6 +215,36 @@
     text-wrap: pretty;
   }
 
+  /* Editor rich text. The reset strips every block margin and list marker, so each block sits one rule below
+     the last visible one and lists get their markers back. A hidden empty paragraph is not a block to sit
+     below, so a body that opens with one still starts flush. */
+  .kcc-prose > :not(p:empty) ~ * {
+    margin-top: var(--bl);
+  }
+
+  /* The editor keeps an empty paragraph after a closing list or heading, which would add a rule of space. */
+  .kcc-prose > p:empty {
+    display: none;
+  }
+
+  .kcc-prose ul,
+  .kcc-prose ol {
+    padding-left: var(--bl);
+  }
+
+  .kcc-prose ul {
+    list-style: disc;
+  }
+
+  .kcc-prose ol {
+    list-style: decimal;
+  }
+
+  .kcc-prose ol > li::marker {
+    font-family: var(--font-sono);
+    font-variant-numeric: tabular-nums;
+  }
+
   .kcc-h3 {
     font-family: var(--font-casual);
     font-size: 40px;

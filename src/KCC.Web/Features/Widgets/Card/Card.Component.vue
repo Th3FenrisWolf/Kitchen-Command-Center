@@ -27,11 +27,6 @@
      * @default ''
      */
     seed?: string
-
-    /**
-     * @default ''
-     */
-    marginClasses?: string
   }
 
   export interface CardSlots {
@@ -46,7 +41,7 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { cardColor = 'bg-paper', tear, seed = '', marginClasses = '' } = defineProps<CardProps>()
+  const { cardColor = 'bg-paper', tear, seed = '' } = defineProps<CardProps>()
 
   const { drawer } = defineSlots<CardSlots>()
 
@@ -58,18 +53,10 @@
     :wash="washOf(cardColor)"
     :at="{ x: '100%', y: '0%', w: '38%', h: 'min(40%, 68px)' }"
     :tear="resolvedTear"
-    :class="['group/card kcc-slip--fill', marginClasses]"
+    class="group/card kcc-slip--fill"
   >
     <div class="flex h-full flex-col">
-      <div
-        :class="[
-          'relative transition-all',
-          drawer && 'top-1 group-focus-within/card:top-0 group-hover/card:top-0',
-          drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
-        ]"
-      >
-        <slot />
-      </div>
+      <slot />
 
       <div
         v-if="drawer"

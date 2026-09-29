@@ -1,0 +1,98 @@
+using System.Text.RegularExpressions;
+using KCC.Web.Features.Pages.Home;
+
+namespace KCC.UnitTests.Features.Pages.Home;
+
+public class SectionStyleTests
+{
+    private static readonly string[] Backgrounds = ["Desk", "Desk two", "Paper", "Paper two"];
+
+    private static readonly string[] Widths = ["Thin", "Container", "Breakout", "Full width"];
+
+    private static readonly string[] Washes = ["Peach", "Yellow", "Green", "Teal", "Sky", "Lavender", "Pink", "Red"];
+
+    [Test]
+    public async Task Classes_Unset_LeaveTheSectionOnTheDeskAtContainerWidth()
+    {
+        _ = await Assert.That(SectionStyle.Classes(null, null)).IsEqualTo(string.Empty);
+    }
+
+    [Test]
+    [Arguments("Desk", "")]
+    [Arguments("Desk two", "bg-desk-2 p-6 lg:p-12")]
+    [Arguments("Paper", "bg-paper p-6 lg:p-12")]
+    [Arguments("Paper two", "bg-paper-2 p-6 lg:p-12")]
+    public async Task Classes_Background_FillsAndPadsEveryGroundButTheDesk(string background, string expected)
+    {
+        _ = await Assert.That(SectionStyle.Classes(background, null)).IsEqualTo(expected);
+    }
+
+    [Test]
+    [Arguments("Thin", "thin")]
+    [Arguments("Container", "")]
+    [Arguments("Breakout", "breakout")]
+    [Arguments("Full width", "full-width px-4")]
+    public async Task Classes_Width_ChoosesTheContentGridColumn(string width, string expected)
+    {
+        _ = await Assert.That(SectionStyle.Classes(null, width)).IsEqualTo(expected);
+    }
+
+    [Test]
+    public async Task Classes_PutTheWidthBeforeTheFill()
+    {
+        _ = await Assert.That(SectionStyle.Classes("Paper", "Breakout")).IsEqualTo("breakout bg-paper p-6 lg:p-12");
+    }
+
+    [Test]
+    public async Task Classes_FullWidthFill_PadsInsteadOfTakingAGutter()
+    {
+        _ = await Assert.That(SectionStyle.Classes("Paper two", "Full width")).IsEqualTo("full-width bg-paper-2 p-6 lg:p-12");
+    }
+
+    [Test]
+    [Arguments("Peach", "bg-peach")]
+    [Arguments("Lavender", "bg-lavender")]
+    [Arguments("", "")]
+    [Arguments(null, "")]
+    public async Task Wash_IsTheFillUtility(string wash, string expected)
+    {
+        _ = await Assert.That(SectionStyle.Wash(wash)).IsEqualTo(expected);
+    }
+
+    // Tailwind never scans .cs files, so a class built here that the safelist misses renders unstyled, silently.
+    [Test]
+    public async Task EveryClassItCanBuild_IsInTheTailwindSafelist()
+    {
+        var safelist = Safelist();
+        var built = Backgrounds.SelectMany(background => Widths.Select(width => SectionStyle.Classes(background, width)))
+            .Concat(Washes.Select(SectionStyle.Wash))
+            .SelectMany(classes => classes.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Except(["thin", "breakout", "full-width"])
+            .Distinct();
+
+        _ = await Assert.That(built.Where(name => !safelist.Contains(name))).IsEmpty();
+    }
+
+    private static HashSet<string> Safelist()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
+        {
+            directory = directory.Parent;
+        }
+
+        var css = File.ReadAllText(Path.Combine(directory!.FullName, "src", "KCC.Web", "Features", "Styles", "TailwindConfig.css"));
+        return Regex.Matches(css, @"@source inline\('([^']+)'\)")
+            .SelectMany(match => Expand(match.Groups[1].Value))
+            .ToHashSet();
+    }
+
+    private static IEnumerable<string> Expand(string pattern)
+    {
+        var group = Regex.Match(pattern, @"\{([^}]*)\}");
+        return group.Success
+            ? group.Groups[1].Value.Split(',').SelectMany(option =>
+                Expand(pattern[..group.Index] + option + pattern[(group.Index + group.Length)..]))
+            : [pattern];
+    }
+}
