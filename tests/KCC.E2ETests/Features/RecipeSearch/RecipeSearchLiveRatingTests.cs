@@ -4,8 +4,9 @@ using Microsoft.Playwright;
 namespace KCC.E2ETests.Features.RecipeSearch;
 
 // A review reaches the search index within seconds: the variant's recipe, unrated before, becomes the Top Rated
-// spotlight for a search that finds it. Searching keeps the listing's own spotlight, which other suites assert,
-// untouched.
+// spotlight for a search that finds it. The test searches because the listing cannot show the change: a five-star
+// review only ties the recipe with Legendary Lasagna, and the name tie-break puts Lasagna first, so it stays the
+// listing's spotlight, as other suites assert.
 [NotInParallel(MemberSession.Serial)]
 public class RecipeSearchLiveRatingTests : BasePageTests
 {

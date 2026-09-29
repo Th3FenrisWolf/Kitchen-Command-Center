@@ -58,7 +58,8 @@ public sealed class WriteLockedCacheInstructionService(
     private ProcessInstructionsResult InWriteLockWhenPending(int lastSyncedId, Func<ProcessInstructionsResult> process)
     {
         // An idle sync only reads, so it runs unlocked rather than committing every five seconds. An instruction that
-        // arrives after this check is processed unguarded, as Umbraco processes every instruction.
+        // lands between this check and the inner read is tolerable: the gap is microseconds, and the instruction is
+        // almost always this server's own, which the inner sync skips.
         if (inner.GetMaxInstructionId() <= lastSyncedId)
         {
             return process();
@@ -66,7 +67,8 @@ public sealed class WriteLockedCacheInstructionService(
 
         using var scope = scopeProvider.CreateCoreScope();
 
-        // On SQL Server, the exit path, Servers makes the sync wait only on server registration, not on content writes.
+        // On SQLite any lock makes this the one writer; Servers is chosen because on SQL Server it makes the sync wait
+        // only on server registration, not on content saves.
         scope.WriteLock(Constants.Locks.Servers);
         var result = process();
         scope.Complete();

@@ -46,7 +46,8 @@ public class SqliteComposer : IComposer
                 provider.GetRequiredService<ICoreScopeProvider>()));
 
     // Without the lock the site hangs for minutes under concurrent writes, so a registration that has moved in an
-    // Umbraco upgrade stops the boot rather than going unwrapped. Replacing it in place keeps its lifetime, and a
+    // Umbraco upgrade stops the boot rather than going unwrapped. Replacing it in place with the same lifetime keeps
+    // the cache-instruction service a singleton, so there is one inner service and one sync lock, and keeps each
     // handler's position among the others.
     private static void Wrap<TService>(IServiceCollection services, string implementationTypeName, Func<IServiceProvider, TService, TService> decorate)
         where TService : class

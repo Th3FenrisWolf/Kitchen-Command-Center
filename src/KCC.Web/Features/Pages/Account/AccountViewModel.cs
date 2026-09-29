@@ -36,9 +36,6 @@ public class AccountViewModel : BasePageViewModel
     public static string FormatMemberSince(DateTime? created) =>
         created?.ToString("MMMM yyyy", CultureInfo.InvariantCulture) ?? string.Empty;
 
-    // Items absent from the published-key sets are pending review: badged, no URL. Recipes the member started
-    // always show; a foreign recipe shows only while it holds the member's variants; orphan variants are skipped;
-    // duplicate recipe keys throw.
     public static IEnumerable<RecipeGroupViewModel> BuildRecipeGroups(
         IReadOnlyCollection<AuthoredRecipeInput> recipes,
         IReadOnlyCollection<AuthoredVariantInput> variants,

@@ -47,6 +47,48 @@ each component's path *and* its content, so a client bundle built against differ
 the SSR bundle emits `data-v-` attributes the CSS has no selectors for, and every scoped component
 silently loses its styles.
 
+## SQLite writes
+
+The site runs on SQLite, where a transaction that has read cannot become the writer once another connection has
+committed, and Umbraco then retries the write for about ten minutes. Four guards in `src/KCC.Web/Features/Sqlite`
+cover the paths KCC writes through. Never remove one.
+
+- `WriteLockedRelationsUpdate` wraps Umbraco's post-save relations update for content, media and member saves.
+- `WriteLockedRelateOnTrash` wraps Umbraco's relate-on-trash handler.
+- `WriteLockedCacheInstructionService` wraps the cache-instruction sync. It takes its write lock only when
+  instructions are pending.
+- `IMemberWriteLock.RunAsync` takes the member write lock up front. Code that saves a member through Umbraco's
+  sign-in manager, member manager or `IMemberService` runs inside it.
+
+`SqliteComposer` registers the three that wrap Umbraco's own registrations by replacing them in place. If an Umbraco
+upgrade moves one, the site refuses to boot rather than run unguarded.
+
+The guards do not reach these paths inside Umbraco:
+
+- `CacheInstructionsPruningJob` reads the newest instruction id and then deletes, every minute, outside
+  `ICacheInstructionService`. Umbraco's other background jobs have not been surveyed.
+- The backoffice's member password reset and unlock: `MemberEditingService.UpdateAsync` reaches
+  `MemberUserStore.UpdateAsync`, which reads the member and then saves it, outside `IMemberWriteLock`.
+- `ObtainWriteLock` in Umbraco's EF Core SQLite lock (`SqliteEFCoreDistributedLockingMechanism`) does not await its
+  own task, so a contributions write whose lock wait times out carries on unlocked.
+
+Contribution writes go through `ContributionWrites`, which takes its lock before its first read. A write that creates
+several content nodes opens one core scope and takes `Constants.Locks.ContentTree` before its first read, as
+`RecipeSubmissions` does. Take a lock with `scope.WriteLock(lockId)`, never with a `TimeSpan` overload: in Umbraco 17.7,
+`WriteLock(TimeSpan, int)` takes a read lock and `ReadLock(TimeSpan, int)` takes a write lock.
+
+The tests are in `tests/KCC.IntegrationTests/Features/Sqlite`. Run the whole integration suite after touching any of
+the above, with `dotnet run --project tests/KCC.IntegrationTests/KCC.IntegrationTests.csproj` (`dotnet test` reports
+"Zero tests ran" in this repository):
+
+- `SqliteConcurrencyTests` races review, cook-note and cooked writes, member saves, a content save and publish, and
+  index rebuilds. It fails when the member write lock is removed.
+- `CacheInstructionSyncTests` and `TrashRaceTests` reproduce their stalls deterministically and fail without their
+  guards. `CacheInstructionSyncTests` also checks that an idle sync takes no write lock.
+- `RelationsWriteLockTests` checks that the relations and relate-on-trash handlers are wrapped. No test reproduces the
+  relations update's own race deterministically. Without that guard, `SqliteConcurrencyTests` stalls in some full-suite
+  runs but passes when run alone.
+
 ## Torn & Waxed design language
 
 The public site uses the Torn & Waxed identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight

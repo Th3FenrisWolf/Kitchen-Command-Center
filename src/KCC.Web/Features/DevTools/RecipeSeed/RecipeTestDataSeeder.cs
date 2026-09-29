@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using KCC.Contributions;
-using Microsoft.Extensions.Configuration;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
 using Umbraco.Cms.Core.Models.ContentPublishing;
@@ -235,7 +234,7 @@ public class RecipeTestDataSeeder(
 
         _ = await CreateApprovedMemberAsync(userName, $"{userName}@example.test", password, "E2E", "Member");
         summary.E2EMembersCreated++;
-        log.WriteLine($"  E2E member created: {userName}");
+        log.WriteLine("  E2E member created.");
     }
 
     private async Task<Guid> CreateApprovedMemberAsync(string userName, string email, string password, string firstName, string lastName)
