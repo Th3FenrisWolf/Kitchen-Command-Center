@@ -21,3 +21,7 @@ export function formatRating(rating: number): string {
 export function totalPagesFor(total: number, pageSize: number): number {
   return Math.max(1, Math.ceil(Math.max(0, total) / Math.max(1, pageSize)))
 }
+
+export function clampPage(page: number, total: number, pageSize: number): number {
+  return Math.min(Math.max(1, page), totalPagesFor(total, pageSize))
+}

@@ -15,6 +15,10 @@ public interface IContributionReads
     Task<Paged<CookNote>> NotesAsync(Guid variantKey, int page, int pageSize);
 
     Task<bool> HasCookedAsync(Guid variantKey, Guid memberKey);
+
+    Task<Paged<Review>> LatestReviewsAsync(int page, int pageSize);
+
+    Task<Paged<CookNote>> LatestNotesAsync(int page, int pageSize);
 }
 
 public sealed class ContributionReads(IEFCoreScopeProvider<ContributionsDbContext> scopes) : IContributionReads
@@ -45,6 +49,18 @@ public sealed class ContributionReads(IEFCoreScopeProvider<ContributionsDbContex
 
     public Task<bool> HasCookedAsync(Guid variantKey, Guid memberKey) =>
         ReadAsync(db => db.CookedMarks.AnyAsync(mark => mark.VariantKey == variantKey && mark.MemberKey == memberKey));
+
+    public Task<Paged<Review>> LatestReviewsAsync(int page, int pageSize) =>
+        ReadAsync(db => PageAsync(
+            db.Reviews.AsNoTracking().OrderByDescending(review => review.Created).ThenByDescending(review => review.Id),
+            page,
+            pageSize));
+
+    public Task<Paged<CookNote>> LatestNotesAsync(int page, int pageSize) =>
+        ReadAsync(db => PageAsync(
+            db.CookNotes.AsNoTracking().OrderByDescending(note => note.Created).ThenByDescending(note => note.Id),
+            page,
+            pageSize));
 
     private static async Task<Paged<T>> PageAsync<T>(IQueryable<T> query, int page, int pageSize)
     {

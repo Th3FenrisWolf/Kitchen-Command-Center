@@ -22,6 +22,14 @@ public interface IContributionWrites
     Task DeleteForVariantsAsync(IReadOnlyCollection<Guid> variantKeys);
 
     Task DeleteForMembersAsync(IReadOnlyCollection<Guid> memberKeys);
+
+    Task<bool> EditReviewAsync(int reviewId, decimal rating, string text);
+
+    Task<bool> DeleteReviewByIdAsync(int reviewId);
+
+    Task<bool> EditNoteAsync(int noteId, string text);
+
+    Task<bool> DeleteNoteByIdAsync(int noteId);
 }
 
 public sealed class ContributionWrites(
@@ -127,6 +135,65 @@ public sealed class ContributionWrites(
         });
         await DeletedAsync(reviews);
     }
+
+    public async Task<bool> EditReviewAsync(int reviewId, decimal rating, string text)
+    {
+        if (!RatingMath.IsValidRating(rating))
+        {
+            throw new ArgumentOutOfRangeException(nameof(rating), rating, "A rating runs from 0.5 to 5 in half-star steps.");
+        }
+
+        var edited = await WriteAsync(async db =>
+        {
+            var review = await db.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId);
+            if (review is null)
+            {
+                return 0;
+            }
+
+            review.Rating = rating;
+            review.Text = RatingMath.ClampText(text);
+            review.Modified = DateTime.UtcNow;
+            return await db.SaveChangesAsync();
+        });
+        if (edited > 0)
+        {
+            await ReviewsChangedAsync();
+        }
+
+        return edited > 0;
+    }
+
+    public async Task<bool> DeleteReviewByIdAsync(int reviewId)
+    {
+        var deleted = await WriteAsync(db => db.Reviews.Where(review => review.Id == reviewId).ExecuteDeleteAsync());
+        if (deleted > 0)
+        {
+            await ReviewsChangedAsync();
+        }
+
+        return deleted > 0;
+    }
+
+    public async Task<bool> EditNoteAsync(int noteId, string text)
+    {
+        var clamped = RatingMath.ClampText(text) ?? throw new ArgumentException("A cook note needs text.", nameof(text));
+        return await WriteAsync(async db =>
+        {
+            var note = await db.CookNotes.FirstOrDefaultAsync(n => n.Id == noteId);
+            if (note is null)
+            {
+                return 0;
+            }
+
+            note.Text = clamped;
+            note.Modified = DateTime.UtcNow;
+            return await db.SaveChangesAsync();
+        }) > 0;
+    }
+
+    public async Task<bool> DeleteNoteByIdAsync(int noteId) =>
+        await WriteAsync(db => db.CookNotes.Where(note => note.Id == noteId).ExecuteDeleteAsync()) > 0;
 
     private async Task<T> WriteAsync<T>(Func<ContributionsDbContext, Task<T>> write)
     {

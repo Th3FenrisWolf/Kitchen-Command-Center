@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDateTime, formatRating, ratingSteps, totalPagesFor } from './format.js'
+import { clampPage, formatDateTime, formatRating, ratingSteps, totalPagesFor } from './format.js'
 
 describe('formatDateTime', () => {
   it('writes nothing for a missing or unreadable date', () => {
@@ -33,5 +33,25 @@ describe('totalPagesFor', () => {
     expect(totalPagesFor(0, 20)).toBe(1)
     expect(totalPagesFor(21, 20)).toBe(2)
     expect(totalPagesFor(40, 20)).toBe(2)
+  })
+})
+
+describe('clampPage', () => {
+  it('keeps a page that exists', () => {
+    expect(clampPage(1, 40, 20)).toBe(1)
+    expect(clampPage(2, 40, 20)).toBe(2)
+  })
+
+  it('moves a page past the end back to the last page', () => {
+    expect(clampPage(3, 40, 20)).toBe(2)
+    expect(clampPage(2, 20, 20)).toBe(1)
+    expect(clampPage(4, 61, 20)).toBe(4)
+    expect(clampPage(5, 61, 20)).toBe(4)
+  })
+
+  it('never goes below the first page, even when nothing is left', () => {
+    expect(clampPage(2, 0, 20)).toBe(1)
+    expect(clampPage(0, 40, 20)).toBe(1)
+    expect(clampPage(-3, 40, 20)).toBe(1)
   })
 })
