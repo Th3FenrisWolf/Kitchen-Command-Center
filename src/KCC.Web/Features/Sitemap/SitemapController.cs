@@ -7,6 +7,7 @@ namespace KCC.Web.Features.Sitemap;
 public class SitemapController(ISitemapPages sitemapPages, IUmbracoContextFactory umbracoContextFactory) : Controller
 {
     [HttpGet("sitemap.xml")]
+    [HttpHead("sitemap.xml")]
     public IActionResult Index()
     {
         // Umbraco skips creating an UmbracoContext for a request whose path has a file extension

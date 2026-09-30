@@ -68,7 +68,29 @@ pass "every asset home links loads"
 for page in /robots.txt /sitemap.xml /umbraco; do
     curl -fsSk -o /dev/null "https://localhost:8443$page" || fail "$page does not load"
 done
+curl -fsSkI -o /dev/null https://localhost:8443/sitemap.xml || fail "the sitemap does not answer HEAD"
 pass "robots.txt, the sitemap and the backoffice load"
+robots=$(curl -fsSk https://localhost:8443/robots.txt | tr -d '\r')
+if printf '%s\n' "$robots" | grep -qx 'Disallow: /' || ! printf '%s\n' "$robots" | grep -qx 'Disallow: /umbraco'; then
+    fail "robots.txt turns every crawler away"
+fi
+printf '%s\n' "$robots" | grep -qx 'Sitemap: https://localhost:8443/sitemap.xml' || fail "robots.txt names the wrong sitemap"
+pass "robots.txt lets crawlers in and names the sitemap"
+locs=$(curl -fsSk https://localhost:8443/sitemap.xml | grep -oE '<loc>[^<]*</loc>' | sed -e 's#<loc>##' -e 's#</loc>##')
+[ -n "$locs" ] || fail "the sitemap lists no pages"
+for loc in $locs; do
+    case "$loc" in
+        https://localhost:8443/*) ;;
+        *) fail "the sitemap lists $loc, which is not an https address on the site" ;;
+    esac
+done
+pass "the sitemap lists the site's pages at https addresses"
+cookies=$(curl -fsSk -o /dev/null -D - https://localhost:8443/ | tr -d '\r' | grep -i '^set-cookie:') ||
+    fail "home sets no cookie"
+if printf '%s\n' "$cookies" | grep -qiv '; secure'; then
+    fail "home sets a cookie without Secure over HTTPS"
+fi
+pass "every cookie home sets over HTTPS is Secure"
 for endpoint in /api/dev/seed-recipes /api/dev/baseline/export; do
     [ "$(curl -sk -o /dev/null -w '%{http_code}' -X POST "https://localhost:8443$endpoint")" = 404 ] ||
         fail "$endpoint answers in production"

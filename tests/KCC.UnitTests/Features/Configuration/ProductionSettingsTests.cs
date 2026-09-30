@@ -31,6 +31,15 @@ public class ProductionSettingsTests
         _ = await Assert.That(install).IsFalse();
     }
 
+    // Every other environment keeps appsettings.json's deny-all robots.txt: only the live site is meant to be indexed.
+    [Test]
+    public async Task Production_LetsSearchEnginesIn()
+    {
+        var denyAll = WebAppSettings.Load("appsettings.Production.json").GetProperty("RobotsTxtDenyAll").GetBoolean();
+
+        _ = await Assert.That(denyAll).IsFalse();
+    }
+
     private static JsonElement Cms() =>
         WebAppSettings.Load("appsettings.Production.json").GetProperty("Umbraco").GetProperty("CMS");
 }
