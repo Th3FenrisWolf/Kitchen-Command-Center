@@ -1,0 +1,16 @@
+# Runs the stack on this machine without Cloudflare: Caddy takes the tunnel's address and terminates TLS on
+# https://localhost:8443, forwarding the way the tunnel does. Used by smoke-test.sh and the restore drill.
+services:
+  app:
+    environment:
+      Umbraco__CMS__WebRouting__UmbracoApplicationUrl: https://localhost:8443/
+  cloudflared:
+    image: caddy:2.11.4
+    command: caddy run --config /etc/caddy/Caddyfile
+    environment: !reset {}
+    healthcheck: !reset {}
+    read_only: false
+    volumes:
+      - ./local/Caddyfile:/etc/caddy/Caddyfile:ro
+    ports:
+      - 127.0.0.1:8443:443

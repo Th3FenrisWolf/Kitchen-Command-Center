@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 using System.Security.Cryptography;
 using TUnit.Core.Interfaces;
 using Umbraco.Cms.Core;
@@ -18,6 +19,11 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
 {
     // The file extension keeps Umbraco's content routing off this path, so the request reaches the end of the pipeline.
     public const string ThrowingPath = "/integration-tests-throw.txt";
+
+    // A documentation address stands in for the tunnel container, and the header chooses the address a request
+    // arrives from, which a test server otherwise leaves unset.
+    public const string TunnelAddress = "192.0.2.10";
+    public const string PeerHeader = "X-Integration-Tests-Peer";
 
     private readonly string imagingHmacSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
@@ -99,6 +105,7 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         }
 
         builder.ConfigureServices(services => services.AddTransient<IStartupFilter, ThrowingPathFilter>());
+        builder.ConfigureServices(services => services.AddTransient<IStartupFilter, PeerFilter>());
 
         builder.ConfigureServices(services =>
         {
@@ -165,6 +172,7 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         // ImageSharp maps its cache folder under the content root even when given an absolute path.
         ["Umbraco:CMS:Imaging:Cache:CacheFolder"] = $"~/umbraco/Data/TEMP/{MediaCacheFolderName}",
         ["DataProtection:KeysDirectory"] = Path.Combine(runDirectory, "keys"),
+        ["Hosting:TunnelAddress"] = TunnelAddress,
         ["uSync:Settings:ExportOnSave"] = "None",
         ["VueSsr:Enabled"] = "false",
 
@@ -194,6 +202,24 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
 
                 await nextMiddleware(context);
             });
+        };
+    }
+
+    // Ahead of the app's own middleware, so the forwarded-headers middleware sees the chosen address.
+    private sealed class PeerFilter : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+        {
+            app.Use(async (context, nextMiddleware) =>
+            {
+                if (context.Request.Headers.TryGetValue(PeerHeader, out var peer))
+                {
+                    context.Connection.RemoteIpAddress = IPAddress.Parse(peer.ToString());
+                }
+
+                await nextMiddleware(context);
+            });
+            next(app);
         };
     }
 }

@@ -2,6 +2,7 @@ using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Components.Header;
 using KCC.Web.Features.DevTools.RecipeSeed;
 using KCC.Web.Features.Dictionary;
+using KCC.Web.Features.Hosting;
 using KCC.Web.Features.Pages.Account;
 using KCC.Web.Features.Pages.Shared;
 using KCC.Web.Features.Recipes;
@@ -48,9 +49,12 @@ var app = builder.Build();
 
 await app.BootUmbracoAsync();
 
+app.UseTunnelForwardedHeaders();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/error");
+    app.UseHsts();
 }
 
 app.UseRobotsTxt();
