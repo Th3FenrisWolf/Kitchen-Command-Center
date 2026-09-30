@@ -1,6 +1,7 @@
 using Anthropic;
 using Anthropic.Core;
 using KCC.Admin;
+using KCC.Contributions.Dashboard;
 using KCC.Web.Features.Models.Options;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -14,6 +15,7 @@ public class ProvidersComposer : IComposer
     public void Compose(IUmbracoBuilder builder)
     {
         builder.Services.AddSingleton<IAuthorNameProvider, AuthorNameProvider>();
+        builder.Services.AddScoped<IDashboardMembers, DashboardMembers>();
 
         var anthropic = builder.Config.GetSection(AnthropicOptions.SectionName).Get<AnthropicOptions>() ?? new();
         builder.Services.AddSingleton(anthropic);

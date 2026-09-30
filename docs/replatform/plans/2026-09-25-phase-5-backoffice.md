@@ -4,8 +4,9 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** "Before you start", then Task 1. **Requires Phase 4 done:** its Status
-line reads `done (<date>)` and `node tests/scripts/run.mjs` is green on `replatform`.
+**Status:** done (2026-09-29), on branch `replatform-phase-5`, which is based on `replatform-phase-4`. **Resume
+point:** the Phase 6 plan in this folder; read **Findings from Phase 5** at the end of this file first. **Requires
+Phase 4 done** (it is, 2026-09-28).
 
 **Goal:** The owner runs the site from the backoffice. Recipes and variants get their own editors for ingredients,
 instructions and the icon, the icon one with **Suggest with AI**. A Contributions dashboard in the Content section
@@ -4892,3 +4893,73 @@ git commit -m "Close Replatform Phase 5"
 Phase 6 (Home) is planned next, in this folder, against the code as it then stands. Its Block List and blocks are core
 Umbraco and need no client of their own. If a block needs a custom preview or editor, it belongs in `KCC.Admin`'s
 client, on the base this phase built.
+
+## Findings from Phase 5
+
+Found during Phase 5 (2026-09-29). The Phase 6 to 8 plans predate them.
+
+- **The branch.** Phase 5 ran on `replatform-phase-5`, based on `replatform-phase-4` and rebased by the owner onto
+  `fe8ba92`, which adds the Phase 7 and 8 plans. None of Phases 2 to 5 is merged into `replatform` yet.
+- **Build order.** The SDK registers a Razor class library's `wwwroot/**` content root only if the folder exists
+  when `ResolveProjectStaticWebAssets` runs, and both libraries' `wwwroot` holds only untracked build output. So a
+  `dotnet build` before the first root `yarn build:all` left the site without either backoffice package until the
+  next .NET build, and the E2E backoffice tests timed out. Both library projects now create `wwwroot` first
+  (`EnsureWebRoot`), so the order no longer matters, and "a client rebuilt while the site is stopped needs no .NET
+  build" holds from a fresh clone too. The E2E fixture's bundle check still looks only for the files on disk.
+- **Where the code departs from this plan's text.**
+  - Task 1 has a fifth recipe-editor test: an API user in Umbraco's Translators group gets 403 from all three
+    endpoints. The plan's four tests still pass with `SectionAccessContent` removed. `BackofficeClient` gained
+    `TranslatorAsync`.
+  - Task 3's sorter. The shared `identifier: 'KCC.Sorter.JsonArray'` let a row be dragged from the ingredients list
+    into the steps list, where it broke both editors, so each list's sorter keeps its own default identifier. The
+    `.rows` container is now always rendered, and the sorter is disabled while the editor is read-only or its value
+    is unreadable: the plan's version bound the sorter once to a container that read-only and unreadable mounts never
+    render, so every such mount threw and drag stayed dead after **Start fresh**.
+  - Task 3's look. Plain **Save** keeps a draft that fails validation and shows the message; only **Save and
+    publish** refuses. Umbraco 17.7 saves drafts regardless.
+  - Task 7's dashboard. Deleting the last entry on the last page drops back a page (`clampPage` in `format.ts`, with
+    3 Vitest cases). A failed load keeps the list on screen, and a failed first load says so. A failed action reloads
+    the list, so stale rows drop. The delete confirmation passes its text as a Lit template: `umb-confirm-modal`
+    renders string content as raw HTML, and the text holds the member's display name, which members type freely.
+  - Task 8's `PublishAsync` waits for `PUT …/document/{id}/update-and-publish`. In 17.7, **Save and publish** on an
+    existing document calls that endpoint, not `…/publish` as "What the scratch probe already proved" says. The review
+    test also removes the E2E member's review when it fails, as Phase 4's tests on the shared variant do, and checks
+    the variant page after the delete.
+  - Task 9's CLAUDE.md remedy for the stale application-parts file deletes `KCC.Web.MvcApplicationPartsAssemblyInfo.*`,
+    the `.cs` and its `.cache`. The SDK regenerates the `.cs` only when the `.cache` is missing or stale, so deleting
+    the `.cs` alone leaves the site with no application parts at all.
+  - Approval saves the member through `IMemberService` inside `IMemberWriteLock`, as Task 5 says. Phase 4's closing
+    note (the member editing service) is superseded by CLAUDE.md's SQLite-writes rule: the editing service's update
+    reaches `MemberUserStore.UpdateAsync`, which CLAUDE.md lists as unguarded.
+- **Known limitations.**
+  - Backspacing across the decimal point of an ingredient quantity rewrites it ("1.5", Backspace, "7" gives "71").
+    UUI's own `uui-input type=number` does it without any binding. A text field would avoid it but silently store
+    inputs like "1/2" as no quantity, so the number field stays.
+  - The backoffice bundles ship with their source maps, and `App_Plugins` is public once Cloudflare Access covers only
+    `/umbraco`. Phase 7 decides whether production builds keep them.
+  - The Waiting list reads every unapproved member. Cap or page it before sign-up opens at launch.
+- **Counts.** Unit 190, unchanged. Integration 220 (Phase 4's 198 plus 22), E2E 36 (plus 3), admin Vitest 17 and
+  contributions Vitest 8.
+- **Not taken up here, from Phase 4's findings.**
+  - Un-approving or locking out a signed-in member still does not end their session. The dashboard only approves.
+  - The Anthropic client still has no timeout, and the icon provider still swallows cancellation, so **Suggest with
+    AI** inherits both.
+- **The gate** ran from a fresh copy of `replatform-phase-5` (`59f49c2`), built `dotnet build` first and then the root
+  `yarn build:all`, and started as the E2E fixture starts its site: the Testing environment, the fixture's admin, the
+  SSR sidecar, and no Anthropic key.
+  - A new member, `gate-lili`, signed up. Content opened on **Contributions** → **Waiting**, which listed them;
+    **Approve** said "gate-lili can now sign in.", and they could.
+  - As `gate-lili`, **Create Recipe** "Garnet Gate Chowder" with "Classic Pot". **Waiting** listed both, newest first.
+    **Suggest with AI** sent the description as edited and not yet saved, and answered the name's fallback. **Select
+    icon** picked `bowl-hot`. **Save and publish** showed one transient "does not have a URL" warning; the Info tab
+    listed `/recipes/garnet-gate-chowder/` and the page answered 200.
+  - The variant showed the wizard's ingredient and steps as rows. An added ingredient, a third step and a dragged step
+    (renumbered) published, **Waiting** emptied, and search found the recipe with its icon, author and time.
+  - `gate-lili` reviewed the variant at 4 stars. **Reviews** listed it first; **Edit** to 2.5 stars with new text
+    reached the variant page and search; **Delete** asked first, then the page said "No reviews yet.".
+  - Trashing the recipe (its read-only workspace hid the icon editor's buttons), emptying the recycle bin and deleting
+    the member all worked. The new pages rendered like the seeded ones in both ramps, and the backoffice screens in
+    both themes. The log held no stall or lock error.
+  - The owner's own pass on a dev site, with the real Anthropic key and the owner's account, is still to do.
+- **Spec change.** §10's Waiting line now reads "recipes and variants that are not published", which is what the
+  dashboard lists and what the account page calls "Pending review".

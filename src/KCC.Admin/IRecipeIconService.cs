@@ -1,8 +1,8 @@
 namespace KCC.Admin;
 
 /// <summary>
-/// Picks the best curated Font Awesome icon for a recipe. Always returns a valid kebab-case
-/// name from <see cref="RecipeIcons.All"/> — never empty.
+/// Picks the best curated Font Awesome icon for a recipe. Always returns a valid full Font Awesome
+/// class string (e.g. "fa-duotone fa-cheese") from <see cref="RecipeIcons.All"/> — never empty.
 /// </summary>
 public interface IRecipeIconService
 {
@@ -11,6 +11,6 @@ public interface IRecipeIconService
     /// <param name="description">Recipe description.</param>
     /// <param name="ingredients">Ingredient names.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>A kebab-case icon name from <see cref="RecipeIcons.All"/>.</returns>
+    /// <returns>A Font Awesome class string from <see cref="RecipeIcons.All"/>.</returns>
     Task<string> PickAsync(string name, string description, IEnumerable<string> ingredients, CancellationToken cancellationToken);
 }

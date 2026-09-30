@@ -3,8 +3,8 @@ namespace KCC.Admin;
 /// <summary>
 /// The curated set of Font Awesome Pro duotone icons available for recipes, as full
 /// Font Awesome class strings (e.g. "fa-duotone fa-cheese"). This is the single
-/// source of truth shared by the AI enum, the deterministic fallback, and the admin
-/// icon-selector form component; the value is stored verbatim and rendered as-is.
+/// source of truth shared by the AI enum, the deterministic fallback, and the backoffice's
+/// recipe icon editor; the value is stored verbatim and rendered as-is.
 /// </summary>
 public static class RecipeIcons
 {

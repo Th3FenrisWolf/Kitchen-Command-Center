@@ -1,3 +1,4 @@
+using KCC.Contributions.Dashboard;
 using KCC.Contributions.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,5 +31,6 @@ public class ContributionsComposer : IComposer
         builder.Services.AddSingleton<IContributionStats, ContributionStatsSource>();
         builder.Services.AddSingleton<IContributionReads, ContributionReads>();
         builder.Services.AddSingleton<IContributionWrites, ContributionWrites>();
+        builder.Services.AddScoped<IDashboardQueries, DashboardQueries>();
     }
 }
