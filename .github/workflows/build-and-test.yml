@@ -8,7 +8,8 @@ on:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # A cancel part-way through moving the main tags would leave app and SSR images from different builds.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
@@ -29,6 +30,10 @@ jobs:
       # ---------- Setup ----------
       - name: Checkout
         uses: actions/checkout@v7
+
+      # The Pi updates deploy.sh itself through git pull, so a broken line, once merged, would stop it pulling the fix.
+      - name: Lint the deploy scripts
+        run: shellcheck -s sh deploy/smoke-test.sh deploy/deploy.sh deploy/kcc deploy/kcc-backup/kcc-backup
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v6
@@ -180,7 +185,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Push all commit tags first (slow blob uploads), then move main together: the Pi never pairs app
-      # and SSR images from different builds.
+      # and SSR images from different builds. A re-run of an older run must leave main alone, or it would roll
+      # production back.
       - name: Push the images
         if: env.PUBLISH == 'true'
         run: |
@@ -188,11 +194,16 @@ jobs:
             image="ghcr.io/th3fenriswolf/kcc-$name"
             docker push "$image:$KCC_IMAGE_TAG"
           done
-          for name in app ssr backup; do
-            image="ghcr.io/th3fenriswolf/kcc-$name"
-            docker tag "$image:$KCC_IMAGE_TAG" "$image:main"
-            docker push "$image:main"
-          done
+          main_head=$(git ls-remote origin refs/heads/main)
+          if [ "${main_head%%[[:space:]]*}" = "$GITHUB_SHA" ]; then
+            for name in app ssr backup; do
+              image="ghcr.io/th3fenriswolf/kcc-$name"
+              docker tag "$image:$KCC_IMAGE_TAG" "$image:main"
+              docker push "$image:main"
+            done
+          else
+            echo "::notice::main is no longer at $GITHUB_SHA, so the main tags stay where they are."
+          fi
 
       - name: Prune old app images
         if: env.PUBLISH == 'true'

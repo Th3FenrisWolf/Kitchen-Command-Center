@@ -8,8 +8,8 @@ registries:
     scope: "@fortawesome"
 
 updates:
-  # A new major is deliberate work: .NET and Microsoft's packages stay on 10, Umbraco on its 17 LTS until the move to
-  # 21 (spec §6.1), and uSync's majors follow Umbraco's.
+  # A new major is deliberate work (spec §6.1): .NET and Microsoft's packages stay on 10, Umbraco on its 17 LTS, and
+  # uSync's majors follow Umbraco's.
   - package-ecosystem: nuget
     directory: /
     schedule:

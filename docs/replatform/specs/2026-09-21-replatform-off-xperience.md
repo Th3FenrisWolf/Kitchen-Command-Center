@@ -214,7 +214,8 @@ disappears with Page Builder.
   Umbraco's own write-lock wait (`Umbraco:CMS:Global:DistributedLockingWriteLockDefaultTimeout`, 5 seconds by
   default) is raised to 30 seconds.
 - **Unattended install:** a new database installs itself (`Umbraco:CMS:Unattended`), taking the admin account from
-  secrets. The credentials matter only on first boot.
+  secrets. In production only the first boot installs: `deploy/first-boot.env` turns the install on with the admin
+  account, and is deleted afterwards, so a lost database stops at the installer instead of becoming an empty site.
 - **Member security:** sign-in locks out after 5 failures for **15 minutes**
   (`MaxFailedAccessAttemptsBeforeLockout`, `MemberDefaultLockoutTimeInMinutes`; Umbraco's default is 30 days). The
   minimum password length stays 8.
@@ -427,12 +428,12 @@ One file, identical on the Pi or a VPS. No host ports are published and there is
 
 | Service | Details |
 |---|---|
-| `app` | The ASP.NET image, arm64, non-root, read-only root filesystem. Volume `data` → `umbraco/Data`, which also holds the logs (Serilog's file path points there), the data-protection keys and Umbraco's TEMP; volume `media` → `wwwroot/media`. Both owned by the container user. Health check on `/healthz` |
+| `app` | The ASP.NET image, arm64, non-root, read-only root filesystem. Volume `data` → `umbraco/Data`, which also holds the logs (Serilog's file path points there), the data-protection keys and Umbraco's TEMP; volume `media` → `wwwroot/media`. Both owned by the container user. `init: true`, so a crash exits and restarts instead of hanging. Health check on Umbraco's readiness probe, `/umbraco/api/health/ready` |
 | `ssr` | Node with the built SSR bundle, non-root, read-only, reachable only from `app`. Health check on `/health` |
 | `cloudflared` | Tunnel token from `.env`; one ingress rule, `<host>` → `http://app:8080` |
-| `backup` | The nightly job (§13.5), with the data and media volumes mounted read-only |
+| `backup`, `restore` | One-off jobs in the `jobs` profile, as the app's user: the nightly backup (§13.5), started by a systemd timer; the pre-deploy snapshot; restores. The media volume is mounted read-only for a backup, the data volume read-write, because SQLite cannot open a WAL database read-only once the app has closed it |
 
-Every service restarts unless stopped.
+Every long-running service restarts unless stopped.
 
 ### 13.3 Network and exposure
 
@@ -444,7 +445,8 @@ Every service restarts unless stopped.
   Squarespace site, email) has been recreated in Cloudflare. Apex or subdomain is chosen then; nothing in the
   build depends on it.
 - **Cloudflare Access** on `<host>/umbraco`: one-time PIN (added by hand, since new accounts default to Cloudflare
-  logins), a policy allowing the owner's email, one seat of the free 50.
+  logins), a policy allowing the owner's email, one seat of the free 50. Until launch a second application covers the
+  whole host, for the owner and anyone testing; launch deletes it (the owner's decision, 2026-09-26).
 - **Tailscale** for SSH and private admin. Funnel is not used for the public site (HTTPS only, no custom domains on
   free, three funnels per tailnet).
 - **Segmentation.** With no inbound path into the LAN, the threat model narrows to a compromised app pivoting off
@@ -455,16 +457,17 @@ Every service restarts unless stopped.
 
 ### 13.4 Build and deploy
 
-- **Built in CI, never on the Pi.** Multi-stage Dockerfiles for `app` and `ssr`, with the repo root as the build
-  context because of the yarn workspace layout. The client and SSR bundles are built **in the same stage**: scope
-  IDs hash path and content, so a mismatch silently strips every scoped style. The Font Awesome Pro token is a
-  BuildKit secret, never a layer.
+- **Built in CI, never on the Pi.** One multi-stage Dockerfile for `app` and `ssr`, with the repo root as the build
+  context because of the yarn workspace layout, and a small Alpine image for the backup jobs. The client and SSR
+  bundles are built **in the same stage**: scope IDs hash path and content, so a mismatch silently strips every scoped
+  style. The Font Awesome Pro token is a BuildKit secret, never a layer.
 - **Images** build on GitHub's `ubuntu-24.04-arm` runners, free because the repository is public, and are pushed to
   **private** GHCR packages tagged with the commit SHA and `main`. Private because the build contains Font Awesome
-  Pro files. Old versions are pruned to stay inside GitHub's free private-package allowance; if transfer ever runs
-  out, `docker save` / `docker load` over Tailscale is the fallback.
+  Pro files. Old versions are pruned to the last ten. GitHub does not bill container images against the
+  private-package allowance; if that changes, `docker save` / `docker load` over Tailscale is the fallback.
 - **Deploy is pull-based.** A systemd timer on the Pi checks for a new `main` digest every 5 minutes with a
-  read-only GHCR token. On a change it takes a database `.backup` snapshot, pulls, and restarts the stack; Umbraco,
+  read-only GHCR token. On a change it pulls, takes a database `.backup` snapshot unless the app is already unhealthy,
+  and restarts what changed. A run that finds the stack unhealthy fails, so the timer's journal shows it. Umbraco,
   uSync and EF Core migrations run on start. CI never gets a path into the home network.
 - **Rollback** pins `KCC_IMAGE_TAG` in `.env` to a previous SHA, restoring the pre-deploy snapshot if a migration
   went wrong.
@@ -488,9 +491,10 @@ volume. Dependabot for NuGet, npm, Docker and Actions. Umbraco 17 patch releases
 
 ### 13.7 Fallback
 
-The same compose file on an x86 VPS: restore the latest backup, `docker compose up`, change DNS. Moving off the Pi
-is not a re-architecture, which is what makes starting on it low-regret. If SQLite itself turns out to be the
-problem, SQL Server Express slots in there; it needs ~2 GB of RAM of its own.
+The same compose file on an x86 VPS: retire the Pi's tunnel after one last backup, restore that backup, and
+`docker compose up` with the same tunnel token. Nothing in DNS changes: the tunnel is the route. Moving off the Pi is
+not a re-architecture, which is what makes starting on it low-regret. If SQLite itself turns out to be the problem, SQL
+Server Express slots in there; it needs ~2 GB of RAM of its own.
 
 ## 14. Testing and CI
 
@@ -532,7 +536,7 @@ problem, SQL Server Express slots in there; it needs ~2 GB of RAM of its own.
 | **5 Backoffice** | The three property editors; the Contributions dashboard | In the backoffice: approve a member, publish a submission, edit and delete a review, suggest an icon |
 | **6 Home** | Block List, three blocks and section settings; home re-authored; baseline re-exported | Home in both ramps; a brand-steward review; then merge to `main` |
 | **7 Hosting** | Dockerfiles and the image workflow; compose; the Pi runbook; nameservers to Cloudflare; tunnel; Access; backups; pull-based deploy | The site reachable behind Access; a restore rehearsed from the bucket |
-| **8 Launch** | Real content authored in production; `RobotsTxtDenyAll` off; README, CLAUDE.md and memory rewritten; the reference worktree and the old SQL Server container retired | Public |
+| **8 Launch** | Real content authored in production; `RobotsTxtDenyAll` off and the whole-site Access application deleted; README, CLAUDE.md and memory rewritten; the reference worktree and the old SQL Server container retired | Public |
 
 Every gate also requires `dotnet build` clean (warnings are errors), `yarn build:all` with both bundles built
 together, Vitest green, and a browser check of the touched pages in both ramps.

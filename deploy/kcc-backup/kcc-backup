@@ -107,6 +107,7 @@ restore() {
 rollback() {
     file="$snapshots/pre-deploy/${1:?name a snapshot from: ls /srv/kcc/snapshots/pre-deploy}"
     [ -f "$file" ] || fail "$file does not exist"
+    check_database "$file" "the snapshot $file"
     replace_database "$file"
     log "restored $file"
 }

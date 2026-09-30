@@ -17,7 +17,7 @@ RUN --mount=type=bind,source=.npmrc,target=.npmrc \
     yarn install --frozen-lockfile --network-timeout 600000
 COPY src/ src/
 RUN yarn build:all \
-    && for wwwroot in src/*/wwwroot; do mkdir -p "/out/$wwwroot" && cp -R "$wwwroot/." "/out/$wwwroot/"; done
+    && for wwwroot in src/*/wwwroot; do mkdir -p "/out/$wwwroot" && cp -R "$wwwroot/." "/out/$wwwroot/" || exit 1; done
 
 FROM --platform=$BUILDPLATFORM node:24.21.0-bookworm-slim AS ssr-deps
 WORKDIR /deps

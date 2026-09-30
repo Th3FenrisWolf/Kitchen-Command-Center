@@ -190,6 +190,21 @@ backoffice. Run a client's tests with `yarn workspace @kcc/admin test` or `yarn 
 
 ---
 
+## Deployment
+
+The site runs on a Raspberry Pi behind a Cloudflare Tunnel, as the containers in `deploy/compose.yaml`. On every push
+to `main`, CI builds the images, smoke-tests them and pushes them to private GHCR packages, and within five minutes
+the Pi pulls and deploys them. A nightly job backs the site up to Cloudflare R2.
+
+- **Build the images:** `docker buildx bake --load` at the repository root. It needs the Font Awesome token, as `yarn`
+  does.
+- **Run them the way the Pi does:** `deploy/smoke-test.sh`. It boots them with Caddy standing in for the tunnel on
+  `https://localhost:8443`, checks the site and a restored backup, and removes everything afterwards.
+- **Everything else,** from Cloudflare and the Pi to deploys, rollbacks, restores and the restore drill, is in
+  [`docs/hosting/runbook.md`](docs/hosting/runbook.md).
+
+---
+
 ## Frontend Development
 
 ### IDE Setup
