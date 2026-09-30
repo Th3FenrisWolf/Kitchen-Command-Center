@@ -243,10 +243,10 @@ Aliases keep the Xperience class names in camelCase, so generated models never c
 
 - **Blocks.** `richTextBlock` (rich text), `cardGridBlock` (optional heading, column count, cards) and
   `stackerBlock` (heading, body, image, cards). Together they cover everything the current home page does — its
-  four-column row is a card grid with a heading. All three share one settings element, `sectionSettings`, with
-  today's section options: background (desk, desk two, paper, paper two), width (thin, container, breakout, full),
-  and top, bottom and horizontal padding. Blocks render through Razor partials that emit the existing Vue
-  components.
+  four-column row is a card grid with a heading. All three share one settings element, `sectionSettings`, with a
+  background (desk, desk two, paper, paper two) and a width (thin, container, breakout, full). The kit spaces the
+  sections 72px apart, and a block's text sits on a torn sheet. Blocks render through Razor partials that emit the
+  existing Vue components.
 - **Element types.** `card` (CardItem's fields), `navLink` and `navGroup`. Each nav element has `showWhen` —
   Always, Signed in or Signed out — replacing the AuthStatus taxonomy; a group's setting governs its links, as
   today. Every link is a core Multi URL Picker (an internal page or a URL, plus target), replacing the Type / Page /
@@ -540,7 +540,8 @@ together, Vitest green, and a browser check of the touched pages in both ramps.
 ## 16. What is lost
 
 1. **In-context Page Builder editing.** The one real authoring regression. Block List composes in the property
-   panel with per-block previews; *Save and Preview* renders the real page. One extra click and a context switch.
+   panel with each block labelled by its heading or opening words; *Save and Preview* renders the real page. One
+   extra click and a context switch.
 2. **On-page UI string editing.** Strings are edited in the Dictionary instead; the editor could return later as
    its own feature.
 3. **Multilingual:** the translation table, the fallback chain, the `{lang}` routing.

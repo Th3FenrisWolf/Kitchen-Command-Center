@@ -23,7 +23,7 @@ Take the scope from the request: a diff (`git diff main...HEAD` or a commit rang
 page. If no scope is given, review the working tree diff: `git diff` plus `git diff --cached`, and for new
 files `git ls-files --others --exclude-standard`.
 
-Only review files under `src/KCC.Web/Features/**`, `src/KCC.Web/App_Data/CIRepository/**`, and the two
+Only review files under `src/KCC.Web/Features/**`, `src/KCC.Web/uSync/v17/**` (persisted CMS content), and the two
 brand docs. Read the whole of every file in scope, not just the hunks.
 
 ## Check, with evidence

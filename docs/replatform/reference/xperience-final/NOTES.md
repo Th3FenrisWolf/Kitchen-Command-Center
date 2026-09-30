@@ -60,3 +60,24 @@ selected, which is what Phase 2 needs before sign-in exists.
 - Three UI strings have empty values and render as their keys: `Theme.SwitchToDark` and `Theme.SwitchToLight`
   (the theme toggle's labels, so not visible) and `VariantDetail.SaturatedFat` (only shown when nutrition
   exists).
+
+## Home, from Phase 6
+
+The home is re-authored in Umbraco blocks: a rich text, two card grids, a stacker and a rich text. Expected
+differences:
+
+- The welcome heading and the placeholder paragraphs sit on torn sheets, `max-w-2xl` wide, instead of on the bare
+  desk. The heading is display size, 40 / 48; Xperience's content set an inline 60px span. The placeholder fills two
+  sheets of five paragraphs.
+- The stacker's heading is a section name above its text sheet and cards, not a display heading beside them.
+- Sections sit 72px apart. Xperience's padding settings left 48px between them.
+- Desk sections have no fill, so the desk grain runs through them. Xperience painted them `bg-desk`, which hid the
+  grain: flat rectangles in light, near-black ones in dark. The paper band stays.
+- Card subheadings are body text. Xperience set them in the heading face.
+- A grid card's heading and subheading sit on the rule. Xperience's rested 4px under it until the card was hovered.
+- Every sheet and card takes the next tear of one cycle down the page. Xperience restarted at 1 in each grid, and
+  its "How About Something Sweeter?" cards hashed theirs from each heading.
+- Every card's "View Recipes" goes to `/recipes/`. Xperience's went to Home.
+- The stacker has no image. Xperience's test image did not render either.
+- The grid cards still show no wash, as in Xperience: the kit's capped corner washes render nothing until their
+  own fix lands.

@@ -19,19 +19,14 @@
      */
     cardColor?: BackgroundColor
 
-    /** Neighbours never share a tear: a grid passes `(index % 6) + 1`. Unset, the tear comes from `seed`. */
+    /** Neighbours never share a tear: the page passes the next of its cycle. Unset, the tear comes from `seed`. */
     tear?: 1 | 2 | 3 | 4 | 5 | 6
 
     /**
-     * Hashed into a stable tear when no grid index supplies one; usually the card's heading.
+     * Hashed into a stable tear when the page supplies none; usually the card's heading.
      * @default ''
      */
     seed?: string
-
-    /**
-     * @default ''
-     */
-    marginClasses?: string
   }
 
   export interface CardSlots {
@@ -46,7 +41,7 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
-  const { cardColor = 'bg-paper', tear, seed = '', marginClasses = '' } = defineProps<CardProps>()
+  const { cardColor = 'bg-paper', tear, seed = '' } = defineProps<CardProps>()
 
   const { drawer } = defineSlots<CardSlots>()
 
@@ -58,18 +53,10 @@
     :wash="washOf(cardColor)"
     :at="{ x: '100%', y: '0%', w: '38%', h: 'min(40%, 68px)' }"
     :tear="resolvedTear"
-    :class="['group/card kcc-slip--fill', marginClasses]"
+    class="group/card kcc-slip--fill"
   >
     <div class="flex h-full flex-col">
-      <div
-        :class="[
-          'relative transition-all',
-          drawer && 'top-1 group-focus-within/card:top-0 group-hover/card:top-0',
-          drawer && 'group-focus-within/card:duration-100 group-hover/card:duration-100',
-        ]"
-      >
-        <slot />
-      </div>
+      <slot />
 
       <div
         v-if="drawer"

@@ -19,13 +19,14 @@ const drawerClasses = (html: string) => classesOf(html, /<div[^>]*data-card-draw
 
 const slipClasses = (html: string) => classesOf(html, /<div class="kcc-slip[^"]*"[^>]*>/, 'kcc-slip')
 
-const headingClasses = (html: string) => classesOf(html, /<div class="relative[^"]*"[^>]*>/, 'the heading wrapper')
+// The anchors Vue prints around a slot and a `v-if` are not part of the markup an assertion is about.
+const withoutComments = (html: string) => html.replace(/<!--.*?-->/g, '')
 
 describe('Card structure', () => {
-  it('is a slip whose group and margins ride on the tilt', async () => {
-    const html = await render({ marginClasses: 'mt-12 mb-4' })
+  it('is a slip whose hover group rides on the tilt', async () => {
+    const html = await render()
 
-    expect(slipClasses(html)).toEqual(expect.arrayContaining(['kcc-slip', 'group/card', 'mt-12', 'mb-4']))
+    expect(slipClasses(html)).toEqual(expect.arrayContaining(['kcc-slip', 'group/card']))
     expect(html).toContain('<div class="kcc-torn">')
     expect(html).toContain('<div class="kcc-sheet">')
   })
@@ -42,21 +43,15 @@ describe('Card structure', () => {
     expect(html).toContain('<div class="flex h-full flex-col">')
   })
 
-  it('nudges the heading up as the drawer opens', async () => {
-    const classes = headingClasses(await render())
+  // The type sits on the sheet's pencil rule, so nothing wraps or offsets it. An offset that only hover undoes
+  // stays on a phone, where `group-hover` does not apply.
+  it.each([
+    ['with a drawer', () => render()],
+    ['without one', () => renderSsr(Card, {}, { default: () => 'Weeknight' })],
+  ])('sets the content on the rule %s', async (_, renderCard) => {
+    const html = withoutComments(await renderCard())
 
-    expect(classes).toEqual(
-      expect.arrayContaining(['relative', 'top-1', 'group-hover/card:top-0', 'group-focus-within/card:top-0']),
-    )
-  })
-
-  // The nudge only pays for itself when there is a drawer to return from. With none, nothing would ever
-  // set `top-0` again, so the heading would sit 4px under the sheet's rule for good.
-  it('leaves a drawerless heading on the rule', async () => {
-    const classes = headingClasses(await renderSsr(Card, {}, { default: () => 'Weeknight' }))
-
-    expect(classes).toContain('relative')
-    expect(classes).not.toContain('top-1')
+    expect(html).toContain('<div class="flex h-full flex-col">Weeknight')
   })
 })
 

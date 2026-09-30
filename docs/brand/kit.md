@@ -15,7 +15,6 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
 | `src/KCC.Web/Features/Styles/Layout.css` | the `.content-grid` breakout system: content, breakout and full-width columns for pages and sections |
-| `src/KCC.Web/Features/Styles/Sections/MultipleColumnSection.css` | the page-builder column grid for `MultipleColumnSection`, in `@layer components` because Razor renders it |
 | `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here and `#app` carries the desk colour so the overlays have a backdrop to blend with |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
@@ -169,7 +168,8 @@ Depth is constant but the wavelength stretches with the box, so each family has 
 48–128px tiles, the six sheet tears for sheets 170–700px wide, the hero tear for 330–1300px. A tile tear on a
 full-width sheet reads as a scallop, not a tear.
 
-**Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`; a standalone sheet takes a preset from a
+**Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`, unless its page hands it one from a page-wide
+cycle (see **Razor**); a standalone sheet takes a preset from a
 stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design names; the default is
 `kcc-tear-1`. Neighbours never share a tear. The kit ships one hero tear, so two hero sheets on one page
 (RecipeDetail's hero and its featured variant) do share it; keep at least one standard sheet between them.
@@ -191,6 +191,7 @@ stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design
 | `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink`; pointer-transparent, so a link beneath it keeps the click |
 | `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
 | `kcc-body` | 15/24 body | a class-less link inside (editor rich text) takes the `kcc-link` look |
+| `kcc-prose` | editor rich text, with `kcc-body` | each block one rule below the last; lists keep their markers, list numbers in Sono |
 | `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | size and leading only; bare `h1`–`h3` already take APCasual from `Typography.css`, so these go on any element that needs display or heading size |
 | `kcc-hand` | APCasual italic 17/24 ink-soft | one per sheet |
 | `kcc-num` | Sono tabular | every number |
@@ -248,7 +249,12 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 ## Razor
 
 Razor writes the Structure by hand. `ButtonLinkTagHelper` emits `kcc-btn` plus the modifiers in `Class`.
-Widget loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. Filter defs for the wax are inline in
+Loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. A page built from blocks, like Home, runs one cycle
+through all its sheets and cards instead, so neighbours never share a tear across two sections either. A stacker's
+sheet is sticky and travels, so the cycle skips its tear for the stack's cards and for the first two sheets or cards
+of the next section, where the sheet comes to rest: its half of the width sits over two cards at most, because grids
+stop at four columns. When that next section is another stacker, its own sheet's window takes over after the sheet, so
+its first card may repeat the first sheet's tear, corner to corner. Filter defs for the wax are inline in
 `Layout.cshtml`, so server-rendered washes are filtered before hydration.
 
 ## Invariants
