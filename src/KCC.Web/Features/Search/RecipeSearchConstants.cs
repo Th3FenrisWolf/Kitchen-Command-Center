@@ -2,9 +2,6 @@ namespace KCC.Web.Features.Search;
 
 public static class RecipeSearchConstants
 {
-    public const string IndexName = "RecipeSearch";
-    public const string StrategyName = "RecipeSearch";
-
     // Full-text
     public const string FieldName = "Name";
     public const string FieldContent = "Content"; // description + ingredients + author, combined

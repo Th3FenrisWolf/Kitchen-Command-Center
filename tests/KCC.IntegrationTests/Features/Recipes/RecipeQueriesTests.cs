@@ -17,7 +17,7 @@ public class RecipeQueriesTests
     [Test]
     public async Task GetRecipePage_ReadsASeededRecipe()
     {
-        var page = WithContent(content => new RecipeQueries().GetRecipePage((Recipe)content.GetById(SeedKeys.Recipe("Spicy Ramen Flight"))!));
+        var page = WithContent((content, queries) => queries.GetRecipePage((Recipe)content.GetById(SeedKeys.Recipe("Spicy Ramen Flight"))!));
 
         _ = await Assert.That(page.Recipe.Name).IsEqualTo("Spicy Ramen Flight");
         _ = await Assert.That(page.Recipe.Url).IsEqualTo("/recipes/spicy-ramen-flight/");
@@ -31,7 +31,7 @@ public class RecipeQueriesTests
     [Test]
     public async Task GetRecipePage_ReadsEachVariant()
     {
-        var page = WithContent(content => new RecipeQueries().GetRecipePage((Recipe)content.GetById(SeedKeys.Recipe("Spicy Ramen Flight"))!));
+        var page = WithContent((content, queries) => queries.GetRecipePage((Recipe)content.GetById(SeedKeys.Recipe("Spicy Ramen Flight"))!));
 
         var shoyu = page.Variants.Single(variant => variant.Name == "Chili Oil Shoyu");
 
@@ -48,7 +48,7 @@ public class RecipeQueriesTests
     [Test]
     public async Task GetVariantPage_ReadsTheRecipeAndTheOtherVariants()
     {
-        var page = WithContent(content => new RecipeQueries().GetVariantPage(
+        var page = WithContent((content, queries) => queries.GetVariantPage(
             (RecipeVariant)content.GetById(SeedKeys.Variant("Spicy Ramen Flight", "Chili Oil Shoyu"))!));
 
         _ = await Assert.That(page.Recipe.Name).IsEqualTo("Spicy Ramen Flight");
@@ -64,7 +64,7 @@ public class RecipeQueriesTests
         var withdrawn = await TestContent.VariantAsync(Site.Services, recipeKey, "Withdrawn");
         await TestContent.UnpublishAsync(Site.Services, withdrawn);
 
-        var page = WithContent(content => new RecipeQueries().GetRecipePage((Recipe)content.GetById(recipeKey)!));
+        var page = WithContent((content, queries) => queries.GetRecipePage((Recipe)content.GetById(recipeKey)!));
 
         _ = await Assert.That(string.Join(",", page.Variants.Select(variant => variant.Name))).IsEqualTo("Kept");
     }
@@ -75,7 +75,7 @@ public class RecipeQueriesTests
         var imageKey = await TestContent.ImageAsync(Site.Services, "IT Stack photo");
         var recipeKey = await TestContent.RecipeAsync(Site.Services, "IT Pictured", TestContent.Image("image", imageKey));
 
-        var tile = WithContent(content => new RecipeQueries().GetRecipePage((Recipe)content.GetById(recipeKey)!)).Recipe.ImageUrl;
+        var tile = WithContent((content, queries) => queries.GetRecipePage((Recipe)content.GetById(recipeKey)!)).Recipe.ImageUrl;
         using var client = Site.CreateClient();
         using var image = await client.GetAsync(tile);
 
@@ -86,9 +86,34 @@ public class RecipeQueriesTests
         _ = await Assert.That(image.Headers.CacheControl!.MaxAge).IsEqualTo(TimeSpan.FromDays(365));
     }
 
-    private T WithContent<T>(Func<IPublishedContentCache, T> read)
+    [Test]
+    public async Task GetPublishedRecipes_ListsEveryPublishedRecipeWithItsVariants()
+    {
+        var withdrawn = await TestContent.RecipeAsync(Site.Services, "IT Never Listed");
+        await TestContent.UnpublishAsync(Site.Services, withdrawn);
+
+        var recipes = WithContent((_, queries) => queries.GetPublishedRecipes());
+
+        _ = await Assert.That(recipes.Count(page => page.Recipe.Key == SeedKeys.Recipe("Spicy Ramen Flight"))).IsEqualTo(1);
+        _ = await Assert.That(recipes.Single(page => page.Recipe.Key == SeedKeys.Recipe("Spicy Ramen Flight")).Variants.Count).IsEqualTo(4);
+        _ = await Assert.That(recipes.Single(page => page.Recipe.Key == SeedKeys.Recipe("Spicy Ramen Flight")).AddVariantUrl).IsEqualTo("/recipes/add-variant/");
+        _ = await Assert.That(recipes.Count(page => SeedKeys.Recipe(page.Recipe.Name) == page.Recipe.Key)).IsEqualTo(25);
+        _ = await Assert.That(recipes.Any(page => page.Recipe.Key == withdrawn)).IsFalse();
+    }
+
+    [Test]
+    public async Task GetCreateRecipeUrl_FindsTheWizardUnderTheListing()
+    {
+        var url = WithContent((content, queries) => queries.GetCreateRecipeUrl(
+            (RecipeListingPage)content.GetById(TestContent.RecipeListing(Site.Services))!));
+
+        _ = await Assert.That(url).IsEqualTo("/recipes/create-recipe/");
+    }
+
+    private T WithContent<T>(Func<IPublishedContentCache, IRecipeQueries, T> read)
     {
         using var context = Site.Services.GetRequiredService<IUmbracoContextFactory>().EnsureUmbracoContext();
-        return read(context.UmbracoContext.Content!);
+        using var scope = Site.Services.CreateScope();
+        return read(context.UmbracoContext.Content!, scope.ServiceProvider.GetRequiredService<IRecipeQueries>());
     }
 }

@@ -218,8 +218,8 @@ public static class RecipeSeedData
             [new(3.5m), new(3m)]),
 
         new SeedRecipe("Matcha Panna Cotta", Dessert, null,
-            "Silky, wobbly, faintly grassy.", "fa-duotone fa-pudding", 45,
-            [new SeedVariant("Green Tea Set", "Barely any active time.", 15, 10, 4, "fa-duotone fa-pudding",
+            "Silky, wobbly, faintly grassy.", "fa-duotone fa-custard", 45,
+            [new SeedVariant("Green Tea Set", "Barely any active time.", 15, 10, 4, "fa-duotone fa-custard",
                 [Vegetarian, GlutenFree],
                 [new SeedIngredient("Cream", 2, "cups"), new SeedIngredient("Matcha", 1, "tbsp"), new SeedIngredient("Gelatin", 1, "packet")],
                 [new SeedInstruction(1, "Warm cream with matcha."), new SeedInstruction(2, "Set with gelatin.")])],

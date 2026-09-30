@@ -62,6 +62,10 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         if (seed)
         {
             await SeedTestRecipesAsync();
+
+            // Concurrent first requests to a cold site can read a site-settings nav link as null (an Umbraco
+            // first-conversion race), so the header renders without Login.
+            await WarmUpAsync();
         }
     }
 
@@ -239,6 +243,16 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         if (!response.IsSuccessStatusCode)
         {
             throw new InvalidOperationException($"Seeding answered {(int)response.StatusCode}.{LogTail()}");
+        }
+    }
+
+    private async Task WarmUpAsync()
+    {
+        using var http = new HttpClient { BaseAddress = BaseUrl, Timeout = TimeSpan.FromMinutes(1) };
+        using var response = await http.GetAsync("/");
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException($"The home page answered {(int)response.StatusCode}.{LogTail()}");
         }
     }
 

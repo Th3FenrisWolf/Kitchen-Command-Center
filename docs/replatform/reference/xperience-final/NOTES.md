@@ -30,9 +30,13 @@ selected, which is what Phase 2 needs before sign-in exists.
 - The recipe and variant rating (4.3 from a 4-star and a 4.5-star review) holds now that ratings count published
   variants only (spec §17): both reviews are on a published variant.
 - Seeded variants have no nutrition, so the nutrition sheet shows its empty state.
-- On mobile, the torn strip under the header's dashed rule differs at its bottom-left corner: a 3×4 px patch at
-  x 18–20, y 114–117, by at most 34 levels in light and 26 in dark. It has been there since Phase 1, and its cause is
-  not traced.
+- On mobile, the torn strip under the header's dashed rule differs at both bottom corners: a 3×4 px patch at
+  x 18–20, y 114–117, by at most 34 levels in light and 26 in dark, and a 3×7 px patch at x 371–373, y 111–117, by
+  at most 17 in light and 12 in dark. Both have been there since Phase 1, and their cause is not traced.
+- `recipes` holds 25 recipes, not 27: the reference also held two hand-made recipes, Egg Skillet and Mac & Cheese, so
+  the cards after Crispy Roasted Chickpeas each move up one place, and the mobile page is 92 px taller because
+  full-height cards fill the two short cards' slots. Its spotlight reads 5.0 · 3, not 5.0 · 1: the seed gives
+  Legendary Lasagna three 5-star reviews.
 - `not-found` shows the hard-coded fallback text: the 404 page text was never serialized (spec §17). Umbraco
   serves the 404 node's baseline content.
 - `registration-complete` text changes in Phase 4 (the account waits for approval, spec §8).

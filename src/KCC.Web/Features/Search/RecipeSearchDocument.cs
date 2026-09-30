@@ -1,6 +1,6 @@
 namespace KCC.Web.Features.Search;
 
-/// <summary>Pure, Kentico-free projection of a recipe's indexable fields.</summary>
+/// <summary>Pure projection of a recipe's indexable fields.</summary>
 public record RecipeSearchDocument
 {
     public string Name { get; init; } = string.Empty;

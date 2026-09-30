@@ -24,7 +24,6 @@
         <Compile Remove="Features/Api/ReviewApiControllerTests.cs" />
         <Compile Remove="Features/Api/VariantCookedApiControllerTests.cs" />
         <Compile Remove="Features/Pages/Account/**" />
-        <Compile Remove="Features/Search/**" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />
