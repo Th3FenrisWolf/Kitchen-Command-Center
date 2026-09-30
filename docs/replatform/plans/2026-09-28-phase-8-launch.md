@@ -4,10 +4,13 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** "Before you start", then Task 1. Task 4, the owner's content, can start
-as soon as "Before you start" passes, alongside Tasks 1 to 3. Task 3 waits for Umbraco 17.8.0 on NuGet (scheduled for
-2026-10-29), and Task 6 waits for Tasks 2, 3 and 5. **Requires Phase 7 done:** its Status line reads `done (<date>)`,
-both of its pull requests are merged into `main`, and the site runs on the Pi behind Cloudflare Access.
+**Status:** in progress: Tasks 1 and 2, Steps 1 to 6, done (2026-09-30) on branch `ready-for-public`, based on
+`hosting` at `c4a84bf`. **Resume point:** Task 2, Step 7. The push, the pull request and the merge wait on the owner,
+and on Phase 7's merge into `main`. Task 3 waits for Umbraco 17.8.0 on NuGet (scheduled for 2026-10-29), and branches
+off `main` once this pull request is merged. Task 4, the owner's content, can start once "Before you start" passes,
+and Task 6 waits for Tasks 2, 3 and 5. "Findings from Phase 8", at the end, lists where the work so far departs from
+this plan. **Requires Phase 7 done** before Task 2, Step 7: its Status line reads `done (<date>)`, both of its pull
+requests are merged into `main`, and the site runs on the Pi behind Cloudflare Access.
 
 **Goal:** The site goes public on the owner's domain. It holds the owner's real content and runs Umbraco 17.8 or
 later, and every clause of the spec's definition of done has been proven on the live site first. Then the
@@ -1125,7 +1128,7 @@ exactly as it is.
 ```bash
 H=<KCC_HOST>
 curl -sS -o /dev/null -w "%{http_code}\n" "https://$H/"
-curl -sS "https://$H/" | grep -c '<div id="app"><'
+curl -sS "https://$H/" | grep -c '<div id="app"><[^/]'
 curl -sS -o /dev/null -w "%{http_code} %{redirect_url}\n" "https://$H/umbraco/"
 curl -sS "https://$H/robots.txt" | tr -d '\r'
 curl -sS "https://$H/sitemap.xml" | grep -oE '<loc>[^<]*</loc>' | head -n 5
@@ -2253,3 +2256,39 @@ Every gate also requires:
 
 Task 2, Step 6 and Task 10, Step 3 cover the first three. Task 6, Steps 6 and 7 are the browser check: every page,
 since the whole site is what launch touches.
+
+## Findings from Phase 8
+
+Found while building Tasks 1 and 2 (2026-09-30). Task 10 adds what the launch finds.
+
+- **The branch.** Tasks 1 and 2 ran on `ready-for-public`, based on `hosting` at `c4a84bf`, because Phase 7 and the
+  phases beneath it wait on the owner's merges into `main`; Task 1, Step 1's branch off `main` was skipped. The pull
+  request opens after Phase 7's merge: if it lands as a squash, rebase first with
+  `git rebase --onto main c4a84bf ready-for-public`.
+- **"Before you start".** Checked on `hosting`: items 3 to 9 and 16 passed, apart from item 8's Dependabot check,
+  which needs the pushed repository. Items 1 and 2 did not (Phase 7 is not merged, and the site does not run on the
+  Pi yet), and items 10 to 15 belong to later tasks. After Tasks 1 and 2, items 3 to 7 describe the tree before
+  them: now `appsettings.Production.json` has `"RobotsTxtDenyAll": false`, the sitemap has
+  `[HttpHead("sitemap.xml")]`, `SecurityComposer` configures `AntiforgeryOptions`, `ProductionSettingsTests` has four
+  tests, `SitemapTests` has `RobotsTxt_DeniesEverythingOutsideProduction`, `TunnelTests` has eight, and the smoke
+  test has 14 `pass` calls.
+- **Where the work departs from this plan's text.**
+  - Task 1: the smoke test's fourth check also asks for `/sitemap.xml` with HEAD, through the local edge and
+    Kestrel, so the sitemap's HEAD is proven on the real stack before the Pi deploys it. Without the HEAD route it
+    fails with `not ok - the sitemap does not answer HEAD`. The smoke test still has 14 checks.
+  - Task 1's introduction says the smoke stack and the restore drills keep the deny-all. They run the Production
+    environment, so they serve the open robots.txt, as Step 5's own check requires; they listen on `127.0.0.1` only.
+  - Task 2: the comments in `SecurityComposer` and `TunnelTests` give the reason the cookie is not always Secure.
+    With `Always`, ASP.NET Core's antiforgery refuses to issue a token over plain HTTP (`CheckSSLConfig`), so every
+    page on the E2E site would fail before a browser saw a cookie. The plan's reason, that a browser would drop the
+    Secure cookie, never comes into play.
+  - Task 8, Step 6's items 1 and 2, the spec's §6.3 and §8, are done here with the work they describe. Items 3 and 4
+    wait for the launch date.
+  - Task 3, Step 3: `@umbraco-cms/backoffice` is pinned once, at 17.7.0 in `packages/admin-client-config/package.json`,
+    which both Lit clients build from; neither client's `package.json` names it. Move that one line.
+  - Task 6, Step 4: its first check counted `<div id="app"><`, which also matches the empty client-side fallback
+    `<div id="app"></div>`, as Phase 7's findings say. It now counts `<div id="app"><[^/]`, the smoke test's pattern.
+- **Task 3.** On 2026-09-30 NuGet's newest `Umbraco.Cms` 17.x was 17.7.0, with no 17.8 release candidate, so Task 3
+  has not started.
+- **Counts.** 1333 passed, 0 failed: unit 233 (Phase 7's 232 plus 1), integration 263 (plus 3), E2E 41, web Vitest
+  771 (769 and its 2 expected failures), admin Vitest 17, contributions Vitest 8. The smoke test's 14 checks pass.
