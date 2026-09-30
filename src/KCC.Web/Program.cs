@@ -2,10 +2,12 @@ using KCC.Web.Features.Components.Breadcrumbs;
 using KCC.Web.Features.Components.Header;
 using KCC.Web.Features.DevTools.RecipeSeed;
 using KCC.Web.Features.Dictionary;
+using KCC.Web.Features.Pages.Account;
 using KCC.Web.Features.Pages.Shared;
 using KCC.Web.Features.Recipes;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
+using KCC.Web.Features.Submissions;
 using Microsoft.AspNetCore.DataProtection;
 using RobotsTxt;
 
@@ -26,6 +28,9 @@ builder.Services.AddScoped<ISitemapPages, SitemapPages>();
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddTransient<RecipeTestDataSeeder>();
 builder.Services.AddScoped<IRecipeQueries, RecipeQueries>();
+builder.Services.AddScoped<IAccountPageQueries, AccountPageQueries>();
+builder.Services.AddScoped<IAuthoredRecipeQueries, AuthoredRecipeQueries>();
+builder.Services.AddScoped<IRecipeSubmissions, RecipeSubmissions>();
 builder.Services.AddScoped<BreadcrumbService>();
 
 // ASP.NET Core keeps data-protection keys in the user profile when it can, but only in memory where the home

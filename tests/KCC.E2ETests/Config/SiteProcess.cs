@@ -313,6 +313,11 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
             ["Umbraco__CMS__WebRouting__UmbracoApplicationUrl"] = BaseUrl.ToString(),
             ["Umbraco__CMS__Imaging__HMACSecretKey"] = imagingHmacSecretKey,
             ["DataProtection__KeysDirectory"] = Path.Combine(runDirectory, "keys"),
+
+            // Every browser request comes from this machine, so the whole suite shares one client's rate limits.
+            ["RateLimits__AccountPerMinute"] = "1000",
+            ["RateLimits__ContributionsPerMinute"] = "1000",
+            ["RateLimits__SubmissionsPerHour"] = "1000",
             ["uSync__Settings__ExportOnSave"] = "None",
             ["VueSsr__Enabled"] = withSsr ? "true" : "false",
             ["VueSsr__BaseUrl"] = $"http://127.0.0.1:{ssrPort}",

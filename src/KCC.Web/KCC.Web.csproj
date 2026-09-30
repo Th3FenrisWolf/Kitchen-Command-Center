@@ -31,23 +31,8 @@
         <PackageReference Include="Vite.AspNetCore" />
     </ItemGroup>
 
-    <ItemGroup Label="Unported slices">
-        <Compile Remove="Features/Api/AccountApiController.cs" />
-        <Compile Remove="Features/Api/ProfileApiController.cs" />
-        <Compile Remove="Features/Api/RecipeApiController.cs" />
-        <Compile Remove="Features/Api/VariantCookedApiController.cs" />
-        <Compile Remove="Features/Models/Api/**" />
-        <Compile Remove="Features/Models/Common/KCCApplicationUser.cs" />
-        <Compile Remove="Features/Pages/Account/**" />
-        <Compile Remove="Features/Pages/AddVariant/**" />
-        <Compile Remove="Features/Pages/CreateRecipe/**" />
-        <Compile Remove="Features/Providers/RecipeIconProvider.cs" />
-        <Content Remove="Features/Pages/Account/**/*.cshtml" />
-        <Content Remove="Features/Pages/AddVariant/**/*.cshtml" />
-        <Content Remove="Features/Pages/CreateRecipe/**/*.cshtml" />
-    </ItemGroup>
-
     <ItemGroup>
+        <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
         <ProjectReference Include="..\KCC.Contributions\KCC.Contributions.csproj" />
     </ItemGroup>
 

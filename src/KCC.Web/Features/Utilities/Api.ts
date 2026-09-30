@@ -35,6 +35,11 @@ export function configureApi(next: { antiforgeryToken?: string; strings?: Partia
   }
 }
 
+// Sign-out posts a real form, which carries the token as a field rather than a header.
+export function antiforgeryToken(): string {
+  return config.antiforgeryToken ?? ''
+}
+
 export function get<T>(url: string, params?: Record<string, unknown>): Promise<ApiResult<T>> {
   const query = params ? `?${qs.stringify(params)}` : ''
   return request<T>(`${url}${query}`, { method: 'GET' })

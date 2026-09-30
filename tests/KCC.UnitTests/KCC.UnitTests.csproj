@@ -17,13 +17,8 @@
         <PackageReference Include="TUnit" />
     </ItemGroup>
     <ItemGroup Label="Unported slices">
-        <Compile Remove="Admin/**" />
-        <Compile Remove="Features/Api/CookNoteApiControllerTests.cs" />
-        <Compile Remove="Features/Api/ProfileApiControllerTests.cs" />
-        <Compile Remove="Features/Api/RecipeApiControllerTests.cs" />
-        <Compile Remove="Features/Api/ReviewApiControllerTests.cs" />
-        <Compile Remove="Features/Api/VariantCookedApiControllerTests.cs" />
-        <Compile Remove="Features/Pages/Account/**" />
+        <Compile Remove="Admin/HomeApplicationsResolverTests.cs" />
+        <Compile Remove="Admin/HomeStatsServiceTests.cs" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />

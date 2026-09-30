@@ -123,7 +123,8 @@ describe('AccountSettingsView', () => {
   })
 
   it('saves each form from a marker pill inside its own form', async () => {
-    const html = await render()
+    // The sign-out form has a pill of its own, checked in the next test.
+    const html = (await render()).replace(/<form[^>]*action="\/account\/logout"[\s\S]*?<\/form>/, '')
     const submits = html.match(/<button[^>]*type="submit"[^>]*>/g) ?? []
 
     expect(submits).toHaveLength(2)
@@ -137,7 +138,8 @@ describe('AccountSettingsView', () => {
     const html = await render()
 
     expect(tagWith(html, 'href="/account"')).toContain('class="kcc-btn kcc-btn--ghost"')
-    expect(tagWith(html, 'href="/account/logout"')).toContain('class="kcc-btn kcc-btn--ghost"')
+    expect(tagWith(html, 'action="/account/logout"')).toContain('method="post"')
+    expect(html).toMatch(/action="\/account\/logout"[^>]*>.*?<button class="kcc-btn kcc-btn--ghost" type="submit">/s)
     expect(html).not.toContain('text-danger-ink')
   })
 

@@ -3,30 +3,24 @@ using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.VariantCooked;
 
-// TUnit runs tests in parallel by default; concurrent navigations starve the single-threaded
-// Vite dev server and every nav times out. [NotInParallel] serializes them (matches the
-// AdminHomePageMiddlewareTests / CookModeTests precedent in this repo).
-[NotInParallel]
+[NotInParallel(MemberSession.Serial)]
 public class VariantCookedTests : BasePageTests
 {
     [Test]
     public async Task LoggedInMember_TogglingICookedThis_ChangesTheCount()
     {
         await MemberSession.SignInAsync(Page);
-        _ = await RecipeNavigation.GoToFirstRecipeAsync(Page);
-        _ = await RecipeNavigation.GoToFirstVariantAsync(Page);
+        _ = await Page.GotoAsync(MemberTestVariant.Path);
 
         var toggle = Page.Locator("[data-testid='cooked-toggle']");
         await Expect(toggle).ToBeVisibleAsync();
 
         var before = await ReadCount(toggle);
         await toggle.ClickAsync();
-        await Expect(toggle).Not.ToContainTextAsync($"({before})"); // count changed after the round-trip
+        await Expect(toggle).Not.ToContainTextAsync($"({before})");
+        _ = await Assert.That(await ReadCount(toggle)).IsEqualTo(before + 1);
 
-        var after = await ReadCount(toggle);
-        _ = await Assert.That(after).IsNotEqualTo(before);
-
-        // Toggle back so the test is idempotent across runs.
+        // Untoggle so the run is repeatable.
         await toggle.ClickAsync();
         await Expect(toggle).ToContainTextAsync($"({before})");
     }

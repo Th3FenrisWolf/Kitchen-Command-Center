@@ -2,6 +2,7 @@ using KCC.Contributions;
 using KCC.Contributions.Data;
 using KCC.Web.Features.Api;
 using KCC.Web.Features.Providers;
+using KCC.Web.Features.Recipes;
 using Moq;
 using Umbraco.Cms.Core.Security;
 
@@ -95,6 +96,6 @@ public class ReviewListTests
         members.Setup(m => m.GetCurrentMemberAsync())
             .ReturnsAsync(memberKey is { } key ? new MemberIdentityUser { Key = key } : null);
 
-        return new ReviewApiController(stats.Object, reads.Object, authors.Object, members.Object);
+        return new ReviewApiController(stats.Object, reads.Object, Mock.Of<IContributionWrites>(), Mock.Of<IRecipeQueries>(), authors.Object, members.Object);
     }
 }
