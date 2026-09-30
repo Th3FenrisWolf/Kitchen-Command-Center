@@ -1,18 +1,24 @@
 #!/bin/sh
-# Boots the images the way the Pi runs them, with Caddy in the tunnel's place (local.yaml), then checks the site and the
-# tunnel's trust boundary. CI runs it on every build of the images; locally, run it after `docker buildx bake --load`
-# at the repository root.
+# Boots the images the way the Pi runs them, with Caddy in the tunnel's place (local.yaml), then checks the site, the
+# tunnel's trust boundary, and a backup restored into fresh volumes. CI runs it on every build of the images; locally,
+# run it after `docker buildx bake --load` at the repository root.
 set -eu
 cd "$(dirname "$0")"
+# Compose prefers the calling shell's variables to --env-file, so an exported key or host would reach the test stacks.
+unset KCC_HOST KCC_IMAGING_HMAC_KEY KCC_TUNNEL_TOKEN ANTHROPIC_API_KEY KCC_FIRST_BOOT_ENV \
+    KCC_BACKUP_BUCKET KCC_BACKUP_ENDPOINT KCC_BACKUP_ACCESS_KEY_ID KCC_BACKUP_SECRET_ACCESS_KEY KCC_BACKUP_PING_URL
 
 export KCC_IMAGE_TAG="${KCC_IMAGE_TAG:-local}"
 work=$(mktemp -d)
-cat >"$work/smoke.env" <<EOF
+cat >"$work/drill.env" <<EOF
 KCC_HOST=localhost
 KCC_IMAGING_HMAC_KEY=$(head -c 64 /dev/urandom | base64 | tr -d '\n')
 KCC_TUNNEL_TOKEN=unused
-KCC_FIRST_BOOT_ENV=$work/first-boot.env
 EOF
+cp "$work/drill.env" "$work/smoke.env"
+echo "KCC_FIRST_BOOT_ENV=$work/first-boot.env" >>"$work/smoke.env"
+# A path that never exists, so a developer's deploy/first-boot.env cannot switch the install on in the drill.
+echo "KCC_FIRST_BOOT_ENV=$work/no-first-boot.env" >>"$work/drill.env"
 cat >"$work/first-boot.env" <<EOF
 Umbraco__CMS__Unattended__InstallUnattended=true
 Umbraco__CMS__Unattended__UnattendedUserName=Smoke Test
@@ -21,6 +27,7 @@ Umbraco__CMS__Unattended__UnattendedUserPassword=Smoke-Test-Passw0rd
 EOF
 
 smoke() { docker compose -p kcc-smoke --env-file "$work/smoke.env" -f compose.yaml -f local.yaml "$@"; }
+drill() { docker compose -p kcc-smoke-drill --env-file "$work/drill.env" -f compose.yaml -f local.yaml "$@"; }
 image() { printf '%s/kcc-%s:%s' "${KCC_REGISTRY:-ghcr.io/th3fenriswolf}" "$1" "$KCC_IMAGE_TAG"; }
 pass() { echo "ok - $*"; }
 fail() {
@@ -32,12 +39,17 @@ cleanup() {
     status=$?
     if [ "$status" -ne 0 ]; then
         smoke logs --tail 60 app ssr 2>/dev/null || true
+        drill logs --tail 60 app 2>/dev/null || true
     fi
-    smoke down -v --remove-orphans >/dev/null 2>&1 || true
+    smoke --profile jobs down -v --remove-orphans >/dev/null 2>&1 || true
+    drill --profile jobs down -v --remove-orphans >/dev/null 2>&1 || true
     rm -rf "$work"
     exit "$status"
 }
+# Under dash a signal ends the script without running its EXIT trap, so each signal becomes an ordinary exit.
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 smoke up -d --wait --wait-timeout 600
 pass "app, ssr and the local edge are healthy"
@@ -76,3 +88,19 @@ if smoke exec -T ssr node -e "fetch('https://example.com').then(() => process.ex
     fail "ssr reached the internet"
 fi
 pass "ssr has no route out"
+
+smoke run --rm --entrypoint sh restore -c 'echo smoke >/srv/kcc/media/smoke-marker.txt'
+smoke run --rm -e RCLONE_CONFIG_BUCKET_TYPE=local -e KCC_BACKUP_BUCKET=/srv/kcc/snapshots/bucket backup nightly
+smoke run --rm backup snapshot
+pass "the nightly backup and a pre-deploy snapshot ran"
+
+# The drill uses the same fixed subnet for its edge network, so the first stack stops before it starts.
+smoke down
+drill run --rm --entrypoint true restore
+docker run --rm -v kcc-smoke_snapshots:/from:ro -v kcc-smoke-drill_snapshots:/srv/kcc/snapshots \
+    --entrypoint cp "$(image backup)" -R /from/bucket /srv/kcc/snapshots/bucket
+drill run --rm -e RCLONE_CONFIG_BUCKET_TYPE=local -e KCC_BACKUP_BUCKET=/srv/kcc/snapshots/bucket restore latest
+drill up -d --wait --wait-timeout 300
+pass "the restored database boots with the install off"
+[ "$(curl -fsSk https://localhost:8443/media/smoke-marker.txt)" = smoke ] || fail "the restored media is missing"
+pass "the restored media is served"

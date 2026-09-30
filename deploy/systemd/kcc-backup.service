@@ -1,0 +1,10 @@
+[Unit]
+Description=Back up Kitchen Command Center to the bucket
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+User=kcc
+ExecStart=/usr/bin/flock /srv/kcc/kcc.lock /srv/kcc/repo/deploy/kcc run --rm backup nightly
+TimeoutStartSec=2h

@@ -7,7 +7,7 @@ variable "KCC_IMAGE_TAG" {
 }
 
 group "default" {
-  targets = ["app", "ssr"]
+  targets = ["app", "ssr", "backup"]
 }
 
 target "_image" {
@@ -34,4 +34,10 @@ target "ssr" {
   inherits = ["_site"]
   target   = "ssr"
   tags     = ["${KCC_REGISTRY}/kcc-ssr:${KCC_IMAGE_TAG}"]
+}
+
+target "backup" {
+  inherits = ["_image"]
+  context  = "deploy/kcc-backup"
+  tags     = ["${KCC_REGISTRY}/kcc-backup:${KCC_IMAGE_TAG}"]
 }

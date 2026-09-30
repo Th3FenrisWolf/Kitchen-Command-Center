@@ -132,3 +132,88 @@ jobs:
             exit 0
           fi
           cat tests/results/combined-report.md >> "$GITHUB_STEP_SUMMARY"
+
+  images:
+    needs: build-and-test
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+      KCC_IMAGE_TAG: ${{ github.sha }}
+      PUBLISH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # One bake builds the shared frontend stage once for both site images. Each target keeps its own cache
+      # scope, because targets sharing one would overwrite each other's.
+      - name: Build the images
+        uses: docker/bake-action@v7
+        with:
+          source: .
+          load: true
+          set: |
+            app.cache-from=type=gha,scope=app
+            app.cache-to=type=gha,scope=app,mode=max
+            ssr.cache-from=type=gha,scope=ssr
+            ssr.cache-to=type=gha,scope=ssr,mode=max
+            backup.cache-from=type=gha,scope=backup
+            backup.cache-to=type=gha,scope=backup,mode=max
+
+      - name: Smoke-test the images
+        run: deploy/smoke-test.sh
+
+      - name: Log in to the GitHub Container Registry
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Push all commit tags first (slow blob uploads), then move main together: the Pi never pairs app
+      # and SSR images from different builds.
+      - name: Push the images
+        if: env.PUBLISH == 'true'
+        run: |
+          for name in app ssr backup; do
+            image="ghcr.io/th3fenriswolf/kcc-$name"
+            docker push "$image:$KCC_IMAGE_TAG"
+          done
+          for name in app ssr backup; do
+            image="ghcr.io/th3fenriswolf/kcc-$name"
+            docker tag "$image:$KCC_IMAGE_TAG" "$image:main"
+            docker push "$image:main"
+          done
+
+      - name: Prune old app images
+        if: env.PUBLISH == 'true'
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: kcc-app
+          package-type: container
+          min-versions-to-keep: 10
+
+      - name: Prune old SSR images
+        if: env.PUBLISH == 'true'
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: kcc-ssr
+          package-type: container
+          min-versions-to-keep: 10
+
+      - name: Prune old backup images
+        if: env.PUBLISH == 'true'
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: kcc-backup
+          package-type: container
+          min-versions-to-keep: 10

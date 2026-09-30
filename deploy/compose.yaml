@@ -90,9 +90,47 @@ services:
         condition: service_healthy
     logging: *logging
 
+  backup:
+    image: ${KCC_REGISTRY:-ghcr.io/th3fenriswolf}/kcc-backup:${KCC_IMAGE_TAG:-main}
+    profiles: [jobs]
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment: &backup-environment
+      RCLONE_CONFIG_BUCKET_TYPE: s3
+      RCLONE_CONFIG_BUCKET_PROVIDER: Cloudflare
+      RCLONE_CONFIG_BUCKET_ENDPOINT: ${KCC_BACKUP_ENDPOINT:-}
+      RCLONE_CONFIG_BUCKET_ACCESS_KEY_ID: ${KCC_BACKUP_ACCESS_KEY_ID:-}
+      RCLONE_CONFIG_BUCKET_SECRET_ACCESS_KEY: ${KCC_BACKUP_SECRET_ACCESS_KEY:-}
+      RCLONE_CONFIG_BUCKET_ACL: private
+      RCLONE_CONFIG_BUCKET_NO_CHECK_BUCKET: "true"
+      KCC_BACKUP_BUCKET: ${KCC_BACKUP_BUCKET:-}
+      KCC_BACKUP_PING_URL: ${KCC_BACKUP_PING_URL:-}
+    # Data is read-write because SQLite cannot open a WAL database read-only once the app has closed it.
+    volumes:
+      - data:/srv/kcc/data
+      - media:/srv/kcc/media:ro
+      - snapshots:/srv/kcc/snapshots
+    logging: *logging
+
+  restore:
+    image: ${KCC_REGISTRY:-ghcr.io/th3fenriswolf}/kcc-backup:${KCC_IMAGE_TAG:-main}
+    profiles: [jobs]
+    entrypoint: ["kcc-backup", "restore"]
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment: *backup-environment
+    volumes:
+      - data:/srv/kcc/data
+      - media:/srv/kcc/media
+      - snapshots:/srv/kcc/snapshots
+    logging: *logging
+
 volumes:
   data:
   media:
+  snapshots:
 
 networks:
   edge:

@@ -1,0 +1,60 @@
+version: 2
+
+registries:
+  fontawesome:
+    type: npm-registry
+    url: https://npm.fontawesome.com
+    token: ${{secrets.FONTAWESOME_NPM_AUTH_TOKEN}}
+    scope: "@fortawesome"
+
+updates:
+  # A new major is deliberate work: .NET and Microsoft's packages stay on 10, Umbraco on its 17 LTS until the move to
+  # 21 (spec §6.1), and uSync's majors follow Umbraco's.
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      umbraco:
+        patterns: ["Umbraco.*", "uSync*"]
+      nuget:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /
+    registries:
+      - fontawesome
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      npm:
+        patterns: ["*"]
+
+  # Node stays on 24: its images from 26 on drop Yarn 1, which the build uses.
+  - package-ecosystem: docker
+    directories:
+      - /
+      - /deploy/kcc-backup
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "dotnet/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: docker-compose
+    directory: /deploy
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
