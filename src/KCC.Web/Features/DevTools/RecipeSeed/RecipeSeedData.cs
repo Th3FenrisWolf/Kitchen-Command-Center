@@ -8,7 +8,7 @@ namespace KCC.Web.Features.DevTools.RecipeSeed;
 ///   only), "midnight" (one recipe's description only), "Salazar" (author name only — matches Diego
 ///   Salazar's two recipes, Shakshuka + Cold Brew Concentrate); "zephyr" appears ONLY in a variant
 ///   instruction, which is NOT indexed, so it must return nothing.</item>
-/// <item>Category facet: all six categories, each on ≥3 recipes (only a recipe's first category is indexed).</item>
+/// <item>Category facet: all six categories, each on ≥3 recipes (a recipe holds exactly one).</item>
 /// <item>Diet facet: all eight diets, several recipes multi-diet, some sharing a diet; "Spicy Ramen Flight"
 ///   spreads different diets across its variants to exercise the union-across-variants facet.</item>
 /// <item>Fastest-time range: values at 0 (no variants), 5, 10, exactly 60, and one 90 (&gt; the 60-min
@@ -23,8 +23,8 @@ namespace KCC.Web.Features.DevTools.RecipeSeed;
 /// </summary>
 public static class RecipeSeedData
 {
-    // Category taxonomy (RecipeCategories). Only the FIRST category on a recipe is indexed, so each recipe
-    // carries exactly one; covering N categories therefore takes N recipes.
+    // The baseline's "Recipe Categories" nodes. A recipe holds exactly one, so covering N categories takes N
+    // recipes.
     public const string Breakfast = "Breakfast";
     public const string Lunch = "Lunch";
     public const string Dinner = "Dinner";
@@ -34,7 +34,7 @@ public static class RecipeSeedData
 
     public static readonly string[] Categories = [Breakfast, Lunch, Dinner, Dessert, Snack, Beverage];
 
-    // Diet taxonomy (RecipeTags) — multi-valued across a recipe's variants.
+    // The baseline's "Recipe Tags" nodes — multi-valued across a recipe's variants.
     public const string Vegetarian = "Vegetarian";
     public const string Vegan = "Vegan";
     public const string GlutenFree = "Gluten-Free";

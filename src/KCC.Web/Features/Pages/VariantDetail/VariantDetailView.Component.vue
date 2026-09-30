@@ -2,7 +2,6 @@
 <script lang="ts">
   import { computed, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
-  import type { ImageItem } from '~/Types/ContentTypes'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
@@ -32,9 +31,9 @@
     variantDescription: string
     icon?: string
     /**
-     * Only the first is used, as the hero tile.
+     * Already sized for the hero tile by the server.
      */
-    images?: ImageItem[]
+    coverImage?: string
     /**
      * Minutes. Both feed the total-time stat tile.
      */
@@ -97,8 +96,6 @@
   const openCookMode = () => {
     if (hasInstructions.value) cookModeOpen.value = true
   }
-
-  const coverImage = computed(() => props.images?.[0]?.Asset?.Url)
 
   const statTiles = computed<StatTileSpec[]>(() => {
     const tiles: StatTileSpec[] = []

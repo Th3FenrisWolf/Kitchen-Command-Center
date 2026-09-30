@@ -16,6 +16,7 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         typeof(SiteProcess).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ?? "Debug";
 
     private readonly bool withSsr;
+    private readonly bool seed;
     private readonly string imagingHmacSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     private Process? site;
     private Process? ssr;
@@ -24,11 +25,15 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
     private TextWriter? log;
 
     public SiteProcess()
-        : this(withSsr: true)
+        : this(withSsr: true, seed: true)
     {
     }
 
-    public SiteProcess(bool withSsr) => this.withSsr = withSsr;
+    public SiteProcess(bool withSsr, bool seed = false)
+    {
+        this.withSsr = withSsr;
+        this.seed = seed;
+    }
 
     public Uri BaseUrl { get; private set; } = null!;
 
@@ -54,6 +59,10 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         }
 
         await StartAsync();
+        if (seed)
+        {
+            await SeedTestRecipesAsync();
+        }
     }
 
     public async Task StartAsync()
@@ -221,6 +230,16 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         }
 
         throw new TimeoutException($"The SSR service did not answer /health within a minute.{LogTail()}");
+    }
+
+    private async Task SeedTestRecipesAsync()
+    {
+        using var http = new HttpClient { BaseAddress = BaseUrl, Timeout = TimeSpan.FromMinutes(5) };
+        using var response = await http.PostAsync("api/dev/seed-recipes", content: null);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException($"Seeding answered {(int)response.StatusCode}.{LogTail()}");
+        }
     }
 
     private Process StartLogged(ProcessStartInfo info)

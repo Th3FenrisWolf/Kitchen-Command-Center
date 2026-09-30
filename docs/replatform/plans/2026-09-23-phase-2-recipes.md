@@ -4,8 +4,8 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** "Before you start", then Task 1. **Requires Phase 1 done:** its Status
-line reads `done (<date>)` and `node tests/scripts/run.mjs` is green on `replatform`.
+**Status:** done (2026-09-25). **Resume point:** the Phase 3 plan in this folder; read **Findings from Phase 2** at
+the end of this file first. **Requires Phase 1 done** (it is, 2026-09-24).
 
 **Goal:** Seeded recipe and variant pages render from Umbraco, with their ratings, authors, breadcrumbs and image
 tiles, and match the Phase 0 reference screenshots in both ramps.
@@ -5977,3 +5977,27 @@ Expected:
 
 Set this file's **Status** line to `done (<date>)`. Phase 3 (Search) is planned next, in this folder, against the code
 as it then stands.
+
+## Findings from Phase 2
+
+Found during Phase 2 (2026-09-25). The Phase 3 and 4 plans predate them.
+
+- **Built-in member property keys.** uSync pins Umbraco's built-in member properties to legacy int-based keys
+  (`umbracoMemberComments` is `2a280588-0000-0000-0000-000000000000`). Once `member.config` differs from the
+  database, as it did when Task 2 added `firstName` and `lastName`, the import writes those keys to the database, and
+  editing them in the file makes uSync count a change on every boot. The 17.7 backoffice calls `UmbId.validate` only
+  on user ids and in the UFM content- and member-name components, never on a property type's key, so `SchemaTests`
+  skips `umbracoMember*` properties. R9 still applies to every other key, including any member property Phase 4 adds.
+- **The gate** ran from a fresh clone of branch `replatform-phase-2` on a new database. All 12 captures match the
+  reference in content and layout. Besides the review dates, one difference predates this phase: in every mobile
+  capture, the torn strip under the header's dashed rule differs at its bottom-left corner (3×4 px at x 18–20,
+  y 114–117, by at most 34 levels in light and 26 in dark). Phase 1's home and 404 captures carry the identical patch,
+  and Phase 1's gate did not report it. The cause is not traced; `NOTES.md` now lists it.
+- **No dev SSR styles.** No Vue component has a `<style>` block (the kit lives in global CSS), so the dev sidecar has
+  nothing to inline and pages carry no `<style data-ssr-styles>`. Its absence is not a delivery failure.
+- **Fresh-install warnings.** A new database logs five `Configured database is reporting as not being available`
+  warnings (SQLite Error 14), one a second, before the unattended install starts: Umbraco's availability check polls
+  for a file that does not exist yet. They are expected, and they add about 5 s to each fixture boot.
+- **Seeding soon after boot.** The gate seeded about 80 s after its first boot, before Umbraco's first
+  cache-instruction sync, and logged Phase 1's cache-instruction stall at the 2-minute mark. It is harmless on one
+  server and Phase 4's fix covers it; the test runs finish before that sync.

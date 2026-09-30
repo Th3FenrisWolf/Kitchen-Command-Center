@@ -22,8 +22,11 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
     private string runDirectory = string.Empty;
     private string localTempPath = string.Empty;
     private string examineTempPath = string.Empty;
+    private string mediaCachePath = string.Empty;
 
     public string DatabasePath => Path.Combine(runDirectory, "Umbraco.sqlite.db");
+
+    private string MediaCacheFolderName => $"{Path.GetFileName(runDirectory)}-media-cache";
 
     public async Task InitializeAsync()
     {
@@ -53,6 +56,9 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         examineTempPath = UmbracoTempEnvFileSystemDirectoryFactory.GetTempPath(
             Services.GetRequiredService<IApplicationIdentifier>(),
             hostingEnvironment);
+        mediaCachePath = Path.Combine(WebProjectDirectory(), "umbraco", "Data", "TEMP", MediaCacheFolderName);
+
+        await SeedTestRecipesAsync();
     }
 
     public override async ValueTask DisposeAsync()
@@ -62,6 +68,7 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         DeleteIfPresent(runDirectory);
         DeleteIfPresent(localTempPath);
         DeleteIfPresent(examineTempPath);
+        DeleteIfPresent(mediaCachePath);
     }
 
     private static void DeleteIfPresent(string path)
@@ -112,6 +119,19 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         return Path.Combine(directory?.FullName ?? throw new InvalidOperationException("Repository root not found."), "src", "KCC.Web");
     }
 
+    // Seeding saves content and members, which must not overlap a test's writes (see AssemblyInfo.cs), so it
+    // runs once, before any test.
+    private async Task SeedTestRecipesAsync()
+    {
+        using var client = CreateClient();
+        client.Timeout = TimeSpan.FromMinutes(5);
+        using var response = await client.PostAsync("/api/dev/seed-recipes", null);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException($"Seeding answered {(int)response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
+        }
+    }
+
     private Dictionary<string, string> Settings() => new()
     {
         ["ConnectionStrings:umbracoDbDSN"] = $"Data Source={DatabasePath};Cache=Private;Foreign Keys=True;Pooling=True",
@@ -128,6 +148,10 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         ["Umbraco:CMS:Examine:LuceneDirectoryFactory"] = "TempFileSystemDirectoryFactory",
         ["Umbraco:CMS:Logging:Directory"] = Path.Combine(runDirectory, "logs"),
         ["Umbraco:CMS:Imaging:HMACSecretKey"] = imagingHmacSecretKey,
+        ["Umbraco:CMS:Global:UmbracoMediaPhysicalRootPath"] = Path.Combine(runDirectory, "media"),
+
+        // ImageSharp maps its cache folder under the content root even when given an absolute path.
+        ["Umbraco:CMS:Imaging:Cache:CacheFolder"] = $"~/umbraco/Data/TEMP/{MediaCacheFolderName}",
         ["DataProtection:KeysDirectory"] = Path.Combine(runDirectory, "keys"),
         ["uSync:Settings:ExportOnSave"] = "None",
         ["VueSsr:Enabled"] = "false",

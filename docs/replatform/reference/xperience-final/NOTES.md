@@ -24,11 +24,15 @@ selected, which is what Phase 2 needs before sign-in exists.
 
 ## Expected differences when comparing the Umbraco site
 
-- Review cards show the author as "(deleted)": the old seeder's reviews reference no real member. The Umbraco
-  seeder creates two real authors (spec §12).
-- The recipe and variant rating (4.3 from a 4-star and a 4.5-star review) may move once ratings aggregate over
-  published variants only (spec §17).
+- Review cards show the author as "(deleted)" on both sites: neither seeder's reviews reference a real member. The
+  Umbraco seeder's two real authors (spec §12) are set on some recipes and their variants, not on reviews.
+- Review dates read the day the seeder ran, not "SEP 1, 2026".
+- The recipe and variant rating (4.3 from a 4-star and a 4.5-star review) holds now that ratings count published
+  variants only (spec §17): both reviews are on a published variant.
 - Seeded variants have no nutrition, so the nutrition sheet shows its empty state.
+- On mobile, the torn strip under the header's dashed rule differs at its bottom-left corner: a 3×4 px patch at
+  x 18–20, y 114–117, by at most 34 levels in light and 26 in dark. It has been there since Phase 1, and its cause is
+  not traced.
 - `not-found` shows the hard-coded fallback text: the 404 page text was never serialized (spec §17). Umbraco
   serves the 404 node's baseline content.
 - `registration-complete` text changes in Phase 4 (the account waits for approval, spec §8).

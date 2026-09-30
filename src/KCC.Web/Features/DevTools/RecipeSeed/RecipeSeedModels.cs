@@ -1,8 +1,8 @@
 namespace KCC.Web.Features.DevTools.RecipeSeed;
 
-// Pure, framework-free description of the test-data set the seeder materializes into published
-// KCC.Recipe / KCC.RecipeVariant web pages plus VariantReview rows. Kept separate from the seeding
-// logic so the dataset reads as a coverage matrix (see RecipeSeedData) rather than Kentico plumbing.
+// Pure, framework-free description of the test-data set the seeder publishes as recipe and recipe-variant pages
+// plus review rows. Kept separate from the seeding logic so the dataset reads as a coverage matrix (see
+// RecipeSeedData) rather than CMS plumbing.
 
 /// <summary>One ingredient line. Only <see cref="Name"/> is indexed for free-text search.</summary>
 public sealed record SeedIngredient(string Name, decimal? Quantity, string Unit, bool IsEyeballed = false);
@@ -31,7 +31,7 @@ public sealed record SeedReview(decimal Rating);
 
 /// <summary>
 /// A recipe and everything the search index derives from it. <see cref="Reviews"/> are attached to the
-/// first variant (the recipe-level average the index stores aggregates every review by recipe GUID).
+/// first variant; the recipe's rating averages the reviews of all its published variants.
 /// </summary>
 public sealed record SeedRecipe(
     string Name,
