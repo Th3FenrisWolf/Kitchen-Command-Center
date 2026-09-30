@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.RateLimiting;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -10,6 +11,11 @@ public class SecurityComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
+        // ASP.NET Core never marks the antiforgery cookie Secure by default, and with Always it refuses to issue a
+        // token over plain HTTP, which the E2E site serves. Following the request's scheme, as Umbraco's member cookie
+        // does, marks it Secure over the tunnel's HTTPS.
+        builder.Services.Configure<AntiforgeryOptions>(options => options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest);
+
         builder.Services.Configure<RateLimitOptions>(builder.Config.GetSection("RateLimits"));
         builder.Services.AddRateLimiter(options =>
         {

@@ -1,4 +1,5 @@
 using KCC.IntegrationTests.Config;
+using Microsoft.Net.Http.Headers;
 
 namespace KCC.IntegrationTests.Features.Hosting;
 
@@ -54,6 +55,26 @@ public class TunnelTests
         _ = await Assert.That(response.Headers.Contains("Strict-Transport-Security")).IsFalse();
     }
 
+    // Umbraco's member cookie follows the request's scheme, and its backoffice cookie is always Secure. ASP.NET Core
+    // leaves the antiforgery cookie unmarked unless told otherwise.
+    [Test]
+    public async Task HttpsPages_MarkTheAntiforgeryCookieSecure()
+    {
+        var cookie = await AntiforgeryCookieAsync(forwardedAsHttps: true);
+
+        _ = await Assert.That(cookie.Secure).IsTrue();
+    }
+
+    // The E2E site runs over plain HTTP, where antiforgery set to Always would refuse to issue a token and every page
+    // would fail.
+    [Test]
+    public async Task PlainHttpPages_LeaveTheAntiforgeryCookieUnmarked()
+    {
+        var cookie = await AntiforgeryCookieAsync(forwardedAsHttps: false);
+
+        _ = await Assert.That(cookie.Secure).IsFalse();
+    }
+
     private async Task<string> AuthorizeAsync(string peer)
     {
         using var client = Site.CreateClient();
@@ -63,5 +84,20 @@ public class TunnelTests
         request.Headers.Add("X-Forwarded-For", "203.0.113.7");
         using var response = await client.SendAsync(request);
         return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task<SetCookieHeaderValue> AntiforgeryCookieAsync(bool forwardedAsHttps)
+    {
+        using var client = Site.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        if (forwardedAsHttps)
+        {
+            request.Headers.Add(UmbracoSite.PeerHeader, UmbracoSite.TunnelAddress);
+            request.Headers.Add("X-Forwarded-Proto", "https");
+        }
+
+        using var response = await client.SendAsync(request);
+        return SetCookieHeaderValue.ParseList(response.Headers.GetValues("Set-Cookie").ToList())
+            .Single(cookie => cookie.Name.StartsWith(".AspNetCore.Antiforgery.", StringComparison.Ordinal));
     }
 }
