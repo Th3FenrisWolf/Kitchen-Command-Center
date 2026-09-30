@@ -32,6 +32,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Publish skips folders whose names start with a dot, and Vite.AspNetCore reads the manifest from there. -->
+        <Content Include="wwwroot/.vite/**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
         <ProjectReference Include="..\KCC.Contributions\KCC.Contributions.csproj" />
     </ItemGroup>

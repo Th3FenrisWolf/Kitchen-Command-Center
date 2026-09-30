@@ -9,9 +9,8 @@ public static class RateLimits
     public const string Contributions = "contributions";
     public const string Submissions = "submissions";
 
-    // Every request arrives through the Cloudflare tunnel, so every socket address is cloudflared's and the visitor's
-    // own address is in this header. The tunnel being the only way in is what makes the header trustworthy. Without
-    // it, in development and tests, the socket address stands in.
+    // Cloudflare puts the visitor's address in this header, and the tunnel being the only way in is what makes it
+    // trustworthy. Without it, in development and tests, the connection's address stands in.
     public static string ClientKey(HttpContext context) =>
         context.Request.Headers["CF-Connecting-IP"].FirstOrDefault() is { Length: > 0 } address
             ? address
