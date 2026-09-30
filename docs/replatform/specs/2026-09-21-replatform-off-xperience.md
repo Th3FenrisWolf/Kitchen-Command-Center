@@ -192,8 +192,8 @@ attribute-routed: `/api/*`, `/error/{code}`, `/sitemap.xml`, `/robots.txt` and `
 served by a last-chance content finder that returns the 404 status-code node; a 500 goes through
 `UseExceptionHandler("/error")`, which renders the 500 node's text with today's hard-coded fallback. Status-code
 re-execution is dropped: it would turn the backoffice's bodiless 401s into HTML error pages.
-`RobotsTxtDenyAll` stays on until launch; when off, robots.txt disallows `/umbraco`, `/api`, `/account` and
-`/error` and points at the sitemap.
+`RobotsTxtDenyAll` is off in production and on everywhere else; when off, robots.txt disallows `/umbraco`, `/api`,
+`/account` and `/error` and points at the sitemap. The sitemap answers HEAD as well as GET.
 
 ### 6.4 Content access and caching
 
@@ -292,7 +292,8 @@ Aliases keep the Xperience class names in camelCase, so generated models never c
   so limiting by socket IP would throttle every visitor together. The header is trustworthy only because the
   tunnel is the sole ingress.
 - **Forwarded headers** are trusted from the tunnel container alone, so cookies are `Secure` and generated URLs are
-  `https`.
+  `https`. The antiforgery cookie, which ASP.NET Core never marks Secure by default, follows the request's scheme as
+  the member cookie does.
 - **Redirects and sign-out.** `returnUrl` must be a local URL. Sign-out becomes a POST; the three places that link
   to it (the header menu, the account page, the settings page) submit a small form instead.
 - **Backoffice.** Cloudflare Access protects `<host>/umbraco` with a one-time PIN, allowing only the owner's email;

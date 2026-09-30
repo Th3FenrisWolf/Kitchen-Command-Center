@@ -1,3 +1,4 @@
+using System.Net;
 using KCC.IntegrationTests.Config;
 
 namespace KCC.IntegrationTests.Features.Pages;
@@ -28,8 +29,19 @@ public class SitemapTests
         _ = await Assert.That(xml.Contains("/recipes/fluffy-buttermilk-pancakes/classic-stack/", StringComparison.Ordinal)).IsTrue();
     }
 
+    // An attribute route answers only the verbs it names, and link checkers and some crawlers ask with HEAD.
     [Test]
-    public async Task RobotsTxt_DeniesEverythingUntilLaunch()
+    public async Task Sitemap_AnswersHead()
+    {
+        using var client = Site.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Head, "/sitemap.xml");
+        using var response = await client.SendAsync(request);
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+    }
+
+    [Test]
+    public async Task RobotsTxt_DeniesEverythingOutsideProduction()
     {
         using var client = Site.CreateClient();
         var robots = await client.GetStringAsync("/robots.txt");
