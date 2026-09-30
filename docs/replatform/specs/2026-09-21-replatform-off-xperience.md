@@ -221,7 +221,7 @@ disappears with Page Builder.
 - **URLs:** `UmbracoApplicationUrl` is the public `https://` hostname, and HTTPS is enforced.
 - **Data protection:** ASP.NET data-protection keys persist under `umbraco/Data/keys`, on the data volume.
 - **Telemetry:** Umbraco's telemetry at its minimal level.
-- **Secrets never enter git:** the unattended admin account, the Anthropic key, the tunnel token, the backup
+- **Secrets never enter git:** the unattended admin account, the imaging HMAC key, the Anthropic key, the tunnel token, the backup
   bucket credentials, the dead-man ping URL, the E2E member. Development uses user-secrets, CI uses Actions
   secrets, the Pi uses a mode-600 `.env`.
 

@@ -23,7 +23,7 @@ const RECIPE_GROUPS = [
     pageId: 1,
     recipeName: 'Mac & Cheese',
     recipeIcon: 'fa-duotone fa-pot-food',
-    recipeUrl: '~/recipes/mac-and-cheese',
+    recipeUrl: '/recipes/mac-and-cheese',
     isPending: false,
     startedByYou: true,
     variants: [
@@ -31,7 +31,7 @@ const RECIPE_GROUPS = [
         pageId: 10,
         name: 'Classic Stovetop',
         icon: 'fa-duotone fa-pot-food',
-        url: '~/recipes/mac/classic',
+        url: '/recipes/mac/classic',
         isPending: false,
       },
       { pageId: 11, name: 'Spicy Jalapeño', icon: 'fa-duotone fa-pepper-hot', isPending: true },

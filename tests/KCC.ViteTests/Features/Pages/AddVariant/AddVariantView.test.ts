@@ -24,7 +24,7 @@ const render = () =>
   renderSsr(AddVariantView, {
     recipeId: '11111111-2222-3333-4444-555555555555',
     recipeName: 'Brown Butter Gnocchi',
-    recipeSlug: '~/recipes/gnocchi',
+    recipeSlug: '/recipes/gnocchi',
     resourceStrings: STRINGS,
   })
 
@@ -93,11 +93,6 @@ describe('AddVariantView', () => {
   it('takes the field label from a ResourceString, not a bare prop', async () => {
     const wizard = wizardOf(await render())
 
-    // `data-resource-key`/`kcc-rs-editable` (ResourceString.Component.vue) only render in preview mode,
-    // which this suite doesn't inject, so they can't be the signal here. What SSR without preview can
-    // show is the wrapping element ResourceString always renders (`as` defaults to `span`): a `label`
-    // string prop interpolates as bare text with no wrapper, so the `<span>` proves the field went
-    // through the slot.
     expect(wizard).toMatch(/<label for="[^"]+" class="kcc-lbl">(?:<!--\[-->)?<span>Variant name<\/span>/)
   })
 
@@ -120,7 +115,7 @@ describe('AddVariantView', () => {
     expect(wizard).not.toContain('fa-arrow-left')
   })
 
-  it('leaves the recipe by a hairline pill with the tilde stripped', async () => {
+  it('leaves the recipe by a hairline pill', async () => {
     const cancel = tagWith(await render(), 'href="/recipes/gnocchi"')
 
     expect(cancel).toMatch(/^<a /)

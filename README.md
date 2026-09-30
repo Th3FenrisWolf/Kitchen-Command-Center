@@ -1,74 +1,55 @@
 # KitchenCommandCenter
 
-A Kentico Xperience application with Vue 3 server-side rendering (SSR).
+An Umbraco 17 application with Vue 3 server-side rendering (SSR), on SQLite.
 
 ## Table of Contents
 
 - [Local Development](#local-development)
 - [Architecture](#architecture)
 - [Deployment](#deployment)
-- [Common Commands](#common-commands)
 
 ---
 
 ## Local Development
 
-### Development Environment Setup
-
-**Working Directory**: All commands should be run from `./src/KCC.Web`
-
-```bash
-cd src/KCC.Web
-```
-
 ### Quick Development Workflow
 
-1. **Restore Tools**:
-
-   ```bash
-   dotnet tool restore
-   ```
-
-2. **Database Setup**:
-   ```bash
-   dotnet kentico-xperience-dbmanager -- -s "localhost" -d "YourDatabase" -a "AdminPassword" --hash-string-salt "HashStringSaltForSolution"
-   ```
-
-> Note: Regardless of what `AdminPassword` is, it will be overwritten once Kentico CI is restored to be the default admin credentials found in 1pass.
-
-3. **Configure Secrets**:
-   - Copy connection string and hash salt from `appsettings.json` to `secrets.json`
-   - Run: `type secrets.json | dotnet user-secrets set`
-   - Remove sensitive values from `appsettings.json`
-
-4. **Restore Database Content**:
-
-   ```bash
-   dotnet run --kxp-ci-restore
-   ```
-
-5. **Install Frontend Dependencies** (from `src/KCC.Web`):
+1. **Install frontend dependencies** from the repo root (needs the Font Awesome token, see below):
 
    ```bash
    yarn install
    ```
 
-   > Requires a **Font Awesome Pro** token — set `FONTAWESOME_NPM_AUTH_TOKEN` first (see [Font Awesome Pro](#font-awesome-pro)). The admin client in `src/KCC.Admin/Client` needs `yarn install` with the same token, too.
-
-6. **Run the Application**:
-
-   The application requires three services running concurrently:
-   - ASP.NET Core web server
-   - Vite dev server (for HMR)
-   - Vue SSR service
+2. **Set the backoffice admin account** once per machine. Umbraco creates it on the first boot of a new database.
+   The password needs at least 10 characters; keep it in 1Password.
 
    ```bash
-   dotnet watch
+   cd src/KCC.Web
+   dotnet user-secrets set "Umbraco:CMS:Unattended:UnattendedUserName" "<name>"
+   dotnet user-secrets set "Umbraco:CMS:Unattended:UnattendedUserEmail" "<email>"
+   dotnet user-secrets set "Umbraco:CMS:Unattended:UnattendedUserPassword" "<password>"
+   dotnet user-secrets set "Umbraco:CMS:Imaging:HMACSecretKey" "$(openssl rand -base64 64 | tr -d '\n')"
    ```
 
-   This automatically runs `yarn dev:all` which starts Vite, SSR, and CSS watchers alongside the .NET app.
+   The last line stores a random imaging key; without one, Umbraco writes a generated key into the tracked
+   `appsettings.json` whenever it installs a new database.
 
-The root URL will be the live site's home page. To access the administration interface, navigate to the `/admin` path. Admin credentials can be found in 1pass to create your own account.
+3. **Run it** from `src/KCC.Web`:
+
+   ```bash
+   dotnet watch --non-interactive
+   ```
+
+   The first run creates `umbraco/Data/Umbraco.sqlite.db`, installs Umbraco and imports the schema, UI strings and
+   baseline pages from `uSync/v17/`. `dotnet watch` also starts Vite and the SSR service. To start over, stop the site
+   and delete `umbraco/Data/Umbraco.sqlite.db*`.
+
+   Umbraco's log prints to the console. If cache instructions are still pending at Umbraco's first cache sync, about
+   two minutes after boot (a new database's first-boot import, or an edit made before then), it logs
+   `Cache instruction sync did not complete within 00:01:00`: a harmless Umbraco SQLite race that recovers on its own
+   about 20 minutes later. A later edit can occasionally hit the same race.
+
+The site is at `https://localhost:58671`; the backoffice is at `/umbraco`.
 
 ### Font Awesome Pro
 
@@ -88,7 +69,7 @@ The same variable must be set wherever the production frontend is built. Never c
 
 ## Architecture
 
-This starter follows established patterns and best practices for maintainable, scalable Xperience applications.
+This starter follows established patterns and best practices for maintainable, scalable applications.
 
 ### Vertical Slice Architecture
 
@@ -129,88 +110,15 @@ Use consistent field names across content types and widgets:
 
 ### Development Best Practices
 
-#### Caching Strategy
+#### Schema and baseline content
 
-- **Output Caching**: Applied to all widgets and pages with proper cache dependencies
-- **Data Caching**: Use `CacheService` wrapper for database queries
-
-#### Widget Guidelines
-
-- **Never Render Empty**: Always show configuration prompts when setup is needed
-- **Use Constants**: Leverage `WidgetConstants.ConfigHeading` and `WidgetConstants.ConfigSubHeading`
-- **Text Editing**: Enable inline editing for all text content where possible
-
----
-
-## Common Commands
-
-Essential CLI commands for day-to-day development.
-
-### Code Generation
-
-Generate strongly-typed classes for content types:
-
-```bash
-dotnet run --no-build -- --kxp-codegen --type "PageContentTypes" --location ".\Models\Generated\{type}\{dataClassNamespace}"
-```
-
-**Available Types:**
-
-- `Forms`
-- `ReusableContentTypes`
-- `PageContentTypes`
-- `ReusableFieldSchemas`
-- `Classes`
-
-### Kentico Upgrades
-
-1. **Update Packages**:
-
-   ```bash
-   dotnet add package Kentico.Xperience.WebApp
-   # Repeat for other Kentico packages
-   ```
-
-2. **Upgrade Database**:
-   ```bash
-   dotnet run --no-build --kxp-update
-   ```
-
-### CI/CD Operations
-
-#### Continuous Integration
-
-**Store Changes**:
-
-```bash
-dotnet run --no-build --kxp-ci-store
-```
-
-**Restore Changes** (after pulling branch changes):
-
-```bash
-dotnet run --no-build --kxp-ci-restore
-```
-
-#### Continuous Deployment
-
-**Create CD Configuration**:
-
-```bash
-dotnet run --no-build -- --kxp-cd-config --path ".\App_Data\CDRepository\repository.config"
-```
-
-**Store Repository**:
-
-```bash
-dotnet run --no-build -- --kxp-cd-store --repository-path ".\App_Data\CDRepository"
-```
-
-**Restore Repository**:
-
-```bash
-dotnet run --no-build -- --kxp-cd-restore --repository-path ".\App_Data\CDRepository"
-```
+- Document types, data types and dictionary items are edited in the backoffice and exported by uSync on save in
+  Development. Commit `src/KCC.Web/uSync/v17/`.
+- Baseline content (the empty page tree, site settings, taxonomy, status pages) is not exported on save. Edit it in a
+  fresh database, then run `curl -sk -X POST https://localhost:58671/api/dev/baseline/export` and commit the result.
+  The endpoint refuses to run while seeded recipes exist.
+- ModelsBuilder runs in `SourceCodeManual` mode: after a schema change, use Settings → Models Builder → Generate models,
+  and commit `Features/Models/Generated`.
 
 ---
 
@@ -270,49 +178,11 @@ node tests/scripts/run.mjs
 The command exits non-zero if any suite has failures or fails to run, so it is
 CI-friendly. The individual per-suite reports are still produced alongside it.
 
-#### E2E seed member (one-time)
+#### E2E tests
 
-The E2E suite includes logged-in member flows (add a cook note, toggle "I cooked
-this", submit/edit/delete a review). These sign in through the public login form,
-so a **confirmed** member must exist in the database, and the tests read that
-member's credentials from environment variables (no login is committed to git):
-
-- `KCC_E2E_MEMBER_USERNAME`
-- `KCC_E2E_MEMBER_PASSWORD`
-
-Set them durably so the spawned `dotnet test` process inherits them. On macOS/zsh,
-put them in `~/.zshenv` (read by non-interactive shells too — the same place as the
-Font Awesome token):
-
-```bash
-export KCC_E2E_MEMBER_USERNAME="<your-username>"
-export KCC_E2E_MEMBER_PASSWORD="<your-password>"
-```
-
-Then create the member once against your local database (the web app must be
-running — e.g. `dotnet run` from `src/KCC.Web`, or let the E2E fixture start it).
-The commands below reuse the same env vars so no credentials are written down:
-
-1. Register the member via the public API:
-
-   ```bash
-   curl -k -X POST https://localhost:58671/api/account/register \
-     -H "Content-Type: application/json" \
-     -d "{\"UserName\":\"$KCC_E2E_MEMBER_USERNAME\",\"Email\":\"$KCC_E2E_MEMBER_USERNAME@example.test\",\"Password\":\"$KCC_E2E_MEMBER_PASSWORD\"}"
-   ```
-
-2. Confirm (enable) the member so it can sign in — email confirmation is not wired
-   up locally, and Kentico maps a member's confirmed state to `MemberEnabled`. Run
-   against the KCC database (`QUOTED_IDENTIFIER ON` is required because
-   `CMS_Member` carries filtered indexes):
-
-   ```sql
-   SET QUOTED_IDENTIFIER ON;
-   UPDATE CMS_Member SET MemberEnabled = 1 WHERE MemberName = '<your-username>';
-   ```
-
-Member data is not part of the CI repository, so this is a one-time step per
-database (it survives `--kxp-ci-restore`).
+The E2E suite starts its own copy of the site on a free port, with a fresh SQLite database and its own SSR process, so
+nothing needs setting up beyond building: run `dotnet build` and `yarn build:all` (in `src/KCC.Web`) first. The member
+flows return in a later phase and will read `KCC_E2E_MEMBER_USERNAME` / `KCC_E2E_MEMBER_PASSWORD`.
 
 ### Vue SSR
 

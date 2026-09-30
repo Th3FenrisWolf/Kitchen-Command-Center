@@ -24,7 +24,7 @@ function cleanAssetsPlugin(): Plugin {
   }
 }
 
-// Kestrel serves the channel domain over HTTPS, so a browser rejects dev-server assets fetched
+// Kestrel serves the site over HTTPS, so a browser rejects dev-server assets fetched
 // over plain HTTP as mixed content and the app never hydrates. Reusing ASP.NET Core's developer
 // certificate keeps this origin trusted wherever the app's own origin already is.
 function aspNetCoreDevCertificate() {
@@ -92,12 +92,6 @@ export default defineConfig(({ command, mode }) => {
             input: {
               main: resolve(__dirname, 'Features/Main.ts'),
               mainCss: resolve(__dirname, 'Features/Styles/Main.css'),
-              pageBuilderMount: resolve(__dirname, 'Features/PageBuilderMount.ts'),
-              adminHomeRedirect: resolve(__dirname, 'Features/AdminHomePage/admin-home-redirect.ts'),
-              resourceStringEditor: resolve(
-                __dirname,
-                '../KCC.ResourceStrings/Client/src/resource-strings/ResourceStringEditor.ts',
-              ),
             },
           },
         },

@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <TargetFramework>net10.0</TargetFramework>
-        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>
         <CodeAnalysisRuleSet>..\..\KCCStandardRules.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);AD0001</NoWarn>
@@ -14,21 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Anthropic" />
-        <PackageReference Include="Kentico.Xperience.Admin" />
-        <PackageReference Include="Kentico.Xperience.AzureStorage" />
-        <PackageReference Include="Kentico.Xperience.ComponentRegistry" />
-        <PackageReference Include="Kentico.Xperience.ComponentRegistry.Admin" />
-        <PackageReference Include="Kentico.Xperience.ComponentRegistry.MCP" />
-        <PackageReference Include="Kentico.Xperience.ImageProcessing" />
-        <PackageReference Include="Kentico.Xperience.Lucene" />
-        <PackageReference Include="Kentico.Xperience.ManagementApi" />
-        <PackageReference Include="Kentico.Xperience.MiniProfiler" />
-        <PackageReference Include="Kentico.Xperience.WebApp" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" />
         <PackageReference Include="RobotsTxtCore" />
         <PackageReference Include="SimpleMvcSitemap" />
@@ -36,22 +22,31 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Umbraco.Cms" />
+        <PackageReference Include="uSync" />
         <PackageReference Include="Vite.AspNetCore" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="assets\**" CopyToPublishDirectory="PreserveNewest" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <UpToDateCheckBuilt Include="wwwroot/css/site.css" Set="Css" />
-        <UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\KCC.Contributions\KCC.Contributions.csproj" />
-        <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
-        <ProjectReference Include="..\KCC.ResourceStrings\KCC.ResourceStrings.csproj" />
+    <ItemGroup Label="Unported slices">
+        <Compile Remove="Features/Api/**" />
+        <Compile Remove="Features/Components/Breadcrumbs/BreadcrumbService.cs" />
+        <Compile Remove="Features/DevTools/RecipeSeed/**" />
+        <Compile Remove="Features/Models/Api/**" />
+        <Compile Remove="Features/Models/Common/KCCApplicationUser.cs" />
+        <Compile Remove="Features/Pages/Account/**" />
+        <Compile Remove="Features/Pages/AddVariant/**" />
+        <Compile Remove="Features/Pages/CreateRecipe/**" />
+        <Compile Remove="Features/Pages/RecipeDetail/**" />
+        <Compile Remove="Features/Pages/RecipeSearch/**" />
+        <Compile Remove="Features/Pages/VariantDetail/**" />
+        <Compile Remove="Features/Providers/**" />
+        <Compile Remove="Features/Search/**" />
+        <Content Remove="Features/Pages/Account/**/*.cshtml" />
+        <Content Remove="Features/Pages/AddVariant/**/*.cshtml" />
+        <Content Remove="Features/Pages/CreateRecipe/**/*.cshtml" />
+        <Content Remove="Features/Pages/RecipeDetail/**/*.cshtml" />
+        <Content Remove="Features/Pages/RecipeSearch/**/*.cshtml" />
+        <Content Remove="Features/Pages/VariantDetail/**/*.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

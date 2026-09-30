@@ -1,121 +1,24 @@
-using CMS.ContentEngine;
-using KCC.ResourceStrings.Data;
-using Kentico.Content.Web.Mvc;
-using Kentico.Content.Web.Mvc.Routing;
+using KCC.Web.Features.Dictionary;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Components.Header;
 
-public class HeaderViewComponent(
-    IContentRetriever contentRetriever,
-    IResourceStringInfoProvider resourceStringInfoProvider,
-    ITaxonomyRetriever taxonomyRetriever,
-    IPreferredLanguageRetriever preferredLanguageRetriever
-) : ViewComponent
+public class HeaderViewComponent(ISiteSettingsQueries siteSettings, IResourceStringProvider resourceStrings) : ViewComponent
 {
-    private const string AuthStatusTaxonomyName = "AuthStatus";
-    private const string AuthenticatedTagName = "Authenticated";
-    private const string UnauthenticatedTagName = "Unauthenticated";
-
-    public async Task<IViewComponentResult> InvokeAsync()
+    public IViewComponentResult Invoke()
     {
-        var headerNav = (await contentRetriever.RetrieveContent<HeaderNavigation>(
-            new RetrieveContentParameters { LinkedItemsMaxLevel = 3 },
-            query => query.TopN(1),
-            new($"{nameof(HeaderViewComponent)}|{nameof(InvokeAsync)}")
-        )).FirstOrDefault();
-
-        var currentStatusTagId = await GetCurrentAuthStatusTagId();
-
-        var mainNavItems = RetrieveNavItems(headerNav?.MainNavItems, currentStatusTagId);
-        var utilityNavItems = RetrieveNavItems(headerNav?.UtilityNavItems, currentStatusTagId);
+        var navigation = siteSettings.GetHeaderNavigation();
+        var isSignedIn = User.Identity?.IsAuthenticated == true;
 
         var viewModel = new HeaderViewModel
         {
-            Logo = headerNav.Logo.FirstOrDefault(),
-            LogoLight = headerNav.LogoLight?.FirstOrDefault(),
-            SwitchToLightLabel = resourceStringInfoProvider.GetOrDefault("Theme.SwitchToLight"),
-            SwitchToDarkLabel = resourceStringInfoProvider.GetOrDefault("Theme.SwitchToDark"),
-            MainNavItems = MapPageLinks(mainNavItems),
-            UtilityNavItems = MapPageLinks(utilityNavItems),
+            LogoAlt = resourceStrings.GetOrDefault("Shared.LogoAlt"),
+            SwitchToLightLabel = resourceStrings.GetOrDefault("Theme.SwitchToLight"),
+            SwitchToDarkLabel = resourceStrings.GetOrDefault("Theme.SwitchToDark"),
+            MainNavItems = HeaderNav.Visible(navigation.Main, isSignedIn).ToList(),
+            UtilityNavItems = HeaderNav.Visible(navigation.Utility, isSignedIn).ToList(),
         };
 
         return View("~/Features/Components/Header/Header.cshtml", viewModel);
-    }
-
-    private static IEnumerable<IContentItemFieldsSource> RetrieveNavItems(IEnumerable<IContentItemFieldsSource> sourceItems, Guid? currentStatusTagId)
-    {
-        var navItems = sourceItems.OfType<NavItem>().Where(item =>
-        {
-            var showWhen = item.ShowWhen?.ToList();
-            if (showWhen is null || showWhen.Count == 0)
-            {
-                return true;
-            }
-
-            if (currentStatusTagId is null)
-            {
-                return false;
-            }
-
-            return showWhen.Any(t => t.Identifier == currentStatusTagId.Value);
-        });
-
-        var navLinks = sourceItems.OfType<NavLink>().Where(item =>
-        {
-            var showWhen = item.ShowWhen?.ToList();
-            if (showWhen is null || showWhen.Count == 0)
-            {
-                return true;
-            }
-
-            if (currentStatusTagId is null)
-            {
-                return false;
-            }
-
-            return showWhen.Any(t => t.Identifier == currentStatusTagId.Value);
-        });
-
-        return sourceItems.Where(item =>
-            (item is NavItem ni && navItems.Contains(ni)) ||
-            (item is NavLink nl && navLinks.Contains(nl)));
-    }
-
-    private async Task<Guid?> GetCurrentAuthStatusTagId()
-    {
-        var language = preferredLanguageRetriever.Get();
-        var taxonomy = await taxonomyRetriever.RetrieveTaxonomy(AuthStatusTaxonomyName, language);
-        var tagName = User.Identity?.IsAuthenticated == true
-            ? AuthenticatedTagName
-            : UnauthenticatedTagName;
-
-        return taxonomy?.Tags
-            ?.FirstOrDefault(t => string.Equals(t.Name, tagName, StringComparison.OrdinalIgnoreCase))
-            ?.Identifier;
-    }
-
-    private static IEnumerable<HeaderNavItem> MapPageLinks(IEnumerable<IContentItemFieldsSource> items)
-    {
-        if (items?.Any() is not true)
-        {
-            return [];
-        }
-
-        return items.Select<IContentItemFieldsSource, HeaderNavItem>(item => item switch
-        {
-            NavItem navItem => new HeaderNavItem
-            {
-                DisplayText = navItem.DisplayText,
-                SubLinks = navItem.SubLinks.Select(subLink => subLink.MapToPageLink()),
-            },
-            NavLink navLink => new HeaderNavItem
-            {
-                DisplayText = navLink.DisplayText,
-                Url = navLink.MapToPageLink().Url,
-                Target = navLink.Target,
-            },
-            _ => null,
-        }).Where(navItem => navItem is not null);
     }
 }

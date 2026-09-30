@@ -40,6 +40,4 @@ public static class StringExtensions
 
         return $"{uriBuilder.Path}{uriBuilder.Query}{uriBuilder.Fragment}";
     }
-
-    public static string StripTilde(this string input) => input?.TrimStart('~') ?? string.Empty;
 }

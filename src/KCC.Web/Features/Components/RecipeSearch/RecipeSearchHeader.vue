@@ -12,9 +12,6 @@
   }
 
   export interface RecipeSearchHeaderProps {
-    /**
-     * Kentico hands out tilde-relative paths; the tilde is stripped before it reaches the anchor.
-     */
     createRecipeUrl: string
   }
 </script>
@@ -47,7 +44,7 @@
 
     <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">
       <ResourceString for="SearchRecipes" as="h1" class="kcc-h3" />
-      <Button as="a" :href="createRecipeUrl.stripTilde()">
+      <Button as="a" :href="createRecipeUrl">
         <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="CreateRecipe" />
       </Button>
     </div>

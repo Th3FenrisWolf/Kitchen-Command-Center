@@ -254,15 +254,18 @@
   }
 
   /* Links are ink with a hair underline. Bare `a` stays unstyled on purpose: cards and button-links are
-     anchors too. */
-  .kcc-link {
+     anchors too. Body copy is the exception, because editor rich text writes class-less anchors that would
+     otherwise read as plain text. */
+  .kcc-link,
+  .kcc-body a:not([class]) {
     color: var(--color-ink);
     text-decoration: underline;
     text-decoration-color: var(--color-hair-strong);
     text-underline-offset: 3px;
   }
 
-  .kcc-link:hover {
+  .kcc-link:hover,
+  .kcc-body a:not([class]):hover {
     text-decoration-color: currentColor;
   }
 

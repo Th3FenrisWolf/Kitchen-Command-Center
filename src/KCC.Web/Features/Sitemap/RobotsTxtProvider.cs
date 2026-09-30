@@ -15,7 +15,7 @@ public class RobotsTxtProvider(
         return Task.FromResult(new RobotsTxtResult(buffer, 3600));
     }
 
-    private string GetContent()
+    internal string GetContent()
     {
         var shouldDenyAll = configuration.GetValue("RobotsTxtDenyAll", true);
 
@@ -27,7 +27,9 @@ public class RobotsTxtProvider(
 
         return (shouldDenyAll ? builder.DenyAll() : builder.AddSection(section => section
             .AddUserAgent("*")
-            .Disallow("/admin")
+            .Disallow("/umbraco")
+            .Disallow("/api")
+            .Disallow("/account")
             .Disallow("/error")
         )).Build().ToString();
     }

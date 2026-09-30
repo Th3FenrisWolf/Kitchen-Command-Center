@@ -6,9 +6,6 @@ namespace KCC.Web.Features.Models.Common;
 
 public class SsrHtmlContent(SsrResult result) : IHtmlContent
 {
-    // Exposed so PreviewJsonUrlSyncMiddleware can locate this exact opener
-    // in the rendered HTML. Keep both emission (WriteTo) and lookup on the
-    // same constant to prevent silent drift.
     internal const string ServerContentScriptOpen =
         "<script id=\"server-content\" type=\"application/json\">";
 

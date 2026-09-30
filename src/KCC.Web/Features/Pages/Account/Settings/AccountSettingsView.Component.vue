@@ -67,7 +67,7 @@
     confirmPassword: `${uid}-confirm-password`,
   }
 
-  const backHref = computed(() => props.backUrl.stripTilde())
+  const backHref = computed(() => props.backUrl)
 
   const saveProfile = async () => {
     profileMessage.value = null

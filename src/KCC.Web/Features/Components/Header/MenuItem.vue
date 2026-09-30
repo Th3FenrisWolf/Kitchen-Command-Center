@@ -19,7 +19,7 @@
   /**
    * A header entry that is either a dropdown group (subLinks set) or a flat link
    * (url + target set). The two modes are mutually exclusive on the server side
-   * (HeaderNavItem in C# is populated from either a NavItem or a NavLink).
+   * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
    */
   interface NavItem {
     displayText: string
@@ -56,7 +56,7 @@
 <template>
   <a
     v-if="item.url"
-    :href="item.url.stripTilde()"
+    :href="item.url"
     :target="item.target"
     class="kcc-kick relative z-20 flex h-full w-full cursor-pointer items-center px-4 py-2 text-ink decoration-hair-strong underline-offset-[3px] hover:underline"
   >
@@ -94,7 +94,7 @@
             >
               <a
                 class="block size-full p-4 text-center decoration-hair-strong underline-offset-[3px] hover:underline"
-                :href="subLink.url?.stripTilde()"
+                :href="subLink.url"
                 :target="subLink.target"
               >
                 {{ subLink.displayText }}

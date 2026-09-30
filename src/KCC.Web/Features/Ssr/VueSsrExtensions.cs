@@ -32,10 +32,6 @@ public static class VueSsrExtensions
         return services;
     }
 
-    // Registers the Vite development server (dev only). The
-    // PreviewJsonUrlSyncMiddleware is registered separately in Program.cs
-    // before UseKentico so it processes the response AFTER Kentico's
-    // virtual-context decorator has already rewritten URLs.
     public static IApplicationBuilder UseVueSsr(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())

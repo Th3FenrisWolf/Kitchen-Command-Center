@@ -11,17 +11,10 @@
     name: 'AppHeader',
   }
 
-  interface ImageItem {
-    asset: {
-      url: string
-    }
-    altText: string
-  }
-
   /**
    * A header entry that is either a dropdown group (subLinks set) or a flat link
    * (url + target set). The two modes are mutually exclusive on the server side
-   * (HeaderNavItem in C# is populated from either a NavItem or a NavLink).
+   * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
    */
   interface NavItem {
     displayText: string
@@ -37,17 +30,9 @@
   }
 
   export interface AppHeaderProps {
-    /**
-     * URL the logo links to. Pre-resolved via Razor's Url.Content so the server
-     * HTML and hydration JSON both carry the same decorated value in preview.
-     */
     homeUrl: string
-    logo: ImageItem
-
-    /**
-     * Mark shown on the light ramp. When omitted, `logo` shows on both ramps.
-     */
-    logoLight?: ImageItem
+    /** Alt text for the mark, resolved server-side from the dictionary. */
+    logoAlt: string
 
     /** Theme-toggle labels, resolved server-side so they work on every page. */
     switchToLightLabel: string
@@ -63,8 +48,10 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
+  import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
+  import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
   import ThemeToggle from '~/Components/Theme/ThemeToggle.vue'
-  const { homeUrl, logo, logoLight, switchToLightLabel, switchToDarkLabel, mainNavItems, utilityNavItems } =
+  const { homeUrl, logoAlt, switchToLightLabel, switchToDarkLabel, mainNavItems, utilityNavItems } =
     defineProps<AppHeaderProps>()
 
   const navRef = ref<HTMLElement | null>(null)
@@ -100,23 +87,22 @@
     >
       <a
         class="btn-no-style z-20 shrink-0 py-4 text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink"
-        :href="homeUrl.stripTilde()"
+        :href="homeUrl"
       >
         <img
-          :data-ramp="logoLight ? 'dark' : undefined"
+          data-ramp="dark"
           loading="eager"
-          :src="logo.asset.url.stripTilde()"
-          :alt="logo.altText"
+          :src="logoOnDark"
+          :alt="logoAlt"
           class="h-12 w-auto sm:h-16"
           height="64"
           width="90"
         />
         <img
-          v-if="logoLight"
           data-ramp="light"
           loading="eager"
-          :src="logoLight.asset.url.stripTilde()"
-          :alt="logoLight.altText"
+          :src="logoOnLight"
+          :alt="logoAlt"
           class="h-12 w-auto sm:h-16"
           height="64"
           width="90"

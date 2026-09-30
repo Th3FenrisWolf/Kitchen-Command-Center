@@ -16,10 +16,17 @@
         <PackageReference Include="Moq" />
         <PackageReference Include="TUnit" />
     </ItemGroup>
+    <ItemGroup Label="Unported slices">
+        <Compile Remove="Admin/**" />
+        <Compile Remove="Features/Api/**" />
+        <Compile Remove="Features/Contributions/**" />
+        <Compile Remove="Features/Pages/Account/**" />
+        <Compile Remove="Features/Pages/RecipeDetail/**" />
+        <Compile Remove="Features/Pages/VariantDetail/**" />
+        <Compile Remove="Features/Providers/**" />
+        <Compile Remove="Features/Search/**" />
+    </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />
-        <ProjectReference Include="..\..\src\KCC.Admin\KCC.Admin.csproj" />
-        <ProjectReference Include="..\..\src\KCC.ResourceStrings\KCC.ResourceStrings.csproj" />
-        <ProjectReference Include="..\..\src\KCC.Contributions\KCC.Contributions.csproj" />
     </ItemGroup>
 </Project>

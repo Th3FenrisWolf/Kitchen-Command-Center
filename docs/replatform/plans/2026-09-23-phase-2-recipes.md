@@ -85,6 +85,16 @@ Expected, and what to do if not:
     - Tasks 5 and 6 pass that template's key in every `ContentCreateModel`. See the notes there.
 13. `Program.cs` registers `IResourceStringProvider`, `ISiteSettingsQueries`, `PageMetadata`, `ISitemapPages` and
     `IRobotsTxtProvider`, in that order. Tasks 5, 6 and 7 each add a line after `IRobotsTxtProvider`.
+14. **Deterministic keys (ruling R9).** The backoffice rejects GUIDs without RFC 9562 version and variant bits
+    (`UmbId.validate`). Task 2's `Key()` in `RecipeSchemaBootstrap` and Task 5's `SeedKeys.For` must set the version-8
+    nibble (the high nibble of byte 7 in .NET's `Guid(ReadOnlySpan<byte>)` layout) and the RFC variant (the top two
+    bits of byte 8). Restore one shared helper for both, e.g. from
+    `git show 5e0840e^:src/KCC.Web/Features/DevTools/Baseline/BaselineKeys.cs`. Otherwise Phase 1's widened
+    `SchemaTests` key guard (every type, property and group key) and `BaselineContentTests` (every content key) fail.
+15. `UmbracoSite.DisposeAsync` no longer has the `if (runDirectory.Length > 0) { try … }` block that Task 6 Step 1
+    replaces. Phase 1 replaced it with a `DeleteIfPresent(path)` helper, which also deletes Umbraco's `LocalTempPath`
+    and the Examine temp folder. Add the media-cache folder as one more `DeleteIfPresent` call instead of adding
+    `DeleteQuietly`.
 
 Before any task starts the dev site, check that nothing else is listening on port 58671.
 
