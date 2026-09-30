@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
@@ -101,6 +103,91 @@ public static class TestContent
         return mediaKey;
     }
 
+    public static PropertyValueModel Pick(string alias, Guid documentKey) => new()
+    {
+        Alias = alias,
+        Value = new JsonArray(new JsonObject { ["type"] = "document", ["unique"] = documentKey.ToString() }),
+    };
+
+    public static PropertyValueModel Author(Guid memberKey) => new() { Alias = "author", Value = memberKey.ToString() };
+
+    public static Task<Guid> CategoryAsync(IServiceProvider services, string name) =>
+        PublishedAsync(services, "recipeCategory", name, Folder(services, "Recipe Categories"), []);
+
+    public static Task<Guid> TagAsync(IServiceProvider services, string name) =>
+        PublishedAsync(services, "recipeTag", name, Folder(services, "Recipe Tags"), []);
+
+    public static async Task TrashAsync(IServiceProvider services, Guid key)
+    {
+        using var scope = services.CreateScope();
+        var result = await scope.ServiceProvider.GetRequiredService<IContentEditingService>()
+            .MoveToRecycleBinAsync(key, Constants.Security.SuperUserKey);
+        if (!result.Success)
+        {
+            throw new InvalidOperationException($"Trashing {key} failed: {result.Status}.");
+        }
+    }
+
+    public static async Task<Guid> AuthorAsync(IServiceProvider services, string userName, string firstName, string lastName)
+    {
+        using var scope = services.CreateScope();
+        var scoped = scope.ServiceProvider;
+        var superUser = await scoped.GetRequiredService<IUserService>().GetAsync(Constants.Security.SuperUserKey)
+            ?? throw new InvalidOperationException("The super user is missing.");
+        var created = await scoped.GetRequiredService<IMemberEditingService>().CreateAsync(
+            new MemberCreateModel
+            {
+                Key = Guid.NewGuid(),
+                ContentTypeKey = scoped.GetRequiredService<IMemberTypeService>().Get(Constants.Security.DefaultMemberTypeAlias)!.Key,
+                Username = userName,
+                Email = $"{userName}@example.test",
+                Password = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
+                IsApproved = true,
+                Variants = [new VariantModel { Name = $"{firstName} {lastName}" }],
+                Properties =
+                [
+                    new PropertyValueModel { Alias = "firstName", Value = firstName },
+                    new PropertyValueModel { Alias = "lastName", Value = lastName },
+                ],
+            },
+            superUser);
+        if (!created.Success)
+        {
+            throw new InvalidOperationException($"Creating member {userName} failed: {created.Status.MemberEditingOperationStatus}.");
+        }
+
+        return created.Result.Content!.Key;
+    }
+
+    public static void RenameAuthor(IServiceProvider services, Guid memberKey, string firstName, string lastName)
+    {
+        using var scope = services.CreateScope();
+        var memberService = scope.ServiceProvider.GetRequiredService<IMemberService>();
+        var member = memberService.GetById(memberKey) ?? throw new InvalidOperationException($"No member {memberKey}.");
+        member.SetValue("firstName", firstName);
+        member.SetValue("lastName", lastName);
+        memberService.Save(member);
+    }
+
+    public static async Task RenameAsync(IServiceProvider services, Guid key, string name)
+    {
+        using var scope = services.CreateScope();
+        var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
+        var content = contentService.GetById(key) ?? throw new InvalidOperationException($"No content {key}.");
+        content.Name = name;
+        if (!contentService.Save(content).Success)
+        {
+            throw new InvalidOperationException($"Renaming {key} failed.");
+        }
+
+        var published = await scope.ServiceProvider.GetRequiredService<IContentPublishingService>()
+            .PublishAsync(key, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
+        if (!published.Success)
+        {
+            throw new InvalidOperationException($"Publishing {name} failed: {published.Status}.");
+        }
+    }
+
     public static async Task UnpublishAsync(IServiceProvider services, Guid key)
     {
         using var scope = services.CreateScope();
@@ -110,6 +197,12 @@ public static class TestContent
         {
             throw new InvalidOperationException($"Unpublishing {key} failed: {result.Result}.");
         }
+    }
+
+    private static Guid Folder(IServiceProvider services, string name)
+    {
+        services.GetRequiredService<IDocumentNavigationQueryService>().TryGetRootKeysOfType("contentFolder", out var folders);
+        return services.GetRequiredService<IContentService>().GetByIds(folders).Single(folder => folder.Name == name).Key;
     }
 
     private static async Task<Guid> PublishedAsync(IServiceProvider services, string contentTypeAlias, string name, Guid parentKey, IEnumerable<PropertyValueModel> values)

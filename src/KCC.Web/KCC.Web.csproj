@@ -35,20 +35,16 @@
         <Compile Remove="Features/Api/AccountApiController.cs" />
         <Compile Remove="Features/Api/ProfileApiController.cs" />
         <Compile Remove="Features/Api/RecipeApiController.cs" />
-        <Compile Remove="Features/Api/RecipeSearchApiController.cs" />
         <Compile Remove="Features/Api/VariantCookedApiController.cs" />
         <Compile Remove="Features/Models/Api/**" />
         <Compile Remove="Features/Models/Common/KCCApplicationUser.cs" />
         <Compile Remove="Features/Pages/Account/**" />
         <Compile Remove="Features/Pages/AddVariant/**" />
         <Compile Remove="Features/Pages/CreateRecipe/**" />
-        <Compile Remove="Features/Pages/RecipeSearch/**" />
         <Compile Remove="Features/Providers/RecipeIconProvider.cs" />
-        <Compile Remove="Features/Search/**" />
         <Content Remove="Features/Pages/Account/**/*.cshtml" />
         <Content Remove="Features/Pages/AddVariant/**/*.cshtml" />
         <Content Remove="Features/Pages/CreateRecipe/**/*.cshtml" />
-        <Content Remove="Features/Pages/RecipeSearch/**/*.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

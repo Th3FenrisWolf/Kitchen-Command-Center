@@ -1,3 +1,4 @@
+using KCC.Web.Features.Search;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.DevTools.RecipeSeed;
@@ -8,7 +9,10 @@ namespace KCC.Web.Features.DevTools.RecipeSeed;
 public class DevSeedApiController(IWebHostEnvironment environment) : ControllerBase
 {
     [HttpPost("seed-recipes")]
-    public async Task<IActionResult> SeedRecipes([FromServices] RecipeTestDataSeeder seeder, CancellationToken cancellationToken)
+    public async Task<IActionResult> SeedRecipes(
+        [FromServices] RecipeTestDataSeeder seeder,
+        [FromServices] IRecipeIndexRebuilder recipeIndex,
+        CancellationToken cancellationToken)
     {
         // The integration and E2E fixtures run the site in the Testing environment.
         if (!environment.IsDevelopment() && !environment.IsEnvironment("Testing"))
@@ -18,6 +22,9 @@ public class DevSeedApiController(IWebHostEnvironment environment) : ControllerB
 
         using var log = new StringWriter();
         var summary = await seeder.RunAsync(log, cancellationToken);
+
+        // The fixtures start testing once this answers, so it waits until search can find what it seeded.
+        await recipeIndex.WhenCurrentAsync(cancellationToken);
         return Ok(new { summary = summary.ToString(), log = log.ToString() });
     }
 }
