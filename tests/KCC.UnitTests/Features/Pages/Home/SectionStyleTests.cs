@@ -1,5 +1,8 @@
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using KCC.Web.Features.Pages.Home;
+using TUnit.Assertions.Enums;
 
 namespace KCC.UnitTests.Features.Pages.Home;
 
@@ -73,15 +76,60 @@ public class SectionStyleTests
         _ = await Assert.That(built.Where(name => !safelist.Contains(name))).IsEmpty();
     }
 
+    // The backoffice stores each option's text as the content's value and SectionStyle matches it by string, so an
+    // option renamed or added there renders unstyled, silently.
+    [Test]
+    public async Task SectionBackgroundOptions_MatchTheBackgroundsTheStyleHandles()
+    {
+        _ = await Assert.That(DropdownItems("KCCSectionBackground")).IsEquivalentTo(Backgrounds, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task SectionWidthOptions_MatchTheWidthsTheStyleHandles()
+    {
+        _ = await Assert.That(DropdownItems("KCCSectionWidth")).IsEquivalentTo(Widths, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task WashOptions_MatchTheWashesTheStyleHandles()
+    {
+        _ = await Assert.That(DropdownItems("KCCWash")).IsEquivalentTo(Washes, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task SectionBackgroundOptions_OnlyTheDeskLeavesTheSectionUnfilled()
+    {
+        var unfilled = DropdownItems("KCCSectionBackground").Where(background => SectionStyle.Classes(background, null).Length == 0);
+
+        _ = await Assert.That(unfilled).IsEquivalentTo(["Desk"]);
+    }
+
+    [Test]
+    public async Task SectionWidthOptions_OnlyTheContainerKeepsTheDefaultColumn()
+    {
+        var defaultColumn = DropdownItems("KCCSectionWidth").Where(width => SectionStyle.Classes(null, width).Length == 0);
+
+        _ = await Assert.That(defaultColumn).IsEquivalentTo(["Container"]);
+    }
+
+    [Test]
+    public async Task WashOptions_EveryOneFills()
+    {
+        var unfilled = DropdownItems("KCCWash").Where(wash => SectionStyle.Wash(wash).Length == 0);
+
+        _ = await Assert.That(unfilled).IsEmpty();
+    }
+
+    private static string[] DropdownItems(string dataType)
+    {
+        var path = Path.Combine(RepositoryRoot(), "src", "KCC.Web", "uSync", "v17", "DataTypes", $"{dataType}.config");
+        var config = XDocument.Load(path).Root.Element("Config").Value;
+        return JsonNode.Parse(config)["items"].AsArray().Select(item => (string)item).ToArray();
+    }
+
     private static HashSet<string> Safelist()
     {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        var css = File.ReadAllText(Path.Combine(directory!.FullName, "src", "KCC.Web", "Features", "Styles", "TailwindConfig.css"));
+        var css = File.ReadAllText(Path.Combine(RepositoryRoot(), "src", "KCC.Web", "Features", "Styles", "TailwindConfig.css"));
         return Regex.Matches(css, @"@source inline\('([^']+)'\)")
             .SelectMany(match => Expand(match.Groups[1].Value))
             .ToHashSet();
@@ -94,5 +142,16 @@ public class SectionStyleTests
             ? group.Groups[1].Value.Split(',').SelectMany(option =>
                 Expand(pattern[..group.Index] + option + pattern[(group.Index + group.Length)..]))
             : [pattern];
+    }
+
+    private static string RepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
+        {
+            directory = directory.Parent;
+        }
+
+        return directory!.FullName;
     }
 }

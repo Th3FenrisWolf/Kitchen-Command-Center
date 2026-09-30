@@ -126,10 +126,10 @@ composites ink over paper plus each wash.
 ### The kit, and where CSS lives
 
 `kcc-*` classes live in global `@layer components` CSS under `Features/Styles/Torn/`, **not** in component
-`<style>` blocks: Razor-rendered widgets and Vue components share them, and Razor cannot reach a scoped
-block. Anything Razor also renders belongs in `@layer components`. A rule that must beat a Tailwind *utility*
-sits **outside** `@layer` entirely (the ramp-swap rule at the end of `Features/Styles/Torn/Kit.css`), because
-the `utilities` layer comes after `components`.
+`<style>` blocks: Razor-rendered views, home blocks and Vue components share them, and Razor cannot reach a
+scoped block. Anything Razor also renders belongs in `@layer components`. A rule that must beat a Tailwind
+*utility* sits **outside** `@layer` entirely (the ramp-swap rule at the end of
+`Features/Styles/Torn/Kit.css`), because the `utilities` layer comes after `components`.
 
 ### The tear
 

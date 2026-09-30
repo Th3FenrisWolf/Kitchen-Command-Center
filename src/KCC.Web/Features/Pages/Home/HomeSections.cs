@@ -47,7 +47,8 @@ public static class HomeSections
 
             // The sheet is sticky on wide screens, so it passes every card in the stack and comes to rest above the
             // next section. Grids stop at four columns, so its half of the width covers two of that section's sheets
-            // or cards at most. None of them may take its tear.
+            // or cards at most. So the stack's cards and the next two draws skip its tear, unless another stacker's
+            // sheet opens a window of its own first.
             tears.Avoid(sheetTear, cards.Count + 2);
         }
 

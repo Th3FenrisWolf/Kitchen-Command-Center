@@ -253,8 +253,9 @@ Loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. A page built from 
 through all its sheets and cards instead, so neighbours never share a tear across two sections either. A stacker's
 sheet is sticky and travels, so the cycle skips its tear for the stack's cards and for the first two sheets or cards
 of the next section, where the sheet comes to rest: its half of the width sits over two cards at most, because grids
-stop at four columns. Filter defs for the wax are inline in `Layout.cshtml`, so server-rendered washes are filtered
-before hydration.
+stop at four columns. When that next section is another stacker, its own sheet's window takes over after the sheet, so
+its first card may repeat the first sheet's tear, corner to corner. Filter defs for the wax are inline in
+`Layout.cshtml`, so server-rendered washes are filtered before hydration.
 
 ## Invariants
 

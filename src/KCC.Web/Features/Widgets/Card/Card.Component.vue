@@ -19,11 +19,11 @@
      */
     cardColor?: BackgroundColor
 
-    /** Neighbours never share a tear: a grid passes `(index % 6) + 1`. Unset, the tear comes from `seed`. */
+    /** Neighbours never share a tear: the page passes the next of its cycle. Unset, the tear comes from `seed`. */
     tear?: 1 | 2 | 3 | 4 | 5 | 6
 
     /**
-     * Hashed into a stable tear when no grid index supplies one; usually the card's heading.
+     * Hashed into a stable tear when the page supplies none; usually the card's heading.
      * @default ''
      */
     seed?: string
