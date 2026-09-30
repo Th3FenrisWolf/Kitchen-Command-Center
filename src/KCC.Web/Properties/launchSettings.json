@@ -1,4 +1,4 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -23,14 +23,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_VITE": "true"
-      }
-    },
-    "CI": {
-      "commandName": "Project",
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:58671;http://localhost:58672",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "CI"
       }
     }
   }

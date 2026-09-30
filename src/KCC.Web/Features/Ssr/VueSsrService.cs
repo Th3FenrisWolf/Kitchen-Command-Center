@@ -71,7 +71,7 @@ public class VueSsrService(
             return baseResult;
         }
 
-        var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent);
+        var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent, isPreview);
 
         if (cache.TryGetValue(cacheKey, out CachedRender cached) && cached is not null)
         {
@@ -167,9 +167,9 @@ public class VueSsrService(
         }
     }
 
-    private static string GenerateCacheKey(string header, string body, string footer)
+    private static string GenerateCacheKey(string header, string body, string footer, bool isPreview)
     {
-        var combined = $"{header}{body}{footer}";
+        var combined = $"{(isPreview ? "preview" : "live")}\n{header}{body}{footer}";
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(combined));
         return $"ssr:{Convert.ToHexString(hashBytes)}";
     }

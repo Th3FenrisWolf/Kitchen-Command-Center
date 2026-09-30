@@ -1,16 +1,10 @@
-@using KCC.ResourceStrings.Data
 @using KCC.Web.Features.Components.Header
-@using KCC.Web.Features.Extensions
-@using KCC.Web.Features.Models.Common
-
-@inject IResourceStringInfoProvider ResourceStringInfoProvider
 
 @model HeaderViewModel
 
 <AppHeader
-  home-url="@Url.HomePage()"
-  :logo="@Vue.Prop(Model.Logo)"
-  :logo-light="@Vue.Prop(Model.LogoLight)"
+  home-url="/"
+  logo-alt="@Model.LogoAlt"
   switch-to-light-label="@Model.SwitchToLightLabel"
   switch-to-dark-label="@Model.SwitchToDarkLabel"
   :main-nav-items="@Vue.Prop(Model.MainNavItems)"

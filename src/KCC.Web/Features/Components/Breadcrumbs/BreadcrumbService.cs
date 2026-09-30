@@ -93,11 +93,3 @@ public class BreadcrumbService(
         return results.FirstOrDefault();
     }
 }
-
-public record BreadcrumbLink
-(
-    string LinkText,
-    string Url,
-    int? ParentId = null,
-    int? WebPageItemId = null
-);

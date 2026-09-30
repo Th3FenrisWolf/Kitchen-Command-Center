@@ -42,7 +42,7 @@ const render = (over: Record<string, unknown> = {}) =>
       recipeCategory: 'Mains',
       recipeGuid: 'a1b2c3',
       startedByName: 'Ira Boone',
-      addVariantUrl: '~/recipes/add-variant',
+      addVariantUrl: '/recipes/add-variant',
       variants: NAMES.map(variant),
       breadcrumbs: [
         { linkText: 'Home', url: '/' },

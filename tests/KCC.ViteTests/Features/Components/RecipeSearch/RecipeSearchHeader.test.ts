@@ -4,7 +4,7 @@ import '~/Utilities/StringExtensions'
 import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
 
 const render = (draft = '', slots?: Record<string, () => unknown>) =>
-  renderSsr(RecipeSearchHeader, { draft, createRecipeUrl: '~/create-recipe' }, slots)
+  renderSsr(RecipeSearchHeader, { draft, createRecipeUrl: '/create-recipe' }, slots)
 
 const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
@@ -49,7 +49,7 @@ describe('RecipeSearchHeader sheet', () => {
     expect(await render('gnocchi')).toContain('fa-duotone fa-xmark')
   })
 
-  it('links to the recipe form as the one marker button, tilde resolved', async () => {
+  it('links to the recipe form as the one marker button', async () => {
     const html = await render()
 
     const link = tagWith(html, 'href="/create-recipe"')

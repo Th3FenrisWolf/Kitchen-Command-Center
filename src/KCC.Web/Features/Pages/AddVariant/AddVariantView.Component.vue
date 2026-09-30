@@ -70,8 +70,7 @@
     servings: `${uid}-servings`,
   }
 
-  // Kentico hands out tilde-relative paths; the tilde is stripped before it reaches an anchor.
-  const recipeHref = computed(() => props.recipeSlug.stripTilde())
+  const recipeHref = computed(() => props.recipeSlug)
 
   /* eslint-disable vue/script-indent */
   const canProceed = computed(() => {

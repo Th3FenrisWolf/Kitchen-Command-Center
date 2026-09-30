@@ -4,7 +4,6 @@ namespace KCC.Web.Features.Pages.Shared;
 
 public class BasePageViewModel
 {
-    public int WebPageItemID { get; set; }
     public bool ShowBreadcrumbs { get; set; }
     public IEnumerable<BreadcrumbLink> Breadcrumbs { get; set; } = [];
 

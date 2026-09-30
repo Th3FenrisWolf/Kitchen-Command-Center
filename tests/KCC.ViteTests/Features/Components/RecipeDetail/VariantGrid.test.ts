@@ -21,7 +21,7 @@ const variant = (name: string, index: number): VariantSummary => ({
 const render = (count = NAMES.length) =>
   renderSsr(VariantGrid, {
     variants: NAMES.slice(0, count).map(variant),
-    addVariantUrl: '~/recipes/add-variant?recipe=abc',
+    addVariantUrl: '/recipes/add-variant?recipe=abc',
   })
 
 const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''

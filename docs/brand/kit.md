@@ -190,7 +190,7 @@ stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design
 | `kcc-tape` | one strip, top-centre | opt-in |
 | `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink`; pointer-transparent, so a link beneath it keeps the click |
 | `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
-| `kcc-body` | 15/24 body | |
+| `kcc-body` | 15/24 body | a class-less link inside (editor rich text) takes the `kcc-link` look |
 | `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | size and leading only; bare `h1`–`h3` already take APCasual from `Typography.css`, so these go on any element that needs display or heading size |
 | `kcc-hand` | APCasual italic 17/24 ink-soft | one per sheet |
 | `kcc-num` | Sono tabular | every number |

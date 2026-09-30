@@ -52,7 +52,7 @@ const render = (over: Partial<RecipeSearchResponse> = {}) =>
     RecipeSearchView,
     {
       initial: response(over),
-      createRecipeUrl: '~/create-recipe',
+      createRecipeUrl: '/create-recipe',
       breadcrumbs: [
         { linkText: 'Home', url: '/' },
         { linkText: 'Recipes', url: '/recipes' },

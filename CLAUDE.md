@@ -36,8 +36,7 @@ separately:
 
 - **Production** — the client build extracts it into chunk CSS assets (`GlobalComponents-*.css`). A
   `<link rel="stylesheet" vite-href="/Features/Main.ts">` in `Layout.cshtml` makes Vite.AspNetCore emit a
-  `<link>` for every CSS file in the entry's import graph. Entries outside that graph need their own link —
-  see `ResourceStringEditorTagHelper`.
+  `<link>` for every CSS file in the entry's import graph.
 - **Development** — no such asset exists, so the SSR sidecar walks the Vite SSR module graph after
   rendering, compiles each style module through the client pipeline, and returns the CSS alongside the
   HTML. `SsrHtmlContent` inlines it as `<style data-ssr-styles>`, and `Main.ts` removes that tag once

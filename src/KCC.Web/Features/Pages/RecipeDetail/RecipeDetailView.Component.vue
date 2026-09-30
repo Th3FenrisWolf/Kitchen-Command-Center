@@ -60,7 +60,7 @@
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeDetail')
 
-  const addVariantHref = computed(() => `${props.addVariantUrl.stripTilde()}?recipe=${encodeURIComponent(props.recipeGuid)}`)
+  const addVariantHref = computed(() => `${props.addVariantUrl}?recipe=${encodeURIComponent(props.recipeGuid)}`)
 
   const search = ref('')
   const tag = ref('')
