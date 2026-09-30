@@ -17,11 +17,9 @@
     </ItemGroup>
     <ItemGroup Label="Unported slices">
         <Compile Remove="Features/HomePage/**" />
-        <Compile Remove="Features/RecipeRatings/**" />
         <Compile Remove="Features/RecipeSearch/**" />
         <Compile Remove="Features/VariantCookNotes/**" />
         <Compile Remove="Features/VariantCooked/**" />
-        <Compile Remove="Features/VariantDetail/**" />
         <Compile Remove="Features/VariantReviews/**" />
     </ItemGroup>
 </Project>

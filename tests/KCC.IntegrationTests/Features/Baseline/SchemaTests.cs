@@ -79,8 +79,16 @@ public class SchemaTests
 
     private static IEnumerable<(string Kind, string Owner, Guid Key)> TypeKeys(string kind, IContentTypeComposition type) =>
         type.PropertyGroups.Select(group => ("group", $"{type.Alias}/{group.Alias}", group.Key))
-            .Concat(type.PropertyTypes.Select(property => ("property", $"{type.Alias}.{property.Alias}", property.Key)))
+            .Concat(type.PropertyTypes
+                .Where(property => !IsBuiltInMemberProperty(kind, property))
+                .Select(property => ("property", $"{type.Alias}.{property.Alias}", property.Key)))
             .Prepend((kind, type.Alias, type.Key));
+
+    // uSync pins Umbraco's built-in member properties to legacy int-based keys such as 2a280588-0000-… and applies
+    // them whenever it imports the member type, so they are uSync's to choose. 17.7's backoffice validates content,
+    // member and user keys, never a property type's.
+    private static bool IsBuiltInMemberProperty(string kind, IPropertyType property) =>
+        kind == "member type" && property.Alias.StartsWith("umbracoMember", StringComparison.Ordinal);
 
     private async Task<List<(string Kind, string Owner, Guid Key)>> SchemaKeysAsync()
     {

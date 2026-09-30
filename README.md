@@ -120,6 +120,31 @@ Use consistent field names across content types and widgets:
 - ModelsBuilder runs in `SourceCodeManual` mode: after a schema change, use Settings → Models Builder → Generate models,
   and commit `Features/Models/Generated`.
 
+#### Test recipes
+
+With the site running, seed the test data: 25 recipes, 29 variants, two authors and their reviews.
+
+```bash
+curl -sk -X POST https://localhost:58671/api/dev/seed-recipes
+```
+
+The endpoint answers only in Development and in the Testing environment the test fixtures use. It skips recipes that
+already exist, and it is what the integration and E2E fixtures run before their first test. While seeded recipes
+exist, the baseline export refuses to run, so change the baseline from a fresh database.
+
+#### Contributions
+
+Reviews, cook notes and cooked marks are EF Core tables (`kccReview`, `kccCookNote`, `kccCookedMark`) in the same
+SQLite file, migrated at startup. Every write runs inside Umbraco's scope and takes `ContributionLocks.Contributions`
+before its first read, so it shares Umbraco's single SQLite writer. After changing an entity or
+`ContributionsDbContext`, add a migration:
+
+```bash
+dotnet tool restore
+dotnet dotnet-ef migrations add <Name> --project src/KCC.Contributions --startup-project src/KCC.Web \
+  --context ContributionsDbContext --output-dir Data/Migrations
+```
+
 ---
 
 ## Frontend Development
@@ -180,9 +205,10 @@ CI-friendly. The individual per-suite reports are still produced alongside it.
 
 #### E2E tests
 
-The E2E suite starts its own copy of the site on a free port, with a fresh SQLite database and its own SSR process, so
-nothing needs setting up beyond building: run `dotnet build` and `yarn build:all` (in `src/KCC.Web`) first. The member
-flows return in a later phase and will read `KCC_E2E_MEMBER_USERNAME` / `KCC_E2E_MEMBER_PASSWORD`.
+The E2E suite starts its own copy of the site on a free port, with a fresh SQLite database and its own SSR process, and
+seeds the test recipes before the first test, so nothing needs setting up beyond building: run `dotnet build` and
+`yarn build:all` (in `src/KCC.Web`) first. The member flows return in a later phase and will read
+`KCC_E2E_MEMBER_USERNAME` / `KCC_E2E_MEMBER_PASSWORD`.
 
 ### Vue SSR
 

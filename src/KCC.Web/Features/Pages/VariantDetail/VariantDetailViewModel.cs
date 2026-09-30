@@ -7,7 +7,7 @@ public class VariantDetailViewModel : BasePageViewModel
     public string VariantName { get; set; }
     public string VariantDescription { get; set; }
     public string Icon { get; set; }
-    public IEnumerable<ImageItem> Images { get; set; } = [];
+    public string CoverImage { get; set; }
     public int? PrepTime { get; set; }
     public int? CookTime { get; set; }
     public int? Servings { get; set; }

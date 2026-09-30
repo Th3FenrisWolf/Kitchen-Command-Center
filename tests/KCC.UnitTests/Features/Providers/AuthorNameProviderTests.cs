@@ -1,7 +1,8 @@
-using CMS.DataEngine;
-using CMS.Membership;
 using KCC.Web.Features.Providers;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Services;
 
 namespace KCC.UnitTests.Features.Providers;
 
@@ -30,38 +31,85 @@ public class AuthorNameProviderTests
     }
 
     [Test]
-    public async Task Resolve_ReturnsNullForEmptyGuidWithoutQuerying()
+    public async Task ResolveMany_EmptyKeys_NeverAsksTheMemberService()
     {
-        var provider = new Mock<IInfoProvider<MemberInfo>>(MockBehavior.Strict);
-        var resolver = new AuthorNameProvider(provider.Object);
+        var members = new Mock<IMemberService>(MockBehavior.Strict);
 
-        var name = await resolver.Resolve(Guid.Empty);
+        var names = await Provider(members).ResolveMany([Guid.Empty]);
 
-        _ = await Assert.That(name).IsNull();
-        provider.Verify(p => p.Get(), Times.Never);
+        _ = await Assert.That(names.Count).IsEqualTo(0);
     }
 
     [Test]
-    public async Task ResolveMany_ReturnsEmptyForNoUsableGuidsWithoutQuerying()
+    public async Task ResolveMany_NamesAMemberFromFirstAndLastName()
     {
-        var provider = new Mock<IInfoProvider<MemberInfo>>(MockBehavior.Strict);
-        var resolver = new AuthorNameProvider(provider.Object);
+        var key = Guid.NewGuid();
+        var members = MembersReturning(Member(key, "Priya", "Balan", "priya.balan"));
 
-        var names = await resolver.ResolveMany([Guid.Empty]);
+        var names = await Provider(members).ResolveMany([key]);
 
-        _ = await Assert.That(names.Count()).IsEqualTo(0);
-        provider.Verify(p => p.Get(), Times.Never);
+        _ = await Assert.That(names[key]).IsEqualTo("Priya Balan");
     }
 
     [Test]
-    public async Task ResolveMany_ReturnsEmptyForEmptyInputWithoutQuerying()
+    public async Task ResolveMany_SecondCall_IsServedFromTheCache()
     {
-        var provider = new Mock<IInfoProvider<MemberInfo>>(MockBehavior.Strict);
-        var resolver = new AuthorNameProvider(provider.Object);
+        var key = Guid.NewGuid();
+        var members = MembersReturning(Member(key, "Priya", "Balan", "priya.balan"));
+        var provider = Provider(members);
 
-        var names = await resolver.ResolveMany([]);
+        _ = await provider.ResolveMany([key]);
+        _ = await provider.ResolveMany([key]);
 
-        _ = await Assert.That(names.Count()).IsEqualTo(0);
-        provider.Verify(p => p.Get(), Times.Never);
+        members.Verify(m => m.GetByKeysAsync(It.IsAny<Guid[]>()), Times.Once);
+    }
+
+    [Test]
+    public async Task ResolveMany_UnknownMember_HasNoNameAndIsNotLookedUpAgain()
+    {
+        var key = Guid.NewGuid();
+        var members = MembersReturning();
+        var provider = Provider(members);
+
+        var names = await provider.ResolveMany([key]);
+        _ = await provider.ResolveMany([key]);
+
+        _ = await Assert.That(names.ContainsKey(key)).IsFalse();
+        members.Verify(m => m.GetByKeysAsync(It.IsAny<Guid[]>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Forget_MakesTheNextCallLookTheMemberUpAgain()
+    {
+        var key = Guid.NewGuid();
+        var members = MembersReturning(Member(key, "Priya", "Balan", "priya.balan"));
+        var provider = Provider(members);
+
+        _ = await provider.ResolveMany([key]);
+        provider.Forget([key]);
+        _ = await provider.ResolveMany([key]);
+
+        members.Verify(m => m.GetByKeysAsync(It.IsAny<Guid[]>()), Times.Exactly(2));
+    }
+
+    private static AuthorNameProvider Provider(Mock<IMemberService> members) =>
+        new(members.Object, new MemoryCache(new MemoryCacheOptions()));
+
+    private static Mock<IMemberService> MembersReturning(params IMember[] found)
+    {
+        var members = new Mock<IMemberService>();
+        members.Setup(m => m.GetByKeysAsync(It.IsAny<Guid[]>()))
+            .ReturnsAsync((Guid[] keys) => found.Where(member => keys.Contains(member.Key)));
+        return members;
+    }
+
+    private static IMember Member(Guid key, string firstName, string lastName, string userName)
+    {
+        var member = new Mock<IMember>();
+        member.SetupGet(m => m.Key).Returns(key);
+        member.SetupGet(m => m.Username).Returns(userName);
+        member.Setup(m => m.GetValue<string>("firstName", null, null, false)).Returns(firstName);
+        member.Setup(m => m.GetValue<string>("lastName", null, null, false)).Returns(lastName);
+        return member.Object;
     }
 }
