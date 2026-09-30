@@ -1,37 +1,32 @@
-using System.Text.Json;
-using CMS.ContentEngine;
-using CMS.Membership;
-using CMS.Websites;
-using CMS.Websites.Routing;
-using KCC.Admin;
-using KCC.Web.Features.Models.Common;
-using Kentico.Content.Web.Mvc.Routing;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using KCC.Web.Features.Security;
+using KCC.Web.Features.Submissions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Umbraco.Cms.Core.Security;
 
 namespace KCC.Web.Features.Api;
 
 [ApiController]
 [Route("api/recipes")]
-[Authorize]
-public class RecipeApiController(
-    IWebPageManagerFactory webPageManagerFactory,
-    IWebsiteChannelContext websiteChannelContext,
-    IPreferredLanguageRetriever preferredLanguageRetriever,
-    IUserInfoProvider userInfoProvider,
-    IRecipeIconService recipeIconService,
-    UserManager<KCCApplicationUser> userManager
-) : ControllerBase
+[AutoValidateAntiforgeryToken]
+[EnableRateLimiting(RateLimits.Submissions)]
+public class RecipeApiController(IRecipeSubmissions submissions, IMemberManager memberManager) : ControllerBase
 {
+    // Longer defeats Umbraco's ContentService.Save, which throws past 255 characters and would otherwise reach the
+    // member as a 500.
+    private const int MaxNameLength = 255;
+
     [HttpPost]
-    public async Task<IActionResult> CreateRecipe(
-        [FromBody] CreateRecipeRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.RecipeName))
+        if (string.IsNullOrWhiteSpace(request?.RecipeName))
         {
             return BadRequest(new { error = "Recipe name is required." });
+        }
+
+        if (request.RecipeName.Trim().Length > MaxNameLength)
+        {
+            return BadRequest(new { error = "Recipe name cannot be more than 255 characters." });
         }
 
         if (string.IsNullOrWhiteSpace(request.FirstVariant?.VariantName))
@@ -39,125 +34,39 @@ public class RecipeApiController(
             return BadRequest(new { error = "First variant name is required." });
         }
 
-        var author = await userManager.GetUserAsync(User);
-        if (author is null)
+        if (request.FirstVariant.VariantName.Trim().Length > MaxNameLength)
+        {
+            return BadRequest(new { error = "First variant name cannot be more than 255 characters." });
+        }
+
+        if (await memberManager.GetCurrentMemberAsync() is not { } member)
         {
             return Unauthorized();
         }
 
-        string languageName = preferredLanguageRetriever.Get();
-        var webPageManager = CreateManager();
-
-        string icon = await recipeIconService.PickAsync(
-            request.RecipeName,
-            request.RecipeDescription,
-            request.FirstVariant.Ingredients.Select(i => i.Name),
-            cancellationToken);
-
-        var recipeData = new ContentItemData(BuildRecipeData(request, icon, author.MemberGuid));
-
-        var recipeContentItemParams = new ContentItemParameters(Recipe.CONTENT_TYPE_NAME, recipeData);
-
-        var recipePageParams = new CreateWebPageParameters(
-            request.RecipeName,
-            languageName,
-            recipeContentItemParams);
-
-        var recipeId = await webPageManager.Create(recipePageParams, cancellationToken);
-
-        string variantIcon = await recipeIconService.PickAsync(
-            request.FirstVariant.VariantName,
-            request.FirstVariant.VariantDescription,
-            request.FirstVariant.Ingredients.Select(i => i.Name),
-            cancellationToken);
-
-        var variantData = new ContentItemData(BuildVariantData(request.FirstVariant, variantIcon, author.MemberGuid));
-
-        var variantContentItemParams = new ContentItemParameters(RecipeVariant.CONTENT_TYPE_NAME, variantData);
-
-        var variantPageParams = new CreateWebPageParameters(
-            request.FirstVariant.VariantName,
-            languageName,
-            variantContentItemParams)
-        {
-            ParentWebPageItemID = recipeId,
-        };
-
-        await webPageManager.Create(variantPageParams, cancellationToken);
-
-        return Ok(new { recipeId });
+        return Ok(new { recipeKey = await submissions.SubmitRecipeAsync(request, member.Key, cancellationToken) });
     }
 
-    [HttpPost("{recipeWebPageId:int}/variants")]
-    public async Task<IActionResult> AddVariant(
-        int recipeWebPageId,
-        [FromBody] CreateVariantRequest request,
-        CancellationToken cancellationToken)
+    [HttpPost("{recipeKey:guid}/variants")]
+    public async Task<IActionResult> AddVariant(Guid recipeKey, [FromBody] CreateVariantRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.VariantName))
+        if (string.IsNullOrWhiteSpace(request?.VariantName))
         {
             return BadRequest(new { error = "Variant name is required." });
         }
 
-        var author = await userManager.GetUserAsync(User);
-        if (author is null)
+        if (request.VariantName.Trim().Length > MaxNameLength)
+        {
+            return BadRequest(new { error = "Variant name cannot be more than 255 characters." });
+        }
+
+        if (await memberManager.GetCurrentMemberAsync() is not { } member)
         {
             return Unauthorized();
         }
 
-        string languageName = preferredLanguageRetriever.Get();
-        var webPageManager = CreateManager();
-
-        string icon = await recipeIconService.PickAsync(
-            request.VariantName,
-            request.VariantDescription,
-            request.Ingredients.Select(i => i.Name),
-            cancellationToken);
-
-        var variantData = new ContentItemData(BuildVariantData(request, icon, author.MemberGuid));
-
-        var variantContentItemParams = new ContentItemParameters(RecipeVariant.CONTENT_TYPE_NAME, variantData);
-
-        var variantPageParams = new CreateWebPageParameters(
-            request.VariantName,
-            languageName,
-            variantContentItemParams)
-        {
-            ParentWebPageItemID = recipeWebPageId,
-        };
-
-        var variantId = await webPageManager.Create(variantPageParams, cancellationToken);
-
-        return Ok(new { variantId });
-    }
-
-    public static Dictionary<string, object> BuildRecipeData(CreateRecipeRequest request, string icon, Guid authorMemberGuid) => new()
-    {
-        [nameof(Recipe.Name)] = request.RecipeName,
-        [nameof(Recipe.Description)] = request.RecipeDescription ?? string.Empty,
-        [nameof(Recipe.Icon)] = icon,
-        [nameof(Recipe.AuthorMemberGuid)] = authorMemberGuid,
-    };
-
-    public static Dictionary<string, object> BuildVariantData(CreateVariantRequest request, string icon, Guid authorMemberGuid) => new()
-    {
-        [nameof(RecipeVariant.Name)] = request.VariantName,
-        [nameof(RecipeVariant.Description)] = request.VariantDescription ?? string.Empty,
-        [nameof(RecipeVariant.Icon)] = icon,
-        [nameof(RecipeVariant.PrepTime)] = request.PrepTime ?? 0,
-        [nameof(RecipeVariant.CookTime)] = request.CookTime ?? 0,
-        [nameof(RecipeVariant.ServingNumber)] = request.Servings ?? 0,
-        [nameof(RecipeVariant.Ingredients)] = JsonSerializer.Serialize(request.Ingredients, JsonNaming.CamelCase),
-        [nameof(RecipeVariant.Instructions)] = JsonSerializer.Serialize(request.Instructions, JsonNaming.CamelCase),
-        [nameof(RecipeVariant.AuthorMemberGuid)] = authorMemberGuid,
-    };
-
-    private IWebPageManager CreateManager()
-    {
-        var user = userInfoProvider.Get()
-            .WhereEquals(nameof(UserInfo.UserName), "administrator")
-            .FirstOrDefault() ?? new();
-
-        return webPageManagerFactory.Create(websiteChannelContext.WebsiteChannelID, user.UserID);
+        return await submissions.SubmitVariantAsync(recipeKey, request, member.Key, cancellationToken) is { } variantKey
+            ? Ok(new { variantKey })
+            : NotFound(new { error = "Recipe not found." });
     }
 }

@@ -30,6 +30,13 @@ public class RecipeIconProvider(
         IEnumerable<string> ingredients,
         CancellationToken cancellationToken)
     {
+        // Development, CI and the test hosts run without a key, and a request that cannot authenticate only delays the
+        // same fallback.
+        if (string.IsNullOrWhiteSpace(options.ApiKey))
+        {
+            return RecipeIcons.Fallback(name);
+        }
+
         try
         {
             string ingredientList = string.Join(", ", ingredients ?? Array.Empty<string>());

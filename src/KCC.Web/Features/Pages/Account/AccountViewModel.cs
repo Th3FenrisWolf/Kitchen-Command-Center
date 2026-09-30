@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Globalization;
 using KCC.Web.Features.Pages.Shared;
 
@@ -7,8 +6,12 @@ namespace KCC.Web.Features.Pages.Account;
 public class AccountViewModel : BasePageViewModel
 {
     public string DisplayName { get; set; }
+
     public string Initials { get; set; }
+
     public string MemberSince { get; set; }
+
+    public string SettingsUrl { get; set; }
 
     public IEnumerable<RecipeGroupViewModel> RecipeGroups { get; set; } = [];
 
@@ -33,48 +36,20 @@ public class AccountViewModel : BasePageViewModel
     public static string FormatMemberSince(DateTime? created) =>
         created?.ToString("MMMM yyyy", CultureInfo.InvariantCulture) ?? string.Empty;
 
-    /// <summary>A recipe relevant to the member's profile: started by them, or parent of one of their variants.</summary>
-    /// <param name="PageId">Web page item ID.</param>
-    /// <param name="Name">Recipe display name.</param>
-    /// <param name="Icon">Recipe icon class.</param>
-    /// <param name="Url">Relative URL of the live page; only surfaced for published recipes.</param>
-    /// <param name="StartedByMe">Whether the profile's member authored the recipe.</param>
-    public record AuthoredRecipeInput(int PageId, string Name, string Icon, string Url, bool StartedByMe);
-
-    /// <summary>A variant authored by the member.</summary>
-    /// <param name="PageId">Web page item ID.</param>
-    /// <param name="ParentPageId">Web page item ID of the parent recipe.</param>
-    /// <param name="Name">Variant display name.</param>
-    /// <param name="Icon">Variant icon class.</param>
-    /// <param name="Url">Relative URL of the live page; only surfaced for published variants.</param>
-    public record AuthoredVariantInput(int PageId, int ParentPageId, string Name, string Icon, string Url);
-
-    /// <summary>
-    /// Groups the member's variants under their recipes. Items absent from the published-id
-    /// sets are pending review: badged, no URL. Recipes the member started always show;
-    /// foreign recipes only show while they contain the member's variants. Variants whose
-    /// parent recipe is missing (deleted) are skipped.
-    /// </summary>
-    /// <param name="recipes">Recipes the member started plus parents of their variants.</param>
-    /// <param name="variants">Variants the member authored.</param>
-    /// <param name="publishedRecipeIds">Page IDs of recipes that are published.</param>
-    /// <param name="publishedVariantIds">Page IDs of variants that are published.</param>
-    /// <returns>Ordered display groups for the profile's creations section.</returns>
-    /// <remarks>Callers must supply unique <see cref="AuthoredRecipeInput.PageId"/> values; duplicates throw.</remarks>
     public static IEnumerable<RecipeGroupViewModel> BuildRecipeGroups(
         IReadOnlyCollection<AuthoredRecipeInput> recipes,
         IReadOnlyCollection<AuthoredVariantInput> variants,
-        IReadOnlySet<int> publishedRecipeIds,
-        IReadOnlySet<int> publishedVariantIds)
+        IReadOnlySet<Guid> publishedRecipeKeys,
+        IReadOnlySet<Guid> publishedVariantKeys)
     {
         var groups = recipes.ToDictionary(
-            recipe => recipe.PageId,
+            recipe => recipe.Key,
             recipe =>
             {
-                var isPublished = publishedRecipeIds.Contains(recipe.PageId);
+                var isPublished = publishedRecipeKeys.Contains(recipe.Key);
                 return new RecipeGroupViewModel
                 {
-                    PageId = recipe.PageId,
+                    Key = recipe.Key,
                     RecipeName = recipe.Name,
                     RecipeIcon = recipe.Icon,
                     RecipeUrl = isPublished ? recipe.Url : null,
@@ -83,17 +58,17 @@ public class AccountViewModel : BasePageViewModel
                 };
             });
 
-        var variantsByParent = variants.ToLookup(variant => variant.ParentPageId);
+        var variantsByParent = variants.ToLookup(variant => variant.ParentKey);
 
         var enrichedGroups = groups.Values.Select(group =>
         {
-            group.Variants = variantsByParent[group.PageId]
+            group.Variants = variantsByParent[group.Key]
                 .Select(variant =>
                 {
-                    var isPublished = publishedVariantIds.Contains(variant.PageId);
+                    var isPublished = publishedVariantKeys.Contains(variant.Key);
                     return new ProfileVariantViewModel
                     {
-                        PageId = variant.PageId,
+                        Key = variant.Key,
                         Name = variant.Name,
                         Icon = variant.Icon,
                         Url = isPublished ? variant.Url : null,
@@ -109,24 +84,38 @@ public class AccountViewModel : BasePageViewModel
             .Where(group => group.StartedByYou || group.Variants.Any())
             .OrderBy(group => group.RecipeName, StringComparer.OrdinalIgnoreCase);
     }
+
+    public record AuthoredRecipeInput(Guid Key, string Name, string Icon, string Url, bool StartedByMe);
+
+    public record AuthoredVariantInput(Guid Key, Guid ParentKey, string Name, string Icon, string Url);
 }
 
 public class RecipeGroupViewModel
 {
-    public int PageId { get; set; }
+    public Guid Key { get; set; }
+
     public string RecipeName { get; set; }
+
     public string RecipeIcon { get; set; }
+
     public string RecipeUrl { get; set; }
+
     public bool IsPending { get; set; }
+
     public bool StartedByYou { get; set; }
+
     public IEnumerable<ProfileVariantViewModel> Variants { get; set; } = [];
 }
 
 public class ProfileVariantViewModel
 {
-    public int PageId { get; set; }
+    public Guid Key { get; set; }
+
     public string Name { get; set; }
+
     public string Icon { get; set; }
+
     public string Url { get; set; }
+
     public bool IsPending { get; set; }
 }

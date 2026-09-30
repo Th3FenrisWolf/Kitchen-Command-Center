@@ -14,6 +14,10 @@ public interface IRecipeQueries
     IReadOnlyList<RecipePageData> GetPublishedRecipes();
 
     string GetCreateRecipeUrl(RecipeListingPage listing);
+
+    bool IsPublishedVariant(Guid key);
+
+    RecipeRecord FindPublishedRecipe(Guid key);
 }
 
 public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
@@ -48,6 +52,10 @@ public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
 
     public string GetCreateRecipeUrl(RecipeListingPage listing) =>
         listing.Children<CreateRecipePage>().FirstOrDefault()?.Url();
+
+    public bool IsPublishedVariant(Guid key) => contentQuery.Content(key) is RecipeVariant;
+
+    public RecipeRecord FindPublishedRecipe(Guid key) => contentQuery.Content(key) is Recipe recipe ? RecipeFrom(recipe) : null;
 
     private static RecipePageData RecipePageFrom(Recipe recipe, string addVariantUrl) => new(
         RecipeFrom(recipe),

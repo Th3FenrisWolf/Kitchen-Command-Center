@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { configureApi, del, get, post, put } from '~/Utilities/Api'
+import { antiforgeryToken, configureApi, del, get, post, put } from '~/Utilities/Api'
 
 const STRINGS = { unexpectedError: 'Something went wrong.', requestFailed: 'Request failed.' }
 
@@ -131,5 +131,13 @@ describe('Api', () => {
     const [url, init] = fetchMock.mock.calls[0]!
     expect(url).toBe('/api/search?q=mac&page=2')
     expect(init.method).toBe('GET')
+  })
+
+  it('hands a native form the configured anti-forgery token, or nothing before one is configured', () => {
+    expect(antiforgeryToken()).toBe('tok')
+
+    configureApi({})
+
+    expect(antiforgeryToken()).toBe('')
   })
 })

@@ -20,7 +20,7 @@ const STRINGS = {
 
 const RECIPE_GROUPS = [
   {
-    pageId: 1,
+    key: '8d2b0c1e-4f6a-4d9b-9a31-2c7e5f0b6a11',
     recipeName: 'Mac & Cheese',
     recipeIcon: 'fa-duotone fa-pot-food',
     recipeUrl: '/recipes/mac-and-cheese',
@@ -28,22 +28,34 @@ const RECIPE_GROUPS = [
     startedByYou: true,
     variants: [
       {
-        pageId: 10,
+        key: '5b7c9e2a-1d3f-4a6b-8c9d-0e1f2a3b4c10',
         name: 'Classic Stovetop',
         icon: 'fa-duotone fa-pot-food',
         url: '/recipes/mac/classic',
         isPending: false,
       },
-      { pageId: 11, name: 'Spicy Jalapeño', icon: 'fa-duotone fa-pepper-hot', isPending: true },
+      {
+        key: '6c8d0f3b-2e4a-4b7c-9d0e-1f2a3b4c5d11',
+        name: 'Spicy Jalapeño',
+        icon: 'fa-duotone fa-pepper-hot',
+        isPending: true,
+      },
     ],
   },
   {
-    pageId: 2,
+    key: '7d9e1a4c-3f5b-4c8d-8e1f-2a3b4c5d6e02',
     recipeName: 'Brown Butter Gnocchi',
     recipeIcon: 'fa-duotone fa-wheat',
     isPending: true,
     startedByYou: false,
-    variants: [{ pageId: 20, name: 'Sage Brown Butter', icon: 'fa-duotone fa-leaf', isPending: true }],
+    variants: [
+      {
+        key: '9e0f2b5d-4a6c-4d9e-9f2a-3b4c5d6e7f20',
+        name: 'Sage Brown Butter',
+        icon: 'fa-duotone fa-leaf',
+        isPending: true,
+      },
+    ],
   },
 ]
 
@@ -102,7 +114,8 @@ describe('AccountView', () => {
     const html = await render()
 
     expect(tagWith(html, 'href="/account/settings"')).toContain('class="kcc-btn kcc-btn--ghost"')
-    expect(tagWith(html, 'href="/account/logout"')).toContain('class="kcc-btn kcc-btn--text"')
+    expect(tagWith(html, 'action="/account/logout"')).toContain('method="post"')
+    expect(html).toMatch(/action="\/account\/logout"[^>]*>.*?<button class="kcc-btn kcc-btn--text" type="submit">/s)
   })
 
   it('sets every recipe group on its own slip, never repeating a neighbour’s tear', async () => {

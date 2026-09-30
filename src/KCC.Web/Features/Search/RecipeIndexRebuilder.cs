@@ -79,9 +79,13 @@ public sealed class RecipeIndexRebuilder(
         {
             if (await wake.WaitAsync(retryDelay, stoppingToken))
             {
-                // Saves arrive in bursts (a publish with descendants, the seeder); each new signal restarts the quiet
-                // period, so a burst costs one rebuild.
-                while (await wake.WaitAsync(quietPeriod, stoppingToken))
+                // Saves arrive in bursts (a publish with descendants, the seeder); each new signal restarts the
+                // quiet period, so a burst costs one rebuild, but a stream that never goes quiet — sign-ins saving
+                // the member, say — still rebuilds within MaxRebuildWait of the burst's first signal.
+                var burstStarted = Stopwatch.GetTimestamp();
+                TimeSpan remaining;
+                while ((remaining = options.Value.MaxRebuildWait - Stopwatch.GetElapsedTime(burstStarted)) > TimeSpan.Zero
+                    && await wake.WaitAsync(quietPeriod < remaining ? quietPeriod : remaining, stoppingToken))
                 {
                 }
             }

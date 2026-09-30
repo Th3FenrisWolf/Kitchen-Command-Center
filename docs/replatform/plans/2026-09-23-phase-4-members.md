@@ -4,8 +4,9 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** "Before you start", then Task 1. **Requires Phase 3 done:** its Status
-line reads `done (<date>)` and `node tests/scripts/run.mjs` is green on `replatform`.
+**Status:** done (2026-09-28), on branch `replatform-phase-4`, which is based on `replatform-phase-3`. **Resume
+point:** the Phase 5 plan in this folder; read **Findings from Phase 4** at the end of this file first. **Requires
+Phase 3 done** (it is, 2026-09-27).
 
 **Goal:** Members sign up, wait for the owner's approval, sign in and out, and keep their profile. They write
 reviews, cook notes and cooked marks, and submit recipes and variants for review. Every state-changing request is
@@ -6495,3 +6496,112 @@ git commit -m "Close Replatform Phase 4"
 Phase 5 (Backoffice) is planned next, in this folder, against the code as it then stands. Its dashboard's review and
 note edits and deletes go through `ContributionWrites` and publish `ReviewsChangedNotification`. Its Approve action
 saves the member through the member editing service, which needs only the relations decorator.
+
+## Findings from Phase 4
+
+Found during Phase 4 (2026-09-28). The Phase 5 to 8 plans predate them.
+
+- **The branch.** Phase 4 ran on `replatform-phase-4`, based on `replatform-phase-3`. None of Phases 2 to 4 is
+  merged into `replatform` yet.
+- **Approval is one flag.** Spec §19 row 5 holds, so no fallback was needed. Identity checks whether a member may
+  sign in before it checks the password, so "waiting for approval" and "locked out" answer even a wrong password.
+  Spec §8 asks for those messages, and sign-up already reveals which usernames are taken. The gate saw it:
+  `gate-newcomer` with a wrong password got the approval message.
+- **Four SQLite guards, not two.** Besides the plan's relations decorator and `IMemberWriteLock`:
+  - `WriteLockedCacheInstructionService` fixes Phase 1's cache-instruction stall. It takes the write lock only when
+    instructions are pending, so an idle sync stays read-only.
+  - `WriteLockedRelateOnTrash` guards Umbraco's relate-on-trash handler, which also reads and then writes after the
+    trash commits.
+
+  `CacheInstructionSyncTests` and `TrashRaceTests` reproduce their stalls deterministically. The gate's fresh boot
+  with an early edit and its warm restart logged no stall, and `umbracoLastSynced` caught up each time (**The gate**,
+  below).
+- **What the concurrency test proves.** `SqliteConcurrencyTests` times out when the member write lock is removed.
+  With only the relations decorators removed it passes alone and stalls only in some full-suite runs;
+  `RelationsWriteLockTests` catches the missing registration. It sees only awaited failures: a lock error in a
+  background job shows only in the log. `IMemberWriteLock.RunAsync` returns normally when an inner Umbraco scope
+  vetoes completion, so callers act on the `IdentityResult` or `SignInResult`.
+- **Still unguarded in Umbraco**, for a follow-up survey:
+  - `CacheInstructionsPruningJob` reads the newest instruction id and then deletes, every minute, outside
+    `ICacheInstructionService`. Umbraco's other distributed jobs have not been surveyed.
+  - The backoffice's member password reset and unlock: `MemberEditingService.UpdateAsync` reaches
+    `MemberUserStore.UpdateAsync`, which reads the member and then saves it, outside `IMemberWriteLock`.
+  - Content delete's `HandleDeletionAsync` reads the item before the delete takes its own lock.
+
+  A write lock at `MemberUserStore.UpdateAsync` would cover every caller that saves a member, and would stop a
+  sign-in holding SQLite's writer through the password hash. Phase 5's Approve toggle (`IsApproved` through the
+  member editing service) needs only the relations decorator; a password reset or an unlock is not covered.
+- **Umbraco 17.7 lock traps.** Its EF Core SQLite lock (`ObtainWriteLock` in
+  `SqliteEFCoreDistributedLockingMechanism`) discards its own task, so a contributions write whose lock wait times
+  out carries on unlocked. `CoreScope.WriteLock(TimeSpan, int)` takes a read lock (the `TimeSpan` overloads are
+  swapped), so the guards use `WriteLock(params int[])`.
+- **The rebuild debounce is capped.** `RecipeSearch:MaxRebuildWait` (10 s) bounds how long signals can put off a
+  rebuild, because sign-ins, failed attempts and sign-outs save the member and each save signals one. Umbraco marks
+  those saves `LoginPropertiesOnly`, so the index trigger and the author-name cache could skip them. A sign-up
+  signals nothing: Umbraco's member store creates the member with only `MemberSavingNotification`, so no saved
+  notification, cache instruction or relations update follows it.
+- **For Phase 5's moderation.** Un-approving or locking out a signed-in member does not end their session: the
+  security-stamp validator compares stamps only. Rotate the stamp, or check `IsApproved` there.
+- **Limits and input.**
+  - The rate-limit key is the full client address, so an IPv6 client can rotate through its /64, and
+    `CF-Connecting-IP` is trusted from any client until Phase 7 makes the tunnel the only way in.
+  - `UpdateProfile` is not rate-limited. The 429 answer is the same for every policy, and its `Retry-After` is a
+    whole window.
+  - Recipe and variant names are capped at Umbraco's 255 characters. Profile names, and a submission's ingredient
+    and step counts and sizes, are not.
+  - Review and note text is cut silently at 4,000 characters, and the textareas have no `maxlength`.
+  - The dev endpoints (`/api/dev/*`) take no anti-forgery token and no sign-in. They answer only in Development,
+    and the seeder also in Testing.
+- **The Anthropic client has no timeout.** It keeps the SDK's defaults, 10 minutes and 2 retries, and a new recipe
+  makes two calls. The icon provider's catch also swallows cancellation, so a submission whose visitor gave up is
+  still saved, and a retry duplicates it. Set `Timeout` and `MaxRetries`, and let cancellation through, before any
+  environment gets a key.
+- **Contributions.** The cascades run after the delete has committed, so a cascade that fails leaves orphan rows,
+  which published-only ratings ignore. The concurrency test never races two writes for the same member and variant.
+- **Drafts.** A new recipe's first variant arrives as a second draft. Publish the recipe first: Umbraco refuses to
+  publish a child under an unpublished parent. A submission missing mandatory values is still saved
+  (`PropertyValidationError`), and the E2E submission covers that path.
+- **Dictionary strings.** A fresh database imports the new wording of `Login.NotAllowedError`,
+  `Login.InvalidCredentialsError` and `RegistrationComplete.Body`. An existing database keeps the old wording,
+  because uSync imports dictionary items create-only, so edit them under Translation. The baseline export cannot
+  write the old wording back: this site moves the dictionary handler into uSync's Settings group, and the export
+  writes the Content group only.
+- **Tests.**
+  - Each `MemberClient` sends its own `CF-Connecting-IP`, so the integration host keeps the real rate limits.
+  - The integration host's E2E member pair wins over the shell's real `KCC_E2E_MEMBER_*` variables.
+  - TUnit 1.27 ran the serial member E2E suites after the read-only ones.
+  - The password-change test cannot see a missing `RefreshSignInAsync`: the member cookie re-checks its security
+    stamp only every 30 seconds.
+  - The idle cache-sync test could flake if the site's own sync job holds Umbraco's sync lock while the test holds
+    the writer.
+- **Three plan-text corrections.**
+  - The Global Constraint's "takes `Constants.Locks.ContentTree` before its first create" means before its first
+    read.
+  - "The backoffice's editing services need only the decorator", in Task 12's memory text and in **What the scratch
+    probe already proved**, is wrong for member password resets and unlocks.
+  - Task 10's seeder line `E2E member created: {userName}` put the E2E member's username in the seed response, so
+    the seeder logs `E2E member created.` instead.
+- **The gate** ran from a fresh clone of `replatform-phase-4` (`a3e1d1c`) on a new database.
+  - The seed, run as soon as the site served, reported recipes +25, variants +29, reviews +27, authors +2 and E2E
+    member +1: Phase 3's counts, and the new member.
+  - The six member captures match the reference in both ramps at both widths, apart from the differences
+    `NOTES.md` now lists. `login`, `create-recipe` and `add-variant` (the Fluffy Buttermilk Pancakes wizard) match
+    it pixel for pixel on desktop.
+  - Signed in, the header's Logout entry sits in the Account menu like its neighbours in both ramps at both widths,
+    and the Green Tea Set page's review editor, cook-note box and cooked toggle look like the rest of the page. A
+    new member, `gate-newcomer`, signed up through the login page, landed on the waiting-for-approval page, and
+    was told the same when signing in.
+  - No stall. The fresh boot's first sync ran a minute after start with the seed pending. Ten minutes in, the logs
+    held no stall or lock line and no error, and `umbracoLastSynced` equalled the newest instruction (350). For the
+    warm restart, a sign-in made 0.15 s before the site was stopped left instruction 352 pending, and the next
+    boot's first sync replayed it inside the guard's write lock. Two minutes after the restart served, the logs were
+    as clean and `umbracoLastSynced` read 352. A sign-up could not be that edit, since it writes no cache
+    instruction, and a `dotnet watch` started as a background job ignores SIGINT, so the stop was a SIGTERM to the
+    site.
+  - The home page, whose body has been empty since Phase 1 and fills in Phase 6, logs a Vue hydration mismatch
+    whether or not a member is signed in. Phase 4 changed none of its files.
+  - The full run was green: unit 190, integration 198, E2E 33, web Vitest 766 (2 expected failures), admin 24 and
+    contributions 15, on a build with 0 warnings.
+  - The owner's backoffice steps are handed to the owner, on a dev site, because the gate's database went with its
+    clone: approve a new sign-up, publish a submitted draft and see search find it, then delete it and empty the
+    recycle bin.

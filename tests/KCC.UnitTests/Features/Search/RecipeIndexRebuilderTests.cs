@@ -44,6 +44,33 @@ public class RecipeIndexRebuilderTests
     }
 
     [Test]
+    public async Task AStreamOfSignals_StillRebuildsWithinTheMaximumWait()
+    {
+        var source = new FakeSource("Chili");
+        await using var site = await StartAsync(
+            source,
+            rebuildDelay: TimeSpan.FromMilliseconds(200),
+            maxRebuildWait: TimeSpan.FromMilliseconds(500));
+        await site.Rebuilder.WhenCurrentAsync(CancellationToken.None);
+
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var streamStarted = Stopwatch.GetTimestamp();
+        var rebuiltDuringStream = false;
+        while (Stopwatch.GetElapsedTime(streamStarted) < TimeSpan.FromMilliseconds(2_500))
+        {
+            site.Rebuilder.Signal();
+            await Task.Delay(TimeSpan.FromMilliseconds(20), timeout.Token);
+            if (source.Loads >= 2)
+            {
+                rebuiltDuringStream = true;
+                break;
+            }
+        }
+
+        _ = await Assert.That(rebuiltDuringStream).IsTrue();
+    }
+
+    [Test]
     public async Task WhenCurrent_WaitsForTheSignalledChange()
     {
         var source = new FakeSource("Chili");
@@ -143,7 +170,11 @@ public class RecipeIndexRebuilderTests
         _ = await Assert.That(source.Loads).IsEqualTo(0);
     }
 
-    private static async Task<RunningRebuilder> StartAsync(FakeSource source, RuntimeLevel level = RuntimeLevel.Run)
+    private static async Task<RunningRebuilder> StartAsync(
+        FakeSource source,
+        RuntimeLevel level = RuntimeLevel.Run,
+        TimeSpan? rebuildDelay = null,
+        TimeSpan? maxRebuildWait = null)
     {
         var services = new ServiceCollection().AddScoped<IRecipeIndexSource>(_ => source).BuildServiceProvider();
         var runtimeState = new Mock<IRuntimeState>();
@@ -153,7 +184,12 @@ public class RecipeIndexRebuilderTests
             services.GetRequiredService<IServiceScopeFactory>(),
             index,
             runtimeState.Object,
-            Options.Create(new RecipeSearchOptions { RebuildDelay = TimeSpan.FromMilliseconds(50), RetryDelay = RetryDelay }),
+            Options.Create(new RecipeSearchOptions
+            {
+                RebuildDelay = rebuildDelay ?? TimeSpan.FromMilliseconds(50),
+                RetryDelay = RetryDelay,
+                MaxRebuildWait = maxRebuildWait ?? TimeSpan.FromSeconds(10),
+            }),
             NullLogger<RecipeIndexRebuilder>.Instance);
         await rebuilder.StartAsync(CancellationToken.None);
         return new RunningRebuilder(rebuilder, index, services);

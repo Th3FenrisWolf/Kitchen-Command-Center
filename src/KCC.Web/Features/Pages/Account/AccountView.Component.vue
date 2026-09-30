@@ -13,7 +13,7 @@
   }
 
   interface ProfileVariant {
-    pageId: number
+    key: string
     name: string
     icon?: string
     url?: string
@@ -21,7 +21,7 @@
   }
 
   interface RecipeGroup {
-    pageId: number
+    key: string
     recipeName: string
     recipeIcon?: string
     recipeUrl?: string
@@ -49,6 +49,7 @@
 <!-- #endregion -->
 
 <script setup lang="ts">
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
   import Badge from '~/Components/Badge/Badge.vue'
   import Button from '~/Components/Button/Button.vue'
   import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
@@ -90,9 +91,11 @@
         <Button as="a" :href="settingsUrl" variant="ghost">
           <ResourceString for="AccountSettings" />
         </Button>
-        <Button as="a" :href="logoutUrl" variant="text">
-          <ResourceString for="SignOut" />
-        </Button>
+        <SignOutForm :action="logoutUrl">
+          <Button type="submit" variant="text">
+            <ResourceString for="SignOut" />
+          </Button>
+        </SignOutForm>
       </div>
     </KccSheet>
 
@@ -104,13 +107,7 @@
       <!-- The profile sheet beside the list takes the first tear, so the list starts at the second and no two
            neighbours are torn alike. -->
       <ul v-else class="grid gap-9">
-        <KccSheet
-          v-for="(group, index) in recipeGroups"
-          :key="group.pageId"
-          as="li"
-          :tear="listTearFor(index + 1)"
-          pad="16px"
-        >
+        <KccSheet v-for="(group, index) in recipeGroups" :key="group.key" as="li" :tear="listTearFor(index + 1)" pad="16px">
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <i v-if="group.recipeIcon" :class="group.recipeIcon" aria-hidden="true"></i>
             <h3 class="kcc-h4">
@@ -127,7 +124,7 @@
           </div>
 
           <ul v-if="group.variants.length" class="mt-6 grid gap-2">
-            <li v-for="variant in group.variants" :key="variant.pageId" class="grid grid-cols-[1fr_auto] items-center gap-3">
+            <li v-for="variant in group.variants" :key="variant.key" class="grid grid-cols-[1fr_auto] items-center gap-3">
               <span class="flex flex-wrap items-center gap-2">
                 <i v-if="variant.icon" :class="variant.icon" aria-hidden="true"></i>
                 <component
