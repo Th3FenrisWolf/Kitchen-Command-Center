@@ -61,6 +61,27 @@ public class BaselineContentTests
     }
 
     [Test]
+    public async Task Home_HoldsTheBaselineSections()
+    {
+        var sections = HomeSections();
+
+        _ = await Assert.That(sections.Contains("Welcome to Kitchen Command Center!", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(sections.Contains("How About Something Sweeter?", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(sections.Contains("Delicious Drinks", StringComparison.Ordinal)).IsTrue();
+    }
+
+    // A fresh database holds no media, so nothing in the baseline may point at any.
+    [Test]
+    public async Task Home_ReferencesNoMedia()
+    {
+        var sections = HomeSections();
+
+        _ = await Assert.That(sections).IsNotEmpty();
+        _ = await Assert.That(sections.Contains("mediaKey", StringComparison.Ordinal)).IsFalse();
+        _ = await Assert.That(sections.Contains("umb://media", StringComparison.Ordinal)).IsFalse();
+    }
+
+    [Test]
     public async Task BaselineKeys_AreUuidsTheBackofficeAccepts()
     {
         var keys = Content.GetRootContent().SelectMany(TreeKeys).ToList();
@@ -69,6 +90,9 @@ public class BaselineContentTests
         _ = await Assert.That(keys).IsNotEmpty();
         _ = await Assert.That(rejected).IsEmpty();
     }
+
+    private string HomeSections() =>
+        Content.GetRootContent().Single(node => node.ContentType.Alias == "homePage").GetValue<string>("sections") ?? string.Empty;
 
     // The short IContentService.GetPagedChildren overload is obsolete in Umbraco 17, and warnings fail the build.
     private List<IContent> ChildrenOf(IContent parent) =>

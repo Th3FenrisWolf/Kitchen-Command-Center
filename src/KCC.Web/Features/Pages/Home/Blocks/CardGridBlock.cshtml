@@ -1,0 +1,55 @@
+@using KCC.Web.Features.Pages.Home
+
+@model CardGridSection
+
+@{
+  var hasHeading = !string.IsNullOrWhiteSpace(Model.Heading);
+
+  // Written out whole so Tailwind, which scans this file, emits each one.
+  var columns = Model.Columns switch
+  {
+    3 => "lg:grid-cols-3",
+    4 => "lg:grid-cols-4",
+    _ => "lg:grid-cols-2",
+  };
+}
+
+@if (hasHeading)
+{
+  <div class="kcc-secname"><h2 v-pre>@Model.Heading</h2></div>
+}
+
+<div class="grid gap-x-7 gap-y-9 @columns">
+  @foreach (var card in Model.Cards)
+  {
+    <Card card-color="@card.BackgroundColor" :tear="@card.Tear">
+      <div>
+        @* Cards nest under their section's h2. A grid without a heading has none above it, so its cards take the h2. *@
+        @if (hasHeading)
+        {
+          <h3 class="kcc-h4" v-pre>@card.Heading</h3>
+        }
+        else
+        {
+          <h2 class="kcc-h4" v-pre>@card.Heading</h2>
+        }
+        <p class="kcc-body text-ink-soft" v-pre>@card.SubHeading</p>
+      </div>
+
+      @if (card.HasDrawer)
+      {
+        <template #drawer>
+          @if (!string.IsNullOrWhiteSpace(card.Body))
+          {
+            <p class="kcc-body" v-pre>@card.Body</p>
+          }
+
+          @if (card.Link is { } link)
+          {
+            <UnderlineLink href="@link.Url" target="@link.Target"><span v-pre>@link.Text</span></UnderlineLink>
+          }
+        </template>
+      }
+    </Card>
+  }
+</div>

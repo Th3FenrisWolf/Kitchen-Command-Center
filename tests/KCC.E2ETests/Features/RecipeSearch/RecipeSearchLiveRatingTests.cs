@@ -17,9 +17,14 @@ public class RecipeSearchLiveRatingTests : BasePageTests
     {
         await MemberSession.SignInAsync(Page);
         var spotlight = Page.Locator("[data-testid='recipe-spotlight']");
+        var plainCard = Page.Locator($"[data-testid='recipe-card'][data-recipe-name='{MemberTestVariant.RecipeName}']");
 
         await SearchForMatchaAsync();
-        await Expect(Page.Locator($"[data-testid='recipe-card'][data-recipe-name='{MemberTestVariant.RecipeName}']")).ToHaveCountAsync(1);
+
+        // An earlier test in the serial member chain may have just written or deleted a review on this shared variant,
+        // and the index reflects that only about two seconds later.
+        await SearchAgainUntilAsync(async () => await plainCard.IsVisibleAsync() && !await spotlight.IsVisibleAsync());
+        await Expect(plainCard).ToHaveCountAsync(1);
         await Expect(spotlight).ToHaveCountAsync(0);
 
         _ = await Page.GotoAsync(MemberTestVariant.Path);
@@ -35,11 +40,7 @@ public class RecipeSearchLiveRatingTests : BasePageTests
             // until it has read the search response, so only this recipe's spotlight says the search has caught up.
             var reviewedSpotlight = Page.Locator(
                 $"[data-testid='recipe-spotlight'][data-recipe-name='{MemberTestVariant.RecipeName}']");
-            for (var attempt = 0; attempt < 20 && !await reviewedSpotlight.IsVisibleAsync(); attempt++)
-            {
-                await Page.WaitForTimeoutAsync(1000);
-                await SearchForMatchaAsync();
-            }
+            await SearchAgainUntilAsync(() => reviewedSpotlight.IsVisibleAsync());
 
             await Expect(spotlight).ToHaveAttributeAsync("data-recipe-name", MemberTestVariant.RecipeName);
             await Expect(spotlight.Locator("[data-testid='recipe-card-rating']")).ToBeVisibleAsync();
@@ -62,5 +63,14 @@ public class RecipeSearchLiveRatingTests : BasePageTests
         await Page.RunAndWaitForResponseAsync(
             () => Page.Locator("[data-testid='recipe-search-submit']").ClickAsync(),
             response => response.Url.Contains("/api/recipes/search", StringComparison.Ordinal));
+    }
+
+    private async Task SearchAgainUntilAsync(Func<Task<bool>> caughtUp)
+    {
+        for (var attempt = 0; attempt < 20 && !await caughtUp(); attempt++)
+        {
+            await Page.WaitForTimeoutAsync(1000);
+            await SearchForMatchaAsync();
+        }
     }
 }

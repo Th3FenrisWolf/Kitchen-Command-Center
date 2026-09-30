@@ -28,9 +28,11 @@
     var(--full-width-size) [full-width-end];
 }
 
+/* Auto margins stop a grid item stretching, so without the width a thin section shrinks to its content. */
 .content-grid > .thin {
   margin-inline: auto;
   max-width: 60rem;
+  width: 100%;
 }
 
 .content-grid > :not(.breakout, .full-width) {

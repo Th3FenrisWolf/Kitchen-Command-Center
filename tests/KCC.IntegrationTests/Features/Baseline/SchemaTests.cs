@@ -1,6 +1,7 @@
 using KCC.IntegrationTests.Config;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
 
 namespace KCC.IntegrationTests.Features.Baseline;
@@ -29,6 +30,11 @@ public class SchemaTests
     [Arguments("metadata")]
     [Arguments("navLink")]
     [Arguments("navGroup")]
+    [Arguments("card")]
+    [Arguments("sectionSettings")]
+    [Arguments("richTextBlock")]
+    [Arguments("cardGridBlock")]
+    [Arguments("stackerBlock")]
     public async Task DocumentType_IsImportedOnFirstBoot(string alias)
     {
         var contentTypes = Site.Services.GetRequiredService<IContentTypeService>();
@@ -41,6 +47,14 @@ public class SchemaTests
     [Arguments("KCC Single Link")]
     [Arguments("KCC Links")]
     [Arguments("KCC Nav Items")]
+    [Arguments("KCC Section Background")]
+    [Arguments("KCC Section Width")]
+    [Arguments("KCC Wash")]
+    [Arguments("KCC Card Columns")]
+    [Arguments("KCC Rich Text")]
+    [Arguments("KCC Optional Link")]
+    [Arguments("KCC Cards")]
+    [Arguments("KCC Home Sections")]
     public async Task DataType_IsImportedOnFirstBoot(string name)
     {
         var dataTypes = Site.Services.GetRequiredService<IDataTypeService>();
@@ -63,6 +77,32 @@ public class SchemaTests
 
         _ = await Assert.That(contentTypes.Get("navLink")!.IsElement).IsTrue();
         _ = await Assert.That(contentTypes.Get("navGroup")!.IsElement).IsTrue();
+    }
+
+    [Test]
+    [Arguments("card")]
+    [Arguments("sectionSettings")]
+    [Arguments("richTextBlock")]
+    [Arguments("cardGridBlock")]
+    [Arguments("stackerBlock")]
+    public async Task HomeBlock_IsAnElementType(string alias)
+    {
+        _ = await Assert.That(Site.Services.GetRequiredService<IContentTypeService>().Get(alias)!.IsElement).IsTrue();
+    }
+
+    [Test]
+    public async Task HomeSections_OfferTheThreeBlocks_EachWithSectionSettings()
+    {
+        var contentTypes = Site.Services.GetRequiredService<IContentTypeService>();
+        var home = contentTypes.Get("homePage")!;
+        var sections = home.PropertyTypes.Single(property => property.Alias == "sections");
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(sections.DataTypeKey);
+        var blocks = ((BlockListConfiguration)dataType!.ConfigurationObject!).Blocks;
+
+        _ = await Assert.That(dataType.Name).IsEqualTo("KCC Home Sections");
+        _ = await Assert.That(blocks.Select(block => contentTypes.Get(block.ContentElementTypeKey)!.Alias))
+            .IsEquivalentTo(["richTextBlock", "cardGridBlock", "stackerBlock"]);
+        _ = await Assert.That(blocks.All(block => block.SettingsElementTypeKey == contentTypes.Get("sectionSettings")!.Key)).IsTrue();
     }
 
     [Test]

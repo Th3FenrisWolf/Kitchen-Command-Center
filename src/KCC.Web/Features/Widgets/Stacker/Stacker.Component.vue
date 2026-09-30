@@ -1,7 +1,7 @@
 <!-- #region Stacker Component Properties -->
 <script lang="ts">
   import { onMounted, ref } from 'vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import { washOf, type BackgroundColor } from '~/Types/DesignSystem'
   import { listTearFor } from '~/Utilities/BrandColor'
 
@@ -16,6 +16,9 @@
     heading: string
     subHeading: string
     backgroundColor: BackgroundColor
+
+    /** Set when the page runs one tear cycle across its sheets; unset, the stack cycles from the first preset. */
+    tear?: Exclude<Tear, 'hero'>
   }
 
   export interface StackerProps {
@@ -23,6 +26,18 @@
      * Rendered in order; each card pins 32px lower than the one before it.
      */
     cards: StackerCard[]
+  }
+
+  interface SentinelEntry {
+    target: { nextElementSibling: { classList: Pick<DOMTokenList, 'toggle'> } | null }
+    boundingClientRect: Pick<DOMRectReadOnly, 'top'>
+  }
+
+  // A fast scroll moves several sentinels past the threshold in one frame, and the observer reports them in one call.
+  export const markStuckCards = (entries: SentinelEntry[]) => {
+    entries.forEach(({ target, boundingClientRect }) => {
+      target.nextElementSibling?.classList.toggle('stuck', boundingClientRect.top < 0)
+    })
   }
 </script>
 <!-- #endregion -->
@@ -33,10 +48,7 @@
   // The slip is the sentinel's next sibling, so it is the slip that takes `.stuck` and shrinks. `scale-*`
   // sets the `scale` property, which composes with the slip's `rotate` rather than replacing it.
   onMounted(() => {
-    const observer = new IntersectionObserver(
-      ([e]) => e?.target.nextElementSibling?.classList.toggle('stuck', e.boundingClientRect.top < 0),
-      { threshold: [1] },
-    )
+    const observer = new IntersectionObserver(markStuckCards, { threshold: [1] })
 
     if (containerRef.value) {
       const sentinels = containerRef.value.querySelectorAll('[data-sentinel]')
@@ -58,12 +70,12 @@
     >
       <div data-sentinel class="absolute size-0" :style="`top: -${32 * (index + 1) + 1}px`"></div>
       <KccSheet
-        :tear="listTearFor(index)"
+        :tear="card.tear ?? listTearFor(index)"
         :wash="washOf(card.backgroundColor)"
         :at="{ x: '85%', y: '90%', w: '55%', h: '50%' }"
         class="origin-top transition-all duration-100 [.last_div]:scale-100 [.stuck]:scale-95"
       >
-        <h2 class="kcc-h4">{{ card.heading }}</h2>
+        <h3 class="kcc-h4">{{ card.heading }}</h3>
         <p class="kcc-body">{{ card.subHeading }}</p>
       </KccSheet>
     </div>

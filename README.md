@@ -97,7 +97,7 @@ Each feature contains all related files (controllers, view models, views) in one
 
 #### Field Naming Conventions
 
-Use consistent field names across content types and widgets:
+Use consistent field names across content types and blocks:
 
 - **Heading**: Primary title text
 - **SubHeading**: Supporting title text
@@ -105,7 +105,7 @@ Use consistent field names across content types and widgets:
 
 #### Field Ordering
 
-1. **Primary Function**: Core functionality (e.g., item selectors for listing widgets)
+1. **Primary Function**: Core functionality (e.g., a card grid's cards)
 2. **Content Fields**: Headings, text, media
 3. **Styling Options**: Colors, spacing, layout options
 
@@ -115,9 +115,11 @@ Use consistent field names across content types and widgets:
 
 - Document types, data types and dictionary items are edited in the backoffice and exported by uSync on save in
   Development. Commit `src/KCC.Web/uSync/v17/`.
-- Baseline content (the empty page tree, site settings, taxonomy, status pages) is not exported on save. Edit it in a
-  fresh database, then run `curl -sk -X POST https://localhost:58671/api/dev/baseline/export` and commit the result.
-  The endpoint refuses to run while seeded recipes exist.
+- Baseline content (the page tree with Home's sections, site settings, taxonomy, status pages) is not exported on save.
+  Edit it in a fresh database, then run `curl -sk -X POST https://localhost:58671/api/dev/baseline/export` and commit
+  the result. The endpoint refuses to run while seeded recipes exist.
+- A fresh database boots into the baseline home. An existing one keeps its own Home, because content imports on first
+  boot only: delete `src/KCC.Web/umbraco/Data/Umbraco.sqlite.db*` and restart to see the baseline's.
 - ModelsBuilder runs in `SourceCodeManual` mode: after a schema change, use Settings → Models Builder → Generate models,
   and commit `Features/Models/Generated`.
 

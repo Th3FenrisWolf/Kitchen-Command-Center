@@ -1,0 +1,30 @@
+@using KCC.Web.Features.Pages.Home
+
+@model StackerSection
+
+<div class="kcc-secname"><h2 v-pre>@Model.Heading</h2></div>
+
+<div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-2">
+  @if (Model.HasSheet)
+  {
+    <div class="kcc-slip kcc-tear-@Model.Tear w-full lg:sticky lg:top-8">
+      <div class="kcc-torn">
+        <div class="kcc-sheet">
+          <div class="grid gap-6">
+            @if (!string.IsNullOrWhiteSpace(Model.BodyHtml))
+            {
+              <div class="kcc-body kcc-prose" v-pre>@Html.Raw(Model.BodyHtml)</div>
+            }
+
+            @if (Model.Image is { } image)
+            {
+              <img class="block w-full object-cover" src="@image.Url" alt="@image.Alt" loading="lazy" />
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <Stacker :cards="@Vue.Prop(Model.Cards)" />
+</div>

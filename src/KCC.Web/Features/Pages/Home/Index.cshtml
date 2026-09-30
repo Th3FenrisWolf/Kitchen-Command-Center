@@ -1,3 +1,26 @@
 @using KCC.Web.Features.Pages.Home
 
 @model HomeViewModel
+
+@* A content grid of its own, so the sections keep their thin, breakout and full-width columns and sit a section apart.
+   A tall sheet's tilt reaches past the screen's edge on a phone, and the clip keeps that from scrolling the page
+   sideways. `section` is a Razor directive, so the loop variable cannot take that name. *@
+<div class="full-width content-grid mt-12 gap-y-[72px] overflow-x-clip">
+  @foreach (var block in Model.Sections)
+  {
+    <section class="@(block.Classes.Length > 0 ? block.Classes : null)" data-block="@block.Alias">
+      @switch (block)
+      {
+        case RichTextSection richText:
+          <partial name="~/Features/Pages/Home/Blocks/RichTextBlock.cshtml" model="richText" />
+          break;
+        case CardGridSection cardGrid:
+          <partial name="~/Features/Pages/Home/Blocks/CardGridBlock.cshtml" model="cardGrid" />
+          break;
+        case StackerSection stacker:
+          <partial name="~/Features/Pages/Home/Blocks/StackerBlock.cshtml" model="stacker" />
+          break;
+      }
+    </section>
+  }
+</div>
