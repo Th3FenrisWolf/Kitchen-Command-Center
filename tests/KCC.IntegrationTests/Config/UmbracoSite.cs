@@ -174,6 +174,9 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         // The seeder creates the approved member the E2E suite signs in as, from these two settings.
         ["KCC_E2E_MEMBER_USERNAME"] = "e2e-member",
         ["KCC_E2E_MEMBER_PASSWORD"] = "E2E-Member-Passw0rd",
+
+        // The icon suggestion takes its fallback instead of calling Anthropic, whatever key the environment holds.
+        ["Anthropic:ApiKey"] = string.Empty,
     };
 
     // Appended after the app's own middleware, so an exception thrown here has to pass through its exception handler.

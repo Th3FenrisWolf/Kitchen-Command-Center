@@ -12,6 +12,10 @@ namespace KCC.E2ETests.Config;
 /// <summary>A KCC.Web process on a free port with its own SQLite file, started the way production starts it.</summary>
 public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
 {
+    public const string AdminEmail = "admin@example.test";
+
+    public const string AdminPassword = "E2E-Passw0rd-2026";
+
     private static readonly string Configuration =
         typeof(SiteProcess).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ?? "Debug";
 
@@ -193,7 +197,15 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         var web = RepoPaths.WebProject;
         if (!File.Exists(Path.Combine(web, "wwwroot", ".vite", "manifest.json")) || !File.Exists(Path.Combine(web, "wwwroot", "ssr", "Server.Entry.js")))
         {
-            throw new InvalidOperationException("The front-end bundles are missing. Run `yarn build:all` in src/KCC.Web first.");
+            throw new InvalidOperationException("The front-end bundles are missing. Run `yarn build:all` at the repository root first.");
+        }
+
+        foreach (var package in new[] { "KCC.Admin", "KCC.Contributions" })
+        {
+            if (!File.Exists(Path.Combine(RepoPaths.Root, "src", package, "wwwroot", "App_Plugins", package, "umbraco-package.json")))
+            {
+                throw new InvalidOperationException($"The {package} backoffice bundle is missing. Run `yarn build:all` at the repository root first.");
+            }
         }
     }
 
@@ -302,8 +314,8 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
             ["Umbraco__CMS__Unattended__InstallUnattended"] = "true",
             ["Umbraco__CMS__Unattended__UpgradeUnattended"] = "true",
             ["Umbraco__CMS__Unattended__UnattendedUserName"] = "E2E Admin",
-            ["Umbraco__CMS__Unattended__UnattendedUserEmail"] = "admin@example.test",
-            ["Umbraco__CMS__Unattended__UnattendedUserPassword"] = "E2E-Passw0rd-2026",
+            ["Umbraco__CMS__Unattended__UnattendedUserEmail"] = AdminEmail,
+            ["Umbraco__CMS__Unattended__UnattendedUserPassword"] = AdminPassword,
             ["Umbraco__CMS__Unattended__UnattendedTelemetryLevel"] = "Minimal",
             ["Umbraco__CMS__ModelsBuilder__ModelsMode"] = "Nothing",
             ["Umbraco__CMS__Hosting__LocalTempStorageLocation"] = "EnvironmentTemp",
@@ -318,6 +330,12 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
             ["RateLimits__AccountPerMinute"] = "1000",
             ["RateLimits__ContributionsPerMinute"] = "1000",
             ["RateLimits__SubmissionsPerHour"] = "1000",
+
+            // The site listens on plain HTTP, and the backoffice's sign-in refuses it while UseHttps is on.
+            ["Umbraco__CMS__Global__UseHttps"] = "false",
+
+            // The icon suggestion takes its fallback instead of calling Anthropic, whatever key the environment holds.
+            ["Anthropic__ApiKey"] = string.Empty,
             ["uSync__Settings__ExportOnSave"] = "None",
             ["VueSsr__Enabled"] = withSsr ? "true" : "false",
             ["VueSsr__BaseUrl"] = $"http://127.0.0.1:{ssrPort}",

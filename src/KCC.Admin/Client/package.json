@@ -1,23 +1,15 @@
 {
   "name": "@kcc/admin",
   "version": "1.0.0",
-  "description": "Custom Kentico Xperience administration project.",
+  "description": "Backoffice property editors for recipes.",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode=production",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "build": "tsc && vite build",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@kcc/admin-client-config": "*",
     "@fortawesome/fontawesome-pro": "^7.3.0",
-    "@kentico/xperience-admin-base": "31.4.4",
-    "@kentico/xperience-admin-components": "31.4.4",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "vitest": "^4.1.9"
+    "@kcc/admin-client-config": "*"
   }
 }

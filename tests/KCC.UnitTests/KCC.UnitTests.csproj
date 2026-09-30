@@ -16,10 +16,6 @@
         <PackageReference Include="Moq" />
         <PackageReference Include="TUnit" />
     </ItemGroup>
-    <ItemGroup Label="Unported slices">
-        <Compile Remove="Admin/HomeApplicationsResolverTests.cs" />
-        <Compile Remove="Admin/HomeStatsServiceTests.cs" />
-    </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />
     </ItemGroup>
