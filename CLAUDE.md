@@ -15,6 +15,17 @@ This overrides the default locations and filename placeholders baked into the `w
 
 **`.superpowers/` is gitignored** (see `.gitignore`). The plan, spec, and brainstorm files are local scratch only — do **not** stage or commit them while working through a feature, and don't be surprised when they don't appear in `git status`. Leave them out of every commit.
 
+**Exception: the replatform off Xperience.** Its spec, phase plans and reference screenshots are tracked in
+`docs/replatform/`, so they travel with the branch:
+
+- **Spec** → `docs/replatform/specs/2026-09-21-replatform-off-xperience.md`
+- **Phase plans** → `docs/replatform/plans/YYYY-MM-DD-phase-N-<name>.md`, one self-contained file per phase
+- **Reference set** → `docs/replatform/reference/xperience-final/`: 48 PNGs of the last Xperience version, and a
+  `NOTES.md` listing the differences to expect
+
+Commit changes to them with the work they describe. Everything else in the replatform, such as SDD ledgers and
+gate-capture output, stays in `.superpowers/`.
+
 ## Vue SFC `<style>` blocks
 
 Write component CSS in a `<style>` or `<style scoped>` block. A standalone CSS file is not required, and
