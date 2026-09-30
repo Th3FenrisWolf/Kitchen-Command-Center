@@ -4,9 +4,10 @@
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
 > tracking.
 
-**Status:** not started. **Resume point:** "Before you start", then Task 1. Task 9's DNS move can start at any time,
-even before Task 1, because the nameserver change takes up to two days. **Requires Phase 6 done:** its Status line
-reads `done (<date>)` and `replatform` is merged into `main` (Phase 6, Task 8).
+**Status:** in progress: Tasks 1 to 8, Step 4 done (2026-09-30) on branch `hosting`, based on `replatform-phase-6` at
+`ec5c44a`. **Resume point:** Task 8, Step 5. The push, the pull request and the merge wait on the owner, and on Phase
+6's merge into `main`; then Tasks 9 to 12. Task 9's DNS move can start at any time. "Findings from Phase 7", at the
+end, lists where the code departs from this plan.
 
 **Goal:** The site runs on the owner's Raspberry Pi as containers behind a Cloudflare Tunnel, private behind
 Cloudflare Access until launch. The Pi deploys by pulling the images CI builds and pushes to private GHCR packages,
@@ -3199,3 +3200,78 @@ Every gate also requires:
 - a browser check of the touched pages in both ramps.
 
 Task 8, Step 4 and Task 11, Step 1 cover those.
+
+## Findings from Phase 7
+
+Found while building (2026-09-29 to 2026-09-30), Tasks 1 to 8, Step 4. Task 12 adds what the Pi run finds.
+
+- **The branch.** Phase 7 ran on `hosting`, based on `replatform-phase-6` at `ec5c44a`, because Phase 6's merge into
+  `main` (its Task 8) waits on the owner. The pull request opens after that merge: if Phase 6 lands as a squash, rebase
+  first with `git rebase --onto main ec5c44a hosting`.
+- **"Before you start".** Every check passed except the first (the merge). Check 11's grep also finds Umbraco's own
+  `Umbraco:CMS:Hosting:*` settings in `UmbracoSite`, which are unrelated to `Hosting:TunnelAddress`.
+- **Where the code departs from this plan's text.**
+  - Task 3: the ssr-deps stage's Yarn cache mount has its own id, `yarn-ssr`. The two install stages run in parallel,
+    Yarn 1 does not lock its cache, and a shared cold cache failed 3 of 3 concurrent trials; a fresh CI runner starts
+    cold. The `wwwroot` copy loop fails on any failed copy.
+  - Tasks 4 and 5: the smoke test checks `*'<div id="app"><'[!/]*`. The plan's pattern also matches the empty
+    client-side fallback `<div id="app"></div>`, so it could never fail. The Phase 8 plan's live check (its line 1128,
+    `grep -c '<div id="app"><'`) has the same hole.
+  - Task 5: the smoke test traps INT and TERM, because dash skips the EXIT trap on a signal and left both stacks behind.
+    It unsets the variables compose interpolates, except `KCC_REGISTRY` and `KCC_IMAGE_TAG`, because compose prefers the
+    shell's to `--env-file`. The drill's `KCC_FIRST_BOOT_ENV` names a file that never exists.
+  - Task 5: `kcc-backup` refuses a database that is missing, empty, damaged or without Umbraco's schema, for every copy
+    and every restored or rolled-back database. `sqlite3` had created an empty database in the live volume, and an empty
+    database passes `integrity_check`, so a lost database became a "good" archive. `nightly` fails, pings `/fail` and
+    deletes the uploaded object when tar fails: the pipe had hidden tar's status, and an unreadable file uploaded an
+    incomplete archive with a success ping. `nightly` and `restore` stop before any rclone call when `KCC_BACKUP_BUCKET`
+    is unset or empty, because the `:?` inside `$(...)` ended only the subshell.
+  - Task 6: `deploy.sh` keeps the last deployed commit in `refs/kcc/deployed`, because a `deploy/` change was lost when
+    the run that pulled it failed. With nothing to deploy, a run fails with `not healthy: …` while a service is not
+    running or is unhealthy, because a failed `up --wait` was otherwise forgotten. The pre-deploy snapshot is taken only
+    while the app is running and not unhealthy, because retries of a failing `deploy/` change rotated the pre-change
+    snapshot out of the five kept. Accepted: a slow crash loop, which reads running or starting at each check, still
+    snapshots on those retries; the nightly backup is the fallback.
+  - Task 6: the deploy test runs `deploy.sh` behind a `docker` wrapper that skips `image prune`, which on a developer's
+    machine removes every dangling image, not only this project's.
+  - Task 7: the images job pushes every commit tag before it moves a `main` tag, never cancels a run on `main`, and
+    moves `main` only while `main` still names the run's commit. Otherwise a cancel mid-push could pair app and ssr
+    from different builds, and re-running an old run could roll production back. `build-and-test` shellchecks the deploy
+    scripts, because `deploy.sh` updates itself on the Pi before CI has run anything.
+  - Task 7: Dependabot does not read `deploy/local.yaml`, so Caddy's tag is bumped by hand. Renaming the file into
+    Dependabot's compose pattern would make it parse the `!reset` tags, and Caddy never runs on the Pi.
+  - Task 8: the runbook describes all of the above. It also runs `chmod 755 /srv/kcc` after `useradd`, because Debian 13
+    creates home folders with mode 700. It adds `sudo -u kcc -H` to three commands in section 11, because only `kcc` is
+    in the docker group. It stops the services along with the timers, and a move to a VPS retires the Pi's timers and
+    takes a last backup first. The spec takes the plan's eight corrections, one to §13.4's deploy bullet, and one to
+    §13.7's DNS phrase.
+  - The final review corrected the stale premise of `RateLimits`' comment, a Dependabot comment that promised the
+    future, and the runbook's "harmless" cache-instruction bullet (wrong since Phase 4's guard).
+- **Decisions this run made that earlier phases left open.**
+  - Phase 5's backoffice source maps stay in the images. The repository is public, and until launch Access covers the
+    whole site.
+  - Phase 4's Anthropic client timeout is not fixed here. Leave `ANTHROPIC_API_KEY` empty on the Pi until it is.
+- **Known limitations.**
+  - The backup jobs run BusyBox sh as PID 1, with no init and no signal traps. A stopped or timed-out job leaves its
+    work folder and sends no `/fail`; healthchecks.io's grace still alerts. Stopping `kcc-backup.service` ends the
+    compose client but not a job container already running, so a restore started meanwhile can overlap a backup, which
+    then fails safe.
+  - The deploy timer never sees a change to `.env`, and an exact revert of a failed `deploy/` change does not redeploy.
+    The runbook covers both with `kcc up -d --wait`.
+  - CI never runs cloudflared, because Caddy stands in for it. Nothing watches the site or the deploys: a failed deploy
+    shows only in `systemctl --failed` and the journal.
+  - The data-protection keys sit unencrypted on the data volume and in every backup; the bucket is private.
+  - Production logs "Features/Main.ts doesn't have CSS chunks" on every render (filed in Phase 6), and "The culture
+    specified  was not found" 62 times during the first boot's import.
+  - A tar status of 1, from a media file changed while it was read, fails that night's backup. A missing bucket sends
+    no ping at all.
+- **For Task 12's runbook pass.** Section 11's first-boot bullet resumes the timers even when they were never
+  installed; its troubleshooting bullet does not name `rollback`'s refusal messages; rollback step 6 and the
+  production-data snapshot run outside `/srv/kcc/kcc.lock`; and `WriteLockedCacheInstructionService`'s comment puts the
+  stall at about ten minutes where the runbook says about 20.
+- **Recommendations from the final review, for the owner.** Protect `main` with required checks, because the Pi takes
+  `deploy/` from git whatever CI says. Consider a second healthchecks.io check that `deploy.sh` pings. Pin the images
+  job's actions by SHA.
+- **Counts.** 1329 passed, 0 failed: unit 232 (Phase 6's 229 plus 3), integration 260 (plus 6), E2E 41, web Vitest 769
+  (plus 2) with its 2 expected failures, admin Vitest 17, contributions Vitest 8. The smoke test's 11 checks pass in
+  about 27 seconds, and the deploy test's three runs pass.

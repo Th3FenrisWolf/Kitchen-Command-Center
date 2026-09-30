@@ -1,0 +1,123 @@
+#!/bin/sh
+# kcc-backup nightly | snapshot | restore <archive|latest> | rollback <snapshot>
+set -eu
+
+data=/srv/kcc/data
+media=/srv/kcc/media
+snapshots=/srv/kcc/snapshots
+database="$data/Umbraco.sqlite.db"
+
+log() {
+    printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"
+}
+
+fail() {
+    log "$*"
+    exit 1
+}
+
+bucket() {
+    printf 'bucket:%s' "$KCC_BACKUP_BUCKET"
+}
+
+# An empty database passes integrity_check, so the check also needs Umbraco's schema.
+check_database() {
+    [ "$(sqlite3 "$1" 'PRAGMA integrity_check;')" = ok ] || fail "$2 failed its integrity check"
+    [ "$(sqlite3 "$1" "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'umbracoNode';")" = 1 ] ||
+        fail "$2 has no Umbraco schema"
+}
+
+# The online backup API copies a consistent image of a WAL database and keeps the WAL flag, which Umbraco sets only
+# when it creates a database and its locking relies on. VACUUM INTO would write a rollback-journal file instead.
+copy_database() {
+    [ -s "$database" ] || fail "$database is missing or empty"
+    sqlite3 "$database" ".backup '$1'"
+    check_database "$1" "the copy of the database"
+}
+
+ping() {
+    [ -n "${KCC_BACKUP_PING_URL:-}" ] || return 0
+    curl -fsS -m 10 --retry 5 -o /dev/null "$KCC_BACKUP_PING_URL$1" || log "the ping to healthchecks.io failed"
+}
+
+nightly() {
+    : "${KCC_BACKUP_BUCKET:?KCC_BACKUP_BUCKET is not set}"
+    work=$(mktemp -d "$snapshots/nightly.XXXXXX")
+    trap 'rm -rf "$work"; ping /fail' EXIT
+    ping /start
+    mkdir "$work/data"
+    copy_database "$work/data/Umbraco.sqlite.db"
+    cp -R "$data/keys" "$work/data/keys"
+    name="kcc-$(date -u +%Y-%m-%d).tar.gz"
+    # The pipeline's status is rclone's, so tar's goes through a file.
+    {
+        tar -czf - -C "$work" data -C /srv/kcc media || echo "$?" >"$work/tar.failed"
+    } | rclone rcat "$(bucket)/daily/$name"
+    if [ -f "$work/tar.failed" ]; then
+        rclone deletefile "$(bucket)/daily/$name" || true
+        fail "tar exited with status $(cat "$work/tar.failed"), so daily/$name is incomplete"
+    fi
+    if [ "$(date -u +%u)" = 7 ]; then
+        rclone copyto "$(bucket)/daily/$name" "$(bucket)/weekly/$name"
+    fi
+    rclone delete "$(bucket)" --min-age 14d --include "/daily/**"
+    rclone delete "$(bucket)" --min-age 56d --include "/weekly/**"
+    rm -rf "$work"
+    trap - EXIT
+    log "uploaded daily/$name"
+    ping ""
+}
+
+snapshot() {
+    mkdir -p "$snapshots/pre-deploy"
+    file="$snapshots/pre-deploy/Umbraco-$(date -u +%Y%m%dT%H%M%SZ).sqlite.db"
+    trap 'rm -f "$file"' EXIT
+    copy_database "$file"
+    trap - EXIT
+    find "$snapshots/pre-deploy" -name '*.sqlite.db' | sort -r | tail -n +6 | xargs -r rm -f
+    log "saved $file"
+}
+
+replace_database() {
+    rm -f "$database" "$database-wal" "$database-shm"
+    cp "$1" "$database"
+    rm -rf "$data/TEMP"
+}
+
+restore() {
+    : "${KCC_BACKUP_BUCKET:?KCC_BACKUP_BUCKET is not set}"
+    archive=${1:?name an archive such as daily/kcc-2026-10-01.tar.gz, or latest}
+    if [ "$archive" = latest ]; then
+        latest=$(rclone lsf "$(bucket)/daily" | sort | tail -n 1)
+        [ -n "$latest" ] || fail "the bucket holds no daily backup"
+        archive="daily/$latest"
+    fi
+    work=$(mktemp -d "$snapshots/restore.XXXXXX")
+    trap 'rm -rf "$work"' EXIT
+    rclone cat "$(bucket)/$archive" | tar -xzf - -C "$work"
+    check_database "$work/data/Umbraco.sqlite.db" "the database in $archive"
+    replace_database "$work/data/Umbraco.sqlite.db"
+    rm -rf "$data/keys"
+    cp -R "$work/data/keys" "$data/keys"
+    find "$media" -mindepth 1 -delete
+    cp -R "$work/media/." "$media/"
+    log "restored $archive"
+}
+
+rollback() {
+    file="$snapshots/pre-deploy/${1:?name a snapshot from: ls /srv/kcc/snapshots/pre-deploy}"
+    [ -f "$file" ] || fail "$file does not exist"
+    check_database "$file" "the snapshot $file"
+    replace_database "$file"
+    log "restored $file"
+}
+
+command=${1:-nightly}
+[ $# -gt 0 ] && shift
+case "$command" in
+    nightly) nightly ;;
+    snapshot) snapshot ;;
+    restore) restore "$@" ;;
+    rollback) rollback "$@" ;;
+    *) fail "unknown command: $command" ;;
+esac
