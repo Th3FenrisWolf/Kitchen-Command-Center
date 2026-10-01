@@ -2,9 +2,9 @@ name: Build and Test Solution
 
 on:
   pull_request:
-    branches: [main, replatform]
+    branches: [main]
   push:
-    branches: [main, replatform]
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -91,20 +91,14 @@ jobs:
           echo "Microsoft.Playwright version: $version"
 
       - name: Cache Playwright browsers
-        id: playwright_cache
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
 
-      # Browser binaries live in the cached dir; OS-level deps do not, so install-deps still runs on a hit.
-      - name: Install Playwright browsers + deps (cache miss)
-        if: steps.playwright_cache.outputs.cache-hit != 'true'
+      # The cache holds the browser binaries but not the OS-level deps; on a hit this installs only the deps.
+      - name: Install Playwright browsers and system deps
         run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps
-
-      - name: Install Playwright system deps (cache hit)
-        if: steps.playwright_cache.outputs.cache-hit == 'true'
-        run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install-deps
 
       # ---------- Full combined test suite ----------
       # The E2E fixture starts KCC.Web and its SSR service itself, each run on a fresh SQLite file.

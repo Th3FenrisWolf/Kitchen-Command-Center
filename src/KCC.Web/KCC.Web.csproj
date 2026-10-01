@@ -1,15 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <TargetFramework>net10.0</TargetFramework>
         <RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>
         <CodeAnalysisRuleSet>..\..\KCCStandardRules.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);AD0001</NoWarn>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningsNotAsErrors>NU1608;NU1901;NU1902;NU1903</WarningsNotAsErrors>
         <UserSecretsId>85272aa4-641c-4fe4-b1e7-977f7decf9dc</UserSecretsId>
     </PropertyGroup>
 
