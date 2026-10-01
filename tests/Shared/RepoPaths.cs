@@ -9,7 +9,7 @@ internal static class RepoPaths
     private static string FindRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Directory.Packages.props")))
         {
             directory = directory.Parent;
         }

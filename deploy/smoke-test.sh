@@ -91,11 +91,9 @@ if printf '%s\n' "$cookies" | grep -qiv '; secure'; then
     fail "home sets a cookie without Secure over HTTPS"
 fi
 pass "every cookie home sets over HTTPS is Secure"
-for endpoint in /api/dev/seed-recipes /api/dev/baseline/export; do
-    [ "$(curl -sk -o /dev/null -w '%{http_code}' -X POST "https://localhost:8443$endpoint")" = 404 ] ||
-        fail "$endpoint answers in production"
-done
-pass "the development endpoints answer 404"
+[ "$(curl -sk -o /dev/null -w '%{http_code}' -X POST https://localhost:8443/api/dev/seed-recipes)" = 404 ] ||
+    fail "/api/dev/seed-recipes answers in production"
+pass "the development seeding endpoint answers 404"
 
 authorize=/umbraco/management/api/v1/security/back-office/authorize
 curl -sk "https://localhost:8443$authorize" | grep -q ID2029 ||

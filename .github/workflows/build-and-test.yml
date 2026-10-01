@@ -57,7 +57,7 @@ jobs:
       # ---------- Build task 1: .NET solution (Release) ----------
       - name: Build .NET solution (Release)
         id: build_dotnet
-        run: dotnet build KitchenCommandCenter.sln -c Release
+        run: dotnet build KitchenCommandCenter.slnx -c Release
 
       # ---------- Build task 2: frontend (attempted even if .NET build failed) ----------
       - name: Build frontend
