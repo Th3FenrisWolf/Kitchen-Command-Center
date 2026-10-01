@@ -8,7 +8,7 @@
   import AppliedFilterChips from '~/Components/RecipeSearch/AppliedFilterChips.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
   import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
-  import RecipeListRow from '~/Components/RecipeSearch/RecipeListRow.vue'
+  import RecipeCardRow from '~/Components/Recipe/RecipeCardRow.vue'
   import RecipesEmptyState from '~/Components/RecipeSearch/RecipesEmptyState.vue'
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
@@ -159,7 +159,12 @@
         </div>
 
         <div v-else class="flex flex-col gap-y-9">
-          <RecipeListRow v-for="(recipe, index) in listed" :key="recipe.slug" :recipe :tear="listTearFor(index)" />
+          <RecipeCardRow
+            v-for="(recipe, index) in listed"
+            :key="recipe.slug"
+            :card="hitToCard(recipe, rs)"
+            :tear="listTearFor(index)"
+          />
         </div>
 
         <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-6">

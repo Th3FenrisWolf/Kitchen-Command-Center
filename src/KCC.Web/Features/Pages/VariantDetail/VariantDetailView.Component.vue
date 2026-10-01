@@ -1,10 +1,9 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
-  import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
+  import type { Ingredient, Instruction, Breadcrumb, Nutrition, SiblingVariant } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
-  import Badge from '~/Components/Badge/Badge.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
@@ -17,7 +16,7 @@
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
 
-  export interface VariantDetailViewProps {
+  export interface VariantDetailViewProps extends Nutrition {
     variantName: string
     variantDescription: string
     icon?: string
@@ -38,14 +37,6 @@
      * `easy`, `medium`, or `hard`; anything else drops the difficulty tile.
      */
     difficulty?: string
-    calories?: number | null
-    proteinG?: number | null
-    carbsG?: number | null
-    fatG?: number | null
-    saturatedFatG?: number | null
-    fiberG?: number | null
-    sugarG?: number | null
-    sodiumMg?: number | null
     tags: string[]
     ingredients: Ingredient[]
     instructions: Instruction[]
@@ -141,7 +132,7 @@
 
         <template v-if="tags.length" #footer>
           <div class="kcc-badges mt-6">
-            <Badge v-for="tag in tags" :key="tag">{{ tag }}</Badge>
+            <span v-for="tag in tags" :key="tag" class="kcc-badge">{{ tag }}</span>
           </div>
         </template>
       </DetailHero>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
-  import MenuItem from '~/Components/Header/MenuItem.vue'
+  import MenuItem, { type NavItem } from '~/Components/Header/MenuItem.vue'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
   import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
   import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
@@ -20,24 +20,6 @@
      * Pushed to the right of the bar, after the main items.
      */
     utilityNavItems: NavItem[]
-  }
-
-  /**
-   * A header entry that is either a dropdown group (subLinks set) or a flat link
-   * (url + target set). The two modes are mutually exclusive on the server side
-   * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
-   */
-  interface NavItem {
-    displayText: string
-    url?: string
-    target?: string
-    subLinks?: PageLink[]
-  }
-
-  interface PageLink {
-    displayText: string
-    url: string
-    target: string
   }
 
   const { homeUrl, logoAlt, switchToLightLabel, switchToDarkLabel, mainNavItems, utilityNavItems } =

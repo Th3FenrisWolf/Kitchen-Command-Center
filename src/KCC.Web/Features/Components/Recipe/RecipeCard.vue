@@ -1,7 +1,5 @@
 <script setup lang="ts">
   import { computed } from 'vue'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { sheetTearFor } from '~/Utilities/BrandColor'
   import type { Tear } from '~/Components/Sheet/KccSheet.vue'
@@ -38,7 +36,7 @@
     class="kcc-slip kcc-recipe transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
     :class="`kcc-tear-${preset}`"
   >
-    <AppLink :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
+    <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet">
         <span
           class="kcc-stat"
@@ -67,10 +65,10 @@
         <p v-if="card.description" class="kcc-body">{{ card.description }}</p>
 
         <div v-if="card.tags.length" class="kcc-badges mt-6">
-          <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+          <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
         </div>
       </div>
-    </AppLink>
+    </a>
 
     <div class="kcc-tilewrap">
       <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14" />

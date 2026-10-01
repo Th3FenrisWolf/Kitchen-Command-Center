@@ -4,15 +4,7 @@
   import { isSignOutUrl } from '~/Components/Account/signOut'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
-  export interface MenuItemProps {
-    item: NavItem
-    /**
-     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
-     */
-    menuId: string
-  }
-
-  interface PageLink {
+  export interface PageLink {
     displayText: string
     url: string
     target: string
@@ -23,11 +15,19 @@
    * (url + target set). The two modes are mutually exclusive on the server side
    * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
    */
-  interface NavItem {
+  export interface NavItem {
     displayText: string
     url?: string
     target?: string
     subLinks?: PageLink[]
+  }
+
+  export interface MenuItemProps {
+    item: NavItem
+    /**
+     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
+     */
+    menuId: string
   }
 
   const { item, menuId } = defineProps<MenuItemProps>()

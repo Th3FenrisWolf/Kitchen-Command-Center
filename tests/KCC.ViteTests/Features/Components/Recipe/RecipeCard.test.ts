@@ -55,9 +55,8 @@ describe('RecipeCard slip', () => {
     expect(anchor).toContain('<a href="/recipes/chicken-piccata"')
     expect(anchor).toContain('data-testid="recipe-card"')
     expect(anchor).toContain(`data-recipe-name="${NAME}"`)
-    // The fibre-and-fall filter is on the link and the clip on the sheet inside it, so the focus ring is
-    // whole. `<!--[-->` is the anchor Vue prints around a slot's content.
-    expect(html).toMatch(/<a[^>]*class="kcc-torn block"[^>]*><!--\[--><div class="kcc-sheet">/)
+    // The fibre-and-fall filter is on the link and the clip on the sheet inside it, so the focus ring is whole.
+    expect(html).toMatch(/<a[^>]*class="kcc-torn block"[^>]*><div class="kcc-sheet">/)
   })
 
   it('pins the tile and its tape outside the link, so neither is clipped by the tear', async () => {
@@ -111,6 +110,6 @@ describe('RecipeCard body', () => {
   it('renders the tags as hairline badges', async () => {
     const html = await render(hit())
     const badges = html.match(/<div class="kcc-badges[^"]*">.*?<\/div>/s)?.[0] ?? ''
-    expect(badges).toContain('<span class="kcc-badge"><!--[-->Gluten-Free<!--]--></span>')
+    expect(badges).toContain('<span class="kcc-badge">Gluten-Free</span>')
   })
 })

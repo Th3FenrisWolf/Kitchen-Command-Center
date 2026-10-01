@@ -1,7 +1,5 @@
 <script setup lang="ts">
   import { computed } from 'vue'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import { sheetTearFor } from '~/Utilities/BrandColor'
@@ -38,7 +36,7 @@
 </script>
 
 <template>
-  <AppLink
+  <a
     :href="card.href"
     v-bind="card.dataAttrs"
     class="kcc-slip kcc-torn block transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
@@ -52,7 +50,7 @@
         <div class="flex flex-wrap items-center gap-x-3">
           <h3 class="kcc-h4">{{ card.name }}</h3>
           <div v-if="card.tags.length" class="kcc-badges">
-            <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+            <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
           </div>
         </div>
 
@@ -85,5 +83,5 @@
 
       <i class="fa-duotone fa-arrow-right flex-none text-ink-soft" aria-hidden="true"></i>
     </div>
-  </AppLink>
+  </a>
 </template>

@@ -1,10 +1,8 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
   import SignOutForm from '~/Components/Account/SignOutForm.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
   import Button from '~/Components/Button/Button.vue'
   import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
@@ -101,15 +99,15 @@
             <i v-if="group.recipeIcon" :class="group.recipeIcon" aria-hidden="true"></i>
             <h3 class="kcc-h4">
               <component
-                :is="group.recipeUrl ? AppLink : 'span'"
+                :is="group.recipeUrl ? 'a' : 'span'"
                 :href="group.recipeUrl || undefined"
                 :class="group.recipeUrl && 'kcc-link'"
               >
                 {{ group.recipeName }}
               </component>
             </h3>
-            <Badge v-if="group.startedByYou"><ResourceString for="StartedByYou" /></Badge>
-            <Badge v-if="group.isPending"><ResourceString for="PendingReview" /></Badge>
+            <span v-if="group.startedByYou" class="kcc-badge"><ResourceString for="StartedByYou" /></span>
+            <span v-if="group.isPending" class="kcc-badge"><ResourceString for="PendingReview" /></span>
           </div>
 
           <ul v-if="group.variants.length" class="mt-6 grid gap-2">
@@ -117,14 +115,14 @@
               <span class="flex flex-wrap items-center gap-2">
                 <i v-if="variant.icon" :class="variant.icon" aria-hidden="true"></i>
                 <component
-                  :is="variant.url ? AppLink : 'span'"
+                  :is="variant.url ? 'a' : 'span'"
                   :href="variant.url || undefined"
                   :class="variant.url && 'kcc-link'"
                 >
                   {{ variant.name }}
                 </component>
               </span>
-              <Badge v-if="variant.isPending"><ResourceString for="PendingReview" /></Badge>
+              <span v-if="variant.isPending" class="kcc-badge"><ResourceString for="PendingReview" /></span>
             </li>
           </ul>
         </KccSheet>
