@@ -39,8 +39,8 @@ public static class VariantDetailMapping
             SugarG = variant.Nutrition.SugarG,
             SodiumMg = variant.Nutrition.SodiumMg,
             Tags = variant.Tags,
-            Ingredients = Collection<IngredientViewModel>(variant.IngredientsJson),
-            Instructions = Collection<InstructionViewModel>(variant.InstructionsJson),
+            Ingredients = JsonSerializer.DeserializeCollection<IngredientViewModel>(variant.IngredientsJson),
+            Instructions = JsonSerializer.DeserializeCollection<InstructionViewModel>(variant.InstructionsJson),
             VariantSlug = variant.Url,
             RecipeName = page.Recipe.Name,
             RecipeSlug = page.Recipe.Url,
@@ -60,19 +60,5 @@ public static class VariantDetailMapping
                 TotalTime = sibling.TotalTime,
             }).ToList(),
         };
-    }
-
-    // The owner can type this JSON by hand in the backoffice, and a slip should empty the list rather than
-    // take the page down.
-    private static IEnumerable<T> Collection<T>(string json)
-    {
-        try
-        {
-            return JsonSerializer.DeserializeCollection<T>(json);
-        }
-        catch (System.Text.Json.JsonException)
-        {
-            return [];
-        }
     }
 }

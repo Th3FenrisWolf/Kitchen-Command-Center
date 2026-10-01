@@ -90,8 +90,11 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
                 Total = outcome.Hits.TotalHits,
                 Page = criteria.Page,
                 PageSize = criteria.PageSize,
-                CategoryFacets = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetCategory),
-                DietFacets = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetDiet),
+                Facets = new()
+                {
+                    Category = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetCategory),
+                    Diet = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetDiet),
+                },
                 Spotlight = spotlight,
             };
         });

@@ -25,24 +25,15 @@ public class DictionaryResourceStringProviderTests
     }
 
     [Test]
-    public async Task GetManyOrDefault_MapsEveryKeyWithTheKeyAsFallback()
+    public async Task GetGroup_MapsEveryChildWithTheKeyAsFallback()
     {
-        var provider = CreateProvider(("Login.SignIn", "Sign in"));
+        var provider = CreateProvider(("Login.SignIn", "Sign in"), ("Login.Empty", string.Empty));
 
-        var strings = provider.GetManyOrDefault("Login.SignIn", "Login.Missing");
+        var strings = provider.GetGroup("Login");
 
+        _ = await Assert.That(strings.Count).IsEqualTo(2);
         _ = await Assert.That(strings["Login.SignIn"]).IsEqualTo("Sign in");
-        _ = await Assert.That(strings["Login.Missing"]).IsEqualTo("Login.Missing");
-    }
-
-    [Test]
-    public async Task GetManyOrDefault_DuplicateKeys_CollapseToOneEntry()
-    {
-        var provider = CreateProvider(("Login.SignIn", "Sign in"));
-
-        var strings = provider.GetManyOrDefault("Login.SignIn", "Login.SignIn");
-
-        _ = await Assert.That(strings.Count).IsEqualTo(1);
+        _ = await Assert.That(strings["Login.Empty"]).IsEqualTo("Login.Empty");
     }
 
     private static DictionaryResourceStringProvider CreateProvider(params (string Key, string Value)[] entries)
@@ -53,6 +44,8 @@ public class DictionaryResourceStringProviderTests
         {
             dictionary.Setup(d => d[key]).Returns(value);
         }
+
+        dictionary.Setup(d => d.GetChildren("Login")).Returns(entries.ToDictionary(entry => entry.Key, entry => entry.Value));
 
         var factory = new Mock<ICultureDictionaryFactory>();
         factory.Setup(f => f.CreateDictionary(It.Is<CultureInfo>(culture => culture.Name == "en-US"))).Returns(dictionary.Object);

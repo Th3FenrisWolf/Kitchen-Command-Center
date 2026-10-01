@@ -6,15 +6,6 @@ using Umbraco.Cms.Core.Services.Navigation;
 
 namespace KCC.Contributions.Dashboard;
 
-public interface IDashboardQueries
-{
-    Task<WaitingModel> WaitingAsync();
-
-    Task<EntryPage> ReviewsAsync(int page, int pageSize);
-
-    Task<EntryPage> NotesAsync(int page, int pageSize);
-}
-
 // Recipes and variants waiting for the owner are saved but unpublished, so they are read from the content service;
 // everything else comes from the navigation structure and the publish-status cache.
 public sealed class DashboardQueries(
@@ -24,7 +15,7 @@ public sealed class DashboardQueries(
     IContentService contentService,
     IEntityService entityService,
     IDocumentNavigationQueryService navigation,
-    IPublishStatusQueryService publishStatus) : IDashboardQueries
+    IPublishStatusQueryService publishStatus)
 {
     public const string RecipeKind = "recipe";
 

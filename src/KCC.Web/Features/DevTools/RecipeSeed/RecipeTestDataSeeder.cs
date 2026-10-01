@@ -31,7 +31,7 @@ public class RecipeTestDataSeeder(
         var summary = new SeedSummary();
         var recipeTypeKey = RequireContentType("recipe");
         var variantTypeKey = RequireContentType("recipeVariant");
-        var listingKey = FindRecipeListing();
+        var listingKey = FindRecipeListing(navigation);
         var categories = KeysByName("recipeCategory");
         var tags = KeysByName("recipeTag");
         var authors = await EnsureAuthorsAsync(summary, log);
@@ -88,6 +88,22 @@ public class RecipeTestDataSeeder(
 
         log.WriteLine(summary.ToString());
         return summary;
+    }
+
+    internal static Guid FindRecipeListing(IDocumentNavigationQueryService navigation)
+    {
+        if (navigation.TryGetRootKeysOfType("homePage", out var homes))
+        {
+            foreach (var home in homes)
+            {
+                if (navigation.TryGetChildrenKeysOfType(home, "recipeListingPage", out var listings) && listings.Any())
+                {
+                    return listings.First();
+                }
+            }
+        }
+
+        throw new InvalidOperationException("The baseline has no recipe listing page under Home.");
     }
 
     private static List<PropertyValueModel> RecipeValues(SeedRecipe recipe, IReadOnlyDictionary<string, Guid> categories, Guid? authorKey)
@@ -155,22 +171,6 @@ public class RecipeTestDataSeeder(
 
     private Guid RequireContentType(string alias) =>
         contentTypeService.Get(alias)?.Key ?? throw new InvalidOperationException($"Document type {alias} is missing; uSync imports it at startup.");
-
-    private Guid FindRecipeListing()
-    {
-        if (navigation.TryGetRootKeysOfType("homePage", out var homes))
-        {
-            foreach (var home in homes)
-            {
-                if (navigation.TryGetChildrenKeysOfType(home, "recipeListingPage", out var listings) && listings.Any())
-                {
-                    return listings.First();
-                }
-            }
-        }
-
-        throw new InvalidOperationException("The baseline has no recipe listing page under Home.");
-    }
 
     private Dictionary<string, Guid> KeysByName(string contentTypeAlias)
     {

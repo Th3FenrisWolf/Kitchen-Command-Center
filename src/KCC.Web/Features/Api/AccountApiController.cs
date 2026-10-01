@@ -18,7 +18,7 @@ public class AccountApiController(
     IMemberSignInManager signInManager,
     IMemberManager memberManager,
     IMemberWriteLock memberWriteLock,
-    IAccountPageQueries accountPages,
+    AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings) : ControllerBase
 {
     [HttpPost("login")]

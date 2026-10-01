@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KCC.Web.Features.Components.Header;
 
-public class HeaderViewComponent(ISiteSettingsQueries siteSettings, IResourceStringProvider resourceStrings) : ViewComponent
+public class HeaderViewComponent(SiteSettingsQueries siteSettings, IResourceStringProvider resourceStrings) : ViewComponent
 {
     public IViewComponentResult Invoke()
     {

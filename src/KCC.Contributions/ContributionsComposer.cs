@@ -31,6 +31,6 @@ public class ContributionsComposer : IComposer
         builder.Services.AddSingleton<IContributionStats, ContributionStatsSource>();
         builder.Services.AddSingleton<IContributionReads, ContributionReads>();
         builder.Services.AddSingleton<IContributionWrites, ContributionWrites>();
-        builder.Services.AddScoped<IDashboardQueries, DashboardQueries>();
+        builder.Services.AddScoped<DashboardQueries>();
     }
 }

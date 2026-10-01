@@ -26,30 +26,8 @@ public class VueSsrService(
         IHtmlContent bodyContent,
         IHtmlContent footerContent,
         bool isPreview = false,
-        CancellationToken cancellationToken = default)
-    {
-        var encoder = HtmlEncoder.Default;
-        var builder = new StringBuilder(8192);
-        using var writer = new StringWriter(builder);
-
-        // Render header
-        headerContent.WriteTo(writer, encoder);
-        var header = builder.ToString();
-        builder.Clear();
-
-        // Render body
-        bodyContent.WriteTo(writer, encoder);
-        var body = builder.ToString();
-        builder.Clear();
-
-        // Render footer
-        footerContent.WriteTo(writer, encoder);
-        var footer = builder.ToString();
-
-        var result = await RenderAsync(header, body, footer, isPreview, cancellationToken);
-
-        return new SsrHtmlContent(result);
-    }
+        CancellationToken cancellationToken = default) =>
+        new SsrHtmlContent(await RenderAsync(Html(headerContent), Html(bodyContent), Html(footerContent), isPreview, cancellationToken));
 
     public async Task<SsrResult> RenderAsync(
         string headerContent,
@@ -151,6 +129,13 @@ public class VueSsrService(
             logger.LogWarning("SSR circuit breaker is open, falling back to client-side rendering");
             return baseResult;
         }
+    }
+
+    private static string Html(IHtmlContent content)
+    {
+        using var writer = new StringWriter();
+        content.WriteTo(writer, HtmlEncoder.Default);
+        return writer.ToString();
     }
 
     private static async Task<SsrErrorResponse> TryReadErrorAsync(

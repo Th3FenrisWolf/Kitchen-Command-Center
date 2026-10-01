@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
+using KCC.Web.Features.DevTools.RecipeSeed;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
@@ -18,22 +19,8 @@ public static class TestContent
     // A 1×1 PNG: enough for ImageSharp to resize and re-encode.
     private const string Png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
-    public static Guid RecipeListing(IServiceProvider services)
-    {
-        var navigation = services.GetRequiredService<IDocumentNavigationQueryService>();
-        if (navigation.TryGetRootKeysOfType("homePage", out var homes))
-        {
-            foreach (var home in homes)
-            {
-                if (navigation.TryGetChildrenKeysOfType(home, "recipeListingPage", out var listings) && listings.Any())
-                {
-                    return listings.First();
-                }
-            }
-        }
-
-        throw new InvalidOperationException("The baseline has no recipe listing page.");
-    }
+    public static Guid RecipeListing(IServiceProvider services) =>
+        RecipeTestDataSeeder.FindRecipeListing(services.GetRequiredService<IDocumentNavigationQueryService>());
 
     public static Task<Guid> RecipeAsync(IServiceProvider services, string name, params PropertyValueModel[] more) =>
         CreateAsync(
