@@ -1,17 +1,4 @@
-<!-- #region Button Component Properties -->
-<script lang="ts">
-  /**
-   * Torn & Waxed pill button. `marker` (default) is the filled primary action; `ghost` is a hairline
-   * secondary pill; `ink` is a filled dark pill; `text` is an underlined link, no pill at all. Razor gets
-   * the same look from `ButtonLinkTagHelper`, which emits the same `kcc-btn` classes.
-   */
-  export default {
-    // Not `Button`: `resolveDynamicComponent` checks the rendering component's own name first, so
-    // `<component :is="'button'">` below would resolve this component to itself and recurse until the
-    // stack blows. Any name that is not a capitalized native tag keeps `as` resolving to the element.
-    name: 'KccButton',
-  }
-
+<script setup lang="ts">
   export type ButtonVariant = 'marker' | 'ghost' | 'ink' | 'text'
   export type ButtonSize = 'md' | 'lg'
 
@@ -41,10 +28,7 @@
 
     disabled?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const {
     variant = 'marker',
     size = 'md',

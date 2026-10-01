@@ -1,5 +1,4 @@
-<!-- #region VariantSiblings Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import type { SiblingVariant } from '~/Types/Recipe'
   import { ResourceString } from '~/Components/ResourceStrings'
@@ -7,23 +6,13 @@
   import { siblingToCard } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
 
-  /**
-   * Cross-links to the other variants of the same recipe.
-   */
-  export default {
-    name: 'VariantSiblings',
-  }
-
   export interface VariantSiblingsProps {
     /**
      * Excludes the variant being viewed; an empty list renders nothing.
      */
     variants: SiblingVariant[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantSiblingsProps>()
 
   const cards = computed(() => props.variants.map((sibling) => ({ key: sibling.slug, card: siblingToCard(sibling) })))

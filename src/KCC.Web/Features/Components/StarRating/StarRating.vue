@@ -1,15 +1,7 @@
-<!-- #region StarRating Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
   import { formatRating, starStates } from '~/Components/StarRating/starDisplay'
   import { MIN_RATING, stepRating } from '~/Components/StarRating/ratingInput'
-
-  /**
-   * Row of stars in half-star steps, either as a static display or as a slider.
-   */
-  export default {
-    name: 'StarRating',
-  }
 
   export interface StarRatingProps {
     modelValue: number
@@ -23,10 +15,7 @@
      */
     max?: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { modelValue, readonly = false, max = 5 } = defineProps<StarRatingProps>()
 
   const emit = defineEmits<{ 'update:modelValue': [value: number] }>()

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import Stacker, { markStuckCards } from '~/Widgets/Stacker/Stacker.Component.vue'
+import Stacker from '~/Widgets/Stacker/Stacker.Component.vue'
+import { markStuckCards } from '~/Widgets/Stacker/markStuckCards'
 import { renderSsr } from '../../support/renderSsr'
 
 const card = (heading: string, backgroundColor: string, tear?: 1 | 2 | 3 | 4 | 5 | 6) => ({

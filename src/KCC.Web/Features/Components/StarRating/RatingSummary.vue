@@ -1,15 +1,6 @@
-<!-- #region RatingSummary Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import StarRating from './StarRating.vue'
   import { formatRating } from './starDisplay'
-
-  /**
-   * Read-only stars paired with the numeric average. Callers supply their own review-count
-   * and empty-state markup.
-   */
-  export default {
-    name: 'RatingSummary',
-  }
 
   export interface RatingSummaryProps {
     value: number
@@ -18,10 +9,7 @@
      */
     max?: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { value, max = 5 } = defineProps<RatingSummaryProps>()
 </script>
 

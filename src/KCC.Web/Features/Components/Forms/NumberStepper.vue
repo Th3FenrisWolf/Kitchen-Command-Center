@@ -1,15 +1,5 @@
-<!-- #region NumberStepper Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, onUnmounted } from 'vue'
-
-  /**
-   * Integer field flanked by minus and plus buttons that auto-repeat while held.
-   */
-  export default {
-    name: 'NumberStepper',
-    // Attributes land on the inner <input>, not the wrapping flex row.
-    inheritAttrs: false,
-  }
 
   export interface NumberStepperProps {
     min?: number
@@ -37,10 +27,12 @@
     disabled?: boolean
     placeholder?: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
+  defineOptions({
+    // Attributes land on the inner <input>, not the wrapping flex row.
+    inheritAttrs: false,
+  })
+
   const {
     min,
     max,

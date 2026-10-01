@@ -1,5 +1,4 @@
-<!-- #region CreateRecipeView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ref, computed, useId } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import Field from '~/Components/Forms/Field.vue'
@@ -9,13 +8,9 @@
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
-
-  /**
-   * Five-step wizard creating a recipe together with its first variant.
-   */
-  export default {
-    name: 'CreateRecipeView',
-  }
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
 
   export interface CreateRecipeViewProps {
     /**
@@ -23,13 +18,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
-  import Button from '~/Components/Button/Button.vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
-  import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
   const props = defineProps<CreateRecipeViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'CreateRecipe')

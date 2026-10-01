@@ -1,16 +1,10 @@
-<!-- #region LoginView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ref, useId } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
-
-  /**
-   * Sign-in and registration, flipping between the two on one sheet.
-   */
-  export default {
-    name: 'LoginView',
-  }
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
   export interface LoginViewProps {
     /**
@@ -28,12 +22,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
-  import Button from '~/Components/Button/Button.vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<LoginViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Login')

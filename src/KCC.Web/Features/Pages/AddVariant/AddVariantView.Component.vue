@@ -1,5 +1,4 @@
-<!-- #region AddVariantView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ref, computed, useId } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import Field from '~/Components/Forms/Field.vue'
@@ -10,13 +9,9 @@
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
   import { stepLabelKey, validIngredients, validInstructions } from '~/Pages/AddVariant/reviewSummary'
-
-  /**
-   * Four-step wizard adding a variant to an existing recipe.
-   */
-  export default {
-    name: 'AddVariantView',
-  }
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
 
   export interface AddVariantViewProps {
     /**
@@ -33,13 +28,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
-  import Button from '~/Components/Button/Button.vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
-  import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
   const props = defineProps<AddVariantViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'AddVariant')

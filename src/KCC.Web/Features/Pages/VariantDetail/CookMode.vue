@@ -1,5 +1,4 @@
-<!-- #region CookMode Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
@@ -7,13 +6,6 @@
   import Button from '~/Components/Button/Button.vue'
   import { useWakeLock } from './useWakeLock'
   import CookModeStep from './CookModeStep.vue'
-
-  /**
-   * Full-screen step-by-step cooking overlay that holds the screen awake.
-   */
-  export default {
-    name: 'CookMode',
-  }
 
   export interface CookModeProps {
     open: boolean
@@ -32,10 +24,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<CookModeProps>()
 
   const emit = defineEmits<{ close: [] }>()

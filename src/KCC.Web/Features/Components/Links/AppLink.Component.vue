@@ -1,9 +1,4 @@
-<!-- #region AppLink Component Properties -->
-<script lang="ts">
-  export default {
-    name: 'AppLink',
-  }
-
+<script setup lang="ts">
   export interface AppLinkProps {
     href: string
   }
@@ -11,10 +6,7 @@
   export interface AppLinkSlots {
     default: () => void
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { href } = defineProps<AppLinkProps>()
   defineSlots<AppLinkSlots>()
 </script>

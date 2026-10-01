@@ -1,15 +1,13 @@
-<!-- #region VariantDetailView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
+  import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
   import Badge from '~/Components/Badge/Badge.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
-  import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
   import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
@@ -18,13 +16,6 @@
   import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
-
-  /**
-   * One variant in full: hero, stats, ingredients, instructions, nutrition, reviews, and cook mode.
-   */
-  export default {
-    name: 'VariantDetailView',
-  }
 
   export interface VariantDetailViewProps {
     variantName: string
@@ -83,10 +74,7 @@
      */
     isAuthenticated?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantDetailViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')

@@ -1,23 +1,12 @@
-<!-- #region VariantInstructions Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import type { Instruction } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
-  /**
-   * Numbered walkthrough of a variant's steps.
-   */
-  export default {
-    name: 'VariantInstructions',
-  }
-
   export interface VariantInstructionsProps {
     instructions: Instruction[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   defineProps<VariantInstructionsProps>()
 
   const rs = useResourceStrings()

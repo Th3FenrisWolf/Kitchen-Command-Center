@@ -1,5 +1,4 @@
-<!-- #region RecipeSearchView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
@@ -18,13 +17,6 @@
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
 
-  /**
-   * Recipe search: query, facet filters, and an infinite-scrolling result grid or list.
-   */
-  export default {
-    name: 'RecipeSearchView',
-  }
-
   export interface RecipeSearchViewProps {
     /**
      * Server-rendered first page. Its unfiltered facets also fix the filter panel's option set,
@@ -38,10 +30,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { initial, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
 
   const rs = provideResourceStrings(resourceStrings, 'RecipeSearch')

@@ -1,18 +1,10 @@
-<!-- #region RecipeFilters Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, useId } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import RangeSlider from '~/Components/Forms/RangeSlider.vue'
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
-
-  /**
-   * Filter panel for the recipe search: category and diet toggles plus a total-time range.
-   */
-  export default {
-    name: 'RecipeFilters',
-  }
 
   export interface RecipeFiltersProps {
     /**
@@ -29,10 +21,7 @@
     selectedCategories: string[]
     selectedDiets: string[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<RecipeFiltersProps>()
   const timeMin = defineModel<number>('timeMin', { required: true })
   const timeMax = defineModel<number>('timeMax', { required: true })

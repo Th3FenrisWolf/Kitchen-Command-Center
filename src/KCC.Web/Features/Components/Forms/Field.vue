@@ -1,14 +1,4 @@
-<!-- #region Field Component Properties -->
-<script lang="ts">
-  /**
-   * Label, control, hint and error for one form field. The control goes in the slot and takes
-   * `:id="controlId"`; the slot exposes `describedby` for the control's `aria-describedby` and `error` so
-   * the slotted control can add `kcc-field--error` to its own pill.
-   */
-  export default {
-    name: 'Field',
-  }
-
+<script setup lang="ts">
   export interface FieldProps {
     /** `label` (string) or the `#label` slot for rich content such as a `<ResourceString>`. */
     label?: string
@@ -23,10 +13,7 @@
 
     required?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { label, controlId, hint, error, required = false } = defineProps<FieldProps>()
 </script>
 

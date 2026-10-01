@@ -1,5 +1,4 @@
-<!-- #region FeaturedRecipeCard Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
@@ -8,25 +7,13 @@
   import { washFor } from '~/Utilities/BrandColor'
   import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
 
-  /**
-   * The library's spotlight above a grid of RecipeCards: one recipe or variant on a hero-torn slip, the
-   * recipe's wash pooled in the bottom-right corner away from the kick lines, and a large tile pinned over
-   * the top-left corner.
-   */
-  export default {
-    name: 'FeaturedRecipeCard',
-  }
-
   export interface FeaturedRecipeCardProps {
     /**
      * Build with `hitToFeatured` or `variantToFeatured` from recipeCardModel.
      */
     card: FeaturedRecipeModel
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { card } = defineProps<FeaturedRecipeCardProps>()
 
   const wash = computed(() => ({

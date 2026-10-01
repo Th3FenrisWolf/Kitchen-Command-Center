@@ -1,14 +1,15 @@
-<!-- #region MenuItem Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, inject } from 'vue'
-  import SignOutForm, { isSignOutUrl } from '~/Components/Account/SignOutForm.vue'
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
+  import { isSignOutUrl } from '~/Components/Account/signOut'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
-  /**
-   * One header entry: a flat link, or a button opening a panel of sub-links.
-   */
-  export default {
-    name: 'MenuItem',
+  export interface MenuItemProps {
+    item: NavItem
+    /**
+     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
+     */
+    menuId: string
   }
 
   interface PageLink {
@@ -29,17 +30,6 @@
     subLinks?: PageLink[]
   }
 
-  export interface MenuItemProps {
-    item: NavItem
-    /**
-     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
-     */
-    menuId: string
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   const { item, menuId } = defineProps<MenuItemProps>()
 
   const controller = inject(MENU_CONTROLLER_KEY)

@@ -1,13 +1,5 @@
-<!-- #region AccentTile Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { tileTearFor, washFor } from '~/Utilities/BrandColor'
-
-  /**
-   * Square thumbnail: the image when there is one, otherwise a torn wax tile pinned over its corner.
-   */
-  export default {
-    name: 'AccentTile',
-  }
 
   export interface AccentTileProps {
     /**
@@ -28,10 +20,7 @@
      */
     large?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { seed, icon, image, alt, large } = defineProps<AccentTileProps>()
 </script>
 

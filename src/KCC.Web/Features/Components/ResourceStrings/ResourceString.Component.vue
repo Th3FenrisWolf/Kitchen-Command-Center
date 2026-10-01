@@ -1,14 +1,6 @@
-<!-- #region ResourceString Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, inject } from 'vue'
   import { resourceStringsKey } from '~/Components/ResourceStrings/UseResourceStrings'
-
-  /**
-   * Renders one localized string, falling back to its own key when the string is missing.
-   */
-  export default {
-    name: 'ResourceString',
-  }
 
   export interface ResourceStringProps {
     /**
@@ -25,10 +17,7 @@
      */
     shared?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<ResourceStringProps>()
   const ctx = inject(resourceStringsKey, { strings: {}, prefix: undefined })
 

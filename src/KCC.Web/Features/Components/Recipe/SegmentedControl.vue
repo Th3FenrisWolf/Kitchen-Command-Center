@@ -1,13 +1,5 @@
-<!-- #region SegmentedControl Component Properties -->
-<script lang="ts">
+<script setup lang="ts" generic="T extends string">
   import { nextTick, ref } from 'vue'
-
-  /**
-   * Radiogroup of pills; the active segment is a solid ink fill (`kcc-seg`).
-   */
-  export default {
-    name: 'SegmentedControl',
-  }
 
   /** One selectable segment. Provide `label` for text pills or `icon` for icon-only toggles. */
   export interface SegmentOption<V extends string = string> {
@@ -37,10 +29,7 @@
      */
     variant?: 'text' | 'icon'
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts" generic="T extends string">
   const { options, ariaLabel, variant = 'text' } = defineProps<SegmentedControlProps<T>>()
 
   const model = defineModel<T>({ required: true })

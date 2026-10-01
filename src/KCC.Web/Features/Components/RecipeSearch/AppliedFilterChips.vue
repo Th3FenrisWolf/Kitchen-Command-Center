@@ -1,15 +1,7 @@
-<!-- #region AppliedFilterChips Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
   import type { FilterChip } from '~/Pages/RecipeSearch/recipeSearchCriteria'
-
-  /**
-   * Dismissible summary of the filters currently narrowing a search.
-   */
-  export default {
-    name: 'AppliedFilterChips',
-  }
 
   export interface AppliedFilterChipsProps {
     /**
@@ -17,10 +9,7 @@
      */
     chips: FilterChip[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   defineProps<AppliedFilterChipsProps>()
   const emit = defineEmits<{ remove: [FilterChip]; clearAll: [] }>()
 </script>

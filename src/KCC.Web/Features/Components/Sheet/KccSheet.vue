@@ -1,14 +1,6 @@
-<!-- #region KccSheet Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import type { Wash } from '~/Types/DesignSystem'
-
-  /**
-   * A sheet torn off the pad: tilt → torn (fibre + fall) → sheet (clip + rule + wash), with the printed label
-   * and the tape outside the tear. Every panel in the app is one of these. Renders entirely on the server.
-   */
-  export default {
-    name: 'KccSheet',
-  }
+  import { computed } from 'vue'
 
   export type Tear = 1 | 2 | 3 | 4 | 5 | 6 | 'hero'
 
@@ -51,11 +43,6 @@
      */
     as?: 'div' | 'section' | 'article' | 'li'
   }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
-  import { computed } from 'vue'
 
   const {
     label,

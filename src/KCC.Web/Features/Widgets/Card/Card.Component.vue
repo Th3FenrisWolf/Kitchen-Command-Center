@@ -1,16 +1,8 @@
-<!-- #region Card Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import { washOf, type BackgroundColor } from '~/Types/DesignSystem'
   import { sheetTearFor } from '~/Utilities/BrandColor'
-
-  /**
-   * Widget card whose drawer expands on hover and focus.
-   */
-  export default {
-    name: 'Card',
-  }
 
   export interface CardProps {
     /**
@@ -37,10 +29,7 @@
      */
     drawer?: () => void
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { cardColor = 'bg-paper', tear, seed = '' } = defineProps<CardProps>()
 
   const { drawer } = defineSlots<CardSlots>()

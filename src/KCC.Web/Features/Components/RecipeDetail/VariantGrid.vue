@@ -1,5 +1,4 @@
-<!-- #region VariantGrid Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import type { VariantSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
@@ -8,13 +7,6 @@
   import { variantToCard } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
 
-  /**
-   * Card grid of a recipe's variants, closing with a blank slip that starts a new one.
-   */
-  export default {
-    name: 'VariantGrid',
-  }
-
   export interface VariantGridProps {
     variants: VariantSummary[]
     /**
@@ -22,10 +14,7 @@
      */
     addVariantUrl: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantGridProps>()
   const rs = useResourceStrings()
   const cards = computed(() => props.variants.map((variant) => ({ key: variant.slug, card: variantToCard(variant, rs) })))

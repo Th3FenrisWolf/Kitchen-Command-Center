@@ -1,16 +1,5 @@
-<!-- #region SmallHero Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
-
-  /**
-   * Compact page header framing an eyebrow, title, action button, and description.
-   */
-  export default {
-    name: 'SmallHero',
-    // The sheet binds `$attrs` itself, so the widget's margin class rides the slip. Inherited as well, every
-    // attribute would land there twice.
-    inheritAttrs: false,
-  }
 
   export interface SmallHeroProps {
     /**
@@ -28,10 +17,13 @@
     'action-button'?: () => void
     description?: () => void
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
+  defineOptions({
+    // The sheet binds `$attrs` itself, so the widget's margin class rides the slip. Inherited as well, every
+    // attribute would land there twice.
+    inheritAttrs: false,
+  })
+
   // `dark` is still accepted so persisted widget configuration keeps deserialising, but it no longer
   // branches the ground: the dual ramp replaced the old two-ground world it was built for.
   defineProps<SmallHeroProps>()

@@ -1,12 +1,4 @@
-<!-- #region StatTiles Component Properties -->
-<script lang="ts">
-  /**
-   * Row of at-a-glance stats under a detail hero.
-   */
-  export default {
-    name: 'StatTiles',
-  }
-
+<script setup lang="ts">
   export interface StatTileSpec {
     /** Font Awesome class for the leading icon (ignored when `dotColor` is set). */
     icon?: string
@@ -26,10 +18,7 @@
   export interface StatTilesProps {
     tiles: StatTileSpec[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   defineProps<StatTilesProps>()
 
   const WELLS: Record<string, string> = {

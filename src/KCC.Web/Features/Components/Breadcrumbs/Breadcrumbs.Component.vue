@@ -1,14 +1,7 @@
-<!-- #region Breadcrumb Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import type { Breadcrumb } from '~/Types/Recipe'
-
-  /**
-   * Dot-separated trail of ancestor links, starting from a home icon.
-   */
-  export default {
-    name: 'Breadcrumbs',
-  }
+  import { computed } from 'vue'
 
   export interface BreadcrumbProps {
     /**
@@ -16,11 +9,7 @@
      */
     items: Breadcrumb[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
-  import { computed } from 'vue'
   const { items } = defineProps<BreadcrumbProps>()
   const home = computed(() => items[0]!)
   const ancestors = computed(() => items.slice(1))

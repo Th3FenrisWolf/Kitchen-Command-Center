@@ -1,15 +1,28 @@
-<!-- #region AccountView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
+  import Badge from '~/Components/Badge/Badge.vue'
+  import Button from '~/Components/Button/Button.vue'
+  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
-  /**
-   * Member's profile page: identity sheet, contribution counts, and their recipes and variants.
-   */
-  export default {
-    name: 'AccountView',
+  export interface AccountViewProps {
+    displayName: string
+    initials: string
+    memberSince: string
+    settingsUrl: string
+    logoutUrl: string
+    /**
+     * Every recipe the member has touched, whether they started it or only added a variant.
+     */
+    recipeGroups: RecipeGroup[]
+    /**
+     * Localized text for this page, keyed by unprefixed name and provided to descendants.
+     */
+    resourceStrings?: Record<string, string>
   }
 
   interface ProfileVariant {
@@ -30,30 +43,6 @@
     variants: ProfileVariant[]
   }
 
-  export interface AccountViewProps {
-    displayName: string
-    initials: string
-    memberSince: string
-    settingsUrl: string
-    logoutUrl: string
-    /**
-     * Every recipe the member has touched, whether they started it or only added a variant.
-     */
-    recipeGroups: RecipeGroup[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
-    resourceStrings?: Record<string, string>
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
-  import SignOutForm from '~/Components/Account/SignOutForm.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
-  import Button from '~/Components/Button/Button.vue'
-  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<AccountViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'Account')

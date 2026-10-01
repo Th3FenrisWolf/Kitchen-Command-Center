@@ -1,17 +1,9 @@
-<!-- #region VariantNutrition Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import type { Nutrition } from '~/Types/Recipe'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import { buildNutritionRows, hasNutrition } from './variantNutritionRows'
-
-  /**
-   * Nutrition panel, replaced by an empty state when no figure has been recorded.
-   */
-  export default {
-    name: 'VariantNutrition',
-  }
 
   /**
    * Flattened rather than a single `Nutrition` object so the server can hydrate each figure as its
@@ -27,10 +19,7 @@
     sugarG?: number | null
     sodiumMg?: number | null
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantNutritionProps>()
 
   const rs = useResourceStrings()

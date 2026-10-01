@@ -1,18 +1,10 @@
-<!-- #region VariantCookNotes Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { onMounted, ref } from 'vue'
   import type { CookNote, CookNotesResponse } from '~/Types/Recipe'
   import { get, post, del } from '~/Utilities/Api'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
-
-  /**
-   * Paged list of cooks' notes on a variant, with a compose box for signed-in members.
-   */
-  export default {
-    name: 'VariantCookNotes',
-  }
 
   export interface VariantCookNotesProps {
     variantGuid: string
@@ -22,10 +14,7 @@
      */
     isAuthenticated?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { variantGuid, isAuthenticated = false } = defineProps<VariantCookNotesProps>()
 
   const t = useResourceStrings()

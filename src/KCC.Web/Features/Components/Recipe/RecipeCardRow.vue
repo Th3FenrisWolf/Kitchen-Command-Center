@@ -1,5 +1,4 @@
-<!-- #region RecipeCardRow Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
@@ -8,14 +7,6 @@
   import { sheetTearFor } from '~/Utilities/BrandColor'
   import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
-
-  /**
-   * Horizontal counterpart to RecipeCard, driven by the same model so the search list and the
-   * variant list stay visually identical.
-   */
-  export default {
-    name: 'RecipeCardRow',
-  }
 
   export interface RecipeCardRowProps {
     /**
@@ -27,10 +18,7 @@
      */
     tear?: Exclude<Tear, 'hero'>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { card, tear } = defineProps<RecipeCardRowProps>()
 
   const preset = computed(() => tear ?? sheetTearFor(card.seed))

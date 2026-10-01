@@ -1,28 +1,19 @@
-<!-- #region RecipeDetailView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
   import type { Breadcrumb, VariantSummary } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { type SortKey, type ViewMode, filterVariants, tagOptions } from '~/Components/RecipeDetail/variantFilters.ts'
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
-  import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
+  import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
-  import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
   import VariantToolbar from '~/Components/RecipeDetail/VariantToolbar.vue'
   import VariantGrid from '~/Components/RecipeDetail/VariantGrid.vue'
   import VariantList from '~/Components/RecipeDetail/VariantList.vue'
   import VariantsEmptyState from '~/Components/RecipeDetail/VariantsEmptyState.vue'
   import { variantToFeatured } from '~/Components/Recipe/recipeCardModel.ts'
-
-  /**
-   * A recipe and every variant of it, filtered and sorted client-side.
-   */
-  export default {
-    name: 'RecipeDetailView',
-  }
 
   export interface RecipeDetailViewProps {
     recipeName: string
@@ -52,10 +43,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<RecipeDetailViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeDetail')

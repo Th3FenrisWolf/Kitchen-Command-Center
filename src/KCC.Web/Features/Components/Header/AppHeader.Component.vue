@@ -1,14 +1,25 @@
-<!-- #region AppHeader Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
   import MenuItem from '~/Components/Header/MenuItem.vue'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
+  import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
+  import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
+  import ThemeToggle from '~/Components/Theme/ThemeToggle.vue'
 
-  /**
-   * Site header: logo, main navigation, and a right-aligned utility navigation.
-   */
-  export default {
-    name: 'AppHeader',
+  export interface AppHeaderProps {
+    homeUrl: string
+    /** Alt text for the mark, resolved server-side from the dictionary. */
+    logoAlt: string
+
+    /** Theme-toggle labels, resolved server-side so they work on every page. */
+    switchToLightLabel: string
+
+    switchToDarkLabel: string
+    mainNavItems: NavItem[]
+    /**
+     * Pushed to the right of the bar, after the main items.
+     */
+    utilityNavItems: NavItem[]
   }
 
   /**
@@ -29,28 +40,6 @@
     target: string
   }
 
-  export interface AppHeaderProps {
-    homeUrl: string
-    /** Alt text for the mark, resolved server-side from the dictionary. */
-    logoAlt: string
-
-    /** Theme-toggle labels, resolved server-side so they work on every page. */
-    switchToLightLabel: string
-
-    switchToDarkLabel: string
-    mainNavItems: NavItem[]
-    /**
-     * Pushed to the right of the bar, after the main items.
-     */
-    utilityNavItems: NavItem[]
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
-  import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
-  import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
-  import ThemeToggle from '~/Components/Theme/ThemeToggle.vue'
   const { homeUrl, logoAlt, switchToLightLabel, switchToDarkLabel, mainNavItems, utilityNavItems } =
     defineProps<AppHeaderProps>()
 

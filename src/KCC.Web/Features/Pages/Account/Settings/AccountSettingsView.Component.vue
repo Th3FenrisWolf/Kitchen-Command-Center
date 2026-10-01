@@ -1,18 +1,13 @@
-<!-- #region AccountSettingsView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref, useId } from 'vue'
   import Field from '~/Components/Forms/Field.vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import { post } from '~/Utilities/Api'
-
-  /**
-   * Two independent forms: the member's profile details, and a password change.
-   */
-  export default {
-    name: 'AccountSettingsView',
-  }
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
+  import Button from '~/Components/Button/Button.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
   export interface AccountSettingsViewProps {
     /**
@@ -31,13 +26,7 @@
      */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
-  import SignOutForm from '~/Components/Account/SignOutForm.vue'
-  import Button from '~/Components/Button/Button.vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<AccountSettingsViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Account')

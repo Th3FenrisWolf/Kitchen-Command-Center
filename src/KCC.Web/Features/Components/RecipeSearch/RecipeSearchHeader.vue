@@ -1,23 +1,12 @@
-<!-- #region RecipeSearchHeader Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
-  /**
-   * The library sheet: the query field, the way to a new recipe, and a slot for the results toolbar.
-   */
-  export default {
-    name: 'RecipeSearchHeader',
-  }
-
   export interface RecipeSearchHeaderProps {
     createRecipeUrl: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   defineProps<RecipeSearchHeaderProps>()
 
   // Uncommitted query text: the page only searches once `submit` fires, so this stays separate

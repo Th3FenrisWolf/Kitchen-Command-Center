@@ -1,5 +1,4 @@
-<!-- #region VariantReviews Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, onMounted, ref } from 'vue'
   import type { Review, ReviewsResponse } from '~/Types/Recipe'
   import { get, put, del } from '~/Utilities/Api'
@@ -9,13 +8,6 @@
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
-
-  /**
-   * Rating histogram and paged reviews for a variant, with the member's own review editable inline.
-   */
-  export default {
-    name: 'VariantReviews',
-  }
 
   export interface VariantReviewsProps {
     variantGuid: string
@@ -34,10 +26,7 @@
      */
     isAuthenticated?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { variantGuid, averageRating = 0, reviewCount = 0, isAuthenticated = false } = defineProps<VariantReviewsProps>()
 
   const t = useResourceStrings()

@@ -1,14 +1,6 @@
-<!-- #region ComingSoonSection Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
-
-  /**
-   * Lavender-washed sheet standing in for a feature that has not shipped yet.
-   */
-  export default {
-    name: 'ComingSoonSection',
-  }
 
   export interface ComingSoonSectionProps {
     /**
@@ -29,10 +21,7 @@
      */
     shared?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { textKey, tear = 3, shared = true } = defineProps<ComingSoonSectionProps>()
 </script>
 

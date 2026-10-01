@@ -1,5 +1,4 @@
-<!-- #region RecipeCard Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import AppLink from '~/Components/Links/AppLink.Component.vue'
   import Badge from '~/Components/Badge/Badge.vue'
@@ -7,13 +6,6 @@
   import { sheetTearFor } from '~/Utilities/BrandColor'
   import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
-
-  /**
-   * Grid slip for a recipe or a variant: the hero stat top-right, the accent tile pinned over the corner.
-   */
-  export default {
-    name: 'RecipeCard',
-  }
 
   export interface RecipeCardProps {
     /**
@@ -25,10 +17,7 @@
      */
     tear?: Exclude<Tear, 'hero'>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { card, tear } = defineProps<RecipeCardProps>()
 
   const preset = computed(() => tear ?? sheetTearFor(card.seed))

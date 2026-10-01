@@ -1,16 +1,9 @@
-<!-- #region Stacker Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { onMounted, ref } from 'vue'
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import { washOf, type BackgroundColor } from '~/Types/DesignSystem'
   import { listTearFor } from '~/Utilities/BrandColor'
-
-  /**
-   * Column of sticky cards that shrink as the next one scrolls over them.
-   */
-  export default {
-    name: 'Stacker',
-  }
+  import { markStuckCards } from '~/Widgets/Stacker/markStuckCards'
 
   export interface StackerCard {
     heading: string
@@ -28,21 +21,6 @@
     cards: StackerCard[]
   }
 
-  interface SentinelEntry {
-    target: { nextElementSibling: { classList: Pick<DOMTokenList, 'toggle'> } | null }
-    boundingClientRect: Pick<DOMRectReadOnly, 'top'>
-  }
-
-  // A fast scroll moves several sentinels past the threshold in one frame, and the observer reports them in one call.
-  export const markStuckCards = (entries: SentinelEntry[]) => {
-    entries.forEach(({ target, boundingClientRect }) => {
-      target.nextElementSibling?.classList.toggle('stuck', boundingClientRect.top < 0)
-    })
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   const containerRef = ref<HTMLElement>()
 
   // The slip is the sentinel's next sibling, so it is the slip that takes `.stuck` and shrinks. `scale-*`

@@ -1,18 +1,10 @@
-<!-- #region VariantIngredients Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref, useId } from 'vue'
   import type { Ingredient } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import { formatIngredientAmount } from './variantScaling'
-
-  /**
-   * Checklist of ingredients whose amounts rescale with the chosen serving count.
-   */
-  export default {
-    name: 'VariantIngredients',
-  }
 
   export interface VariantIngredientsProps {
     ingredients: Ingredient[]
@@ -21,10 +13,7 @@
      */
     baseServings?: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantIngredientsProps>()
 
   const rs = useResourceStrings()

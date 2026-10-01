@@ -1,14 +1,5 @@
-<!-- #region InputField Component Properties -->
-<script lang="ts">
-  /**
-   * Single-line text input carrying the app's form styling.
-   */
-  export default {
-    name: 'InputField',
-    // Attributes land on the <input> itself rather than being split across the wrapper — except
-    // class/style, which style the pill (the label) a caller sees as this component's root.
-    inheritAttrs: false,
-  }
+<script setup lang="ts">
+  import { computed, useAttrs, type StyleValue } from 'vue'
 
   export interface InputFieldProps {
     /**
@@ -17,11 +8,12 @@
      */
     icon?: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
-  import { computed, useAttrs, type StyleValue } from 'vue'
+  defineOptions({
+    // Attributes land on the <input> itself rather than being split across the wrapper — except
+    // class/style, which style the pill (the label) a caller sees as this component's root.
+    inheritAttrs: false,
+  })
 
   const { icon } = defineProps<InputFieldProps>()
 

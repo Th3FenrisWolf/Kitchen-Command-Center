@@ -1,18 +1,10 @@
-<!-- #region CookModeStep Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref, useId } from 'vue'
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import { formatIngredientAmount } from '~/Components/VariantDetail/variantScaling'
   import { parseDurations } from './useStepTimers'
   import StepTimer from './StepTimer.vue'
-
-  /**
-   * One cook-mode step: the instruction, timers parsed out of its text, and its ingredients.
-   */
-  export default {
-    name: 'CookModeStep',
-  }
 
   export interface CookModeStepProps {
     instruction: Instruction
@@ -23,10 +15,7 @@
     baseServings?: number
     currentServings: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<CookModeStepProps>()
 
   const rs = useResourceStrings()

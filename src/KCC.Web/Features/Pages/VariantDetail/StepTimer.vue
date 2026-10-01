@@ -1,16 +1,8 @@
-<!-- #region StepTimer Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, onBeforeUnmount, ref } from 'vue'
   import { useResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
   import { remainingSeconds } from './useStepTimers'
-
-  /**
-   * Countdown for a duration found in a cook-mode step, set large enough to read from the stove.
-   */
-  export default {
-    name: 'StepTimer',
-  }
 
   export interface StepTimerProps {
     /**
@@ -22,10 +14,7 @@
      */
     label: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<StepTimerProps>()
   const t = useResourceStrings()
 
