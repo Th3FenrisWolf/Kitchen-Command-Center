@@ -21,7 +21,6 @@
 
   const attrs = useAttrs()
   const textareaAttrs = computed(() => {
-    // class and style dress the pill, so they stay on the root label; everything else is the textarea's.
     const { class: _class, style: _style, ...rest } = attrs
     return rest
   })

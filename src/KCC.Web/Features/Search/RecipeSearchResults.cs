@@ -14,7 +14,6 @@ public record RecipeSearchHit
     public int FastestTime { get; init; }
 }
 
-// Declared in the order the client reads, because the SSR prop and the JSON API both serialize it as it is.
 public record RecipeSearchResults
 {
     public int Total { get; init; }

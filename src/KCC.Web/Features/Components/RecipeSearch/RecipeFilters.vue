@@ -7,9 +7,7 @@
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
   export interface RecipeFiltersProps {
-    /**
-     * Result counts for the current search. Values that match nothing are absent, not zero.
-     */
+    /** Values that match nothing are absent, not zero. */
     categoryFacets: Record<string, number>
     dietFacets: Record<string, number>
     /**
@@ -30,7 +28,6 @@
   const t = useResourceStrings()
 
   interface FilterRow {
-    /** Ties the row's printed box and text to its native checkbox. */
     id: string
     label: string
     count: number
@@ -65,7 +62,6 @@
   <KccSheet icon="fa-duotone fa-sliders" :tear="5" crisp>
     <template #label><ResourceString for="Filters" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <ResourceString for="Filters" as="h2" class="sr-only" />
     <div class="flex justify-end">
       <Button variant="text" @click="emit('reset')">

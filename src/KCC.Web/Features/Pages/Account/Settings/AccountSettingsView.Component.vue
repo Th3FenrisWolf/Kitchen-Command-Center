@@ -10,20 +10,11 @@
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
   export interface AccountSettingsViewProps {
-    /**
-     * Seeds the profile form; edits post to the API rather than round-tripping the page.
-     */
     firstName: string
     lastName: string
-    /**
-     * Shown read-only — the form offers no way to change it.
-     */
     email: string
     backUrl: string
     logoutUrl: string
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
 
@@ -112,7 +103,6 @@
     <KccSheet crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
       <template #label><ResourceString for="Profile" /></template>
 
-      <!-- The sheet's label carries the group's name in print; the heading carries it in the document. -->
       <h2 class="sr-only">{{ rs('Profile') }}</h2>
 
       <form class="flex flex-col gap-6" @submit.prevent="saveProfile">

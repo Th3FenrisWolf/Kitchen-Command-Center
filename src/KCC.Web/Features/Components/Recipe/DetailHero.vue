@@ -7,29 +7,17 @@
 
   export interface DetailHeroProps {
     title: string
-    /**
-     * Picks the sheet's wash and the tile, so the same subject is always coloured alike.
-     */
     seed: string
     description: string
-    /**
-     * Font Awesome classes for the tile when there is no image.
-     */
     icon?: string
     image?: string
     authorName?: string
-    /**
-     * 0–5. Only shown once `reviewCount` is non-zero.
-     */
     averageRating?: number
     reviewCount?: number
     timesCooked?: number
   }
 
   export interface DetailHeroSlots {
-    /**
-     * Small uppercase kicker above the title.
-     */
     eyebrow?: () => void
     footer?: () => void
   }

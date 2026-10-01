@@ -8,10 +8,6 @@
 
   export interface VariantCookNotesProps {
     variantGuid: string
-    /**
-     * Gates the compose box; the notes themselves are always readable.
-     * @default false
-     */
     isAuthenticated?: boolean
   }
 
@@ -66,7 +62,6 @@
   <KccSheet as="section" icon="fa-duotone fa-pen-nib" :tear="4">
     <template #label><ResourceString for="CookNotes" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ t('CookNotes') }}</h2>
 
     <!-- The heading takes no room, so the rhythm is between the blocks, never above the first of them. -->

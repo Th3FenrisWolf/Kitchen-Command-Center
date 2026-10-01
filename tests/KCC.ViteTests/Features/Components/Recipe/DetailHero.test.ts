@@ -10,8 +10,6 @@ const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
 
 const count = (html: string, needle: string) => html.split(needle).length - 1
 
-/** The whole opening tag of the first element carrying `needle`, so nothing pins Vue's attribute order. */
-
 /** The paragraph `needle` sits in, fragment anchors and all: slot content is not a tag of its own. */
 const paragraph = (html: string, needle: string) => {
   const at = html.indexOf(needle)

@@ -13,13 +13,7 @@
     memberSince: string
     settingsUrl: string
     logoutUrl: string
-    /**
-     * Every recipe the member has touched, whether they started it or only added a variant.
-     */
     recipeGroups: RecipeGroup[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
 

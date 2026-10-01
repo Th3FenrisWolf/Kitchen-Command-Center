@@ -18,7 +18,6 @@ const LINKED_CSS_PATHS = [resolve(__dirname, '../Styles/Main.css')]
 const PORT = process.env.SSR_PORT || 3001
 const isDev = process.env.NODE_ENV !== 'production'
 
-// Simple logger that respects environment
 const log = {
   /* eslint-disable no-console */
   info: (...args) => isDev && console.log(...args),
@@ -27,12 +26,10 @@ const log = {
   /* eslint-enable no-console */
 }
 
-// Start true to trigger initial load
 let moduleInvalidated = true
 let createApp
 let vite
 
-// Metrics for health check
 const metrics = {
   startTime: Date.now(),
   renderCount: 0,
@@ -42,13 +39,11 @@ const metrics = {
 
 async function loadModule() {
   if (isDev && vite) {
-    // In dev, use Vite's ssrLoadModule for proper HMR
     const ssrModule = await vite.ssrLoadModule(SSR_ENTRY_PATH)
     createApp = ssrModule.createApp
     moduleInvalidated = false
     log.info('SSR module loaded via Vite dev server')
   } else {
-    // In production, use the pre-built bundle
     const ssrModule = await import(SSR_BUNDLE_PATH)
     createApp = ssrModule.createApp
     log.info('SSR bundle loaded')
@@ -69,7 +64,6 @@ async function createServer() {
   const app = express()
   const httpServer = createHttpServer(app)
 
-  // In development, create Vite dev server in middleware mode for SSR
   if (isDev) {
     const { createServer: createViteServer } = await import('vite')
     vite = await createViteServer({
@@ -83,7 +77,6 @@ async function createServer() {
     })
     app.use(vite.middlewares)
 
-    // Listen for HMR updates to invalidate the cached module
     vite.watcher.on('change', (file) => {
       if (file.endsWith('.ts') || file.endsWith('.vue') || file.endsWith('.css')) {
         moduleInvalidated = true
@@ -102,7 +95,6 @@ async function createServer() {
     next()
   })
 
-  // Load the SSR module
   try {
     await loadModule()
   } catch (err) {
@@ -147,7 +139,6 @@ async function createServer() {
 
       log.debug(`[${req.id}] SSR render started`)
 
-      // In dev mode, only reload when module has been invalidated by file changes
       if (isDev && vite && moduleInvalidated) {
         await loadModule()
       }
@@ -164,7 +155,6 @@ async function createServer() {
       const duration = Date.now() - startTime
       log.debug(`[${req.id}] SSR render completed in ${duration}ms`)
 
-      // Update metrics
       metrics.renderCount++
       metrics.lastRenderTime = duration
 
@@ -173,7 +163,6 @@ async function createServer() {
       const duration = Date.now() - startTime
       log.error(`[${req.id}] SSR render failed after ${duration}ms:`, err.message)
 
-      // Update error metrics
       metrics.renderErrors++
 
       if (isDev && vite) {

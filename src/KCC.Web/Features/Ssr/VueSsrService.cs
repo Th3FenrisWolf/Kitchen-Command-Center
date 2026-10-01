@@ -60,7 +60,6 @@ public class VueSsrService(
 
         try
         {
-            // Use Activity.Current for distributed tracing, or generate a new ID
             var requestId = Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "/render");
@@ -104,7 +103,6 @@ public class VueSsrService(
                 result.RenderTime,
                 requestId);
 
-            // Cache the successful response
             cache.Set(cacheKey, new CachedRender(result.Html, result.Css), CacheDuration);
 
             return baseResult with { Html = result.Html, Css = result.Css };

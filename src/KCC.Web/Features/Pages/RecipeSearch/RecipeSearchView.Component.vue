@@ -25,9 +25,6 @@
     initial: RecipeSearchResponse
     createRecipeUrl: string
     breadcrumbs?: Breadcrumb[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
 

@@ -9,15 +9,10 @@
     heading: string
     subHeading: string
     backgroundColor: BackgroundColor
-
-    /** Set when the page runs one tear cycle across its sheets; unset, the stack cycles from the first preset. */
     tear?: Exclude<Tear, 'hero'>
   }
 
   export interface StackerProps {
-    /**
-     * Rendered in order; each card pins 32px lower than the one before it.
-     */
     cards: StackerCard[]
   }
 

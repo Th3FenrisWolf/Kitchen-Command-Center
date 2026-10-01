@@ -14,18 +14,9 @@
   import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
 
   export interface AddVariantViewProps {
-    /**
-     * GUID of the parent recipe, submitted with the finished variant.
-     */
     recipeId: string
     recipeName: string
-    /**
-     * Where to return once the variant is submitted.
-     */
     recipeSlug: string
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
 
@@ -140,7 +131,6 @@
     <KccSheet v-if="step === 1" crisp :tear="1" :pad="STEP_PAD" icon="fa-duotone fa-pen-to-square">
       <template #label><ResourceString for="VariantInfo" /></template>
 
-      <!-- The sheet's label carries the step's name in print; the heading carries it in the document. -->
       <h2 class="sr-only">{{ rs('VariantInfo') }}</h2>
 
       <form class="flex flex-col gap-6" @submit.prevent="step++">

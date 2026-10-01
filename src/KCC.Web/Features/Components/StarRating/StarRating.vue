@@ -5,14 +5,7 @@
 
   export interface StarRatingProps {
     modelValue: number
-    /**
-     * Swaps the slider for a non-interactive display.
-     * @default false
-     */
     readonly?: boolean
-    /**
-     * @default 5
-     */
     max?: number
   }
 
@@ -20,7 +13,6 @@
 
   const emit = defineEmits<{ 'update:modelValue': [value: number] }>()
 
-  // Live pointer preview; falls back to the committed value.
   const hoverValue = ref<number | null>(null)
   const displayValue = computed(() => hoverValue.value ?? modelValue)
   const states = computed(() => starStates(displayValue.value, max))
@@ -50,7 +42,6 @@
 </script>
 
 <template>
-  <!-- Readonly: static display (already supports halves). -->
   <div
     v-if="readonly"
     class="inline-flex items-center gap-0.5"

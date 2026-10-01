@@ -5,13 +5,7 @@
   import { remainingSeconds } from './useStepTimers'
 
   export interface StepTimerProps {
-    /**
-     * Starting duration; also what Reset returns to.
-     */
     seconds: number
-    /**
-     * The duration phrase matched in the instruction, e.g. "10-12 minutes".
-     */
     label: string
   }
 

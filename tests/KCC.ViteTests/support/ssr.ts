@@ -22,6 +22,8 @@ export function renderSsr(
   return renderToString(app)
 }
 
+// Whole opening tags, so an assertion about one element's classes and hooks does not pin the order Vue prints its
+// attributes in.
 export const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 export const openTag = (html: string, needle: string) => {
@@ -30,6 +32,7 @@ export const openTag = (html: string, needle: string) => {
   return html.slice(html.lastIndexOf('<', at), html.indexOf('>', at) + 1)
 }
 
+// What useResourceStrings hands back for a key with no value.
 export const echoKey = (key: string) => key
 
 export const expectNoRetiredMarkup = (html: string) => expect(html).not.toMatch(RETIRED)

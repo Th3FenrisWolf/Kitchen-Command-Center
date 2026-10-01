@@ -48,7 +48,6 @@
   <KccSheet as="section" icon="fa-duotone fa-wheat" :tear="2">
     <template #label><ResourceString for="Nutrition" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ rs('Nutrition') }}</h2>
 
     <ResourceString for="PerServing" as="p" class="kcc-kick" />

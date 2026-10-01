@@ -108,7 +108,6 @@ describe('RecipeFilters zero-result options', () => {
       categoryOptions: ['Breakfast', 'Dessert', 'Dinner'],
       categoryFacets: { Breakfast: 4 },
     })
-    // Dessert and Dinner are greyed out + disabled; Breakfast stays interactive.
     expect(countDisabled(html)).toBe(2)
     expect(html).toContain('cursor-not-allowed')
     expect(rowFor(html, 'Dinner')).toContain('opacity-40')

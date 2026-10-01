@@ -8,17 +8,10 @@
 
   export interface AppHeaderProps {
     homeUrl: string
-    /** Alt text for the mark, resolved server-side from the dictionary. */
     logoAlt: string
-
-    /** Theme-toggle labels, resolved server-side so they work on every page. */
     switchToLightLabel: string
-
     switchToDarkLabel: string
     mainNavItems: NavItem[]
-    /**
-     * Pushed to the right of the bar, after the main items.
-     */
     utilityNavItems: NavItem[]
   }
 

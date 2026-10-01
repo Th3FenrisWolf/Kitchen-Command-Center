@@ -24,7 +24,6 @@
   >
     <template #label><ResourceString for="Instructions" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ rs('Instructions') }}</h2>
 
     <p class="kcc-kick">

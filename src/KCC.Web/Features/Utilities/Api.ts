@@ -1,7 +1,5 @@
 export interface ApiStrings {
-  /** Shown when the request never completes (network error, abort). */
   unexpectedError: string
-  /** Shown when the server fails but provides no usable message (e.g. an empty 401 body). */
   requestFailed: string
 }
 
@@ -13,8 +11,6 @@ interface ApiConfig {
   strings: ApiStrings
 }
 
-// English defaults, used until configureApi() runs (or when a seeded string is
-// blank). Main.ts calls configureApi() once at mount with the localized values.
 let config: ApiConfig = {
   strings: {
     unexpectedError: 'An unexpected error occurred. Please try again.',
@@ -83,9 +79,7 @@ async function request<T>(url: string, init: RequestInit): Promise<ApiResult<T>>
   return { success: true, data: (body ?? null) as T, errorMessage: null }
 }
 
-// Reads the body as text then JSON-parses defensively: an empty or non-JSON
-// body (e.g. a 401 Unauthorized with no content) yields undefined rather than
-// throwing — the trap the old `await response.json()` calls fell into.
+// An empty or non-JSON body, such as a 401 with no content, reads as undefined instead of throwing.
 async function readBody(response: Response): Promise<unknown> {
   const text = await response.text().catch(() => '')
   if (!text) return undefined
@@ -101,7 +95,6 @@ function isEnvelopeFailure(body: unknown): boolean {
   return isRecord(body) && body.success === false
 }
 
-// Pulls a message from { errors: string[] } or { error: string }; null if neither.
 function messageFrom(body: unknown): string | null {
   if (!isRecord(body)) return null
   if (Array.isArray(body.errors)) {

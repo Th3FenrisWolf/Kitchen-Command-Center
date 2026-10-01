@@ -19,7 +19,6 @@ const render = ({
   tags = ['', 'Quick', 'Vegan'],
 }: ToolbarProps = {}) => renderSsr(VariantToolbar, { search, sort, view, tag, tags })
 
-/** Every rendered button as its opening tag plus the text it carries, comment anchors stripped. */
 const buttons = (html: string) =>
   [...html.matchAll(/<button([^>]*)>([\s\S]*?)<\/button>/g)].map((match) => ({
     open: match[1]!,

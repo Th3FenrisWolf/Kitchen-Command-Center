@@ -2,7 +2,6 @@
 // <script id="test-data" data-compressed="gzip">base64</script>.
 import { gunzipSync, inflateSync } from "node:zlib";
 
-// Returns the parsed test-data object, or null if absent/unreadable.
 export function extractTunitData(html) {
   const match = html.match(/<script id="test-data"([^>]*)>([\s\S]*?)<\/script>/);
   if (!match) return null;

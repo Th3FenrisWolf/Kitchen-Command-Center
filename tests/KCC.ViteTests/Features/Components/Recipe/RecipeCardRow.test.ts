@@ -35,8 +35,6 @@ const variant = (over: Partial<VariantSummary> = {}): VariantSummary => ({
   ...over,
 })
 
-// Matches what useResourceStrings hands the row when a key has no value: the key itself.
-
 const renderHit = (recipe: RecipeSearchHit) => renderSsr(RecipeCardRow, { card: hitToCard(recipe, echoKey) })
 const renderVariant = (summary: VariantSummary) => renderSsr(RecipeCardRow, { card: variantToCard(summary, echoKey) })
 

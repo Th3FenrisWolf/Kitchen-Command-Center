@@ -24,7 +24,6 @@ public static class MemberSession
         // independent of the string's value.
         await page.ClickAsync("form button[type='submit']");
 
-        // On success the client sets window.location.href; wait until we've left the login page.
         await page.WaitForURLAsync(url => !url.Contains("/account/login", StringComparison.OrdinalIgnoreCase));
     }
 

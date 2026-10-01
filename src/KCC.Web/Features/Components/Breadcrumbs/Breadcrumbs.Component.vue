@@ -3,9 +3,6 @@
   import { computed } from 'vue'
 
   export interface BreadcrumbProps {
-    /**
-     * Ordered root-first; the first entry becomes the home icon and the last renders unlinked.
-     */
     items: Breadcrumb[]
   }
 

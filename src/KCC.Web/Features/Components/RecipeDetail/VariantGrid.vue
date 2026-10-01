@@ -7,9 +7,6 @@
 
   export interface VariantGridProps {
     variants: VariantSummary[]
-    /**
-     * Already carries the parent recipe's identifier as a query string.
-     */
     addVariantUrl: string
   }
 

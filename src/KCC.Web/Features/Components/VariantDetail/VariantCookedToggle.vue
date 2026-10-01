@@ -6,19 +6,8 @@
 
   export interface VariantCookedToggleProps {
     variantGuid: string
-    /**
-     * Server-rendered starting values; the API's response drives them from the first click on.
-     * @default 0
-     */
     cookedCount?: number
-    /**
-     * @default false
-     */
     hasCooked?: boolean
-    /**
-     * Hides the button entirely when false.
-     * @default false
-     */
     isAuthenticated?: boolean
   }
 

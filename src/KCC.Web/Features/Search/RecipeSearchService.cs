@@ -9,25 +9,16 @@ using Lucene.Net.Util;
 
 namespace KCC.Web.Features.Search;
 
-/// <summary>
-/// Queries the recipe Lucene index. Builds a boosted full-text query (optionally intersected with a prep+cook time
-/// range), applies the selected category/diet facets as a drill-down, and reads cross-aware (drill-sideways) facet
-/// counts alongside a sorted, paged slice of hits and an optional highest-rated spotlight.
-/// </summary>
 public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
 {
     // Suffix under which the average rating is stored (the un-suffixed key is the sort-only DoubleDocValuesField).
     private const string AverageRatingStoredSuffix = "_v";
 
-    // Matches on the recipe name count for more than matches buried in the combined content blob.
     private const float NameBoost = 2f;
 
     // Category and diet are small controlled taxonomies; this comfortably returns every value with its count.
     private const int FacetTopN = 1000;
 
-    /// <summary>Runs a recipe search for the supplied criteria.</summary>
-    /// <param name="rawCriteria">The search criteria; it is normalized before use.</param>
-    /// <returns>The requested page of hits together with facet counts and the optional spotlight recipe.</returns>
     public RecipeSearchResults Search(RecipeSearchCriteria rawCriteria)
     {
         var criteria = rawCriteria.Normalized();

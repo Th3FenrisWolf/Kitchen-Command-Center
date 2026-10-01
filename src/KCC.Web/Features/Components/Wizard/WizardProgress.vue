@@ -1,8 +1,6 @@
 <script setup lang="ts">
   export interface WizardProgressProps {
-    /** 1-based index of the step being shown. */
     current: number
-
     total: number
   }
 

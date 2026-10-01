@@ -8,9 +8,6 @@
 
   export interface VariantIngredientsProps {
     ingredients: Ingredient[]
-    /**
-     * Servings the stored amounts were written for. Omit or pass 0 to hide the scaler.
-     */
     baseServings?: number
   }
 
@@ -54,7 +51,6 @@
   >
     <template #label><ResourceString for="Ingredients" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>
 
     <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">

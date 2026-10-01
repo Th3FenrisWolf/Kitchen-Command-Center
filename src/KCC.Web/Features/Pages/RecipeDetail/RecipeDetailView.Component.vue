@@ -21,26 +21,14 @@
     recipeImagePath?: string
     recipeIcon?: string
     recipeCategory?: string
-    /**
-     * Identifies the recipe to the add-variant page.
-     */
     recipeGuid: string
-    /**
-     * Aggregated across the recipe's variants, since only variants can be reviewed.
-     */
     recipeAverageRating?: number
     recipeReviewCount?: number
     recipeTimesCooked?: number
     addVariantUrl: string
-    /**
-     * Member who created the recipe, as opposed to any variant of it.
-     */
     startedByName?: string
     variants: VariantSummary[]
     breadcrumbs?: Breadcrumb[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
 

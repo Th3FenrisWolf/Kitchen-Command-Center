@@ -7,9 +7,6 @@
   import { listTearFor } from '~/Utilities/BrandColor'
 
   export interface VariantSiblingsProps {
-    /**
-     * Excludes the variant being viewed; an empty list renders nothing.
-     */
     variants: SiblingVariant[]
   }
 

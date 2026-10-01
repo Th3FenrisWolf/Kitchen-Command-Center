@@ -4,25 +4,10 @@
   export interface NumberStepperProps {
     min?: number
     max?: number
-    /**
-     * @default 1
-     */
     step?: number
-    /**
-     * Rendered after the value and folded into its accessible name, e.g. 'kg'.
-     */
     unit?: string
-    /**
-     * Never rendered; supplies the accessible names for the input and both buttons.
-     */
     label?: string
-    /**
-     * Accessible name for the minus button; composed from `label` in English when omitted.
-     */
     decreaseLabel?: string
-    /**
-     * Accessible name for the plus button; composed from `label` in English when omitted.
-     */
     increaseLabel?: string
     disabled?: boolean
     placeholder?: string
@@ -60,7 +45,6 @@
 
   const stepValue = (direction: 1 | -1) => {
     if (disabled) return
-    // From an empty field, the first press lands on the minimum (or one step if no min is set).
     model.value = model.value === undefined ? clamp(min ?? step) : clamp(model.value + direction * step)
   }
 
@@ -71,16 +55,13 @@
   }
 
   const onBlur = () => {
-    // Never empty: a cleared field falls back to the minimum (0 when no min is set).
     if (model.value === undefined) {
       model.value = min ?? 0
       return
     }
-    // These fields are integer-valued; round a typed decimal before clamping into range.
     model.value = clamp(Math.round(model.value))
   }
 
-  // Select the current value on focus so typing replaces the default instead of appending to it.
   const onFocus = (event: FocusEvent) => {
     ;(event.target as HTMLInputElement).select()
   }
@@ -98,7 +79,6 @@
   const decreaseName = computed(() => decreaseLabel ?? (label ? `Decrease ${label}` : 'Decrease'))
   const increaseName = computed(() => increaseLabel ?? (label ? `Increase ${label}` : 'Increase'))
 
-  // --- Press-and-hold auto-repeat -------------------------------------------
   const HOLD_DELAY = 400 // ms held before auto-repeat begins
   const REPEAT_START = 120 // ms between the first repeated steps
   const REPEAT_MIN = 35 // fastest repeat interval

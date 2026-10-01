@@ -27,7 +27,6 @@ export function isTimeActive(min: number, max: number): boolean {
   return min > 0 || max < MAX_TIME
 }
 
-/** Resolves a resource-string key (relative to the provider's prefix) to its display text. */
 export type ResourceResolver = (key: string) => string
 
 export function timeRangeLabel(min: number, max: number, t: ResourceResolver): string {
@@ -35,15 +34,12 @@ export function timeRangeLabel(min: number, max: number, t: ResourceResolver): s
     return 'Any'
   }
   const unit = t('Min')
-  // Open-ended top (upper thumb at the ceiling): "15 min or more".
   if (max >= MAX_TIME) {
     return `${min} ${unit} ${t('OrMore')}`
   }
-  // Open-ended bottom (lower thumb at 0): "40 min or less".
   if (min <= 0) {
     return `${max} ${unit} ${t('OrLess')}`
   }
-  // Bounded on both ends: "15–40 min".
   return `${min}–${max} ${unit}`
 }
 

@@ -18,7 +18,6 @@ public class VariantCookNotesTests : BasePageTests
         await Page.Locator("[data-testid='add-cook-note']").ClickAsync();
         await Expect(notes.GetByText(noteText)).ToBeVisibleAsync();
 
-        // Only the member's own note carries a delete button.
         await notes.Locator("li").Filter(new() { HasText = noteText }).GetByRole(AriaRole.Button).ClickAsync();
         await Expect(Page.GetByText(noteText)).ToHaveCountAsync(0);
     }

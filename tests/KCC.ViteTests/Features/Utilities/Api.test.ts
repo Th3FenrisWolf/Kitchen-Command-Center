@@ -3,7 +3,6 @@ import { antiforgeryToken, configureApi, del, get, post, put } from '~/Utilities
 
 const STRINGS = { unexpectedError: 'Something went wrong.', requestFailed: 'Request failed.' }
 
-// Minimal stand-in for the parts of Response that Api.ts touches.
 function fakeResponse(opts: { ok: boolean; status?: number; body?: string }): Response {
   return {
     ok: opts.ok,

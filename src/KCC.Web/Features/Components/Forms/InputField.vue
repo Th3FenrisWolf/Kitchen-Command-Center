@@ -2,10 +2,6 @@
   import { computed, useAttrs, type StyleValue } from 'vue'
 
   export interface InputFieldProps {
-    /**
-     * Font Awesome classes for a leading icon inside the pill, e.g. 'fa-duotone fa-magnifying-glass'.
-     * Omit it and the pill is a single column (`kcc-field--noicon`); the kit colours the glyph itself.
-     */
     icon?: string
   }
 
@@ -23,7 +19,6 @@
 
   const attrs = useAttrs()
   const inputAttrs = computed(() => {
-    // class and style dress the pill, so they stay on the root label; everything else is the input's.
     const { class: _class, style: _style, ...rest } = attrs
     return rest
   })

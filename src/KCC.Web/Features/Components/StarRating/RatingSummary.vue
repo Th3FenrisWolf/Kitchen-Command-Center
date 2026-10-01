@@ -4,9 +4,6 @@
 
   export interface RatingSummaryProps {
     value: number
-    /**
-     * @default 5
-     */
     max?: number
   }
 

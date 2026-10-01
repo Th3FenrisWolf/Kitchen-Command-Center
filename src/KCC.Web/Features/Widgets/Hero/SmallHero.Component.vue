@@ -2,18 +2,12 @@
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
   export interface SmallHeroProps {
-    /**
-     * @default false
-     */
     dark?: boolean
   }
 
   export interface SmallHeroSlots {
     eyebrow?: () => void
     title?: () => void
-    /**
-     * Sits inline with the title, right-aligned.
-     */
     'action-button'?: () => void
     description?: () => void
   }

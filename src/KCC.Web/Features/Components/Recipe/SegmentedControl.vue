@@ -1,32 +1,18 @@
 <script setup lang="ts" generic="T extends string">
   import { nextTick, ref } from 'vue'
 
-  /** One selectable segment. Provide `label` for text pills or `icon` for icon-only toggles. */
   export interface SegmentOption<V extends string = string> {
-    /** Value bound to the control's model when this segment is active. */
     value: V
-    /** Visible, already-localized text (text segments). */
     label?: string
-    /** Font Awesome classes for an icon-only segment, e.g. 'fa-solid fa-list'. */
     icon?: string
-    /** Accessible name — required for icon-only segments (no visible `label`). */
     ariaLabel?: string
-    /** Native tooltip text. */
     title?: string
-    /** Optional `data-testid` hook. */
     testId?: string
   }
 
   export interface SegmentedControlProps<T extends string> {
     options: SegmentOption<T>[]
-    /**
-     * Accessible group name announced for the radiogroup.
-     */
     ariaLabel?: string
-    /**
-     * `text` = padded label pills; `icon` = fixed-width icon squares.
-     * @default 'text'
-     */
     variant?: 'text' | 'icon'
   }
 

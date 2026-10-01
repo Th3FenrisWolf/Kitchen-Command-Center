@@ -20,22 +20,10 @@
     variantName: string
     variantDescription: string
     icon?: string
-    /**
-     * Already sized for the hero tile by the server.
-     */
     coverImage?: string
-    /**
-     * Minutes. Both feed the total-time stat tile.
-     */
     prepTime?: number
     cookTime?: number
-    /**
-     * Servings the stored ingredient amounts were written for, and the scaler's starting point.
-     */
     servings?: number
-    /**
-     * `easy`, `medium`, or `hard`; anything else drops the difficulty tile.
-     */
     difficulty?: string
     tags: string[]
     ingredients: Ingredient[]
@@ -44,25 +32,13 @@
     recipeSlug: string
     createdByName?: string
     breadcrumbs?: Breadcrumb[]
-    /**
-     * The recipe's other variants, excluding this one.
-     */
     siblingVariants: SiblingVariant[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
-    /**
-     * Identifies this variant to the reviews, notes, and cooked-toggle APIs.
-     */
     variantGuid: string
     averageRating?: number
     reviewCount?: number
     cookedCount?: number
     hasCooked?: boolean
-    /**
-     * Gates the review form, cook notes, and cooked toggle.
-     */
     isAuthenticated?: boolean
   }
 

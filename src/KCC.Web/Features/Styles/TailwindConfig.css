@@ -1,4 +1,3 @@
-/* Only scan specific file types in Features directory */
 @import 'tailwindcss' source(none);
 @source '../**/*.cshtml';
 @source '../**/*.vue';

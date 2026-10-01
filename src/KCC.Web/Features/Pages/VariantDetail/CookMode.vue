@@ -10,13 +10,7 @@
   export interface CookModeProps {
     open: boolean
     instructions: Instruction[]
-    /**
-     * Repeated in full under every step, so a cook never has to navigate back for it.
-     */
     ingredients: Ingredient[]
-    /**
-     * Servings the stored amounts were written for. Omit or pass 0 to hide the scaler.
-     */
     servings?: number
     /**
      * Localized text under the VariantDetail prefix. The overlay teleports to <body>, outside the
@@ -76,7 +70,6 @@
     }
   }
 
-  // Simple focus trap: keep Tab/Shift+Tab cycling within the panel's focusables.
   const trapFocus = (event: KeyboardEvent) => {
     const root = panel.value
     if (!root) return

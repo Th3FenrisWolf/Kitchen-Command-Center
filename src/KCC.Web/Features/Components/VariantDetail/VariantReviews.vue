@@ -11,19 +11,8 @@
 
   export interface VariantReviewsProps {
     variantGuid: string
-    /**
-     * Server-rendered starting values; the API's response drives them once reviews load.
-     * @default 0
-     */
     averageRating?: number
-    /**
-     * @default 0
-     */
     reviewCount?: number
-    /**
-     * Gates the review form; existing reviews are always readable.
-     * @default false
-     */
     isAuthenticated?: boolean
   }
 

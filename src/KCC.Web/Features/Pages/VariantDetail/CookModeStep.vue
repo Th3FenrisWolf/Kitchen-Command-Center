@@ -9,9 +9,6 @@
   export interface CookModeStepProps {
     instruction: Instruction
     ingredients: Ingredient[]
-    /**
-     * Servings the stored amounts were written for; amounts scale by `currentServings / baseServings`.
-     */
     baseServings?: number
     currentServings: number
   }

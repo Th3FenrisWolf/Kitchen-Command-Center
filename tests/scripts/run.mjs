@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// One command: run every suite, merge results, write + open the combined report.
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
@@ -16,7 +15,6 @@ const summaryFile = path.join(resultsDir, "combined-report.md");
 
 function log(msg) { process.stdout.write(`\n> ${msg}\n`); }
 
-// Recursively find */TestResults/*-report.html under a project's bin folder.
 function findTunitReports(projectDir) {
   const binDir = path.join(repoRoot, projectDir, "bin");
   const out = [];
@@ -53,11 +51,9 @@ function openInBrowser(file) {
 
 mkdirSync(resultsDir, { recursive: true });
 
-// 1) Run the three TUnit suites in one solution-level invocation, with HTML report on.
 log("Running .NET test suites (dotnet test -- --report-html)");
 spawnSync("dotnet", ["test", "--", "--report-html"], { cwd: repoRoot, stdio: "inherit", shell: false });
 
-// 2) Run each vitest suite, writing its json next to the combined report.
 for (const suite of SUITES.filter((s) => s.type === "vitest")) {
   const cwdAbs = path.join(repoRoot, suite.cwd);
   const outAbs = path.join(repoRoot, suite.outputFile);
@@ -72,7 +68,6 @@ for (const suite of SUITES.filter((s) => s.type === "vitest")) {
   spawnSync(process.execPath, [bin, "run", "--reporter=default", "--reporter=json", `--outputFile=${outAbs}`], { cwd: cwdAbs, stdio: "inherit" });
 }
 
-// 3) Collect every suite's output into combine sources.
 const sources = SUITES.map((suite) => {
   const descriptor = { id: suite.id, label: suite.label, type: suite.type };
   if (suite.type === "dotnet") {
@@ -85,7 +80,6 @@ const sources = SUITES.map((suite) => {
   return { descriptor, kind: "vitest-json", content: readFileSync(outAbs, "utf8") };
 });
 
-// 4) Build, write, open, and exit with a meaningful code.
 const { report, html, markdown } = buildReport(sources, { repoRoot });
 writeFileSync(outFile, html, "utf8");
 writeFileSync(summaryFile, markdown, "utf8");

@@ -2,10 +2,7 @@
   export type Ramp = 'light' | 'dark'
 
   export interface ThemeToggleProps {
-    /** Announced while the dark ramp is active, when clicking switches to light. */
     switchToLightLabel: string
-
-    /** Announced while the light ramp is active, when clicking switches to dark. */
     switchToDarkLabel: string
   }
 

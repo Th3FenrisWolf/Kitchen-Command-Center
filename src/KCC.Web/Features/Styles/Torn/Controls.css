@@ -1,7 +1,6 @@
 /* Torn & Waxed — printed controls. Clean, unclipped, one inset hairline at most, never shadowed. Razor uses
    these classes directly (ButtonLinkTagHelper, the Button widget); Vue components compose the same ones. */
 @layer components {
-  /* ---- button: marker pill; ghost hairline; ink fill; underlined text ---- */
   .kcc-btn {
     align-items: center;
     background: var(--color-marker);
@@ -94,7 +93,6 @@
     opacity: 0.45;
   }
 
-  /* ---- segmented control: pill group, pressed = ink fill ---- */
   .kcc-seg {
     border-radius: 999px;
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
@@ -149,7 +147,6 @@
     color: var(--color-ink);
   }
 
-  /* ---- field: 36px pill with an inset hairline and a leading icon ---- */
   .kcc-field {
     align-items: center;
     border-radius: 999px;
@@ -235,14 +232,12 @@
      These rules sit in `@layer components`, so a Tailwind utility on the input or the track wins over them
      (the component positions both with utilities). */
 
-  /* The track: paper with an inset hairline, same recipe as every other printed control. */
   .kcc-range-track {
     background: var(--color-paper-2);
     border-radius: 999px;
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
   }
 
-  /* The selected span between the two thumbs. */
   .kcc-range-fill {
     background: var(--color-marker);
     border-radius: 999px;
@@ -267,7 +262,6 @@
     outline: none;
   }
 
-  /* Thumbs are a printed mark: flat ink, no drawn border, no fall — only the paper ring below. */
   .kcc-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -335,7 +329,6 @@
     background: color-mix(in oklab, var(--color-red) 28%, var(--color-paper));
   }
 
-  /* ---- badge: hairline pill ---- */
   .kcc-badge {
     align-items: center;
     border-radius: 999px;
@@ -356,7 +349,6 @@
     gap: 6px;
   }
 
-  /* ---- checklist on the rule ---- */
   .kcc-check {
     list-style: none;
     margin: 0;
@@ -403,7 +395,6 @@
     text-decoration: line-through;
   }
 
-  /* ---- stats: Sono numbers over kick labels ---- */
   .kcc-stats {
     display: grid;
     gap: 0 24px;
@@ -429,7 +420,6 @@
     text-transform: uppercase;
   }
 
-  /* A unit beside a number (min, g, servings): the same small caps the stats row uses for its unit. */
   .kcc-unit {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);
@@ -444,7 +434,6 @@
     transform: translateY(-1px);
   }
 
-  /* ---- numbered method ---- */
   .kcc-steps {
     list-style: none;
     margin: 0;
@@ -470,7 +459,6 @@
     line-height: var(--bl);
   }
 
-  /* ---- recipe slip parts: room for the pinned tile, the stat top-right, the meta line ---- */
   .kcc-recipe .kcc-sheet {
     /* One full rule of headroom for the pinned tile; a 12px offset would put every baseline off the ruling. */
     padding-top: calc(var(--pad, 24px) + var(--bl));

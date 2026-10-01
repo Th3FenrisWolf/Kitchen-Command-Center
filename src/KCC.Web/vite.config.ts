@@ -15,7 +15,6 @@ function cleanAssetsPlugin(): Plugin {
     name: 'clean-assets',
     apply: 'build',
     buildStart() {
-      // Preserve fonts and other static files
       const assetsDir = resolve(__dirname, 'wwwroot/assets')
       if (existsSync(assetsDir)) {
         rmSync(assetsDir, { recursive: true })
@@ -56,7 +55,6 @@ function aspNetCoreDevCertificate() {
   return { cert: readFileSync(certificate), key: readFileSync(key) }
 }
 
-// https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const isSSR = mode === 'ssr'
   const servesBrowserAssets = command === 'serve' && !process.env.VITEST
@@ -70,7 +68,6 @@ export default defineConfig(({ command, mode }) => {
     ssr: { noExternal: ['vue'] },
     build: isSSR
       ? {
-          // SSR build configuration
           ssr: true,
           outDir: 'wwwroot/ssr',
           emptyOutDir: true,
@@ -83,7 +80,6 @@ export default defineConfig(({ command, mode }) => {
           },
         }
       : {
-          // Client build configuration
           outDir: 'wwwroot',
           emptyOutDir: false,
           manifest: true,

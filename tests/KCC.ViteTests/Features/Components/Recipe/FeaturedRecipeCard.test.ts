@@ -32,10 +32,6 @@ const variant: VariantSummary = {
   reviewCount: 0,
 }
 
-// Matches what useResourceStrings hands the card when a key has no value: the key itself.
-
-/** The whole opening tag of the first element carrying `needle`, so nothing pins Vue's attribute order. */
-
 /** Everything inside that element. */
 const inner = (html: string, needle: string) => {
   const at = html.indexOf(needle)

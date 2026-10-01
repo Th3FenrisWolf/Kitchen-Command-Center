@@ -7,13 +7,7 @@
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
 
   export interface RecipeCardRowProps {
-    /**
-     * Build with `hitToCard` or `variantToCard` from recipeCardModel.
-     */
     card: RecipeCardModel
-    /**
-     * Neighbours must never share one: a list passes `(index % 6) + 1`.
-     */
     tear?: Exclude<Tear, 'hero'>
   }
 
@@ -26,7 +20,6 @@
       : undefined,
   )
 
-  // Prose opens the meta line; the model's own chips are all numbers, so they close it set in Sono tabular.
   const notes = computed(() =>
     [card.eyebrow, card.rating?.count === 0 ? card.rating.emptyLabel : undefined, card.subtitle].filter(
       (note): note is string => !!note,

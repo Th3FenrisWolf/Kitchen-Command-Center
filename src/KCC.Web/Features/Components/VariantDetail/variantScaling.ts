@@ -1,6 +1,5 @@
 import type { Ingredient } from '~/Types/Recipe'
 
-// Nearest-fraction glyphs, ported from the design mockup's fmtQty/FRACTIONS logic.
 const FRACTIONS: readonly [number, string][] = [
   [0, ''],
   [0.125, '⅛'],
@@ -13,13 +12,11 @@ const FRACTIONS: readonly [number, string][] = [
   [1, ''],
 ]
 
-/** Scale a base quantity from baseServings to currentServings. Unchanged if base is missing/0. */
 export function scaleQuantity(quantity: number, baseServings: number, currentServings: number): number {
   if (!baseServings || baseServings <= 0) return quantity
   return (quantity * currentServings) / baseServings
 }
 
-/** Render a number as a whole number plus the nearest common kitchen fraction glyph. */
 export function formatQuantity(x: number): string {
   if (x == null || Number.isNaN(x)) return ''
   let whole = Math.floor(x + 1e-6)
@@ -44,7 +41,6 @@ export function formatQuantity(x: number): string {
   return x.toFixed(2).replace(/\.0+$/, '')
 }
 
-/** Scaled "{qty} {unit}" string for an ingredient; '' for eyeballed / quantity-less rows. */
 export function formatIngredientAmount(ingredient: Ingredient, baseServings: number, currentServings: number): string {
   if (ingredient.isEyeballed || ingredient.quantity == null) return ''
   const scaled = scaleQuantity(ingredient.quantity, baseServings, currentServings)

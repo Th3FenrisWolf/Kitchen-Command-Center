@@ -2,14 +2,8 @@
   import { computed } from 'vue'
 
   export interface RangeSliderProps {
-    /**
-     * Bounds of the track, not of the current selection — that lives in the models.
-     */
     min: number
     max: number
-    /**
-     * @default 1
-     */
     step?: number
   }
 

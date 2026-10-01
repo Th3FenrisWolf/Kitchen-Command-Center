@@ -3,29 +3,11 @@
   export type ButtonSize = 'md' | 'lg'
 
   export interface ButtonProps {
-    /**
-     * @default 'marker'
-     */
     variant?: ButtonVariant
-
-    /**
-     * @default 'md'
-     */
     size?: ButtonSize
-
-    /**
-     * Render as an anchor by passing `'a'` with an `href`.
-     * @default 'button'
-     */
     as?: 'button' | 'a'
-
-    /**
-     * @default 'button'
-     */
     type?: 'button' | 'submit' | 'reset'
-
     href?: string
-
     disabled?: boolean
   }
 

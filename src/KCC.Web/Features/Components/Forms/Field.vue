@@ -1,16 +1,9 @@
 <script setup lang="ts">
   export interface FieldProps {
-    /** `label` (string) or the `#label` slot for rich content such as a `<ResourceString>`. */
     label?: string
-
-    /** The control's id; also keys the hint and error ids. */
     controlId: string
-
-    /** `hint` (string) or the `#hint` slot for rich content such as more than one `<ResourceString>`. */
     hint?: string
-
     error?: string
-
     required?: boolean
   }
 

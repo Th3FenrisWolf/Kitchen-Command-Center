@@ -96,7 +96,6 @@ describe('renderHtml', () => {
     expect(html).toContain('<details class="group"') // groups are collapsible
     expect(html).toContain('<summary class="ghead">') // the header is the summary
     expect(html).toContain('class="gsum"') // per-group pass/fail/skip summary
-    // a group with a failure is expanded by default; an all-passing group stays collapsed
     expect(html).toContain('<details class="group" open>')
     expect(html).toContain('<details class="group"><summary')
   })

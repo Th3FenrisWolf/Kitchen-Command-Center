@@ -2,7 +2,6 @@ using Microsoft.Data.Sqlite;
 
 namespace KCC.E2ETests.Config;
 
-/// <summary>Reads and writes a stopped site's SQLite file directly, the way a live edit would change it.</summary>
 public static class SiteDatabase
 {
     private const string DocumentObjectType = "C66BA18E-EAF3-4CFF-8A22-41B16D66A972";

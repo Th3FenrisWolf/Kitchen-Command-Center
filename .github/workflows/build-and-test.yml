@@ -27,7 +27,6 @@ jobs:
       KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
 
     steps:
-      # ---------- Setup ----------
       - name: Checkout
         uses: actions/checkout@v7
 
@@ -54,12 +53,11 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      # ---------- Build task 1: .NET solution (Release) ----------
       - name: Build .NET solution (Release)
         id: build_dotnet
         run: dotnet build KitchenCommandCenter.slnx -c Release
 
-      # ---------- Build task 2: frontend (attempted even if .NET build failed) ----------
+      # Attempted even when the .NET build failed, so one run reports both builds.
       - name: Build frontend
         id: build_frontend
         if: ${{ !cancelled() }}
@@ -67,7 +65,6 @@ jobs:
           yarn install --frozen-lockfile
           yarn build:all
 
-      # ---------- Gate: run tests only if BOTH builds succeeded ----------
       - name: Verify builds succeeded
         if: ${{ !cancelled() }}
         run: |
@@ -78,7 +75,6 @@ jobs:
             exit 1
           fi
 
-      # ---------- Playwright browsers (cached across runs; keyed on the Playwright version) ----------
       - name: Resolve Playwright version (cache key)
         id: playwright_version
         run: |
@@ -100,7 +96,6 @@ jobs:
       - name: Install Playwright browsers and system deps
         run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
-      # ---------- Full combined test suite ----------
       # The E2E fixture starts KCC.Web and its SSR service itself, each run on a fresh SQLite file.
       - name: Run combined test suite
         run: |
@@ -114,7 +109,6 @@ jobs:
           rm -f "$GITHUB_STEP_SUMMARY"
           exit $status
 
-      # ---------- Publish report ----------
       - name: Upload combined test report
         if: ${{ always() }}
         uses: actions/upload-artifact@v7

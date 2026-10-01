@@ -10,11 +10,6 @@
     target: string
   }
 
-  /**
-   * A header entry that is either a dropdown group (subLinks set) or a flat link
-   * (url + target set). The two modes are mutually exclusive on the server side
-   * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
-   */
   export interface NavItem {
     displayText: string
     url?: string
@@ -24,9 +19,6 @@
 
   export interface MenuItemProps {
     item: NavItem
-    /**
-     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
-     */
     menuId: string
   }
 

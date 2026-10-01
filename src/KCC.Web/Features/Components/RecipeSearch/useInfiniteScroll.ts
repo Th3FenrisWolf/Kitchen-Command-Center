@@ -1,7 +1,6 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
 
-/** Calls `onHit` when the sentinel scrolls into view. No-op during SSR. Re-observes when the
- *  sentinel element changes (it is behind a v-if, so it is created/destroyed as results change). */
+// Re-observes when the sentinel changes: it sits behind a v-if, so it comes and goes with the results.
 export function useInfiniteScroll(onHit: () => void): { sentinel: ComputedRef<Ref<HTMLElement | null>> } {
   const sentinel = ref<HTMLElement | null>(null)
   let observer: IntersectionObserver | null = null

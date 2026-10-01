@@ -22,12 +22,7 @@ const hit = (over: Partial<RecipeSearchHit> = {}): RecipeSearchHit => ({
   ...over,
 })
 
-// Matches what useResourceStrings hands the card when a key has no value: the key itself.
-
 const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
-
-// The opening tag of the first element carrying `needle`, so an assertion about one element's classes and
-// hooks does not also pin the order Vue happens to print its attributes in.
 
 // Renders through the search page's own mapper, so these cover the RecipeSearchHit -> card
 // hop as well as the markup the shared card produces from it.

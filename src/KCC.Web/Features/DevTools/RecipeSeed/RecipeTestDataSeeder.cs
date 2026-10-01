@@ -68,7 +68,6 @@ public class RecipeTestDataSeeder(
                 summary.VariantsCreated++;
             }
 
-            // Reviews attach to the first variant, as they always have in this data set.
             if (recipe.Variants.Length > 0)
             {
                 var firstVariantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
@@ -201,7 +200,6 @@ public class RecipeTestDataSeeder(
                 continue;
             }
 
-            // Seeded authors never sign in, so their password is random.
             keys[author.Key] = await CreateApprovedMemberAsync(
                 author.UserName,
                 author.Email,
@@ -215,8 +213,8 @@ public class RecipeTestDataSeeder(
         return keys;
     }
 
-    // The E2E suite and the reference capture sign in as this member. Its credentials come from the environment, so
-    // none is committed; without them there is no member to create.
+    // The E2E suite signs in as this member. Its credentials come from the environment, so none is committed;
+    // without them there is no member to create.
     private async Task EnsureE2EMemberAsync(SeedSummary summary, TextWriter log)
     {
         var userName = configuration["KCC_E2E_MEMBER_USERNAME"];

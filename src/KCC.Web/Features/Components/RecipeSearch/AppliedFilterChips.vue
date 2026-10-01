@@ -4,9 +4,6 @@
   import type { FilterChip } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
   export interface AppliedFilterChipsProps {
-    /**
-     * Build with `chipsFor` from recipeSearchCriteria; an empty list renders nothing.
-     */
     chips: FilterChip[]
   }
 

@@ -6,9 +6,6 @@
   import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
 
   export interface FeaturedRecipeCardProps {
-    /**
-     * Build with `hitToFeatured` or `variantToFeatured` from recipeCardModel.
-     */
     card: FeaturedRecipeModel
   }
 

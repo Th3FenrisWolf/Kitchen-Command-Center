@@ -186,7 +186,6 @@ public static class TestContent
         }
     }
 
-    // Saved and never published, as a member's submission is until the owner publishes it.
     public static Task<Guid> DraftRecipeAsync(IServiceProvider services, string name, Guid authorKey) =>
         CreateAsync(services, "recipe", name, RecipeListing(services), [new PropertyValueModel { Alias = "icon", Value = "fa-duotone fa-egg" }, Author(authorKey)], publish: false);
 

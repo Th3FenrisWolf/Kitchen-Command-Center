@@ -2,22 +2,10 @@
   import { tileTearFor, washFor } from '~/Utilities/BrandColor'
 
   export interface AccentTileProps {
-    /**
-     * Picks the fallback wash and tear deterministically, so the same subject always tiles alike.
-     */
     seed: string
-    /**
-     * Font Awesome classes for the fallback tile.
-     */
     icon?: string
     image?: string
-    /**
-     * Falls back to `seed` when omitted.
-     */
     alt?: string
-    /**
-     * The larger tile size, for the detail hero.
-     */
     large?: boolean
   }
 

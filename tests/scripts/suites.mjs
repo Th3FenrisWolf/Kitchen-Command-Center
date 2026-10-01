@@ -1,4 +1,3 @@
-// Registry of every test suite folded into the combined report.
 // Paths are relative to the repo root; run.mjs resolves them.
 export const SUITES = [
   { id: "unit", label: "Unit", type: "dotnet", projectDir: "tests/KCC.UnitTests" },

@@ -6,15 +6,11 @@
   import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
 
   export interface VariantToolbarProps {
-    /**
-     * Every tag across the recipe's variants, feeding the tag pills.
-     */
     tags: string[]
   }
 
   defineProps<VariantToolbarProps>()
 
-  // Filters apply as they change; there is no submit step.
   const search = defineModel<string>('search', { required: true })
   const sort = defineModel<SortKey>('sort', { required: true })
   const tag = defineModel<string>('tag', { required: true })

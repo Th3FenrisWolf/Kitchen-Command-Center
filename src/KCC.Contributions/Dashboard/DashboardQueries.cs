@@ -6,8 +6,6 @@ using Umbraco.Cms.Core.Services.Navigation;
 
 namespace KCC.Contributions.Dashboard;
 
-// Recipes and variants waiting for the owner are saved but unpublished, so they are read from the content service;
-// everything else comes from the navigation structure and the publish-status cache.
 public sealed class DashboardQueries(
     IContributionReads contributionReads,
     IDashboardMembers members,

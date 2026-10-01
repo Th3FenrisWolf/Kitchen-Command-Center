@@ -11,7 +11,6 @@ export type BackgroundColor = (typeof BACKGROUND_COLORS)[number]
 /** The only text colours: ink on paper and desk, marker-ink inside a marker fill or a wash tile. */
 export const TEXT_COLORS = ['text-ink', 'text-ink-soft', 'text-marker-ink'] as const
 
-/** `bg-peach` → `peach`; grounds map to `undefined` (no wash). */
 export function washOf(background: BackgroundColor): Wash | undefined {
   const name = background.slice(3)
   return (WASHES as readonly string[]).includes(name) ? (name as Wash) : undefined

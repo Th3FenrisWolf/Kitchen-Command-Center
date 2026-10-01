@@ -1,11 +1,5 @@
 namespace KCC.Admin;
 
-/// <summary>
-/// The curated set of Font Awesome Pro duotone icons available for recipes, as full
-/// Font Awesome class strings (e.g. "fa-duotone fa-cheese"). This is the single
-/// source of truth shared by the AI enum, the deterministic fallback, and the backoffice's
-/// recipe icon editor; the value is stored verbatim and rendered as-is.
-/// </summary>
 public static class RecipeIcons
 {
     public static readonly IReadOnlyList<string> All = """
@@ -31,12 +25,6 @@ public static class RecipeIcons
         .Select(name => $"fa-duotone fa-{name}")
         .ToArray();
 
-    /// <summary>
-    /// Deterministically maps a seed (e.g. the recipe name) to one icon. Stable across calls,
-    /// so a recipe always gets the same fallback icon and never an empty value.
-    /// </summary>
-    /// <param name="seed">The seed value, typically the recipe name.</param>
-    /// <returns>A full Font Awesome class string from <see cref="All"/>.</returns>
     public static string Fallback(string seed)
     {
         int hash = 0;

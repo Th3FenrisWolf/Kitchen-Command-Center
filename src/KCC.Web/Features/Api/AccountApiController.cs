@@ -53,7 +53,6 @@ public class AccountApiController(
             return BadRequest(new AuthResponse(false, ["Username, email and password are required."], null));
         }
 
-        // Every new member waits for the owner's approval before they can sign in.
         var userName = request.UserName.Trim();
         var member = MemberIdentityUser.CreateNew(userName, request.Email.Trim(), Constants.Security.DefaultMemberTypeAlias, isApproved: false, userName);
         var result = await memberWriteLock.RunAsync(() => memberManager.CreateAsync(member, request.Password));

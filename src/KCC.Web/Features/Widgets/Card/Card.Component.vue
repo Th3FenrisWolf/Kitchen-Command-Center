@@ -5,28 +5,13 @@
   import { sheetTearFor } from '~/Utilities/BrandColor'
 
   export interface CardProps {
-    /**
-     * The editor's colour, pooled as the sheet's wash. A ground carries none.
-     * @default 'bg-paper'
-     */
     cardColor?: BackgroundColor
-
-    /** Neighbours never share a tear: the page passes the next of its cycle. Unset, the tear comes from `seed`. */
     tear?: 1 | 2 | 3 | 4 | 5 | 6
-
-    /**
-     * Hashed into a stable tear when the page supplies none; usually the card's heading.
-     * @default ''
-     */
     seed?: string
   }
 
   export interface CardSlots {
     default?: () => void
-
-    /**
-     * Filling this slot is what gives the card a drawer and its hover behavior.
-     */
     drawer?: () => void
   }
 
