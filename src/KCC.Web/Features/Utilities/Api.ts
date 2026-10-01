@@ -1,5 +1,3 @@
-import qs from 'qs'
-
 export interface ApiStrings {
   /** Shown when the request never completes (network error, abort). */
   unexpectedError: string
@@ -40,39 +38,31 @@ export function antiforgeryToken(): string {
   return config.antiforgeryToken ?? ''
 }
 
-export function get<T>(url: string, params?: Record<string, unknown>): Promise<ApiResult<T>> {
-  const query = params ? `?${qs.stringify(params)}` : ''
+export function get<T>(url: string, params?: Record<string, string | number>): Promise<ApiResult<T>> {
+  const query = params ? `?${new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)]))}` : ''
   return request<T>(`${url}${query}`, { method: 'GET' })
 }
 
 export function post<T>(url: string, body?: unknown): Promise<ApiResult<T>> {
-  return request<T>(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}),
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  })
+  return send<T>('POST', url, body)
 }
 
 export function put<T>(url: string, body?: unknown): Promise<ApiResult<T>> {
-  return request<T>(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}),
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  })
+  return send<T>('PUT', url, body)
 }
 
 export function del<T>(url: string): Promise<ApiResult<T>> {
+  return send<T>('DELETE', url)
+}
+
+function send<T>(method: 'POST' | 'PUT' | 'DELETE', url: string, body?: unknown): Promise<ApiResult<T>> {
   return request<T>(url, {
-    method: 'DELETE',
+    method,
     headers: {
+      ...(method === 'DELETE' ? {} : { 'Content-Type': 'application/json' }),
       ...(config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}),
     },
+    body: body === undefined ? undefined : JSON.stringify(body),
   })
 }
 
