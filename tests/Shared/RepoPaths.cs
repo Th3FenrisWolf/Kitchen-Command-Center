@@ -1,6 +1,6 @@
-namespace KCC.E2ETests.Config;
+namespace KCC.Tests;
 
-public static class RepoPaths
+internal static class RepoPaths
 {
     public static string Root { get; } = FindRoot();
 

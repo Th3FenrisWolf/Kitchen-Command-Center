@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import VariantToolbar from '~/Components/RecipeDetail/VariantToolbar.vue'
 import type { SortKey, ViewMode } from '~/Components/RecipeDetail/variantFilters'
@@ -18,8 +18,6 @@ const render = ({
   tag = '',
   tags = ['', 'Quick', 'Vegan'],
 }: ToolbarProps = {}) => renderSsr(VariantToolbar, { search, sort, view, tag, tags })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 /** Every rendered button as its opening tag plus the text it carries, comment anchors stripped. */
 const buttons = (html: string) =>

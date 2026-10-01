@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import CookModeStep from '~/Pages/VariantDetail/CookModeStep.vue'
 import type { Ingredient, Instruction } from '~/Types/Recipe'
@@ -90,11 +90,8 @@ describe('CookModeStep', () => {
   it('carries no Softbound hook, weight, inset panel or paper radius', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\bv-ink\b/)
-    expect(html).not.toContain('font-bold')
+    expectNoRetiredMarkup(html)
     expect(html).not.toContain('<b>')
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
     expect(html).not.toContain('bg-paper-2')
     expect(html).not.toContain('border-rule')
   })

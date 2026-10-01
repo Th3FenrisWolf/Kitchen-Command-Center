@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
 
@@ -7,8 +7,6 @@ import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
 // body, the delete button and Load more — is covered by VariantCookNotesTests in the e2e suite.
 const render = (over: Record<string, unknown> = {}) =>
   renderSsr(VariantCookNotes, { variantGuid: '11111111-2222-3333-4444-555555555555', ...over })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('VariantCookNotes sheet', () => {
   it('is a section sheet on the fourth tear, labelled with the pen nib', async () => {
@@ -64,9 +62,6 @@ describe('VariantCookNotes sheet', () => {
   it('carries no Softbound hook, coloured status text, weight or paper radius', async () => {
     const html = await render({ isAuthenticated: true })
 
-    expect(html).not.toContain('sk-')
-    expect(html).not.toMatch(/text-(?:danger|warning|success)/)
-    expect(html).not.toContain('font-bold')
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
+    expectNoRetiredMarkup(html)
   })
 })

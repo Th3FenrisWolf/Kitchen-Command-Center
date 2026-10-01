@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, echoKey } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
@@ -23,18 +23,16 @@ const hit = (over: Partial<RecipeSearchHit> = {}): RecipeSearchHit => ({
 })
 
 // Matches what useResourceStrings hands the card when a key has no value: the key itself.
-const rs = (key: string) => key
 
 const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
 
 // The opening tag of the first element carrying `needle`, so an assertion about one element's classes and
 // hooks does not also pin the order Vue happens to print its attributes in.
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 // Renders through the search page's own mapper, so these cover the RecipeSearchHit -> card
 // hop as well as the markup the shared card produces from it.
 const render = (recipe: RecipeSearchHit, props: Record<string, unknown> = {}) =>
-  renderSsr(RecipeCard, { card: hitToCard(recipe, rs), ...props })
+  renderSsr(RecipeCard, { card: hitToCard(recipe, echoKey), ...props })
 
 describe('RecipeCard slip', () => {
   it('is an article slip torn on a preset the recipe picks for itself', async () => {

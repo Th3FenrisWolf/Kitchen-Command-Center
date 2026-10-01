@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeListRow from '~/Components/RecipeSearch/RecipeListRow.vue'
@@ -19,8 +19,6 @@ const hit: RecipeSearchHit = {
   variantCount: 6,
   fastestTime: 25,
 }
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipeListRow', () => {
   it('hands the localized hit to the shared torn row, hooks intact', async () => {

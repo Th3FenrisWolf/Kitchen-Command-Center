@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
 import type { Ingredient } from '~/Types/Recipe'
@@ -10,8 +10,6 @@ const ingredients: Ingredient[] = [
 
 const render = (over: Record<string, unknown> = {}) =>
   renderSsr(VariantIngredients, { ingredients, baseServings: 4, ...over })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 const rowFor = (html: string, name: string) =>
   html.match(new RegExp(`<li[^>]*>(?:(?!</li>).)*${name}.*?</li>`, 's'))?.[0] ?? ''
@@ -100,8 +98,6 @@ describe('VariantIngredients sheet', () => {
   it('carries no Softbound hook, weight or paper radius', async () => {
     const html = await render()
 
-    expect(html).not.toContain('sk-')
-    expect(html).not.toContain('font-bold')
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
+    expectNoRetiredMarkup(html)
   })
 })

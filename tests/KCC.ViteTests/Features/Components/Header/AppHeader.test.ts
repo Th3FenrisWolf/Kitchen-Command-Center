@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import AppHeader from '~/Components/Header/AppHeader.Component.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 const props = {
   homeUrl: '/',

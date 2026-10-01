@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, openTag, echoKey } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
@@ -33,14 +33,8 @@ const variant: VariantSummary = {
 }
 
 // Matches what useResourceStrings hands the card when a key has no value: the key itself.
-const rs = (key: string) => key
 
 /** The whole opening tag of the first element carrying `needle`, so nothing pins Vue's attribute order. */
-const openTag = (html: string, needle: string) => {
-  const at = html.indexOf(needle)
-  expect(at, `${needle} is not in the render`).toBeGreaterThan(-1)
-  return html.slice(html.lastIndexOf('<', at), html.indexOf('>', at) + 1)
-}
 
 /** Everything inside that element. */
 const inner = (html: string, needle: string) => {
@@ -60,14 +54,14 @@ const count = (html: string, needle: string) => html.split(needle).length - 1
 
 describe('FeaturedRecipeCard from a search hit', () => {
   it('renders the recipe name and its numeric rating', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     expect(html).toContain('Sourdough Focaccia')
     expect(html).toContain('4.9')
     expect(html).toContain(recipe.slug)
   })
 
   it('is a recipe slip torn from the hero preset', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const article = openTag(html, 'kcc-slip')
     expect(article.startsWith('<article')).toBe(true)
     expect(article).toContain('kcc-recipe')
@@ -76,7 +70,7 @@ describe('FeaturedRecipeCard from a search hit', () => {
   })
 
   it('makes the torn wrapper the one link, and pads the sheet to the hero rule', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const anchor = openTag(html, 'kcc-torn')
     expect(anchor.startsWith('<a ')).toBe(true)
     expect(anchor).toContain(`href="${recipe.slug}"`)
@@ -85,7 +79,7 @@ describe('FeaturedRecipeCard from a search hit', () => {
   })
 
   it('keeps the spotlight hooks on the link, with one data-recipe-name', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const anchor = openTag(html, 'kcc-torn')
     expect(anchor).toContain('data-testid="recipe-spotlight"')
     expect(anchor).toContain('data-recipe-name="Sourdough Focaccia"')
@@ -93,7 +87,7 @@ describe('FeaturedRecipeCard from a search hit', () => {
   })
 
   it('pools the recipe wash in the bottom-right corner, clear of the kick lines', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const wash = openTag(html, 'kcc-wash').replace(/\s/g, '')
     expect(wash).toContain(`--c:var(--color-${washFor(recipe.name)})`)
     expect(wash).toContain('--x:100%')
@@ -103,7 +97,7 @@ describe('FeaturedRecipeCard from a search hit', () => {
   })
 
   it('pins the large tile and its tape outside the tear, with a strip on the sheet', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const tilewrap = openTag(html, 'kcc-tilewrap').replace(/\s/g, '')
     expect(tilewrap).toContain('top:-22px')
     expect(tilewrap).toContain('left:40px')
@@ -114,14 +108,14 @@ describe('FeaturedRecipeCard from a search hit', () => {
   })
 
   it('prints the spotlight pill as the label over the right edge, outside the link', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     expect(openTag(html, 'kcc-label')).toContain('kcc-label--right')
     expect(inner(html, 'kcc-label')).toContain('TopRated')
     expect(html.indexOf('kcc-label')).toBeGreaterThan(html.indexOf('</a>'))
   })
 
   it('opens with a kick line of category and who started it', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const kick = inner(html, 'kcc-kick').replace(/<[^>]*>/g, '')
     expect(kick).toContain('Breads')
     expect(kick).toContain('·')
@@ -129,13 +123,13 @@ describe('FeaturedRecipeCard from a search hit', () => {
   })
 
   it('sets the title at display size', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     expect(inner(html, 'kcc-h3')).toContain('Sourdough Focaccia')
     expect(openTag(html, 'kcc-h3').startsWith('<h3')).toBe(true)
   })
 
   it('carries the rating hooks on a star line and sets every number in Sono', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const line = openTag(html, 'recipe-card-rating')
     expect(line).toContain('data-average-rating="4.9"')
     expect(inner(html, 'recipe-card-rating')).toContain('fa-duotone fa-star')
@@ -147,7 +141,7 @@ describe('FeaturedRecipeCard from a search hit', () => {
 
 describe('FeaturedRecipeCard from a variant', () => {
   it('renders the blurb and the badges, and drops the rating line when nobody has reviewed', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: variantToFeatured(variant, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: variantToFeatured(variant, echoKey) })
     expect(inner(html, 'kcc-body')).toContain('A slow, sour crumb.')
     expect(inner(html, 'kcc-badges')).toContain('Overnight')
     expect(html).not.toContain('recipe-card-rating')
@@ -155,7 +149,7 @@ describe('FeaturedRecipeCard from a variant', () => {
   })
 
   it('stays out of the detail page card queries: no spotlight hooks', async () => {
-    const html = await renderSsr(FeaturedRecipeCard, { card: variantToFeatured(variant, rs) })
+    const html = await renderSsr(FeaturedRecipeCard, { card: variantToFeatured(variant, echoKey) })
     expect(html).not.toContain('data-recipe-name')
     expect(html).not.toContain('data-testid')
     expect(inner(html, 'kcc-kick').replace(/<[^>]*>/g, '')).toContain('By Ida Soerensen')

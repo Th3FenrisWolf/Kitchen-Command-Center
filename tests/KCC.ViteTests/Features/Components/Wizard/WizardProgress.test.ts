@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 const render = (current: number, total: number) => renderSsr(WizardProgress, { current, total })
 

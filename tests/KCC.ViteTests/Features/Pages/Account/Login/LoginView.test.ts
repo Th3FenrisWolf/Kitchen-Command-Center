@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import LoginView from '~/Pages/Account/Login/LoginView.Component.vue'
-import { renderSsr } from '../../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../../support/ssr'
 
 const STRINGS = {
   'Login.SignIn': 'Sign in',
@@ -19,8 +19,6 @@ const STRINGS = {
 // Sign-in is the server's state: `isSignIn` starts true, so the sign-up fields and the sign-up copy are
 // client state this suite cannot reach.
 const render = () => renderSsr(LoginView, { returnUrl: '/account', resourceStrings: STRINGS })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 const formOf = (html: string) => html.slice(html.indexOf('<form'), html.indexOf('</form>'))
 
@@ -112,12 +110,7 @@ describe('LoginView', () => {
   it('leaves no Softbound remnant on the sheet', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\bv-ink\b/)
-    expect(html).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(html).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(html).not.toMatch(/\bshadow-/)
-    expect(html).not.toMatch(/\btext-danger-ink\b/)
+    expectNoRetiredMarkup(html)
     expect(html).not.toMatch(/\bbg-paper-2\b/)
   })
 })

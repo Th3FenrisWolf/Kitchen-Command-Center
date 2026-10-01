@@ -57,4 +57,18 @@ public static class TestMembers
             throw new InvalidOperationException($"Approving {member.Username} failed: {updated.Status.MemberEditingOperationStatus}.");
         }
     }
+
+    public static async Task<SignedInMember> SignedInAsync(UmbracoSite site, string prefix)
+    {
+        var userName = UniqueUserName(prefix);
+        var key = await ApprovedAsync(site.Services, userName);
+        var visitor = new MemberClient(site);
+        _ = await visitor.SignInAsync(userName, Password);
+        return new SignedInMember(visitor, key, userName);
+    }
+}
+
+public sealed record SignedInMember(MemberClient Visitor, Guid Key, string UserName) : IDisposable
+{
+    public void Dispose() => Visitor.Dispose();
 }

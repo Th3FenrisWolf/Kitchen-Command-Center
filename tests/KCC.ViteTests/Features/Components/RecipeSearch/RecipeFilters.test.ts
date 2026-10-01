@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
 

@@ -36,7 +36,7 @@ public static class TestContent
     }
 
     public static Task<Guid> RecipeAsync(IServiceProvider services, string name, params PropertyValueModel[] more) =>
-        PublishedAsync(
+        CreateAsync(
             services,
             "recipe",
             name,
@@ -48,7 +48,7 @@ public static class TestContent
             ]);
 
     public static Task<Guid> VariantAsync(IServiceProvider services, Guid recipeKey, string name, params PropertyValueModel[] more) =>
-        PublishedAsync(
+        CreateAsync(
             services,
             "recipeVariant",
             name,
@@ -112,10 +112,10 @@ public static class TestContent
     public static PropertyValueModel Author(Guid memberKey) => new() { Alias = "author", Value = memberKey.ToString() };
 
     public static Task<Guid> CategoryAsync(IServiceProvider services, string name) =>
-        PublishedAsync(services, "recipeCategory", name, Folder(services, "Recipe Categories"), []);
+        CreateAsync(services, "recipeCategory", name, Folder(services, "Recipe Categories"), []);
 
     public static Task<Guid> TagAsync(IServiceProvider services, string name) =>
-        PublishedAsync(services, "recipeTag", name, Folder(services, "Recipe Tags"), []);
+        CreateAsync(services, "recipeTag", name, Folder(services, "Recipe Tags"), []);
 
     public static async Task TrashAsync(IServiceProvider services, Guid key)
     {
@@ -201,10 +201,10 @@ public static class TestContent
 
     // Saved and never published, as a member's submission is until the owner publishes it.
     public static Task<Guid> DraftRecipeAsync(IServiceProvider services, string name, Guid authorKey) =>
-        SavedAsync(services, "recipe", name, RecipeListing(services), [new PropertyValueModel { Alias = "icon", Value = "fa-duotone fa-egg" }, Author(authorKey)]);
+        CreateAsync(services, "recipe", name, RecipeListing(services), [new PropertyValueModel { Alias = "icon", Value = "fa-duotone fa-egg" }, Author(authorKey)], publish: false);
 
     public static Task<Guid> DraftVariantAsync(IServiceProvider services, Guid recipeKey, string name, Guid authorKey) =>
-        SavedAsync(services, "recipeVariant", name, recipeKey, [new PropertyValueModel { Alias = "icon", Value = "fa-duotone fa-egg" }, Author(authorKey)]);
+        CreateAsync(services, "recipeVariant", name, recipeKey, [new PropertyValueModel { Alias = "icon", Value = "fa-duotone fa-egg" }, Author(authorKey)], publish: false);
 
     private static Guid Folder(IServiceProvider services, string name)
     {
@@ -212,7 +212,8 @@ public static class TestContent
         return services.GetRequiredService<IContentService>().GetByIds(folders).Single(folder => folder.Name == name).Key;
     }
 
-    private static async Task<Guid> SavedAsync(IServiceProvider services, string contentTypeAlias, string name, Guid parentKey, IEnumerable<PropertyValueModel> values)
+    private static async Task<Guid> CreateAsync(
+        IServiceProvider services, string contentTypeAlias, string name, Guid parentKey, IEnumerable<PropertyValueModel> values, bool publish = true)
     {
         using var scope = services.CreateScope();
         var scoped = scope.ServiceProvider;
@@ -229,39 +230,20 @@ public static class TestContent
             Constants.Security.SuperUserKey);
 
         // A draft may miss mandatory fields, as a submission can; the owner completes it before publishing.
-        if (created.Status is not (ContentEditingOperationStatus.Success or ContentEditingOperationStatus.PropertyValidationError))
-        {
-            throw new InvalidOperationException($"Saving {name} failed: {created.Status}.");
-        }
-
-        return key;
-    }
-
-    private static async Task<Guid> PublishedAsync(IServiceProvider services, string contentTypeAlias, string name, Guid parentKey, IEnumerable<PropertyValueModel> values)
-    {
-        using var scope = services.CreateScope();
-        var scoped = scope.ServiceProvider;
-        var key = Guid.NewGuid();
-        var created = await scoped.GetRequiredService<IContentEditingService>().CreateAsync(
-            new ContentCreateModel
-            {
-                Key = key,
-                ContentTypeKey = scoped.GetRequiredService<IContentTypeService>().Get(contentTypeAlias)!.Key,
-                ParentKey = parentKey,
-                Variants = [new VariantModel { Name = name }],
-                Properties = values,
-            },
-            Constants.Security.SuperUserKey);
-        if (created.Status != ContentEditingOperationStatus.Success)
+        var draftGap = !publish && created.Status == ContentEditingOperationStatus.PropertyValidationError;
+        if (created.Status != ContentEditingOperationStatus.Success && !draftGap)
         {
             throw new InvalidOperationException($"Creating {name} failed: {created.Status}.");
         }
 
-        var published = await scoped.GetRequiredService<IContentPublishingService>()
-            .PublishAsync(key, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
-        if (!published.Success)
+        if (publish)
         {
-            throw new InvalidOperationException($"Publishing {name} failed: {published.Status}.");
+            var published = await scoped.GetRequiredService<IContentPublishingService>()
+                .PublishAsync(key, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
+            if (!published.Success)
+            {
+                throw new InvalidOperationException($"Publishing {name} failed: {published.Status}.");
+            }
         }
 
         return key;

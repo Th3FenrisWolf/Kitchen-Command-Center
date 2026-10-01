@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import Stacker from '~/Widgets/Stacker/Stacker.Component.vue'
 import { markStuckCards } from '~/Widgets/Stacker/markStuckCards'
-import { renderSsr } from '../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../support/ssr'
 
 const card = (heading: string, backgroundColor: string, tear?: 1 | 2 | 3 | 4 | 5 | 6) => ({
   heading,
@@ -136,10 +136,7 @@ describe('Stacker remnants', () => {
   it('leaves no Softbound class behind', async () => {
     const html = await render([card('Prep', 'bg-peach'), card('Cook', 'bg-rosewater')])
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
-    expect(html).not.toMatch(/shadow-/)
-    expect(html).not.toContain('data-ink')
+    expectNoRetiredMarkup(html)
     expect(html).not.toContain('aspect-square')
     expect(html).not.toContain('text-center')
   })

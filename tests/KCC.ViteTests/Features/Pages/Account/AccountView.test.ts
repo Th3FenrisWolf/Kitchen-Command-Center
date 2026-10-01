@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import AccountView from '~/Pages/Account/AccountView.Component.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 
 const STRINGS = {
   'Account.AccountSettings': 'Account settings',
@@ -69,8 +69,6 @@ const render = (recipeGroups: unknown[] = RECIPE_GROUPS) =>
     recipeGroups,
     resourceStrings: STRINGS,
   })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 // Three blocks in source order: the profile sheet, the creations column, then the coming-soon pair. The
 // creations column is the only one holding a section name, and its groups are list items, so the first
@@ -171,11 +169,8 @@ describe('AccountView', () => {
   it('leaves no Softbound remnant on the profile', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\bv-ink\b/)
+    expectNoRetiredMarkup(html)
     expect(html).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl|full)\b/)
-    expect(html).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(html).not.toMatch(/\bshadow-/)
     expect(html).not.toMatch(/\bbg-(?:desk-2|maroon|teal|yellow|peach)\b/)
     expect(html).not.toMatch(/\bborder\b/)
   })

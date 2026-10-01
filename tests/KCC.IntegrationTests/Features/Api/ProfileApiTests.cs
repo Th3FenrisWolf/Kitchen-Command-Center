@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using KCC.IntegrationTests.Config;
-using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core;
@@ -19,7 +18,7 @@ public class ProfileApiTests
     [Test]
     public async Task UpdateProfile_SavesTrimmedNames_AndRenamesTheAuthor()
     {
-        using var member = await SignedInAsync("rename");
+        using var member = await TestMembers.SignedInAsync(Site, "rename");
 
         var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile", new { firstName = "  Grace ", lastName = " Hopper  " }));
 
@@ -30,12 +29,12 @@ public class ProfileApiTests
     [Test]
     public async Task UpdateProfile_WithoutALastName_IsRefused()
     {
-        using var member = await SignedInAsync("half");
+        using var member = await TestMembers.SignedInAsync(Site, "half");
 
         var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile", new { firstName = "Grace", lastName = " " }));
 
         _ = await Assert.That(response.Success).IsFalse();
-        _ = await Assert.That(response.Errors!.Single()).IsEqualTo(String("Account.NameRequiredError"));
+        _ = await Assert.That(response.Errors!.Single()).IsEqualTo(Site.ResourceString("Account.NameRequiredError"));
     }
 
     [Test]
@@ -51,7 +50,7 @@ public class ProfileApiTests
     [Test]
     public async Task UpdateProfile_AfterTheMemberIsDeleted_IsUnauthorized()
     {
-        using var member = await SignedInAsync("vanished");
+        using var member = await TestMembers.SignedInAsync(Site, "vanished");
         await DeleteMemberAsync(member.Key);
 
         using var response = await member.Visitor.PostAsync("/api/profile", new { firstName = "Grace", lastName = "Hopper" });
@@ -62,7 +61,7 @@ public class ProfileApiTests
     [Test]
     public async Task ChangePassword_KeepsTheMemberSignedIn_AndTheNewPasswordWorks()
     {
-        using var member = await SignedInAsync("rotate");
+        using var member = await TestMembers.SignedInAsync(Site, "rotate");
 
         var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile/password", new { currentPassword = TestMembers.Password, newPassword = "Brand-New-Passw0rd" }));
 
@@ -76,7 +75,7 @@ public class ProfileApiTests
     [Test]
     public async Task ChangePassword_WithTheWrongCurrentPassword_Fails()
     {
-        using var member = await SignedInAsync("forgot");
+        using var member = await TestMembers.SignedInAsync(Site, "forgot");
 
         var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile/password", new { currentPassword = "not-my-password", newPassword = "Brand-New-Passw0rd" }));
 
@@ -87,7 +86,7 @@ public class ProfileApiTests
     [Test]
     public async Task ChangePassword_ToOneTooShort_Fails()
     {
-        using var member = await SignedInAsync("short");
+        using var member = await TestMembers.SignedInAsync(Site, "short");
 
         var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile/password", new { currentPassword = TestMembers.Password, newPassword = "Short7!" }));
 
@@ -102,21 +101,6 @@ public class ProfileApiTests
         }
     }
 
-    private async Task<SignedInMember> SignedInAsync(string prefix)
-    {
-        var userName = TestMembers.UniqueUserName(prefix);
-        var key = await TestMembers.ApprovedAsync(Site.Services, userName);
-        var visitor = new MemberClient(Site);
-        _ = await visitor.SignInAsync(userName, TestMembers.Password);
-        return new SignedInMember(visitor, key, userName);
-    }
-
-    private string String(string key)
-    {
-        using var scope = Site.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetOrDefault(key);
-    }
-
     private async Task DeleteMemberAsync(Guid memberKey)
     {
         using var scope = Site.Services.CreateScope();
@@ -128,9 +112,4 @@ public class ProfileApiTests
     }
 
     private sealed record ProfileResult(bool Success, string[]? Errors);
-
-    private sealed record SignedInMember(MemberClient Visitor, Guid Key, string UserName) : IDisposable
-    {
-        public void Dispose() => Visitor.Dispose();
-    }
 }
