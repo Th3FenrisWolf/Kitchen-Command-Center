@@ -56,9 +56,3 @@ export class KccContributionsDashboardElement extends UmbLitElement {
 }
 
 export default KccContributionsDashboardElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-contributions-dashboard': KccContributionsDashboardElement
-  }
-}

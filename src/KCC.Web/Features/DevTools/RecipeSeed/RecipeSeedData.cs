@@ -32,8 +32,6 @@ public static class RecipeSeedData
     public const string Snack = "Snack";
     public const string Beverage = "Beverage";
 
-    public static readonly string[] Categories = [Breakfast, Lunch, Dinner, Dessert, Snack, Beverage];
-
     // The baseline's "Recipe Tags" nodes — multi-valued across a recipe's variants.
     public const string Vegetarian = "Vegetarian";
     public const string Vegan = "Vegan";
@@ -43,9 +41,6 @@ public static class RecipeSeedData
     public const string HighProtein = "High-Protein";
     public const string LowCarb = "Low-Carb";
     public const string Spicy = "Spicy";
-
-    public static readonly string[] Diets =
-        [Vegetarian, Vegan, GlutenFree, DairyFree, Keto, HighProtein, LowCarb, Spicy];
 
     public const string AuthorPriya = "priya";
     public const string AuthorDiego = "diego";

@@ -128,9 +128,3 @@ export class KccIngredientsEditorElement extends KccJsonArrayEditorElement<Ingre
 }
 
 export default KccIngredientsEditorElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-ingredients-editor': KccIngredientsEditorElement
-  }
-}

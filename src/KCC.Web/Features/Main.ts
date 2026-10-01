@@ -14,7 +14,6 @@ if (!serverContentEl?.textContent) throw new Error('Server content not found')
 
 // Parse the JSON-encoded server content
 const { isPreview, ...contentRegions } = JSON.parse(serverContentEl.textContent) as SsrPayload
-if (!contentRegions) throw new Error('Failed to parse server content')
 
 // Seed the API utility with the antiforgery token + localized fallback strings
 // that Layout.cshtml emits once into #api-config. Done before mount so any form

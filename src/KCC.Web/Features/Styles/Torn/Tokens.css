@@ -35,7 +35,6 @@
     --color-paper-2: oklch(0.222 0.028 288);
     --color-ink: oklch(0.945 0.012 92);
     --color-ink-soft: oklch(0.735 0.018 288);
-    --color-hair: oklch(0.945 0.012 92 / 0.18);
     --color-hair-strong: oklch(0.945 0.012 92 / 0.45);
     --color-rule: oklch(0.88 0.02 288 / 0.13);
     --color-fiber: oklch(0.435 0.034 288);

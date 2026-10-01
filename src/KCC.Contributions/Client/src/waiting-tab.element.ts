@@ -141,9 +141,3 @@ export class KccWaitingTabElement extends UmbLitElement {
 }
 
 export default KccWaitingTabElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-waiting-tab': KccWaitingTabElement
-  }
-}

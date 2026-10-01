@@ -64,9 +64,3 @@ export class KccInstructionsEditorElement extends KccJsonArrayEditorElement<Inst
 }
 
 export default KccInstructionsEditorElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-instructions-editor': KccInstructionsEditorElement
-  }
-}

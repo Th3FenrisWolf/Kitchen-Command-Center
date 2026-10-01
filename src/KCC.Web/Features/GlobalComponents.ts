@@ -23,12 +23,3 @@ export const registerGlobalComponents = (app: App) => {
     app.component(name.toLowerCase(), module.default)
   })
 }
-
-// Lowercase tag names for every registered global component.
-// Useful for detecting raw Vue component tags in HTML
-export const registeredTagNames: ReadonlySet<string> = new Set(
-  Object.keys(componentModules)
-    .map(getComponentName)
-    .filter((name): name is string => name !== null)
-    .map((name) => name.toLowerCase()),
-)
