@@ -1,6 +1,6 @@
-# Torn & Waxed — the kit
+# Loose Leaf — the kit
 
-The engineering contract for [torn-and-waxed.md](torn-and-waxed.md): tokens, classes, structure, invariants,
+The engineering contract for [loose-leaf.md](loose-leaf.md): tokens, classes, structure, invariants,
 and the test that enforces each rule. Anything Razor also renders lives in global `@layer components` CSS,
 never in a component `<style>` block.
 

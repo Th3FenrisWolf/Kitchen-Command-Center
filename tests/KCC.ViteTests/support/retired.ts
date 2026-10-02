@@ -1,5 +1,5 @@
 // Retired outright, no alias layer: the pre-sketch tokens (bone / onyx / surface / overlay), the Softbound kit
-// (sk-*, v-ink, data-ink, its tokens) and every rule the Torn & Waxed identity forbids (shadows, radii above
+// (sk-*, v-ink, data-ink, its tokens) and every rule the Loose Leaf identity forbids (shadows, radii above
 // md, weight, coloured icon layers, washes as text). A hit means an unstyled or off-brand element in
 // production, silently: Tailwind emits nothing for an unknown class, and CMS content, which uSync exports into
 // the repo, carries class strings too. See docs/brand/kit.md → Tokens.

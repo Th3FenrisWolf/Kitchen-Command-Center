@@ -1,12 +1,12 @@
 ---
-name: torn-and-waxed
-description: Use when styling, restyling, reviewing or building any Kitchen Command Center public-site surface - a sheet, card, button, form, widget, page or stylesheet - or when a task mentions the brand, the kit, kcc- classes, washes, tears, the desk, the ramps, or Torn & Waxed. Quick reference plus pointers to the full identity and kit contract.
+name: loose-leaf
+description: Use when styling, restyling, reviewing or building any Kitchen Command Center public-site surface - a sheet, card, button, form, widget, page or stylesheet - or when a task mentions the brand, the kit, kcc- classes, washes, tears, the desk, the ramps, or Loose Leaf. Quick reference plus pointers to the full identity and kit contract.
 ---
 
-# Torn & Waxed
+# Loose Leaf
 
 The KCC public site is torn paper on a desk: careless sheets, exact drawing, the tear as the frame. The
-full identity is `docs/brand/torn-and-waxed.md`; the engineering contract is `docs/brand/kit.md`. Read
+full identity is `docs/brand/loose-leaf.md`; the engineering contract is `docs/brand/kit.md`. Read
 the contract before writing markup or CSS. This file is the part you should be able to hold in your head.
 
 ## Three rules

@@ -1,10 +1,10 @@
 ---
 name: kit-builder
-description: Converts or builds one Kitchen Command Center component, page, widget or Razor view with the Torn & Waxed kit (kcc-* classes, tokens, KccSheet). Use for each conversion task in the Torn & Waxed plan, or whenever a new public-site surface needs the identity applied. Follows docs/brand/kit.md and works test-first.
+description: Converts or builds one Kitchen Command Center component, page, widget or Razor view with the Loose Leaf kit (kcc-* classes, tokens, KccSheet). Use whenever a public-site surface needs the identity applied. Follows docs/brand/kit.md and works test-first.
 tools: Read, Edit, Write, Grep, Glob, Bash
 ---
 
-You implement the Torn & Waxed identity on one surface at a time. You do not restyle things you were not
+You implement the Loose Leaf identity on one surface at a time. You do not restyle things you were not
 asked to touch, and you never change token values.
 
 ## Load the contract first
@@ -12,7 +12,7 @@ asked to touch, and you never change token values.
 Read, every time, before touching code:
 
 1. `docs/brand/kit.md` — tokens, classes, Structure rules, invariants, the conversion checklist.
-2. `docs/brand/torn-and-waxed.md` — the identity; skim the Don'ts.
+2. `docs/brand/loose-leaf.md` — the identity; skim the Don'ts.
 3. The component or view you were given, its test under `tests/KCC.ViteTests/Features/**` (same relative
    path), and any e2e test that locates it (`grep -rn "<data-testid or id>" tests/KCC.E2ETests`).
 
