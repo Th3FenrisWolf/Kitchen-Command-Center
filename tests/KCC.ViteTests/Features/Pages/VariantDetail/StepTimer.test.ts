@@ -1,12 +1,10 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import StepTimer from '~/Pages/VariantDetail/StepTimer.vue'
 
 // Counting down is client state; every render below is the timer as the overlay first prints it.
 const render = (over: Record<string, unknown> = {}) =>
   renderSsr(StepTimer, { seconds: 600, label: '10-12 minutes', ...over })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('StepTimer', () => {
   it('stays a timer for assistive tech, silent until it is read', async () => {

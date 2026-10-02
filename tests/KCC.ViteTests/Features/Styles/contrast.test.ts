@@ -49,7 +49,9 @@ const dark = new Map([...light, ...parseTokens(darkBlock)])
 // A dark token written in a form the regex does not read (percent lightness, `deg`, color-mix) would fall
 // out of the dark map and every dark assertion would re-test light. Guard the parse itself.
 const darkOverrides = parseTokens(darkBlock)
-if (darkOverrides.size < 12) throw new Error(`only ${darkOverrides.size} dark tokens parsed from Torn/Tokens.css`)
+const darkDeclared = darkBlock.match(/--color-[a-z0-9-]+:/g)?.length ?? 0
+if (darkOverrides.size !== darkDeclared)
+  throw new Error(`parsed ${darkOverrides.size} of ${darkDeclared} dark tokens in Torn/Tokens.css`)
 if (resolve(dark, 'paper').l === resolve(light, 'paper').l) throw new Error('the dark ramp did not override paper')
 
 type WashRender = { blend: 'multiply' | 'screen'; opacity: number }

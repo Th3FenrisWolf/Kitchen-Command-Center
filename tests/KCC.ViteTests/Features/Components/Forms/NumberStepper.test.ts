@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import NumberStepper from '~/Components/Forms/NumberStepper.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 
 const render = (props: Record<string, unknown> = {}) => renderSsr(NumberStepper, { modelValue: 4, min: 1, ...props })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('NumberStepper names', () => {
   it('composes the button names from the label when a page gives none', async () => {

@@ -1,26 +1,11 @@
-<!-- #region ThemeToggle Component Properties -->
-<script lang="ts">
-  /**
-   * Two-state ramp switch for the header utility nav. Clicking it opts out of `prefers-color-scheme`
-   * permanently, which is what an explicit toggle is expected to do.
-   */
-  export default {
-    name: 'ThemeToggle',
-  }
-
+<script setup lang="ts">
   export type Ramp = 'light' | 'dark'
 
   export interface ThemeToggleProps {
-    /** Announced while the dark ramp is active, when clicking switches to light. */
     switchToLightLabel: string
-
-    /** Announced while the light ramp is active, when clicking switches to dark. */
     switchToDarkLabel: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const STORAGE_KEY = 'kcc-theme'
 
   const { switchToLightLabel, switchToDarkLabel } = defineProps<ThemeToggleProps>()

@@ -1,11 +1,9 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import RecipeResultsToolbar from '~/Components/RecipeSearch/RecipeResultsToolbar.vue'
 
 const render = (over: Record<string, unknown> = {}) =>
   renderSsr(RecipeResultsToolbar, { sort: 'relevant', view: 'grid', ...over })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipeResultsToolbar', () => {
   it('carries no heading: the result count belongs to the results section, not the library sheet', async () => {

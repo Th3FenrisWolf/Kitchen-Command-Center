@@ -16,12 +16,8 @@ public class LoginPageController(
     IMemberManager memberManager,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
-    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
+    : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
-    [NonAction]
-    public sealed override IActionResult Index() => throw new NotSupportedException();
-
     public async Task<IActionResult> Index([FromQuery] string returnUrl, CancellationToken cancellationToken)
     {
         if (CurrentPage is not LoginPage page)
@@ -38,23 +34,10 @@ public class LoginPageController(
         var viewModel = new LoginViewModel
         {
             ReturnUrl = localReturnUrl,
-            ResourceStrings = GetStrings(),
+            ResourceStrings = resourceStrings.GetGroup("Login"),
         };
         pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/Account/Login/Index.cshtml", viewModel);
     }
-
-    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
-        "Login.SignIn",
-        "Login.SignUp",
-        "Login.UsernamePlaceholder",
-        "Login.EmailPlaceholder",
-        "Login.PasswordPlaceholder",
-        "Login.ConfirmPasswordPlaceholder",
-        "Login.RememberMe",
-        "Login.HaveAccount",
-        "Login.HaveAccountDescription",
-        "Login.NewHere",
-        "Login.NewHereDescription");
 }

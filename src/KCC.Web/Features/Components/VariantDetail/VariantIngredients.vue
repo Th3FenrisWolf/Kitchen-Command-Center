@@ -1,5 +1,4 @@
-<!-- #region VariantIngredients Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref, useId } from 'vue'
   import type { Ingredient } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
@@ -7,24 +6,11 @@
   import NumberStepper from '~/Components/Forms/NumberStepper.vue'
   import { formatIngredientAmount } from './variantScaling'
 
-  /**
-   * Checklist of ingredients whose amounts rescale with the chosen serving count.
-   */
-  export default {
-    name: 'VariantIngredients',
-  }
-
   export interface VariantIngredientsProps {
     ingredients: Ingredient[]
-    /**
-     * Servings the stored amounts were written for. Omit or pass 0 to hide the scaler.
-     */
     baseServings?: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantIngredientsProps>()
 
   const rs = useResourceStrings()
@@ -65,7 +51,6 @@
   >
     <template #label><ResourceString for="Ingredients" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>
 
     <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">

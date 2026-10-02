@@ -11,13 +11,10 @@ public class DictionaryResourceStringProvider(ICultureDictionaryFactory dictiona
 
     public string GetOrDefault(string key) => Resolve(dictionaryFactory.CreateDictionary(SiteCulture), key);
 
-    public Dictionary<string, string> GetManyOrDefault(params string[] keys)
-    {
-        var dictionary = dictionaryFactory.CreateDictionary(SiteCulture);
-        return keys
-            .Distinct(StringComparer.Ordinal)
-            .ToDictionary(key => key, key => Resolve(dictionary, key), StringComparer.Ordinal);
-    }
+    public Dictionary<string, string> GetGroup(string parentKey) =>
+        dictionaryFactory.CreateDictionary(SiteCulture).GetChildren(parentKey)
+            .OrderBy(child => child.Key, StringComparer.Ordinal)
+            .ToDictionary(child => child.Key, child => child.Value is { Length: > 0 } value ? value : child.Key, StringComparer.Ordinal);
 
     private static string Resolve(ICultureDictionary dictionary, string key) =>
         dictionary[key] is { Length: > 0 } value ? value : key;

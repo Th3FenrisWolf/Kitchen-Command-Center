@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="..\Directory.Build.props" />
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\*.cs" LinkBase="Shared" />
+    <Using Include="KCC.Tests" />
+  </ItemGroup>
+</Project>

@@ -1,15 +1,12 @@
-<!-- #region VariantDetailView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
-  import type { Ingredient, Instruction, Breadcrumb, SiblingVariant } from '~/Types/Recipe'
+  import type { Ingredient, Instruction, Breadcrumb, Nutrition, SiblingVariant } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
+  import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
-  import Badge from '~/Components/Badge/Badge.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
-  import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
   import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
   import VariantInstructions from '~/Components/VariantDetail/VariantInstructions.vue'
@@ -19,42 +16,15 @@
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
   import CookMode from './CookMode.vue'
 
-  /**
-   * One variant in full: hero, stats, ingredients, instructions, nutrition, reviews, and cook mode.
-   */
-  export default {
-    name: 'VariantDetailView',
-  }
-
-  export interface VariantDetailViewProps {
+  export interface VariantDetailViewProps extends Nutrition {
     variantName: string
     variantDescription: string
     icon?: string
-    /**
-     * Already sized for the hero tile by the server.
-     */
     coverImage?: string
-    /**
-     * Minutes. Both feed the total-time stat tile.
-     */
     prepTime?: number
     cookTime?: number
-    /**
-     * Servings the stored ingredient amounts were written for, and the scaler's starting point.
-     */
     servings?: number
-    /**
-     * `easy`, `medium`, or `hard`; anything else drops the difficulty tile.
-     */
     difficulty?: string
-    calories?: number | null
-    proteinG?: number | null
-    carbsG?: number | null
-    fatG?: number | null
-    saturatedFatG?: number | null
-    fiberG?: number | null
-    sugarG?: number | null
-    sodiumMg?: number | null
     tags: string[]
     ingredients: Ingredient[]
     instructions: Instruction[]
@@ -62,31 +32,16 @@
     recipeSlug: string
     createdByName?: string
     breadcrumbs?: Breadcrumb[]
-    /**
-     * The recipe's other variants, excluding this one.
-     */
     siblingVariants: SiblingVariant[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
-    /**
-     * Identifies this variant to the reviews, notes, and cooked-toggle APIs.
-     */
     variantGuid: string
     averageRating?: number
     reviewCount?: number
     cookedCount?: number
     hasCooked?: boolean
-    /**
-     * Gates the review form, cook notes, and cooked toggle.
-     */
     isAuthenticated?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<VariantDetailViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
@@ -153,7 +108,7 @@
 
         <template v-if="tags.length" #footer>
           <div class="kcc-badges mt-6">
-            <Badge v-for="tag in tags" :key="tag">{{ tag }}</Badge>
+            <span v-for="tag in tags" :key="tag" class="kcc-badge">{{ tag }}</span>
           </div>
         </template>
       </DetailHero>

@@ -1,61 +1,26 @@
-<!-- #region KccSheet Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import type { Wash } from '~/Types/DesignSystem'
-
-  /**
-   * A sheet torn off the pad: tilt → torn (fibre + fall) → sheet (clip + rule + wash), with the printed label
-   * and the tape outside the tear. Every panel in the app is one of these. Renders entirely on the server.
-   */
-  export default {
-    name: 'KccSheet',
-  }
+  import { computed } from 'vue'
 
   export type Tear = 1 | 2 | 3 | 4 | 5 | 6 | 'hero'
 
   export interface KccSheetProps {
-    /** `label` (string) or the `#label` slot for rich content such as a `<ResourceString>`; the icon stays a prop. */
     label?: string
-
-    /** Font Awesome classes for the label's icon. */
     icon?: string
-
-    /** Moves the label to the right edge. */
     labelRight?: boolean
-
-    /** Pools a wash under the content. */
     wash?: Wash
-
     /**
      * Where the wash sits, as percentages of the sheet. Author-supplied literals written straight into
      * custom properties; never bind CMS or user data here.
      */
     at?: { x?: string; y?: string; w?: string; h?: string }
-
-    /**
-     * Which tear preset clips the sheet. Neighbours must differ: pass `(index % 6) + 1` in a list.
-     * @default 1
-     */
+    /** Neighbours must differ: pass `(index % 6) + 1` in a list. */
     tear?: Tear
-
-    /** One strip of tape, top-centre. */
     tape?: boolean
-
-    /** Sheet padding, e.g. `'48px'`; also aligns the pencil rule. */
     pad?: string
-
-    /** No tilt. For surfaces read closely or from across the kitchen: forms, cook mode. */
     crisp?: boolean
-
-    /**
-     * @default 'div'
-     */
     as?: 'div' | 'section' | 'article' | 'li'
   }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
-  import { computed } from 'vue'
 
   const {
     label,

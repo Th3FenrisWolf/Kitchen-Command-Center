@@ -234,9 +234,3 @@ export class KccEntriesTabElement extends UmbLitElement {
 }
 
 export default KccEntriesTabElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-entries-tab': KccEntriesTabElement
-  }
-}

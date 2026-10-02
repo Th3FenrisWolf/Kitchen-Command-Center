@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 import AccentTile from '~/Components/Recipe/AccentTile.vue'
 import { tileTearFor, washFor } from '~/Utilities/BrandColor'
 

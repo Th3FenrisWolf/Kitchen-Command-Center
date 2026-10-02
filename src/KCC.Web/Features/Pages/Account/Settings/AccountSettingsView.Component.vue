@@ -1,43 +1,23 @@
-<!-- #region AccountSettingsView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref, useId } from 'vue'
   import Field from '~/Components/Forms/Field.vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import { post } from '~/Utilities/Api'
-
-  /**
-   * Two independent forms: the member's profile details, and a password change.
-   */
-  export default {
-    name: 'AccountSettingsView',
-  }
-
-  export interface AccountSettingsViewProps {
-    /**
-     * Seeds the profile form; edits post to the API rather than round-tripping the page.
-     */
-    firstName: string
-    lastName: string
-    /**
-     * Shown read-only — the form offers no way to change it.
-     */
-    email: string
-    backUrl: string
-    logoutUrl: string
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
-    resourceStrings?: Record<string, string>
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   import SignOutForm from '~/Components/Account/SignOutForm.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
+
+  export interface AccountSettingsViewProps {
+    firstName: string
+    lastName: string
+    email: string
+    backUrl: string
+    logoutUrl: string
+    resourceStrings?: Record<string, string>
+  }
+
   const props = defineProps<AccountSettingsViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'Account')
@@ -123,7 +103,6 @@
     <KccSheet crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
       <template #label><ResourceString for="Profile" /></template>
 
-      <!-- The sheet's label carries the group's name in print; the heading carries it in the document. -->
       <h2 class="sr-only">{{ rs('Profile') }}</h2>
 
       <form class="flex flex-col gap-6" @submit.prevent="saveProfile">

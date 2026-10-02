@@ -47,7 +47,6 @@ public static class VueSsrExtensions
         return app;
     }
 
-    // Circuit breaker: break after 5 failures for 30 seconds
     private static AsyncCircuitBreakerPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
         HttpPolicyExtensions.HandleTransientHttpError()
             .CircuitBreakerAsync(
@@ -55,7 +54,6 @@ public static class VueSsrExtensions
                 durationOfBreak: TimeSpan.FromSeconds(30)
             );
 
-    // Retry policy: retry 2 times with exponential backoff + jitter to prevent thundering herd
     private static AsyncRetryPolicy<HttpResponseMessage> GetRetryPolicy() =>
         HttpPolicyExtensions.HandleTransientHttpError()
             .WaitAndRetryAsync(

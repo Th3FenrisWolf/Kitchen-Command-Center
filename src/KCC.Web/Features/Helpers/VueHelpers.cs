@@ -17,19 +17,12 @@ public static class Vue
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    /// <summary>
-    /// Serializes a value to JSON for use in Vue component props.
-    /// The output is safe for HTML attributes while preserving Unicode characters.
-    /// </summary>
-    /// <param name="value">The value to serialize as JSON.</param>
-    /// <returns>HTML-safe JSON string for use in Vue component props.</returns>
     public static IHtmlContent Prop(object value)
     {
         var json = Serializer.Serialize(value, SerializationOptions);
 
-        // HTML-encode only the characters that break HTML attribute parsing
-        // while preserving Unicode characters (like · and —) as-is.
-        // Order matters: encode & first to avoid double-encoding.
+        // Only what breaks an attribute is encoded, so · and — stay as they are; & goes first so the entities after it
+        // are not encoded twice.
         var htmlSafe = json
             .Replace("&", "&amp;")
             .Replace("\"", "&quot;")

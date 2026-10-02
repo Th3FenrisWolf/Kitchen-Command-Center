@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
@@ -51,10 +51,7 @@ describe('VariantSiblings', () => {
   it('carries no Softbound remnant: no drawn ink, no pill paper, no coloured star', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\bv-ink\b/)
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
-    expect(html).not.toContain('text-rating-ink')
+    expectNoRetiredMarkup(html)
     expect(html).not.toContain('transition-shadow')
     expect(html).not.toContain('bg-paper-2')
   })

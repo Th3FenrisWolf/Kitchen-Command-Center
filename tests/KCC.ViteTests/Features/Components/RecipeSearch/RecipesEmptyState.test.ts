@@ -1,10 +1,8 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import RecipesEmptyState from '~/Components/RecipeSearch/RecipesEmptyState.vue'
 
 const render = () => renderSsr(RecipesEmptyState)
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipesEmptyState', () => {
   it('is a taped, butter-washed sheet carrying the e2e hook on its slip', async () => {

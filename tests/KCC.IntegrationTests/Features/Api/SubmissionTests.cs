@@ -19,7 +19,7 @@ public class SubmissionTests
     [Test]
     public async Task CreateRecipe_SavesADraftUnderTheListing_WithItsFirstVariant()
     {
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
 
         var recipeKey = await CreateRecipeAsync(member.Visitor, "IT Wolverine Stew");
 
@@ -40,7 +40,7 @@ public class SubmissionTests
     [Test]
     public async Task CreateRecipe_WithATooLongFirstVariantName_IsRejectedAndAddsNothing()
     {
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
         var listing = TestContent.RecipeListing(Site.Services);
         var before = ChildCount(listing);
 
@@ -53,7 +53,7 @@ public class SubmissionTests
     [Test]
     public async Task CreateRecipe_StaysOutOfSearch_AndShowsAsPendingOnTheAccountPage()
     {
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
 
         _ = await CreateRecipeAsync(member.Visitor, "IT Wolverine Chili");
         await Site.Services.GetRequiredService<IRecipeIndexRebuilder>().WhenCurrentAsync(CancellationToken.None);
@@ -69,7 +69,7 @@ public class SubmissionTests
     public async Task AddVariant_ToAPublishedRecipe_SavesADraftUnderIt()
     {
         var recipe = await TestContent.RecipeAsync(Site.Services, "IT Wolverine Pie");
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
 
         using var response = await member.Visitor.PostAsync($"/api/recipes/{recipe}/variants", Variant("Deep Dish"));
         var variantKey = (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("variantKey").GetGuid();
@@ -83,7 +83,7 @@ public class SubmissionTests
     [Test]
     public async Task AddVariant_ToAnythingButAPublishedRecipe_IsNotFound()
     {
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
         var draft = await TestContent.DraftRecipeAsync(Site.Services, "IT Wolverine Draft", member.Key);
         var published = await TestContent.RecipeAsync(Site.Services, "IT Wolverine Tart");
         var variant = await TestContent.VariantAsync(Site.Services, published, "Classic");
@@ -110,7 +110,7 @@ public class SubmissionTests
     [Test]
     public async Task Submissions_AllowFiveAnHourPerClient()
     {
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
         for (var submission = 0; submission < 5; submission++)
         {
             _ = await CreateRecipeAsync(member.Visitor, $"IT Wolverine Batch {submission}");
@@ -142,7 +142,7 @@ public class SubmissionTests
     public async Task AddVariantPage_NamesThePublishedRecipe_AndRefusesAnyOther()
     {
         var recipe = await TestContent.RecipeAsync(Site.Services, "IT Wolverine Bread");
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
         var draft = await TestContent.DraftRecipeAsync(Site.Services, "IT Wolverine Dough", member.Key);
 
         var page = await RenderedPage.GetAsync(member.Visitor.Http, $"/recipes/add-variant/?recipe={recipe}");
@@ -159,7 +159,7 @@ public class SubmissionTests
     [Test]
     public async Task CreateRecipePage_RendersTheWizardForAMember()
     {
-        using var member = await SignedInAsync();
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
 
         var page = await RenderedPage.GetAsync(member.Visitor.Http, "/recipes/create-recipe/");
 
@@ -200,19 +200,5 @@ public class SubmissionTests
         return scope.ServiceProvider.GetRequiredService<IDocumentNavigationQueryService>().TryGetChildrenKeys(parentKey, out var children)
             ? children.Count()
             : 0;
-    }
-
-    private async Task<SignedInMember> SignedInAsync()
-    {
-        var userName = TestMembers.UniqueUserName("chef");
-        var key = await TestMembers.ApprovedAsync(Site.Services, userName);
-        var visitor = new MemberClient(Site);
-        _ = await visitor.SignInAsync(userName, TestMembers.Password);
-        return new SignedInMember(visitor, key);
-    }
-
-    private sealed record SignedInMember(MemberClient Visitor, Guid Key) : IDisposable
-    {
-        public void Dispose() => Visitor.Dispose();
     }
 }

@@ -14,7 +14,7 @@
     "paths": {
       // `~` mirrors the alias in vite.config.ts; the `*` fallback lets bare specifiers
       // (vitest, vue, …) resolve against the web project's node_modules — @types first so
-      // packages like `qs` pick up their @types declarations rather than the untyped JS.
+      // packages pick up their @types declarations rather than the untyped JS.
       "~/*": ["../../src/KCC.Web/Features/*"],
       "*": [
         "../../src/KCC.Web/node_modules/@types/*",

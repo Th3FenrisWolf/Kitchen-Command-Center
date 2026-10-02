@@ -1,17 +1,6 @@
-<!-- #region App Component -->
-<script lang="ts">
+<script setup lang="ts">
   import type { ContentRegions } from '~/Types/ContentRegions'
 
-  /**
-   * Root shell that compiles each server-rendered content region into its own child component.
-   */
-  export default {
-    name: 'App',
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   const { headerContent, bodyContent, footerContent } = defineProps<ContentRegions>()
 </script>
 

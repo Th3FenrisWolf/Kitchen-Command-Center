@@ -1,20 +1,9 @@
-<!-- #region RecipeResultsToolbar Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
   import type { RecipeSortKey, RecipeViewMode } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
-  /**
-   * The search's sort and grid/list controls, printed inside the library sheet.
-   */
-  export default {
-    name: 'RecipeResultsToolbar',
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   const sort = defineModel<RecipeSortKey>('sort', { required: true })
   const view = defineModel<RecipeViewMode>('view', { required: true })
   const t = useResourceStrings()

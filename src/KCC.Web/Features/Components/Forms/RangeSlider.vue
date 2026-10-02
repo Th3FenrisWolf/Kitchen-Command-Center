@@ -1,29 +1,12 @@
-<!-- #region RangeSlider Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
 
-  /**
-   * Dual-thumb slider bounding a numeric range.
-   */
-  export default {
-    name: 'RangeSlider',
-  }
-
   export interface RangeSliderProps {
-    /**
-     * Bounds of the track, not of the current selection — that lives in the models.
-     */
     min: number
     max: number
-    /**
-     * @default 1
-     */
     step?: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { min, max, step = 1 } = defineProps<RangeSliderProps>()
   const modelMin = defineModel<number>('modelMin', { required: true })
   const modelMax = defineModel<number>('modelMax', { required: true })

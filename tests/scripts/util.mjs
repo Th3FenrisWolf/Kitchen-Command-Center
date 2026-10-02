@@ -1,5 +1,3 @@
-// Pure helpers shared across the report tool. No I/O here.
-
 export function emptySummary() {
   return { total: 0, passed: 0, failed: 0, skipped: 0, cancelled: 0, timedOut: 0 };
 }

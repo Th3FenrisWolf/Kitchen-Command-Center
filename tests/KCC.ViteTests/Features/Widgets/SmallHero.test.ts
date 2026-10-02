@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
-import { renderSsr } from '../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../support/ssr'
 
 const SLOTS = {
   eyebrow: () => 'Kitchen notes',
@@ -93,8 +93,6 @@ describe('SmallHero remnants', () => {
   it('leaves no Softbound class behind', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
-    expect(html).not.toContain('data-ink')
+    expectNoRetiredMarkup(html)
   })
 })

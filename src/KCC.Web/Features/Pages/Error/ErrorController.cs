@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KCC.Web.Features.Pages.Error;
 
 [Route("error")]
-public class ErrorController(IStatusCodePages statusCodePages) : Controller
+public class ErrorController(StatusCodePages statusCodePages) : Controller
 {
     // No verb attribute: the exception handler re-executes with the failed request's method, POST included.
     [Route("")]

@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import VariantDetailView from '~/Pages/VariantDetail/VariantDetailView.Component.vue'
@@ -45,8 +45,6 @@ const render = (over: Record<string, unknown> = {}) =>
     undefined,
     { Breadcrumbs },
   )
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('VariantDetailView', () => {
   it('sets the whole page on one 72px rhythm, from a single root', async () => {
@@ -151,11 +149,6 @@ describe('VariantDetailView', () => {
   it('leaves no Softbound remnant on the page', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\bv-ink\b/)
-    expect(html).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(html).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(html).not.toMatch(/\bshadow-/)
-    expect(html).not.toMatch(/\btext-(?:danger|warning|success|rating)-ink\b/)
+    expectNoRetiredMarkup(html)
   })
 })

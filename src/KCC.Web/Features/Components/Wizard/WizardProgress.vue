@@ -1,24 +1,9 @@
-<!-- #region WizardProgress Component Properties -->
-<script lang="ts">
-  /**
-   * Step position for a multi-step form: numbered kick labels on the rule joined by a dashed hair
-   * connector, the current step a marker pill. An ordered list with `aria-current="step"`, so
-   * assistive tech gets the count from the list itself.
-   */
-  export default {
-    name: 'WizardProgress',
-  }
-
+<script setup lang="ts">
   export interface WizardProgressProps {
-    /** 1-based index of the step being shown. */
     current: number
-
     total: number
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { current, total } = defineProps<WizardProgressProps>()
 </script>
 

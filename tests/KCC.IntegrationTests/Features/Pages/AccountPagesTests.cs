@@ -1,7 +1,5 @@
 using System.Net;
 using KCC.IntegrationTests.Config;
-using KCC.Web.Features.Dictionary;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace KCC.IntegrationTests.Features.Pages;
 
@@ -103,7 +101,7 @@ public class AccountPagesTests
         var page = await RenderedPage.GetAsync(visitor.Http, "/account/registration-complete/");
 
         _ = await Assert.That(page.Status).IsEqualTo(HttpStatusCode.OK);
-        _ = await Assert.That(page.Body).Contains(WebUtility.HtmlEncode(String("RegistrationComplete.Body")));
+        _ = await Assert.That(page.Body).Contains(WebUtility.HtmlEncode(Site.ResourceString("RegistrationComplete.Body")));
         _ = await Assert.That(page.Body).Contains("href=\"/account/login/\"");
     }
 
@@ -114,11 +112,5 @@ public class AccountPagesTests
         var state = group.GetProperty("isPending").GetBoolean() ? "pending" : "published";
         var started = group.GetProperty("startedByYou").GetBoolean() ? "started" : "not started";
         return $"{group.GetProperty("recipeName").GetString()} ({state}, {started}): {string.Join(", ", variants)}";
-    }
-
-    private string String(string key)
-    {
-        using var scope = Site.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetOrDefault(key);
     }
 }

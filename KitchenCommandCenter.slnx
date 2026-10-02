@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/KCC.Admin/KCC.Admin.csproj" />
+    <Project Path="src/KCC.Contributions/KCC.Contributions.csproj" />
+    <Project Path="src/KCC.Web/KCC.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/KCC.E2ETests/KCC.E2ETests.csproj" />
+    <Project Path="tests/KCC.IntegrationTests/KCC.IntegrationTests.csproj" />
+    <Project Path="tests/KCC.UnitTests/KCC.UnitTests.csproj" />
+  </Folder>
+</Solution>

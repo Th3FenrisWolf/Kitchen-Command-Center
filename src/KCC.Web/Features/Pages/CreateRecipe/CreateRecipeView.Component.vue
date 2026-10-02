@@ -1,5 +1,4 @@
-<!-- #region CreateRecipeView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ref, computed, useId } from 'vue'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import Field from '~/Components/Forms/Field.vue'
@@ -9,27 +8,14 @@
   import type { Ingredient, Instruction } from '~/Types/Recipe'
   import { provideResourceStrings } from '~/Components/ResourceStrings'
   import { post } from '~/Utilities/Api'
-
-  /**
-   * Five-step wizard creating a recipe together with its first variant.
-   */
-  export default {
-    name: 'CreateRecipeView',
-  }
-
-  export interface CreateRecipeViewProps {
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
-    resourceStrings?: Record<string, string>
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
+
+  export interface CreateRecipeViewProps {
+    resourceStrings?: Record<string, string>
+  }
+
   const props = defineProps<CreateRecipeViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'CreateRecipe')
@@ -43,21 +29,17 @@
   const submitError = ref('')
   const submitSuccess = ref(false)
 
-  // Step 1: Recipe basics
   const recipeName = ref('')
   const recipeDescription = ref('')
 
-  // Step 2: Variant info
   const variantName = ref('')
   const variantDescription = ref('')
   const prepTime = ref<number | undefined>(0)
   const cookTime = ref<number | undefined>(0)
   const servings = ref<number | undefined>(0)
 
-  // Step 3: Ingredients
   const ingredientList = ref<Ingredient[]>([{ name: '', unit: '', isEyeballed: false }])
 
-  // Step 4: Instructions
   const instructionList = ref<Instruction[]>([{ text: '' }])
 
   const uid = useId()
@@ -143,7 +125,6 @@
     <WizardProgress :current="step" :total="totalSteps" />
 
     <KccSheet v-if="step === 1" crisp :tear="1" :pad="STEP_PAD" icon="fa-duotone fa-pen-to-square" label="Recipe Basics">
-      <!-- The sheet's label carries the step's name in print; the heading carries it in the document. -->
       <h2 class="sr-only">Recipe Basics</h2>
 
       <form class="flex flex-col gap-6" @submit.prevent="step++">

@@ -22,12 +22,8 @@ public class RecipeController(
     BreadcrumbService breadcrumbs,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
-    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
+    : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
-    [NonAction]
-    public sealed override IActionResult Index() => throw new NotSupportedException();
-
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         if (CurrentPage is not Recipe recipe)
@@ -41,40 +37,9 @@ public class RecipeController(
             await contributionStats.GetAsync(),
             await authorNames.ResolveMany(RecipeDetailMapping.AuthorKeys(page)));
         viewModel.Breadcrumbs = breadcrumbs.Build(recipe);
-        viewModel.ResourceStrings = GetStrings();
+        viewModel.ResourceStrings = resourceStrings.GetGroup("RecipeDetail");
         pageMetadata.Apply(recipe, viewModel);
 
         return View("~/Features/Pages/RecipeDetail/Index.cshtml", viewModel);
     }
-
-    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
-        "RecipeDetail.AddVariant",
-        "RecipeDetail.StartedBy",
-        "RecipeDetail.Variants",
-        "RecipeDetail.By",
-        "RecipeDetail.ComingSoon",
-        "RecipeDetail.AvgTime",
-        "RecipeDetail.Fastest",
-        "RecipeDetail.Contributors",
-        "RecipeDetail.TopVariant",
-        "RecipeDetail.RankingComingSoon",
-        "RecipeDetail.AllVariants",
-        "RecipeDetail.Sort",
-        "RecipeDetail.SortNewest",
-        "RecipeDetail.SortFastest",
-        "RecipeDetail.SortTopRated",
-        "RecipeDetail.Min",
-        "RecipeDetail.SearchVariants",
-        "RecipeDetail.Grid",
-        "RecipeDetail.List",
-        "RecipeDetail.Total",
-        "RecipeDetail.Of",
-        "RecipeDetail.NoVariantsMatch",
-        "RecipeDetail.TryDifferentFilter",
-        "RecipeDetail.ClearFilters",
-        "RecipeDetail.TimesCooked",
-        "RecipeDetail.NoRatingsYet",
-        "RecipeDetail.Rating",
-        "RecipeDetail.Reviews",
-        "RecipeDetail.All");
 }

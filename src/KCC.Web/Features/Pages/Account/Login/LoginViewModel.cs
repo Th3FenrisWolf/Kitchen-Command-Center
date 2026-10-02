@@ -8,7 +8,6 @@ public class LoginViewModel : BasePageViewModel
 {
     public string ReturnUrl { get; set; }
 
-    // Login form fields
     [DataType(DataType.Text)]
     [Required(ErrorMessage = "Enter a username")]
     [DisplayName("Username")]

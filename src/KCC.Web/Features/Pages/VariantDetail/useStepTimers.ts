@@ -1,9 +1,6 @@
 export interface TimerSpec {
-  /** Stable index within the step's parsed matches; used as a list key. */
   id: number
-  /** Countdown length in seconds (upper bound for ranges). */
   seconds: number
-  /** Original matched phrase, shown as the chip label, e.g. "10-12 minutes". */
   label: string
 }
 
@@ -16,7 +13,6 @@ function unitToSeconds(unit: string): number {
   return /^h/i.test(unit) ? 3600 : 60
 }
 
-/** Parse all durations in a step's text into TimerSpecs. Empty array when none. */
 export function parseDurations(text: string): TimerSpec[] {
   const specs: TimerSpec[] = []
   let match: RegExpExecArray | null
@@ -32,11 +28,7 @@ export function parseDurations(text: string): TimerSpec[] {
   return specs
 }
 
-/**
- * Seconds left until `targetEndMs`, computed from `now` (defaults to Date.now()).
- * Timestamp-based so backgrounded tabs read the correct value on resume.
- * Ceils to whole seconds and clamps at zero.
- */
+// From timestamps, so a tab that was in the background reads the right value when it resumes.
 export function remainingSeconds(targetEndMs: number, now: number = Date.now()): number {
   return Math.max(0, Math.ceil((targetEndMs - now) / 1000))
 }

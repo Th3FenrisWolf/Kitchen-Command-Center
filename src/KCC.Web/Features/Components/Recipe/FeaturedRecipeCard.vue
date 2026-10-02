@@ -1,32 +1,14 @@
-<!-- #region FeaturedRecipeCard Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import { washFor } from '~/Utilities/BrandColor'
   import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
 
-  /**
-   * The library's spotlight above a grid of RecipeCards: one recipe or variant on a hero-torn slip, the
-   * recipe's wash pooled in the bottom-right corner away from the kick lines, and a large tile pinned over
-   * the top-left corner.
-   */
-  export default {
-    name: 'FeaturedRecipeCard',
-  }
-
   export interface FeaturedRecipeCardProps {
-    /**
-     * Build with `hitToFeatured` or `variantToFeatured` from recipeCardModel.
-     */
     card: FeaturedRecipeModel
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { card } = defineProps<FeaturedRecipeCardProps>()
 
   const wash = computed(() => ({
@@ -55,7 +37,7 @@
 
 <template>
   <article class="kcc-slip kcc-recipe kcc-tear-hero transition-transform focus-within:-translate-y-1 hover:-translate-y-1">
-    <AppLink :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
+    <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet" style="--pad: 48px">
         <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
 
@@ -86,10 +68,10 @@
         <p v-if="card.description" class="kcc-body">{{ card.description }}</p>
 
         <div v-if="card.tags?.length" class="kcc-badges mt-6">
-          <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+          <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
         </div>
       </div>
-    </AppLink>
+    </a>
 
     <span class="kcc-label kcc-label--right">
       <i v-if="card.pill.icon" :class="card.pill.icon" aria-hidden="true"></i>{{ card.pill.label }}

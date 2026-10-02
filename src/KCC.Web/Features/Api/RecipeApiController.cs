@@ -10,7 +10,7 @@ namespace KCC.Web.Features.Api;
 [Route("api/recipes")]
 [AutoValidateAntiforgeryToken]
 [EnableRateLimiting(RateLimits.Submissions)]
-public class RecipeApiController(IRecipeSubmissions submissions, IMemberManager memberManager) : ControllerBase
+public class RecipeApiController(RecipeSubmissions submissions, IMemberManager memberManager) : ControllerBase
 {
     // Longer defeats Umbraco's ContentService.Save, which throws past 255 characters and would otherwise reach the
     // member as a 500.
@@ -19,24 +19,9 @@ public class RecipeApiController(IRecipeSubmissions submissions, IMemberManager 
     [HttpPost]
     public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request?.RecipeName))
+        if ((NameError(request?.RecipeName, "Recipe name") ?? NameError(request?.FirstVariant?.VariantName, "First variant name")) is { } error)
         {
-            return BadRequest(new { error = "Recipe name is required." });
-        }
-
-        if (request.RecipeName.Trim().Length > MaxNameLength)
-        {
-            return BadRequest(new { error = "Recipe name cannot be more than 255 characters." });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.FirstVariant?.VariantName))
-        {
-            return BadRequest(new { error = "First variant name is required." });
-        }
-
-        if (request.FirstVariant.VariantName.Trim().Length > MaxNameLength)
-        {
-            return BadRequest(new { error = "First variant name cannot be more than 255 characters." });
+            return BadRequest(new { error });
         }
 
         if (await memberManager.GetCurrentMemberAsync() is not { } member)
@@ -50,14 +35,9 @@ public class RecipeApiController(IRecipeSubmissions submissions, IMemberManager 
     [HttpPost("{recipeKey:guid}/variants")]
     public async Task<IActionResult> AddVariant(Guid recipeKey, [FromBody] CreateVariantRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request?.VariantName))
+        if (NameError(request?.VariantName, "Variant name") is { } error)
         {
-            return BadRequest(new { error = "Variant name is required." });
-        }
-
-        if (request.VariantName.Trim().Length > MaxNameLength)
-        {
-            return BadRequest(new { error = "Variant name cannot be more than 255 characters." });
+            return BadRequest(new { error });
         }
 
         if (await memberManager.GetCurrentMemberAsync() is not { } member)
@@ -69,4 +49,9 @@ public class RecipeApiController(IRecipeSubmissions submissions, IMemberManager 
             ? Ok(new { variantKey })
             : NotFound(new { error = "Recipe not found." });
     }
+
+    private static string NameError(string name, string label) =>
+        string.IsNullOrWhiteSpace(name) ? $"{label} is required."
+        : name.Trim().Length > MaxNameLength ? $"{label} cannot be more than {MaxNameLength} characters."
+        : null;
 }

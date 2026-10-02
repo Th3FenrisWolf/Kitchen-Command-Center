@@ -2,7 +2,7 @@ using Umbraco.Cms.Core.Routing;
 
 namespace KCC.Web.Features.Pages.Error;
 
-public class NotFoundContentFinder(IStatusCodePages statusCodePages) : IContentLastChanceFinder
+public class NotFoundContentFinder(StatusCodePages statusCodePages) : IContentLastChanceFinder
 {
     public Task<bool> TryFindContent(IPublishedRequestBuilder request)
     {

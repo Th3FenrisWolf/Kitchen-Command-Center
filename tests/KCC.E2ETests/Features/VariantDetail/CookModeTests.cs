@@ -52,7 +52,6 @@ public class CookModeTests : BasePageTests
     {
         await OpenOverlayAsync();
 
-        // Tab a handful of times; focus must never escape the dialog.
         for (var i = 0; i < 6; i++)
         {
             await Page.Keyboard.PressAsync("Tab");
@@ -88,13 +87,11 @@ public class CookModeTests : BasePageTests
         var prev = Page.Locator("[data-test=\"cook-prev\"]");
         var next = Page.Locator("[data-test=\"cook-next\"]");
 
-        // First step: Previous disabled, Next enabled.
         await Expect(prev).ToBeDisabledAsync();
         await Expect(progress).ToContainTextAsync("1");
 
         await next.ClickAsync();
         await Expect(progress).ToContainTextAsync("2");
-        // Last of two steps: Next disabled.
         await Expect(next).ToBeDisabledAsync();
 
         await prev.ClickAsync();

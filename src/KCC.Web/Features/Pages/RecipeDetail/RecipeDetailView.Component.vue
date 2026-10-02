@@ -1,15 +1,13 @@
-<!-- #region RecipeDetailView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
   import type { Breadcrumb, VariantSummary } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { type SortKey, type ViewMode, filterVariants, tagOptions } from '~/Components/RecipeDetail/variantFilters.ts'
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
-  import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
+  import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
-  import StatTiles from '~/Components/Recipe/StatTiles.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
   import VariantToolbar from '~/Components/RecipeDetail/VariantToolbar.vue'
   import VariantGrid from '~/Components/RecipeDetail/VariantGrid.vue'
@@ -17,45 +15,23 @@
   import VariantsEmptyState from '~/Components/RecipeDetail/VariantsEmptyState.vue'
   import { variantToFeatured } from '~/Components/Recipe/recipeCardModel.ts'
 
-  /**
-   * A recipe and every variant of it, filtered and sorted client-side.
-   */
-  export default {
-    name: 'RecipeDetailView',
-  }
-
   export interface RecipeDetailViewProps {
     recipeName: string
     recipeDescription: string
     recipeImagePath?: string
     recipeIcon?: string
     recipeCategory?: string
-    /**
-     * Identifies the recipe to the add-variant page.
-     */
     recipeGuid: string
-    /**
-     * Aggregated across the recipe's variants, since only variants can be reviewed.
-     */
     recipeAverageRating?: number
     recipeReviewCount?: number
     recipeTimesCooked?: number
     addVariantUrl: string
-    /**
-     * Member who created the recipe, as opposed to any variant of it.
-     */
     startedByName?: string
     variants: VariantSummary[]
     breadcrumbs?: Breadcrumb[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<RecipeDetailViewProps>()
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeDetail')

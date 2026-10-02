@@ -68,8 +68,8 @@ public class RecipeIndexTriggerTests
 
             var results = await SearchWhenCurrentAsync("dingo");
             _ = await Assert.That(results.Results.Single().Category).IsEqualTo("IT Larder");
-            _ = await Assert.That(results.CategoryFacets.GetValueOrDefault("IT Larder")).IsEqualTo(1);
-            _ = await Assert.That(results.CategoryFacets.ContainsKey("IT Pantry")).IsFalse();
+            _ = await Assert.That(results.Facets.Category.GetValueOrDefault("IT Larder")).IsEqualTo(1);
+            _ = await Assert.That(results.Facets.Category.ContainsKey("IT Pantry")).IsFalse();
         }
         finally
         {
@@ -92,7 +92,7 @@ public class RecipeIndexTriggerTests
 
             var results = await SearchWhenCurrentAsync("kookaburra");
             _ = await Assert.That(string.Join(",", results.Results.Single().Tags)).IsEqualTo("IT Crispy");
-            _ = await Assert.That(results.DietFacets.GetValueOrDefault("IT Crispy")).IsEqualTo(1);
+            _ = await Assert.That(results.Facets.Diet.GetValueOrDefault("IT Crispy")).IsEqualTo(1);
         }
         finally
         {

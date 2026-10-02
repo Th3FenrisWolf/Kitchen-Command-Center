@@ -1,30 +1,8 @@
 namespace KCC.Web.Features.DevTools.RecipeSeed;
 
-/// <summary>
-/// The recipe search test-data set (25 recipes). Deliberately authored as a coverage matrix over every
-/// search path so each is independently assertable:
-/// <list type="bullet">
-/// <item>Free-text: distinctive tokens isolated to one field each — "tahini" (one recipe's ingredient
-///   only), "midnight" (one recipe's description only), "Salazar" (author name only — matches Diego
-///   Salazar's two recipes, Shakshuka + Cold Brew Concentrate); "zephyr" appears ONLY in a variant
-///   instruction, which is NOT indexed, so it must return nothing.</item>
-/// <item>Category facet: all six categories, each on ≥3 recipes (a recipe holds exactly one).</item>
-/// <item>Diet facet: all eight diets, several recipes multi-diet, some sharing a diet; "Spicy Ramen Flight"
-///   spreads different diets across its variants to exercise the union-across-variants facet.</item>
-/// <item>Fastest-time range: values at 0 (no variants), 5, 10, exactly 60, and one 90 (&gt; the 60-min
-///   slider cap, reachable only with the filter inactive); "Weeknight Tacos" has a slow + fast variant so
-///   the faster one sets the indexed time.</item>
-/// <item>Sorts: distinct average ratings (with a single clear 5.0 top) and unrated recipes; variant counts
-///   of 0–4; and staggered publish dates.</item>
-/// <item>Spotlight: "Legendary Lasagna" is the sole 5.0; every Beverage is unrated, so filtering to
-///   Beverage yields results with no spotlight.</item>
-/// <item>Pagination: 25 recipes &gt; the page size of 12.</item>
-/// </list>
-/// </summary>
+// A coverage matrix over the search paths: the comment on an entry names the path it isolates.
 public static class RecipeSeedData
 {
-    // The baseline's "Recipe Categories" nodes. A recipe holds exactly one, so covering N categories takes N
-    // recipes.
     public const string Breakfast = "Breakfast";
     public const string Lunch = "Lunch";
     public const string Dinner = "Dinner";
@@ -32,9 +10,6 @@ public static class RecipeSeedData
     public const string Snack = "Snack";
     public const string Beverage = "Beverage";
 
-    public static readonly string[] Categories = [Breakfast, Lunch, Dinner, Dessert, Snack, Beverage];
-
-    // The baseline's "Recipe Tags" nodes — multi-valued across a recipe's variants.
     public const string Vegetarian = "Vegetarian";
     public const string Vegan = "Vegan";
     public const string GlutenFree = "Gluten-Free";
@@ -43,9 +18,6 @@ public static class RecipeSeedData
     public const string HighProtein = "High-Protein";
     public const string LowCarb = "Low-Carb";
     public const string Spicy = "Spicy";
-
-    public static readonly string[] Diets =
-        [Vegetarian, Vegan, GlutenFree, DairyFree, Keto, HighProtein, LowCarb, Spicy];
 
     public const string AuthorPriya = "priya";
     public const string AuthorDiego = "diego";
@@ -58,7 +30,6 @@ public static class RecipeSeedData
 
     public static readonly SeedRecipe[] Recipes =
     [
-        // ---- Breakfast (4) --------------------------------------------------------------------------
         new SeedRecipe("Fluffy Buttermilk Pancakes", Breakfast, null,
             "Tall, tender stacks for a lazy weekend morning.", "fa-duotone fa-pancakes", 3,
             [new SeedVariant("Classic Stack", "Griddle to golden.", 10, 15, 4, "fa-duotone fa-pancakes",
@@ -91,7 +62,6 @@ public static class RecipeSeedData
                 [new SeedInstruction(1, "Combine and refrigerate overnight.")])],
             [new(3.5m)]),
 
-        // ---- Lunch (4) ------------------------------------------------------------------------------
         // Ingredient-only token "tahini"; two variants so the faster (15) sets FastestTime below the slower (45).
         new SeedRecipe("Weeknight Bowls", Lunch, null,
             "Fast, flexible grain bowls for busy nights.", "fa-duotone fa-bowl-rice", 12,
@@ -142,7 +112,6 @@ public static class RecipeSeedData
                 [new SeedInstruction(1, "Toss everything with lemon dressing.")])],
             []),
 
-        // ---- Dinner (5) -----------------------------------------------------------------------------
         // Spotlight winner: the single 5.0 average, and the most-recent recipe.
         new SeedRecipe("Legendary Lasagna", Dinner, AuthorPriya,
             "Layered comfort food that reheats like a dream.", "fa-duotone fa-plate-utensils", 1,
@@ -192,7 +161,6 @@ public static class RecipeSeedData
                 [new SeedInstruction(1, "Warm beans, fill tortillas.")])],
             [new(3.5m), new(4m)]),
 
-        // ---- Dessert (4) ----------------------------------------------------------------------------
         new SeedRecipe("Molten Chocolate Cake", Dessert, null,
             "Individual cakes with a liquid center.", "fa-duotone fa-cake-slice", 2,
             [new SeedVariant("Classic Lava", "Pull them early.", 15, 12, 4, "fa-duotone fa-cake-slice",
@@ -225,7 +193,6 @@ public static class RecipeSeedData
                 [new SeedInstruction(1, "Warm cream with matcha."), new SeedInstruction(2, "Set with gelatin.")])],
             []),
 
-        // ---- Snack (4) ------------------------------------------------------------------------------
         // Deliberate edge case: a recipe with NO variants -> VariantCount 0 and FastestTime 0.
         new SeedRecipe("Bare Cupboard Snack Board", Snack, null,
             "A placeholder board with no variants yet — edge case for zero-variant indexing.", "fa-duotone fa-plate-utensils", 55,
@@ -256,7 +223,7 @@ public static class RecipeSeedData
                 [new SeedInstruction(1, "Melt and spread."), new SeedInstruction(2, "Scatter toppings and freeze.")])],
             [new(2m)]),
 
-        // ---- Beverage (4) — all UNRATED, so filtering to Beverage yields results but no spotlight ----
+        // All unrated, so filtering to Beverage yields results but no spotlight.
         // Description-only token "midnight"; author-only token "Salazar" (Diego Salazar).
         new SeedRecipe("Cold Brew Concentrate", Beverage, AuthorDiego,
             "A smooth midnight-dark concentrate to cut with milk or water.", "fa-duotone fa-mug-hot", 30,

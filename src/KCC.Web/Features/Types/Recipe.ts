@@ -41,51 +41,6 @@ export interface Nutrition {
   sodiumMg?: number | null
 }
 
-export interface RecipeVariant {
-  name: string
-  description: string
-  images: string[]
-  prepTime?: number
-  cookTime?: number
-  servings?: number
-  difficulty?: string
-  calories?: number | null
-  proteinG?: number | null
-  carbsG?: number | null
-  fatG?: number | null
-  saturatedFatG?: number | null
-  fiberG?: number | null
-  sugarG?: number | null
-  sodiumMg?: number | null
-  tags: string[]
-  ingredients: Ingredient[]
-  instructions: Instruction[]
-  slug: string
-  recipeSlug: string
-  recipeName: string
-  siblingVariants: VariantSummary[]
-}
-
-export interface RecipeSummary {
-  name: string
-  description: string
-  image?: string
-  icon?: string
-  category?: string
-  slug: string
-  variantCount: number
-}
-
-export interface RecipeDetail {
-  name: string
-  description: string
-  image?: string
-  category?: string
-  slug: string
-  variants: VariantSummary[]
-  timesCooked?: number
-}
-
 export interface SiblingVariant {
   name: string
   slug: string

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import StatTiles from '~/Components/Recipe/StatTiles.vue'
 import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
 
 const tiles: StatTileSpec[] = [
   { icon: 'fa-duotone fa-clock', value: 25, unit: 'min', label: 'Prep' },
@@ -67,6 +67,6 @@ describe('StatTiles', () => {
 
   it('carries no Softbound hook', async () => {
     const html = await renderSsr(StatTiles, { tiles })
-    expect(html).not.toContain('sk-')
+    expectNoRetiredMarkup(html)
   })
 })

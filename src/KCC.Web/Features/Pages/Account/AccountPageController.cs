@@ -17,16 +17,12 @@ public class AccountPageController(
     IUmbracoContextAccessor umbracoContextAccessor,
     IMemberManager memberManager,
     IMemberService memberService,
-    IAuthoredRecipeQueries authoredRecipes,
-    IAccountPageQueries accountPages,
+    AuthoredRecipeQueries authoredRecipes,
+    AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
-    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
+    : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
-    [NonAction]
-    public sealed override IActionResult Index() => throw new NotSupportedException();
-
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         if (CurrentPage is not AccountPage page)
@@ -55,24 +51,10 @@ public class AccountPageController(
                 authored.Variants,
                 authored.PublishedRecipeKeys,
                 authored.PublishedVariantKeys).ToList(),
-            ResourceStrings = GetStrings(),
+            ResourceStrings = resourceStrings.GetGroup("Account"),
         };
         pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/Account/Index.cshtml", viewModel);
     }
-
-    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
-        "Account.MemberSince",
-        "Account.AccountSettings",
-        "Account.SignOut",
-        "Account.MyRecipesAndVariants",
-        "Account.Favorites",
-        "Account.RecentActivity",
-        "Account.ComingSoon",
-        "Account.StartedByYou",
-        "Account.PendingReview",
-        "Account.NoCreationsYet",
-        "Account.RecipesLabel",
-        "Account.VariantsLabel");
 }

@@ -15,22 +15,18 @@ function colorIndexFor(text: string, paletteSize: number): number {
   return hash % paletteSize
 }
 
-/** Deterministically map any text to one of the eight washes. */
 export function washFor(text: string): Wash {
   return WASHES[colorIndexFor(text, WASHES.length)]!
 }
 
-/** A stable standard sheet tear (1–6) for a sheet that is not in a list. */
 export function sheetTearFor(text: string): Exclude<Tear, 'hero'> {
   return (colorIndexFor(`sheet:${text}`, SHEET_TEAR_COUNT) + 1) as Exclude<Tear, 'hero'>
 }
 
-/** The tear for the item at `index` of a list: the six presets cycle, so neighbours never share one. */
 export function listTearFor(index: number): Exclude<Tear, 'hero'> {
   return ((index % SHEET_TEAR_COUNT) + 1) as Exclude<Tear, 'hero'>
 }
 
-/** A stable tile tear (1–3). */
 export function tileTearFor(text: string): 1 | 2 | 3 {
   return (colorIndexFor(`tile:${text}`, TILE_TEAR_COUNT) + 1) as 1 | 2 | 3
 }

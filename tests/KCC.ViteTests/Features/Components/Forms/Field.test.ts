@@ -1,7 +1,7 @@
 import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import Field from '~/Components/Forms/Field.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 const baseProps = { label: 'Email', controlId: 'email' }
 

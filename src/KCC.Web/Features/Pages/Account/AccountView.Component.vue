@@ -1,15 +1,20 @@
-<!-- #region AccountView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
+  import Button from '~/Components/Button/Button.vue'
+  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
-  /**
-   * Member's profile page: identity sheet, contribution counts, and their recipes and variants.
-   */
-  export default {
-    name: 'AccountView',
+  export interface AccountViewProps {
+    displayName: string
+    initials: string
+    memberSince: string
+    settingsUrl: string
+    logoutUrl: string
+    recipeGroups: RecipeGroup[]
+    resourceStrings?: Record<string, string>
   }
 
   interface ProfileVariant {
@@ -30,30 +35,6 @@
     variants: ProfileVariant[]
   }
 
-  export interface AccountViewProps {
-    displayName: string
-    initials: string
-    memberSince: string
-    settingsUrl: string
-    logoutUrl: string
-    /**
-     * Every recipe the member has touched, whether they started it or only added a variant.
-     */
-    recipeGroups: RecipeGroup[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
-    resourceStrings?: Record<string, string>
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
-  import SignOutForm from '~/Components/Account/SignOutForm.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
-  import Button from '~/Components/Button/Button.vue'
-  import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
-  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   const props = defineProps<AccountViewProps>()
 
   provideResourceStrings(props.resourceStrings, 'Account')
@@ -112,15 +93,15 @@
             <i v-if="group.recipeIcon" :class="group.recipeIcon" aria-hidden="true"></i>
             <h3 class="kcc-h4">
               <component
-                :is="group.recipeUrl ? AppLink : 'span'"
+                :is="group.recipeUrl ? 'a' : 'span'"
                 :href="group.recipeUrl || undefined"
                 :class="group.recipeUrl && 'kcc-link'"
               >
                 {{ group.recipeName }}
               </component>
             </h3>
-            <Badge v-if="group.startedByYou"><ResourceString for="StartedByYou" /></Badge>
-            <Badge v-if="group.isPending"><ResourceString for="PendingReview" /></Badge>
+            <span v-if="group.startedByYou" class="kcc-badge"><ResourceString for="StartedByYou" /></span>
+            <span v-if="group.isPending" class="kcc-badge"><ResourceString for="PendingReview" /></span>
           </div>
 
           <ul v-if="group.variants.length" class="mt-6 grid gap-2">
@@ -128,14 +109,14 @@
               <span class="flex flex-wrap items-center gap-2">
                 <i v-if="variant.icon" :class="variant.icon" aria-hidden="true"></i>
                 <component
-                  :is="variant.url ? AppLink : 'span'"
+                  :is="variant.url ? 'a' : 'span'"
                   :href="variant.url || undefined"
                   :class="variant.url && 'kcc-link'"
                 >
                   {{ variant.name }}
                 </component>
               </span>
-              <Badge v-if="variant.isPending"><ResourceString for="PendingReview" /></Badge>
+              <span v-if="variant.isPending" class="kcc-badge"><ResourceString for="PendingReview" /></span>
             </li>
           </ul>
         </KccSheet>

@@ -47,10 +47,10 @@ public class RecipeSearchServiceTests
         var results = search.Search(new RecipeSearchCriteria { Categories = ["Dinner"] });
 
         _ = await Assert.That(results.Total).IsEqualTo(2);
-        _ = await Assert.That(results.CategoryFacets["Snack"]).IsEqualTo(1);
-        _ = await Assert.That(results.CategoryFacets["Dinner"]).IsEqualTo(2);
-        _ = await Assert.That(results.DietFacets["Spicy"]).IsEqualTo(1);
-        _ = await Assert.That(results.DietFacets["Hearty"]).IsEqualTo(1);
+        _ = await Assert.That(results.Facets.Category["Snack"]).IsEqualTo(1);
+        _ = await Assert.That(results.Facets.Category["Dinner"]).IsEqualTo(2);
+        _ = await Assert.That(results.Facets.Diet["Spicy"]).IsEqualTo(1);
+        _ = await Assert.That(results.Facets.Diet["Hearty"]).IsEqualTo(1);
     }
 
     [Test]
@@ -147,7 +147,7 @@ public class RecipeSearchServiceTests
         var results = new RecipeSearchService(new RecipeIndex()).Search(new RecipeSearchCriteria());
 
         _ = await Assert.That(results.Total).IsEqualTo(0);
-        _ = await Assert.That(results.CategoryFacets.Count).IsEqualTo(0);
+        _ = await Assert.That(results.Facets.Category.Count).IsEqualTo(0);
     }
 
     private static RecipeSearchService Service(params RecipeSearchDocument[] documents)

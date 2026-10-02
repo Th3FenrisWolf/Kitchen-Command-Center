@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { h } from 'vue'
-import SignOutForm, { isSignOutUrl } from '~/Components/Account/SignOutForm.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import SignOutForm from '~/Components/Account/SignOutForm.vue'
+import { isSignOutUrl } from '~/Components/Account/signOut'
+import { renderSsr } from '../../../support/ssr'
 
 const button = { default: () => h('button', { type: 'submit' }, 'Sign out') }
 

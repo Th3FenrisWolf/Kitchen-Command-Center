@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, openTag } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import DetailHero from '~/Components/Recipe/DetailHero.vue'
 import { washFor } from '~/Utilities/BrandColor'
@@ -9,13 +9,6 @@ import { washFor } from '~/Utilities/BrandColor'
 const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
 
 const count = (html: string, needle: string) => html.split(needle).length - 1
-
-/** The whole opening tag of the first element carrying `needle`, so nothing pins Vue's attribute order. */
-const openTag = (html: string, needle: string) => {
-  const at = html.indexOf(needle)
-  expect(at, `${needle} is not in the render`).toBeGreaterThan(-1)
-  return html.slice(html.lastIndexOf('<', at), html.indexOf('>', at) + 1)
-}
 
 /** The paragraph `needle` sits in, fragment anchors and all: slot content is not a tag of its own. */
 const paragraph = (html: string, needle: string) => {

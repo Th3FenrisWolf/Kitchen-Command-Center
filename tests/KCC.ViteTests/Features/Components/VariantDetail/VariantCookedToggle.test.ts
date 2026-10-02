@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import VariantCookedToggle from '~/Components/VariantDetail/VariantCookedToggle.vue'
 
@@ -12,8 +12,6 @@ const render = (over: Record<string, unknown> = {}) =>
     cookedCount: 3,
     ...over,
   })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('VariantCookedToggle', () => {
   it('is one pill the cook presses, hairline until they have made it', async () => {
@@ -58,9 +56,7 @@ describe('VariantCookedToggle', () => {
   it('carries no Softbound remnant, weight or paper radius', async () => {
     const html = await render({ hasCooked: true })
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toContain('font-bold')
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
+    expectNoRetiredMarkup(html)
     expect(html).not.toContain('bg-paper-2')
     expect(html).not.toContain('transition-colors')
   })

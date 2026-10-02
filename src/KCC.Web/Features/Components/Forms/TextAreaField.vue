@@ -1,27 +1,18 @@
-<!-- #region TextAreaField Component Properties -->
-<script lang="ts">
-  import { computed, ref, onUnmounted, useAttrs, type StyleValue } from 'vue'
-  import type { TextareaHTMLAttributes } from 'vue'
-
-  /**
-   * Multi-line text input with a custom drag handle for vertical resizing.
-   */
-  export default {
-    name: 'TextAreaField',
-    // Attributes land on the <textarea> itself rather than being split across the wrapper — except
-    // class/style, which style the pill (the label) a caller sees as this component's root.
-    inheritAttrs: false,
-  }
+<script setup lang="ts">
+  import { computed, ref, onUnmounted, useAttrs, type StyleValue, type TextareaHTMLAttributes } from 'vue'
 
   export interface TextAreaFieldProps {
     required?: TextareaHTMLAttributes['required']
     readonly?: TextareaHTMLAttributes['readonly']
     placeholder?: TextareaHTMLAttributes['placeholder']
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
+  defineOptions({
+    // Attributes land on the <textarea> itself rather than being split across the wrapper — except
+    // class/style, which style the pill (the label) a caller sees as this component's root.
+    inheritAttrs: false,
+  })
+
   const { required, readonly, placeholder } = defineProps<TextAreaFieldProps>()
 
   const model = defineModel<string>({
@@ -30,7 +21,6 @@
 
   const attrs = useAttrs()
   const textareaAttrs = computed(() => {
-    // class and style dress the pill, so they stay on the root label; everything else is the textarea's.
     const { class: _class, style: _style, ...rest } = attrs
     return rest
   })

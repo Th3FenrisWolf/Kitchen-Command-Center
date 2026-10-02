@@ -9,18 +9,14 @@ interface WakeLockNavigator {
 }
 
 export interface UseWakeLock {
-  /** True while a sentinel is held. */
   isActive: Ref<boolean>
-  /** Acquire the screen wake lock. Silent no-op when unsupported or denied. */
   request: () => Promise<void>
-  /** Release the wake lock if held, and stop auto re-acquiring on visibility. */
   release: () => Promise<void>
 }
 
 export function useWakeLock(): UseWakeLock {
   const isActive = ref(false)
   let sentinel: WakeLockSentinelLike | null = null
-  // True between request() and release(); drives visibility-based re-acquisition.
   let wanted = false
 
   const support = () => (navigator as unknown as WakeLockNavigator).wakeLock

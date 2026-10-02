@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import SegmentedControl from '~/Components/Recipe/SegmentedControl.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
 
 const textOptions = [
   { value: 'grid', label: 'Grid', testId: 'view-grid' },
@@ -38,6 +38,6 @@ describe('SegmentedControl', () => {
   it('carries no sliding thumb or Softbound hook', async () => {
     const html = await renderSsr(SegmentedControl, { options: textOptions, modelValue: 'grid' })
     expect(html).not.toContain('seg-thumb')
-    expect(html).not.toContain('sk-')
+    expectNoRetiredMarkup(html)
   })
 })

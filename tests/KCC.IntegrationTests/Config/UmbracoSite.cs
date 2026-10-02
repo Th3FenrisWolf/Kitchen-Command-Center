@@ -1,4 +1,5 @@
 using Examine.Lucene.Directories;
+using KCC.Web.Features.Dictionary;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -64,7 +65,7 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         examineTempPath = UmbracoTempEnvFileSystemDirectoryFactory.GetTempPath(
             Services.GetRequiredService<IApplicationIdentifier>(),
             hostingEnvironment);
-        mediaCachePath = Path.Combine(WebProjectDirectory(), "umbraco", "Data", "TEMP", MediaCacheFolderName);
+        mediaCachePath = Path.Combine(RepoPaths.WebProject, "umbraco", "Data", "TEMP", MediaCacheFolderName);
 
         await SeedTestRecipesAsync();
     }
@@ -118,25 +119,21 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         });
     }
 
+    public string ResourceString(string key)
+    {
+        using var scope = Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetOrDefault(key);
+    }
+
     private static void RequireFrontEndBuild()
     {
-        var manifest = Path.Combine(WebProjectDirectory(), "wwwroot", ".vite", "manifest.json");
+        var manifest = Path.Combine(RepoPaths.WebProject, "wwwroot", ".vite", "manifest.json");
         if (!File.Exists(manifest))
         {
             throw new InvalidOperationException("Integration tests render real pages, which need the Vite manifest. Run `yarn build:all` in src/KCC.Web first.");
         }
     }
 
-    private static string WebProjectDirectory()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return Path.Combine(directory?.FullName ?? throw new InvalidOperationException("Repository root not found."), "src", "KCC.Web");
-    }
 
     // Seeding saves content and members, which must not overlap a test's writes (see AssemblyInfo.cs), so it
     // runs once, before any test.

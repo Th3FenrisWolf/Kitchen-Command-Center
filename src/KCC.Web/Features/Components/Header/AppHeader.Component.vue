@@ -1,56 +1,20 @@
-<!-- #region AppHeader Component Properties -->
-<script lang="ts">
-  import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
-  import MenuItem from '~/Components/Header/MenuItem.vue'
-  import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
-
-  /**
-   * Site header: logo, main navigation, and a right-aligned utility navigation.
-   */
-  export default {
-    name: 'AppHeader',
-  }
-
-  /**
-   * A header entry that is either a dropdown group (subLinks set) or a flat link
-   * (url + target set). The two modes are mutually exclusive on the server side
-   * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
-   */
-  interface NavItem {
-    displayText: string
-    url?: string
-    target?: string
-    subLinks?: PageLink[]
-  }
-
-  interface PageLink {
-    displayText: string
-    url: string
-    target: string
-  }
-
-  export interface AppHeaderProps {
-    homeUrl: string
-    /** Alt text for the mark, resolved server-side from the dictionary. */
-    logoAlt: string
-
-    /** Theme-toggle labels, resolved server-side so they work on every page. */
-    switchToLightLabel: string
-
-    switchToDarkLabel: string
-    mainNavItems: NavItem[]
-    /**
-     * Pushed to the right of the bar, after the main items.
-     */
-    utilityNavItems: NavItem[]
-  }
-</script>
-<!-- #endregion -->
-
 <script setup lang="ts">
+  import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
+  import MenuItem, { type NavItem } from '~/Components/Header/MenuItem.vue'
+  import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
   import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
   import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
   import ThemeToggle from '~/Components/Theme/ThemeToggle.vue'
+
+  export interface AppHeaderProps {
+    homeUrl: string
+    logoAlt: string
+    switchToLightLabel: string
+    switchToDarkLabel: string
+    mainNavItems: NavItem[]
+    utilityNavItems: NavItem[]
+  }
+
   const { homeUrl, logoAlt, switchToLightLabel, switchToDarkLabel, mainNavItems, utilityNavItems } =
     defineProps<AppHeaderProps>()
 

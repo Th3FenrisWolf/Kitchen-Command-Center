@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { defineComponent, h, provide } from 'vue'
 import ResourceString from '~/Components/ResourceStrings/ResourceString.Component.vue'
 import { resourceStringsKey } from '~/Components/ResourceStrings/UseResourceStrings'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 const Host = defineComponent({
   props: { preview: Boolean, for: { type: String, default: 'SignIn' } },

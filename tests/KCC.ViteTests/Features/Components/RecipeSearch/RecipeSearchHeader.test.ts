@@ -1,12 +1,10 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
 
 const render = (draft = '', slots?: Record<string, () => unknown>) =>
   renderSsr(RecipeSearchHeader, { draft, createRecipeUrl: '/create-recipe' }, slots)
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipeSearchHeader sheet', () => {
   it('is the green-washed Library sheet', async () => {

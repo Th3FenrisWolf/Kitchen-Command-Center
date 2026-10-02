@@ -14,7 +14,7 @@ namespace KCC.Contributions.Dashboard;
 [ApiExplorerSettings(GroupName = "KCC")]
 [Authorize(Policy = AuthorizationPolicies.RequireAdminAccess)]
 public class ContributionsDashboardController(
-    IDashboardQueries queries,
+    DashboardQueries queries,
     IDashboardMembers members,
     IContributionWrites contributionWrites) : ManagementApiControllerBase
 {

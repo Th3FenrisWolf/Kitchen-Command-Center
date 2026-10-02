@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import AddVariantView from '~/Pages/AddVariant/AddVariantView.Component.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 
 // Only the keys step one composes; the rest fall back to their key, as they do in the app.
 const STRINGS = {
@@ -31,8 +31,6 @@ const render = () =>
 // The hero above the wizard is its own sheet, with its own suite; every assertion about the wizard reads
 // the markup from the progress list down.
 const wizardOf = (html: string) => html.slice(html.indexOf('aria-label="Steps"'))
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 // Field prints its label through a slot, so SSR wraps the text in Vue's fragment markers.
 const controlIdFor = (html: string, label: string) =>
@@ -135,12 +133,7 @@ describe('AddVariantView', () => {
     const wizard = wizardOf(await render())
     const sheet = wizard.slice(wizard.indexOf('<div class="kcc-slip'))
 
-    expect(wizard).not.toMatch(/sk-[a-z]/)
-    expect(wizard).not.toMatch(/\bv-ink\b/)
-    expect(wizard).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(wizard).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(wizard).not.toMatch(/\bshadow-/)
-    expect(wizard).not.toMatch(/\btext-(?:danger|warning|success|rating)-ink\b/)
+    expectNoRetiredMarkup(wizard)
     expect(sheet).not.toMatch(/\bbg-(?:paper|paper-2|marker)\b/)
     expect(sheet).not.toMatch(/\btext-lg\b/)
   })

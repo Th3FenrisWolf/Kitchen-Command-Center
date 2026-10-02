@@ -122,14 +122,14 @@ public class SectionStyleTests
 
     private static string[] DropdownItems(string dataType)
     {
-        var path = Path.Combine(RepositoryRoot(), "src", "KCC.Web", "uSync", "v17", "DataTypes", $"{dataType}.config");
+        var path = Path.Combine(RepoPaths.WebProject, "uSync", "v17", "DataTypes", $"{dataType}.config");
         var config = XDocument.Load(path).Root.Element("Config").Value;
         return JsonNode.Parse(config)["items"].AsArray().Select(item => (string)item).ToArray();
     }
 
     private static HashSet<string> Safelist()
     {
-        var css = File.ReadAllText(Path.Combine(RepositoryRoot(), "src", "KCC.Web", "Features", "Styles", "TailwindConfig.css"));
+        var css = File.ReadAllText(Path.Combine(RepoPaths.WebProject, "Features", "Styles", "TailwindConfig.css"));
         return Regex.Matches(css, @"@source inline\('([^']+)'\)")
             .SelectMany(match => Expand(match.Groups[1].Value))
             .ToHashSet();
@@ -142,16 +142,5 @@ public class SectionStyleTests
             ? group.Groups[1].Value.Split(',').SelectMany(option =>
                 Expand(pattern[..group.Index] + option + pattern[(group.Index + group.Length)..]))
             : [pattern];
-    }
-
-    private static string RepositoryRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "KitchenCommandCenter.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory!.FullName;
     }
 }

@@ -118,9 +118,3 @@ export class KccIconPickerModalElement extends UmbModalBaseElement<object, KccIc
 }
 
 export default KccIconPickerModalElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-icon-picker-modal': KccIconPickerModalElement
-  }
-}
