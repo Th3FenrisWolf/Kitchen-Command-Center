@@ -125,6 +125,13 @@ built.
 Sheet padding 24px (heroes 48px). Grid gaps 36px between rows, 28px between columns. Sections 72px apart,
 a section heading 36px above its content. Margins between blocks are multiples of 24px.
 
+## Motion
+
+Paper moves like paper. A sheet you can open lifts when you reach for it and settles when you let go. A drawer
+slides up inside its sheet, a menu unfolds downward, and a stacked sheet steps back as the next one covers it.
+Most motion takes 300ms, and a bigger move that would feel rushed at 300ms takes up to 500ms. Only a loading
+spinner runs longer. Reduced motion stills all of it.
+
 ## Applied patterns
 
 - **Recipe slip**: a plain sheet; a small torn wax tile pinned over the top-left corner with its own tape; the

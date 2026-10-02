@@ -1837,6 +1837,11 @@ styling anything; use the `loose-leaf` skill for the quick reference, the `kit-b
 a surface and the `brand-steward` agent to review one. The invariants below are the ones that break the
 build or the brand silently, so they stay here as well.
 
+General design skills and plugins, such as impeccable, taste-skill, ui-ux-pro-max and frontend-design, do not set
+the public site's look. Where one disagrees with the brand docs, the brand docs win. Some of them ban devices this
+identity uses on purpose: the kicker above a heading (`kcc-kick`), Sono caps labels, the stats row, the tilt and the
+tear. Those stay.
+
 ### Tokens
 
 Role tokens live in `Features/Styles/TailwindConfig.css` under **`@theme static`** with the **light** values;
