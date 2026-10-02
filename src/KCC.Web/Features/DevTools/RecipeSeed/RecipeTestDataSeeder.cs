@@ -31,7 +31,7 @@ public class RecipeTestDataSeeder(
         var summary = new SeedSummary();
         var recipeTypeKey = RequireContentType("recipe");
         var variantTypeKey = RequireContentType("recipeVariant");
-        var listingKey = FindRecipeListing();
+        var listingKey = FindRecipeListing(navigation);
         var categories = KeysByName("recipeCategory");
         var tags = KeysByName("recipeTag");
         var authors = await EnsureAuthorsAsync(summary, log);
@@ -68,7 +68,6 @@ public class RecipeTestDataSeeder(
                 summary.VariantsCreated++;
             }
 
-            // Reviews attach to the first variant, as they always have in this data set.
             if (recipe.Variants.Length > 0)
             {
                 var firstVariantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
@@ -88,6 +87,22 @@ public class RecipeTestDataSeeder(
 
         log.WriteLine(summary.ToString());
         return summary;
+    }
+
+    internal static Guid FindRecipeListing(IDocumentNavigationQueryService navigation)
+    {
+        if (navigation.TryGetRootKeysOfType("homePage", out var homes))
+        {
+            foreach (var home in homes)
+            {
+                if (navigation.TryGetChildrenKeysOfType(home, "recipeListingPage", out var listings) && listings.Any())
+                {
+                    return listings.First();
+                }
+            }
+        }
+
+        throw new InvalidOperationException("The baseline has no recipe listing page under Home.");
     }
 
     private static List<PropertyValueModel> RecipeValues(SeedRecipe recipe, IReadOnlyDictionary<string, Guid> categories, Guid? authorKey)
@@ -156,22 +171,6 @@ public class RecipeTestDataSeeder(
     private Guid RequireContentType(string alias) =>
         contentTypeService.Get(alias)?.Key ?? throw new InvalidOperationException($"Document type {alias} is missing; uSync imports it at startup.");
 
-    private Guid FindRecipeListing()
-    {
-        if (navigation.TryGetRootKeysOfType("homePage", out var homes))
-        {
-            foreach (var home in homes)
-            {
-                if (navigation.TryGetChildrenKeysOfType(home, "recipeListingPage", out var listings) && listings.Any())
-                {
-                    return listings.First();
-                }
-            }
-        }
-
-        throw new InvalidOperationException("The baseline has no recipe listing page under Home.");
-    }
-
     private Dictionary<string, Guid> KeysByName(string contentTypeAlias)
     {
         var keys = new List<Guid>();
@@ -201,7 +200,6 @@ public class RecipeTestDataSeeder(
                 continue;
             }
 
-            // Seeded authors never sign in, so their password is random.
             keys[author.Key] = await CreateApprovedMemberAsync(
                 author.UserName,
                 author.Email,
@@ -215,8 +213,8 @@ public class RecipeTestDataSeeder(
         return keys;
     }
 
-    // The E2E suite and the reference capture sign in as this member. Its credentials come from the environment, so
-    // none is committed; without them there is no member to create.
+    // The E2E suite signs in as this member. Its credentials come from the environment, so none is committed;
+    // without them there is no member to create.
     private async Task EnsureE2EMemberAsync(SeedSummary summary, TextWriter log)
     {
         var userName = configuration["KCC_E2E_MEMBER_USERNAME"];

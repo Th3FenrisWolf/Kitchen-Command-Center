@@ -6,10 +6,8 @@ public class HeaderViewModel
 {
     public string LogoAlt { get; set; }
 
-    /// <summary>
-    /// Gets or sets the theme-toggle labels. Resolved server-side because the header renders on every
-    /// page, while the Vue ResourceString dict is assembled per page controller.
-    /// </summary>
+    // Resolved server-side because the header renders on every page, while each page controller assembles its
+    // own resource strings.
     public string SwitchToLightLabel { get; set; }
 
     public string SwitchToDarkLabel { get; set; }
@@ -23,21 +21,9 @@ public class HeaderNavItem
 {
     public string DisplayText { get; set; }
 
-    /// <summary>
-    /// Gets or sets the direct-link URL for a flat entry. Null when this entry is a group with
-    /// <see cref="SubLinks"/>.
-    /// </summary>
     public string Url { get; set; }
 
-    /// <summary>
-    /// Gets or sets the link target (e.g. <c>_self</c>, <c>_blank</c>) paired with
-    /// <see cref="Url"/>. Null when this entry is a dropdown.
-    /// </summary>
     public string Target { get; set; }
 
-    /// <summary>
-    /// Gets or sets the dropdown children for a group entry. Null when this entry is a flat link
-    /// (see <see cref="Url"/>).
-    /// </summary>
     public IEnumerable<PageLink> SubLinks { get; set; }
 }

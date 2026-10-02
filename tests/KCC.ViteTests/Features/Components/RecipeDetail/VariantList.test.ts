@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import VariantList from '~/Components/RecipeDetail/VariantList.vue'
@@ -19,8 +19,6 @@ const variant = (name: string, index: number): VariantSummary => ({
 })
 
 const render = () => renderSsr(VariantList, { variants: NAMES.map(variant) })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('VariantList', () => {
   it('stacks the rows 36px apart', async () => {

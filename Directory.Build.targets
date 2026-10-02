@@ -1,0 +1,7 @@
+<Project>
+  <!-- The SDK registers wwwroot as a content root only if the folder exists during the build, and the client
+       build's output there is untracked, so a fresh clone has no folder until the client is built. -->
+  <Target Name="EnsureWebRoot" BeforeTargets="ResolveProjectStaticWebAssets">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/wwwroot" />
+  </Target>
+</Project>

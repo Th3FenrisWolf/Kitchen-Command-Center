@@ -16,7 +16,6 @@ describe('StarRating', () => {
     expect((html.match(/data-value=/g) ?? []).length).toBe(10)
     expect(html).toContain('data-value="3.5"')
     expect(html).toContain('data-value="4"')
-    // a 3.5 rating shows exactly one half star
     expect((html.match(/data-state="half"/g) ?? []).length).toBe(1)
   })
 

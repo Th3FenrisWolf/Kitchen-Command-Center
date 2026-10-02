@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import InputField from '~/Components/Forms/InputField.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 // The component's root is the pill (`<label>`), not the control, so the attribute split is the contract:
 // class/style dress the pill, everything else belongs to the <input>.

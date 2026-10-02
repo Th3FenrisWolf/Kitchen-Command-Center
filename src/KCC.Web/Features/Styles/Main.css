@@ -14,7 +14,6 @@
   :root {
     accent-color: var(--color-focus);
 
-    /* Tailwind Overrides */
     --default-transition-duration: 300ms;
   }
 

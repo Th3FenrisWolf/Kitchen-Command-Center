@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 describe('ComingSoonSection', () => {
   it('keeps its editor hooks in the label slot and washes lavender on the default tear', async () => {

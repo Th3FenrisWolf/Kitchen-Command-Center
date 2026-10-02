@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import AccountSettingsView from '~/Pages/Account/Settings/AccountSettingsView.Component.vue'
-import { renderSsr } from '../../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../../support/ssr'
 
 const STRINGS = {
   'Account.AccountSettings': 'Account settings',
@@ -30,8 +30,6 @@ const render = () =>
     logoutUrl: '/account/logout',
     resourceStrings: STRINGS,
   })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 // Field prints its label through a slot, so SSR wraps the resource string in Vue's fragment markers.
 const controlIdFor = (html: string, label: string) =>
@@ -146,11 +144,6 @@ describe('AccountSettingsView', () => {
   it('leaves no Softbound remnant on the page', async () => {
     const sheets = await render()
 
-    expect(sheets).not.toMatch(/sk-[a-z]/)
-    expect(sheets).not.toMatch(/\bv-ink\b/)
-    expect(sheets).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(sheets).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(sheets).not.toMatch(/\bshadow-/)
-    expect(sheets).not.toMatch(/\btext-(?:danger|success)-ink\b/)
+    expectNoRetiredMarkup(sheets)
   })
 })

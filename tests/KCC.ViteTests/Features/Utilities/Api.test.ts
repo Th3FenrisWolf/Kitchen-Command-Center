@@ -3,7 +3,6 @@ import { antiforgeryToken, configureApi, del, get, post, put } from '~/Utilities
 
 const STRINGS = { unexpectedError: 'Something went wrong.', requestFailed: 'Request failed.' }
 
-// Minimal stand-in for the parts of Response that Api.ts touches.
 function fakeResponse(opts: { ok: boolean; status?: number; body?: string }): Response {
   return {
     ok: opts.ok,
@@ -122,7 +121,7 @@ describe('Api', () => {
     expect(init.headers['RequestVerificationToken']).toBe('tok')
   })
 
-  it('serializes get params via qs into the query string', async () => {
+  it('serializes get params into the query string', async () => {
     const fetchMock = vi.fn().mockResolvedValue(fakeResponse({ ok: true, body: '[]' }))
     global.fetch = fetchMock
 

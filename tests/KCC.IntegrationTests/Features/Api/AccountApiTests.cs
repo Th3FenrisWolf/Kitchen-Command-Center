@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using KCC.IntegrationTests.Config;
-using KCC.Web.Features.Dictionary;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Services;
 
@@ -53,7 +52,7 @@ public class AccountApiTests
         var result = await visitor.SignInAsync(userName, TestMembers.Password);
 
         _ = await Assert.That(result.Success).IsFalse();
-        _ = await Assert.That(result.Errors!.Single()).IsEqualTo(String("Login.NotAllowedError"));
+        _ = await Assert.That(result.Errors!.Single()).IsEqualTo(Site.ResourceString("Login.NotAllowedError"));
         _ = await Assert.That(await visitor.IsSignedInAsync(VariantPath)).IsFalse();
     }
 
@@ -96,7 +95,7 @@ public class AccountApiTests
 
         var result = await visitor.SignInAsync(userName, TestMembers.Password);
 
-        _ = await Assert.That(result.Errors!.Single()).IsEqualTo(String("Login.LockedOutError"));
+        _ = await Assert.That(result.Errors!.Single()).IsEqualTo(Site.ResourceString("Login.LockedOutError"));
         _ = await Assert.That(await visitor.IsSignedInAsync(VariantPath)).IsFalse();
     }
 
@@ -109,7 +108,7 @@ public class AccountApiTests
 
         var result = await visitor.SignInAsync(userName, "not-the-password");
 
-        _ = await Assert.That(result.Errors!.Single()).IsEqualTo(String("Login.InvalidCredentialsError"));
+        _ = await Assert.That(result.Errors!.Single()).IsEqualTo(Site.ResourceString("Login.InvalidCredentialsError"));
     }
 
     [Test]
@@ -125,10 +124,8 @@ public class AccountApiTests
     [Test]
     public async Task SignOut_OverGet_DoesNothing()
     {
-        using var visitor = new MemberClient(Site);
-        var userName = TestMembers.UniqueUserName("stays");
-        await TestMembers.ApprovedAsync(Site.Services, userName);
-        _ = await visitor.SignInAsync(userName, TestMembers.Password);
+        using var member = await TestMembers.SignedInAsync(Site, "stays");
+        var visitor = member.Visitor;
 
         using var response = await visitor.Http.GetAsync("/account/logout");
 
@@ -139,10 +136,8 @@ public class AccountApiTests
     [Test]
     public async Task SignOut_OverPost_EndsTheSessionAndGoesHome()
     {
-        using var visitor = new MemberClient(Site);
-        var userName = TestMembers.UniqueUserName("leaver");
-        await TestMembers.ApprovedAsync(Site.Services, userName);
-        _ = await visitor.SignInAsync(userName, TestMembers.Password);
+        using var member = await TestMembers.SignedInAsync(Site, "leaver");
+        var visitor = member.Visitor;
 
         using var response = await visitor.SignOutAsync();
 
@@ -154,10 +149,8 @@ public class AccountApiTests
     [Test]
     public async Task SignOut_WithoutTheAntiforgeryToken_IsRejectedAndLeavesTheMemberSignedIn()
     {
-        using var visitor = new MemberClient(Site);
-        var userName = TestMembers.UniqueUserName("notoken");
-        await TestMembers.ApprovedAsync(Site.Services, userName);
-        _ = await visitor.SignInAsync(userName, TestMembers.Password);
+        using var member = await TestMembers.SignedInAsync(Site, "notoken");
+        var visitor = member.Visitor;
 
         using var response = await visitor.Http.PostAsync("/account/logout", new FormUrlEncodedContent([]));
 
@@ -168,10 +161,8 @@ public class AccountApiTests
     [Test]
     public async Task SignOut_ToAForeignUrl_ReturnsHomeInstead()
     {
-        using var visitor = new MemberClient(Site);
-        var userName = TestMembers.UniqueUserName("foreign");
-        await TestMembers.ApprovedAsync(Site.Services, userName);
-        _ = await visitor.SignInAsync(userName, TestMembers.Password);
+        using var member = await TestMembers.SignedInAsync(Site, "foreign");
+        var visitor = member.Visitor;
 
         using var response = await visitor.PostAsync("/account/logout?returnUrl=https%3A%2F%2Fevil.example%2F");
 
@@ -201,11 +192,5 @@ public class AccountApiTests
     {
         using var response = await visitor.PostAsync("/api/account/register", new { userName, email = email ?? $"{userName}@example.test", password = TestMembers.Password });
         return await response.Content.ReadFromJsonAsync<AuthResult>() ?? throw new InvalidOperationException("Sign-up answered no body.");
-    }
-
-    private string String(string key)
-    {
-        using var scope = Site.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetOrDefault(key);
     }
 }

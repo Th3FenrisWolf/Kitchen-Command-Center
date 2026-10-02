@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import TextAreaField from '~/Components/Forms/TextAreaField.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 describe('TextAreaField', () => {
   it('lands the id and the labelling attributes on the textarea, where a Field label can reach them', async () => {

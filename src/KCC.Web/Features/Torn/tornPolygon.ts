@@ -12,16 +12,12 @@ export type Corner = 1 | 2 | 3 // top-right | bottom-right | bottom-left
 
 export interface TearOptions {
   seed: number
-  /** Tear amplitude in px. Sheets 2.4, tiles 1.8. */
   amp?: number
-  /** Chamfer length in px; 0 for an uncut sheet. */
   chamfer?: number
   corner?: Corner
-  /** Vertices per straight side. The chamfer adds a few of its own. */
   pointsPerSide?: number
 }
 
-/** A coordinate as a percentage of the box plus a pixel term. */
 export interface Coord {
   pct: number
   px: number
@@ -32,7 +28,6 @@ export interface Vertex {
   y: Coord
 }
 
-/** Small, fast seeded PRNG so the same seed always tears the same way. */
 export function mulberry32(seed: number): () => number {
   let a = seed | 0
   return () => {
@@ -60,7 +55,6 @@ interface Segment {
   y0: Coord
   x1: Coord
   y1: Coord
-  /** Outward normal. */
   nx: number
   ny: number
   points: number
@@ -74,7 +68,6 @@ const lerp = (a: Coord, b: Coord, u: number): Coord => ({
   px: a.px + (b.px - a.px) * u,
 })
 
-/** Clockwise perimeter inset by `pad`, with the chamfer at `corner` when `chamfer` > 0. */
 function perimeter(pad: number, chamfer: number, corner: Corner, pointsPerSide: number): Segment[] {
   const d = Math.SQRT1_2
   const side = (x0: Coord, y0: Coord, x1: Coord, y1: Coord, nx: number, ny: number): Segment => ({
@@ -133,7 +126,6 @@ function perimeter(pad: number, chamfer: number, corner: Corner, pointsPerSide: 
   ]
 }
 
-/** The vertices of one tear, before formatting. */
 export function tornVertices({ seed, amp = 2.4, chamfer = 0, corner = 1, pointsPerSide = 80 }: TearOptions): Vertex[] {
   // Outward excursions reach 1.275 × amp (|noise| ≤ 1 plus half the jitter); the inset pad = amp + 1.2
   // contains them only while amp ≤ 4.3. Beyond that a vertex lands outside the box and coordToCss emits a
@@ -171,7 +163,6 @@ const trim = (n: number, digits: number): string => {
   return trimmed === '-0' ? '0' : trimmed
 }
 
-/** `calc(A% + Bpx)`, collapsing to `A%` or `Bpx` when the other term is zero. */
 export function coordToCss({ pct, px }: Coord): string {
   const p = trim(pct, 2)
   const b = trim(px, 1)
@@ -180,7 +171,6 @@ export function coordToCss({ pct, px }: Coord): string {
   return b.startsWith('-') ? `calc(${p}% - ${b.slice(1)}px)` : `calc(${p}% + ${b}px)`
 }
 
-/** A CSS `polygon()` for `clip-path`. */
 export function tornPolygon(options: TearOptions): string {
   return `polygon(${tornVertices(options)
     .map((v) => `${coordToCss(v.x)} ${coordToCss(v.y)}`)

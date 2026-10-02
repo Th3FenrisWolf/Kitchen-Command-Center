@@ -17,17 +17,12 @@ public sealed record AuthoredRecipes(
     public static AuthoredRecipes None { get; } = new([], [], new HashSet<Guid>(), new HashSet<Guid>());
 }
 
-public interface IAuthoredRecipeQueries
-{
-    AuthoredRecipes GetAuthoredBy(Guid memberKey);
-}
-
 // The account page lists a member's submissions before the owner publishes them, so this is the site's one read of
 // saved, unpublished content. Published nodes come from the published cache; only drafts are loaded.
 public class AuthoredRecipeQueries(
     IPublishedContentQuery contentQuery,
     IDocumentNavigationQueryService navigation,
-    IContentService contentService) : IAuthoredRecipeQueries
+    IContentService contentService)
 {
     public AuthoredRecipes GetAuthoredBy(Guid memberKey)
     {

@@ -117,9 +117,3 @@ export class KccRecipeIconEditorElement
 }
 
 export default KccRecipeIconEditorElement
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'kcc-recipe-icon-editor': KccRecipeIconEditorElement
-  }
-}

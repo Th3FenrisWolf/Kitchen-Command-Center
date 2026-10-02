@@ -1,82 +1,52 @@
 import { formatRating } from '~/Components/StarRating/starDisplay'
 import type { RecipeSearchHit, SiblingVariant, VariantSummary } from '~/Types/Recipe'
 
-/**
- * Resolver returned by `provideResourceStrings` / `useResourceStrings`. Each page owns its own
- * resolver (scoped by prefix, e.g. `RecipeSearch` vs `RecipeDetail`), so localized text is resolved
- * here in the page-level wrappers and passed to the shared cards as plain strings — the shared
- * components stay presentation-only and never touch the resource-string context.
- */
+// Each page resolves strings under its own prefix, so the page localizes card text and the shared cards
+// never read the resource-string context.
 type Resolve = (key: string) => string
 
-/**
- * A stat the card promotes out of its body into the top-right corner of its sheet. The body then drops
- * the matching meta chip (or the rating), so the same number never renders twice on one card.
- */
 export type PromotedStat = 'rating' | 'time'
 
-/** One inline meta item on a card's meta line: optional leading icon + text (e.g. "🕐 30m"). */
 export interface RecipeCardMeta {
   icon?: string
   text: string
   key?: PromotedStat
 }
 
-/** Hero stat printed in the top-right corner of the card's sheet; the card picks the glyph from `stat`. */
 export interface RecipeCardNotch {
   stat: PromotedStat
   text: string
 }
 
-/** Compact rating shown on cards / featured blocks. `count === 0` renders `emptyLabel` instead. */
 export interface RecipeCardRating {
   average: number
   count: number
   emptyLabel: string
 }
 
-/**
- * Normalized, presentation-only shape shared by the recipe (search) and variant (detail) cards.
- * Each page maps its own type (`RecipeSearchHit` / `VariantSummary`) into this; optional fields are
- * rendered only when present, so a single card component drives both pages without style drift.
- */
 export interface RecipeCardModel {
   href: string
   name: string
-  /** AccentTile seed (brand color + fallback alt text). */
   seed: string
   icon?: string
   image?: string
-  /** Small uppercase line above the name (search: category). */
   eyebrow?: string
-  /** Compact rating; omit to hide the rating entirely (variant cards show none today). */
   rating?: RecipeCardRating
-  /** Hero stat for the grid card's corner; the row layout ignores it and shows the stat on its meta line. */
   notch: RecipeCardNotch
-  /** Inline meta chips on the meta line (search: variant count + fastest time). */
   meta?: RecipeCardMeta[]
-  /** Secondary text line (variant: "By Alex · 30 min"). */
   subtitle?: string
-  /** Longer description paragraph (variant grid). */
   description?: string
   tags: string[]
-  /**
-   * Trailing stat rendered by the row layout only (variant list: total time). The row hides the `time` meta
-   * chip at the widths that show it, so the same number never prints twice.
-   */
   trailingStat?: { value: string; label: string }
-  /** Attributes spread onto the card's link — the stable E2E/unit test hooks. */
   dataAttrs?: Record<string, string>
 }
 
-/** Normalized shape for the featured / spotlight block. */
 export interface FeaturedRecipeModel {
   href: string
   name: string
   seed: string
   icon?: string
   image?: string
-  /** Inline "Top ___" pill. */
   pill: { icon?: string; label: string }
   eyebrow?: string
   rating?: RecipeCardRating
@@ -94,7 +64,6 @@ function notchStat(rating: RecipeCardRating | undefined, time: string): RecipeCa
   return rating && rating.count > 0 ? { stat: 'rating', text: formatRating(rating.average) } : { stat: 'time', text: time }
 }
 
-/** Search hit → grid/list card. */
 export function hitToCard(hit: RecipeSearchHit, rs: Resolve): RecipeCardModel {
   const rating = { average: hit.averageRating ?? 0, count: hit.reviewCount, emptyLabel: rs('NoRatingsYet') }
   const time = `${hit.fastestTime}m`
@@ -115,7 +84,6 @@ export function hitToCard(hit: RecipeSearchHit, rs: Resolve): RecipeCardModel {
   }
 }
 
-/** Variant summary → grid/list card. */
 export function variantToCard(variant: VariantSummary, rs: Resolve): RecipeCardModel {
   const time = `${variant.totalTime} ${rs('Min')}`
   return {
@@ -152,7 +120,6 @@ export function siblingToCard(sibling: SiblingVariant): RecipeCardModel {
   }
 }
 
-/** Search hit → featured (spotlight) block. */
 export function hitToFeatured(hit: RecipeSearchHit, rs: Resolve): FeaturedRecipeModel {
   const meta: RecipeCardMeta[] = [
     { icon: 'fa-solid fa-layer-group', text: `${hit.variantCount} ${rs('Variants')}` },
@@ -176,7 +143,6 @@ export function hitToFeatured(hit: RecipeSearchHit, rs: Resolve): FeaturedRecipe
   }
 }
 
-/** Variant summary → featured (top variant) block. */
 export function variantToFeatured(variant: VariantSummary, rs: Resolve): FeaturedRecipeModel {
   const meta: RecipeCardMeta[] = [{ icon: 'fa-solid fa-clock', text: `${variant.totalTime} ${rs('Min')}` }]
   if (variant.authorName) {

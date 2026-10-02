@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
 
@@ -8,8 +8,6 @@ import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
 // VariantReviewsTests in the e2e suite.
 const render = (over: Record<string, unknown> = {}) =>
   renderSsr(VariantReviews, { variantGuid: '11111111-2222-3333-4444-555555555555', ...over })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('VariantReviews section', () => {
   it('names the section on the rule and counts the reviews beside it', async () => {
@@ -121,10 +119,7 @@ describe('VariantReviews form', () => {
   it('carries no Softbound remnant, coloured status text, weight or paper radius', async () => {
     const html = await render({ isAuthenticated: true, reviewCount: 12, averageRating: 4.5 })
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/text-(?:danger|warning|success|rating)/)
-    expect(html).not.toContain('font-bold')
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
+    expectNoRetiredMarkup(html)
     expect(html).not.toContain('bg-paper-2')
     expect(html).not.toContain('border-rule')
   })

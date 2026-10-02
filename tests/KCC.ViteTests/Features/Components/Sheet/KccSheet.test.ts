@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import KccSheet from '~/Components/Sheet/KccSheet.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 const render = (props: Record<string, unknown> = {}) => renderSsr(KccSheet, props, { default: () => 'Hello' })
 

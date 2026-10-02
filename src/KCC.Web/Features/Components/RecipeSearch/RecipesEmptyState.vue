@@ -1,19 +1,8 @@
-<!-- #region RecipesEmptyState Component -->
-<script lang="ts">
+<script setup lang="ts">
   import { ResourceString } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
 
-  /**
-   * Shown when a search returns nothing, offering a way back.
-   */
-  export default {
-    name: 'RecipesEmptyState',
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
   const emit = defineEmits<{ clear: [] }>()
 </script>
 

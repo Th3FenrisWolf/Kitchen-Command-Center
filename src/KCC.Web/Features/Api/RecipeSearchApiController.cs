@@ -30,6 +30,6 @@ public class RecipeSearchApiController(IRecipeSearchService search) : Controller
             PageSize = pageSize,
         });
 
-        return Ok(RecipeSearchResponseMapper.ToResponse(results));
+        return Ok(results);
     }
 }

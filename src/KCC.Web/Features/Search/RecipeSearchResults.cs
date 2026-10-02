@@ -16,44 +16,17 @@ public record RecipeSearchHit
 
 public record RecipeSearchResults
 {
-    public IReadOnlyList<RecipeSearchHit> Results { get; init; } = [];
     public int Total { get; init; }
     public int Page { get; init; }
     public int PageSize { get; init; }
-    public IReadOnlyDictionary<string, int> CategoryFacets { get; init; } = new Dictionary<string, int>();
-    public IReadOnlyDictionary<string, int> DietFacets { get; init; } = new Dictionary<string, int>();
+    public IReadOnlyList<RecipeSearchHit> Results { get; init; } = [];
+    public RecipeFacetCounts Facets { get; init; } = new();
     public RecipeSearchHit Spotlight { get; init; } // null when there is no spotlight
 }
 
-/// <summary>One envelope shape shared by the SSR page prop and the JSON API, so the client
-/// consumes an identical structure either way. camelCase names match Vue.Prop + System.Text.Json;
-/// facet-dictionary keys are taxonomy titles, preserved as-is.</summary>
-public static class RecipeSearchResponseMapper
+// Keyed by taxonomy title.
+public record RecipeFacetCounts
 {
-    /// <summary>Projects service results into the wire/prop envelope.</summary>
-    /// <param name="r">The search results to project.</param>
-    /// <returns>An anonymous object with camelCase members for JSON/Vue.Prop.</returns>
-    public static object ToResponse(RecipeSearchResults r) => new
-    {
-        total = r.Total,
-        page = r.Page,
-        pageSize = r.PageSize,
-        results = r.Results.Select(Hit).ToArray(),
-        facets = new { category = r.CategoryFacets, diet = r.DietFacets },
-        spotlight = r.Spotlight is null ? null : Hit(r.Spotlight),
-    };
-
-    private static object Hit(RecipeSearchHit h) => new
-    {
-        name = h.Name,
-        slug = h.Slug,
-        icon = h.Icon,
-        category = h.Category,
-        startedBy = h.StartedBy,
-        tags = h.Tags,
-        averageRating = h.AverageRating,
-        reviewCount = h.ReviewCount,
-        variantCount = h.VariantCount,
-        fastestTime = h.FastestTime,
-    };
+    public IReadOnlyDictionary<string, int> Category { get; init; } = new Dictionary<string, int>();
+    public IReadOnlyDictionary<string, int> Diet { get; init; } = new Dictionary<string, int>();
 }

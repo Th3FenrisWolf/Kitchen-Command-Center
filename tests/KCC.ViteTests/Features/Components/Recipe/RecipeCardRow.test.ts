@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, echoKey } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeCardRow from '~/Components/Recipe/RecipeCardRow.vue'
@@ -35,13 +35,8 @@ const variant = (over: Partial<VariantSummary> = {}): VariantSummary => ({
   ...over,
 })
 
-// Matches what useResourceStrings hands the row when a key has no value: the key itself.
-const rs = (key: string) => key
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
-
-const renderHit = (recipe: RecipeSearchHit) => renderSsr(RecipeCardRow, { card: hitToCard(recipe, rs) })
-const renderVariant = (summary: VariantSummary) => renderSsr(RecipeCardRow, { card: variantToCard(summary, rs) })
+const renderHit = (recipe: RecipeSearchHit) => renderSsr(RecipeCardRow, { card: hitToCard(recipe, echoKey) })
+const renderVariant = (summary: VariantSummary) => renderSsr(RecipeCardRow, { card: variantToCard(summary, echoKey) })
 
 describe('RecipeCardRow sheet', () => {
   it('is one link over a flat torn sheet, with the card hooks on it', async () => {
@@ -71,7 +66,7 @@ describe('RecipeCardRow sheet', () => {
   })
 
   it('takes the tear a list hands it', async () => {
-    const html = await renderSsr(RecipeCardRow, { card: hitToCard(hit(), rs), tear: 2 })
+    const html = await renderSsr(RecipeCardRow, { card: hitToCard(hit(), echoKey), tear: 2 })
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-tear-2')
   })
 })

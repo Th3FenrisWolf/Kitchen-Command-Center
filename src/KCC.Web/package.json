@@ -4,14 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:static": "vite build",
     "build:ssr": "vite build --mode ssr",
     "build:all": "vite build && vite build --mode ssr",
     "dev:static": "vite",
     "dev:ssr": "node Features/Ssr/Server.js",
     "dev:all": "concurrently -k -n \"VITE,SSR\" -c \"cyan,green\" \"yarn dev:static\" \"yarn dev:ssr\"",
-    "preview": "vite preview",
-    "serve:ssr": "cross-env NODE_ENV=production node Features/Ssr/Server.js",
     "test": "vitest run",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
@@ -21,7 +18,6 @@
   "dependencies": {
     "compression": "^1.8.1",
     "express": "^5.2.1",
-    "qs": "^6.15.3",
     "vue": "^3.5.39"
   },
   "devDependencies": {
@@ -32,13 +28,11 @@
     "@types/compression": "^1.8.1",
     "@types/express": "^5.0.0",
     "@types/node": "^24.13.2",
-    "@types/qs": "^6.15.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/tsconfig": "^0.9.1",
     "concurrently": "^10.0.3",
-    "cross-env": "^10.0.1",
     "esbuild": "0.28.1",
     "eslint": "^10.6.0",
     "eslint-plugin-vue": "^10.9.2",

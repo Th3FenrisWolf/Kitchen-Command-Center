@@ -1,15 +1,3 @@
-/*
-  Sources:
-    https://www.youtube.com/watch?v=c13gpBrnGEw
-    https://ryanmulligan.dev/blog/layout-breakouts/
-
-  Usage:
-    Add the `.content-grid` class to the parent element of the content you want to layout.
-    Add the `.breakout` class to any element you want to pop out of the layout.
-    Add the `.full-width` class to any element you want to span the full width of the container.
-    Inside of `.full-width` containers you will also need to add `.content-grid` if you need gutters.
-*/
-
 .content-grid {
   --padding-inline: --spacing(4);
   --content-max-width: 80rem;

@@ -16,15 +16,11 @@ public class AccountSettingsPageController(
     IUmbracoContextAccessor umbracoContextAccessor,
     IMemberManager memberManager,
     IMemberService memberService,
-    IAccountPageQueries accountPages,
+    AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
-    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
+    : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
-    [NonAction]
-    public sealed override IActionResult Index() => throw new NotSupportedException();
-
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         if (CurrentPage is not AccountSettingsPage page)
@@ -45,31 +41,10 @@ public class AccountSettingsPageController(
             LastName = member?.GetValue<string>("lastName"),
             Email = signedIn.Email,
             BackUrl = urls.Account,
-            ResourceStrings = GetStrings(),
+            ResourceStrings = resourceStrings.GetGroup("Account"),
         };
         pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/Account/Settings/Index.cshtml", viewModel);
     }
-
-    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
-        "Account.BackToProfile",
-        "Account.AccountSettings",
-        "Account.Profile",
-        "Account.FirstName",
-        "Account.LastName",
-        "Account.Email",
-        "Account.EmailComingSoon",
-        "Account.EmailComingSoonNote",
-        "Account.SaveChanges",
-        "Account.ChangePassword",
-        "Account.CurrentPassword",
-        "Account.NewPassword",
-        "Account.ConfirmNewPassword",
-        "Account.UpdatePassword",
-        "Account.SignOut",
-        "Account.PasswordsDoNotMatch",
-        "Account.ProfileSaved",
-        "Account.PasswordUpdated",
-        "Account.UnexpectedError");
 }

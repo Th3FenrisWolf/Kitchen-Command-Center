@@ -11,14 +11,6 @@ using Umbraco.Extensions;
 
 namespace KCC.Web.Features.Submissions;
 
-public interface IRecipeSubmissions
-{
-    Task<Guid> SubmitRecipeAsync(CreateRecipeRequest request, Guid authorKey, CancellationToken cancellationToken);
-
-    // Null when the key is not a published recipe's.
-    Task<Guid?> SubmitVariantAsync(Guid recipeKey, CreateVariantRequest request, Guid authorKey, CancellationToken cancellationToken);
-}
-
 // A submission is saved and never published; the owner publishes it once it has been checked.
 public class RecipeSubmissions(
     IContentEditingService contentEditingService,
@@ -26,7 +18,7 @@ public class RecipeSubmissions(
     ICoreScopeProvider scopeProvider,
     IPublishedContentQuery contentQuery,
     IRecipeQueries recipes,
-    IRecipeIconService recipeIconService) : IRecipeSubmissions
+    IRecipeIconService recipeIconService)
 {
     public async Task<Guid> SubmitRecipeAsync(CreateRecipeRequest request, Guid authorKey, CancellationToken cancellationToken)
     {

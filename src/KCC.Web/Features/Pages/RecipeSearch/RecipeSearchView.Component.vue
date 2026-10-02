@@ -1,5 +1,4 @@
-<!-- #region RecipeSearchView Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
@@ -9,7 +8,7 @@
   import AppliedFilterChips from '~/Components/RecipeSearch/AppliedFilterChips.vue'
   import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
   import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
-  import RecipeListRow from '~/Components/RecipeSearch/RecipeListRow.vue'
+  import RecipeCardRow from '~/Components/Recipe/RecipeCardRow.vue'
   import RecipesEmptyState from '~/Components/RecipeSearch/RecipesEmptyState.vue'
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
@@ -17,13 +16,6 @@
   import type { Breadcrumb, RecipeSearchResponse } from '~/Types/Recipe'
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
-
-  /**
-   * Recipe search: query, facet filters, and an infinite-scrolling result grid or list.
-   */
-  export default {
-    name: 'RecipeSearchView',
-  }
 
   export interface RecipeSearchViewProps {
     /**
@@ -33,15 +25,9 @@
     initial: RecipeSearchResponse
     createRecipeUrl: string
     breadcrumbs?: Breadcrumb[]
-    /**
-     * Localized text for this page, keyed by unprefixed name and provided to descendants.
-     */
     resourceStrings?: Record<string, string>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { initial, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
 
   const rs = provideResourceStrings(resourceStrings, 'RecipeSearch')
@@ -170,7 +156,12 @@
         </div>
 
         <div v-else class="flex flex-col gap-y-9">
-          <RecipeListRow v-for="(recipe, index) in listed" :key="recipe.slug" :recipe :tear="listTearFor(index)" />
+          <RecipeCardRow
+            v-for="(recipe, index) in listed"
+            :key="recipe.slug"
+            :card="hitToCard(recipe, rs)"
+            :tear="listTearFor(index)"
+          />
         </div>
 
         <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-6">

@@ -39,19 +39,9 @@ public static class RecipeSearchDocuments
         };
     }
 
-    // The owner can type this JSON by hand in the backoffice; one slip must not take every recipe out of search.
-    private static IEnumerable<string> IngredientNames(string json)
-    {
-        try
-        {
-            return JsonSerializer.DeserializeCollection<IngredientViewModel>(json)
-                .Select(ingredient => ingredient.Name)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .ToList();
-        }
-        catch (System.Text.Json.JsonException)
-        {
-            return [];
-        }
-    }
+    private static IEnumerable<string> IngredientNames(string json) =>
+        JsonSerializer.DeserializeCollection<IngredientViewModel>(json)
+            .Select(ingredient => ingredient.Name)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .ToList();
 }

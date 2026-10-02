@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumbs.Component.vue'
 import type { Breadcrumb } from '~/Types/Recipe'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
 
 const items: Breadcrumb[] = [
   { linkText: 'Home', url: '/' },
@@ -81,8 +81,6 @@ describe('Breadcrumbs', () => {
 
   it('carries no retired weight or Softbound hook', async () => {
     const html = await renderSsr(Breadcrumbs, { items })
-    expect(html).not.toContain('font-bold')
-    expect(html).not.toContain('font-medium')
-    expect(html).not.toContain('sk-')
+    expectNoRetiredMarkup(html)
   })
 })

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import CreateRecipeView from '~/Pages/CreateRecipe/CreateRecipeView.Component.vue'
 import { ResourceString } from '~/Components/ResourceStrings'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 
 // The server renders step one and nothing else: `step` starts at 1, so steps two to five, the review
 // summary and the submitted sheet are client state this suite cannot reach.
@@ -10,8 +10,6 @@ const render = () => renderSsr(CreateRecipeView, { resourceStrings: {} }, undefi
 // The hero above the wizard is its own sheet, with its own suite; every assertion below reads the markup
 // from the progress list down.
 const wizardOf = (html: string) => html.slice(html.indexOf('aria-label="Steps"'))
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 // Field prints its label through a slot, so SSR wraps the text in Vue's fragment markers.
 const controlIdFor = (html: string, label: string) =>
@@ -93,12 +91,7 @@ describe('CreateRecipeView', () => {
     const wizard = wizardOf(await render())
     const sheet = wizard.slice(wizard.indexOf('<div class="kcc-slip'))
 
-    expect(wizard).not.toMatch(/sk-[a-z]/)
-    expect(wizard).not.toMatch(/\bv-ink\b/)
-    expect(wizard).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(wizard).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(wizard).not.toMatch(/\bshadow-/)
-    expect(wizard).not.toMatch(/\btext-(?:danger|warning|success|rating)-ink\b/)
+    expectNoRetiredMarkup(wizard)
     expect(sheet).not.toMatch(/\bbg-(?:paper|paper-2|marker)\b/)
     expect(sheet).not.toMatch(/\btext-lg\b/)
   })

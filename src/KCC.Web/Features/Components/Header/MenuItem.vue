@@ -1,28 +1,16 @@
-<!-- #region MenuItem Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, inject } from 'vue'
-  import SignOutForm, { isSignOutUrl } from '~/Components/Account/SignOutForm.vue'
+  import SignOutForm from '~/Components/Account/SignOutForm.vue'
+  import { isSignOutUrl } from '~/Components/Account/signOut'
   import { MENU_CONTROLLER_KEY } from '~/Components/Header/menuController'
 
-  /**
-   * One header entry: a flat link, or a button opening a panel of sub-links.
-   */
-  export default {
-    name: 'MenuItem',
-  }
-
-  interface PageLink {
+  export interface PageLink {
     displayText: string
     url: string
     target: string
   }
 
-  /**
-   * A header entry that is either a dropdown group (subLinks set) or a flat link
-   * (url + target set). The two modes are mutually exclusive on the server side
-   * (HeaderNavItem in C# is populated from either a NavGroup or a NavLink).
-   */
-  interface NavItem {
+  export interface NavItem {
     displayText: string
     url?: string
     target?: string
@@ -31,15 +19,9 @@
 
   export interface MenuItemProps {
     item: NavItem
-    /**
-     * Identifies this item to the header's shared open-menu controller, so opening one closes the rest.
-     */
     menuId: string
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { item, menuId } = defineProps<MenuItemProps>()
 
   const controller = inject(MENU_CONTROLLER_KEY)

@@ -1,11 +1,11 @@
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Search;
 
 namespace KCC.Web.Features.Pages.RecipeSearch;
 
 public class RecipeSearchViewModel : BasePageViewModel
 {
-    /// <summary>Gets or sets the unfiltered first page, in the envelope shape shared with /api/recipes/search.</summary>
-    public object InitialResults { get; set; }
+    public RecipeSearchResults InitialResults { get; set; }
 
     public string CreateRecipeUrl { get; set; }
 }

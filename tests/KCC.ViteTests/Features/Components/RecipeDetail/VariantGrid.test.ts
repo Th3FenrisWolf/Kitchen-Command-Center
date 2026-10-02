@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import VariantGrid from '~/Components/RecipeDetail/VariantGrid.vue'
@@ -23,8 +23,6 @@ const render = (count = NAMES.length) =>
     variants: NAMES.slice(0, count).map(variant),
     addVariantUrl: '/recipes/add-variant?recipe=abc',
   })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('VariantGrid', () => {
   it('lays the slips out on the rule, 28px between columns and 36px between rows', async () => {

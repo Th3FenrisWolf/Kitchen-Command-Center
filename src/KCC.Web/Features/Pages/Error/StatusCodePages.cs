@@ -4,13 +4,8 @@ using Umbraco.Cms.Core.Services.Navigation;
 
 namespace KCC.Web.Features.Pages.Error;
 
-public interface IStatusCodePages
-{
-    StatusCodePage Find(int statusCode);
-}
-
 // Registered as a singleton because the last-chance content finder is one; both dependencies are singletons too.
-public class StatusCodePages(IPublishedContentCache contentCache, IDocumentNavigationQueryService navigation) : IStatusCodePages
+public class StatusCodePages(IPublishedContentCache contentCache, IDocumentNavigationQueryService navigation)
 {
     public StatusCodePage Find(int statusCode)
     {

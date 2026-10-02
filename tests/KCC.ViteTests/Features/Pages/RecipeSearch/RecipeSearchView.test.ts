@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeSearchView from '~/Pages/RecipeSearch/RecipeSearchView.Component.vue'
@@ -62,8 +62,6 @@ const render = (over: Partial<RecipeSearchResponse> = {}) =>
     undefined,
     { Breadcrumbs },
   )
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipeSearchView library', () => {
   it('opens the results with a section name and the count set in Sono', async () => {
@@ -145,9 +143,7 @@ describe('RecipeSearchView library', () => {
   it('leaves no Softbound remnant on the page', async () => {
     const html = await render({ spotlight: hit('Top Rated Thing', 9), total: 25 })
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(html).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
+    expectNoRetiredMarkup(html)
     expect(html).not.toMatch(/\btext-(?:xs|sm)\b/)
   })
 })

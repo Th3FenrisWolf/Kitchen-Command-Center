@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import Card from '~/Widgets/Card/Card.Component.vue'
 import { sheetTearFor } from '~/Utilities/BrandColor'
-import { renderSsr } from '../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../support/ssr'
 
 const render = (props: Record<string, unknown> = {}) =>
   renderSsr(Card, props, { default: () => 'Weeknight', drawer: () => 'Hover to open.' })
@@ -129,9 +129,6 @@ describe('Card remnants', () => {
   it('leaves no Softbound class behind', async () => {
     const html = await render({ cardColor: 'bg-peach' })
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/rounded-(?:lg|xl|2xl|3xl)/)
-    expect(html).not.toContain('ink-on-wash')
-    expect(html).not.toContain('data-ink')
+    expectNoRetiredMarkup(html)
   })
 })

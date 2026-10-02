@@ -16,16 +16,12 @@ public class AddVariantPageController(
     ICompositeViewEngine compositeViewEngine,
     IUmbracoContextAccessor umbracoContextAccessor,
     IMemberManager memberManager,
-    IAccountPageQueries accountPages,
+    AccountPageQueries accountPages,
     IRecipeQueries recipes,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
-    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
+    : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
-    [NonAction]
-    public sealed override IActionResult Index() => throw new NotSupportedException();
-
     public async Task<IActionResult> Index([FromQuery(Name = "recipe")] Guid? recipeKey, CancellationToken cancellationToken)
     {
         if (CurrentPage is not AddVariantPage page)
@@ -48,55 +44,10 @@ public class AddVariantPageController(
             RecipeId = recipe.Key,
             RecipeName = recipe.Name,
             RecipeSlug = recipe.Url,
-            ResourceStrings = GetStrings(),
+            ResourceStrings = resourceStrings.GetGroup("AddVariant"),
         };
         pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/AddVariant/Index.cshtml", viewModel);
     }
-
-    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
-        // Hero + shared navigation
-        "AddVariant.AddVariantFor",
-        "AddVariant.Cancel",
-        "AddVariant.Next",
-        "AddVariant.Back",
-        // Step 1: variant info
-        "AddVariant.VariantInfo",
-        "AddVariant.VariantName",
-        "AddVariant.Description",
-        "AddVariant.DescriptionPlaceholder",
-        "AddVariant.PrepTime",
-        "AddVariant.CookTime",
-        "AddVariant.Servings",
-        // Step 2: ingredients
-        "AddVariant.Ingredients",
-        "AddVariant.IngredientName",
-        "AddVariant.IngredientNamePlaceholder",
-        "AddVariant.Eyeball",
-        "AddVariant.Quantity",
-        "AddVariant.QuantityPlaceholder",
-        "AddVariant.Unit",
-        "AddVariant.UnitPlaceholder",
-        "AddVariant.Remove",
-        "AddVariant.AddIngredient",
-        // Step 3: instructions
-        "AddVariant.Instructions",
-        "AddVariant.DescribeThisStep",
-        "AddVariant.AddStep",
-        // Step 4: review & submit
-        "AddVariant.ReviewAndSubmit",
-        "AddVariant.Min",
-        "AddVariant.Serves",
-        "AddVariant.ToTaste",
-        "AddVariant.Step",
-        "AddVariant.Steps",
-        "AddVariant.Submitting",
-        "AddVariant.SubmitForReview",
-        // Success + error states
-        "AddVariant.VariantSubmitted",
-        "AddVariant.VariantSubmittedMessage",
-        "AddVariant.BackTo",
-        "AddVariant.FailedToAddVariant",
-        "AddVariant.UnexpectedError");
 }

@@ -8,7 +8,7 @@ public class ErrorComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
-        builder.Services.AddSingleton<IStatusCodePages, StatusCodePages>();
+        builder.Services.AddSingleton<StatusCodePages>();
         builder.SetContentLastChanceFinder<NotFoundContentFinder>();
     }
 }

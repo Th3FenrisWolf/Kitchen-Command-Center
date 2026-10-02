@@ -1,9 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["Features/**/*", "Features/**/*.vue"],
-  "exclude": ["Features/**/__tests__/*"],
   "compilerOptions": {
-    "verbatimModuleSyntax": true,
     "composite": true,
     "tsBuildInfoFile": "node_modules/.cache/tsc/main.tsbuildinfo",
     "types": ["node", "vite/client"],

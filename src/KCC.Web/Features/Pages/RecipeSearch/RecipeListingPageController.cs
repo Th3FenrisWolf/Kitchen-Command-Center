@@ -32,47 +32,12 @@ public class RecipeListingPageController(
         var viewModel = new RecipeSearchViewModel
         {
             CreateRecipeUrl = recipes.GetCreateRecipeUrl(listing),
-            InitialResults = RecipeSearchResponseMapper.ToResponse(recipeSearch.Search(new RecipeSearchCriteria())),
+            InitialResults = recipeSearch.Search(new RecipeSearchCriteria()),
             Breadcrumbs = breadcrumbs.Build(listing),
-            ResourceStrings = GetStrings(),
+            ResourceStrings = resourceStrings.GetGroup("RecipeSearch"),
         };
         pageMetadata.Apply(listing, viewModel);
 
         return View("~/Features/Pages/RecipeSearch/Index.cshtml", viewModel);
     }
-
-    private Dictionary<string, string> GetStrings() => resourceStrings.GetManyOrDefault(
-        "RecipeSearch.SearchRecipes",
-        "RecipeSearch.CreateRecipe",
-        "RecipeSearch.BrowseTheKitchen",
-        "RecipeSearch.SearchPlaceholder",
-        "RecipeSearch.Search",
-        "RecipeSearch.Filters",
-        "RecipeSearch.Reset",
-        "RecipeSearch.Category",
-        "RecipeSearch.Dietary",
-        "RecipeSearch.TotalTime",
-        "RecipeSearch.Min",
-        "RecipeSearch.OrMore",
-        "RecipeSearch.OrLess",
-        "RecipeSearch.Sort",
-        "RecipeSearch.SortRelevant",
-        "RecipeSearch.SortTopRated",
-        "RecipeSearch.SortVariants",
-        "RecipeSearch.SortRecent",
-        "RecipeSearch.Grid",
-        "RecipeSearch.List",
-        "RecipeSearch.ClearAll",
-        "RecipeSearch.TopRated",
-        "RecipeSearch.Variants",
-        "RecipeSearch.StartedBy",
-        "RecipeSearch.NoRatingsYet",
-        "RecipeSearch.LoadingMore",
-        "RecipeSearch.NoRecipesMatch",
-        "RecipeSearch.NoRecipesHint",
-        "RecipeSearch.ClearAllFilters",
-        "RecipeSearch.IngredientSearchComingSoon",
-        "RecipeSearch.Recipe",
-        "RecipeSearch.Recipes",
-        "RecipeSearch.ResultsFor");
 }

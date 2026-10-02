@@ -30,9 +30,6 @@ public record RecipeSearchCriteria
         };
     }
 
-    /// <summary>Maps a sort key to a Lucene sort spec.</summary>
-    /// <param name="sort">The sort key (relevant|rated|variants|recent).</param>
-    /// <returns>The field name, whether descending, and whether to sort by relevance score.</returns>
     public static (string Field, bool Descending, bool ByScore) SortSpec(string sort) => sort switch
     {
         "rated" => (RecipeSearchConstants.FieldAverageRating, true, false),

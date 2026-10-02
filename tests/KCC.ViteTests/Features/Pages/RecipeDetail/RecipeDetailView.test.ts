@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeDetailView from '~/Pages/RecipeDetail/RecipeDetailView.Component.vue'
@@ -55,8 +55,6 @@ const render = (over: Record<string, unknown> = {}) =>
     undefined,
     { Breadcrumbs },
   )
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('RecipeDetailView', () => {
   it('opens with the trail on the rule and sets the page 72px apart', async () => {
@@ -143,10 +141,6 @@ describe('RecipeDetailView', () => {
   it('leaves no Softbound remnant on the page', async () => {
     const html = await render()
 
-    expect(html).not.toMatch(/sk-[a-z]/)
-    expect(html).not.toMatch(/\bv-ink\b/)
-    expect(html).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
-    expect(html).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
-    expect(html).not.toMatch(/\bshadow-/)
+    expectNoRetiredMarkup(html)
   })
 })

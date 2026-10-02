@@ -7,11 +7,6 @@ namespace KCC.Web.Features.Sitemap;
 
 public sealed record SitemapCandidate(string Url, string ContentTypeAlias, bool ExcludeFromSitemap);
 
-public interface ISitemapPages
-{
-    IEnumerable<string> Urls();
-}
-
 public static class SitemapFilter
 {
     private static readonly HashSet<string> ExcludedTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -31,7 +26,7 @@ public static class SitemapFilter
             .Distinct(StringComparer.Ordinal);
 }
 
-public class SitemapPages(IPublishedContentQuery contentQuery) : ISitemapPages
+public class SitemapPages(IPublishedContentQuery contentQuery)
 {
     public IEnumerable<string> Urls() => SitemapFilter.Urls(
         contentQuery.ContentAtRoot()

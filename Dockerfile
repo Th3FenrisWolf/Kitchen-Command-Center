@@ -32,7 +32,7 @@ RUN --mount=type=cache,id=yarn-ssr,target=/usr/local/share/.cache/yarn \
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0.401 AS build
 ARG TARGETARCH
 WORKDIR /repo
-COPY .editorconfig global.json nuget.config Directory.Packages.props KCCStandardRules.ruleset ./
+COPY .editorconfig global.json nuget.config Directory.Build.props Directory.Build.targets Directory.Packages.props KCCStandardRules.ruleset ./
 COPY src/KCC.Web/KCC.Web.csproj src/KCC.Web/
 COPY src/KCC.Contributions/KCC.Contributions.csproj src/KCC.Contributions/
 COPY src/KCC.Admin/KCC.Admin.csproj src/KCC.Admin/

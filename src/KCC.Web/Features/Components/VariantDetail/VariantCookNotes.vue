@@ -1,5 +1,4 @@
-<!-- #region VariantCookNotes Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { onMounted, ref } from 'vue'
   import type { CookNote, CookNotesResponse } from '~/Types/Recipe'
   import { get, post, del } from '~/Utilities/Api'
@@ -7,25 +6,11 @@
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
 
-  /**
-   * Paged list of cooks' notes on a variant, with a compose box for signed-in members.
-   */
-  export default {
-    name: 'VariantCookNotes',
-  }
-
   export interface VariantCookNotesProps {
     variantGuid: string
-    /**
-     * Gates the compose box; the notes themselves are always readable.
-     * @default false
-     */
     isAuthenticated?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { variantGuid, isAuthenticated = false } = defineProps<VariantCookNotesProps>()
 
   const t = useResourceStrings()
@@ -77,7 +62,6 @@
   <KccSheet as="section" icon="fa-duotone fa-pen-nib" :tear="4">
     <template #label><ResourceString for="CookNotes" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ t('CookNotes') }}</h2>
 
     <!-- The heading takes no room, so the rhythm is between the blocks, never above the first of them. -->

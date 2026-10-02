@@ -1,7 +1,6 @@
 /* Torn & Waxed — the paper. Everything Razor also renders lives here, not in a component style block.
    The tear presets (--tear-*, .kcc-tear-*) come from the generated Tears.css. */
 @layer components {
-  /* ---- the desk: grain under everything, wax tooth over everything ---- */
   .kcc-grain {
     background-image: var(--grain);
     background-size: 180px 180px;
@@ -34,7 +33,6 @@
     mix-blend-mode: soft-light;
   }
 
-  /* ---- the slip: tilt → torn (fibre + fall) → sheet (clip + rule + wash) ---- */
   .kcc-slip {
     min-width: 0;
     position: relative;
@@ -128,7 +126,6 @@
     right: 36px;
   }
 
-  /* One strip of tape, top-centre. Opt-in. */
   .kcc-tape {
     background-color: var(--color-tape);
     background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.16) 0 1px, transparent 1px 3px);
@@ -147,7 +144,6 @@
     background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 3px);
   }
 
-  /* ---- a torn wax tile pinned over a sheet's corner ---- */
   .kcc-tilewrap {
     /* --tear inherits from the slip's preset; without this reset an unclassed tile would take the sheet's
        80-point tear on a 56px box. */
@@ -187,7 +183,6 @@
     width: 34px;
   }
 
-  /* ---- type on the 24px rule ---- */
   .kcc-kick,
   .kcc-lbl {
     color: var(--color-ink-soft);
@@ -316,7 +311,6 @@
     color: var(--color-ink);
   }
 
-  /* ---- chrome on the desk ---- */
   .kcc-secname {
     align-items: baseline;
     display: grid;

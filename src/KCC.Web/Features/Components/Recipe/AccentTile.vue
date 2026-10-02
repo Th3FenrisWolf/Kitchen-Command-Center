@@ -1,37 +1,14 @@
-<!-- #region AccentTile Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { tileTearFor, washFor } from '~/Utilities/BrandColor'
 
-  /**
-   * Square thumbnail: the image when there is one, otherwise a torn wax tile pinned over its corner.
-   */
-  export default {
-    name: 'AccentTile',
-  }
-
   export interface AccentTileProps {
-    /**
-     * Picks the fallback wash and tear deterministically, so the same subject always tiles alike.
-     */
     seed: string
-    /**
-     * Font Awesome classes for the fallback tile.
-     */
     icon?: string
     image?: string
-    /**
-     * Falls back to `seed` when omitted.
-     */
     alt?: string
-    /**
-     * The larger tile size, for the detail hero.
-     */
     large?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { seed, icon, image, alt, large } = defineProps<AccentTileProps>()
 </script>
 

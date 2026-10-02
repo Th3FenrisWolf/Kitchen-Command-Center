@@ -1,52 +1,27 @@
-<!-- #region DetailHero Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import AccentTile from './AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import { washFor } from '~/Utilities/BrandColor'
   import { ResourceString } from '~/Components/ResourceStrings'
 
-  /**
-   * Page-heading block for a recipe or a variant: a hero-torn slip with the subject's wash pooled in the
-   * bottom-right corner (the kick lines run along the left, and soft ink over a wash core fails AA in the dark
-   * ramp), a large tile pinned over the top-left corner, and the description beside the title.
-   */
-  export default {
-    name: 'DetailHero',
-  }
-
   export interface DetailHeroProps {
     title: string
-    /**
-     * Picks the sheet's wash and the tile, so the same subject is always coloured alike.
-     */
     seed: string
     description: string
-    /**
-     * Font Awesome classes for the tile when there is no image.
-     */
     icon?: string
     image?: string
     authorName?: string
-    /**
-     * 0–5. Only shown once `reviewCount` is non-zero.
-     */
     averageRating?: number
     reviewCount?: number
     timesCooked?: number
   }
 
   export interface DetailHeroSlots {
-    /**
-     * Small uppercase kicker above the title.
-     */
     eyebrow?: () => void
     footer?: () => void
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { title, seed, description, icon, image, authorName, averageRating, reviewCount, timesCooked } =
     defineProps<DetailHeroProps>()
   const { eyebrow } = defineSlots<DetailHeroSlots>()

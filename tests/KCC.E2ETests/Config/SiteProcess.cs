@@ -9,7 +9,6 @@ using TUnit.Core.Interfaces;
 
 namespace KCC.E2ETests.Config;
 
-/// <summary>A KCC.Web process on a free port with its own SQLite file, started the way production starts it.</summary>
 public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
 {
     public const string AdminEmail = "admin@example.test";

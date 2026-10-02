@@ -4,7 +4,7 @@ using Umbraco.Cms.Core.Web;
 
 namespace KCC.Web.Features.Sitemap;
 
-public class SitemapController(ISitemapPages sitemapPages, IUmbracoContextFactory umbracoContextFactory) : Controller
+public class SitemapController(SitemapPages sitemapPages, IUmbracoContextFactory umbracoContextFactory) : Controller
 {
     [HttpGet("sitemap.xml")]
     [HttpHead("sitemap.xml")]

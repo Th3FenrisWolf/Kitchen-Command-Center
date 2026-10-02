@@ -11,7 +11,7 @@ public class RegistrationCompletePageController(
     ILogger<RenderController> logger,
     ICompositeViewEngine compositeViewEngine,
     IUmbracoContextAccessor umbracoContextAccessor,
-    IAccountPageQueries accountPages,
+    AccountPageQueries accountPages,
     PageMetadata pageMetadata)
     : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {

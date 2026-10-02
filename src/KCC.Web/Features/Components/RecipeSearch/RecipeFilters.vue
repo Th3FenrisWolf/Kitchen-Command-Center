@@ -1,5 +1,4 @@
-<!-- #region RecipeFilters Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed, useId } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
@@ -7,17 +6,8 @@
   import RangeSlider from '~/Components/Forms/RangeSlider.vue'
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
 
-  /**
-   * Filter panel for the recipe search: category and diet toggles plus a total-time range.
-   */
-  export default {
-    name: 'RecipeFilters',
-  }
-
   export interface RecipeFiltersProps {
-    /**
-     * Result counts for the current search. Values that match nothing are absent, not zero.
-     */
+    /** Values that match nothing are absent, not zero. */
     categoryFacets: Record<string, number>
     dietFacets: Record<string, number>
     /**
@@ -29,10 +19,7 @@
     selectedCategories: string[]
     selectedDiets: string[]
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const props = defineProps<RecipeFiltersProps>()
   const timeMin = defineModel<number>('timeMin', { required: true })
   const timeMax = defineModel<number>('timeMax', { required: true })
@@ -41,7 +28,6 @@
   const t = useResourceStrings()
 
   interface FilterRow {
-    /** Ties the row's printed box and text to its native checkbox. */
     id: string
     label: string
     count: number
@@ -76,7 +62,6 @@
   <KccSheet icon="fa-duotone fa-sliders" :tear="5" crisp>
     <template #label><ResourceString for="Filters" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <ResourceString for="Filters" as="h2" class="sr-only" />
     <div class="flex justify-end">
       <Button variant="text" @click="emit('reset')">

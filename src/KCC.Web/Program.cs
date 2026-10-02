@@ -23,15 +23,15 @@ builder.CreateUmbracoBuilder()
 builder.Services.AddMemoryCache();
 builder.Services.AddVueSsr(builder.Configuration);
 builder.Services.AddScoped<IResourceStringProvider, DictionaryResourceStringProvider>();
-builder.Services.AddScoped<ISiteSettingsQueries, SiteSettingsQueries>();
+builder.Services.AddScoped<SiteSettingsQueries>();
 builder.Services.AddScoped<PageMetadata>();
-builder.Services.AddScoped<ISitemapPages, SitemapPages>();
+builder.Services.AddScoped<SitemapPages>();
 builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddTransient<RecipeTestDataSeeder>();
 builder.Services.AddScoped<IRecipeQueries, RecipeQueries>();
-builder.Services.AddScoped<IAccountPageQueries, AccountPageQueries>();
-builder.Services.AddScoped<IAuthoredRecipeQueries, AuthoredRecipeQueries>();
-builder.Services.AddScoped<IRecipeSubmissions, RecipeSubmissions>();
+builder.Services.AddScoped<AccountPageQueries>();
+builder.Services.AddScoped<AuthoredRecipeQueries>();
+builder.Services.AddScoped<RecipeSubmissions>();
 builder.Services.AddScoped<BreadcrumbService>();
 
 // ASP.NET Core keeps data-protection keys in the user profile when it can, but only in memory where the home

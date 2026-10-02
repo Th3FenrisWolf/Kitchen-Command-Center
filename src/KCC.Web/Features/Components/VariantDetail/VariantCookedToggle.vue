@@ -1,38 +1,16 @@
-<!-- #region VariantCookedToggle Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { ref } from 'vue'
   import { post, del } from '~/Utilities/Api'
   import { ResourceString } from '~/Components/ResourceStrings'
   import Button from '~/Components/Button/Button.vue'
 
-  /**
-   * Button recording that the member cooked a variant, showing the running tally.
-   */
-  export default {
-    name: 'VariantCookedToggle',
-  }
-
   export interface VariantCookedToggleProps {
     variantGuid: string
-    /**
-     * Server-rendered starting values; the API's response drives them from the first click on.
-     * @default 0
-     */
     cookedCount?: number
-    /**
-     * @default false
-     */
     hasCooked?: boolean
-    /**
-     * Hides the button entirely when false.
-     * @default false
-     */
     isAuthenticated?: boolean
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const {
     variantGuid,
     cookedCount: initialCookedCount = 0,

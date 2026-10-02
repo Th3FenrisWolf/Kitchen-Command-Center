@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import KccButton from '~/Components/Button/Button.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
 
 const render = (props: Record<string, unknown> = {}) => renderSsr(KccButton, props, { default: () => 'Go' })
 
@@ -51,7 +51,6 @@ describe('KccButton', () => {
 
   it.each(['marker', 'ghost', 'ink', 'text'] as const)('carries no Softbound hook as %s', async (variant) => {
     const html = await render({ variant })
-    expect(html).not.toContain('data-ink')
-    expect(html).not.toContain('sk-')
+    expectNoRetiredMarkup(html)
   })
 })

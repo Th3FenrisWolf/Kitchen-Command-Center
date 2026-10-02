@@ -1,58 +1,22 @@
-<!-- #region VariantNutrition Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import type { Nutrition } from '~/Types/Recipe'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import { buildNutritionRows, hasNutrition } from './variantNutritionRows'
 
-  /**
-   * Nutrition panel, replaced by an empty state when no figure has been recorded.
-   */
-  export default {
-    name: 'VariantNutrition',
-  }
-
-  /**
-   * Flattened rather than a single `Nutrition` object so the server can hydrate each figure as its
-   * own prop. Individually optional: a missing one is left out of the table.
-   */
-  export interface VariantNutritionProps {
-    calories?: number | null
-    proteinG?: number | null
-    carbsG?: number | null
-    fatG?: number | null
-    saturatedFatG?: number | null
-    fiberG?: number | null
-    sugarG?: number | null
-    sodiumMg?: number | null
-  }
-</script>
-<!-- #endregion -->
-
-<script setup lang="ts">
-  const props = defineProps<VariantNutritionProps>()
+  // Flattened rather than one `Nutrition` object, so the server hydrates each figure as its own prop.
+  const props = defineProps<Nutrition>()
 
   const rs = useResourceStrings()
 
   const HEADLINE: readonly (keyof Nutrition)[] = ['calories', 'proteinG', 'carbsG', 'fatG']
   const MACROS: readonly (keyof Nutrition)[] = ['proteinG', 'carbsG', 'fatG']
 
-  const nutrition = computed<Nutrition>(() => ({
-    calories: props.calories,
-    proteinG: props.proteinG,
-    carbsG: props.carbsG,
-    fatG: props.fatG,
-    saturatedFatG: props.saturatedFatG,
-    fiberG: props.fiberG,
-    sugarG: props.sugarG,
-    sodiumMg: props.sodiumMg,
-  }))
-
-  const provided = computed(() => hasNutrition(nutrition.value))
+  const provided = computed(() => hasNutrition(props))
 
   const rows = computed(() =>
-    buildNutritionRows(nutrition.value, {
+    buildNutritionRows(props, {
       calories: rs('Calories'),
       proteinG: rs('Protein'),
       carbsG: rs('Carbs'),
@@ -84,7 +48,6 @@
   <KccSheet as="section" icon="fa-duotone fa-wheat" :tear="2">
     <template #label><ResourceString for="Nutrition" /></template>
 
-    <!-- The sheet's label carries the panel's name in print; the heading carries it in the document. -->
     <h2 class="sr-only">{{ rs('Nutrition') }}</h2>
 
     <ResourceString for="PerServing" as="p" class="kcc-kick" />

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import MenuItem from '~/Components/Header/MenuItem.vue'
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr } from '../../../support/ssr'
 
 const account = {
   displayText: 'Account',

@@ -15,7 +15,6 @@ public class VariantReviewsTests : BasePageTests
         // (both textareas are gated on isAuthenticated), so the page has no textareas.
         await Expect(Page.Locator("textarea")).ToHaveCountAsync(0);
 
-        // The ratings/reviews section still renders its heading, which contains "review".
         await Expect(Page.GetByText("review", new() { Exact = false }).First).ToBeVisibleAsync();
     }
 
@@ -38,7 +37,6 @@ public class VariantReviewsTests : BasePageTests
             await submit.ClickAsync();
             await Expect(reviewsList.GetByText("E2E review - tasty")).ToBeVisibleAsync();
 
-            // Resubmitting edits in place: the member still has one review.
             await reviewInput.FillAsync("E2E review - edited");
             await submit.ClickAsync();
             await Expect(reviewsList.GetByText("E2E review - edited")).ToBeVisibleAsync();
@@ -64,13 +62,11 @@ public class VariantReviewsTests : BasePageTests
 
         try
         {
-            // Click the left half of the 4th star -> 3.5, add text, submit.
             await Page.Locator("[data-value='3.5']").First.ClickAsync();
             await Page.Locator("[data-testid='review-input']").FillAsync("E2E half-star review");
             await submit.ClickAsync();
             await Expect(reviewsList.GetByText("E2E half-star review")).ToBeVisibleAsync();
 
-            // The stored 3.5 round-trips: the review's readonly stars show a half at position 4.
             await Expect(reviewsList.Locator("[data-star='4'][data-state='half']").First).ToBeVisibleAsync();
 
             await Page.Locator("[data-testid='delete-review']").ClickAsync();

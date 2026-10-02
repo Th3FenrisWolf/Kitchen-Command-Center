@@ -34,11 +34,11 @@ public class RecipeSearchTests
     {
         var results = Search(new RecipeSearchCriteria());
 
-        _ = await Assert.That(Counts(results.CategoryFacets, "Beverage", "Breakfast", "Dessert", "Dinner", "Lunch", "Snack"))
+        _ = await Assert.That(Counts(results.Facets.Category, "Beverage", "Breakfast", "Dessert", "Dinner", "Lunch", "Snack"))
             .IsEqualTo("Beverage 4, Breakfast 4, Dessert 4, Dinner 5, Lunch 4, Snack 4");
-        _ = await Assert.That(Counts(results.DietFacets, "Dairy-Free", "Gluten-Free", "High-Protein", "Keto", "Low-Carb", "Spicy", "Vegan", "Vegetarian"))
+        _ = await Assert.That(Counts(results.Facets.Diet, "Dairy-Free", "Gluten-Free", "High-Protein", "Keto", "Low-Carb", "Spicy", "Vegan", "Vegetarian"))
             .IsEqualTo("Dairy-Free 2, Gluten-Free 7, High-Protein 8, Keto 1, Low-Carb 3, Spicy 4, Vegan 12, Vegetarian 10");
-        _ = await Assert.That(results.DietFacets.ContainsKey("Cheesy")).IsFalse();
+        _ = await Assert.That(results.Facets.Diet.ContainsKey("Cheesy")).IsFalse();
     }
 
     [Test]
@@ -47,8 +47,8 @@ public class RecipeSearchTests
         var results = Search(new RecipeSearchCriteria { Categories = ["Dinner"] });
 
         _ = await Assert.That(results.Total).IsEqualTo(5);
-        _ = await Assert.That(Counts(results.CategoryFacets, "Beverage", "Lunch")).IsEqualTo("Beverage 4, Lunch 4");
-        _ = await Assert.That(Counts(results.DietFacets, "High-Protein", "Vegan", "Vegetarian")).IsEqualTo("High-Protein 4, Vegan 1, Vegetarian 1");
+        _ = await Assert.That(Counts(results.Facets.Category, "Beverage", "Lunch")).IsEqualTo("Beverage 4, Lunch 4");
+        _ = await Assert.That(Counts(results.Facets.Diet, "High-Protein", "Vegan", "Vegetarian")).IsEqualTo("High-Protein 4, Vegan 1, Vegetarian 1");
     }
 
     [Test]

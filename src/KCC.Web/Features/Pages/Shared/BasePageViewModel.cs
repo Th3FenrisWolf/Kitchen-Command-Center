@@ -7,7 +7,6 @@ public class BasePageViewModel
     public bool ShowBreadcrumbs { get; set; }
     public IEnumerable<BreadcrumbLink> Breadcrumbs { get; set; } = [];
 
-    /* Metadata/OpenGraph */
     public string Title { get; set; }
     public string Description { get; set; }
     public string Keywords { get; set; }

@@ -5,12 +5,7 @@ using Umbraco.Cms.Core.Models.Blocks;
 
 namespace KCC.Web.Features.Components.Header;
 
-public interface ISiteSettingsQueries
-{
-    HeaderNavigation GetHeaderNavigation();
-}
-
-public class SiteSettingsQueries(IPublishedContentQuery contentQuery) : ISiteSettingsQueries
+public class SiteSettingsQueries(IPublishedContentQuery contentQuery)
 {
     public HeaderNavigation GetHeaderNavigation()
     {

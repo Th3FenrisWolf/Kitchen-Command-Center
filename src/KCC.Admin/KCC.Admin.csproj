@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningsNotAsErrors>NU1608;NU1901;NU1902;NU1903</WarningsNotAsErrors>
         <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
     </PropertyGroup>
     <ItemGroup>
@@ -12,9 +8,4 @@
     <ItemGroup>
         <Content Remove="Client/**" />
     </ItemGroup>
-    <!-- The SDK registers wwwroot as a content root only if the folder exists during the build, and the client
-         build's output there is untracked, so a fresh clone has no folder until the client is built. -->
-    <Target Name="EnsureWebRoot" BeforeTargets="ResolveProjectStaticWebAssets">
-        <MakeDir Directories="$(MSBuildProjectDirectory)/wwwroot" />
-    </Target>
 </Project>

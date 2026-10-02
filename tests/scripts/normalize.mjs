@@ -1,9 +1,7 @@
 import { emptySummary } from "./util.mjs";
 
-// TUnit's failure-text field name/shape is unconfirmed (the committed test base
-// in this worktree doesn't compile, so a live failure couldn't be probed). Pull it
-// defensively from the likely fields, handling both a plain string and an object
-// shape such as { message, stackTrace }.
+// TUnit does not document where a failure's text lives, so the likely fields are tried in turn, each either a
+// string or a { message, stackTrace } object.
 function extractError(t) {
   const candidates = [t.errorMessage, t.exception, t.message, t.error, t.output, t.result];
   for (const c of candidates) {
@@ -18,7 +16,6 @@ function extractError(t) {
   return undefined;
 }
 
-// TUnit embedded data + descriptor -> unified Suite.
 export function normalizeTunit(data, descriptor) {
   const groups = (data.groups || []).map((g) => ({
     name: g.className,
@@ -52,15 +49,12 @@ export function normalizeTunit(data, descriptor) {
   };
 }
 
-// vitest assertion status -> unified status.
 export function mapVitestStatus(status) {
   if (status === "passed") return "passed";
   if (status === "failed") return "failed";
   return "skipped"; // pending | todo | skipped | disabled
 }
 
-// vitest --reporter=json output + descriptor -> unified Suite.
-// repoRoot makes the absolute file paths repo-relative for display.
 export function normalizeVitest(json, descriptor, repoRoot) {
   const rootFwd = String(repoRoot).replace(/\\/g, "/").replace(/\/$/, "");
   const toRel = (abs) => {

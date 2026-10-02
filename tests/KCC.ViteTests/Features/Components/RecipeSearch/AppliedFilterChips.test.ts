@@ -1,4 +1,4 @@
-import { renderSsr } from '../../../support/renderSsr'
+import { renderSsr, tagWith } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import AppliedFilterChips from '~/Components/RecipeSearch/AppliedFilterChips.vue'
 import type { FilterChip } from '~/Pages/RecipeSearch/recipeSearchCriteria'
@@ -9,8 +9,6 @@ const chips: FilterChip[] = [
 ]
 
 const render = (over: FilterChip[] = chips) => renderSsr(AppliedFilterChips, { chips: over })
-
-const tagWith = (html: string, needle: string) => html.match(new RegExp(`<[a-z0-9]+[^>]*${needle}[^>]*>`))?.[0] ?? ''
 
 describe('AppliedFilterChips', () => {
   it('prints each applied filter as a hairline badge that removes itself', async () => {

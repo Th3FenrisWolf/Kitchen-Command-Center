@@ -16,8 +16,6 @@ function makeSentinel(): FakeSentinel {
   return sentinel
 }
 
-// Minimal hand-rolled document stub: an EventTarget that also carries a mutable
-// visibilityState. Enough for useWakeLock's addEventListener/visibilitychange use.
 class FakeDocument extends EventTarget {
   visibilityState: 'visible' | 'hidden' = 'visible'
 }
@@ -27,7 +25,6 @@ let fakeDocument: FakeDocument
 beforeEach(() => {
   fakeDocument = new FakeDocument()
   vi.stubGlobal('document', fakeDocument)
-  // Default: API present but each test overrides navigator.wakeLock as needed.
   vi.stubGlobal('navigator', {})
 })
 

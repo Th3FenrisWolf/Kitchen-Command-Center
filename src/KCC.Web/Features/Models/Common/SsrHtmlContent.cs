@@ -26,7 +26,6 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
 
         if (result.Html is not null)
         {
-            // SSR succeeded - render the pre-rendered HTML
             writer.Write(result.Html); // Already HTML from SSR, no need to encode
         }
 
@@ -35,7 +34,6 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
         // Server content goes in a script tag as JSON to prevent XSS
         writer.Write(ServerContentScriptOpen);
 
-        // Encode the content as JSON string to escape any dangerous characters
         writer.Write(JsonSerializer.Serialize(new
         {
             headerContent = result.HeaderContent,

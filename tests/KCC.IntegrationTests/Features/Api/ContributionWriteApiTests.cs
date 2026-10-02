@@ -207,12 +207,5 @@ public class ContributionWriteApiTests
         return await TestContent.VariantAsync(Site.Services, recipe, "Classic");
     }
 
-    private async Task<MemberClient> SignedInAsync()
-    {
-        var userName = TestMembers.UniqueUserName("writer");
-        await TestMembers.ApprovedAsync(Site.Services, userName);
-        var member = new MemberClient(Site);
-        _ = await member.SignInAsync(userName, TestMembers.Password);
-        return member;
-    }
+    private async Task<MemberClient> SignedInAsync() => (await TestMembers.SignedInAsync(Site, "writer")).Visitor;
 }

@@ -1,36 +1,16 @@
-<!-- #region RecipeCardRow Component Properties -->
-<script lang="ts">
+<script setup lang="ts">
   import { computed } from 'vue'
-  import AppLink from '~/Components/Links/AppLink.Component.vue'
-  import Badge from '~/Components/Badge/Badge.vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import { sheetTearFor } from '~/Utilities/BrandColor'
   import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
 
-  /**
-   * Horizontal counterpart to RecipeCard, driven by the same model so the search list and the
-   * variant list stay visually identical.
-   */
-  export default {
-    name: 'RecipeCardRow',
-  }
-
   export interface RecipeCardRowProps {
-    /**
-     * Build with `hitToCard` or `variantToCard` from recipeCardModel.
-     */
     card: RecipeCardModel
-    /**
-     * Neighbours must never share one: a list passes `(index % 6) + 1`.
-     */
     tear?: Exclude<Tear, 'hero'>
   }
-</script>
-<!-- #endregion -->
 
-<script setup lang="ts">
   const { card, tear } = defineProps<RecipeCardRowProps>()
 
   const preset = computed(() => tear ?? sheetTearFor(card.seed))
@@ -40,7 +20,6 @@
       : undefined,
   )
 
-  // Prose opens the meta line; the model's own chips are all numbers, so they close it set in Sono tabular.
   const notes = computed(() =>
     [card.eyebrow, card.rating?.count === 0 ? card.rating.emptyLabel : undefined, card.subtitle].filter(
       (note): note is string => !!note,
@@ -50,7 +29,7 @@
 </script>
 
 <template>
-  <AppLink
+  <a
     :href="card.href"
     v-bind="card.dataAttrs"
     class="kcc-slip kcc-torn block transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
@@ -64,7 +43,7 @@
         <div class="flex flex-wrap items-center gap-x-3">
           <h3 class="kcc-h4">{{ card.name }}</h3>
           <div v-if="card.tags.length" class="kcc-badges">
-            <Badge v-for="tag in card.tags" :key="tag">{{ tag }}</Badge>
+            <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
           </div>
         </div>
 
@@ -97,5 +76,5 @@
 
       <i class="fa-duotone fa-arrow-right flex-none text-ink-soft" aria-hidden="true"></i>
     </div>
-  </AppLink>
+  </a>
 </template>

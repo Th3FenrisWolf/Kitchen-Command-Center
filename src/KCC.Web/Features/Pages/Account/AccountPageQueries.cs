@@ -6,12 +6,7 @@ namespace KCC.Web.Features.Pages.Account;
 
 public sealed record AccountUrls(string Account, string Login, string Settings, string RegistrationComplete);
 
-public interface IAccountPageQueries
-{
-    AccountUrls GetUrls();
-}
-
-public class AccountPageQueries(IPublishedContentQuery contentQuery) : IAccountPageQueries
+public class AccountPageQueries(IPublishedContentQuery contentQuery)
 {
     public AccountUrls GetUrls()
     {

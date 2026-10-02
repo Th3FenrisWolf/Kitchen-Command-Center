@@ -15,15 +15,11 @@ public class CreateRecipePageController(
     ICompositeViewEngine compositeViewEngine,
     IUmbracoContextAccessor umbracoContextAccessor,
     IMemberManager memberManager,
-    IAccountPageQueries accountPages,
+    AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
-    : RenderController(logger, compositeViewEngine, umbracoContextAccessor)
+    : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    // Route hijacking calls the synchronous Index unless it is hidden like this; the overload below serves the page.
-    [NonAction]
-    public sealed override IActionResult Index() => throw new NotSupportedException();
-
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         if (CurrentPage is not CreateRecipePage page)
@@ -36,7 +32,7 @@ public class CreateRecipePageController(
             return SignInRedirect.To(accountPages.GetUrls().Login, Request);
         }
 
-        var viewModel = new CreateRecipeViewModel { ResourceStrings = resourceStrings.GetManyOrDefault("CreateRecipe.CreateRecipe") };
+        var viewModel = new CreateRecipeViewModel { ResourceStrings = resourceStrings.GetGroup("CreateRecipe") };
         pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/CreateRecipe/Index.cshtml", viewModel);
