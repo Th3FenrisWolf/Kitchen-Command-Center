@@ -1,3 +1,4 @@
+using KCC.Web.Features.Ramp;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
@@ -55,6 +56,15 @@ public static class TestMembers
         if (!updated.Success)
         {
             throw new InvalidOperationException($"Approving {member.Username} failed: {updated.Status.MemberEditingOperationStatus}.");
+        }
+    }
+
+    public static async Task SaveRampAsync(IServiceProvider services, Guid memberKey, string ramp)
+    {
+        using var scope = services.CreateScope();
+        if (!await scope.ServiceProvider.GetRequiredService<MemberRamps>().SaveAsync(memberKey, ramp))
+        {
+            throw new InvalidOperationException($"No member {memberKey}.");
         }
     }
 

@@ -5,6 +5,7 @@ using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Hosting;
 using KCC.Web.Features.Pages.Account;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Ramp;
 using KCC.Web.Features.Recipes;
 using KCC.Web.Features.Sitemap;
 using KCC.Web.Features.Ssr;
@@ -31,6 +32,7 @@ builder.Services.AddTransient<RecipeTestDataSeeder>();
 builder.Services.AddScoped<IRecipeQueries, RecipeQueries>();
 builder.Services.AddScoped<AccountPageQueries>();
 builder.Services.AddScoped<AuthoredRecipeQueries>();
+builder.Services.AddScoped<MemberRamps>();
 builder.Services.AddScoped<RecipeSubmissions>();
 builder.Services.AddScoped<BreadcrumbService>();
 

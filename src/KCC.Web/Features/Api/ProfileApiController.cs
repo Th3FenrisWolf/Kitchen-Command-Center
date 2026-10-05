@@ -1,4 +1,5 @@
 using KCC.Web.Features.Dictionary;
+using KCC.Web.Features.Ramp;
 using KCC.Web.Features.Security;
 using KCC.Web.Features.Sqlite;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +18,7 @@ public class ProfileApiController(
     IMemberService memberService,
     SignInManager<MemberIdentityUser> signInManager,
     IMemberWriteLock memberWriteLock,
+    MemberRamps memberRamps,
     IResourceStringProvider resourceStrings) : ControllerBase
 {
     [HttpPost]
@@ -79,10 +81,34 @@ public class ProfileApiController(
             ? Ok(new ProfileResponse(true, null))
             : Ok(new ProfileResponse(false, [.. result.Errors.Select(error => error.Description)]));
     }
+
+    [HttpPost("ramp")]
+    public async Task<IActionResult> UpdateRamp([FromBody] UpdateRampRequest request)
+    {
+        if (await memberManager.GetCurrentMemberAsync() is not { } signedIn)
+        {
+            return Unauthorized();
+        }
+
+        if (!Ramps.IsKnown(request?.Ramp))
+        {
+            return BadRequest();
+        }
+
+        if (!await memberRamps.SaveAsync(signedIn.Key, request.Ramp))
+        {
+            return Unauthorized();
+        }
+
+        RampCookie.Write(HttpContext, request.Ramp);
+        return Ok(new ProfileResponse(true, null));
+    }
 }
 
 public sealed record UpdateProfileRequest(string FirstName, string LastName);
 
 public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
+
+public sealed record UpdateRampRequest(string Ramp);
 
 public sealed record ProfileResponse(bool Success, string[] Errors);

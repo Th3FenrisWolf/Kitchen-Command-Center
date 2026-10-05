@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using KCC.IntegrationTests.Config;
 using KCC.Web.Features.Providers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Services;
 
@@ -93,6 +94,55 @@ public class ProfileApiTests
         _ = await Assert.That(response.Success).IsFalse();
     }
 
+    [Test]
+    public async Task UpdateRamp_SavesTheChoiceOnTheMember_AndMirrorsItInAnHttpOnlyCookie()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "dusk");
+
+        var response = await member.Visitor.PostAsync("/api/profile/ramp", new { ramp = "Dark" });
+        var cookie = RampCookieOf(response);
+
+        _ = await Assert.That((await ReadAsync(response)).Success).IsTrue();
+        _ = await Assert.That(StoredRamp(member.Key)).IsEqualTo("[\"Dark\"]");
+        _ = await Assert.That(cookie.Value.ToString()).IsEqualTo("dark");
+        _ = await Assert.That(cookie.HttpOnly).IsTrue();
+        _ = await Assert.That(cookie.SameSite).IsEqualTo(Microsoft.Net.Http.Headers.SameSiteMode.Lax);
+        _ = await Assert.That(cookie.MaxAge).IsEqualTo(TimeSpan.FromDays(365));
+    }
+
+    [Test]
+    public async Task UpdateRamp_ToDevice_DeletesTheCookie()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "noon");
+        _ = await ReadAsync(await member.Visitor.PostAsync("/api/profile/ramp", new { ramp = "Dark" }));
+
+        using var response = await member.Visitor.PostAsync("/api/profile/ramp", new { ramp = "Device" });
+
+        _ = await Assert.That(StoredRamp(member.Key)).IsEqualTo("[\"Device\"]");
+        _ = await Assert.That(RampCookieOf(response).Expires < DateTimeOffset.UtcNow).IsTrue();
+    }
+
+    [Test]
+    public async Task UpdateRamp_ToARampTheSiteDoesNotHave_IsRefused()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "sepia");
+
+        using var response = await member.Visitor.PostAsync("/api/profile/ramp", new { ramp = "Sepia" });
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+        _ = await Assert.That(StoredRamp(member.Key)).IsNull();
+    }
+
+    [Test]
+    public async Task UpdateRamp_SignedOut_IsUnauthorized()
+    {
+        using var visitor = new MemberClient(Site);
+
+        using var response = await visitor.PostAsync("/api/profile/ramp", new { ramp = "Dark" });
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
+    }
+
     private static async Task<ProfileResult> ReadAsync(HttpResponseMessage response)
     {
         using (response)
@@ -110,6 +160,13 @@ public class ProfileApiTests
             throw new InvalidOperationException($"Deleting the member failed: {deleted.Status}.");
         }
     }
+
+    private static SetCookieHeaderValue RampCookieOf(HttpResponseMessage response) =>
+        SetCookieHeaderValue.ParseList(response.Headers.TryGetValues("Set-Cookie", out var cookies) ? cookies.ToList() : [])
+            .Single(cookie => cookie.Name.Equals("kcc-ramp", StringComparison.Ordinal));
+
+    private string? StoredRamp(Guid memberKey) =>
+        Site.Services.GetRequiredService<IMemberService>().GetById(memberKey)!.GetValue<string>("ramp");
 
     private sealed record ProfileResult(bool Success, string[]? Errors);
 }

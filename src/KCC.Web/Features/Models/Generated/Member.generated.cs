@@ -66,6 +66,14 @@ namespace KCC.Web.Features.Models.Generated
 		public virtual string LastName => this.Value<string>(_publishedValueFallback, "lastName");
 
 		///<summary>
+		/// Ramp
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("ramp")]
+		public virtual string Ramp => this.Value<string>(_publishedValueFallback, "ramp");
+
+		///<summary>
 		/// Comments
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]

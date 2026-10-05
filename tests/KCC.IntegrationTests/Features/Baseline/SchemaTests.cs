@@ -56,6 +56,7 @@ public class SchemaTests
     [Arguments("KCC Cards")]
     [Arguments("KCC Home Sections")]
     [Arguments("KCC Tag Kind")]
+    [Arguments("KCC Ramp")]
     public async Task DataType_IsImportedOnFirstBoot(string name)
     {
         var dataTypes = Site.Services.GetRequiredService<IDataTypeService>();
@@ -89,6 +90,16 @@ public class SchemaTests
 
         _ = await Assert.That(icon.Mandatory).IsFalse();
         _ = await Assert.That(dataType!.Name).IsEqualTo("KCC Recipe Icon");
+    }
+
+    [Test]
+    public async Task Member_HasAnOptionalRamp()
+    {
+        var ramp = Site.Services.GetRequiredService<IMemberTypeService>().Get("Member")!.PropertyTypes.Single(property => property.Alias == "ramp");
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(ramp.DataTypeKey);
+
+        _ = await Assert.That(ramp.Mandatory).IsFalse();
+        _ = await Assert.That(dataType!.Name).IsEqualTo("KCC Ramp");
     }
 
     [Test]
