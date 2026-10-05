@@ -4,6 +4,7 @@
 
 <RecipeSearchView
   :initial="@Vue.Prop(Model.InitialResults)"
+  :filters="@Vue.Prop(Model.Filters)"
   :options="@Vue.Prop(Model.Options)"
   create-recipe-url="@Model.CreateRecipeUrl"
   :breadcrumbs="@Vue.Prop(Model.Breadcrumbs)"

@@ -3,6 +3,7 @@ import {
   MAX_TIME,
   defaultState,
   buildSearchParams,
+  filterParams,
   chipsFor,
   activeFilterCount,
   timeRangeLabel,
@@ -49,6 +50,40 @@ describe('buildSearchParams', () => {
     const p = buildSearchParams(state({ timeMin: 10, timeMax: 30 }), 0, 12)
     expect(p.get('timeMin')).toBe('10')
     expect(p.get('timeMax')).toBe('30')
+  })
+})
+
+describe('filterParams', () => {
+  it('is empty for the whole library', () => {
+    expect(filterParams(state()).toString()).toBe('')
+  })
+
+  it('leaves each default out on its own, so a preset reads as one parameter', () => {
+    expect(filterParams(state({ timeMax: 30 })).toString()).toBe('timeMax=30')
+    expect(filterParams(state({ timeMin: 15 })).toString()).toBe('timeMin=15')
+    expect(filterParams(state({ sort: 'rated' })).toString()).toBe('sort=rated')
+  })
+
+  it('writes every filter in the order the library reads them, the query trimmed', () => {
+    const p = filterParams(
+      state({
+        query: '  mac & cheese ',
+        categories: ['Dinner'],
+        diets: ['Vegan'],
+        styles: ['Spicy', 'Easy'],
+        timeMin: 10,
+        timeMax: 30,
+        sort: 'recent',
+      }),
+    )
+
+    expect(p.toString()).toBe(
+      'query=mac+%26+cheese&category=Dinner&diet=Vegan&style=Spicy&style=Easy&timeMin=10&timeMax=30&sort=recent',
+    )
+  })
+
+  it('never carries the view', () => {
+    expect(filterParams(state({ view: 'list' })).has('view')).toBe(false)
   })
 })
 

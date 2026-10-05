@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace KCC.Web.Features.Search;
 
 public record RecipeSearchCriteria
@@ -13,9 +15,12 @@ public record RecipeSearchCriteria
     public int TimeMin { get; init; }
     public int TimeMax { get; init; } = MaxTime;
     public string Sort { get; init; } = "relevant";
+    [JsonIgnore]
     public int Page { get; init; }
+    [JsonIgnore]
     public int PageSize { get; init; } = DefaultPageSize;
 
+    [JsonIgnore]
     public bool TimeActive => TimeMin > 0 || TimeMax < MaxTime;
 
     public RecipeSearchCriteria Normalized()

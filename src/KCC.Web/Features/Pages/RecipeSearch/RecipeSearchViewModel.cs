@@ -8,6 +8,8 @@ public class RecipeSearchViewModel : BasePageViewModel
 {
     public RecipeSearchResults InitialResults { get; set; }
 
+    public RecipeSearchCriteria Filters { get; set; }
+
     public RecipeTaxonomy Options { get; set; }
 
     public string CreateRecipeUrl { get; set; }

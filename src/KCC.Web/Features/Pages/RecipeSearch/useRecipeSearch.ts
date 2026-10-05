@@ -1,11 +1,17 @@
 import { reactive, ref, watch } from 'vue'
 import type { RecipeSearchHit, RecipeSearchResponse, RecipeFacets } from '~/Types/Recipe'
-import { buildSearchParams, defaultState, type RecipeSearchState } from './recipeSearchCriteria'
+import { buildSearchParams, filterParams, type RecipeFilterState, type RecipeSearchState } from './recipeSearchCriteria'
 
 const PAGE_SIZE = 12
 
-export function useRecipeSearch(initial: RecipeSearchResponse) {
-  const state = reactive<RecipeSearchState>(defaultState())
+export function useRecipeSearch(initial: RecipeSearchResponse, filters: RecipeFilterState) {
+  const state = reactive<RecipeSearchState>({
+    ...filters,
+    categories: [...filters.categories],
+    diets: [...filters.diets],
+    styles: [...filters.styles],
+    view: 'grid',
+  })
   const results = ref<RecipeSearchHit[]>([...initial.results])
   const facets = ref<RecipeFacets>(initial.facets)
   const total = ref(initial.total)
@@ -41,16 +47,7 @@ export function useRecipeSearch(initial: RecipeSearchResponse) {
   }
 
   watch(
-    () =>
-      [
-        state.query,
-        state.categories.join(','),
-        state.diets.join(','),
-        state.styles.join(','),
-        state.timeMin,
-        state.timeMax,
-        state.sort,
-      ].join('|'),
+    () => filterParams(state).toString(),
     () => fetchPage(0, false),
   )
 

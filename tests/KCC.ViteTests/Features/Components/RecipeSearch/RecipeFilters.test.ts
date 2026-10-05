@@ -101,6 +101,8 @@ describe('RecipeFilters groups', () => {
     expect(groupFor(html, 'Diets')).toContain('>Vegan<')
     expect(groupFor(html, 'Diets')).not.toContain('Spicy')
     expect(groupFor(html, 'Styles')).toContain('>Spicy<')
+    expect(rowFor(html, 'Vegan')).toContain('<span class="kcc-q">3</span>')
+    expect(rowFor(html, 'Spicy')).toContain('<span class="kcc-q">1</span>')
   })
 
   it('keeps the order the options arrive in', async () => {

@@ -70,6 +70,42 @@ public class RecipeListingPageTests
         _ = await Assert.That(strings.TryGetProperty("RecipeSearch.Dietary", out _)).IsFalse();
     }
 
+    [Test]
+    public async Task Listing_OpensADeepLinkFiltered_AndStillOffersEverything()
+    {
+        using var client = Site.CreateClient();
+
+        var page = await RenderedPage.GetAsync(client, "/recipes/?category=dinner&diet=Vegan&sort=rated");
+        var initial = page.Prop("initial");
+        var filters = page.Prop("filters");
+
+        _ = await Assert.That(initial.GetProperty("total").GetInt32()).IsEqualTo(1);
+        _ = await Assert.That(initial.GetProperty("results")[0].GetProperty("name").GetString()).IsEqualTo("Weeknight Tacos");
+        _ = await Assert.That(Names(filters, "categories")).IsEqualTo("Dinner");
+        _ = await Assert.That(Names(filters, "diets")).IsEqualTo("Vegan");
+        _ = await Assert.That(filters.GetProperty("sort").GetString()).IsEqualTo("rated");
+        _ = await Assert.That(Names(page.Prop("options"), "categories")).IsEqualTo("Breakfast,Lunch,Dinner,Dessert,Snack,Beverage");
+        _ = await Assert.That(Names(page.Prop("options"), "diets")).IsEqualTo("Vegetarian,Vegan,Gluten-Free,Dairy-Free,Keto,High-Protein,Low-Carb");
+    }
+
+    [Test]
+    public async Task Listing_IgnoresWhatItDoesNotOffer()
+    {
+        using var client = Site.CreateClient();
+
+        var page = await RenderedPage.GetAsync(client, "/recipes/?category=Brunch&style=Cheesy&sort=spiciest&timeMin=soon&page=3");
+        var initial = page.Prop("initial");
+        var filters = page.Prop("filters");
+
+        _ = await Assert.That(initial.GetProperty("total").GetInt32()).IsGreaterThanOrEqualTo(25);
+        _ = await Assert.That(initial.GetProperty("page").GetInt32()).IsEqualTo(0);
+        _ = await Assert.That(filters.GetProperty("categories").GetArrayLength()).IsEqualTo(0);
+        _ = await Assert.That(filters.GetProperty("styles").GetArrayLength()).IsEqualTo(0);
+        _ = await Assert.That(filters.GetProperty("sort").GetString()).IsEqualTo("relevant");
+        _ = await Assert.That(filters.GetProperty("timeMin").GetInt32()).IsEqualTo(0);
+        _ = await Assert.That(filters.TryGetProperty("page", out _)).IsFalse();
+    }
+
     private static string Names(JsonElement lists, string property) =>
         string.Join(",", lists.GetProperty(property).EnumerateArray().Select(name => name.GetString()));
 }

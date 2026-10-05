@@ -11,27 +11,37 @@
   import RecipeCardRow from '~/Components/Recipe/RecipeCardRow.vue'
   import RecipesEmptyState from '~/Components/RecipeSearch/RecipesEmptyState.vue'
   import { useRecipeSearch } from './useRecipeSearch'
+  import { useLibraryUrl } from './useLibraryUrl'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
-  import { MAX_TIME, chipsFor, activeFilterCount, defaultState, type FilterChip } from './recipeSearchCriteria'
+  import {
+    MAX_TIME,
+    chipsFor,
+    activeFilterCount,
+    defaultState,
+    type FilterChip,
+    type RecipeFilterState,
+  } from './recipeSearchCriteria'
   import type { Breadcrumb, RecipeSearchResponse, RecipeTaxonomy } from '~/Types/Recipe'
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
 
   export interface RecipeSearchViewProps {
     initial: RecipeSearchResponse
+    filters: RecipeFilterState
     options: RecipeTaxonomy
     createRecipeUrl: string
     breadcrumbs?: Breadcrumb[]
     resourceStrings?: Record<string, string>
   }
 
-  const { initial, options, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
+  const { initial, filters, options, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
 
   const rs = provideResourceStrings(resourceStrings, 'RecipeSearch')
 
-  const { state, results, facets, total, spotlight, loading, hasMore, loadMore } = useRecipeSearch(initial)
+  const { state, results, facets, total, spotlight, loading, hasMore, loadMore } = useRecipeSearch(initial, filters)
+  useLibraryUrl(state)
 
-  const draft = ref('')
+  const draft = ref(state.query)
   const sheetOpen = ref(false)
 
   const onSubmit = () => {

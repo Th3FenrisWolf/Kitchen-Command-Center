@@ -65,7 +65,7 @@ export function chipsFor(s: RecipeFilterState, t: ResourceResolver): FilterChip[
   return chips
 }
 
-export function buildSearchParams(s: RecipeFilterState, page: number, pageSize: number): URLSearchParams {
+export function filterParams(s: RecipeFilterState): URLSearchParams {
   const p = new URLSearchParams()
   if (s.query.trim()) {
     p.set('query', s.query.trim())
@@ -73,13 +73,20 @@ export function buildSearchParams(s: RecipeFilterState, page: number, pageSize: 
   s.categories.forEach((c) => p.append('category', c))
   s.diets.forEach((d) => p.append('diet', d))
   s.styles.forEach((style) => p.append('style', style))
-  if (isTimeActive(s.timeMin, s.timeMax)) {
+  if (s.timeMin > 0) {
     p.set('timeMin', String(s.timeMin))
+  }
+  if (s.timeMax < MAX_TIME) {
     p.set('timeMax', String(s.timeMax))
   }
   if (s.sort !== 'relevant') {
     p.set('sort', s.sort)
   }
+  return p
+}
+
+export function buildSearchParams(s: RecipeFilterState, page: number, pageSize: number): URLSearchParams {
+  const p = filterParams(s)
   p.set('page', String(page))
   p.set('pageSize', String(pageSize))
   return p

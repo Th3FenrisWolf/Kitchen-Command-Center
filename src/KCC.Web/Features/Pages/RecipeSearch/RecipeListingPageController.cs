@@ -30,11 +30,14 @@ public class RecipeListingPageController(
         }
 
         var wholeLibrary = recipeSearch.Search(new RecipeSearchCriteria());
+        var options = RecipeLibraryFilters.Options(recipes.GetTaxonomy(), wholeLibrary.Facets);
+        var filters = RecipeLibraryFilters.FromQuery(Request.Query, options);
         var viewModel = new RecipeSearchViewModel
         {
             CreateRecipeUrl = recipes.GetCreateRecipeUrl(listing),
-            InitialResults = wholeLibrary,
-            Options = RecipeLibraryFilters.Options(recipes.GetTaxonomy(), wholeLibrary.Facets),
+            InitialResults = recipeSearch.Search(filters),
+            Filters = filters,
+            Options = options,
             Breadcrumbs = breadcrumbs.Build(listing),
             ResourceStrings = resourceStrings.GetGroup("RecipeSearch"),
         };
