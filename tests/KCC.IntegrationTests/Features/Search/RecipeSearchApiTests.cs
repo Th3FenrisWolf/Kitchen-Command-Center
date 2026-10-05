@@ -43,6 +43,31 @@ public class RecipeSearchApiTests
     }
 
     [Test]
+    public async Task Search_FiltersAndCountsByStyle()
+    {
+        using var client = Site.CreateClient();
+        using var document = JsonDocument.Parse(await client.GetStringAsync("/api/recipes/search?style=Spicy&pageSize=48"));
+        var root = document.RootElement;
+        var total = root.GetProperty("total").GetInt32();
+        var tags = root.GetProperty("results").EnumerateArray()
+            .Select(hit => hit.GetProperty("tags").EnumerateArray().Select(tag => tag.GetString()).ToList());
+
+        _ = await Assert.That(total).IsGreaterThan(0);
+        _ = await Assert.That(tags.All(hitTags => hitTags.Contains("Spicy"))).IsTrue();
+        _ = await Assert.That(root.GetProperty("facets").GetProperty("style").GetProperty("Spicy").GetInt32()).IsEqualTo(total);
+    }
+
+    [Test]
+    public async Task Search_StyleFilter_AnswersNoResultsForADietTag()
+    {
+        using var client = Site.CreateClient();
+        using var document = JsonDocument.Parse(await client.GetStringAsync("/api/recipes/search?style=Vegan&pageSize=48"));
+        var root = document.RootElement;
+
+        _ = await Assert.That(root.GetProperty("total").GetInt32()).IsEqualTo(0);
+    }
+
+    [Test]
     public async Task Search_PastTheLastPage_AnswersNoResults()
     {
         using var client = Site.CreateClient();

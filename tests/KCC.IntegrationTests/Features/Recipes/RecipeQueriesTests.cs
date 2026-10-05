@@ -102,6 +102,14 @@ public class RecipeQueriesTests
     }
 
     [Test]
+    public async Task GetStyleTagNames_ListsTheTagsWhoseKindIsStyle()
+    {
+        var styles = WithContent((_, queries) => queries.GetStyleTagNames());
+
+        _ = await Assert.That(styles).IsEquivalentTo(["Cheesy", "Easy", "Fast", "Spicy"]);
+    }
+
+    [Test]
     public async Task GetCreateRecipeUrl_FindsTheWizardUnderTheListing()
     {
         var url = WithContent((content, queries) => queries.GetCreateRecipeUrl(

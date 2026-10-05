@@ -176,6 +176,25 @@ public static class TestContent
         }
     }
 
+    public static async Task SetKindAsync(IServiceProvider services, Guid tagKey, string kind)
+    {
+        using var scope = services.CreateScope();
+        var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
+        var tag = contentService.GetById(tagKey) ?? throw new InvalidOperationException($"No tag {tagKey}.");
+        tag.SetValue("kind", $"[\"{kind}\"]");
+        if (!contentService.Save(tag).Success)
+        {
+            throw new InvalidOperationException($"Saving the kind of {tagKey} failed.");
+        }
+
+        var published = await scope.ServiceProvider.GetRequiredService<IContentPublishingService>()
+            .PublishAsync(tagKey, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
+        if (!published.Success)
+        {
+            throw new InvalidOperationException($"Publishing the kind of {tagKey} failed: {published.Status}.");
+        }
+    }
+
     public static async Task UnpublishAsync(IServiceProvider services, Guid key)
     {
         using var scope = services.CreateScope();

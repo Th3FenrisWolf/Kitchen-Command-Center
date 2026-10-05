@@ -9,6 +9,7 @@ public record RecipeSearchDocument
     public string StartedBy { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public IReadOnlyList<string> Diets { get; init; } = [];
+    public IReadOnlyList<string> Styles { get; init; } = [];
     public IReadOnlyList<string> IngredientNames { get; init; } = [];
     public int FastestTime { get; init; }
     public int VariantCount { get; init; }

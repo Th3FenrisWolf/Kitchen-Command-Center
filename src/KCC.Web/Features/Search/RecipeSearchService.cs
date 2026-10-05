@@ -16,7 +16,7 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
 
     private const float NameBoost = 2f;
 
-    // Category and diet are small controlled taxonomies; this comfortably returns every value with its count.
+    // Category, diet and style are small controlled taxonomies; this comfortably returns every value with its count.
     private const int FacetTopN = 1000;
 
     public RecipeSearchResults Search(RecipeSearchCriteria rawCriteria)
@@ -34,6 +34,11 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
         foreach (var diet in criteria.Diets.Where(value => !string.IsNullOrWhiteSpace(value)))
         {
             drill.Add(RecipeSearchConstants.FacetDiet, diet);
+        }
+
+        foreach (var style in criteria.Styles.Where(value => !string.IsNullOrWhiteSpace(value)))
+        {
+            drill.Add(RecipeSearchConstants.FacetStyle, style);
         }
 
         var sort = BuildSort(criteria);
@@ -85,6 +90,7 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
                 {
                     Category = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetCategory),
                     Diet = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetDiet),
+                    Style = ReadFacetCounts(outcome.Facets, RecipeSearchConstants.FacetStyle),
                 },
                 Spotlight = spotlight,
             };

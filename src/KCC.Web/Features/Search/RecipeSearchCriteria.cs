@@ -9,6 +9,7 @@ public record RecipeSearchCriteria
     public string Query { get; init; } = string.Empty;
     public IReadOnlyList<string> Categories { get; init; } = [];
     public IReadOnlyList<string> Diets { get; init; } = [];
+    public IReadOnlyList<string> Styles { get; init; } = [];
     public int TimeMin { get; init; }
     public int TimeMax { get; init; } = MaxTime;
     public string Sort { get; init; } = "relevant";

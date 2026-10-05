@@ -1,5 +1,6 @@
 using KCC.Contributions;
 using KCC.IntegrationTests.Config;
+using KCC.Web.Features.Recipes;
 using KCC.Web.Features.Search;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -93,6 +94,27 @@ public class RecipeIndexTriggerTests
             var results = await SearchWhenCurrentAsync("kookaburra");
             _ = await Assert.That(string.Join(",", results.Results.Single().Tags)).IsEqualTo("IT Crispy");
             _ = await Assert.That(results.Facets.Diet.GetValueOrDefault("IT Crispy")).IsEqualTo(1);
+        }
+        finally
+        {
+            await TestContent.TrashAsync(Site.Services, recipeKey);
+            await TestContent.TrashAsync(Site.Services, tagKey);
+        }
+    }
+
+    [Test]
+    public async Task ChangingATagsKind_MovesItIntoTheStyles()
+    {
+        var tagKey = await TestContent.TagAsync(Site.Services, "IT Charred");
+        var recipeKey = await TestContent.RecipeAsync(Site.Services, "IT Bandicoot");
+        try
+        {
+            await TestContent.VariantAsync(Site.Services, recipeKey, "Classic", TestContent.Pick("tags", tagKey));
+            _ = await Assert.That((await SearchWhenCurrentAsync("bandicoot")).Facets.Style.ContainsKey("IT Charred")).IsFalse();
+
+            await TestContent.SetKindAsync(Site.Services, tagKey, TagKinds.Style);
+
+            _ = await Assert.That((await SearchWhenCurrentAsync("bandicoot")).Facets.Style.GetValueOrDefault("IT Charred")).IsEqualTo(1);
         }
         finally
         {

@@ -29,4 +29,5 @@ public record RecipeFacetCounts
 {
     public IReadOnlyDictionary<string, int> Category { get; init; } = new Dictionary<string, int>();
     public IReadOnlyDictionary<string, int> Diet { get; init; } = new Dictionary<string, int>();
+    public IReadOnlyDictionary<string, int> Style { get; init; } = new Dictionary<string, int>();
 }

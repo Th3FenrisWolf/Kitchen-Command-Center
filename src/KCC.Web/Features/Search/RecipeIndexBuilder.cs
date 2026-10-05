@@ -66,6 +66,11 @@ public static class RecipeIndexBuilder
             doc.Add(new FacetField(RecipeSearchConstants.FacetDiet, diet));
         }
 
+        foreach (var style in d.Styles.Where(tag => !string.IsNullOrWhiteSpace(tag)))
+        {
+            doc.Add(new FacetField(RecipeSearchConstants.FacetStyle, style));
+        }
+
         return doc;
     }
 }
