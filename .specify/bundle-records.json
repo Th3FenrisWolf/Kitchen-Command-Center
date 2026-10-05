@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-10-05T18:29:36Z",
+  "bundles": [
+    {
+      "bundle_id": "bizstream",
+      "version": "0.9.0",
+      "installed_at": "2026-10-05T18:29:36Z",
+      "contributed_components": [
+        {
+          "kind": "extensions",
+          "id": "bug",
+          "version": "1.0.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "assess",
+          "version": "1.0.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "git",
+          "version": "1.0.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "grill",
+          "version": "0.2.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "qa",
+          "version": "0.2.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "jira",
+          "version": "0.2.2"
+        },
+        {
+          "kind": "extensions",
+          "id": "jev",
+          "version": "0.2.1"
+        },
+        {
+          "kind": "extensions",
+          "id": "batch",
+          "version": "0.2.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "card",
+          "version": "0.3.1"
+        },
+        {
+          "kind": "extensions",
+          "id": "coderabbit",
+          "version": "0.1.1"
+        },
+        {
+          "kind": "presets",
+          "id": "bizstream-grilling",
+          "version": "0.3.0",
+          "priority": 50,
+          "strategy": "wrap"
+        }
+      ]
+    }
+  ]
+}

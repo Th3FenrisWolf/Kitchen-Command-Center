@@ -1,0 +1,42 @@
+schema_version: "1.0"
+
+extension:
+  id: jev
+  name: "Jev Decisions"
+  version: "0.2.1"
+  description: "Typed decisions with Jev as a smart switch statement: regex floor cases in code, one Jev question for the residue, a declared fallback for every unsure answer. Ships the engine, the question bank and the calibration harness every other command calls."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+  tools:
+    - name: node
+      required: true
+
+provides:
+  templates:
+    - name: jev
+      file: templates/jev.md
+      description: "Every Jev rule: the switch, the banks, authoring, calibration, subagent routing, owner steering, model bumps"
+    - name: steer-session
+      file: templates/steer-session.md
+      description: "The steering rules the session steer adds to every session"
+  scripts:
+    - name: decide
+      file: scripts/decide.mjs
+      description: "Answer one bank question over a state: floor, Jev, then fallback. Prints one JSON line."
+    - name: steer
+      file: scripts/steer.mjs
+      description: "Owner steering: the plugin's hook events, a report and a case export over the local steer log"
+  commands:
+    - name: speckit.jev.decide
+      file: commands/speckit.jev.decide.md
+      description: "Route one decision through the Jev switch, or add and calibrate a question"
+
+tags:
+  - "jev"
+  - "routing"
+  - "decisions"
+  - "bizstream"

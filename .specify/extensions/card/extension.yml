@@ -1,0 +1,36 @@
+schema_version: "1.0"
+
+extension:
+  id: card
+  name: "Implement Card"
+  version: "0.3.1"
+  description: "Takes one card from a written tasks.md to an open pull request: preflight against the constitution's gates, execute tasks.md, run every definition-of-done row, verify acceptance, loop a local review, then close out. Never merges."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+  tools:
+    - name: git
+      required: true
+    - name: gh
+      required: true
+
+provides:
+  commands:
+    - name: speckit.card.implement
+      file: commands/speckit.card.implement.md
+      description: "Implement one card end to end, with the project's gates enforced. Never merges."
+
+  config:
+    - name: "card-config.yml"
+      template: "config-template.yml"
+      description: "Repo split, content-type chain, review tool, and board close-out values"
+      required: false
+
+tags:
+  - "implement"
+  - "gates"
+  - "close-out"
+  - "bizstream"

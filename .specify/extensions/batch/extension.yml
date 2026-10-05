@@ -1,0 +1,31 @@
+schema_version: "1.0"
+
+extension:
+  id: batch
+  name: "Phase Batch"
+  version: "0.2.0"
+  description: "Runs one Spec Kit phase across every ready target in parallel: specify, clarify, plan, tasks, or jira. Fans out subagents, reports one table per phase, gates jira on approval."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+
+provides:
+  config:
+    - name: "batch-config.yml"
+      template: "config-template.yml"
+      description: "The card source a specify phase reads its targets from"
+      required: false
+
+  commands:
+    - name: speckit.batch.run
+      file: commands/speckit.batch.run.md
+      description: "Run one phase (specify, clarify, plan, tasks, jira) across every ready target, fanned out in parallel subagents"
+
+tags:
+  - "batch"
+  - "parallel"
+  - "phases"
+  - "bizstream"

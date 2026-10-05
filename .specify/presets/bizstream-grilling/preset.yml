@@ -1,0 +1,84 @@
+schema_version: "1.0"
+
+preset:
+  id: "bizstream-grilling"
+  name: "Grilling Everywhere"
+  version: "0.3.0"
+  description: "Wraps every question-asking command so it interviews the user in dependency-ordered rounds instead of ad hoc. Requires the grill extension, which holds the protocol."
+  author: "BizStream"
+  repository: "https://github.com/BizStream/bizstream.ai"
+  license: "MIT"
+
+requires:
+  # 0.14.4 is the runtime-resolution baseline: {CORE_TEMPLATE} substitution
+  # resolves an extension-provided command as a wrap base from that release on,
+  # which is what lets speckit.bug.assess and speckit.assess.* be wrapped.
+  speckit_version: ">=0.14.4"
+
+provides:
+  templates:
+    - type: "command"
+      name: "speckit.clarify"
+      file: "commands/speckit.clarify.md"
+      description: "Grill the underspecified areas in dependency-ordered rounds"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.specify"
+      file: "commands/speckit.specify.md"
+      description: "Grill the open decisions instead of guessing them into the spec"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.plan"
+      file: "commands/speckit.plan.md"
+      description: "Grill what the spec cannot settle before the plan commits to it"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.constitution"
+      file: "commands/speckit.constitution.md"
+      description: "Grill each principle in dependency order"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.checklist"
+      file: "commands/speckit.checklist.md"
+      description: "Grill scope and depth before writing the checklist"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.bug.assess"
+      file: "commands/speckit.bug.assess.md"
+      description: "Grill what the bug report leaves open (needs the bug extension)"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.assess.intake"
+      file: "commands/speckit.assess.intake.md"
+      description: "Grill the intake round (needs the assess extension)"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.assess.research"
+      file: "commands/speckit.assess.research.md"
+      description: "Grill only what research cannot settle (needs the assess extension)"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.assess.define"
+      file: "commands/speckit.assess.define.md"
+      description: "Grill the define round (needs the assess extension)"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.assess.decide"
+      file: "commands/speckit.assess.decide.md"
+      description: "Grill every decision the verdict rests on (needs the assess extension)"
+      strategy: "wrap"
+
+tags:
+  - "grilling"
+  - "clarification"
+  - "questions"
+  - "bizstream"

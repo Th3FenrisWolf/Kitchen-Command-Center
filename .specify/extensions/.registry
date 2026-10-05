@@ -1,0 +1,157 @@
+{
+  "schema_version": "1.0",
+  "extensions": {
+    "bug": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:1d0da5458f3c18ff08cf1602d88cecc33fad07068208951fb7128090cfa90c90",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.bug.assess",
+          "speckit.bug.fix",
+          "speckit.bug.test"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:29.712363+00:00"
+    },
+    "assess": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:6eba1ffbc264c7aa43e31b34303a8312ddad5b979772d2785c808179b402d9f2",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.assess.intake",
+          "speckit.assess.research",
+          "speckit.assess.define",
+          "speckit.assess.shape",
+          "speckit.assess.decide"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:29.722505+00:00"
+    },
+    "git": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:89711dec9716473fba4afc54f7224bcb28ebd3c55fb5aaa30df854ab02b07a75",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:29.743089+00:00"
+    },
+    "grill": {
+      "version": "0.2.0",
+      "source": "local",
+      "manifest_hash": "sha256:3dcf4ebe6c8d288eb396fb47fa2cb0b3f8c4b9e8c0a7de8bbf0945965b4f1649",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.grill.run"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:30.653587+00:00"
+    },
+    "qa": {
+      "version": "0.2.0",
+      "source": "local",
+      "manifest_hash": "sha256:8e9cea65c059c161de22388999ceeed8cf87bd9847dae11f774f6bf6548a13c9",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.qa.walk"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:31.369522+00:00"
+    },
+    "jira": {
+      "version": "0.2.2",
+      "source": "local",
+      "manifest_hash": "sha256:2fe8b2efe0f54fc75ea928fb45df0e2ee3049cb6903da8afd050cd1ae63e274b",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.jira.cards",
+          "speckit.jira.pull",
+          "speckit.jira.verify"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:32.107511+00:00"
+    },
+    "jev": {
+      "version": "0.2.1",
+      "source": "local",
+      "manifest_hash": "sha256:cf1fb67e2540c19400922b1c2c4d0d94ddceb51c7bd0c6e74a3a21862d4b10ab",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.jev.decide"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:32.868881+00:00"
+    },
+    "batch": {
+      "version": "0.2.0",
+      "source": "local",
+      "manifest_hash": "sha256:c5ed057bbc7cd2f8d49f2e981ca944948502774c8869f5fd653b4ef286b2eeb7",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.batch.run"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:33.911269+00:00"
+    },
+    "card": {
+      "version": "0.3.1",
+      "source": "local",
+      "manifest_hash": "sha256:358ad48ad5c1e56f79ba39768f02bbf7d7432804687ef2833409ee788e4ff7f6",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.card.implement"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:34.708151+00:00"
+    },
+    "coderabbit": {
+      "version": "0.1.1",
+      "source": "local",
+      "manifest_hash": "sha256:252bcdc025a01b9c2a27b2120f56a05d6fd7064ba9e20436d8122677513e36a3",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.coderabbit.review"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-05T18:29:35.430524+00:00"
+    }
+  }
+}

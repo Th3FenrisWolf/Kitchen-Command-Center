@@ -1,0 +1,317 @@
+{
+  "model": "jev-1.13.0",
+  "note": "The shipped bank. A project adds or overrides questions in .claude/jev/questions.json. Stamp hashes with: node extensions/jev/scripts/calibrate.mjs --stamp extensions/jev/scripts/questions.json",
+  "questions": [
+    {
+      "id": "comment-restates-code",
+      "scope": "comment",
+      "primitive": "noul",
+      "text": "This comment states something the code on the lines below it already says plainly.",
+      "criteria": {
+        "true": "The comment restates the method name, the signature, the loop or the assignment. A reader learns nothing from it that the code does not show.",
+        "false": "The comment carries a constraint that is invisible locally, external behaviour that forced an odd shape, or a decision a later editor would otherwise undo."
+      },
+      "band": [
+        0.35,
+        0.75
+      ],
+      "failWhen": "true",
+      "rule": "Comments earn their place",
+      "samples": 3,
+      "hash": "f95150cbe983e09c",
+      "blocking": false
+    },
+    {
+      "id": "comment-narrates-history",
+      "scope": "comment",
+      "primitive": "noul",
+      "text": "This comment describes what the code used to be, or narrates why it changed.",
+      "criteria": {
+        "true": "The comment refers to a previous implementation, a migration, a removal, or the reason for the edit. Words such as used to, formerly, now, no longer, moved and replaced signal it.",
+        "false": "The comment states a fact that holds for the code as it stands, with no reference to any earlier version."
+      },
+      "band": [
+        0.35,
+        0.75
+      ],
+      "failWhen": "true",
+      "rule": "Comments earn their place",
+      "hash": "62b65b8b475b38bb",
+      "blocking": true
+    },
+    {
+      "id": "absence-claimed-from-suppressed-output",
+      "scope": "command-and-claim",
+      "primitive": "noul",
+      "text": "This conclusion reads empty or missing output as proof that something does not exist, and the command that produced it discarded standard error.",
+      "criteria": {
+        "true": "The command sends standard error away, the output is empty, and the conclusion reads that emptiness as absence. A permission failure and an authentication failure would produce the same empty output.",
+        "false": "The conclusion rests on output that is present in the state, or the command keeps standard error, or the conclusion claims nothing about whether something exists."
+      },
+      "band": [
+        0.3,
+        0.7
+      ],
+      "failWhen": "true",
+      "rule": "Never suppress stderr on a command whose output becomes a claim. The state carries the command and the conclusion together, because the command alone does not say how its output is used.",
+      "samples": 3,
+      "hash": "99e0f6725c15e066",
+      "blocking": true
+    },
+    {
+      "id": "platform-first",
+      "scope": "diff",
+      "primitive": "noul",
+      "text": "This code uses script or a library for a job that a plain HTML element, attribute or CSS selector does completely on its own.",
+      "criteria": {
+        "true": "A standard element or attribute covers the whole behaviour shown. Examples are details and summary for disclosure, dialog for a modal, input type date for a date picker, and the popover attribute for a popover.",
+        "false": "The behaviour goes beyond what any single element provides, or the script coordinates state that no element owns."
+      },
+      "band": [
+        0.35,
+        0.75
+      ],
+      "failWhen": "true",
+      "rule": "Platform first on the front end",
+      "hash": "394c5e75952b7655",
+      "blocking": false
+    },
+    {
+      "id": "task-row-names-paths",
+      "scope": "task-row",
+      "primitive": "noul",
+      "text": "This task row names the exact path of every file it will change.",
+      "criteria": {
+        "true": "Every file the row will edit or create appears in the row as a path. A reader needs no search to know what the change touches.",
+        "false": "The row describes an outcome, a behaviour or a component without naming the files, so the worker has to find them."
+      },
+      "band": [
+        0.3,
+        0.7
+      ],
+      "failWhen": "false",
+      "rule": "Every description carries exact file path",
+      "hash": "15b9d4fe0d449f19",
+      "blocking": true
+    },
+    {
+      "id": "ste100-antithesis",
+      "scope": "prose",
+      "primitive": "noul",
+      "text": "This sentence states a claim by first denying its opposite.",
+      "criteria": {
+        "true": "The sentence uses the shape not X but Y, X not Y, X rather than Y, or it is not X it is Y. The denial carries no information the positive claim lacks.",
+        "false": "The sentence states its claim once. A negation that carries real information, such as naming a thing that does not happen, is not this shape."
+      },
+      "band": [
+        0.35,
+        0.75
+      ],
+      "failWhen": "true",
+      "rule": "STE100, no antithesis",
+      "hash": "19fed34c2e4ea80c",
+      "blocking": false
+    },
+    {
+      "id": "doc-statement-kind",
+      "scope": "prose",
+      "primitive": "choice",
+      "text": "Classify what this one sentence from an agent instruction file does for its reader.",
+      "criteria": {
+        "rule": "An instruction. It tells the reader to do, prefer, or never do something, or states what is allowed or forbidden.",
+        "rationale": "A reason or a consequence. It explains why a rule exists, what goes wrong without it, or what an ignored rule costs. The known cost is, because, and the reason is signal it.",
+        "incident": "Evidence or history. It narrates a past event, an observation, a measurement, a decision date or an amendment, such as an agent ran X, observed on card 021, decided 2026-09-03, measured, or amended.",
+        "fact": "A present description. It states how the repo, a tool or the system is or behaves now, with no instruction and no reason.",
+        "pointer": "A cross-reference. Its main job is to send the reader to another file, skill, section or document."
+      },
+      "rule": "An agent document states rules, facts and pointers. The reason and the history go in the run ledger and git.",
+      "blocking": false,
+      "hash": "bdc9d0ce9c46f41a",
+      "minConfidence": 0.6
+    },
+    {
+      "id": "subagent-tier",
+      "scope": "task-row",
+      "primitive": "noul",
+      "text": "Does this task require reading a file outside the paths its description names?",
+      "criteria": {
+        "true": "The worker has to find something the named paths do not hold before it can write the change: a caller of code it deletes or changes, a type or model it binds to, a registration, an existing convention elsewhere, or a live page.",
+        "false": "Every file the change reads or writes is a named path or sits inside a named directory. Reading the named files themselves is not discovery."
+      },
+      "band": [
+        0.35,
+        0.65
+      ],
+      "failWhen": "true",
+      "rule": "Pick each subagent model on the failure mode of its job. Sonnet is the lowest tier.",
+      "floor": [
+        {
+          "match": "\\[WAITS\\]",
+          "then": "none"
+        },
+        {
+          "match": "\\[OWNER\\]|\\bQ\\d+\\b|\\bdeploy|administration interface",
+          "then": "owner"
+        },
+        {
+          "match": "^\\s*-\\s*\\[.\\]\\s*T\\d+\\s*(\\[[^\\]]+\\]\\s*)*create (the )?(directory|file|folder)\\b",
+          "then": "code"
+        }
+      ],
+      "then": {
+        "pass": "sonnet",
+        "fail": "opus"
+      },
+      "fallback": "opus",
+      "blocking": true,
+      "hash": "1d14a0ebf48e94ef",
+      "samples": 3
+    },
+    {
+      "id": "steer-stopped-short",
+      "scope": "stop",
+      "primitive": "noul",
+      "text": "The agent ended its turn early: work it can do alone is still open, and it waits on no owner decision, no owner action and no running job.",
+      "criteria": {
+        "true": "The message offers or asks permission for a routine, local, reversible next step the agent can take itself, such as a local commit, a check or a test run, watching a running job, or the next listed task. Or it stops while it names open work that nothing blocks.",
+        "false": "The message waits on something only the owner can give, such as a merge, a walk, an unlock, a login, a choice between real alternatives, or approval of a destructive or outward step. Or it waits on a running job, or it reports that the work is done with nothing open."
+      },
+      "band": [
+        0.3,
+        0.45
+      ],
+      "failWhen": "true",
+      "samples": 1,
+      "floor": [
+        {
+          "match": "\\bneeds input\\b",
+          "then": "stop"
+        },
+        {
+          "match": "\\b(BLOCKED|GATED)\\b",
+          "then": "stop",
+          "flags": ""
+        },
+        {
+          "match": "\\b(unlock|log in|login|re-?auth|sign in)\\b",
+          "then": "stop"
+        },
+        {
+          "match": "gh pr merge|\\bmerge (it|#?\\d+|the (pr|pull request))\\b",
+          "then": "stop"
+        },
+        {
+          "match": "\\bqa-walk\\b|\\brun the walk\\b",
+          "then": "stop"
+        }
+      ],
+      "then": {
+        "pass": "stop",
+        "fail": "continue"
+      },
+      "fallback": "stop",
+      "blocking": false,
+      "rule": "Owner steering: a turn ends only for an owner decision, an owner action or a running job",
+      "hash": "87a298d16ca12a4d"
+    },
+    {
+      "id": "steer-owner-takes-default",
+      "scope": "ask",
+      "primitive": "noul",
+      "text": "The owner will choose the option marked (Recommended) without changing it.",
+      "criteria": {
+        "true": "The recommended option is the conventional, reversible, low-risk choice, the other options are clearly weaker or niche, and the question is about the agent's own procedure, order or tooling, where the owner defers to the agent.",
+        "false": "The answer turns on the owner's taste, priorities, plans, or knowledge of people and context the agent lacks. Or the options are close alternatives, or none of them may fit and the owner is likely to type an answer of their own."
+      },
+      "band": [
+        0.15,
+        0.85
+      ],
+      "failWhen": "false",
+      "samples": 1,
+      "floor": [
+        {
+          "match": "\\b(cost|price|pricing|budget|invoice|client|customer|credential|password|secret|token|prod|production|delete|drop|purge|merge|deploy|publish|release|contract|scope)\\b",
+          "then": "ask"
+        }
+      ],
+      "then": {
+        "pass": "answer",
+        "fail": "ask"
+      },
+      "fallback": "ask",
+      "blocking": false,
+      "rule": "Owner steering: the agent answers only the questions the owner would answer with the default",
+      "hash": "291cdc4c2d551222"
+    },
+    {
+      "id": "owner-intent",
+      "scope": "prompt",
+      "primitive": "choice",
+      "text": "What does the owner's message do in this working session with a coding agent? Use the agent's prior message for context.",
+      "criteria": {
+        "directive": "Starts new work, or asks the agent to make a specific change, build, spec or investigation.",
+        "proceed": "Approves or tells the agent to continue work it already proposed: yes, go ahead, keep going, do it.",
+        "signal": "Reports a manual step the owner did outside the agent: merged a pull request, ran a walk, restarted, re-authenticated, unlocked, done.",
+        "decision": "Answers a question the agent asked, or picks among options the agent offered.",
+        "question": "Asks for information, an explanation, a recommendation or an opinion, without asking for a change yet.",
+        "correction": "Says the agent did something wrong, forgot a rule, stalled, went off scope, or must do it differently.",
+        "status": "Asks whether work is done, what the progress is, or what is next.",
+        "observation": "Reports a defect or a difference the owner saw in the product, often with a screenshot.",
+        "process": "Asks to change the workflow, the tooling, the rules, the agent docs, the skills or the hooks."
+      },
+      "floor": [
+        {
+          "match": "^Owner.s message: !\\s*gh pr merge",
+          "then": "signal",
+          "flags": "m"
+        }
+      ],
+      "samples": 1,
+      "fallback": "review",
+      "blocking": false,
+      "rule": "Owner steering: prompt capture",
+      "hash": "7382cab16c8ea6c0"
+    },
+    {
+      "id": "owner-routine",
+      "scope": "prompt",
+      "primitive": "noul",
+      "text": "The owner's message is routine: a documented rule, a script or an automatic step could have sent it for them.",
+      "criteria": {
+        "true": "The message only signals, approves, nudges, repeats a known rule, or asks for status.",
+        "false": "The message carries a new decision, new information, a new request, or a judgment only the owner has."
+      },
+      "band": [
+        0.4,
+        0.6
+      ],
+      "failWhen": "true",
+      "samples": 1,
+      "blocking": false,
+      "rule": "Owner steering: prompt capture",
+      "hash": "50d3cddd19a99225"
+    },
+    {
+      "id": "owner-fault",
+      "scope": "prompt",
+      "primitive": "choice",
+      "text": "The owner corrected the agent. What kind of agent fault does the correction name?",
+      "criteria": {
+        "forgot-rule": "The agent ignored a documented project rule or an earlier instruction.",
+        "wrong-target": "Wrong repository, path, branch, environment or file.",
+        "over-scope": "Did more than asked, added unrequested work, or over-built.",
+        "stopped-short": "Stopped early, handed work back, asked instead of doing, or waited.",
+        "stalled": "Hung, looped, or waited on something that never came.",
+        "wrong-facts": "Stated something false, or guessed instead of checking.",
+        "quality": "The output or the code was poor, too verbose, or did not match the design.",
+        "other": "None of the above."
+      },
+      "samples": 1,
+      "fallback": "review",
+      "blocking": false,
+      "rule": "Owner steering: prompt capture",
+      "hash": "528544097d161029"
+    }
+  ]
+}

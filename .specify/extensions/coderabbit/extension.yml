@@ -1,0 +1,39 @@
+schema_version: "1.0"
+
+extension:
+  id: coderabbit
+  name: "CodeRabbit Review"
+  version: "0.1.1"
+  description: "Runs the CodeRabbit command-line review over the feature's diff at the end of implement, and loops on the findings until the branch is clean. Catches on a local run what a pull-request review would cost a push and a review cycle."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+  tools:
+    # The command reports the install line and stops when the tool is absent,
+    # so a machine without it still finishes implement.
+    - name: coderabbit
+      required: false
+
+provides:
+  commands:
+    - name: speckit.coderabbit.review
+      file: commands/speckit.coderabbit.review.md
+      description: "Review the feature's diff with the CodeRabbit command-line tool and resolve what it finds"
+
+hooks:
+  after_implement:
+    command: speckit.coderabbit.review
+    optional: false
+    # Below the default 10 the git extension registers, so the review runs
+    # before the commit hook when the host sorts by priority.
+    priority: 5
+    description: "Review the implementation locally before it reaches a pull request"
+
+tags:
+  - "coderabbit"
+  - "review"
+  - "implement"
+  - "bizstream"

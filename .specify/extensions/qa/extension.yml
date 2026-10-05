@@ -1,0 +1,42 @@
+schema_version: "1.0"
+
+extension:
+  id: qa
+  name: "QA Walk"
+  version: "0.2.0"
+  description: "Builds a QA wizard for a feature: one stage per acceptance scenario, each opening the page to check and recording pass or fail. For the manual pass a developer does before hand-off."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+  # A project takes one script form. Neither runtime is required on its own.
+  tools:
+    - name: bash
+      required: false
+    - name: pwsh
+      required: false
+
+provides:
+  scripts:
+    - name: qa-wizard
+      file: scripts/qa-wizard.sh
+      description: "The wizard library every generated qa-walk.sh copies above its STAGES marker"
+      runtimes:
+        - bash
+    - name: qa-wizard-pwsh
+      file: scripts/qa-wizard.ps1
+      description: "The wizard library every generated qa-walk.ps1 copies above its STAGES marker"
+      runtimes:
+        - powershell
+  commands:
+    - name: speckit.qa.walk
+      file: commands/speckit.qa.walk.md
+      description: "Build the QA wizard for a feature from its acceptance scenarios"
+
+tags:
+  - "qa"
+  - "wizard"
+  - "acceptance"
+  - "bizstream"
