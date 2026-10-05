@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 // Typography.css is the base of the 24px rule and the only place the brand fonts are declared. Pin the
-// numbers the identity promises (docs/brand/torn-and-waxed.md → Type) and make sure every self-hosted font
+// numbers the identity promises (docs/brand/loose-leaf.md → Type) and make sure every self-hosted font
 // file it references is actually in the repo — a missing woff2 falls back silently to the next family.
 const stylesDir = new URL('../../../../src/KCC.Web/Features/Styles/', import.meta.url)
 const css = readFileSync(fileURLToPath(new URL('Typography.css', stylesDir)), 'utf8')

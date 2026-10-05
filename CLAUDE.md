@@ -106,14 +106,19 @@ misleadingly:
   `KCC.Web.MvcApplicationPartsAssemblyInfo.*` (the `.cs` and its `.cache`) and rebuild.
 - Never name a file or folder `icon`: `.gitignore`'s macOS `Icon` rule ignores it.
 
-## Torn & Waxed design language
+## Loose Leaf design language
 
-The public site uses the Torn & Waxed identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight
+The public site uses the Loose Leaf identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight
 wax washes, marker green as the one strong fill, Sono for every number and label. **The brand lives in
-`docs/brand/torn-and-waxed.md`; the engineering contract in `docs/brand/kit.md`.** Read the contract before
-styling anything; use the `torn-and-waxed` skill for the quick reference, the `kit-builder` agent to convert
+`docs/brand/loose-leaf.md`; the engineering contract in `docs/brand/kit.md`.** Read the contract before
+styling anything; use the `loose-leaf` skill for the quick reference, the `kit-builder` agent to convert
 a surface and the `brand-steward` agent to review one. The invariants below are the ones that break the
 build or the brand silently, so they stay here as well.
+
+General design skills and plugins, such as impeccable, taste-skill, ui-ux-pro-max and frontend-design, do not set
+the public site's look. Where one disagrees with the brand docs, the brand docs win. Some of them ban devices this
+identity uses on purpose: the kicker above a heading (`kcc-kick`), Sono caps labels, the stats row, the tilt and the
+tear. Those stay.
 
 ### Tokens
 

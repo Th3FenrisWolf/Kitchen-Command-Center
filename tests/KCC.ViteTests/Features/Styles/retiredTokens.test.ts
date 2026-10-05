@@ -1,7 +1,8 @@
-import { readdirSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { files } from '../../support/files'
 import { RETIRED } from '../../support/retired'
 
 const WEB = fileURLToPath(new URL('../../../../src/KCC.Web/', import.meta.url))
@@ -16,14 +17,6 @@ const ALLOWLIST = new Set<string>([])
 
 const covers = (entry: string, path: string) => (entry.endsWith('/') ? path.startsWith(entry) : path === entry)
 
-function* files(dir: string): Generator<string> {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) yield* files(path)
-    else if (SCAN.test(entry.name)) yield path
-  }
-}
-
 // `font-weight` inside an @font-face block is a descriptor naming a face (Hazelnut Bold stays declared for
 // content that still carries <strong>), not weight applied to text. Blank those blocks out line by line so
 // line numbers in the report stay right and the weight rule only sees applied weight.
@@ -31,7 +24,7 @@ const withoutFontFaces = (css: string) => css.replace(/@font-face\s*\{[^}]*\}/g,
 
 const hits = new Map<string, string[]>()
 for (const root of ROOTS) {
-  for (const file of files(root)) {
+  for (const file of files(root, SCAN)) {
     const path = relative(WEB, file).replaceAll('\\', '/')
     const source = readFileSync(file, 'utf8')
     const lines = (file.endsWith('.css') ? withoutFontFaces(source) : source)

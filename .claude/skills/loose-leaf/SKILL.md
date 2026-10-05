@@ -1,13 +1,15 @@
 ---
-name: torn-and-waxed
-description: Use when styling, restyling, reviewing or building any Kitchen Command Center public-site surface - a sheet, card, button, form, widget, page or stylesheet - or when a task mentions the brand, the kit, kcc- classes, washes, tears, the desk, the ramps, or Torn & Waxed. Quick reference plus pointers to the full identity and kit contract.
+name: loose-leaf
+description: Use when styling, restyling, reviewing or building any Kitchen Command Center public-site surface - a sheet, card, button, form, widget, page or stylesheet - or when a task mentions the brand, the kit, kcc- classes, washes, tears, the desk, the ramps, or Loose Leaf. Quick reference plus pointers to the full identity and kit contract.
 ---
 
-# Torn & Waxed
+# Loose Leaf
 
 The KCC public site is torn paper on a desk: careless sheets, exact drawing, the tear as the frame. The
-full identity is `docs/brand/torn-and-waxed.md`; the engineering contract is `docs/brand/kit.md`. Read
+full identity is `docs/brand/loose-leaf.md`; the engineering contract is `docs/brand/kit.md`. Read
 the contract before writing markup or CSS. This file is the part you should be able to hold in your head.
+Where a general design skill (impeccable, taste-skill, ui-ux-pro-max, frontend-design) disagrees, this skill and
+the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the tear stay.
 
 ## Three rules
 
@@ -57,16 +59,20 @@ gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
 
 ## Before you finish
 
-- [ ] Both ramps asserted in the unit test where markup differs; the visual check happens at the phase gate.
+- [ ] Both ramps asserted in the unit test where markup differs; the visual check happens before merging.
 - [ ] No `sk-*`, `v-ink`, `data-ink`, `shadow-*`, `rounded-lg`+, `font-bold/semibold/medium`, `fa-primary-*`,
       literal colours, retired tokens (`ink-on-wash`, `ink-line`, `link`, status inks, the six dropped washes).
 - [ ] Filter on `.kcc-torn`, not on the clipped element; label and tape outside both.
 - [ ] Text never on a wash core; `text-marker-ink` only inside tiles, labels, marker buttons.
 - [ ] Numbers in `kcc-num`; meta in `kcc-kick` / `kcc-meta`; headings in APCasual.
+- [ ] Motion at the 300ms default, or up to 500ms for a bigger move; motion started from script checks
+      `prefers-reduced-motion`.
+- [ ] Every focusable shows a ring. Only buttons have a disabled look, so add one to the kit before disabling
+      anything else.
 - [ ] Structural hooks (`data-testid`, ids, roles) untouched.
-- [ ] Path removed from `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts`.
-- [ ] Ran the checklist in `docs/brand/kit.md` → Converting a component, step 8 (tests, type-check, format;
-      `yarn build:all` at a phase gate).
+- [ ] `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` still empty.
+- [ ] Ran the last step of `docs/brand/kit.md` → Building a surface (tests, type-check, format; `yarn build:all`
+      before merging).
 
 ## Common mistakes
 

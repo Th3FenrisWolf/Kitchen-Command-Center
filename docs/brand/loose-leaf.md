@@ -1,4 +1,4 @@
-# Torn & Waxed
+# Loose Leaf
 
 The visual identity of Kitchen Command Center's public site. This document is the brand: what it is, what it
 forbids, and why. The engineering contract that implements it is [kit.md](kit.md). When the two disagree,
@@ -125,6 +125,13 @@ built.
 Sheet padding 24px (heroes 48px). Grid gaps 36px between rows, 28px between columns. Sections 72px apart,
 a section heading 36px above its content. Margins between blocks are multiples of 24px.
 
+## Motion
+
+Paper moves like paper. A sheet you can open lifts when you reach for it and settles when you let go. A drawer
+slides up inside its sheet, a menu unfolds downward, and a stacked sheet steps back as the next one covers it.
+Most motion takes 300ms, and a bigger move that would feel rushed at 300ms takes up to 500ms. Only a loading
+spinner runs longer. Reduced motion stills all of it.
+
 ## Applied patterns
 
 - **Recipe slip**: a plain sheet; a small torn wax tile pinned over the top-left corner with its own tape; the
@@ -154,6 +161,6 @@ a section heading 36px above its content. Margins between blocks are multiples o
 
 ## Decisions and history
 
-- **2026-09-17**: Torn & Waxed (Soft) replaces Softbound Sketch, whose drawn outlines and hatched shadows are
+- **2026-09-17**: Loose Leaf (Soft) replaces Softbound Sketch, whose drawn outlines and hatched shadows are
   retired. Light is the default ramp. The handling and ruling dials from the mockup are not built. The class
   prefix is `kcc-`. Tears are pure-CSS polygon presets; a JS `path()` tear is the fallback if fidelity needs it.
