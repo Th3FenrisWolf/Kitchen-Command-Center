@@ -39,6 +39,24 @@ public class RampTests
     }
 
     [Test]
+    public async Task AMemberOnDevice_DoesNotInheritTheRampThePreviousMemberLeftBehind()
+    {
+        var previousUserName = TestMembers.UniqueUserName("dusk");
+        var previousKey = await TestMembers.ApprovedAsync(Site.Services, previousUserName);
+        await TestMembers.SaveRampAsync(Site.Services, previousKey, Ramps.Dark);
+        var nextUserName = TestMembers.UniqueUserName("noon");
+        _ = await TestMembers.ApprovedAsync(Site.Services, nextUserName);
+        using var visitor = new MemberClient(Site);
+        _ = await visitor.SignInAsync(previousUserName, TestMembers.Password);
+
+        _ = await visitor.SignInAsync(nextUserName, TestMembers.Password);
+        var page = await RenderedPage.GetAsync(visitor.Http, "/");
+
+        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"light\">");
+        _ = await Assert.That(page.Html).Contains(PrePaintScript);
+    }
+
+    [Test]
     public async Task SigningOut_DeletesTheCookie_AndTheDeviceDecidesAgain()
     {
         var userName = TestMembers.UniqueUserName("dawn");
@@ -66,6 +84,21 @@ public class RampTests
 
         _ = await Assert.That(html).Contains("<html lang=\"en\" data-theme=\"light\">");
         _ = await Assert.That(html).Contains(PrePaintScript);
+    }
+
+    [Test]
+    public async Task TheSettingsPage_PicksUpARampSavedElsewhere()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "elsewhere");
+        await TestMembers.SaveRampAsync(Site.Services, member.Key, Ramps.Dark);
+
+        using var settings = await member.Visitor.Http.GetAsync("/account/settings/");
+        var settingsHtml = await settings.Content.ReadAsStringAsync();
+        var home = await RenderedPage.GetAsync(member.Visitor.Http, "/");
+
+        _ = await Assert.That(RampCookieOf(settings).Value.ToString()).IsEqualTo("dark");
+        _ = await Assert.That(settingsHtml).Contains("<html lang=\"en\" data-theme=\"dark\">");
+        _ = await Assert.That(home.Html).Contains("<html lang=\"en\" data-theme=\"dark\">");
     }
 
     private static SetCookieHeaderValue RampCookieOf(HttpResponseMessage response) =>

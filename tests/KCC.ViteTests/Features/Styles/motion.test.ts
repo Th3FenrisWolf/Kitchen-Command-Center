@@ -75,8 +75,16 @@ describe('motion', () => {
     expect(frozen).toMatch(/animation:\s*none !important;/)
     expect(frozen).toMatch(/transition:\s*none !important;/)
 
-    const toggle = read('Features/Components/Theme/ThemeToggle.vue')
-    expect(toggle).toContain("setAttribute('data-theme-switching'")
-    expect(toggle).toContain("removeAttribute('data-theme-switching')")
+    const ramp = read('Features/Utilities/Ramp.ts')
+    expect(ramp).toContain("setAttribute('data-theme-switching'")
+    expect(ramp).toContain("removeAttribute('data-theme-switching')")
+  })
+
+  it('switches the ramp only through applyRamp', () => {
+    const switchers = [...files(`${WEB}Features`, /\.(vue|ts)$/)]
+      .filter((file) => readFileSync(file, 'utf8').includes("setAttribute('data-theme',"))
+      .map((file) => relative(WEB, file).replaceAll('\\', '/'))
+
+    expect(switchers, 'applyRamp in Utilities/Ramp.ts freezes motion for the switch').toEqual(['Features/Utilities/Ramp.ts'])
   })
 })
