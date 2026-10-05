@@ -42,3 +42,6 @@ deploy/first-boot.env
 !.claude/skills/
 .mcp.json
 .superpowers
+
+# Spec Kit's pointer to the active feature is local to each checkout.
+.specify/feature.json
