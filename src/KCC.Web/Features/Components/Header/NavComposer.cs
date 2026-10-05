@@ -10,6 +10,7 @@ public class NavComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
+        builder.Services.AddScoped<NavModelBuilder>();
         builder.Services.AddSingleton<KitchenSummaries>();
         builder.AddNotificationHandler<ContentCacheRefresherNotification, KitchenSummaryCacheRefresher>();
     }
