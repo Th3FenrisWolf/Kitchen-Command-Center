@@ -30,11 +30,9 @@ selected, which is what Phase 2 needs before sign-in exists.
 - The recipe and variant rating (4.3 from a 4-star and a 4.5-star review) holds now that ratings count published
   variants only (spec §17): both reviews are on a published variant.
 - Seeded variants have no nutrition, so the nutrition sheet shows its empty state.
-- On mobile, the torn strip under the header's dashed rule differs at both bottom corners: a 3×4 px patch at
-  x 18–20, y 114–117, by at most 34 levels in light and 26 in dark, and a 3×7 px patch at x 371–373, y 111–117, by
-  at most 17 in light and 12 in dark. Both have been there since Phase 1, and their cause is not traced. On signed-in
-  mobile pages the header wraps onto a second row and the strip sits 48 px lower, where the two patches differ by at
-  most 11 and 7 levels in light and 10 and 6 in dark.
+- The header is the pad and differs from the reference by design: a torn notepad whose menus are cards in its stack,
+  with no dashed rule and no ramp toggle, Sign in for Login and My kitchen for Account. On a phone it keeps one row,
+  with search and Menu.
 - `recipes` holds 25 recipes, not 27: the reference also held two hand-made recipes, Egg Skillet and Mac & Cheese, so
   the cards after Crispy Roasted Chickpeas each move up one place, and the mobile page is 92 px taller because
   full-height cards fill the two short cards' slots. Its spotlight reads 5.0 · 3, not 5.0 · 1: the seed gives
@@ -57,9 +55,7 @@ selected, which is what Phase 2 needs before sign-in exists.
   port removes them (spec §6.3). The Umbraco home page, empty until Phase 6, logs a different one whether or not a
   member is signed in: "Hydration children mismatch", with "Server rendered element contains fewer child nodes than
   client vdom".
-- Three UI strings have empty values and render as their keys: `Theme.SwitchToDark` and `Theme.SwitchToLight`
-  (the theme toggle's labels, so not visible) and `VariantDetail.SaturatedFat` (only shown when nutrition
-  exists).
+- `VariantDetail.SaturatedFat` has an empty value and renders as its key, which shows only when nutrition exists.
 
 ## Home, from Phase 6
 

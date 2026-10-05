@@ -85,8 +85,8 @@ For each file, check every rule below and record hits as `path:line — rule —
   big.
 
 **States (kit.md → States)**
-- A focusable element whose ring is removed (`outline-none`, `outline: none` or `0`, `btn-no-style`) with nothing
-  drawn in its place.
+- A focusable element whose ring is removed (`outline-none`, `outline: none` or `0`) with nothing drawn in its
+  place.
 - `disabled` or `aria-disabled` on a field, segment, checkbox or range, which the kit has no disabled look for.
 - A loading state that clears what is already shown, or a busy region without `aria-busy`.
 - An empty state that is blank or bare text rather than a sheet with a way out.

@@ -234,21 +234,15 @@ yarn build:all
 
 ### Light and dark ramps
 
-The site ships two colour ramps. A toggle sits in the header's utility nav; it writes `'light'` or
-`'dark'` to `localStorage['kcc-theme']`, and an inline script in `Layout.cshtml` applies it to
-`<html data-theme>` before first paint so there is no flash of the wrong ramp.
+The site ships two colour ramps. A member chooses Device, Light or Dark on Account Settings, and the choice is saved
+on the member. A saved Light or Dark is mirrored in the HttpOnly `kcc-ramp` cookie, and `Layout.cshtml` renders it into
+`<html data-theme>`. Everyone else, members on Device included, follows `prefers-color-scheme`: an inline script in
+`Layout.cshtml` applies it before the first paint, so there is no flash of the wrong ramp, and the markup's light default
+holds without JavaScript.
 
-A signed-in member's saved Appearance (Light or Dark, on Account Settings) is rendered into
-`<html data-theme>` by the server instead of by the script, so the stored key applies only to visitors
-and to members on Device. To see the other ramp as a member, change Appearance or test signed out.
-
-With no stored choice the site follows `prefers-color-scheme`, defaulting to light. To force a ramp while
-testing as a visitor or a member on Device, set the key by hand and reload:
-
-```js
-localStorage.setItem('kcc-theme', 'light') // or 'dark'
-localStorage.removeItem('kcc-theme') // back to following the OS
-```
+To check a ramp while testing, switch the operating system's appearance, or emulate `prefers-color-scheme` in the
+browser's developer tools (Rendering → Emulate CSS media feature) and reload. That works signed out or as a member on
+Device; a member with a saved Light or Dark changes Appearance instead.
 
 **Check any visual change in both ramps.** The light ramp is the binding contrast constraint, and
 `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` asserts WCAG AA across every token pair in both.

@@ -128,9 +128,12 @@ a section heading 36px above its content. Margins between blocks are multiples o
 ## Motion
 
 Paper moves like paper. A sheet you can open lifts when you reach for it and settles when you let go. A drawer
-slides up inside its sheet, a menu unfolds downward, and a stacked sheet steps back as the next one covers it.
-Most motion takes 300ms, and a bigger move that would feel rushed at 300ms takes up to 500ms. Only a loading
-spinner runs longer. Reduced motion stills all of it.
+slides up inside its sheet, and a stacked sheet steps back as the next one covers it. The header is a notepad. A
+menu is a card in the middle of the stack: it fans out from its far corner when you reach for it, turning up to
+2.4° (past a resting sheet's degree, and only while you reach), and slides out from between the pages when you
+open it. The pad tucks away as you read and returns when you scroll up. Most motion takes 300ms, and a bigger move
+that would feel rushed at 300ms takes up to 500ms. Only a loading spinner runs longer. Reduced motion stills all of
+it.
 
 ## Applied patterns
 

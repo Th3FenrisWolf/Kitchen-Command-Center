@@ -241,17 +241,18 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 
 - **Hover.** `kcc-btn` mixes 12% `marker-ink` into its marker, and `kcc-btn--ink` mixes 12% paper into its ink. The
   hairline of `kcc-btn--ghost` turns ink, and the underline of `kcc-btn--text` and `kcc-link` goes from `hair-strong`
-  to ink. An unpressed `kcc-seg` segment and `kcc-link--icon` go from `ink-soft` to ink. A slip you can open lifts
-  (see Motion).
+  to ink. An unpressed `kcc-seg` segment and `kcc-link--icon` go from `ink-soft` to ink. A slip you can open lifts,
+  and a pad menu fans its card out with no underline of its own (see Motion). A row or search result in a pad card
+  underlines its name in ink, and the hairline of a Try chip, or of a diet chip in the phone menu, turns ink.
 - **Focus.** A 2px ink outline, 2px out, on every focusable (`:focus-visible` in `TailwindConfig.css`). `kcc-field`
   rings inside instead, 2px inset ink on `focus-within`. A `kcc-check` rings its `kcc-box`, because the checkbox
-  itself is `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. `btn-no-style` drops the ring,
-  so an element that uses it draws its own (`ThemeToggle`, the header's logo link). Under `forced-colors: active`
+  itself is `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. Under `forced-colors: active`
   the field and the segments take a `CanvasText` outline, because high-contrast mode paints no box-shadow. The
   `kcc-range` thumbs have no focus ring yet.
 - **Pressed, current, checked.** A pressed or checked `kcc-seg` segment fills with ink. The current wizard step and
-  an open menu button are `kcc-pill`. A checked box is `kcc-box--on`, and a done checklist row (`li.kcc-done`) is
-  struck through.
+  an open menu button are `kcc-pill`. The section you are in is a marker underline on its menu, 5px of marker
+  behind the label, hidden while that menu is open. A checked box is `kcc-box--on`, and a done checklist row
+  (`li.kcc-done`) is struck through.
 - **Disabled.** Buttons only: 45% opacity, a `not-allowed` cursor and no hover. Nothing else in the kit has a
   disabled look, so a field, segment, checkbox or range gets one here before anything disables it.
 - **Error.** `kcc-field--error` on the field and a `kcc-well--danger` below it (see Status).
@@ -271,14 +272,21 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 |---|---|---|
 | A slip you can open lifts 4px | `transition-transform hover:-translate-y-1 focus-within:-translate-y-1` | `RecipeCard.vue`, `RecipeCardRow.vue`, `FeaturedRecipeCard.vue`, `VariantGrid.vue` |
 | A card's drawer slides up | `transition-all`, height from 0 to full on hover or focus-within | `Card.Component.vue` |
-| A header menu unfolds | `transition-all duration-500`, max-height from 0 to 24rem | `MenuItem.vue` |
+| A pad card fans out as you reach for its menu | 300ms `cubic-bezier(.2, .9, .3, 1.15)`: 19px out of the stack, turned −1.8° about its far top corner, the top right, or +1.8° about its top left for the mirrored desktop search card (24px and +2.4° about its top left on a phone) | `PadCard.vue` |
+| A pad card comes out of the stack | 480ms `cubic-bezier(.3, 1.2, .4, 1)` to its own tilt, its rows landing 20ms apart; back in over 280ms; switching from another card, it waits 100ms for that one to go | `PadCard.vue` |
+| The pad tucks away as you read | 300ms `cubic-bezier(.2, .8, .2, 1)`: up by its height plus 28px (130px for the 102px pad) as you scroll down, once the page is past 150px; back on any scroll up or when focus moves into it; never under reduced motion | `AppHeader.Component.vue` |
+| Sticky neighbours follow the pad | `transition-[top]`: their top, which adds `--pad-offset`, eases over 300ms as the pad tucks and comes back, and a stacker card's sentinel eases with it | `RecipeSearchView.Component.vue`, `StackerBlock.cshtml`, `Stacker.Component.vue` |
+| A pad menu fades to and from its marker pill | `background-color` and `color` over 300ms, keeping the focus ring's 0.2s fade | `AppHeader.Component.vue` |
+| A pad menu's chevron flips | 180° over 300ms while its card is open | `AppHeader.Component.vue` |
+| The desktop search field widens as it takes focus | 300ms `cubic-bezier(.2, .8, .2, 1)`, from 230px to 330px (170px to 230px between 768px and 1023px) | `AppHeader.Component.vue` |
+| A row's name in a pad card underlines | `text-decoration-color` from transparent to ink over 300ms on hover | `PadLines.vue` |
 | A stacked sheet steps back | `transition-all duration-100`, scale from 1 to .95 once it sticks, all but the last | `Stacker.Component.vue` |
 | The focus ring fades in | `transition: outline-color 0.2s, outline-offset 0.2s` on every focusable | `TailwindConfig.css` |
 | More recipes load | `fa-spin` on a `fa-circle-notch` | `RecipeSearchView.Component.vue` |
 
 1. **300ms is the standard.** `--default-transition-duration` in `Main.css` gives it to every `transition-*`
    utility that names no duration, which is most of them.
-2. **500ms is the ceiling**, for a bigger move that would feel rushed at 300ms, like a menu unfolding. A loop such
+2. **500ms is the ceiling**, for a bigger move that would feel rushed at 300ms, like a pad card coming out. A loop such
    as the spinner is exempt: its duration is one turn, not a wait.
 3. **Any property, any easing.** Tailwind's default curve unless a move wants another.
 4. **Reduced motion stills everything CSS runs.** Under `prefers-reduced-motion: reduce`, `Main.css` sets every
