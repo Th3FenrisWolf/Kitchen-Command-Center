@@ -58,6 +58,46 @@ namespace KCC.Web.Features.Models.Generated
 		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockListModel MainNav => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockListModel>(_publishedValueFallback, "mainNav");
 
 		///<summary>
+		/// Diets: Leave empty to list every diet tag.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("navDiets")]
+		public virtual global::System.Collections.Generic.IEnumerable<global::Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent> NavDiets => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>>(_publishedValueFallback, "navDiets");
+
+		///<summary>
+		/// Meals: Leave empty to list every category, in tree order.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("navMeals")]
+		public virtual global::System.Collections.Generic.IEnumerable<global::Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent> NavMeals => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>>(_publishedValueFallback, "navMeals");
+
+		///<summary>
+		/// Quick picks: Leave empty for Under 30 minutes, Top rated, Most variants, Newest and Surprise me.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("navQuickPicks")]
+		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockListModel NavQuickPicks => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockListModel>(_publishedValueFallback, "navQuickPicks");
+
+		///<summary>
+		/// Recipes note: A hand-written line at the foot of the Recipes card. Leave empty for none.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("navRecipesNote")]
+		public virtual string NavRecipesNote => this.Value<string>(_publishedValueFallback, "navRecipesNote");
+
+		///<summary>
+		/// Search suggestions: Leave empty to suggest the three biggest meals.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("navSearchSuggestions")]
+		public virtual global::System.Collections.Generic.IEnumerable<string> NavSearchSuggestions => this.Value<global::System.Collections.Generic.IEnumerable<string>>(_publishedValueFallback, "navSearchSuggestions");
+
+		///<summary>
 		/// Utility navigation
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]

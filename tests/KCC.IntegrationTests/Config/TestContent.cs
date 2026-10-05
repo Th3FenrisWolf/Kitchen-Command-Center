@@ -4,6 +4,7 @@ using KCC.Web.Features.DevTools.RecipeSeed;
 using KCC.Web.Features.Recipes;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.ContentEditing;
 using Umbraco.Cms.Core.Models.ContentPublishing;
 using Umbraco.Cms.Core.Models.TemporaryFile;
@@ -163,17 +164,7 @@ public static class TestContent
         var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
         var content = contentService.GetById(key) ?? throw new InvalidOperationException($"No content {key}.");
         content.Name = name;
-        if (!contentService.Save(content).Success)
-        {
-            throw new InvalidOperationException($"Renaming {key} failed.");
-        }
-
-        var published = await scope.ServiceProvider.GetRequiredService<IContentPublishingService>()
-            .PublishAsync(key, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
-        if (!published.Success)
-        {
-            throw new InvalidOperationException($"Publishing {name} failed: {published.Status}.");
-        }
+        await SaveAndPublishAsync(scope.ServiceProvider, content, $"the name of {key}");
     }
 
     public static async Task SetKindAsync(IServiceProvider services, Guid tagKey, string kind)
@@ -182,16 +173,21 @@ public static class TestContent
         var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
         var tag = contentService.GetById(tagKey) ?? throw new InvalidOperationException($"No tag {tagKey}.");
         tag.SetValue("kind", $"[\"{kind}\"]");
-        if (!contentService.Save(tag).Success)
+        await SaveAndPublishAsync(scope.ServiceProvider, tag, $"the kind of {tagKey}");
+    }
+
+    public static async Task SaveAndPublishAsync(IServiceProvider scoped, IContent content, string what)
+    {
+        if (!scoped.GetRequiredService<IContentService>().Save(content).Success)
         {
-            throw new InvalidOperationException($"Saving the kind of {tagKey} failed.");
+            throw new InvalidOperationException($"Saving {what} failed.");
         }
 
-        var published = await scope.ServiceProvider.GetRequiredService<IContentPublishingService>()
-            .PublishAsync(tagKey, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
+        var published = await scoped.GetRequiredService<IContentPublishingService>()
+            .PublishAsync(content.Key, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
         if (!published.Success)
         {
-            throw new InvalidOperationException($"Publishing the kind of {tagKey} failed: {published.Status}.");
+            throw new InvalidOperationException($"Publishing {what} failed: {published.Status}.");
         }
     }
 
