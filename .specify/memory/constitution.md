@@ -1,22 +1,19 @@
 <!--
 Sync Impact Report
 ==================
-Version change: unversioned template -> 1.0.0 (first ratification)
+Version change: 1.0.0 -> 1.1.0 (MINOR: relaxes the generated-file rule for uSync files; everything that
+complied with 1.0.0 still complies)
 
-Principles (template placeholder -> title):
-- PRINCIPLE_1_NAME -> I. Content Lives in the Backoffice
-- PRINCIPLE_2_NAME -> II. Loose Leaf Is the Only Look
-- PRINCIPLE_3_NAME -> III. SQLite Has One Writer
-- PRINCIPLE_4_NAME -> IV. Tests First, Builds Clean
-- PRINCIPLE_5_NAME -> V. Cheap to Run, Cheap to Upgrade
-- added -> VI. Members Earn Trust
-- added -> VII. Code Explains Itself
+Modified principles:
+- IV. Tests First, Builds Clean: the uSync files leave the list of generated files. A person or an agent MAY
+  write one by hand when the repository holds uSync files of the same kind that show its format, and a test
+  that boots a fresh site MUST prove that it imports.
 
-Added sections:
-- Platform and Settled Decisions (was SECTION_2_NAME): Stack, Settled decisions, Decision ownership
-- Development Workflow and Quality Gates (was SECTION_3_NAME): Flow, Gates, Ordering rule,
-  Definition of done, Review and merge
+Modified sections:
+- Definition of done, row D5: checks the boot test for each hand-written uSync file, and applies to a change
+  to the dictionary or the baseline content as well
 
+Added sections: none
 Removed sections: none
 
 Dependent templates and commands read this file at runtime and are not edited here:
@@ -28,11 +25,12 @@ Dependent templates and commands read this file at runtime and are not edited he
 
 Deferred placeholders: none
 
-Follow-ups outside this file:
+Follow-ups outside this file, carried from 1.0.0:
 - CLAUDE.md: describe the Spec Kit flow beside "Superpowers: plans & specs"
 - .specify/extensions/card/card-config.yml: create it with review.command, or card implement skips
   the CodeRabbit loop that Review and merge requires
-- shellcheck: install it locally, or definition-of-done row D8 is blocked on a deploy change
+
+Resolved since 1.0.0: shellcheck is installed, so row D8 can run on a deploy change.
 -->
 
 # Kitchen Command Center Constitution
@@ -106,11 +104,15 @@ runs. "SQLite writes" in `CLAUDE.md` holds the detail and the paths that the gua
   component's path and content, so a client bundle built apart from its SSR bundle loses its
   styles.
 - A generated file MUST come from its generator and be committed with its source: `Tears.css` from
-  `yarn tears`, the ModelsBuilder models, the uSync files and the EF Core migrations. Nobody edits
-  one by hand.
+  `yarn tears`, the ModelsBuilder models and the EF Core migrations. Nobody edits one by hand.
+- A uSync file MAY be written by hand, by a person or an agent, when the repository already holds
+  uSync files of the same kind that show its format. A test that boots a fresh site MUST prove that
+  the file imports.
 
 Rationale: the suites are the one check that SSR, the backoffice clients and the SQLite site agree.
-CI runs the same six suites on every pull request.
+CI runs the same six suites on every pull request. uSync writes schema and dictionary files only when
+someone saves in a signed-in Development backoffice, and baseline content has had no exporter since
+its export endpoint was retired, so a hand-written uSync file is allowed and a boot test checks it.
 
 ### V. Cheap to Run, Cheap to Upgrade
 
@@ -260,7 +262,7 @@ change to any file outside `specs/`, `docs/` and Markdown files.
 | D2 | Every bundle builds together | `yarn build:all` at the repository root | A code change |
 | D3 | The web front end type-checks, lints and formats | In `src/KCC.Web`: `yarn type-check`, `yarn lint`, `yarn format`. Commit what lint and format change | A change to a `.vue`, `.ts`, `.js` or `.css` file under `src/KCC.Web` or `tests/KCC.ViteTests` |
 | D4 | All six suites pass | `node tests/scripts/run.mjs` at the repository root, after D1 and D2. It opens its HTML report, so an unattended run puts a no-op `open` first on `PATH` | A code change |
-| D5 | Generated files match their source | Each generated file came from its generator and is committed with its source: `Tears.css` from `yarn tears`, the uSync files with the ModelsBuilder models, an EF Core migration | A change to `tears.ts`, the schema or a contributions entity |
+| D5 | Generated files match their source | Each generated file came from its generator and is committed with its source: `Tears.css` from `yarn tears`, the ModelsBuilder models with the uSync files, an EF Core migration. A boot test proves each hand-written uSync file | A change to `tears.ts`, the schema, the dictionary, the baseline content or a contributions entity |
 | D6 | Touched pages hold in both ramps | Open each touched page in the Browser pane, in the light and the dark ramp, against the running site | A public-site visual change |
 | D7 | The brand holds | The `brand-steward` agent reports no violation | A public-site visual change |
 | D8 | The deploy scripts pass lint | `shellcheck -s sh deploy/smoke-test.sh deploy/deploy.sh deploy/kcc deploy/kcc-backup/kcc-backup` | A change under `deploy/` |
@@ -295,4 +297,4 @@ change to any file outside `specs/`, `docs/` and Markdown files.
   context. A plan that breaks a principle MUST justify the break in its Complexity Tracking table,
   and an unjustified break fails the Constitution Check.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-10-05
+**Version**: 1.1.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-10-05
