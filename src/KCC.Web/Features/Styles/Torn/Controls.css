@@ -1,4 +1,4 @@
-/* Torn & Waxed — printed controls. Clean, unclipped, one inset hairline at most, never shadowed. Razor uses
+/* Loose Leaf — printed controls. Clean, unclipped, one inset hairline at most, never shadowed. Razor uses
    these classes directly (ButtonLinkTagHelper, the Button widget); Vue components compose the same ones. */
 @layer components {
   .kcc-btn {

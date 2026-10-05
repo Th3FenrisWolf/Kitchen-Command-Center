@@ -1,6 +1,6 @@
-# Torn & Waxed — the kit
+# Loose Leaf — the kit
 
-The engineering contract for [torn-and-waxed.md](torn-and-waxed.md): tokens, classes, structure, invariants,
+The engineering contract for [loose-leaf.md](loose-leaf.md): tokens, classes, structure, invariants,
 and the test that enforces each rule. Anything Razor also renders lives in global `@layer components` CSS,
 never in a component `<style>` block.
 
@@ -236,6 +236,58 @@ stars are `fa-regular`). `Torn/Kit.css` sets `--fa-primary-color` and `--fa-seco
 `--fa-secondary-opacity` to `.35` globally (`.4` inside tiles, labels and marker buttons). Components never set
 the Font Awesome custom properties and never use the `fa-primary-*` / `fa-secondary-*` utilities.
 
+## States
+
+- **Hover.** `kcc-btn` mixes 12% `marker-ink` into its marker, and `kcc-btn--ink` mixes 12% paper into its ink. The
+  hairline of `kcc-btn--ghost` turns ink, and the underline of `kcc-btn--text` and `kcc-link` goes from `hair-strong`
+  to ink. An unpressed `kcc-seg` segment and `kcc-link--icon` go from `ink-soft` to ink. A slip you can open lifts
+  (see Motion).
+- **Focus.** A 2px ink outline, 2px out, on every focusable (`:focus-visible` in `TailwindConfig.css`). `kcc-field`
+  rings inside instead, 2px inset ink on `focus-within`. A `kcc-check` rings its `kcc-box`, because the checkbox
+  itself is `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. `btn-no-style` drops the ring,
+  so an element that uses it draws its own (`ThemeToggle`, the header's logo link). Under `forced-colors: active`
+  the field and the segments take a `CanvasText` outline, because high-contrast mode paints no box-shadow. The
+  `kcc-range` thumbs have no focus ring yet.
+- **Pressed, current, checked.** A pressed or checked `kcc-seg` segment fills with ink. The current wizard step and
+  an open menu button are `kcc-pill`. A checked box is `kcc-box--on`, and a done checklist row (`li.kcc-done`) is
+  struck through.
+- **Disabled.** Buttons only: 45% opacity, a `not-allowed` cursor and no hover. Nothing else in the kit has a
+  disabled look, so a field, segment, checkbox or range gets one here before anything disables it.
+- **Error.** `kcc-field--error` on the field and a `kcc-well--danger` below it (see Status).
+- **Loading.** What is already shown stays. The region takes `aria-busy`, and the loader is a
+  `fa-solid fa-circle-notch fa-spin` beside a `kcc-kick` message (`RecipeSearchView.Component.vue`).
+- **Empty.** A sheet, never a blank: a large duotone glyph in `ink-soft`, a `kcc-h4` line, a `kcc-body` hint and a
+  ghost button that undoes whatever emptied it (`RecipesEmptyState.vue`). A recipe with no reviews says so in its
+  meta line, and empty rating stars are `fa-regular` in `ink-soft`.
+- **Browser surfaces.** `accent-color` is ink, and underlines sit 3px below the text. `kcc-seg` hides its
+  scrollbar. Text selection, the caret and the page scrollbars are the browser's own.
+
+## Motion
+
+The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). All of today's motion is CSS:
+
+| What moves | How | Where |
+|---|---|---|
+| A slip you can open lifts 4px | `transition-transform hover:-translate-y-1 focus-within:-translate-y-1` | `RecipeCard.vue`, `RecipeCardRow.vue`, `FeaturedRecipeCard.vue`, `VariantGrid.vue` |
+| A card's drawer slides up | `transition-all`, height from 0 to full on hover or focus-within | `Card.Component.vue` |
+| A header menu unfolds | `transition-all duration-500`, max-height from 0 to 24rem | `MenuItem.vue` |
+| A stacked sheet steps back | `transition-all duration-100`, scale from 1 to .95 once it sticks, all but the last | `Stacker.Component.vue` |
+| The focus ring fades in | `transition: outline-color 0.2s, outline-offset 0.2s` on every focusable | `TailwindConfig.css` |
+| More recipes load | `fa-spin` on a `fa-circle-notch` | `RecipeSearchView.Component.vue` |
+
+1. **300ms is the standard.** `--default-transition-duration` in `Main.css` gives it to every `transition-*`
+   utility that names no duration, which is most of them.
+2. **500ms is the ceiling**, for a bigger move that would feel rushed at 300ms, like a menu unfolding. A loop such
+   as the spinner is exempt: its duration is one turn, not a wait.
+3. **Any property, any easing.** Tailwind's default curve unless a move wants another.
+4. **Reduced motion stills everything CSS runs.** Under `prefers-reduced-motion: reduce`, `Main.css` sets every
+   transition and animation to 0.01ms (not `none`, so `transitionend` and `animationend` still fire) and turns
+   smooth scrolling off. Motion started from script (`element.animate`, a `requestAnimationFrame` loop, an animation
+   library) never reaches that rule, so it checks `matchMedia('(prefers-reduced-motion: reduce)')` itself.
+5. **A ramp switch freezes motion for a frame.** `ThemeToggle` sets `data-theme-switching` on the root and clears
+   it on the next frame, and `Kit.css` drops every transition and animation under it, so no token eases between
+   the ramps.
+
 ## Vue primitives
 
 - `Components/Sheet/KccSheet.vue` — props `label` or a `#label` slot for rich content (a `<ResourceString>`
@@ -280,6 +332,7 @@ its first card may repeat the first sheet's tear, corner to corner. Filter defs 
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 | The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 | Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
+| Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |
 
 ## Building a surface
 
@@ -292,7 +345,9 @@ its first card may repeat the first sheet's tear, corner to corner. Filter defs 
    `text-marker-ink` only inside a tile, a label or a marker button.
 5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
 6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
-7. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
+7. Motion takes the 300ms default, or up to 500ms for a bigger move (see Motion). Every focusable shows a ring,
+   and only buttons have a disabled look (see States).
+8. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
    message says why.
-8. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens contrast`, `yarn type-check`, `yarn format`; before
-   merging also `yarn build:all` and the browser check in both ramps. Commit.
+9. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens contrast motion`, `yarn type-check`, `yarn format`;
+   before merging also `yarn build:all` and the browser check in both ramps. Commit.

@@ -115,7 +115,7 @@ Expected, and what to do if not:
 10. The runbook has sections 1 to 11, and its section 4 has step 5, "**Access for the whole site, until launch.**".
 11. README.md has the sections Task 8, Step 2 keeps as they stand (Members, Backoffice extensions, E2E tests,
     Deployment), and CLAUDE.md the ones Step 3 keeps (SQLite writes, Backoffice extensions, Vue SFC `<style>` blocks,
-    Torn & Waxed design language). If one is missing, its phase never added it: ask the owner before writing it from
+    Loose Leaf design language). If one is missing, its phase never added it: ask the owner before writing it from
     this plan's text alone.
 12. `git worktree list` shows the main checkout and `../Kitchen-Command-Center-xperience`, detached at `d9bcb09`
     (tag `xperience-final`). Other worktrees are not this phase's business.
@@ -1339,7 +1339,7 @@ One paragraph is conditional, and shown after the file's text.
 
 Recipes, the variants people make of them, and what they thought of each: **[<KCC_HOST>](https://<KCC_HOST>)**.
 
-An Umbraco 17 site on SQLite, with a Vue 3 front end rendered on the server, in the Torn & Waxed identity. It runs on a
+An Umbraco 17 site on SQLite, with a Vue 3 front end rendered on the server, in the Loose Leaf identity. It runs on a
 Raspberry Pi behind Cloudflare. Anyone can sign up; the owner approves every account, and members then review, note and
 submit recipes.
 
@@ -1458,14 +1458,14 @@ baseline export refuses to run, so change the baseline from a fresh database.
 | `src/KCC.Web/Features/Recipes`, `Features/Search` | The recipe queries, and the in-memory recipe index |
 | `src/KCC.Web/Features/Security`, `Features/Sqlite`, `Features/Hosting` | Rate limits and cookies; SQLite's write locks; the tunnel's forwarded headers |
 | `src/KCC.Web/Features/Ssr` | The Node SSR service (`Server.js`) and the C# side that calls it |
-| `src/KCC.Web/Features/Styles`, `Features/Torn` | Tailwind, the Torn & Waxed kit, and the tear generator |
+| `src/KCC.Web/Features/Styles`, `Features/Torn` | Tailwind, the Loose Leaf kit, and the tear generator |
 | `src/KCC.Web/Features/DevTools` | The test-data seeder and the baseline export, which answer in Development and Testing only |
 | `src/KCC.Contributions` | Reviews, cook notes and cooked marks on EF Core, and the Contributions dashboard |
 | `src/KCC.Admin` | The backoffice's recipe editors (ingredients, instructions, icon) and the icon API |
 | `packages/admin-client-config` | The Vite and TypeScript base the two Lit backoffice clients share |
 | `tests/` | The TUnit unit, integration and E2E suites, the Vitest suites, the combined report, and a screenshot tool |
 | `deploy/`, `Dockerfile`, `docker-bake.hcl` | The production images, the compose stack, and the Pi's deploy and backup jobs |
-| `docs/brand/` | The Torn & Waxed identity and its engineering contract |
+| `docs/brand/` | The Loose Leaf identity and its engineering contract |
 | `docs/hosting/runbook.md` | Setting up and running the Pi |
 
 Each feature keeps its controller, view model, view and components together in one folder.
@@ -1598,10 +1598,10 @@ Razor renders each page's header, body and footer as Vue template text, and `Vue
 service (`Features/Ssr/Server.js`, on port 3001 in development). The service renders it, and returns the HTML with the
 hydration payload. If the SSR service is down, the page falls back to rendering in the browser.
 
-### Torn & Waxed
+### Loose Leaf
 
 The public site's identity: torn-paper sheets on a lilac-grey desk, wax washes, one marker green. The brand is
-[`docs/brand/torn-and-waxed.md`](docs/brand/torn-and-waxed.md), and [`docs/brand/kit.md`](docs/brand/kit.md) is the
+[`docs/brand/loose-leaf.md`](docs/brand/loose-leaf.md), and [`docs/brand/kit.md`](docs/brand/kit.md) is the
 engineering contract every style change follows.
 
 ---
@@ -1655,7 +1655,7 @@ the Pi pulls and deploys them. A nightly job backs the site up to Cloudflare R2.
 ## History
 
 Kitchen Command Center ran on Xperience by Kentico until <launch date>. Xperience has no free or hobby licence, so the
-site moved to Umbraco 17 on SQLite, keeping its Vue front end and the Torn & Waxed identity. `docs/replatform/` holds
+site moved to Umbraco 17 on SQLite, keeping its Vue front end and the Loose Leaf identity. `docs/replatform/` holds
 the spec, one plan per phase, and screenshots of the last Xperience version.
 
 The tag `xperience-final` is that last version. To run it:
@@ -1691,7 +1691,7 @@ In **Deployment**, add this paragraph at the end of main's text, after its bulle
 - [ ] **Step 3: Rewrite CLAUDE.md**
 
 Replace the whole file with the text below. Four sections keep their text as it stands on `main`: **SQLite writes**
-(Phase 4), **Backoffice extensions** (Phase 5), **Vue SFC `<style>` blocks** and **Torn & Waxed design language**
+(Phase 4), **Backoffice extensions** (Phase 5), **Vue SFC `<style>` blocks** and **Loose Leaf design language**
 (with Phase 6's and 7's edits). The text shown for them is what those plans left. Two changes are made to kept text:
 - **Backoffice extensions** loses its bullet about naming a path `icon`, which **Naming traps** now holds, and its
   "Three things" becomes "Two things".
@@ -1701,7 +1701,7 @@ Replace the whole file with the text below. Four sections keep their text as it 
 # Kitchen Command Center
 
 Project-level instructions for Claude Code. The site is Umbraco 17 LTS on SQLite, with a Vue 3 front end rendered on
-the server in the Torn & Waxed identity. It has been live at `https://<KCC_HOST>` since <launch date>, on a Raspberry
+the server in the Loose Leaf identity. It has been live at `https://<KCC_HOST>` since <launch date>, on a Raspberry
 Pi behind Cloudflare. `README.md` is the developer guide, and `docs/hosting/runbook.md` runs the Pi.
 
 ## Superpowers: plans & specs
@@ -1828,14 +1828,19 @@ silently loses its styles.
 - `Features/Styles/Main.css` imports every Font Awesome style the markup uses. An icon whose style is not imported
   renders in the solid style instead, without an error; `mainCssIconStyles.test.ts` guards the list.
 
-## Torn & Waxed design language
+## Loose Leaf design language
 
-The public site uses the Torn & Waxed identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight
+The public site uses the Loose Leaf identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight
 wax washes, marker green as the one strong fill, Sono for every number and label. **The brand lives in
-`docs/brand/torn-and-waxed.md`; the engineering contract in `docs/brand/kit.md`.** Read the contract before
-styling anything; use the `torn-and-waxed` skill for the quick reference, the `kit-builder` agent to convert
+`docs/brand/loose-leaf.md`; the engineering contract in `docs/brand/kit.md`.** Read the contract before
+styling anything; use the `loose-leaf` skill for the quick reference, the `kit-builder` agent to convert
 a surface and the `brand-steward` agent to review one. The invariants below are the ones that break the
 build or the brand silently, so they stay here as well.
+
+General design skills and plugins, such as impeccable, taste-skill, ui-ux-pro-max and frontend-design, do not set
+the public site's look. Where one disagrees with the brand docs, the brand docs win. Some of them ban devices this
+identity uses on purpose: the kicker above a heading (`kcc-kick`), Sono caps labels, the stats row, the tilt and the
+tear. Those stay.
 
 ### Tokens
 
@@ -2124,7 +2129,7 @@ file Step 2 kept.
 - [.NET 10 BackgroundService start](dotnet10-backgroundservice-executeasync.md) — ExecuteAsync runs wholly on a background thread; start-up work belongs in StartAsync
 - [Long autonomous runs on this Mac](autonomous-run-sleep-and-agent-resume.md) — lid-closed sleep stalls subagents; resume one with SendMessage
 - [Browser pane input quirks](preview-pane-drops-hover.md) — the pane never applies :hover, and emulated clicks can miss
-- [KCC design projects](kcc-recipe-design-project.md) — Torn & Waxed is the shipped identity; the claude.ai/design projects are pre-history
+- [KCC design projects](kcc-recipe-design-project.md) — Loose Leaf is the shipped identity; the claude.ai/design projects are pre-history
 - [React design-system port (removed)](kcc-design-system-react-port.md) — deliberately deleted 2026-08-21; don't rebuild it
 - [Font vertical metrics](kcc-font-vertical-metrics.md) — Hazelnut and APCasual k constants; pin APCasual's ascent and descent
 - [Paper and baseline grid](kcc-paper-system.md) — the pitch drives rule spacing; the shim is padding cancelled by a negative margin

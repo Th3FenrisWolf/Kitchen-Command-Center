@@ -10,13 +10,8 @@
   "cSpell.words": [
     "antiforgery",
     "aspnetcore",
-    "bychannel",
-    "byid",
-    "clsx",
-    "cmsctx",
     "fontawesome",
     "fortawesome",
-    "kentico",
     "minmax",
     "modulepreload",
     "nameof",
@@ -25,10 +20,9 @@
     "tabindex",
     "tailwindcss",
     "typeinfo",
+    "umbraco",
     "vite",
     "walsheim",
-    "webpageitem",
-    "xperience",
-    "Xunit"
+    "xunit"
   ]
 }
