@@ -55,6 +55,7 @@ public class SchemaTests
     [Arguments("KCC Optional Link")]
     [Arguments("KCC Cards")]
     [Arguments("KCC Home Sections")]
+    [Arguments("KCC Tag Kind")]
     public async Task DataType_IsImportedOnFirstBoot(string name)
     {
         var dataTypes = Site.Services.GetRequiredService<IDataTypeService>();
@@ -68,6 +69,26 @@ public class SchemaTests
         var home = Site.Services.GetRequiredService<IContentTypeService>().Get("homePage")!;
 
         _ = await Assert.That(home.ContentTypeComposition.Any(type => type.Alias == "metadata")).IsTrue();
+    }
+
+    [Test]
+    public async Task RecipeTag_HasAMandatoryKind()
+    {
+        var kind = Site.Services.GetRequiredService<IContentTypeService>().Get("recipeTag")!.PropertyTypes.Single(property => property.Alias == "kind");
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(kind.DataTypeKey);
+
+        _ = await Assert.That(kind.Mandatory).IsTrue();
+        _ = await Assert.That(dataType!.Name).IsEqualTo("KCC Tag Kind");
+    }
+
+    [Test]
+    public async Task RecipeCategory_HasAnOptionalIcon()
+    {
+        var icon = Site.Services.GetRequiredService<IContentTypeService>().Get("recipeCategory")!.PropertyTypes.Single(property => property.Alias == "icon");
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(icon.DataTypeKey);
+
+        _ = await Assert.That(icon.Mandatory).IsFalse();
+        _ = await Assert.That(dataType!.Name).IsEqualTo("KCC Recipe Icon");
     }
 
     [Test]

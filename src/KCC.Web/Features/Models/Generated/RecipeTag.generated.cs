@@ -48,5 +48,13 @@ namespace KCC.Web.Features.Models.Generated
 		}
 
 		// properties
+
+		///<summary>
+		/// Kind
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("kind")]
+		public virtual string Kind => this.Value<string>(_publishedValueFallback, "kind");
 	}
 }
