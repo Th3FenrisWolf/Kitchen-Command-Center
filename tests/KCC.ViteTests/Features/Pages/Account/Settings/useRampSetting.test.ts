@@ -8,7 +8,7 @@ beforeEach(() => {
   root = new FakeRoot()
   vi.stubGlobal('document', { documentElement: root })
   vi.stubGlobal('requestAnimationFrame', () => 0)
-  vi.stubGlobal('window', { localStorage: { getItem: () => null }, matchMedia: () => ({ matches: false }) })
+  vi.stubGlobal('window', { matchMedia: () => ({ matches: false }) })
 })
 
 afterEach(() => {
@@ -66,7 +66,7 @@ describe('useRampSetting', () => {
 
   it('gives Device whatever the device prefers', async () => {
     serve(answer(true, { success: true }))
-    vi.stubGlobal('window', { localStorage: { getItem: () => null }, matchMedia: () => ({ matches: true }) })
+    vi.stubGlobal('window', { matchMedia: () => ({ matches: true }) })
     const { choose } = useRampSetting('Light')
 
     await choose('Device')
@@ -119,7 +119,7 @@ describe('useRampSetting', () => {
   })
 
   it('puts the last saved choice back when overlapping saves both fail', async () => {
-    vi.stubGlobal('window', { localStorage: { getItem: () => null }, matchMedia: () => ({ matches: true }) })
+    vi.stubGlobal('window', { matchMedia: () => ({ matches: true }) })
     const { fail } = holdRequests()
     const { setting, error, choose } = useRampSetting('Device')
 

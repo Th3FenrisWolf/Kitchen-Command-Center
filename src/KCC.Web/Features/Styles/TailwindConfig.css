@@ -83,20 +83,3 @@
     outline: 2px solid var(--color-focus);
   }
 }
-
-@layer components {
-  .btn-no-style {
-    background: none;
-    border: none;
-    color: inherit;
-    cursor: pointer;
-    font: inherit;
-    outline: none;
-    padding: 0;
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-    }
-  }
-}

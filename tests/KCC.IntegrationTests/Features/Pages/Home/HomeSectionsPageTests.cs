@@ -40,7 +40,7 @@ public class HomeSectionsPageTests
 
     [Test]
     [Arguments("<div class=\"kcc-slip kcc-tear-1 mx-auto w-full max-w-2xl\">")]
-    [Arguments("<div class=\"kcc-slip kcc-tear-4 w-full lg:sticky lg:top-8\">")]
+    [Arguments("<div class=\"kcc-slip kcc-tear-4 w-full lg:sticky lg:top-[calc(2rem_+_var(--pad-offset,0px))] lg:transition-[top]\">")]
     [Arguments("<div class=\"kcc-slip kcc-tear-6 mx-auto w-full max-w-2xl\">")]
     public async Task Home_SetsItsTextOnTornSheets(string sheet)
     {
