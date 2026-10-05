@@ -37,6 +37,26 @@ public class RecipeSearchServiceTests
     }
 
     [Test]
+    public async Task Query_RepeatingAWord_StillFindsIt()
+    {
+        var search = Service(Doc("Chili", description: "smoky chili"));
+
+        var results = search.Search(new RecipeSearchCriteria { Query = string.Join(' ', Enumerable.Repeat("chili", 2000)) });
+
+        _ = await Assert.That(results.Total).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Query_OfMoreWordsThanLuceneAllows_FindsNothingRatherThanThrowing()
+    {
+        var search = Service(Doc("Chili", description: "smoky chili"));
+
+        var results = search.Search(new RecipeSearchCriteria { Query = string.Join(' ', Enumerable.Range(0, 1100).Select(i => $"word{i}")) });
+
+        _ = await Assert.That(results.Total).IsEqualTo(0);
+    }
+
+    [Test]
     public async Task Facets_KeepTheirOwnDimensionWideWhileNarrowingTheOthers()
     {
         var search = Service(
