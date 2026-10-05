@@ -7,6 +7,9 @@ public sealed class RecipeIndex : IDisposable
 {
     private readonly ReaderWriterLockSlim swap = new();
     private RecipeIndexSnapshot current = RecipeIndexBuilder.Build([]);
+    private long version;
+
+    public long Version => Interlocked.Read(ref version);
 
     public T Search<T>(Func<IndexSearcher, TaxonomyReader, T> search)
     {
@@ -31,6 +34,7 @@ public sealed class RecipeIndex : IDisposable
         {
             previous = current;
             current = next;
+            Interlocked.Increment(ref version);
         }
         finally
         {

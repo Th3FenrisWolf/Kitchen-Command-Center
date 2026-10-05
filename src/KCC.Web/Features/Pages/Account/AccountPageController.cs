@@ -17,7 +17,7 @@ public class AccountPageController(
     IUmbracoContextAccessor umbracoContextAccessor,
     IMemberManager memberManager,
     IMemberService memberService,
-    AuthoredRecipeQueries authoredRecipes,
+    IAuthoredRecipeQueries authoredRecipes,
     AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)

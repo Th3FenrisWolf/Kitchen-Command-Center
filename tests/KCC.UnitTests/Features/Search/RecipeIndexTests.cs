@@ -39,4 +39,15 @@ public class RecipeIndexTests
         await replace;
         _ = await Assert.That(index.Search((searcher, _) => searcher.IndexReader.NumDocs)).IsEqualTo(0);
     }
+
+    [Test]
+    public async Task Replace_MovesTheVersionOn()
+    {
+        using var index = new RecipeIndex();
+        var before = index.Version;
+
+        index.Replace(RecipeIndexBuilder.Build([]));
+
+        _ = await Assert.That(index.Version).IsNotEqualTo(before);
+    }
 }

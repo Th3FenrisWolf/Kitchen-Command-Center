@@ -13,6 +13,7 @@ public class SearchComposer : IComposer
         builder.Services.Configure<RecipeSearchOptions>(builder.Config.GetSection("RecipeSearch"));
         builder.Services.AddSingleton<RecipeIndex>();
         builder.Services.AddSingleton<IRecipeSearchService, RecipeSearchService>();
+        builder.Services.AddSingleton<LibraryCountsCache>();
         builder.Services.AddScoped<IRecipeIndexSource, RecipeIndexSource>();
         builder.Services.AddSingleton<RecipeIndexRebuilder>();
         builder.Services.AddSingleton<IRecipeIndexRebuilder>(services => services.GetRequiredService<RecipeIndexRebuilder>());
