@@ -21,6 +21,7 @@ public static class RecipeSearchDocuments
         var recipe = page.Recipe;
         var rating = stats.RatingAcross(page.Variants.Select(variant => variant.Key));
         var tags = page.Variants.SelectMany(variant => variant.Tags).Distinct().ToArray();
+        var styles = tags.Where(styleTags.Contains).ToArray();
 
         return new RecipeSearchDocument
         {
@@ -30,8 +31,9 @@ public static class RecipeSearchDocuments
             Category = recipe.Category ?? string.Empty,
             StartedBy = AuthorNameProvider.NameFor(authorNames, recipe.AuthorKey) ?? string.Empty,
             Description = recipe.Description ?? string.Empty,
-            Diets = tags,
-            Styles = tags.Where(styleTags.Contains).ToArray(),
+            Tags = tags,
+            Diets = tags.Except(styles).ToArray(),
+            Styles = styles,
             IngredientNames = page.Variants
                 .SelectMany(variant => IngredientNames(variant.IngredientsJson))
                 .Distinct()

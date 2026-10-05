@@ -1,27 +1,22 @@
 import { renderSsr } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
+import type { RecipeFacets, RecipeTaxonomy } from '~/Types/Recipe'
 
-interface Props {
-  categoryFacets?: Record<string, number>
-  dietFacets?: Record<string, number>
-  categoryOptions?: string[]
-  dietOptions?: string[]
-  selectedCategories?: string[]
-  selectedDiets?: string[]
+interface Over {
+  facets?: Partial<RecipeFacets>
+  options?: Partial<RecipeTaxonomy>
+  selected?: Partial<RecipeTaxonomy>
+  timeMin?: number
 }
 
-const render = (over: Props = {}) =>
+const render = ({ facets, options, selected, timeMin = 0 }: Over = {}) =>
   renderSsr(RecipeFilters, {
-    categoryFacets: {},
-    dietFacets: {},
-    categoryOptions: [],
-    dietOptions: [],
-    selectedCategories: [],
-    selectedDiets: [],
-    timeMin: 0,
+    facets: { category: {}, diet: {}, style: {}, ...facets },
+    options: { categories: [], diets: [], styles: [], ...options },
+    selected: { categories: [], diets: [], styles: [], ...selected },
+    timeMin,
     timeMax: 60,
-    ...over,
   })
 
 // Each `:disabled` input renders the boolean attribute; range-slider inputs never do.
@@ -29,6 +24,9 @@ const countDisabled = (html: string) => (html.match(/\sdisabled/g) ?? []).length
 
 const rowFor = (html: string, label: string) =>
   html.match(new RegExp(`<li[^>]*>(?:(?!</li>).)*${label}.*?</li>`, 's'))?.[0] ?? ''
+
+const groupFor = (html: string, legend: string) =>
+  html.match(new RegExp(`<legend class="kcc-kick">\\s*${legend}\\s*</legend>.*?</fieldset>`, 's'))?.[0] ?? ''
 
 describe('RecipeFilters sheet', () => {
   it('is a crisp labelled sheet on its own tear', async () => {
@@ -50,18 +48,19 @@ describe('RecipeFilters sheet', () => {
   })
 
   it('titles each group with a kick legend', async () => {
-    const html = await render()
+    const html = await render({ options: { categories: ['Breakfast'], diets: ['Vegan'], styles: ['Spicy'] } })
 
     expect(html).toMatch(/<legend class="kcc-kick">\s*Category\s*<\/legend>/)
-    expect(html).toMatch(/<legend class="kcc-kick">\s*Dietary\s*<\/legend>/)
+    expect(html).toMatch(/<legend class="kcc-kick">\s*Diets\s*<\/legend>/)
+    expect(html).toMatch(/<legend class="kcc-kick">\s*Styles\s*<\/legend>/)
     expect(html).toMatch(/<legend class="kcc-kick">\s*TotalTime\s*<\/legend>/)
   })
 
   it('prints the options as a checklist on the rule, ticked boxes filled', async () => {
     const html = await render({
-      categoryOptions: ['Breakfast', 'Dessert'],
-      categoryFacets: { Breakfast: 4, Dessert: 2 },
-      selectedCategories: ['Dessert'],
+      options: { categories: ['Breakfast', 'Dessert'] },
+      facets: { category: { Breakfast: 4, Dessert: 2 } },
+      selected: { categories: ['Dessert'] },
     })
 
     expect(html).toContain('<ul class="kcc-check">')
@@ -73,7 +72,7 @@ describe('RecipeFilters sheet', () => {
   })
 
   it('hangs the box, the text and the count straight off the row, with nothing wrapping them', async () => {
-    const html = await render({ categoryOptions: ['Breakfast'], categoryFacets: { Breakfast: 4 } })
+    const html = await render({ options: { categories: ['Breakfast'] }, facets: { category: { Breakfast: 4 } } })
 
     // The kit's row is a three-column grid of direct children of the li, and `.kcc-check li.kcc-done`
     // excludes the box and the count by child combinator: a wrapper element breaks both.
@@ -92,12 +91,43 @@ describe('RecipeFilters sheet', () => {
   })
 })
 
+describe('RecipeFilters groups', () => {
+  it('lists diets and styles apart', async () => {
+    const html = await render({
+      options: { diets: ['Vegan'], styles: ['Spicy'] },
+      facets: { diet: { Vegan: 3 }, style: { Spicy: 1 } },
+    })
+
+    expect(groupFor(html, 'Diets')).toContain('>Vegan<')
+    expect(groupFor(html, 'Diets')).not.toContain('Spicy')
+    expect(groupFor(html, 'Styles')).toContain('>Spicy<')
+  })
+
+  it('keeps the order the options arrive in', async () => {
+    const html = await render({
+      options: { categories: ['Dinner', 'Breakfast'] },
+      facets: { category: { Breakfast: 4, Dinner: 5 } },
+    })
+
+    expect(html.indexOf('>Dinner<')).toBeLessThan(html.indexOf('>Breakfast<'))
+  })
+
+  it('leaves out a group with nothing to offer', async () => {
+    const html = await render({ options: { categories: ['Breakfast'] } })
+
+    expect(html).toMatch(/<legend class="kcc-kick">\s*Category\s*<\/legend>/)
+    expect(html).not.toMatch(/>\s*Diets\s*</)
+    expect(html).not.toMatch(/>\s*Styles\s*</)
+  })
+})
+
 describe('RecipeFilters zero-result options', () => {
   it('renders every option even when the current results omit some (no rows dropped)', async () => {
     const html = await render({
-      categoryOptions: ['Breakfast', 'Dessert', 'Dinner'],
-      categoryFacets: { Breakfast: 4 }, // Dessert + Dinner have no matches right now
+      options: { categories: ['Breakfast', 'Dessert', 'Dinner'] },
+      facets: { category: { Breakfast: 4 } }, // Dessert + Dinner have no matches right now
     })
+
     expect(html).toContain('Breakfast')
     expect(html).toContain('Dessert')
     expect(html).toContain('Dinner')
@@ -105,9 +135,10 @@ describe('RecipeFilters zero-result options', () => {
 
   it('disables the options that have no matches in the current result set', async () => {
     const html = await render({
-      categoryOptions: ['Breakfast', 'Dessert', 'Dinner'],
-      categoryFacets: { Breakfast: 4 },
+      options: { categories: ['Breakfast', 'Dessert', 'Dinner'] },
+      facets: { category: { Breakfast: 4 } },
     })
+
     expect(countDisabled(html)).toBe(2)
     expect(html).toContain('cursor-not-allowed')
     expect(rowFor(html, 'Dinner')).toContain('opacity-40')
@@ -115,18 +146,20 @@ describe('RecipeFilters zero-result options', () => {
 
   it('does not disable options that still have matches', async () => {
     const html = await render({
-      categoryOptions: ['Breakfast', 'Dessert'],
-      categoryFacets: { Breakfast: 4, Dessert: 2 },
+      options: { categories: ['Breakfast', 'Dessert'] },
+      facets: { category: { Breakfast: 4, Dessert: 2 } },
     })
+
     expect(countDisabled(html)).toBe(0)
   })
 
   it('keeps a selected option interactive even when it drops to zero matches', async () => {
     const html = await render({
-      categoryOptions: ['Breakfast', 'Dessert'],
-      categoryFacets: { Breakfast: 4 }, // Dessert is 0 now...
-      selectedCategories: ['Dessert'], // ...but it's selected, so it must stay toggleable
+      options: { categories: ['Breakfast', 'Dessert'] },
+      facets: { category: { Breakfast: 4 } }, // Dessert is 0 now...
+      selected: { categories: ['Dessert'] }, // ...but it's selected, so it must stay toggleable
     })
+
     expect(countDisabled(html)).toBe(0)
     expect(html).toContain('checked')
   })

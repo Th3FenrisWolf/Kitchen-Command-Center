@@ -3,7 +3,7 @@ namespace KCC.Web.Features.Search;
 public static class RecipeSearchConstants
 {
     public const string FieldName = "Name";
-    public const string FieldContent = "Content"; // description + ingredients + author, combined
+    public const string FieldContent = "Content";
     // Sortable copy of the name (SortedDocValues) — the full-text FieldName is analyzed and can't be
     // sorted on; this gives the default view a stable alphabetical tie-break.
     public const string FieldNameSort = "NameSort";

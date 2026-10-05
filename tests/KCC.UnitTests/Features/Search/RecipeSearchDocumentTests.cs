@@ -12,7 +12,9 @@ public class RecipeSearchDocumentTests
         Category = "Mains",
         StartedBy = "Dana Whitfield",
         Description = "Bright, buttery, caper-flecked.",
+        Tags = ["Gluten-Free", "Spicy"],
         Diets = ["Gluten-Free"],
+        Styles = ["Spicy"],
         IngredientNames = ["chicken breast", "capers", "lemon"],
         FastestTime = 30,
         VariantCount = 5,
@@ -32,10 +34,19 @@ public class RecipeSearchDocumentTests
     }
 
     [Test]
+    public async Task Content_HoldsEveryTag_DietOrStyle()
+    {
+        var content = RecipeSearchDocument.BuildContent(Sample());
+
+        _ = await Assert.That(content).Contains("Gluten-Free");
+        _ = await Assert.That(content).Contains("Spicy");
+    }
+
+    [Test]
     public async Task TagsStorage_JoinsWithSemicolons()
     {
-        var doc = Sample() with { Diets = ["Vegan", "Dairy-Free"] };
-        _ = await Assert.That(RecipeSearchDocument.JoinTags(doc.Diets)).IsEqualTo("Vegan;Dairy-Free");
+        var doc = Sample() with { Tags = ["Vegan", "Dairy-Free"] };
+        _ = await Assert.That(RecipeSearchDocument.JoinTags(doc.Tags)).IsEqualTo("Vegan;Dairy-Free");
     }
 
     [Test]

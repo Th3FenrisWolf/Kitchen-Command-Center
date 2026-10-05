@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeSearchView from '~/Pages/RecipeSearch/RecipeSearchView.Component.vue'
 import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumbs.Component.vue'
-import type { RecipeSearchHit, RecipeSearchResponse } from '~/Types/Recipe'
+import type { RecipeSearchHit, RecipeSearchResponse, RecipeTaxonomy } from '~/Types/Recipe'
 
 const NAMES = [
   'Brown Butter Gnocchi',
@@ -42,16 +42,23 @@ const response = (over: Partial<RecipeSearchResponse> = {}): RecipeSearchRespons
   page: 0,
   pageSize: 12,
   results: NAMES.map(hit),
-  facets: { category: { Mains: 7 }, diet: { Vegetarian: 3 } },
+  facets: { category: { Mains: 7 }, diet: { Vegetarian: 3 }, style: {} },
   spotlight: null,
   ...over,
 })
 
-const render = (over: Partial<RecipeSearchResponse> = {}) =>
+const OPTIONS: RecipeTaxonomy = { categories: ['Mains'], diets: ['Vegetarian'], styles: [] }
+
+interface Page {
+  options?: RecipeTaxonomy
+}
+
+const render = (over: Partial<RecipeSearchResponse> = {}, page: Page = {}) =>
   renderSsr(
     RecipeSearchView,
     {
       initial: response(over),
+      options: page.options ?? OPTIONS,
       createRecipeUrl: '/create-recipe',
       breadcrumbs: [
         { linkText: 'Home', url: '/' },
@@ -116,6 +123,13 @@ describe('RecipeSearchView library', () => {
     expect(aside).toContain('lg:sticky')
     expect(aside).not.toContain('rounded')
     expect(aside).not.toContain('bg-paper-2')
+  })
+
+  it('offers every option the server sends, even one the first page has none of', async () => {
+    const html = await render({}, { options: { categories: ['Mains', 'Sides'], diets: ['Vegetarian'], styles: ['Spicy'] } })
+
+    expect(html).toContain('>Sides<')
+    expect(html).toContain('>Spicy<')
   })
 
   it('opens the filter panel from a ghost pill that keeps its aria wiring', async () => {

@@ -140,7 +140,7 @@ public class RecipeSearchServiceTests
     [Test]
     public async Task Hit_CarriesTheCardFields()
     {
-        var search = Service(Doc("Chili", category: "Dinner", diets: ["Spicy", "Vegan"], fastest: 25, rating: 4.5, reviews: 2, variants: 3));
+        var search = Service(Doc("Chili", category: "Dinner", tags: ["Spicy", "Vegan"], fastest: 25, rating: 4.5, reviews: 2, variants: 3));
 
         var hit = search.Search(new RecipeSearchCriteria()).Results.Single();
 
@@ -153,6 +153,18 @@ public class RecipeSearchServiceTests
         _ = await Assert.That(hit.AverageRating).IsEqualTo(4.5d);
         _ = await Assert.That(hit.ReviewCount).IsEqualTo(2);
         _ = await Assert.That(hit.VariantCount).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task Hit_ListsEveryTag_WhileEachFacetCountsOnlyItsOwnKind()
+    {
+        var search = Service(Doc("Chili", tags: ["Vegan", "Spicy"], diets: ["Vegan"], styles: ["Spicy"]));
+
+        var results = search.Search(new RecipeSearchCriteria());
+
+        _ = await Assert.That(string.Join(",", results.Results.Single().Tags)).IsEqualTo("Vegan,Spicy");
+        _ = await Assert.That(string.Join(",", results.Facets.Diet.Keys)).IsEqualTo("Vegan");
+        _ = await Assert.That(string.Join(",", results.Facets.Style.Keys)).IsEqualTo("Spicy");
     }
 
     [Test]
@@ -185,6 +197,7 @@ public class RecipeSearchServiceTests
         string name,
         string description = "",
         string category = "Dinner",
+        string[] tags = null,
         string[] diets = null,
         string[] styles = null,
         string[] ingredients = null,
@@ -200,6 +213,7 @@ public class RecipeSearchServiceTests
         Category = category,
         StartedBy = "Priya Balan",
         Description = description,
+        Tags = tags ?? [],
         Diets = diets ?? [],
         Styles = styles ?? [],
         IngredientNames = ingredients ?? [],

@@ -29,10 +29,12 @@ public class RecipeListingPageController(
             return NotFound();
         }
 
+        var wholeLibrary = recipeSearch.Search(new RecipeSearchCriteria());
         var viewModel = new RecipeSearchViewModel
         {
             CreateRecipeUrl = recipes.GetCreateRecipeUrl(listing),
-            InitialResults = recipeSearch.Search(new RecipeSearchCriteria()),
+            InitialResults = wholeLibrary,
+            Options = RecipeLibraryFilters.Options(recipes.GetTaxonomy(), wholeLibrary.Facets),
             Breadcrumbs = breadcrumbs.Build(listing),
             ResourceStrings = resourceStrings.GetGroup("RecipeSearch"),
         };

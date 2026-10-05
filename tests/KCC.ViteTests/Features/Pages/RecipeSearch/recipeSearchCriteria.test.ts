@@ -20,13 +20,20 @@ const t = (key: string): string => {
 describe('buildSearchParams', () => {
   it('serializes query, repeated facets, sort and paging', () => {
     const p = buildSearchParams(
-      state({ query: 'chicken', categories: ['Mains'], diets: ['Vegan', 'Dairy-Free'], sort: 'rated' }),
+      state({
+        query: 'chicken',
+        categories: ['Mains'],
+        diets: ['Vegan', 'Dairy-Free'],
+        styles: ['Spicy', 'Easy'],
+        sort: 'rated',
+      }),
       2,
       12,
     )
     expect(p.get('query')).toBe('chicken')
     expect(p.getAll('category')).toEqual(['Mains'])
     expect(p.getAll('diet')).toEqual(['Vegan', 'Dairy-Free'])
+    expect(p.getAll('style')).toEqual(['Spicy', 'Easy'])
     expect(p.get('sort')).toBe('rated')
     expect(p.get('page')).toBe('2')
     expect(p.get('pageSize')).toBe('12')
@@ -54,11 +61,15 @@ describe('chipsFor', () => {
   it('is empty with no active filters', () => {
     expect(chipsFor(state(), t)).toEqual([])
   })
+
+  it('marks a style chip as a style, so removing it clears the style', () => {
+    expect(chipsFor(state({ styles: ['Spicy'] }), t)).toEqual([{ label: 'Spicy', kind: 'style', value: 'Spicy' }])
+  })
 })
 
 describe('activeFilterCount', () => {
-  it('counts categories + diets + a narrowed time as one', () => {
-    expect(activeFilterCount(state({ categories: ['a', 'b'], diets: ['c'], timeMin: 5 }))).toBe(4)
+  it('counts categories + diets + styles + a narrowed time as one', () => {
+    expect(activeFilterCount(state({ categories: ['a', 'b'], diets: ['c'], styles: ['d'], timeMin: 5 }))).toBe(5)
     expect(activeFilterCount(state())).toBe(0)
   })
 })

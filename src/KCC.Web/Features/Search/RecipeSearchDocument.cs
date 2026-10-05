@@ -8,6 +8,7 @@ public record RecipeSearchDocument
     public string Category { get; init; } = string.Empty;
     public string StartedBy { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
+    public IReadOnlyList<string> Tags { get; init; } = [];
     public IReadOnlyList<string> Diets { get; init; } = [];
     public IReadOnlyList<string> Styles { get; init; } = [];
     public IReadOnlyList<string> IngredientNames { get; init; } = [];
@@ -21,7 +22,7 @@ public record RecipeSearchDocument
 
     public static string BuildContent(RecipeSearchDocument d) => string.Join(
         ' ',
-        new[] { d.Description, d.Category, d.StartedBy, string.Join(' ', d.Diets), string.Join(' ', d.IngredientNames) }
+        new[] { d.Description, d.Category, d.StartedBy, string.Join(' ', d.Tags), string.Join(' ', d.IngredientNames) }
             .Where(s => !string.IsNullOrWhiteSpace(s)));
 
     public static int FastestOf(IReadOnlyList<(int Prep, int Cook)> variants) =>

@@ -13,27 +13,23 @@
   import { useRecipeSearch } from './useRecipeSearch'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
   import { MAX_TIME, chipsFor, activeFilterCount, defaultState, type FilterChip } from './recipeSearchCriteria'
-  import type { Breadcrumb, RecipeSearchResponse } from '~/Types/Recipe'
+  import type { Breadcrumb, RecipeSearchResponse, RecipeTaxonomy } from '~/Types/Recipe'
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
 
   export interface RecipeSearchViewProps {
-    /**
-     * Server-rendered first page. Its unfiltered facets also fix the filter panel's option set,
-     * which later filtered responses can only narrow.
-     */
     initial: RecipeSearchResponse
+    options: RecipeTaxonomy
     createRecipeUrl: string
     breadcrumbs?: Breadcrumb[]
     resourceStrings?: Record<string, string>
   }
 
-  const { initial, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
+  const { initial, options, createRecipeUrl, breadcrumbs, resourceStrings } = defineProps<RecipeSearchViewProps>()
 
   const rs = provideResourceStrings(resourceStrings, 'RecipeSearch')
 
-  const { state, results, facets, categoryOptions, dietOptions, total, spotlight, loading, hasMore, loadMore } =
-    useRecipeSearch(initial)
+  const { state, results, facets, total, spotlight, loading, hasMore, loadMore } = useRecipeSearch(initial)
 
   const draft = ref('')
   const sheetOpen = ref(false)
@@ -70,6 +66,8 @@
       toggle(state.categories, chip.value)
     } else if (chip.kind === 'diet' && chip.value) {
       toggle(state.diets, chip.value)
+    } else if (chip.kind === 'style' && chip.value) {
+      toggle(state.styles, chip.value)
     } else if (chip.kind === 'time') {
       state.timeMin = 0
       state.timeMax = MAX_TIME
@@ -116,16 +114,12 @@
   <div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-[244px_1fr]">
     <aside id="recipe-filters" :class="['lg:sticky lg:top-6 lg:block', { hidden: !sheetOpen }]">
       <RecipeFilters
-        :category-facets="facets.category"
-        :diet-facets="facets.diet"
-        :category-options="categoryOptions"
-        :diet-options="dietOptions"
-        :selected-categories="state.categories"
-        :selected-diets="state.diets"
+        :facets="facets"
+        :options="options"
+        :selected="state"
         v-model:time-min="state.timeMin"
         v-model:time-max="state.timeMax"
-        @toggle-category="(c) => toggle(state.categories, c)"
-        @toggle-diet="(d) => toggle(state.diets, d)"
+        @toggle="(group, value) => toggle(state[group], value)"
         @reset="clearAll"
       />
     </aside>

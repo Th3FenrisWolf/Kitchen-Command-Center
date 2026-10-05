@@ -102,11 +102,13 @@ public class RecipeQueriesTests
     }
 
     [Test]
-    public async Task GetStyleTagNames_ListsTheTagsWhoseKindIsStyle()
+    public async Task GetTaxonomy_ListsTheCategoriesAndTheTagsByKind_InTreeOrder()
     {
-        var styles = WithContent((_, queries) => queries.GetStyleTagNames());
+        var taxonomy = WithContent((_, queries) => queries.GetTaxonomy());
 
-        _ = await Assert.That(styles).IsEquivalentTo(["Cheesy", "Easy", "Fast", "Spicy"]);
+        _ = await Assert.That(string.Join(",", taxonomy.Categories)).IsEqualTo("Breakfast,Lunch,Dinner,Dessert,Snack,Beverage");
+        _ = await Assert.That(string.Join(",", taxonomy.Diets)).IsEqualTo("Vegetarian,Vegan,Gluten-Free,Dairy-Free,Keto,High-Protein,Low-Carb");
+        _ = await Assert.That(string.Join(",", taxonomy.Styles)).IsEqualTo("Spicy,Cheesy,Easy,Fast");
     }
 
     [Test]

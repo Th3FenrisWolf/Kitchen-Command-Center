@@ -104,7 +104,16 @@ export interface RecipeSearchHit {
 export interface RecipeFacets {
   category: Record<string, number>
   diet: Record<string, number>
+  style: Record<string, number>
 }
+
+export interface RecipeTaxonomy {
+  categories: string[]
+  diets: string[]
+  styles: string[]
+}
+
+export type TaxonomyGroup = keyof RecipeTaxonomy
 
 export interface RecipeSearchResponse {
   total: number
