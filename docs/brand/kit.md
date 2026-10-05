@@ -21,7 +21,8 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Torn/tears.ts` | preset table and CSS emitter |
 | `src/KCC.Web/Features/Torn/generateTears.ts` | CLI that writes `Tears.css` |
 | `src/KCC.Web/Features/Components/Sheet/KccSheet.vue` | the sheet primitive for Vue |
-| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | pre-paint ramp script, font preloads, `#kcc-wax` / `#kcc-wax-flat` filter defs |
+| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | renders a signed-in member's saved ramp or runs the pre-paint ramp script; font preloads, `#kcc-wax` / `#kcc-wax-flat` filter defs |
+| `src/KCC.Web/Features/Utilities/Ramp.ts` | `applyRamp`, the one way to switch the ramp after the first paint; `deviceRamp` and `rampFor`, the ramp a device or a saved setting asks for |
 
 ## Tokens
 
@@ -284,9 +285,10 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
    transition and animation to 0.01ms (not `none`, so `transitionend` and `animationend` still fire) and turns
    smooth scrolling off. Motion started from script (`element.animate`, a `requestAnimationFrame` loop, an animation
    library) never reaches that rule, so it checks `matchMedia('(prefers-reduced-motion: reduce)')` itself.
-5. **A ramp switch freezes motion for a frame.** `ThemeToggle` sets `data-theme-switching` on the root and clears
-   it on the next frame, and `Kit.css` drops every transition and animation under it, so no token eases between
-   the ramps.
+5. **A ramp switch freezes motion for a frame.** `applyRamp` (`Utilities/Ramp.ts`) sets `data-theme-switching` on
+   the root and clears it only after a frame has rendered with it, and `Kit.css` drops every transition and
+   animation under it, so no token eases between the ramps. Everything that switches the ramp after the first
+   paint goes through it.
 
 ## Vue primitives
 
@@ -332,7 +334,7 @@ its first card may repeat the first sheet's tear, corner to corner. Filter defs 
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 | The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 | Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
-| Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |
+| Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them, and the ramp switches only through `applyRamp` | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |
 
 ## Building a surface
 

@@ -238,8 +238,12 @@ The site ships two colour ramps. A toggle sits in the header's utility nav; it w
 `'dark'` to `localStorage['kcc-theme']`, and an inline script in `Layout.cshtml` applies it to
 `<html data-theme>` before first paint so there is no flash of the wrong ramp.
 
-With no stored choice the site follows `prefers-color-scheme`, defaulting to dark. To force a ramp while
-testing, set the key by hand and reload:
+A signed-in member's saved Appearance (Light or Dark, on Account Settings) is rendered into
+`<html data-theme>` by the server instead of by the script, so the stored key applies only to visitors
+and to members on Device. To see the other ramp as a member, change Appearance or test signed out.
+
+With no stored choice the site follows `prefers-color-scheme`, defaulting to light. To force a ramp while
+testing as a visitor or a member on Device, set the key by hand and reload:
 
 ```js
 localStorage.setItem('kcc-theme', 'light') // or 'dark'
