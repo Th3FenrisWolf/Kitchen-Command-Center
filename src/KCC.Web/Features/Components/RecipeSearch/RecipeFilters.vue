@@ -5,55 +5,39 @@
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import RangeSlider from '~/Components/Forms/RangeSlider.vue'
   import { MAX_TIME, timeRangeLabel } from '~/Pages/RecipeSearch/recipeSearchCriteria'
+  import type { RecipeFacets, RecipeTaxonomy, TaxonomyGroup } from '~/Types/Recipe'
 
   export interface RecipeFiltersProps {
-    /** Values that match nothing are absent, not zero. */
-    categoryFacets: Record<string, number>
-    dietFacets: Record<string, number>
-    /**
-     * Every value that exists at all, captured from the initial unfiltered search so the panel
-     * can grey out dead options instead of dropping them.
-     */
-    categoryOptions: string[]
-    dietOptions: string[]
-    selectedCategories: string[]
-    selectedDiets: string[]
+    facets: RecipeFacets
+    options: RecipeTaxonomy
+    selected: Record<TaxonomyGroup, string[]>
   }
 
   const props = defineProps<RecipeFiltersProps>()
   const timeMin = defineModel<number>('timeMin', { required: true })
   const timeMax = defineModel<number>('timeMax', { required: true })
-  const emit = defineEmits<{ toggleCategory: [string]; toggleDiet: [string]; reset: [] }>()
+  const emit = defineEmits<{ toggle: [group: TaxonomyGroup, value: string]; reset: [] }>()
 
   const t = useResourceStrings()
-
-  interface FilterRow {
-    id: string
-    label: string
-    count: number
-    selected: boolean
-    disabled: boolean
-  }
-
   const uid = useId()
 
-  // Render the full, stable option set on every search so the panel keeps its height as filters
-  // change (rather than dropping rows). An option with no matches in the current result set is
-  // greyed out and disabled — unless it's currently selected, which must stay toggleable so the
-  // user can clear it.
-  const toRows = (group: string, options: string[], facets: Record<string, number>, selected: string[]): FilterRow[] =>
-    [...new Set([...options, ...selected])]
-      .sort((a, b) => a.localeCompare(b))
-      .map((label, i) => {
-        const count = facets[label] ?? 0
-        const isSelected = selected.includes(label)
-        return { id: `${uid}-${group}-${i}`, label, count, selected: isSelected, disabled: count === 0 && !isSelected }
-      })
+  const GROUPS = [
+    { group: 'categories', facet: 'category', legend: 'Category' },
+    { group: 'diets', facet: 'diet', legend: 'Diets' },
+    { group: 'styles', facet: 'style', legend: 'Styles' },
+  ] as const
 
-  const categories = computed(() =>
-    toRows('category', props.categoryOptions, props.categoryFacets, props.selectedCategories),
+  const groups = computed(() =>
+    GROUPS.map(({ group, facet, legend }) => ({
+      group,
+      legend,
+      rows: props.options[group].map((label, i) => {
+        const count = props.facets[facet][label] ?? 0
+        const isSelected = props.selected[group].includes(label)
+        return { id: `${uid}-${group}-${i}`, label, count, selected: isSelected, disabled: count === 0 && !isSelected }
+      }),
+    })).filter(({ rows }) => rows.length > 0),
   )
-  const diets = computed(() => toRows('diet', props.dietOptions, props.dietFacets, props.selectedDiets))
   const rangeLabel = computed(() => timeRangeLabel(timeMin.value, timeMax.value, t))
   const minUnit = t('Min')
 </script>
@@ -69,42 +53,19 @@
       </Button>
     </div>
 
-    <fieldset class="mt-6">
-      <ResourceString for="Category" as="legend" class="kcc-kick" />
+    <fieldset v-for="{ group, legend, rows } in groups" :key="group" class="mt-6">
+      <ResourceString :for="legend" as="legend" class="kcc-kick" />
       <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
            stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
       <ul class="kcc-check">
-        <li
-          v-for="row in categories"
-          :key="row.label"
-          :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'"
-        >
+        <li v-for="row in rows" :key="row.label" :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'">
           <input
             :id="row.id"
             type="checkbox"
             class="sr-only"
             :checked="row.selected"
             :disabled="row.disabled"
-            @change="emit('toggleCategory', row.label)"
-          />
-          <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></label>
-          <label :for="row.id">{{ row.label }}</label>
-          <span class="kcc-q">{{ row.count }}</span>
-        </li>
-      </ul>
-    </fieldset>
-
-    <fieldset class="mt-6">
-      <ResourceString for="Dietary" as="legend" class="kcc-kick" />
-      <ul class="kcc-check">
-        <li v-for="row in diets" :key="row.label" :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'">
-          <input
-            :id="row.id"
-            type="checkbox"
-            class="sr-only"
-            :checked="row.selected"
-            :disabled="row.disabled"
-            @change="emit('toggleDiet', row.label)"
+            @change="emit('toggle', group, row.label)"
           />
           <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': row.selected }"></label>
           <label :for="row.id">{{ row.label }}</label>

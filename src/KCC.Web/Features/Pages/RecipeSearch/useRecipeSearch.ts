@@ -1,21 +1,19 @@
 import { reactive, ref, watch } from 'vue'
 import type { RecipeSearchHit, RecipeSearchResponse, RecipeFacets } from '~/Types/Recipe'
-import { buildSearchParams, defaultState, type RecipeSearchState } from './recipeSearchCriteria'
+import { buildSearchParams, filterParams, type RecipeFilterState, type RecipeSearchState } from './recipeSearchCriteria'
 
 const PAGE_SIZE = 12
 
-export function useRecipeSearch(initial: RecipeSearchResponse) {
-  const state = reactive<RecipeSearchState>(defaultState())
+export function useRecipeSearch(initial: RecipeSearchResponse, filters: RecipeFilterState) {
+  const state = reactive<RecipeSearchState>({
+    ...filters,
+    categories: [...filters.categories],
+    diets: [...filters.diets],
+    styles: [...filters.styles],
+    view: 'grid',
+  })
   const results = ref<RecipeSearchHit[]>([...initial.results])
   const facets = ref<RecipeFacets>(initial.facets)
-
-  // The initial response is unfiltered, so its facet keys are the complete universe of
-  // category/diet options. Capturing them once lets the filter panel render every option on
-  // every search (greying out the ones with no current matches) instead of dropping rows —
-  // which keeps the panel from resizing as the user filters. Filtered searches only ever
-  // return a subset of these, so the option set never needs to grow.
-  const categoryOptions = Object.keys(initial.facets.category)
-  const dietOptions = Object.keys(initial.facets.diet)
   const total = ref(initial.total)
   const spotlight = ref<RecipeSearchHit | null>(initial.spotlight)
   const page = ref(0)
@@ -48,10 +46,8 @@ export function useRecipeSearch(initial: RecipeSearchResponse) {
     }
   }
 
-  // Any filter/sort change resets to page 0 (replace). `view` is display-only — exclude it.
   watch(
-    () =>
-      [state.query, state.categories.join(','), state.diets.join(','), state.timeMin, state.timeMax, state.sort].join('|'),
+    () => filterParams(state).toString(),
     () => fetchPage(0, false),
   )
 
@@ -61,5 +57,5 @@ export function useRecipeSearch(initial: RecipeSearchResponse) {
     }
   }
 
-  return { state, results, facets, categoryOptions, dietOptions, total, spotlight, loading, hasMore, loadMore }
+  return { state, results, facets, total, spotlight, loading, hasMore, loadMore }
 }

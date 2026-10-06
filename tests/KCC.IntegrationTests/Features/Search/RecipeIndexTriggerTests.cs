@@ -110,11 +110,16 @@ public class RecipeIndexTriggerTests
         try
         {
             await TestContent.VariantAsync(Site.Services, recipeKey, "Classic", TestContent.Pick("tags", tagKey));
-            _ = await Assert.That((await SearchWhenCurrentAsync("bandicoot")).Facets.Style.ContainsKey("IT Charred")).IsFalse();
+            var before = await SearchWhenCurrentAsync("bandicoot");
+            _ = await Assert.That(before.Facets.Diet.GetValueOrDefault("IT Charred")).IsEqualTo(1);
+            _ = await Assert.That(before.Facets.Style.ContainsKey("IT Charred")).IsFalse();
 
             await TestContent.SetKindAsync(Site.Services, tagKey, TagKinds.Style);
 
-            _ = await Assert.That((await SearchWhenCurrentAsync("bandicoot")).Facets.Style.GetValueOrDefault("IT Charred")).IsEqualTo(1);
+            var after = await SearchWhenCurrentAsync("bandicoot");
+            _ = await Assert.That(after.Facets.Style.GetValueOrDefault("IT Charred")).IsEqualTo(1);
+            _ = await Assert.That(after.Facets.Diet.ContainsKey("IT Charred")).IsFalse();
+            _ = await Assert.That(string.Join(",", after.Results.Single().Tags)).IsEqualTo("IT Charred");
         }
         finally
         {

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.RecipeSearch;
@@ -75,6 +76,51 @@ public class RecipeSearchTests : BasePageTests
         await Expect(filters.Locator("li").Filter(new() { HasText = "Dinner" }).Locator(".kcc-q")).ToHaveTextAsync("5");
         await Expect(filters.Locator("li").Filter(new() { HasText = "Vegan" }).Locator(".kcc-q")).ToHaveTextAsync("3");
     }
+
+    [Test]
+    public async Task Deep_link_is_filtered_in_the_server_render()
+    {
+        var response = await Page.APIRequest.GetAsync("/recipes/?category=Dinner&diet=Vegan");
+        var html = await response.TextAsync();
+
+        // Weeknight Tacos is the one vegan dinner, and it is rated, so it renders as the spotlight.
+        _ = await Assert.That(html.Contains("data-recipe-name=\"Weeknight Tacos\"", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(html.Contains("data-recipe-name=\"Legendary Lasagna\"", StringComparison.Ordinal)).IsFalse();
+        _ = await Assert.That(Regex.Count(html, "data-recipe-name=\"")).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Deep_link_opens_with_its_filters_ticked()
+    {
+        await Page.GotoAsync("/recipes/?category=Dinner&diet=Vegan");
+
+        await Expect(Page.Locator("[data-recipe-name]")).ToHaveCountAsync(1);
+        await Expect(FilterBox("Dinner")).ToBeCheckedAsync();
+        await Expect(FilterBox("Vegan")).ToBeCheckedAsync();
+    }
+
+    [Test]
+    public async Task Filters_stay_in_the_address_and_back_leaves_the_library()
+    {
+        await Page.GotoAsync("/");
+        await Page.GotoAsync("/recipes");
+
+        await Page.RunAndWaitForResponseAsync(
+            () => Page.Locator("#recipe-filters label").GetByText("Dinner", new() { Exact = true }).ClickAsync(),
+            response => response.Url.Contains("/api/recipes/search", StringComparison.Ordinal));
+        await Expect(Page).ToHaveURLAsync(new Regex(@"/recipes/?\?category=Dinner$"));
+
+        // Dinner's five recipes: Legendary Lasagna in the spotlight and four cards.
+        await Page.ReloadAsync();
+        await Expect(FilterBox("Dinner")).ToBeCheckedAsync();
+        await Expect(Page.Locator("[data-recipe-name]")).ToHaveCountAsync(5);
+
+        await Page.GoBackAsync();
+        _ = await Assert.That(new Uri(Page.Url).AbsolutePath).IsEqualTo("/");
+    }
+
+    private ILocator FilterBox(string label) =>
+        Page.Locator("#recipe-filters li").Filter(new() { HasText = label }).Locator("input[type='checkbox']");
 
     // Search is submit-based: the header emits `submit` only when its form is submitted, which fetches
     // /api/recipes/search.

@@ -13,7 +13,7 @@ public interface IRecipeQueries
 
     IReadOnlyList<RecipePageData> GetPublishedRecipes();
 
-    IReadOnlySet<string> GetStyleTagNames();
+    RecipeTaxonomy GetTaxonomy();
 
     string GetCreateRecipeUrl(RecipeListingPage listing);
 
@@ -52,13 +52,17 @@ public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
             })
             .ToList();
 
-    public IReadOnlySet<string> GetStyleTagNames() =>
-        contentQuery.ContentAtRoot()
-            .OfType<ContentFolder>()
-            .SelectMany(folder => folder.Children<RecipeTag>())
-            .Where(tag => tag.Kind == TagKinds.Style)
-            .Select(tag => tag.Name)
-            .ToHashSet(StringComparer.Ordinal);
+    public RecipeTaxonomy GetTaxonomy()
+    {
+        var folders = contentQuery.ContentAtRoot().OfType<ContentFolder>().ToList();
+        var tags = folders.SelectMany(folder => folder.Children<RecipeTag>()).ToList();
+        var styles = tags.Where(tag => tag.Kind == TagKinds.Style).ToList();
+
+        return new RecipeTaxonomy(
+            folders.SelectMany(folder => folder.Children<RecipeCategory>()).Select(category => category.Name).ToList(),
+            tags.Except(styles).Select(tag => tag.Name).ToList(),
+            styles.Select(tag => tag.Name).ToList());
+    }
 
     public string GetCreateRecipeUrl(RecipeListingPage listing) =>
         listing.Children<CreateRecipePage>().FirstOrDefault()?.Url();

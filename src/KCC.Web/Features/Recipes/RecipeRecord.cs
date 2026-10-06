@@ -45,3 +45,5 @@ public sealed record VariantRecord(
 public sealed record RecipePageData(RecipeRecord Recipe, IReadOnlyList<VariantRecord> Variants, string AddVariantUrl);
 
 public sealed record VariantPageData(VariantRecord Variant, RecipeRecord Recipe, IReadOnlyList<VariantRecord> Siblings);
+
+public sealed record RecipeTaxonomy(IReadOnlyList<string> Categories, IReadOnlyList<string> Diets, IReadOnlyList<string> Styles);

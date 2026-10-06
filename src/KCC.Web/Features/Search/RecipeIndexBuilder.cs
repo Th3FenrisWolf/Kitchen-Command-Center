@@ -44,7 +44,7 @@ public static class RecipeIndexBuilder
             new StringField(RecipeSearchConstants.FieldIcon, d.Icon, Field.Store.YES),
             new StringField(RecipeSearchConstants.FieldCategory, d.Category, Field.Store.YES),
             new StringField(RecipeSearchConstants.FieldStartedBy, d.StartedBy, Field.Store.YES),
-            new StringField(RecipeSearchConstants.FieldTags, RecipeSearchDocument.JoinTags(d.Diets), Field.Store.YES),
+            new StringField(RecipeSearchConstants.FieldTags, RecipeSearchDocument.JoinTags(d.Tags), Field.Store.YES),
             new Int32Field(RecipeSearchConstants.FieldFastestTime, d.FastestTime, Field.Store.YES),
             new Int32Field(RecipeSearchConstants.FieldVariantCount, d.VariantCount, Field.Store.YES),
             new Int32Field(RecipeSearchConstants.FieldReviewCount, d.ReviewCount, Field.Store.YES),

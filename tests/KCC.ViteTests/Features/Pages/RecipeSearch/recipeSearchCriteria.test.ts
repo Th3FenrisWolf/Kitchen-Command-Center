@@ -3,6 +3,7 @@ import {
   MAX_TIME,
   defaultState,
   buildSearchParams,
+  filterParams,
   chipsFor,
   activeFilterCount,
   timeRangeLabel,
@@ -20,13 +21,20 @@ const t = (key: string): string => {
 describe('buildSearchParams', () => {
   it('serializes query, repeated facets, sort and paging', () => {
     const p = buildSearchParams(
-      state({ query: 'chicken', categories: ['Mains'], diets: ['Vegan', 'Dairy-Free'], sort: 'rated' }),
+      state({
+        query: 'chicken',
+        categories: ['Mains'],
+        diets: ['Vegan', 'Dairy-Free'],
+        styles: ['Spicy', 'Easy'],
+        sort: 'rated',
+      }),
       2,
       12,
     )
     expect(p.get('query')).toBe('chicken')
     expect(p.getAll('category')).toEqual(['Mains'])
     expect(p.getAll('diet')).toEqual(['Vegan', 'Dairy-Free'])
+    expect(p.getAll('style')).toEqual(['Spicy', 'Easy'])
     expect(p.get('sort')).toBe('rated')
     expect(p.get('page')).toBe('2')
     expect(p.get('pageSize')).toBe('12')
@@ -45,6 +53,40 @@ describe('buildSearchParams', () => {
   })
 })
 
+describe('filterParams', () => {
+  it('is empty for the whole library', () => {
+    expect(filterParams(state()).toString()).toBe('')
+  })
+
+  it('leaves each default out on its own, so a preset reads as one parameter', () => {
+    expect(filterParams(state({ timeMax: 30 })).toString()).toBe('timeMax=30')
+    expect(filterParams(state({ timeMin: 15 })).toString()).toBe('timeMin=15')
+    expect(filterParams(state({ sort: 'rated' })).toString()).toBe('sort=rated')
+  })
+
+  it('writes every filter in the order the library reads them, the query trimmed', () => {
+    const p = filterParams(
+      state({
+        query: '  mac & cheese ',
+        categories: ['Dinner'],
+        diets: ['Vegan'],
+        styles: ['Spicy', 'Easy'],
+        timeMin: 10,
+        timeMax: 30,
+        sort: 'recent',
+      }),
+    )
+
+    expect(p.toString()).toBe(
+      'query=mac+%26+cheese&category=Dinner&diet=Vegan&style=Spicy&style=Easy&timeMin=10&timeMax=30&sort=recent',
+    )
+  })
+
+  it('never carries the view', () => {
+    expect(filterParams(state({ view: 'list' })).has('view')).toBe(false)
+  })
+})
+
 describe('chipsFor', () => {
   it('produces a chip per active filter', () => {
     const chips = chipsFor(state({ query: 'cake', categories: ['Cookies'], diets: ['Vegan'], timeMin: 5, timeMax: 60 }), t)
@@ -54,11 +96,15 @@ describe('chipsFor', () => {
   it('is empty with no active filters', () => {
     expect(chipsFor(state(), t)).toEqual([])
   })
+
+  it('marks a style chip as a style, so removing it clears the style', () => {
+    expect(chipsFor(state({ styles: ['Spicy'] }), t)).toEqual([{ label: 'Spicy', kind: 'style', value: 'Spicy' }])
+  })
 })
 
 describe('activeFilterCount', () => {
-  it('counts categories + diets + a narrowed time as one', () => {
-    expect(activeFilterCount(state({ categories: ['a', 'b'], diets: ['c'], timeMin: 5 }))).toBe(4)
+  it('counts categories + diets + styles + a narrowed time as one', () => {
+    expect(activeFilterCount(state({ categories: ['a', 'b'], diets: ['c'], styles: ['d'], timeMin: 5 }))).toBe(5)
     expect(activeFilterCount(state())).toBe(0)
   })
 })

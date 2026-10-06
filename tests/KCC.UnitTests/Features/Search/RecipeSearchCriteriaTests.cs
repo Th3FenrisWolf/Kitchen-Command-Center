@@ -1,3 +1,4 @@
+using KCC.Web.Features.Helpers;
 using KCC.Web.Features.Search;
 
 namespace KCC.UnitTests.Features.Search;
@@ -31,5 +32,13 @@ public class RecipeSearchCriteriaTests
         _ = await Assert.That(c.PageSize).IsEqualTo(RecipeSearchCriteria.MaxPageSize);
         _ = await Assert.That(c.TimeMin).IsEqualTo(10);   // swapped
         _ = await Assert.That(c.TimeMax).IsEqualTo(40);
+    }
+
+    [Test]
+    public async Task Json_CarriesTheFilters_AndLeavesThePagingOut()
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(new RecipeSearchCriteria { Styles = ["Spicy"], Page = 2 }, Vue.SerializationOptions);
+
+        _ = await Assert.That(json).IsEqualTo("""{"query":"","categories":[],"diets":[],"styles":["Spicy"],"timeMin":0,"timeMax":60,"sort":"relevant"}""");
     }
 }
