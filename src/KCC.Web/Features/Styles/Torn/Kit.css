@@ -351,7 +351,7 @@
   }
 
   /* Switching ramps repaints every token at once; any in-flight transition would interpolate between the
-     two palettes. ThemeToggle sets this for one frame. */
+     two palettes. applyRamp (Utilities/Ramp.ts) sets this until the switch has rendered. */
   :root[data-theme-switching] *,
   :root[data-theme-switching] *::before,
   :root[data-theme-switching] *::after {
@@ -361,7 +361,7 @@
 }
 
 /* Deliberately unlayered. The logo and the toggle glyph ship both ramps' variants and let CSS pick one,
-   because the server cannot know the ramp. This must beat any `display` utility on the same element, and
+   because the server cannot always know the ramp. This must beat any `display` utility on the same element, and
    Tailwind's utilities layer comes after components — so a rule inside @layer components would lose to
    `flex`. Light is the default, so the dark variant hides unless the dark ramp is set. */
 :root[data-theme='dark'] [data-ramp='light'],

@@ -1,5 +1,6 @@
 using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Pages.Account;
+using KCC.Web.Features.Ramp;
 using KCC.Web.Features.Security;
 using KCC.Web.Features.Sqlite;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ public class AccountApiController(
     IMemberSignInManager signInManager,
     IMemberManager memberManager,
     IMemberWriteLock memberWriteLock,
+    MemberRamps memberRamps,
     AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings) : ControllerBase
 {
@@ -33,6 +35,7 @@ public class AccountApiController(
             signInManager.PasswordSignInAsync(request.UserName, request.Password, request.RememberMe, lockoutOnFailure: true));
         if (result.Succeeded)
         {
+            RampCookie.Write(HttpContext, memberRamps.SavedFor(request.UserName));
             return Ok(new AuthResponse(true, null, Url.IsLocalUrl(request.ReturnUrl) ? request.ReturnUrl : "/"));
         }
 

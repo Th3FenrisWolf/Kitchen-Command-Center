@@ -1,5 +1,6 @@
 using System.Net;
 using KCC.IntegrationTests.Config;
+using KCC.Web.Features.Ramp;
 
 namespace KCC.IntegrationTests.Features.Pages;
 
@@ -91,6 +92,24 @@ public class AccountPagesTests
         _ = await Assert.That(page.Attribute("email")).IsEqualTo($"{userName}@example.test");
         _ = await Assert.That(page.Attribute("back-url")).IsEqualTo("/account/");
         _ = await Assert.That(page.Attribute("logout-url")).IsEqualTo("/account/logout");
+    }
+
+    [Test]
+    public async Task SettingsPage_HandsTheViewTheSavedRampAndItsWords()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "words");
+        await TestMembers.SaveRampAsync(Site.Services, member.Key, Ramps.Light);
+
+        var page = await RenderedPage.GetAsync(member.Visitor.Http, "/account/settings/");
+        var strings = page.Prop("resource-strings");
+
+        _ = await Assert.That(page.Attribute("ramp")).IsEqualTo("Light");
+        _ = await Assert.That(strings.GetProperty("Account.Appearance").GetString()).IsEqualTo("Appearance");
+        _ = await Assert.That(strings.GetProperty("Account.AppearanceDevice").GetString()).IsEqualTo("Device");
+        _ = await Assert.That(strings.GetProperty("Account.AppearanceLight").GetString()).IsEqualTo("Light");
+        _ = await Assert.That(strings.GetProperty("Account.AppearanceDark").GetString()).IsEqualTo("Dark");
+        _ = await Assert.That(strings.GetProperty("Account.AppearanceHint").GetString())
+            .IsEqualTo("Device follows the setting on your phone or computer.");
     }
 
     [Test]

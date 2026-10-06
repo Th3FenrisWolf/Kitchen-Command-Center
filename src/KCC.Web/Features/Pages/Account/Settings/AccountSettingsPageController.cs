@@ -1,6 +1,7 @@
 using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Models.Generated;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.Ramp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Umbraco.Cms.Core.Security;
@@ -35,11 +36,14 @@ public class AccountSettingsPageController(
         }
 
         var member = memberService.GetById(signedIn.Key);
+        var ramp = Ramps.Of(member);
+        RampCookie.Write(HttpContext, ramp);
         var viewModel = new AccountSettingsViewModel
         {
             FirstName = member?.GetValue<string>("firstName"),
             LastName = member?.GetValue<string>("lastName"),
             Email = signedIn.Email,
+            Ramp = ramp,
             BackUrl = urls.Account,
             ResourceStrings = resourceStrings.GetGroup("Account"),
         };

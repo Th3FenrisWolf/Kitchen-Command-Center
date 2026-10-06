@@ -125,10 +125,11 @@ tear. Those stay.
 Role tokens live in `Features/Styles/TailwindConfig.css` under **`@theme static`** with the **light** values;
 the dark ramp overrides them in `Features/Styles/Torn/Tokens.css` under `:root[data-theme='dark']`. The
 `static` is load-bearing: Tailwind 4 prunes theme variables no utility references, and the kit CSS and the
-dark ramp read `--color-*` directly. `Layout.cshtml` runs a pre-paint inline script that sets `data-theme`
-from `localStorage['kcc-theme']`, else `prefers-color-scheme`, else **light**. **Check both ramps for any
-visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
-composites ink over paper plus each wash.
+dark ramp read `--color-*` directly. A signed-in member's saved Light or Dark is rendered by the server:
+`Layout.cshtml` writes `data-theme` from the HttpOnly `kcc-ramp` cookie and leaves the pre-paint inline script
+out. Otherwise that script sets `data-theme` from `localStorage['kcc-theme']`, else `prefers-color-scheme`, else
+**light**. **Check both ramps for any visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is
+the living contrast table and also composites ink over paper plus each wash.
 
 ### The kit, and where CSS lives
 
