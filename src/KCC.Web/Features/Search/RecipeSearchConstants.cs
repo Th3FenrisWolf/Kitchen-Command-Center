@@ -20,4 +20,5 @@ public static class RecipeSearchConstants
 
     public const string FacetCategory = "CategoryFacet";
     public const string FacetDiet = "DietFacet";
+    public const string FacetStyle = "StyleFacet";
 }

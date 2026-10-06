@@ -40,8 +40,10 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
     dotnet restore src/KCC.Web/KCC.Web.csproj -a $TARGETARCH
 COPY src/ src/
 COPY --from=frontend /out/ ./
+# The Actions cache can supply the restore layer without the packages it fetched, which live only in the cache mount,
+# so the publish restores whatever is missing.
 RUN --mount=type=cache,target=/root/.nuget/packages \
-    dotnet publish src/KCC.Web/KCC.Web.csproj -c Release -a $TARGETARCH --no-restore -o /app \
+    dotnet publish src/KCC.Web/KCC.Web.csproj -c Release -a $TARGETARCH -o /app \
     && rm -rf /app/wwwroot/ssr
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.12 AS app

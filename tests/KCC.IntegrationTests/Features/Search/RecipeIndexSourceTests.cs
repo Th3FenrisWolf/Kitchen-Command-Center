@@ -26,6 +26,15 @@ public class RecipeIndexSourceTests
     }
 
     [Test]
+    public async Task Load_ListsARecipesStylesBesideItsDiets()
+    {
+        var ramen = (await LoadAsync()).Single(document => document.Name == "Spicy Ramen Flight");
+
+        _ = await Assert.That(string.Join(",", ramen.Styles)).IsEqualTo("Spicy");
+        _ = await Assert.That(string.Join(",", ramen.Diets)).IsEqualTo("Spicy,Vegan,High-Protein,Dairy-Free");
+    }
+
+    [Test]
     public async Task Load_KeepsARecipeWithNoVariants()
     {
         var board = (await LoadAsync()).Single(document => document.Name == "Bare Cupboard Snack Board");

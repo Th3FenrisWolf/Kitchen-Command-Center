@@ -13,6 +13,8 @@ public interface IRecipeQueries
 
     IReadOnlyList<RecipePageData> GetPublishedRecipes();
 
+    IReadOnlySet<string> GetStyleTagNames();
+
     string GetCreateRecipeUrl(RecipeListingPage listing);
 
     bool IsPublishedVariant(Guid key);
@@ -49,6 +51,14 @@ public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
                 return listing.Children<Recipe>().Select(recipe => RecipePageFrom(recipe, addVariantUrl));
             })
             .ToList();
+
+    public IReadOnlySet<string> GetStyleTagNames() =>
+        contentQuery.ContentAtRoot()
+            .OfType<ContentFolder>()
+            .SelectMany(folder => folder.Children<RecipeTag>())
+            .Where(tag => tag.Kind == TagKinds.Style)
+            .Select(tag => tag.Name)
+            .ToHashSet(StringComparer.Ordinal);
 
     public string GetCreateRecipeUrl(RecipeListingPage listing) =>
         listing.Children<CreateRecipePage>().FirstOrDefault()?.Url();

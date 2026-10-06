@@ -7,6 +7,7 @@ namespace KCC.UnitTests.Features.Search;
 public class RecipeSearchDocumentsTests
 {
     private static readonly IReadOnlyDictionary<Guid, string> NoNames = new Dictionary<Guid, string>();
+    private static readonly IReadOnlySet<string> NoStyles = new HashSet<string>();
 
     [Test]
     public async Task From_RatesTheRecipeAcrossTheVariantsItHolds()
@@ -16,7 +17,7 @@ public class RecipeSearchDocumentsTests
         var elsewhere = Guid.NewGuid();
         var stats = ContributionStats.Build([(first.Key, 5m), (second.Key, 3m), (elsewhere, 1m)], []);
 
-        var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), stats, NoNames);
+        var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), stats, NoNames, NoStyles);
 
         _ = await Assert.That(document.AverageRating).IsEqualTo(4d);
         _ = await Assert.That(document.ReviewCount).IsEqualTo(2);
@@ -28,10 +29,23 @@ public class RecipeSearchDocumentsTests
         var first = Variant("Classic Stack", tags: ["Vegan", "Spicy"], ingredientsJson: """[{"name":"Tofu"},{"name":"Chili Oil"}]""");
         var second = Variant("Blueberry Stack", tags: ["Vegan"], ingredientsJson: """[{"name":"Tofu"},{"name":" "}]""");
 
-        var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), ContributionStats.Build([], []), NoNames);
+        var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), ContributionStats.Build([], []), NoNames, NoStyles);
 
         _ = await Assert.That(string.Join(",", document.Diets)).IsEqualTo("Vegan,Spicy");
         _ = await Assert.That(string.Join(",", document.IngredientNames)).IsEqualTo("Tofu,Chili Oil");
+    }
+
+    [Test]
+    public async Task From_ListsTheTagsThatAreStyles_AndKeepsEveryTagAsADiet()
+    {
+        var first = Variant("Classic Stack", tags: ["Vegan", "Spicy"]);
+        var second = Variant("Blueberry Stack", tags: ["Easy", "Spicy"]);
+        var styles = new HashSet<string> { "Cheesy", "Easy", "Spicy" };
+
+        var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), ContributionStats.Build([], []), NoNames, styles);
+
+        _ = await Assert.That(string.Join(",", document.Styles)).IsEqualTo("Spicy,Easy");
+        _ = await Assert.That(string.Join(",", document.Diets)).IsEqualTo("Vegan,Spicy,Easy");
     }
 
     [Test]
@@ -39,7 +53,7 @@ public class RecipeSearchDocumentsTests
     {
         var page = Page(Recipe(), Variant("Classic Stack", prep: 10, cook: 15), Variant("Blueberry Stack", prep: 5, cook: 5));
 
-        var document = RecipeSearchDocuments.From(page, ContributionStats.Build([], []), NoNames);
+        var document = RecipeSearchDocuments.From(page, ContributionStats.Build([], []), NoNames, NoStyles);
 
         _ = await Assert.That(document.FastestTime).IsEqualTo(10);
         _ = await Assert.That(document.VariantCount).IsEqualTo(2);
@@ -51,7 +65,7 @@ public class RecipeSearchDocumentsTests
         var priya = Guid.NewGuid();
         var names = new Dictionary<Guid, string> { [priya] = "Priya Balan" };
 
-        var document = RecipeSearchDocuments.From(Page(Recipe(priya)), ContributionStats.Build([], []), names);
+        var document = RecipeSearchDocuments.From(Page(Recipe(priya)), ContributionStats.Build([], []), names, NoStyles);
 
         _ = await Assert.That(document.Name).IsEqualTo("Fluffy Buttermilk Pancakes");
         _ = await Assert.That(document.Slug).IsEqualTo("/recipes/fluffy-buttermilk-pancakes/");
@@ -68,7 +82,8 @@ public class RecipeSearchDocumentsTests
         var document = RecipeSearchDocuments.From(
             Page(Recipe(createDate: new DateTime(2026, 9, 20, 0, 0, 0, DateTimeKind.Unspecified))),
             ContributionStats.Build([], []),
-            NoNames);
+            NoNames,
+            NoStyles);
 
         _ = await Assert.That(document.PublishedUnixSeconds).IsEqualTo(1_789_862_400L);
     }
@@ -76,7 +91,7 @@ public class RecipeSearchDocumentsTests
     [Test]
     public async Task From_LeavesStartedByEmptyWithoutAnAuthor()
     {
-        var document = RecipeSearchDocuments.From(Page(Recipe()), ContributionStats.Build([], []), NoNames);
+        var document = RecipeSearchDocuments.From(Page(Recipe()), ContributionStats.Build([], []), NoNames, NoStyles);
 
         _ = await Assert.That(document.StartedBy).IsEqualTo(string.Empty);
         _ = await Assert.That(document.VariantCount).IsEqualTo(0);
@@ -88,7 +103,7 @@ public class RecipeSearchDocumentsTests
     {
         var page = Page(Recipe(), Variant("Classic Stack", ingredientsJson: "flour, eggs"));
 
-        var document = RecipeSearchDocuments.From(page, ContributionStats.Build([], []), NoNames);
+        var document = RecipeSearchDocuments.From(page, ContributionStats.Build([], []), NoNames, NoStyles);
 
         _ = await Assert.That(document.IngredientNames.Count).IsEqualTo(0);
         _ = await Assert.That(document.VariantCount).IsEqualTo(1);

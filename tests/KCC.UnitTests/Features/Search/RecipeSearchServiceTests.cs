@@ -64,6 +64,28 @@ public class RecipeSearchServiceTests
     }
 
     [Test]
+    public async Task StyleFilter_KeepsRecipesWithAnyChosenStyle()
+    {
+        var search = Service(Doc("Chili", styles: ["Spicy"]), Doc("Stew"), Doc("Salsa", styles: ["Spicy", "Easy"]), Doc("Toast", styles: ["Easy"]));
+
+        var results = search.Search(new RecipeSearchCriteria { Styles = ["Spicy", "Cheesy"] });
+
+        _ = await Assert.That(Names(results)).IsEqualTo("Chili,Salsa");
+    }
+
+    [Test]
+    public async Task StyleFacet_CountsEachStyle_AndStaysWideWhileItFilters()
+    {
+        var search = Service(Doc("Chili", styles: ["Spicy"]), Doc("Stew", styles: ["Easy"]), Doc("Salsa", styles: ["Spicy", "Easy"]));
+
+        var results = search.Search(new RecipeSearchCriteria { Styles = ["Spicy"] });
+
+        _ = await Assert.That(results.Total).IsEqualTo(2);
+        _ = await Assert.That(results.Facets.Style["Spicy"]).IsEqualTo(2);
+        _ = await Assert.That(results.Facets.Style["Easy"]).IsEqualTo(2);
+    }
+
+    [Test]
     public async Task TimeFilter_KeepsRecipesInsideTheRange()
     {
         var search = Service(Doc("Toast", fastest: 5), Doc("Soup", fastest: 30), Doc("Roast", fastest: 90));
@@ -164,6 +186,7 @@ public class RecipeSearchServiceTests
         string description = "",
         string category = "Dinner",
         string[] diets = null,
+        string[] styles = null,
         string[] ingredients = null,
         int fastest = 20,
         double rating = 0,
@@ -178,6 +201,7 @@ public class RecipeSearchServiceTests
         StartedBy = "Priya Balan",
         Description = description,
         Diets = diets ?? [],
+        Styles = styles ?? [],
         IngredientNames = ingredients ?? [],
         FastestTime = fastest,
         VariantCount = variants,

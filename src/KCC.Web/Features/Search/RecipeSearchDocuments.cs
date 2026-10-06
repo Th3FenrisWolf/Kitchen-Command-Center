@@ -12,10 +12,15 @@ public static class RecipeSearchDocuments
     public static IEnumerable<Guid> AuthorKeys(IEnumerable<RecipePageData> recipes) =>
         recipes.Select(page => page.Recipe.AuthorKey).OfType<Guid>().Distinct();
 
-    public static RecipeSearchDocument From(RecipePageData page, ContributionStats stats, IReadOnlyDictionary<Guid, string> authorNames)
+    public static RecipeSearchDocument From(
+        RecipePageData page,
+        ContributionStats stats,
+        IReadOnlyDictionary<Guid, string> authorNames,
+        IReadOnlySet<string> styleTags)
     {
         var recipe = page.Recipe;
         var rating = stats.RatingAcross(page.Variants.Select(variant => variant.Key));
+        var tags = page.Variants.SelectMany(variant => variant.Tags).Distinct().ToArray();
 
         return new RecipeSearchDocument
         {
@@ -25,7 +30,8 @@ public static class RecipeSearchDocuments
             Category = recipe.Category ?? string.Empty,
             StartedBy = AuthorNameProvider.NameFor(authorNames, recipe.AuthorKey) ?? string.Empty,
             Description = recipe.Description ?? string.Empty,
-            Diets = page.Variants.SelectMany(variant => variant.Tags).Distinct().ToArray(),
+            Diets = tags,
+            Styles = tags.Where(styleTags.Contains).ToArray(),
             IngredientNames = page.Variants
                 .SelectMany(variant => IngredientNames(variant.IngredientsJson))
                 .Distinct()

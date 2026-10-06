@@ -1,8 +1,10 @@
 using KCC.IntegrationTests.Config;
+using KCC.Web.Features.Models.Generated;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.Navigation;
+using Umbraco.Cms.Core.Web;
 
 namespace KCC.IntegrationTests.Features.Baseline;
 
@@ -35,6 +37,35 @@ public class BaselineContentTests
 
         _ = await Assert.That(children.Count).IsEqualTo(expected);
         _ = await Assert.That(children.All(child => child.Published)).IsTrue();
+    }
+
+    [Test]
+    [Arguments("Vegetarian", "Diet")]
+    [Arguments("Vegan", "Diet")]
+    [Arguments("Gluten-Free", "Diet")]
+    [Arguments("Dairy-Free", "Diet")]
+    [Arguments("Keto", "Diet")]
+    [Arguments("Low-Carb", "Diet")]
+    [Arguments("High-Protein", "Diet")]
+    [Arguments("Cheesy", "Style")]
+    [Arguments("Easy", "Style")]
+    [Arguments("Fast", "Style")]
+    [Arguments("Spicy", "Style")]
+    public async Task Tag_IsPublishedWithItsKind(string name, string kind)
+    {
+        _ = await Assert.That(Published<RecipeTag>("Recipe Tags", name, tag => tag.Kind)).IsEqualTo(kind);
+    }
+
+    [Test]
+    [Arguments("Breakfast", "fa-duotone fa-egg")]
+    [Arguments("Lunch", "fa-duotone fa-sandwich")]
+    [Arguments("Dinner", "fa-duotone fa-pot-food")]
+    [Arguments("Dessert", "fa-duotone fa-cake-candles")]
+    [Arguments("Snack", "fa-duotone fa-cookie")]
+    [Arguments("Beverage", "fa-duotone fa-mug-hot")]
+    public async Task Category_IsPublishedWithItsIcon(string name, string icon)
+    {
+        _ = await Assert.That(Published<RecipeCategory>("Recipe Categories", name, category => category.Icon)).IsEqualTo(icon);
     }
 
     [Test]
@@ -93,6 +124,15 @@ public class BaselineContentTests
 
     private string HomeSections() =>
         Content.GetRootContent().Single(node => node.ContentType.Alias == "homePage").GetValue<string>("sections") ?? string.Empty;
+
+    private string? Published<T>(string folderName, string name, Func<T, string?> read)
+        where T : class
+    {
+        var folder = Content.GetRootContent().Single(node => node.Name == folderName);
+        var key = ChildrenOf(folder).Single(child => child.Name == name).Key;
+        using var context = Site.Services.GetRequiredService<IUmbracoContextFactory>().EnsureUmbracoContext();
+        return read((T)context.UmbracoContext.Content!.GetById(key)!);
+    }
 
     // The short IContentService.GetPagedChildren overload is obsolete in Umbraco 17, and warnings fail the build.
     private List<IContent> ChildrenOf(IContent parent) =>
