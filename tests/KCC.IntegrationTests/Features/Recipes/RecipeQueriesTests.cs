@@ -120,6 +120,15 @@ public class RecipeQueriesTests
         _ = await Assert.That(url).IsEqualTo("/recipes/create-recipe/");
     }
 
+    [Test]
+    public async Task GetCategoryIcons_ReadsEachCategorysIcon()
+    {
+        var icons = WithContent((_, queries) => queries.GetCategoryIcons());
+
+        _ = await Assert.That(string.Join(", ", icons.OrderBy(icon => icon.Key, StringComparer.Ordinal).Select(icon => $"{icon.Key} {icon.Value}")))
+            .IsEqualTo("Beverage fa-duotone fa-mug-hot, Breakfast fa-duotone fa-egg, Dessert fa-duotone fa-cake-candles, Dinner fa-duotone fa-pot-food, Lunch fa-duotone fa-sandwich, Snack fa-duotone fa-cookie");
+    }
+
     private T WithContent<T>(Func<IPublishedContentCache, IRecipeQueries, T> read)
     {
         using var context = Site.Services.GetRequiredService<IUmbracoContextFactory>().EnsureUmbracoContext();

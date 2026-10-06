@@ -5,6 +5,7 @@
   import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
   import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
   import ThemeToggle from '~/Components/Theme/ThemeToggle.vue'
+  import type { NavModel } from '~/Types/Nav'
 
   export interface AppHeaderProps {
     homeUrl: string
@@ -13,6 +14,7 @@
     switchToDarkLabel: string
     mainNavItems: NavItem[]
     utilityNavItems: NavItem[]
+    nav: NavModel
   }
 
   const { homeUrl, logoAlt, switchToLightLabel, switchToDarkLabel, mainNavItems, utilityNavItems } =

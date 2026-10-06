@@ -16,9 +16,7 @@ const STRINGS = {
   'Login.HaveAccountDescription': 'Pick up where you left off.',
 }
 
-// Sign-in is the server's state: `isSignIn` starts true, so the sign-up fields and the sign-up copy are
-// client state this suite cannot reach.
-const render = () => renderSsr(LoginView, { returnUrl: '/account', resourceStrings: STRINGS })
+const render = (register = false) => renderSsr(LoginView, { returnUrl: '/account', register, resourceStrings: STRINGS })
 
 const formOf = (html: string) => html.slice(html.indexOf('<form'), html.indexOf('</form>'))
 
@@ -112,5 +110,16 @@ describe('LoginView', () => {
 
     expectNoRetiredMarkup(html)
     expect(html).not.toMatch(/\bbg-paper-2\b/)
+  })
+
+  it('opens on the sign-up form when the address asks for it', async () => {
+    const html = await render(true)
+    const form = formOf(html)
+
+    expect(html).toContain('<h2 class="sr-only">Sign up</h2>')
+    expect(form).toContain('name="Email"')
+    expect(form).toContain('name="PasswordConfirmation"')
+    expect(form).not.toContain('name="RememberMe"')
+    expect(switcherOf(html)).toContain('Already have an account?')
   })
 })

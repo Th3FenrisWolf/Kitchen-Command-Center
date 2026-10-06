@@ -77,6 +77,20 @@ public class AccountPagesTests
     }
 
     [Test]
+    [Arguments("/account/login/?mode=register", "true")]
+    [Arguments("/account/login/?mode=REGISTER", "true")]
+    [Arguments("/account/login/?mode=sign-in", "false")]
+    [Arguments("/account/login/", "false")]
+    public async Task LoginPage_OpensInRegisterMode_WhenTheAddressAsks(string path, string register)
+    {
+        using var visitor = new MemberClient(Site);
+
+        var page = await RenderedPage.GetAsync(visitor.Http, path);
+
+        _ = await Assert.That(page.Attribute(":register")).IsEqualTo(register);
+    }
+
+    [Test]
     public async Task SettingsPage_ShowsTheMembersNamesAndEmail()
     {
         var userName = TestMembers.UniqueUserName("names");
