@@ -17,7 +17,7 @@ public class RecipeIndexSourceTests
         _ = await Assert.That(ramen.Slug).IsEqualTo("/recipes/spicy-ramen-flight/");
         _ = await Assert.That(ramen.Category).IsEqualTo("Lunch");
         _ = await Assert.That(ramen.StartedBy).IsEqualTo("Priya Balan");
-        _ = await Assert.That(string.Join(",", ramen.Diets)).IsEqualTo("Spicy,Vegan,High-Protein,Dairy-Free");
+        _ = await Assert.That(string.Join(",", ramen.Tags)).IsEqualTo("Spicy,Vegan,High-Protein,Dairy-Free");
         _ = await Assert.That(ramen.IngredientNames.Contains("Chili Oil")).IsTrue();
         _ = await Assert.That(ramen.FastestTime).IsEqualTo(20);
         _ = await Assert.That(ramen.VariantCount).IsEqualTo(4);
@@ -31,7 +31,7 @@ public class RecipeIndexSourceTests
         var ramen = (await LoadAsync()).Single(document => document.Name == "Spicy Ramen Flight");
 
         _ = await Assert.That(string.Join(",", ramen.Styles)).IsEqualTo("Spicy");
-        _ = await Assert.That(string.Join(",", ramen.Diets)).IsEqualTo("Spicy,Vegan,High-Protein,Dairy-Free");
+        _ = await Assert.That(string.Join(",", ramen.Diets)).IsEqualTo("Vegan,High-Protein,Dairy-Free");
     }
 
     [Test]

@@ -16,6 +16,8 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
 
     private const float NameBoost = 2f;
 
+    private const int MaxQueryTerms = 32;
+
     // Category, diet and style are small controlled taxonomies; this comfortably returns every value with its count.
     private const int FacetTopN = 1000;
 
@@ -121,7 +123,7 @@ public class RecipeSearchService(RecipeIndex index) : IRecipeSearchService
             return new MatchAllDocsQuery();
         }
 
-        var terms = Tokenize(queryText);
+        var terms = Tokenize(queryText).Distinct().Take(MaxQueryTerms).ToList();
         if (terms.Count == 0)
         {
             // The input was only punctuation or stop words; treat it as "everything", same as a blank query.

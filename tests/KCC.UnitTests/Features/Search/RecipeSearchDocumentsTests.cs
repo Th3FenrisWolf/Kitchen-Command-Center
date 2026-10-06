@@ -31,12 +31,12 @@ public class RecipeSearchDocumentsTests
 
         var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), ContributionStats.Build([], []), NoNames, NoStyles);
 
-        _ = await Assert.That(string.Join(",", document.Diets)).IsEqualTo("Vegan,Spicy");
+        _ = await Assert.That(string.Join(",", document.Tags)).IsEqualTo("Vegan,Spicy");
         _ = await Assert.That(string.Join(",", document.IngredientNames)).IsEqualTo("Tofu,Chili Oil");
     }
 
     [Test]
-    public async Task From_ListsTheTagsThatAreStyles_AndKeepsEveryTagAsADiet()
+    public async Task From_SplitsTheTagsIntoDietsAndStyles_AndKeepsEveryTag()
     {
         var first = Variant("Classic Stack", tags: ["Vegan", "Spicy"]);
         var second = Variant("Blueberry Stack", tags: ["Easy", "Spicy"]);
@@ -44,8 +44,9 @@ public class RecipeSearchDocumentsTests
 
         var document = RecipeSearchDocuments.From(Page(Recipe(), first, second), ContributionStats.Build([], []), NoNames, styles);
 
+        _ = await Assert.That(string.Join(",", document.Tags)).IsEqualTo("Vegan,Spicy,Easy");
+        _ = await Assert.That(string.Join(",", document.Diets)).IsEqualTo("Vegan");
         _ = await Assert.That(string.Join(",", document.Styles)).IsEqualTo("Spicy,Easy");
-        _ = await Assert.That(string.Join(",", document.Diets)).IsEqualTo("Vegan,Spicy,Easy");
     }
 
     [Test]

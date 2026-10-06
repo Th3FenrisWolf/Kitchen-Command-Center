@@ -30,15 +30,25 @@ public class RecipeSearchTests
     }
 
     [Test]
-    public async Task Facets_CountEverySeededCategoryAndDiet()
+    public async Task Query_FindsAStyle()
+    {
+        var results = Search(new RecipeSearchCriteria { Query = "spicy" });
+
+        _ = await Assert.That(Names(results)).IsEqualTo("Loaded Nachos,Shakshuka,Spicy Ramen Flight,Weeknight Tacos");
+    }
+
+    [Test]
+    public async Task Facets_CountEverySeededCategoryDietAndStyle()
     {
         var results = Search(new RecipeSearchCriteria());
 
         _ = await Assert.That(Counts(results.Facets.Category, "Beverage", "Breakfast", "Dessert", "Dinner", "Lunch", "Snack"))
             .IsEqualTo("Beverage 4, Breakfast 4, Dessert 4, Dinner 5, Lunch 4, Snack 4");
-        _ = await Assert.That(Counts(results.Facets.Diet, "Dairy-Free", "Gluten-Free", "High-Protein", "Keto", "Low-Carb", "Spicy", "Vegan", "Vegetarian"))
-            .IsEqualTo("Dairy-Free 2, Gluten-Free 7, High-Protein 8, Keto 1, Low-Carb 3, Spicy 4, Vegan 12, Vegetarian 10");
-        _ = await Assert.That(results.Facets.Diet.ContainsKey("Cheesy")).IsFalse();
+        _ = await Assert.That(Counts(results.Facets.Diet, "Dairy-Free", "Gluten-Free", "High-Protein", "Keto", "Low-Carb", "Vegan", "Vegetarian"))
+            .IsEqualTo("Dairy-Free 2, Gluten-Free 7, High-Protein 8, Keto 1, Low-Carb 3, Vegan 12, Vegetarian 10");
+        _ = await Assert.That(results.Facets.Diet.ContainsKey("Spicy")).IsFalse();
+        _ = await Assert.That(Counts(results.Facets.Style, "Spicy")).IsEqualTo("Spicy 4");
+        _ = await Assert.That(results.Facets.Style.ContainsKey("Cheesy")).IsFalse();
     }
 
     [Test]

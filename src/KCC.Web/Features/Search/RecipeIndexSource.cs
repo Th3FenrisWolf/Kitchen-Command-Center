@@ -25,7 +25,7 @@ public class RecipeIndexSource(
         using (umbracoContextFactory.EnsureUmbracoContext())
         {
             pages = recipes.GetPublishedRecipes();
-            styleTags = recipes.GetStyleTagNames();
+            styleTags = recipes.GetTaxonomy().Styles.ToHashSet(StringComparer.Ordinal);
         }
 
         var stats = await contributionStats.GetAsync();
