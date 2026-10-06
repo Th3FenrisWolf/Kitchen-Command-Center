@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using KCC.Web.Features.DevTools.RecipeSeed;
+using KCC.Web.Features.Recipes;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
@@ -101,8 +102,8 @@ public static class TestContent
     public static Task<Guid> CategoryAsync(IServiceProvider services, string name) =>
         CreateAsync(services, "recipeCategory", name, Folder(services, "Recipe Categories"), []);
 
-    public static Task<Guid> TagAsync(IServiceProvider services, string name) =>
-        CreateAsync(services, "recipeTag", name, Folder(services, "Recipe Tags"), []);
+    public static Task<Guid> TagAsync(IServiceProvider services, string name, string kind = TagKinds.Diet) =>
+        CreateAsync(services, "recipeTag", name, Folder(services, "Recipe Tags"), [new PropertyValueModel { Alias = "kind", Value = new[] { kind } }]);
 
     public static async Task TrashAsync(IServiceProvider services, Guid key)
     {
@@ -172,6 +173,25 @@ public static class TestContent
         if (!published.Success)
         {
             throw new InvalidOperationException($"Publishing {name} failed: {published.Status}.");
+        }
+    }
+
+    public static async Task SetKindAsync(IServiceProvider services, Guid tagKey, string kind)
+    {
+        using var scope = services.CreateScope();
+        var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
+        var tag = contentService.GetById(tagKey) ?? throw new InvalidOperationException($"No tag {tagKey}.");
+        tag.SetValue("kind", $"[\"{kind}\"]");
+        if (!contentService.Save(tag).Success)
+        {
+            throw new InvalidOperationException($"Saving the kind of {tagKey} failed.");
+        }
+
+        var published = await scope.ServiceProvider.GetRequiredService<IContentPublishingService>()
+            .PublishAsync(tagKey, [new CulturePublishScheduleModel { Culture = null }], Constants.Security.SuperUserKey);
+        if (!published.Success)
+        {
+            throw new InvalidOperationException($"Publishing the kind of {tagKey} failed: {published.Status}.");
         }
     }
 

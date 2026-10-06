@@ -48,5 +48,13 @@ namespace KCC.Web.Features.Models.Generated
 		}
 
 		// properties
+
+		///<summary>
+		/// Icon
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("icon")]
+		public virtual string Icon => this.Value<string>(_publishedValueFallback, "icon");
 	}
 }

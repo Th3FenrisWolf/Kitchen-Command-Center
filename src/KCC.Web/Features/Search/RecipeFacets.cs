@@ -11,6 +11,7 @@ public static class RecipeFacets
         var config = new FacetsConfig();
         config.SetMultiValued(RecipeSearchConstants.FacetCategory, true);
         config.SetMultiValued(RecipeSearchConstants.FacetDiet, true);
+        config.SetMultiValued(RecipeSearchConstants.FacetStyle, true);
         return config;
     }
 }
