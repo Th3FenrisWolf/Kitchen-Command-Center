@@ -27,4 +27,16 @@ public class DictionaryTests
 
         _ = await Assert.That(strings.GetOrDefault("Nowhere.ToBeFound")).IsEqualTo("Nowhere.ToBeFound");
     }
+
+    [Test]
+    public async Task NavGroup_IsImportedOnFirstBoot()
+    {
+        using var scope = Site.Services.CreateScope();
+        var nav = scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetGroup("Nav");
+
+        _ = await Assert.That(nav.Count).IsEqualTo(29);
+        _ = await Assert.That(nav["Nav.MyKitchen"]).IsEqualTo("My kitchen");
+        _ = await Assert.That(nav["Nav.NothingMatches"]).IsEqualTo("Nothing matches “{0}” yet.");
+        _ = await Assert.That(nav["Nav.KitchenOf"]).IsEqualTo("{0}’s kitchen");
+    }
 }

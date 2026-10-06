@@ -8,6 +8,7 @@
 
   export interface LoginViewProps {
     returnUrl?: string
+    register?: boolean
     defaultUserName?: string
     defaultPassword?: string
     defaultRememberMe?: boolean
@@ -18,7 +19,7 @@
 
   const rs = provideResourceStrings(props.resourceStrings, 'Login')
 
-  const isSignIn = ref(true)
+  const isSignIn = ref(!props.register)
   const isSubmitting = ref(false)
 
   const userName = ref(props.defaultUserName ?? '')

@@ -35,6 +35,8 @@ public class SchemaTests
     [Arguments("richTextBlock")]
     [Arguments("cardGridBlock")]
     [Arguments("stackerBlock")]
+    [Arguments("navPreset")]
+    [Arguments("navQuickLink")]
     public async Task DocumentType_IsImportedOnFirstBoot(string alias)
     {
         var contentTypes = Site.Services.GetRequiredService<IContentTypeService>();
@@ -57,6 +59,11 @@ public class SchemaTests
     [Arguments("KCC Home Sections")]
     [Arguments("KCC Tag Kind")]
     [Arguments("KCC Ramp")]
+    [Arguments("KCC Nav Meals")]
+    [Arguments("KCC Nav Diets")]
+    [Arguments("KCC Nav Preset")]
+    [Arguments("KCC Quick Picks")]
+    [Arguments("KCC Search Suggestions")]
     public async Task DataType_IsImportedOnFirstBoot(string name)
     {
         var dataTypes = Site.Services.GetRequiredService<IDataTypeService>();
@@ -135,6 +142,58 @@ public class SchemaTests
         _ = await Assert.That(blocks.Select(block => contentTypes.Get(block.ContentElementTypeKey)!.Alias))
             .IsEquivalentTo(["richTextBlock", "cardGridBlock", "stackerBlock"]);
         _ = await Assert.That(blocks.All(block => block.SettingsElementTypeKey == contentTypes.Get("sectionSettings")!.Key)).IsTrue();
+    }
+
+    [Test]
+    [Arguments("navMeals", "KCC Nav Meals")]
+    [Arguments("navDiets", "KCC Nav Diets")]
+    [Arguments("navQuickPicks", "KCC Quick Picks")]
+    [Arguments("navSearchSuggestions", "KCC Search Suggestions")]
+    [Arguments("navRecipesNote", "Textstring")]
+    public async Task SiteSettings_HoldTheNavsContent_InTheNavigationGroup(string alias, string dataTypeName)
+    {
+        var settings = Site.Services.GetRequiredService<IContentTypeService>().Get("siteSettings")!;
+        var property = settings.PropertyGroups.Single(group => group.Alias == "navigation").PropertyTypes!.Single(type => type.Alias == alias);
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(property.DataTypeKey);
+
+        _ = await Assert.That(property.Mandatory).IsFalse();
+        _ = await Assert.That(dataType!.Name).IsEqualTo(dataTypeName);
+    }
+
+    [Test]
+    [Arguments("KCC Nav Meals", "recipeCategory")]
+    [Arguments("KCC Nav Diets", "recipeTag")]
+    public async Task NavPicker_OffersOnlyItsTaxonomy_AsManyAsWanted(string dataTypeName, string contentTypeAlias)
+    {
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(dataTypeName);
+        var configuration = (MultiNodePickerConfiguration)dataType!.ConfigurationObject!;
+        var allowed = Site.Services.GetRequiredService<IContentTypeService>().Get(contentTypeAlias)!.Key;
+
+        _ = await Assert.That(configuration.Filter).IsEqualTo(allowed.ToString());
+        _ = await Assert.That(configuration.MaxNumber).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task QuickPicks_OfferPresetsAndQuickLinks()
+    {
+        var contentTypes = Site.Services.GetRequiredService<IContentTypeService>();
+        var dataType = await Site.Services.GetRequiredService<IDataTypeService>().GetAsync("KCC Quick Picks");
+        var elements = ((BlockListConfiguration)dataType!.ConfigurationObject!).Blocks.Select(block => contentTypes.Get(block.ContentElementTypeKey)!).ToList();
+
+        _ = await Assert.That(elements.Select(element => element.Alias)).IsEquivalentTo(["navPreset", "navQuickLink"]);
+        _ = await Assert.That(elements.All(element => element.IsElement)).IsTrue();
+    }
+
+    [Test]
+    [Arguments("navPreset", "preset", true)]
+    [Arguments("navPreset", "label", false)]
+    [Arguments("navQuickLink", "label", true)]
+    [Arguments("navQuickLink", "link", true)]
+    public async Task QuickPickProperty_IsMandatoryOnlyWhereThePickNeedsIt(string elementAlias, string propertyAlias, bool mandatory)
+    {
+        var element = Site.Services.GetRequiredService<IContentTypeService>().Get(elementAlias)!;
+
+        _ = await Assert.That(element.PropertyTypes.Single(property => property.Alias == propertyAlias).Mandatory).IsEqualTo(mandatory);
     }
 
     [Test]

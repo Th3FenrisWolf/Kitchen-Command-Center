@@ -15,6 +15,8 @@ public class HeaderViewModel
     public IEnumerable<HeaderNavItem> MainNavItems { get; set; }
 
     public IEnumerable<HeaderNavItem> UtilityNavItems { get; set; }
+
+    public NavModel Nav { get; set; }
 }
 
 public class HeaderNavItem

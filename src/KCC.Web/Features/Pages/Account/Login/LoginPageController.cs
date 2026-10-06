@@ -18,7 +18,9 @@ public class LoginPageController(
     PageMetadata pageMetadata)
     : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
-    public async Task<IActionResult> Index([FromQuery] string returnUrl, CancellationToken cancellationToken)
+    public const string RegisterMode = "register";
+
+    public async Task<IActionResult> Index([FromQuery] string returnUrl, [FromQuery] string mode, CancellationToken cancellationToken)
     {
         if (CurrentPage is not LoginPage page)
         {
@@ -34,6 +36,7 @@ public class LoginPageController(
         var viewModel = new LoginViewModel
         {
             ReturnUrl = localReturnUrl,
+            Register = string.Equals(mode, RegisterMode, StringComparison.OrdinalIgnoreCase),
             ResourceStrings = resourceStrings.GetGroup("Login"),
         };
         pageMetadata.Apply(page, viewModel);

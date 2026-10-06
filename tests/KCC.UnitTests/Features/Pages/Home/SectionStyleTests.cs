@@ -1,6 +1,4 @@
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using KCC.Web.Features.Pages.Home;
 using TUnit.Assertions.Enums;
 
@@ -81,25 +79,25 @@ public class SectionStyleTests
     [Test]
     public async Task SectionBackgroundOptions_MatchTheBackgroundsTheStyleHandles()
     {
-        _ = await Assert.That(DropdownItems("KCCSectionBackground")).IsEquivalentTo(Backgrounds, CollectionOrdering.Matching);
+        _ = await Assert.That(UsyncDataTypes.DropdownItems("KCCSectionBackground")).IsEquivalentTo(Backgrounds, CollectionOrdering.Matching);
     }
 
     [Test]
     public async Task SectionWidthOptions_MatchTheWidthsTheStyleHandles()
     {
-        _ = await Assert.That(DropdownItems("KCCSectionWidth")).IsEquivalentTo(Widths, CollectionOrdering.Matching);
+        _ = await Assert.That(UsyncDataTypes.DropdownItems("KCCSectionWidth")).IsEquivalentTo(Widths, CollectionOrdering.Matching);
     }
 
     [Test]
     public async Task WashOptions_MatchTheWashesTheStyleHandles()
     {
-        _ = await Assert.That(DropdownItems("KCCWash")).IsEquivalentTo(Washes, CollectionOrdering.Matching);
+        _ = await Assert.That(UsyncDataTypes.DropdownItems("KCCWash")).IsEquivalentTo(Washes, CollectionOrdering.Matching);
     }
 
     [Test]
     public async Task SectionBackgroundOptions_OnlyTheDeskLeavesTheSectionUnfilled()
     {
-        var unfilled = DropdownItems("KCCSectionBackground").Where(background => SectionStyle.Classes(background, null).Length == 0);
+        var unfilled = UsyncDataTypes.DropdownItems("KCCSectionBackground").Where(background => SectionStyle.Classes(background, null).Length == 0);
 
         _ = await Assert.That(unfilled).IsEquivalentTo(["Desk"]);
     }
@@ -107,7 +105,7 @@ public class SectionStyleTests
     [Test]
     public async Task SectionWidthOptions_OnlyTheContainerKeepsTheDefaultColumn()
     {
-        var defaultColumn = DropdownItems("KCCSectionWidth").Where(width => SectionStyle.Classes(null, width).Length == 0);
+        var defaultColumn = UsyncDataTypes.DropdownItems("KCCSectionWidth").Where(width => SectionStyle.Classes(null, width).Length == 0);
 
         _ = await Assert.That(defaultColumn).IsEquivalentTo(["Container"]);
     }
@@ -115,16 +113,9 @@ public class SectionStyleTests
     [Test]
     public async Task WashOptions_EveryOneFills()
     {
-        var unfilled = DropdownItems("KCCWash").Where(wash => SectionStyle.Wash(wash).Length == 0);
+        var unfilled = UsyncDataTypes.DropdownItems("KCCWash").Where(wash => SectionStyle.Wash(wash).Length == 0);
 
         _ = await Assert.That(unfilled).IsEmpty();
-    }
-
-    private static string[] DropdownItems(string dataType)
-    {
-        var path = Path.Combine(RepoPaths.WebProject, "uSync", "v17", "DataTypes", $"{dataType}.config");
-        var config = XDocument.Load(path).Root.Element("Config").Value;
-        return JsonNode.Parse(config)["items"].AsArray().Select(item => (string)item).ToArray();
     }
 
     private static HashSet<string> Safelist()

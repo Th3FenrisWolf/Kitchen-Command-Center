@@ -31,7 +31,7 @@ builder.Services.AddScoped<IRobotsTxtProvider, RobotsTxtProvider>();
 builder.Services.AddTransient<RecipeTestDataSeeder>();
 builder.Services.AddScoped<IRecipeQueries, RecipeQueries>();
 builder.Services.AddScoped<AccountPageQueries>();
-builder.Services.AddScoped<AuthoredRecipeQueries>();
+builder.Services.AddScoped<IAuthoredRecipeQueries, AuthoredRecipeQueries>();
 builder.Services.AddScoped<MemberRamps>();
 builder.Services.AddScoped<RecipeSubmissions>();
 builder.Services.AddScoped<BreadcrumbService>();

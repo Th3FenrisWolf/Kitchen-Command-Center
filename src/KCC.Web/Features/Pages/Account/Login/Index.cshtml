@@ -4,6 +4,7 @@
 
 <LoginView
   return-url="@Model.ReturnUrl"
+  :register="@Vue.Prop(Model.Register)"
   default-user-name="@Model.UserName"
   default-password="@Model.Password"
   :default-remember-me="@Model.RememberMe"

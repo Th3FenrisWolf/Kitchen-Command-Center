@@ -41,11 +41,11 @@ public sealed partial class MemberClient : IDisposable
         return result;
     }
 
-    public async Task<HttpResponseMessage> SignOutAsync()
+    public async Task<HttpResponseMessage> SignOutAsync(string action = "/account/logout")
     {
         await EnsureTokenAsync();
         using var form = new FormUrlEncodedContent([new("__RequestVerificationToken", token)]);
-        var response = await client.PostAsync("/account/logout", form);
+        var response = await client.PostAsync(action, form);
         token = string.Empty;
         return response;
     }

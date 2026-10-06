@@ -15,6 +15,8 @@ public interface IRecipeQueries
 
     RecipeTaxonomy GetTaxonomy();
 
+    IReadOnlyDictionary<string, string> GetCategoryIcons();
+
     string GetCreateRecipeUrl(RecipeListingPage listing);
 
     bool IsPublishedVariant(Guid key);
@@ -63,6 +65,14 @@ public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
             tags.Except(styles).Select(tag => tag.Name).ToList(),
             styles.Select(tag => tag.Name).ToList());
     }
+
+    public IReadOnlyDictionary<string, string> GetCategoryIcons() =>
+        contentQuery.ContentAtRoot()
+            .OfType<ContentFolder>()
+            .SelectMany(folder => folder.Children<RecipeCategory>())
+            .Where(category => !string.IsNullOrWhiteSpace(category.Icon))
+            .DistinctBy(category => category.Name)
+            .ToDictionary(category => category.Name, category => category.Icon, StringComparer.Ordinal);
 
     public string GetCreateRecipeUrl(RecipeListingPage listing) =>
         listing.Children<CreateRecipePage>().FirstOrDefault()?.Url();
