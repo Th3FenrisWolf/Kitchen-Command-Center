@@ -37,12 +37,12 @@ public class MemberFlowTests : BasePageTests
         await MemberSession.SignInAsync(Page);
         _ = await Page.GotoAsync("/");
 
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Account", Exact = true }).ClickAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Logout", Exact = true }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "My kitchen" }).ClickAsync();
+        await Page.Locator("#pad-card-kitchen").GetByRole(AriaRole.Button, new() { Name = "Sign out", Exact = true }).ClickAsync();
 
         await Page.WaitForURLAsync(url => new Uri(url).AbsolutePath == "/");
-        await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "Login", Exact = true })).ToBeVisibleAsync();
-        await Expect(Page.GetByRole(AriaRole.Button, new() { Name = "Account", Exact = true })).ToHaveCountAsync(0);
+        await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "New recipe" })).ToHaveCountAsync(0);
     }
 
     [Test]

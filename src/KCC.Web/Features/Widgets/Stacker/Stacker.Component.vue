@@ -38,10 +38,14 @@
       v-for="(card, index) in props.cards"
       :key="card.heading"
       data-card
-      :class="['sticky', index === props.cards.length - 1 && 'last']"
-      :style="`top: ${32 * (index + 1)}px`"
+      :class="['sticky transition-[top]', index === props.cards.length - 1 && 'last']"
+      :style="`top: calc(${32 * (index + 1)}px + var(--pad-offset, 0px))`"
     >
-      <div data-sentinel class="absolute size-0" :style="`top: -${32 * (index + 1) + 1}px`"></div>
+      <div
+        data-sentinel
+        class="absolute size-0 transition-[top]"
+        :style="`top: calc(-${32 * (index + 1) + 1}px - var(--pad-offset, 0px))`"
+      ></div>
       <KccSheet
         :tear="card.tear ?? listTearFor(index)"
         :wash="washOf(card.backgroundColor)"

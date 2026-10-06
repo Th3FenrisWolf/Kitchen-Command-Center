@@ -28,8 +28,6 @@ public class SchemaTests
     [Arguments("recipeTag")]
     [Arguments("statusCodePage")]
     [Arguments("metadata")]
-    [Arguments("navLink")]
-    [Arguments("navGroup")]
     [Arguments("card")]
     [Arguments("sectionSettings")]
     [Arguments("richTextBlock")]
@@ -45,10 +43,7 @@ public class SchemaTests
     }
 
     [Test]
-    [Arguments("KCC Show When")]
     [Arguments("KCC Single Link")]
-    [Arguments("KCC Links")]
-    [Arguments("KCC Nav Items")]
     [Arguments("KCC Section Background")]
     [Arguments("KCC Section Width")]
     [Arguments("KCC Wash")]
@@ -110,12 +105,29 @@ public class SchemaTests
     }
 
     [Test]
-    public async Task NavElements_AreElementTypes()
+    [Arguments("navLink")]
+    [Arguments("navGroup")]
+    public async Task RetiredNavElement_IsNotImported(string alias)
     {
-        var contentTypes = Site.Services.GetRequiredService<IContentTypeService>();
+        _ = await Assert.That(Site.Services.GetRequiredService<IContentTypeService>().Get(alias)).IsNull();
+    }
 
-        _ = await Assert.That(contentTypes.Get("navLink")!.IsElement).IsTrue();
-        _ = await Assert.That(contentTypes.Get("navGroup")!.IsElement).IsTrue();
+    [Test]
+    [Arguments("KCC Nav Items")]
+    [Arguments("KCC Show When")]
+    [Arguments("KCC Links")]
+    public async Task RetiredNavDataType_IsNotImported(string name)
+    {
+        _ = await Assert.That(await Site.Services.GetRequiredService<IDataTypeService>().GetAsync(name)).IsNull();
+    }
+
+    [Test]
+    public async Task SiteSettings_HoldOnlyTheNavsContent()
+    {
+        var settings = Site.Services.GetRequiredService<IContentTypeService>().Get("siteSettings")!;
+
+        _ = await Assert.That(settings.PropertyTypes.Select(property => property.Alias)).IsEquivalentTo(
+            ["navMeals", "navDiets", "navQuickPicks", "navSearchSuggestions", "navRecipesNote"]);
     }
 
     [Test]

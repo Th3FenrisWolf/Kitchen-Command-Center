@@ -60,23 +60,23 @@ describe('Stacker structure', () => {
 })
 
 describe('Stacker sticky mechanics', () => {
-  it('pins each card 32px lower than the one before it and marks the last', async () => {
+  it('pins each card 32px lower than the one before it, below the pad, and marks the last', async () => {
     const cards = tagsOf(await render([card('Prep', 'bg-paper'), card('Cook', 'bg-paper')]), 'data-card')
 
     expect(cards).toHaveLength(2)
-    expect(cards[0]).toContain('style="top: 32px"')
-    expect(cards[1]).toContain('style="top: 64px"')
-    expect(cards[0]).toContain('class="sticky"')
+    expect(cards[0]).toContain('style="top: calc(32px + var(--pad-offset, 0px))"')
+    expect(cards[1]).toContain('style="top: calc(64px + var(--pad-offset, 0px))"')
+    expect(cards[0]).toContain('class="sticky transition-[top]"')
     expect(cards[1]).toContain('last')
   })
 
-  it('keeps a sentinel a pixel above each card', async () => {
+  it('keeps a sentinel a pixel above where each card sticks', async () => {
     const sentinels = tagsOf(await render([card('Prep', 'bg-paper'), card('Cook', 'bg-paper')]), 'data-sentinel')
 
     expect(sentinels).toHaveLength(2)
-    expect(sentinels[0]).toContain('class="absolute size-0"')
-    expect(sentinels[0]).toContain('style="top: -33px"')
-    expect(sentinels[1]).toContain('style="top: -65px"')
+    expect(sentinels[0]).toContain('class="absolute size-0 transition-[top]"')
+    expect(sentinels[0]).toContain('style="top: calc(-33px - var(--pad-offset, 0px))"')
+    expect(sentinels[1]).toContain('style="top: calc(-65px - var(--pad-offset, 0px))"')
   })
 
   // The observer toggles `.stuck` on the sentinel's next sibling, so the slip has to be that sibling and
@@ -85,7 +85,7 @@ describe('Stacker sticky mechanics', () => {
   it('shrinks the slip that follows the sentinel, and only until it is the last', async () => {
     const html = await render([card('Prep', 'bg-paper')])
 
-    expect(html).toMatch(/<div data-sentinel class="absolute size-0"[^>]*><\/div><div class="kcc-slip/)
+    expect(html).toMatch(/<div data-sentinel class="absolute size-0 transition-\[top\]"[^>]*><\/div><div class="kcc-slip/)
     expect(slipClasses(html)[0]).toEqual(
       expect.arrayContaining(['origin-top', 'transition-all', 'duration-100', '[.stuck]:scale-95', '[.last_div]:scale-100']),
     )

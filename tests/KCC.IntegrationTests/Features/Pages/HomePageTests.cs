@@ -19,15 +19,4 @@ public class HomePageTests
         _ = await Assert.That(html.Contains("<title>Kitchen Command Center</title>", StringComparison.Ordinal)).IsTrue();
         _ = await Assert.That(html.Contains("<script id=\"server-content\" type=\"application/json\">", StringComparison.Ordinal)).IsTrue();
     }
-
-    [Test]
-    public async Task Home_HeaderShowsTheSignedOutNavigation()
-    {
-        using var client = Site.CreateClient();
-        var html = await client.GetStringAsync("/");
-
-        _ = await Assert.That(html.Contains("All Recipes", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(html.Contains("Login", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(html.Contains("Profile", StringComparison.Ordinal)).IsFalse();
-    }
 }

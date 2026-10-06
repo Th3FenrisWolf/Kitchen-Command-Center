@@ -69,16 +69,6 @@ public class BaselineContentTests
     }
 
     [Test]
-    public async Task SiteSettings_HoldTheSignInAndAccountNavigation()
-    {
-        var settings = Content.GetRootContent().Single(node => node.ContentType.Alias == "siteSettings");
-        var utility = settings.GetValue<string>("utilityNav") ?? string.Empty;
-
-        _ = await Assert.That(utility.Contains("Login", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(utility.Contains("Account", StringComparison.Ordinal)).IsTrue();
-    }
-
-    [Test]
     [Arguments("Recipes", "Create Recipe")]
     [Arguments("Account", "Login")]
     [Arguments("Account", "Settings")]

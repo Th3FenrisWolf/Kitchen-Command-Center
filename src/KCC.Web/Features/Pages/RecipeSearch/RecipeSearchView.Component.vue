@@ -122,7 +122,13 @@
   </Button>
 
   <div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-[244px_1fr]">
-    <aside id="recipe-filters" :class="['lg:sticky lg:top-6 lg:block', { hidden: !sheetOpen }]">
+    <aside
+      id="recipe-filters"
+      :class="[
+        'lg:sticky lg:top-[calc(1.5rem_+_var(--pad-offset,0px))] lg:block lg:transition-[top]',
+        { hidden: !sheetOpen },
+      ]"
+    >
       <RecipeFilters
         :facets="facets"
         :options="options"
