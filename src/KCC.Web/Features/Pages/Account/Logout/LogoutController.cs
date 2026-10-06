@@ -1,3 +1,4 @@
+using KCC.Web.Features.Ramp;
 using KCC.Web.Features.Sqlite;
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Web.Common.Security;
@@ -12,6 +13,7 @@ public class LogoutController(IMemberSignInManager signInManager, IMemberWriteLo
     public async Task<IActionResult> Index(string returnUrl)
     {
         await memberWriteLock.RunAsync(signInManager.SignOutAsync);
+        RampCookie.Clear(HttpContext);
         return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl : "/");
     }
 }

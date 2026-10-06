@@ -5,14 +5,18 @@
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import { post } from '~/Utilities/Api'
+  import type { RampSetting } from '~/Utilities/Ramp'
   import SignOutForm from '~/Components/Account/SignOutForm.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
+  import { useRampSetting } from './useRampSetting'
 
   export interface AccountSettingsViewProps {
     firstName: string
     lastName: string
     email: string
+    ramp: RampSetting
     backUrl: string
     logoutUrl: string
     resourceStrings?: Record<string, string>
@@ -38,6 +42,14 @@
   const passwordSubmitting = ref(false)
   const passwordMessage = ref<{ ok: boolean; text: string } | null>(null)
 
+  const { setting: rampSetting, error: rampError, choose: chooseRamp } = useRampSetting(props.ramp)
+
+  const rampOptions: SegmentOption<RampSetting>[] = [
+    { value: 'Device', label: rs('AppearanceDevice'), testId: 'ramp-device' },
+    { value: 'Light', label: rs('AppearanceLight'), testId: 'ramp-light' },
+    { value: 'Dark', label: rs('AppearanceDark'), testId: 'ramp-dark' },
+  ]
+
   const uid = useId()
   const ids = {
     firstName: `${uid}-first-name`,
@@ -46,6 +58,7 @@
     currentPassword: `${uid}-current-password`,
     newPassword: `${uid}-new-password`,
     confirmPassword: `${uid}-confirm-password`,
+    rampHint: `${uid}-ramp-hint`,
   }
 
   const backHref = computed(() => props.backUrl)
@@ -197,19 +210,41 @@
         </div>
       </form>
     </KccSheet>
+
+    <KccSheet crisp :tear="1" :pad="SHEET_PAD" icon="fa-duotone fa-circle-half-stroke">
+      <template #label><ResourceString for="Appearance" /></template>
+
+      <h2 class="sr-only">{{ rs('Appearance') }}</h2>
+
+      <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-2">
+          <SegmentedControl
+            :model-value="rampSetting"
+            :options="rampOptions"
+            :aria-label="rs('Appearance')"
+            :aria-describedby="ids.rampHint"
+            class="self-start"
+            @update:model-value="chooseRamp"
+          />
+          <p :id="ids.rampHint" class="kcc-kick text-ink"><ResourceString for="AppearanceHint" /></p>
+        </div>
+
+        <p v-if="rampError" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ rampError }}</p>
+      </div>
+    </KccSheet>
+
+    <KccSheet crisp :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket">
+      <template #label><ResourceString for="SignOut" /></template>
+
+      <h2 class="sr-only">{{ rs('SignOut') }}</h2>
+
+      <div class="flex justify-end">
+        <SignOutForm :action="logoutUrl">
+          <Button type="submit" variant="ghost">
+            <ResourceString for="SignOut" />
+          </Button>
+        </SignOutForm>
+      </div>
+    </KccSheet>
   </div>
-
-  <KccSheet crisp :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket" class="mt-9">
-    <template #label><ResourceString for="SignOut" /></template>
-
-    <h2 class="sr-only">{{ rs('SignOut') }}</h2>
-
-    <div class="flex justify-end">
-      <SignOutForm :action="logoutUrl">
-        <Button type="submit" variant="ghost">
-          <ResourceString for="SignOut" />
-        </Button>
-      </SignOutForm>
-    </div>
-  </KccSheet>
 </template>

@@ -1,31 +1,25 @@
 <script setup lang="ts">
-  export type Ramp = 'light' | 'dark'
+  import { STORED_RAMP_KEY, applyRamp, type Ramp } from '~/Utilities/Ramp'
 
   export interface ThemeToggleProps {
     switchToLightLabel: string
     switchToDarkLabel: string
   }
 
-  const STORAGE_KEY = 'kcc-theme'
-
   const { switchToLightLabel, switchToDarkLabel } = defineProps<ThemeToggleProps>()
 
-  // Both glyphs render and Kit.css shows the one for the active ramp. The server cannot know the ramp, so
-  // deciding here would be a hydration mismatch on every dark-ramp visitor.
+  // Both glyphs render and Kit.css shows the one for the active ramp. The server cannot always know the ramp, so
+  // deciding here would be a hydration mismatch on some dark-ramp visitors.
   function toggle() {
-    const root = document.documentElement
     // Light is the default, so a missing attribute flips to dark.
-    const next: Ramp = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+    const next: Ramp = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
 
-    // Kill in-flight transitions for one frame so nothing interpolates between the two palettes.
-    root.setAttribute('data-theme-switching', '')
-    root.setAttribute('data-theme', next)
+    applyRamp(next)
     try {
-      localStorage.setItem(STORAGE_KEY, next)
+      localStorage.setItem(STORED_RAMP_KEY, next)
     } catch {
       // Storage blocked: the ramp still switches for this page view.
     }
-    requestAnimationFrame(() => root.removeAttribute('data-theme-switching'))
   }
 </script>
 

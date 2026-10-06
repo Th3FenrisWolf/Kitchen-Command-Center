@@ -1,6 +1,7 @@
 @using KCC.Web.Features.Components.Footer
 @using KCC.Web.Features.Components.Header
 @using KCC.Web.Features.Dictionary
+@using KCC.Web.Features.Ramp
 @using Umbraco.Cms.Core.Web
 
 @inject IWebHostEnvironment Env
@@ -30,10 +31,11 @@
             PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
         });
     var isPreview = UmbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) && umbracoContext.InPreviewMode;
+    var savedRamp = RampCookie.Read(Context);
 }
 
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="@(savedRamp ?? "light")">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
@@ -59,24 +61,27 @@
     }
   }
 
-  @* The ramp must be known before the first paint or dark-ramp users flash the light default. Stored choice →
-     OS preference → light (the identity leads light). ThemeToggle writes the stored choice. The attribute is
-     pre-set to light in the markup, so a visitor without JavaScript gets a consistent light page and the
-     script only ever overwrites it. *@
-  <script>
-    (function () {
-      var stored = null;
-      try {
-        stored = localStorage.getItem('kcc-theme');
-      } catch (e) {
-        /* storage blocked: fall through to the OS preference rather than losing it too */
-      }
-      var theme = stored === 'light' || stored === 'dark'
-        ? stored
-        : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', theme);
-    })();
-  </script>
+  @* The ramp must be known before the first paint or dark-ramp users flash the light default. A signed-in
+     member's saved ramp is rendered above. Without one, the script picks the header toggle's stored choice → OS
+     preference → light (the identity leads light). The attribute is pre-set to light in the markup, so a visitor
+     without JavaScript gets a consistent light page and the script only ever overwrites it. *@
+  @if (savedRamp is null)
+  {
+    <script>
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem('kcc-theme');
+        } catch (e) {
+          /* storage blocked: fall through to the OS preference rather than losing it too */
+        }
+        var theme = stored === 'light' || stored === 'dark'
+          ? stored
+          : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  }
 
   <link rel="stylesheet" vite-href="/Features/Styles/Main.css" asp-append-version="true" />
 

@@ -5,6 +5,11 @@ import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../../support/s
 
 const STRINGS = {
   'Account.AccountSettings': 'Account settings',
+  'Account.Appearance': 'Appearance',
+  'Account.AppearanceDark': 'Dark',
+  'Account.AppearanceDevice': 'Device',
+  'Account.AppearanceHint': 'Device follows the setting on your phone or computer.',
+  'Account.AppearanceLight': 'Light',
   'Account.BackToProfile': 'Back to profile',
   'Account.ChangePassword': 'Change password',
   'Account.ConfirmNewPassword': 'Confirm new password',
@@ -26,6 +31,7 @@ const render = () =>
     firstName: 'Ada',
     lastName: 'Lovelace',
     email: 'ada@example.com',
+    ramp: 'Dark',
     backUrl: '/account',
     logoutUrl: '/account/logout',
     resourceStrings: STRINGS,
@@ -35,7 +41,9 @@ const render = () =>
 const controlIdFor = (html: string, label: string) =>
   html.match(new RegExp(`<label for="([^"]+)" class="kcc-lbl"><!--\\[--><span>${label}`))?.[1] ?? ''
 
-// The hero is a sheet of its own; these assertions count and describe the form's three sheets, so they read
+const segment = (html: string, testId: string) => tagWith(html, `data-testid="${testId}"`)
+
+// The hero is a sheet of its own; these assertions count and describe the form's four sheets, so they read
 // the markup from the grid below it down.
 const sheetsOf = (html: string) => html.slice(html.indexOf('<div class="mt-6 grid'))
 
@@ -49,20 +57,22 @@ describe('AccountSettingsView', () => {
   it('sets each group on its own crisp sheet, tears that never repeat', async () => {
     const sheets = sheetsOf(await render())
 
-    expect(sheets.match(/kcc-slip/g)).toHaveLength(3)
+    expect(sheets.match(/kcc-slip/g)).toHaveLength(4)
     expect(sheets).toContain('kcc-tear-2')
     expect(sheets).toContain('kcc-tear-5')
+    expect(sheets).toContain('kcc-tear-1')
     expect(sheets).toContain('kcc-tear-6')
-    expect(sheets.match(/--r:0/g)).toHaveLength(3)
-    expect(sheets.match(/--pad:clamp\(24px, 7\.5vw, 48px\)/g)).toHaveLength(3)
+    expect(sheets.match(/--r:0/g)).toHaveLength(4)
+    expect(sheets.match(/--pad:clamp\(24px, 7\.5vw, 48px\)/g)).toHaveLength(4)
   })
 
   it('prints each group name on a label and keeps it in the outline', async () => {
     const sheets = sheetsOf(await render())
 
-    expect(sheets.match(/kcc-label/g)).toHaveLength(3)
+    expect(sheets.match(/kcc-label/g)).toHaveLength(4)
     expect(sheets).toContain('<h2 class="sr-only">Profile</h2>')
     expect(sheets).toContain('<h2 class="sr-only">Change password</h2>')
+    expect(sheets).toContain('<h2 class="sr-only">Appearance</h2>')
     expect(sheets).toContain('<h2 class="sr-only">Sign out</h2>')
   })
 
@@ -112,7 +122,23 @@ describe('AccountSettingsView', () => {
     expect(html).toContain('<span>Coming soon</span> · <span>Changing your email is on the way.</span>')
   })
 
-  it('keeps both status wells off the page until a form answers', async () => {
+  it('offers the ramp as a kcc-seg of Device, Light and Dark, with the saved one checked', async () => {
+    const html = await render()
+    const group = tagWith(html, 'role="radiogroup"')
+    const hintId = group.match(/aria-describedby="([^"]+)"/)?.[1] ?? ''
+
+    expect(group).toContain('kcc-seg')
+    expect(group).toContain('aria-label="Appearance"')
+    expect(segment(html, 'ramp-device')).toContain('aria-checked="false"')
+    expect(segment(html, 'ramp-light')).toContain('aria-checked="false"')
+    expect(segment(html, 'ramp-dark')).toContain('aria-checked="true"')
+    expect(hintId).not.toBe('')
+    expect(html).toContain(
+      `<p id="${hintId}" class="kcc-kick text-ink"><span>Device follows the setting on your phone or computer.</span></p>`,
+    )
+  })
+
+  it('keeps every status well off the page until something answers', async () => {
     const html = await render()
 
     expect(html).not.toContain('kcc-well')
