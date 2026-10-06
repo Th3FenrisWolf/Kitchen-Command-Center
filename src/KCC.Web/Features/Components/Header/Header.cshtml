@@ -3,11 +3,6 @@
 @model HeaderViewModel
 
 <AppHeader
-  home-url="/"
   logo-alt="@Model.LogoAlt"
-  switch-to-light-label="@Model.SwitchToLightLabel"
-  switch-to-dark-label="@Model.SwitchToDarkLabel"
-  :main-nav-items="@Vue.Prop(Model.MainNavItems)"
-  :utility-nav-items="@Vue.Prop(Model.UtilityNavItems)"
   :nav="@Vue.Prop(Model.Nav)"
 />

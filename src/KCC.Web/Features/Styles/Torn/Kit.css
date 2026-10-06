@@ -360,10 +360,10 @@
   }
 }
 
-/* Deliberately unlayered. The logo and the toggle glyph ship both ramps' variants and let CSS pick one,
-   because the server cannot always know the ramp. This must beat any `display` utility on the same element, and
-   Tailwind's utilities layer comes after components — so a rule inside @layer components would lose to
-   `flex`. Light is the default, so the dark variant hides unless the dark ramp is set. */
+/* Deliberately unlayered. The logo ships both ramps' variants and lets CSS pick one, because the server
+   cannot always know the ramp. This must beat any `display` utility on the same element, and Tailwind's
+   utilities layer comes after components — so a rule inside @layer components would lose to `flex`. Light
+   is the default, so the dark variant hides unless the dark ramp is set. */
 :root[data-theme='dark'] [data-ramp='light'],
 :root:not([data-theme='dark']) [data-ramp='dark'] {
   display: none;

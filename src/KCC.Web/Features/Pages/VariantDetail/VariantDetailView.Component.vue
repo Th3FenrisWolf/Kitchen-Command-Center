@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import type { Ingredient, Instruction, Breadcrumb, Nutrition, SiblingVariant } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
@@ -14,6 +14,7 @@
   import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
   import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
+  import { recordRecentlyViewed } from '~/Components/Header/useRecentlyViewed'
   import CookMode from './CookMode.vue'
 
   export interface VariantDetailViewProps extends Nutrition {
@@ -43,6 +44,10 @@
   }
 
   const props = defineProps<VariantDetailViewProps>()
+
+  onMounted(() =>
+    recordRecentlyViewed({ name: `${props.recipeName} · ${props.variantName}`, url: window.location.pathname }),
+  )
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
 

@@ -20,6 +20,7 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
 
     private readonly bool withSsr;
     private readonly bool seed;
+    private readonly bool warmUp;
     private readonly string imagingHmacSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     private Process? site;
     private Process? ssr;
@@ -32,10 +33,11 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
     {
     }
 
-    public SiteProcess(bool withSsr, bool seed = false)
+    public SiteProcess(bool withSsr, bool seed = false, bool warmUp = true)
     {
         this.withSsr = withSsr;
         this.seed = seed;
+        this.warmUp = warmUp;
     }
 
     public Uri BaseUrl { get; private set; } = null!;
@@ -66,9 +68,12 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         {
             await SeedTestRecipesAsync();
 
-            // Concurrent first requests to a cold site can read a site-settings nav link as null (an Umbraco
-            // first-conversion race), so the header renders without Login.
-            await WarmUpAsync();
+            // Concurrent first requests to a cold site can read a block's link as null (an Umbraco first-conversion
+            // race). The suite's tests meet a warmed site; PadColdStartTests boots one without the warm-up.
+            if (warmUp)
+            {
+                await WarmUpAsync();
+            }
         }
     }
 

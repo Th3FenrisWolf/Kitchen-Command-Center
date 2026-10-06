@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import type { Breadcrumb, VariantSummary } from '~/Types/Recipe'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import { type SortKey, type ViewMode, filterVariants, tagOptions } from '~/Components/RecipeDetail/variantFilters.ts'
@@ -14,6 +14,7 @@
   import VariantList from '~/Components/RecipeDetail/VariantList.vue'
   import VariantsEmptyState from '~/Components/RecipeDetail/VariantsEmptyState.vue'
   import { variantToFeatured } from '~/Components/Recipe/recipeCardModel.ts'
+  import { recordRecentlyViewed } from '~/Components/Header/useRecentlyViewed'
 
   export interface RecipeDetailViewProps {
     recipeName: string
@@ -33,6 +34,8 @@
   }
 
   const props = defineProps<RecipeDetailViewProps>()
+
+  onMounted(() => recordRecentlyViewed({ name: props.recipeName, url: window.location.pathname }))
 
   const rs = provideResourceStrings(props.resourceStrings, 'RecipeDetail')
 

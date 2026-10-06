@@ -20,20 +20,8 @@ function runFrame() {
   frames.splice(0).forEach((frame) => frame(0))
 }
 
-function onDevice({
-  stored = null,
-  dark = false,
-  blocked = false,
-}: { stored?: string | null; dark?: boolean; blocked?: boolean } = {}) {
+function onDevice({ dark = false } = {}) {
   vi.stubGlobal('window', {
-    localStorage: {
-      getItem: () => {
-        if (blocked) {
-          throw new DOMException('Storage is blocked.', 'SecurityError')
-        }
-        return stored
-      },
-    },
     matchMedia: (query: string) => ({ matches: dark && query === '(prefers-color-scheme: dark)' }),
   })
 }
@@ -70,12 +58,7 @@ describe('applyRamp', () => {
 })
 
 describe('deviceRamp', () => {
-  it("takes the header toggle's stored choice first", () => {
-    onDevice({ stored: 'light', dark: true })
-    expect(deviceRamp()).toBe('light')
-  })
-
-  it('follows the operating system when nothing is stored', () => {
+  it('follows the operating system', () => {
     onDevice({ dark: true })
     expect(deviceRamp()).toBe('dark')
   })
@@ -85,23 +68,21 @@ describe('deviceRamp', () => {
     expect(deviceRamp()).toBe('light')
   })
 
-  it('falls through to the operating system when storage is blocked', () => {
-    onDevice({ blocked: true, dark: true })
-    expect(deviceRamp()).toBe('dark')
-  })
-
-  it('ignores a stored value that is not a ramp', () => {
-    onDevice({ stored: 'sepia', dark: true })
+  it("takes no ramp from this browser's storage", () => {
+    vi.stubGlobal('window', {
+      localStorage: { getItem: () => 'light' },
+      matchMedia: (query: string) => ({ matches: query === '(prefers-color-scheme: dark)' }),
+    })
     expect(deviceRamp()).toBe('dark')
   })
 })
 
 describe('rampFor', () => {
   it('maps a saved Light or Dark straight to its ramp, whatever the device prefers', () => {
-    onDevice({ stored: 'dark', dark: true })
+    onDevice({ dark: true })
     expect(rampFor('Light')).toBe('light')
 
-    onDevice({ stored: 'light' })
+    onDevice()
     expect(rampFor('Dark')).toBe('dark')
   })
 

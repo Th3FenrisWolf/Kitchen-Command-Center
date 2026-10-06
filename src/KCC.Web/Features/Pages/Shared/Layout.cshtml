@@ -62,24 +62,15 @@
   }
 
   @* The ramp must be known before the first paint or dark-ramp users flash the light default. A signed-in
-     member's saved ramp is rendered above. Without one, the script picks the header toggle's stored choice → OS
-     preference → light (the identity leads light). The attribute is pre-set to light in the markup, so a visitor
-     without JavaScript gets a consistent light page and the script only ever overwrites it. *@
+     member's saved ramp is rendered above. Without one, the script follows the OS preference. The attribute is
+     pre-set to light in the markup (the identity leads light), so a visitor without JavaScript gets a consistent
+     light page and the script only ever overwrites it. *@
   @if (savedRamp is null)
   {
     <script>
-      (function () {
-        var stored = null;
-        try {
-          stored = localStorage.getItem('kcc-theme');
-        } catch (e) {
-          /* storage blocked: fall through to the OS preference rather than losing it too */
-        }
-        var theme = stored === 'light' || stored === 'dark'
-          ? stored
-          : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-      })();
+      document.documentElement.setAttribute(
+        'data-theme',
+        window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     </script>
   }
 

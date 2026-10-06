@@ -2,8 +2,6 @@ export type Ramp = 'light' | 'dark'
 
 export type RampSetting = 'Device' | 'Light' | 'Dark'
 
-export const STORED_RAMP_KEY = 'kcc-theme'
-
 let latestSwitch = 0
 
 export function applyRamp(ramp: Ramp) {
@@ -23,15 +21,6 @@ export function applyRamp(ramp: Ramp) {
 }
 
 export function deviceRamp(): Ramp {
-  let stored: string | null = null
-  try {
-    stored = window.localStorage.getItem(STORED_RAMP_KEY)
-  } catch {
-    // Storage blocked: the OS preference still applies.
-  }
-  if (stored === 'light' || stored === 'dark') {
-    return stored
-  }
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 

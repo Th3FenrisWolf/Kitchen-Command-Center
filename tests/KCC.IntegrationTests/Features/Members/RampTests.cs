@@ -101,6 +101,17 @@ public class RampTests
         _ = await Assert.That(home.Html).Contains("<html lang=\"en\" data-theme=\"dark\">");
     }
 
+    [Test]
+    public async Task ThePrePaintScript_AsksOnlyTheDevice()
+    {
+        using var client = Site.CreateClient();
+
+        var html = await client.GetStringAsync("/");
+
+        _ = await Assert.That(html).Contains(PrePaintScript);
+        _ = await Assert.That(html.Contains("localStorage", StringComparison.Ordinal)).IsFalse();
+    }
+
     private static SetCookieHeaderValue RampCookieOf(HttpResponseMessage response) =>
         SetCookieHeaderValue.ParseList(response.Headers.TryGetValues("Set-Cookie", out var cookies) ? cookies.ToList() : [])
             .Single(cookie => cookie.Name.Equals(RampCookie.Name, StringComparison.Ordinal));

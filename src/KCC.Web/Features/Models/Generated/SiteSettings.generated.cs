@@ -50,14 +50,6 @@ namespace KCC.Web.Features.Models.Generated
 		// properties
 
 		///<summary>
-		/// Main navigation
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("mainNav")]
-		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockListModel MainNav => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockListModel>(_publishedValueFallback, "mainNav");
-
-		///<summary>
 		/// Diets: Leave empty to list every diet tag.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
@@ -96,13 +88,5 @@ namespace KCC.Web.Features.Models.Generated
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("navSearchSuggestions")]
 		public virtual global::System.Collections.Generic.IEnumerable<string> NavSearchSuggestions => this.Value<global::System.Collections.Generic.IEnumerable<string>>(_publishedValueFallback, "navSearchSuggestions");
-
-		///<summary>
-		/// Utility navigation
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("utilityNav")]
-		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockListModel UtilityNav => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockListModel>(_publishedValueFallback, "utilityNav");
 	}
 }
