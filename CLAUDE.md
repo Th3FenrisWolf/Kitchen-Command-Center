@@ -2,6 +2,41 @@
 
 Project-level instructions for Claude Code.
 
+## Spec Kit
+
+New work runs Spec Kit. The constitution, `.specify/memory/constitution.md`, governs every change through its flow,
+gates, ordering rule and definition of done. Only the Spec Kit commands read it, so this section repeats the rules
+every session needs.
+
+- **A feature** runs `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, then
+  `/speckit-card-implement`, which ends at an open pull request and never merges. `/speckit-checklist` and
+  `/speckit-analyze` are optional checks.
+- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`.
+- The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
+
+Superpowers neither starts nor plans work. A request to build something starts at `/speckit-specify`, never at
+`superpowers:brainstorming`. Inside a Spec Kit command, the command owns the plan, the branch, the tasks and the pull
+request, and no Superpowers planning, execution, worktree or finishing skill runs in its place.
+`superpowers:test-driven-development`, `superpowers:systematic-debugging` and
+`superpowers:verification-before-completion` still apply inside a task. Work that started in `.superpowers/`
+finishes there, as the next section describes.
+
+Several features can be in flight at once:
+
+- `.specify/feature.json` names the active feature and is local to each checkout. Spec Kit reads the active feature
+  from it or from `SPECIFY_FEATURE_DIRECTORY`, never from the branch name, so a manual branch switch leaves it on the
+  old feature. Set `SPECIFY_FEATURE_DIRECTORY=specs/NNN-slug` for a command aimed at another one.
+- `/speckit-specify` creates its `NNN-slug` branch from the current `HEAD` and switches to it. Start an unrelated
+  feature from `main`, in its own worktree while another feature is in progress in this checkout. A later phase of
+  the same feature starts from the previous phase's branch, as the ordering rule sets.
+- `/speckit-specify` numbers a feature from every local and remote branch and the `specs/` folders.
+  `/speckit-batch-run specify` numbers from the `specs/` folders on disk only, so a batch on a branch that lacks the
+  newest spec reuses its number.
+- `/speckit-card-implement` creates a missing feature branch from `origin/main`. A spec that a batch wrote on another
+  branch reaches `main` before its card is built.
+- A plan reads the code on its own branch. Run `/speckit-plan` and `/speckit-tasks` just before a feature is built,
+  so the plan reads the code it changes.
+
 ## Superpowers: plans & specs
 
 Save Superpowers **plans** and **specs** under `.superpowers/`, not under `docs/superpowers/`. This keeps all superpowers files together in the same location.
