@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "bizstream-grilling": {
+      "version": "0.3.0",
+      "source": "local",
+      "manifest_hash": "sha256:0bf8b4f213f367b3694638cf0c8c9f44443cf901da9ab085dd8cf87f91b5cf15",
+      "enabled": true,
+      "priority": 50,
+      "registered_commands": {
+        "claude": [
+          "speckit.clarify",
+          "speckit.specify",
+          "speckit.plan",
+          "speckit.constitution",
+          "speckit.checklist",
+          "speckit.bug.assess",
+          "speckit.assess.intake",
+          "speckit.assess.research",
+          "speckit.assess.define",
+          "speckit.assess.decide"
+        ]
+      },
+      "registered_skills": {
+        "claude": [
+          "speckit-clarify",
+          "speckit-specify",
+          "speckit-plan",
+          "speckit-constitution",
+          "speckit-checklist",
+          "speckit-bug-assess",
+          "speckit-assess-intake",
+          "speckit-assess-research",
+          "speckit-assess-define",
+          "speckit-assess-decide"
+        ]
+      },
+      "installed_at": "2026-10-07T15:10:51.776642+00:00"
+    },
+    "kcc-recompose": {
+      "version": "0.1.0",
+      "source": "local",
+      "manifest_hash": "sha256:b382e9a2ae2e402aacb31b66a2c10e5e2340dcf794a9b95257a5bbffa38ae667",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.card.implement",
+          "speckit.flow.run"
+        ]
+      },
+      "registered_skills": {
+        "claude": [
+          "speckit-card-implement",
+          "speckit-flow-run"
+        ]
+      },
+      "installed_at": "2026-10-07T16:27:40.292569+00:00"
+    }
+  }
+}

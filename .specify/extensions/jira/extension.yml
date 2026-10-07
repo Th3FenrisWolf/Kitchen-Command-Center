@@ -1,0 +1,48 @@
+schema_version: "1.0"
+
+extension:
+  id: jira
+  name: "Jira Cards"
+  version: "0.2.2"
+  description: "Client-facing Jira cards, in either direction: written from a spec set as outcomes (several specs feed one Story, under 800 characters, no acceptance criteria, no sub-tasks), or pulled from Jira so specs are written from them. One line in spec.md links a spec to its card. Verifies an implementation against the spec and any card criteria and posts the verdict on the card."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+  tools:
+    - name: acli
+      required: true
+
+provides:
+  templates:
+    - name: acli-gotchas
+      file: templates/acli-gotchas.md
+      description: "acli gotchas that cost real time: API-token auth, --csv over --json, --fields rejects type and parent, transition names vs statuses, the Story/Sub-task level trap, why a key is written to the registry the moment it lands"
+    - name: linking
+      file: templates/linking.md
+      description: "The Jira line that links a spec to its card, and the card criteria a card made in Jira carries"
+
+  commands:
+    - name: speckit.jira.cards
+      file: commands/speckit.jira.cards.md
+      description: "Write client-facing Jira cards from the specs/jira-cards.md registry, link specs to cards, and move a card when its pull requests open: one Story per outcome, several specs per card, dry run by default"
+    - name: speckit.jira.pull
+      file: commands/speckit.jira.pull.md
+      description: "Pull Jira cards that already exist into the registry so specs are written from them, refresh a changed card, or link an existing spec. Never writes to Jira"
+    - name: speckit.jira.verify
+      file: commands/speckit.jira.verify.md
+      description: "Verify an implementation against the spec's Success Criteria, acceptance scenarios and any card criteria, and post the verdict on the card"
+
+  config:
+    - name: "jira-config.yml"
+      template: "config-template.yml"
+      description: "Per-project Jira settings: the Test Notes and Acceptance Criteria custom field IDs and the default project key"
+      required: false
+
+tags:
+  - "jira"
+  - "tracking"
+  - "cards"
+  - "bizstream"

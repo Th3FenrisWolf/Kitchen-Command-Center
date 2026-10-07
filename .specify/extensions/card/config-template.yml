@@ -1,0 +1,43 @@
+# speckit.card.implement configuration
+# Copied to .specify/extensions/card/card-config.yml on install.
+# Every value below is safe empty. Fill in the ones your project has; leave
+# the rest empty and the command skips the phase that needs them.
+
+# Repo split: specs and tasks live in this repo; code can live in a sibling
+# repo. Leave path empty when spec and code share one repo.
+code_repo:
+  path: "" # e.g. "../my-app" — the sibling repo every code command runs against
+  working_directory: "" # subdirectory inside code_repo where build/test/format commands run
+
+# Content-type chain: the ordered steps a content-modeling change follows,
+# every time, skip none. Leave empty when the project has no content-modeling
+# system to model against — Phase 2 is then skipped entirely.
+content_type_chain: []
+# content_type_chain:
+#   - step: "Model and validate"
+#     command: "<MCP tool or CLI call>"
+#   - step: "Create, update, or delete"
+#     command: "<MCP tool or CLI call>"
+#   - step: "Persist to source control"
+#     command: "<command>"
+#   - step: "Regenerate generated code"
+#     command: "<command>"
+
+# Local review loop: the command-line tool that reviews the whole diff before
+# anything reaches the team, and the context file that teaches it this
+# project's conventions and known false positives. Leave context_path empty
+# to run the command without one.
+review:
+  # Point --base at your trunk branch, the same branch Phase 7 opens the
+  # pull request against, or the review reads a diff the reviewer will not.
+  command: "coderabbit review --agent --base main"
+  context_path: ""
+
+# Board close-out: the registry file mapping this feature to its tracker
+# card, and the transition name applied once the card has an open pull
+# request. Leave registry_path empty to skip the board step and report the
+# pull request URL only. A spec with a Jira line goes through the jira
+# extension instead, which ignores registry_path and reads in_review_status.
+board:
+  registry_path: "" # e.g. "specs/cards.md" — the row naming this feature's card key
+  in_review_status: "In Review"
