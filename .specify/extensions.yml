@@ -8,6 +8,7 @@ installed:
 - grill
 - jev
 - jira
+- preview
 - qa
 settings:
   auto_execute_hooks: true
@@ -120,6 +121,14 @@ hooks:
     prompt: Commit clarification changes?
     description: Auto-commit after spec clarification
     condition: null
+  - extension: preview
+    command: speckit.preview.run
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Preview the look before /speckit-plan?
+    description: Show the look of the spec's surfaces before the plan fixes it
+    condition: null
   after_plan:
   - extension: git
     command: speckit.git.commit
@@ -128,6 +137,14 @@ hooks:
     priority: 10
     prompt: Commit plan changes?
     description: Auto-commit after implementation planning
+    condition: null
+  - extension: preview
+    command: speckit.preview.run
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Preview the architecture before /speckit-tasks?
+    description: Show how the plan's parts fit before the tasks fix them
     condition: null
   after_tasks:
   - extension: git

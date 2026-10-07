@@ -11,6 +11,9 @@ every session needs.
 - **A feature** runs `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, then
   `/speckit-card-implement`, which ends at an open pull request and never merges. `/speckit-checklist` and
   `/speckit-analyze` are optional checks.
+- **A preview** shows the owner a proposal before the plan or the tasks fix it. `/speckit-preview-run` serves look
+  rounds, built from the site's own stylesheet, in the Browser pane after clarify, and architecture rounds as Mermaid
+  after plan, for as many rounds as the owner wants. The approved round goes into the spec folder.
 - **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 

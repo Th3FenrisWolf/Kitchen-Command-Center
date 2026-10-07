@@ -152,6 +152,20 @@
       },
       "registered_skills": [],
       "installed_at": "2026-10-05T18:29:35.430524+00:00"
+    },
+    "preview": {
+      "version": "0.1.0",
+      "source": "local",
+      "manifest_hash": "sha256:89641a88aec7082b0fe8aec941d157eeec2a5e7934b5a0ba162dad6778b12a61",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.preview.run"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-07T14:50:52.834972+00:00"
     }
   }
 }
