@@ -487,8 +487,8 @@ Every long-running service restarts unless stopped.
 ### 13.6 Monitoring and maintenance
 
 Container health checks with restart policies; the backup ping; Umbraco's log viewer over the file logs on the data
-volume. Dependabot for NuGet, npm, Docker and Actions. Umbraco 17 patch releases as they ship; the 21 LTS move as
-§6.1 describes.
+volume. Dependabot alerts for NuGet, npm and Actions, with no update pull requests. Umbraco 17 patch releases as they
+ship; the 21 LTS move as §6.1 describes.
 
 ### 13.7 Fallback
 

@@ -190,9 +190,10 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
 2. **The packages stay private.** After the first push to `main` (the images job), open your profile's Packages. For
    each of `kcc-app`, `kcc-ssr` and `kcc-backup`, Package settings should say **Private**, and list this repository
    with the Admin role under "Manage Actions access". The images job needs that role to prune old versions.
-3. **Dependabot's secrets.** Workflows that Dependabot's pull requests trigger read Dependabot's secrets, not the
-   repository's. Under Settings → Secrets and variables → **Dependabot**, add copies of `FONTAWESOME_NPM_AUTH_TOKEN`,
-   `KCC_E2E_MEMBER_USERNAME` and `KCC_E2E_MEMBER_PASSWORD` with the same values as the Actions secrets.
+3. **Dependabot alerts.** Under Settings → Advanced Security, turn on **Dependabot alerts**, leave **Dependabot
+   security updates** off, and set **Automatic dependency submission**, under Dependency graph, to **Enabled**. The
+   submission gives the dependency graph the versions in `Directory.Packages.props`. Without it the graph reads each
+   NuGet package as `>= 0`, and no NuGet alert fires.
 
 ## 7. Install the stack and boot it
 
@@ -370,10 +371,11 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   3. Delete the copies on the Pi: `sudo rm /tmp/Umbraco.sqlite.db /tmp/kcc-media.tar.gz`. They hold members' data.
 
   The development site then signs you in as the production administrator.
-- **Updates.** Dependabot opens pull requests weekly: merging one deploys it. Umbraco's 17.x patches arrive that way.
-  Dependabot does not read `deploy/local.yaml`, so Caddy's tag there, which only the smoke test and the drill use and
-  the Pi never runs, is bumped by hand. The OS updates itself; reboot now and then for a new kernel (`sudo reboot`),
-  and the stack comes back on its own.
+- **Updates.** Dependabot opens no pull requests. Its alerts flag a vulnerable npm, NuGet or Actions package: bump it
+  by hand, and merging the bump deploys it. Alerts follow security advisories only, so Umbraco's other 17.x patches
+  come unannounced, and Docker images have no alerts at all. Now and then, check for new releases of Umbraco, of the
+  images in both Dockerfiles' `FROM` lines, and of cloudflared and Caddy under `deploy/`. The OS updates itself; reboot
+  now and then for a new kernel (`sudo reboot`), and the stack comes back on its own.
 - **Rotate the GHCR token** before it expires: make a new classic token (section 6), then run
   `sudo -u kcc -H docker login ghcr.io -u <your GitHub username>` again.
 
