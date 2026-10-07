@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-09-23T00:00:00Z",
+  "catalog_url": "https://raw.githubusercontent.com/BizStream/bizstream.ai/main/presets/catalog.json",
+  "presets": {
+    "bizstream-grilling": {
+      "name": "Grilling Everywhere",
+      "id": "bizstream-grilling",
+      "version": "0.3.0",
+      "description": "Wraps every question-asking command so it interviews the user in dependency-ordered rounds instead of ad hoc. The protocol is inlined in each wrap and reads after the wrapped command, so it beats the command's own question rules. Requires the grill extension.",
+      "author": "BizStream",
+      "repository": "https://github.com/BizStream/bizstream.ai",
+      "license": "MIT",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.7.0/bizstream-grilling-0.3.0.zip",
+      "requires": {
+        "speckit_version": ">=0.14.4"
+      },
+      "provides": {
+        "commands": 10,
+        "templates": 0
+      },
+      "tags": [
+        "grilling",
+        "clarification",
+        "questions",
+        "bizstream"
+      ]
+    }
+  }
+}

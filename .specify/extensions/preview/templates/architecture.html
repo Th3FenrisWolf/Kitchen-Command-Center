@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture round</title>
+<link rel="stylesheet" href="/kit.css">
+<style>
+  #app { display: block; min-height: 100vh; padding: 48px 24px 144px; }
+  #app > h1, .pv-diagram { max-width: 1280px; margin: 0 auto 72px; }
+  .pv-diagram > header { max-width: 72ch; margin-bottom: 24px; }
+  .pv-diagram .mermaid { padding: 24px; background: var(--color-paper); }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>Architecture round</h1>
+
+  <section class="pv-diagram">
+    <header>
+      <p class="kcc-kick">Flowchart</p>
+      <h2>Components and data flow</h2>
+      <p class="kcc-body">The question this diagram answers.</p>
+    </header>
+    <pre class="mermaid">
+flowchart LR
+  Browser --> Controller
+    </pre>
+  </section>
+</div>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: false, theme: 'neutral', fontFamily: 'Sono, monospace' });
+  await mermaid.run();
+</script>
+</body>
+</html>

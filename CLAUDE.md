@@ -2,18 +2,55 @@
 
 Project-level instructions for Claude Code.
 
-## Superpowers: plans & specs
+## Spec Kit
 
-Save Superpowers **plans** and **specs** under `.superpowers/`, not under `docs/superpowers/`. This keeps all superpowers files together in the same location.
+New work runs Spec Kit. The constitution, `.specify/memory/constitution.md`, governs every change through its flow,
+gates, ordering rule and definition of done. Only the Spec Kit commands read it, so this section repeats the rules
+every session needs.
 
-- **Plans** → `.superpowers/plans/YYYY-MM-DD-<slug>.md`
-- **Specs / design docs** → `.superpowers/specs/YYYY-MM-DD-<slug>.md`
+- **A feature** runs `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, then
+  `/speckit-card-implement`, which recomposes the branch and ends at an open pull request, and never merges.
+  `/speckit-checklist` and `/speckit-analyze` are optional checks.
+- **A preview** shows the owner a proposal before the plan or the tasks fix it. `/speckit-preview-run` serves look
+  rounds, built from the site's own stylesheet, in the Browser pane after clarify, and architecture rounds as Mermaid
+  after plan, for as many rounds as the owner wants. The approved round goes into the spec folder.
+- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`.
+- **A pull request** opens only from a recomposed branch. Development commits stay as they are until then. Card
+  implement's close-out, and with it `/speckit-flow-run`, recomposes the branch once with the `recompose-branch` skill
+  after the review loop and before the push, and the owner approves the new history in the close-out question. The
+  `kcc-recompose` preset adds that step. A branch outside Spec Kit is recomposed the same way before its pull request
+  opens. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
+  prefix>` holds the same tree under a different history.
+- The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 
-A plan and the spec it implements **must share the identical `<slug>` only** — same slug, *potentially* different date. When writing a plan, derive its filename from its spec, updating the date to be the new current date; don't coin a new slug. Example: spec `2026-05-20-recipes.md` ↔ plan `2026-05-21-recipes.md`.
+An extension update writes card implement and flow back without the preset's step, so run
+`.specify/presets/kcc-recompose/scripts/reapply.sh` after every `/bizstream-ai:update`.
 
-This overrides the default locations and filename placeholders baked into the `writing-plans` and `brainstorming` skills (`docs/superpowers/plans/` and `docs/superpowers/specs/`), both of which explicitly defer to user preferences for file location.
+The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
+sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,
+the definition of done, the bug flow, the CodeRabbit loop and `/speckit-preview-run`.
 
-**`.superpowers/` is gitignored** (see `.gitignore`). The plan, spec, and brainstorm files are local scratch only — do **not** stage or commit them while working through a feature, and don't be surprised when they don't appear in `git status`. Leave them out of every commit.
+Several features can be in flight at once:
+
+- `.specify/feature.json` names the active feature and is local to each checkout. Spec Kit reads the active feature
+  from it or from `SPECIFY_FEATURE_DIRECTORY`, never from the branch name, so a manual branch switch leaves it on the
+  old feature. Set `SPECIFY_FEATURE_DIRECTORY=specs/NNN-slug` for a command aimed at another one.
+- `/speckit-specify` creates its `NNN-slug` branch from the current `HEAD` and switches to it. Start an unrelated
+  feature from `main`, in its own worktree while another feature is in progress in this checkout. A later phase of
+  the same feature starts from the previous phase's branch, as the ordering rule sets.
+- `/speckit-specify` numbers a feature from every local and remote branch and the `specs/` folders.
+  `/speckit-batch-run specify` numbers from the `specs/` folders on disk only, so a batch on a branch that lacks the
+  newest spec reuses its number.
+- `/speckit-card-implement` creates a missing feature branch from `origin/main`. A spec that a batch wrote on another
+  branch reaches `main` before its card is built.
+- A plan reads the code on its own branch. Run `/speckit-plan` and `/speckit-tasks` just before a feature is built,
+  so the plan reads the code it changes.
+
+## Past Superpowers work
+
+`.superpowers/` keeps the plans, specs and brainstorm files of the work done before Spec Kit. It is gitignored local
+scratch: never stage or commit it, and start nothing new there. A plan there or in `docs/replatform/plans/` that names
+a Superpowers skill still runs: follow its steps by hand.
 
 **Exception: the replatform off Xperience.** Its spec, phase plans and reference screenshots are tracked in
 `docs/replatform/`, so they travel with the branch:

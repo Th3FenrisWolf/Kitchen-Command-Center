@@ -1,0 +1,29 @@
+schema_version: "1.0"
+
+extension:
+  id: grill
+  name: "Grilling"
+  version: "0.2.0"
+  description: "Dependency-ordered interview rounds that close every open decision before work starts. Ships the protocol every question-asking command reads, plus a standalone command for a plan or a batch of specs."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+
+provides:
+  templates:
+    - name: grilling
+      file: templates/grilling.md
+      description: "The grilling protocol: design tree, frontier, rounds, question format"
+  commands:
+    - name: speckit.grill.run
+      file: commands/speckit.grill.run.md
+      description: "Grill an idea, a plan, or a spec until no open decision is left"
+
+tags:
+  - "grilling"
+  - "clarification"
+  - "discovery"
+  - "bizstream"
