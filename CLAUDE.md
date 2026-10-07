@@ -17,12 +17,9 @@ every session needs.
 - **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 
-Superpowers neither starts nor plans work. A request to build something starts at `/speckit-specify`, never at
-`superpowers:brainstorming`. Inside a Spec Kit command, the command owns the plan, the branch, the tasks and the pull
-request, and no Superpowers planning, execution, worktree or finishing skill runs in its place.
-`superpowers:test-driven-development`, `superpowers:systematic-debugging` and
-`superpowers:verification-before-completion` still apply inside a task. Work that started in `.superpowers/`
-finishes there, as the next section describes.
+The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
+sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,
+the definition of done, the bug flow, the CodeRabbit loop and `/speckit-preview-run`.
 
 Several features can be in flight at once:
 
@@ -40,18 +37,11 @@ Several features can be in flight at once:
 - A plan reads the code on its own branch. Run `/speckit-plan` and `/speckit-tasks` just before a feature is built,
   so the plan reads the code it changes.
 
-## Superpowers: plans & specs
+## Past Superpowers work
 
-Save Superpowers **plans** and **specs** under `.superpowers/`, not under `docs/superpowers/`. This keeps all superpowers files together in the same location.
-
-- **Plans** → `.superpowers/plans/YYYY-MM-DD-<slug>.md`
-- **Specs / design docs** → `.superpowers/specs/YYYY-MM-DD-<slug>.md`
-
-A plan and the spec it implements **must share the identical `<slug>` only** — same slug, *potentially* different date. When writing a plan, derive its filename from its spec, updating the date to be the new current date; don't coin a new slug. Example: spec `2026-05-20-recipes.md` ↔ plan `2026-05-21-recipes.md`.
-
-This overrides the default locations and filename placeholders baked into the `writing-plans` and `brainstorming` skills (`docs/superpowers/plans/` and `docs/superpowers/specs/`), both of which explicitly defer to user preferences for file location.
-
-**`.superpowers/` is gitignored** (see `.gitignore`). The plan, spec, and brainstorm files are local scratch only — do **not** stage or commit them while working through a feature, and don't be surprised when they don't appear in `git status`. Leave them out of every commit.
+`.superpowers/` keeps the plans, specs and brainstorm files of the work done before Spec Kit. It is gitignored local
+scratch: never stage or commit it, and start nothing new there. A plan there or in `docs/replatform/plans/` that names
+a Superpowers skill still runs: follow its steps by hand.
 
 **Exception: the replatform off Xperience.** Its spec, phase plans and reference screenshots are tracked in
 `docs/replatform/`, so they travel with the branch:
