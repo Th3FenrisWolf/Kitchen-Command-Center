@@ -1,0 +1,25 @@
+schema_version: "1.0"
+
+extension:
+  id: flow
+  name: "Autopilot Flow"
+  version: "0.2.0"
+  description: "Runs one feature from an idea to an open pull request: specify, clarify, plan, tasks, analyze, QA wizard, then card implement. Each phase runs in a fresh subagent on a chosen model. Routine decisions become recorded assumptions the owner reviews once, so the run stops only for an owner decision, the review, a gate or the push."
+  author: BizStream
+  repository: https://github.com/BizStream/bizstream.ai
+  license: MIT
+
+requires:
+  speckit_version: ">=0.14.4"
+
+provides:
+  commands:
+    - name: speckit.flow.run
+      file: commands/speckit.flow.run.md
+      description: "Run one feature through every Spec Kit phase to an open pull request, stopping only for the owner"
+
+tags:
+  - "flow"
+  - "autopilot"
+  - "subagents"
+  - "bizstream"

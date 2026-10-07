@@ -1,0 +1,56 @@
+schema_version: "1.0"
+
+extension:
+  id: preview
+  name: "Preview"
+  version: "0.1.0"
+  description: "Shows the owner how a feature will look or how its parts fit, in rounds, before the plan or the tasks fix it. Look rounds render with the site's built Loose Leaf stylesheet in the Browser pane, architecture rounds render as Mermaid, and the approved round is saved with the spec."
+  author: Th3FenrisWolf
+  repository: https://github.com/Th3FenrisWolf/Kitchen-Command-Center
+
+requires:
+  speckit_version: ">=0.16.0"
+  tools:
+    - name: python3
+      required: true
+
+provides:
+  commands:
+    - name: speckit.preview.run
+      file: commands/speckit.preview.run.md
+      description: "Show the look or the architecture of a feature in rounds, and save the approved round with the spec"
+  scripts:
+    - name: preview-setup
+      file: scripts/preview-setup.sh
+      description: "Links the built kit into .mockups/ and writes one feature's round templates"
+      runtimes:
+        - bash
+    - name: preview-shot
+      file: scripts/preview-shot.sh
+      description: "Screenshots a round in both ramps with the Playwright driver from the NuGet cache"
+      runtimes:
+        - bash
+  templates:
+    - name: round
+      file: templates/round.html
+      description: "A look round: the built kit, the wax filters, a ramp switch and a reduced-motion switch"
+    - name: architecture
+      file: templates/architecture.html
+      description: "An architecture round: Mermaid diagrams on the desk"
+
+hooks:
+  after_clarify:
+    command: speckit.preview.run
+    optional: true
+    prompt: "Preview the look before /speckit-plan?"
+    description: "Show the look of the spec's surfaces before the plan fixes it"
+  after_plan:
+    command: speckit.preview.run
+    optional: true
+    prompt: "Preview the architecture before /speckit-tasks?"
+    description: "Show how the plan's parts fit before the tasks fix them"
+
+tags:
+  - "preview"
+  - "mockup"
+  - "architecture"

@@ -36,9 +36,16 @@ deploy/first-boot.env
 *.rsuser
 .DS_Store
 
-# Local Claude Code settings stay private; agents and skills are versioned.
+# Local Claude Code settings stay private; agents, skills, hooks, the shared settings and launch configurations are versioned.
 .claude/*
 !.claude/agents/
 !.claude/skills/
+!.claude/hooks/
+!.claude/settings.json
+!.claude/launch.json
 .mcp.json
 .superpowers
+.mockups/
+
+# Spec Kit's pointer to the active feature is local to each checkout.
+.specify/feature.json
