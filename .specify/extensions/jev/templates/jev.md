@@ -68,8 +68,9 @@ Add a missing fact to the state, or move the question to code.
 | Shipped | `<jev>/scripts/questions.json` | `<jev>/scripts/calibration.jsonl` |
 | Project | `.claude/jev/questions.json` | `.claude/jev/calibration.jsonl` |
 
-The loader merges both. A project entry overrides the shipped entry with the same id. Add a
-project question to the project bank. Change a shipped question in the bizstream.ai repository.
+The loader merges both. A project entry overrides the shipped entry with the same id. The steers
+are the exception: `steer.mjs` reads the shipped bank only. Add a project question to the project
+bank. Change a shipped question in the bizstream.ai repository.
 
 | Field | Meaning |
 |---|---|
@@ -123,7 +124,48 @@ node "<jev>/scripts/calibrate.mjs" --stamp <bank path>    # rewrite hashes after
 
 ## Subagent model
 
-Route a subagent with `subagent-tier`, and act on the outcome.
+A subagent takes one of two routes.
+
+| Dispatch | How the route is picked | What the Agent call passes |
+|---|---|---|
+| A whole job: a phase, a review, a lookup, a check run, a fix | the agent type descriptions | `subagent_type`, and no `model` |
+| One `tasks.md` row inside `speckit.card.implement` | `subagent-tier` | `model` |
+
+### A whole job
+
+The bizstream-ai plugin ships four agent types. A type sets the model and the effort. The Agent
+tool takes effort only from a type, and a `model` on the call overrides the type's model, so pass
+no `model` with a type.
+
+| `subagent_type` | Model, effort | Job |
+|---|---|---|
+| `bizstream-ai:checker` | Sonnet, low | runs prescribed checks and reports results |
+| `bizstream-ai:scout` | Sonnet, medium | finds facts, or applies decisions already taken |
+| `bizstream-ai:builder` | Opus, medium | changes code, CI or migration and keeps it working |
+| `bizstream-ai:architect` | Opus, high | spec, plan, tasks, review, red team, audit, root cause, decision research |
+
+- A command that names the type for a role dispatches that type.
+- Otherwise pick the type from the agent type descriptions. Ask Jev nothing before a dispatch.
+- Start each brief with one sentence that names the job: what the agent decides, changes or
+  checks.
+- When the job holds a judgment, such as a recommendation or a verdict, use `architect`.
+- Without the plugin, pass the model of the type in the table as `model`.
+- A project type of the same name in `.claude/agents/` wins. Pass its bare name.
+
+`agent-tier` is an audit, never a dispatch step. It re-classifies past dispatches offline and flags
+each one whose type differs from the type used. Its state is the description line, then the first
+600 characters of the brief. Run `node "<jev>/scripts/decide.mjs" agent-tier <state-file>` for each
+past dispatch. Read each flag before you change an agent description: the dispatch may be right and
+the outcome wrong.
+
+Give a builder one `tasks.md` phase or one pull request per dispatch, never a whole card. After
+about 150 tool calls it commits the finished work, writes a state note where the project keeps its
+card notes, and hands back. Dispatch a fresh builder that starts from the state note. A long run
+in one agent reads its grown context again on every call.
+
+### One task row
+
+Route a `tasks.md` row with `subagent-tier`, and act on the outcome.
 
 | Outcome | Action |
 |---|---|
@@ -138,14 +180,16 @@ number, a deploy or the administration interface to `owner`, and a create-direct
 Jev asks whether the row needs a file outside the paths it names: `pass` routes to `sonnet`, every
 other answer to `opus`.
 
-Pass `model` on every Agent call. Sonnet is the lowest tier. Never route a subagent to Haiku.
+Pass `model` on every task-row Agent call. Sonnet is the lowest tier. Never route a subagent to
+Haiku.
 Give two rows that share a file to one subagent, at the higher tier.
 
 ## Owner steering
 
 The plugin runs `<jev>/scripts/steer.mjs` on five hook events. Each steer decides whether a
 session needs its owner. A floor match, an unsure answer, an error and a missing key each keep
-what the session does today.
+what the session does today. The steer questions come from the shipped bank only, so a project
+bank cannot change when a session needs its owner.
 
 | Event | Subcommand | Question | Outcome in `on` mode |
 |---|---|---|---|

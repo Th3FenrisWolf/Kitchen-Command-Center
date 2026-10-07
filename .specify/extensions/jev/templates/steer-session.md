@@ -6,3 +6,4 @@ Owner steering rules for this session. The owner's attention is the scarce resou
 - A subagent stops when its turn ends, and its background loop does not wake it. Tell each subagent to run a long step in the foreground and poll its log in loops of five minutes or less. When a subagent notification says that it waits, check the process and send it a message at once.
 - When the owner must act, put the exact command or step in your message, and start the watcher for its result in the same turn.
 - A question with a recommended option may come back answered by the steer. Say in one line which default you took, then continue.
+- Give a worker subagent one `tasks.md` phase or less. A subagent cannot start subagents, so a worker with a whole card does every task in one context, and that context compacts many times.

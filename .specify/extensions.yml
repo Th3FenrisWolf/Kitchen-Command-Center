@@ -4,6 +4,7 @@ installed:
 - bug
 - card
 - coderabbit
+- flow
 - git
 - grill
 - jev
@@ -13,6 +14,57 @@ installed:
 settings:
   auto_execute_hooks: true
 hooks:
+  after_clarify:
+  - extension: preview
+    command: speckit.preview.run
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Preview the look before /speckit-plan?
+    description: Show the look of the spec's surfaces before the plan fixes it
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Commit clarification changes?
+    description: Auto-commit after spec clarification
+    condition: null
+  after_plan:
+  - extension: preview
+    command: speckit.preview.run
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Preview the architecture before /speckit-tasks?
+    description: Show how the plan's parts fit before the tasks fix them
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Commit plan changes?
+    description: Auto-commit after implementation planning
+    condition: null
+  after_implement:
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Commit implementation changes?
+    description: Auto-commit after implementation
+    condition: null
+  - extension: coderabbit
+    command: speckit.coderabbit.review
+    enabled: true
+    optional: false
+    priority: 5
+    prompt: Execute speckit.coderabbit.review?
+    description: Review the implementation locally before it reaches a pull request
+    condition: null
   before_constitution:
   - extension: git
     command: speckit.git.initialize
@@ -112,40 +164,6 @@ hooks:
     prompt: Commit specification changes?
     description: Auto-commit after specification
     condition: null
-  after_clarify:
-  - extension: git
-    command: speckit.git.commit
-    enabled: true
-    optional: true
-    priority: 10
-    prompt: Commit clarification changes?
-    description: Auto-commit after spec clarification
-    condition: null
-  - extension: preview
-    command: speckit.preview.run
-    enabled: true
-    optional: true
-    priority: 10
-    prompt: Preview the look before /speckit-plan?
-    description: Show the look of the spec's surfaces before the plan fixes it
-    condition: null
-  after_plan:
-  - extension: git
-    command: speckit.git.commit
-    enabled: true
-    optional: true
-    priority: 10
-    prompt: Commit plan changes?
-    description: Auto-commit after implementation planning
-    condition: null
-  - extension: preview
-    command: speckit.preview.run
-    enabled: true
-    optional: true
-    priority: 10
-    prompt: Preview the architecture before /speckit-tasks?
-    description: Show how the plan's parts fit before the tasks fix them
-    condition: null
   after_tasks:
   - extension: git
     command: speckit.git.commit
@@ -154,23 +172,6 @@ hooks:
     priority: 10
     prompt: Commit task changes?
     description: Auto-commit after task generation
-    condition: null
-  after_implement:
-  - extension: git
-    command: speckit.git.commit
-    enabled: true
-    optional: true
-    priority: 10
-    prompt: Commit implementation changes?
-    description: Auto-commit after implementation
-    condition: null
-  - extension: coderabbit
-    command: speckit.coderabbit.review
-    enabled: true
-    optional: false
-    priority: 5
-    prompt: Execute speckit.coderabbit.review?
-    description: Review the implementation locally before it reaches a pull request
     condition: null
   after_checklist:
   - extension: git

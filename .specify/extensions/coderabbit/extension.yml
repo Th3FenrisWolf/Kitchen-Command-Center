@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: coderabbit
   name: "CodeRabbit Review"
-  version: "0.1.1"
+  version: "0.1.2"
   description: "Runs the CodeRabbit command-line review over the feature's diff at the end of implement, and loops on the findings until the branch is clean. Catches on a local run what a pull-request review would cost a push and a review cycle."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai

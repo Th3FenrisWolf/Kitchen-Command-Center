@@ -51,6 +51,16 @@ fixed.
 coderabbit review --agent --base <base> -c <context files>
 ```
 
+Run the command as written, with no `timeout` and no pipe. macOS has no `timeout`, and a pipe
+returns the exit code of its last command, so either one turns a failed review into empty output.
+A review can take ten minutes: run it in the background, or raise the shell tool's own timeout,
+and read the whole output.
+
+A round counts only when the command exits 0 and its output contains `review_completed`. Any
+other result is a **failed round**. Report it as failed, with its error line, and never as clean. A
+failed round is not one of the three rounds below: fix the cause and run it again, or stop and
+report that the review did not run.
+
 Add `--include-untracked` when the feature added files that git does not track yet.
 `coderabbit review findings` reprints the last result without paying for a new review.
 
@@ -81,13 +91,14 @@ Leave these to their owners, and name each one in the report:
 - Anything the constitution or a project gate has already settled.
 - A file outside this feature's diff.
 
-**Done when:** every finding of the last round is fixed, or recorded with its reason and its
-owner.
+**Done when:** the last round printed `review_completed`, and every finding of it is fixed, or
+recorded with its reason and its owner.
 
 ## 4. Report
 
 One table: the round count, each finding fixed with its file, each finding left with its reason,
-and the verdict of the last round. Name the code repo, the base and the context files you passed.
+and the verdict of the last round. Quote the `review_completed` line of the last round, or name
+the review as not run. Name the code repo, the base and the context files you passed.
 
 ## Guardrails
 

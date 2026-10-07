@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: jev
   name: "Jev Decisions"
-  version: "0.2.1"
+  version: "0.3.1"
   description: "Typed decisions with Jev as a smart switch statement: regex floor cases in code, one Jev question for the residue, a declared fallback for every unsure answer. Ships the engine, the question bank and the calibration harness every other command calls."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai

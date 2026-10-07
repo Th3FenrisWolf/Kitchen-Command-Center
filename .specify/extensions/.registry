@@ -1,6 +1,20 @@
 {
   "schema_version": "1.0",
   "extensions": {
+    "preview": {
+      "version": "0.1.0",
+      "source": "local",
+      "manifest_hash": "sha256:89641a88aec7082b0fe8aec941d157eeec2a5e7934b5a0ba162dad6778b12a61",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.preview.run"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-07T14:50:52.834972+00:00"
+    },
     "bug": {
       "version": "1.0.0",
       "source": "local",
@@ -15,7 +29,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:29.712363+00:00"
+      "installed_at": "2026-10-07T15:10:43.658722+00:00"
     },
     "assess": {
       "version": "1.0.0",
@@ -33,7 +47,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:29.722505+00:00"
+      "installed_at": "2026-10-07T15:10:43.700715+00:00"
     },
     "git": {
       "version": "1.0.0",
@@ -51,7 +65,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:29.743089+00:00"
+      "installed_at": "2026-10-07T15:10:43.736520+00:00"
     },
     "grill": {
       "version": "0.2.0",
@@ -65,7 +79,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:30.653587+00:00"
+      "installed_at": "2026-10-07T15:10:44.830730+00:00"
     },
     "qa": {
       "version": "0.2.0",
@@ -79,7 +93,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:31.369522+00:00"
+      "installed_at": "2026-10-07T15:10:45.581524+00:00"
     },
     "jira": {
       "version": "0.2.2",
@@ -95,12 +109,12 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:32.107511+00:00"
+      "installed_at": "2026-10-07T15:10:46.335310+00:00"
     },
     "jev": {
-      "version": "0.2.1",
+      "version": "0.3.1",
       "source": "local",
-      "manifest_hash": "sha256:cf1fb67e2540c19400922b1c2c4d0d94ddceb51c7bd0c6e74a3a21862d4b10ab",
+      "manifest_hash": "sha256:3b38b5719920ddcfa0f304895c4dd79fd9a1fc4974b450d74793aa5c9263ab44",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -109,12 +123,12 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:32.868881+00:00"
+      "installed_at": "2026-10-07T15:10:47.052457+00:00"
     },
     "batch": {
-      "version": "0.2.0",
+      "version": "0.3.0",
       "source": "local",
-      "manifest_hash": "sha256:c5ed057bbc7cd2f8d49f2e981ca944948502774c8869f5fd653b4ef286b2eeb7",
+      "manifest_hash": "sha256:3930053e9e39f77bd491526df1a4df79b22eca2814ec0954499247fdb7a7e3ae",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -123,12 +137,12 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:33.911269+00:00"
+      "installed_at": "2026-10-07T15:10:47.892628+00:00"
     },
     "card": {
-      "version": "0.3.1",
+      "version": "0.5.1",
       "source": "local",
-      "manifest_hash": "sha256:358ad48ad5c1e56f79ba39768f02bbf7d7432804687ef2833409ee788e4ff7f6",
+      "manifest_hash": "sha256:203cdfb4cd4ffbf1bb2225525fe58393bbc089095e64634cbbaf5249ecec5b63",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -137,12 +151,12 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:34.708151+00:00"
+      "installed_at": "2026-10-07T15:10:48.605483+00:00"
     },
     "coderabbit": {
-      "version": "0.1.1",
+      "version": "0.1.2",
       "source": "local",
-      "manifest_hash": "sha256:252bcdc025a01b9c2a27b2120f56a05d6fd7064ba9e20436d8122677513e36a3",
+      "manifest_hash": "sha256:42c4f71bafbf20d75ad85bf3075180796186cf256dfac0b68ae7ec90ec3c1bd8",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -151,21 +165,21 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-05T18:29:35.430524+00:00"
+      "installed_at": "2026-10-07T15:10:49.706287+00:00"
     },
-    "preview": {
-      "version": "0.1.0",
+    "flow": {
+      "version": "0.2.0",
       "source": "local",
-      "manifest_hash": "sha256:89641a88aec7082b0fe8aec941d157eeec2a5e7934b5a0ba162dad6778b12a61",
+      "manifest_hash": "sha256:ea4b5acd96c64925598bc9fccaeb5eb5168f9dd30f27ec0e36e8af25c44cbc06",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
         "claude": [
-          "speckit.preview.run"
+          "speckit.flow.run"
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-07T14:50:52.834972+00:00"
+      "installed_at": "2026-10-07T15:10:50.519504+00:00"
     }
   }
 }

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { questionHash, validateBank, verdict, worst, ask, loadBank, MODEL, PLUGIN_BANK } from "./core.mjs";
 import { decide } from "./decide.mjs";
 import { sentences } from "./ste100.mjs";
@@ -280,6 +281,8 @@ process.env.JEV_API_KEY = "selftest";
   assert.equal(typo.row.predictions[0].reason, "Runner", "an invalid floor is skipped and the next one still applies");
   const risky = { questions: [{ ...tool_input.questions[0], question: "Which runner do we deploy with?" }] };
   assert.equal((await steerAsk({ tool_input: risky }, deps("on"))).row.predictions[0].via, "floor");
+  const closeOut = { questions: [{ ...tool_input.questions[0], question: "Publish the close-out: push, open the pull request, move the card?" }] };
+  assert.equal((await steerAsk({ tool_input: closeOut }, deps("on", reply(0.95)))).output, null, "card implement's close-out always reaches the owner");
 
   // Each answered question becomes a case, and a shadow stop followed by a
   // nudge becomes a stopped-short case.
@@ -311,5 +314,16 @@ process.env.JEV_API_KEY = "selftest";
   assert.match(session.output.hookSpecificOutput.additionalContext, /GitHub: `gh auth status` failed\. Fix: `gh auth login`/);
 }
 delete process.env.JEV_API_KEY;
+
+// Imported with no script path and no key, no script runs its command line,
+// and the key stays unset.
+{
+  const env = { ...process.env };
+  delete env.JEV_API_KEY;
+  delete env.EVAL_JEV_API_KEY;
+  const imports = ["core", "decide", "steer", "ste100", "doc-kinds"].map((name) => `await import(${JSON.stringify(new URL(`./${name}.mjs`, import.meta.url).href)});`);
+  const probe = `${imports.join(" ")} console.log(String(process.env.JEV_API_KEY === undefined));`;
+  assert.equal(execFileSync(process.execPath, ["--input-type=module", "-e", probe], { env, encoding: "utf8" }).trim(), "true");
+}
 
 console.log("jev selftest: all assertions passed");

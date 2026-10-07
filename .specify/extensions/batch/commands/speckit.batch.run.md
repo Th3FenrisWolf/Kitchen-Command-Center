@@ -45,9 +45,13 @@ Every subagent this command dispatches, in any phase:
   the exact shape to return. It has no memory of this session.
 - Pins its own feature: `SPECIFY_FEATURE_DIRECTORY=<spec dir>` before any
   `.specify/scripts/` call, bash or PowerShell.
-- Runs on a capped model, set explicitly on the dispatch call — never the
-  unset default, which inherits this session's model, and never the top
-  tier.
+- Runs as an agent type, set as `subagent_type` on the dispatch call with
+  no `model`: `bizstream-ai:architect` for a phase that drafts or judges
+  (specify, clarify, plan, tasks) and `bizstream-ai:scout`
+  for one that applies decisions already taken (a jira draft or create).
+  `.specify/extensions/jev/templates/jev.md` sets the types under Subagent
+  model. Without the bizstream-ai plugin, pass the type's model as
+  `model`, never the unset default, which inherits this session's model.
 - Never asks the user anything. An unresolved decision goes into its return
   value instead.
 - Returns a fixed shape: target, status (`done`, `blocked`, or `failed`),

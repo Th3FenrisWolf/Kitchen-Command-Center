@@ -168,6 +168,34 @@
       "samples": 3
     },
     {
+      "id": "agent-tier",
+      "scope": "dispatch",
+      "primitive": "choice",
+      "text": "A subagent dispatch follows: its one-line description, then the start of its brief. Which kind of job is it? Judge the work the agent must do and what it hands back, not the topic it touches.",
+      "criteria": {
+        "checker": "It runs checks the brief prescribes, such as tests, lint, a build, a scanner or a rerun after a fix someone else made, compares each result with a stated expectation, and reports pass or fail. It changes no code, does not investigate why a check fails, and makes no design call.",
+        "scout": "It finds facts or applies decisions already taken. Facts: a lookup, an inventory, a survey of code or data, or a read-only query, with each answer cited and no recommendation. Edits: encoding answers already given, a doc or text fix the brief spells out, a ticket draft, or a QA walk script built from a spec. It changes no running code or configuration.",
+        "builder": "It changes code, configuration, CI, a script or migration logic and must leave it working, checked by a build or a test and often shipped as a pull request. An investigation that ends in a fix counts here, and so does a check run that must fix what fails.",
+        "architect": "It produces a judgment that later work builds on: drafting a spec, a plan or a task list, an ambiguity scan, a review of code or a plan, confirming whether findings are real, verifying acceptance criteria against code, a red team round, an audit or comparison that ends in a recommendation, a root cause from evidence with no fix, or research for an owner decision."
+      },
+      "rule": "An audit, never a dispatch step: re-classify past whole-job dispatches offline and flag each one whose agent type differs from the type used.",
+      "floor": [
+        {
+          "match": "^(red[- ]team|review\\b|verify acceptance\\b|confirm (the )?(review )?findings\\b|draft (the |a )?(spec|plan|tasks)\\b|plan (the )?spec\\b|generate (the )?tasks\\b)",
+          "then": "architect"
+        },
+        {
+          "match": "^implement\\b",
+          "then": "builder"
+        }
+      ],
+      "fallback": "builder",
+      "minConfidence": 0.6,
+      "samples": 1,
+      "blocking": false,
+      "hash": "dd19641d745eeb98"
+    },
+    {
       "id": "steer-stopped-short",
       "scope": "stop",
       "primitive": "noul",

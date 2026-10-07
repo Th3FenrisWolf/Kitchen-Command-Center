@@ -2,6 +2,10 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+// claude plugin eval passes only EVAL_* variables to a run. process.env stores
+// an assigned undefined as the string "undefined", so assign only a real key.
+if (!process.env.JEV_API_KEY && process.env.EVAL_JEV_API_KEY) process.env.JEV_API_KEY = process.env.EVAL_JEV_API_KEY;
+
 export const MODEL = "jev-1.13.0";
 
 // The plugin bank ships beside this module. A project bank sits in the working

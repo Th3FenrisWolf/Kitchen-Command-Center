@@ -3,7 +3,7 @@ import { appendFileSync, closeSync, existsSync, fstatSync, mkdirSync, openSync, 
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { ask, findQuestion, loadBank } from "./core.mjs";
+import { ask, findQuestion, loadBank, PLUGIN_BANK } from "./core.mjs";
 import { decide } from "./decide.mjs";
 
 // Owner steering. Each Claude Code hook event where a session waits on the
@@ -350,14 +350,15 @@ async function main([command, ...rest]) {
   const mode = modeFor(event, config);
   if (mode === "off") return 0;
   if (existsSync(projectDir)) process.chdir(projectDir);
-  const { row, output } = await handler(input, { config, mode, bank: loadBank() });
+  // The shipped bank only: a cloned repository never redefines when its owner is needed.
+  const { row, output } = await handler(input, { config, mode, bank: loadBank([PLUGIN_BANK]) });
   log(row, input);
   if (output) console.log(JSON.stringify(output));
   return 0;
 }
 
 // A steer never breaks the session: any failure leaves the event as it was.
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
     process.exitCode = (await main(process.argv.slice(2))) ?? 0;
   } catch (error) {

@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: batch
   name: "Phase Batch"
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Runs one Spec Kit phase across every ready target in parallel: specify, clarify, plan, tasks, or jira. Fans out subagents, reports one table per phase, gates jira on approval."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai

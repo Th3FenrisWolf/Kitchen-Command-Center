@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-10-05T18:29:36Z",
+  "updated_at": "2026-10-07T15:10:52Z",
   "bundles": [
     {
       "bundle_id": "bizstream",
-      "version": "0.9.0",
+      "version": "0.11.1",
       "installed_at": "2026-10-05T18:29:36Z",
       "contributed_components": [
         {
@@ -40,22 +40,27 @@
         {
           "kind": "extensions",
           "id": "jev",
-          "version": "0.2.1"
-        },
-        {
-          "kind": "extensions",
-          "id": "batch",
-          "version": "0.2.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "card",
           "version": "0.3.1"
         },
         {
           "kind": "extensions",
+          "id": "batch",
+          "version": "0.3.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "card",
+          "version": "0.5.1"
+        },
+        {
+          "kind": "extensions",
           "id": "coderabbit",
-          "version": "0.1.1"
+          "version": "0.1.2"
+        },
+        {
+          "kind": "extensions",
+          "id": "flow",
+          "version": "0.2.0"
         },
         {
           "kind": "presets",
