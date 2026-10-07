@@ -1,17 +1,10 @@
 ---
-name: speckit-card-implement
 description: Take one card from a written tasks.md to an open pull request, with the
   project's gates enforced and the branch recomposed into clean commits before it
   is published. Never merges.
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:kcc-recompose
-user-invocable: true
-disable-model-invocation: false
 ---
 
-# Speckit Card Implement Skill
+
 
 # Implement card
 

@@ -1,19 +1,12 @@
 ---
-name: speckit-flow-run
 description: Run one feature from an idea to an open pull request, through every Spec
   Kit phase, and stop only when the owner must decide or act. The branch is recomposed
   into clean commits before it is published. Use when the user says "autopilot", "run
   the whole flow", "take this idea to a PR", or wants specify through implement without
   a stop per phase.
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:kcc-recompose
-user-invocable: true
-disable-model-invocation: false
 ---
 
-# Speckit Flow Run Skill
+
 
 # Autopilot flow
 

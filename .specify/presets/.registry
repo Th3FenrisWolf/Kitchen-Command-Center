@@ -36,6 +36,26 @@
         ]
       },
       "installed_at": "2026-10-07T15:10:51.776642+00:00"
+    },
+    "kcc-recompose": {
+      "version": "0.1.0",
+      "source": "local",
+      "manifest_hash": "sha256:b382e9a2ae2e402aacb31b66a2c10e5e2340dcf794a9b95257a5bbffa38ae667",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.card.implement",
+          "speckit.flow.run"
+        ]
+      },
+      "registered_skills": {
+        "claude": [
+          "speckit-card-implement",
+          "speckit-flow-run"
+        ]
+      },
+      "installed_at": "2026-10-07T16:27:40.292569+00:00"
     }
   }
 }
