@@ -34,6 +34,7 @@ public class SecurityComposer : IComposer
             options.AddPolicy(RateLimits.Account, context => RateLimits.PerClient(context, limits => limits.AccountPerMinute, TimeSpan.FromMinutes(1)));
             options.AddPolicy(RateLimits.Contributions, context => RateLimits.PerClient(context, limits => limits.ContributionsPerMinute, TimeSpan.FromMinutes(1)));
             options.AddPolicy(RateLimits.Submissions, context => RateLimits.PerClient(context, limits => limits.SubmissionsPerHour, TimeSpan.FromHours(1)));
+            options.AddPolicy(RateLimits.Imports, context => RateLimits.PerClient(context, limits => limits.ImportsPerHour, TimeSpan.FromHours(1)));
         });
 
         // After routing, so the limiter can read which policy the endpoint asks for.

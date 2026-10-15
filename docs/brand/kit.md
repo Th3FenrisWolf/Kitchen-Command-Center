@@ -262,7 +262,10 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
   ghost button that undoes whatever emptied it (`RecipesEmptyState.vue`). A recipe with no reviews says so in its
   meta line, and empty rating stars are `fa-regular` in `ink-soft`.
 - **Browser surfaces.** `accent-color` is ink, and underlines sit 3px below the text. `kcc-seg` hides its
-  scrollbar. Text selection, the caret and the page scrollbars are the browser's own.
+  scrollbar. Text selection, the caret and the page scrollbars are the browser's own. Each ramp sets
+  `color-scheme`, `light` on `:root` in `TailwindConfig.css` and `dark` in the dark ramp, so what the browser
+  draws itself follows the ramp: a `<select>`'s option list, the scrollbars, an autofilled field's fill. Without
+  it the dark ramp's chalk lands on the browser's light list. `contrast.test.ts` checks both.
 
 ## Motion
 

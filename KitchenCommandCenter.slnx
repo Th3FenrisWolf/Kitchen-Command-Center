@@ -9,4 +9,7 @@
     <Project Path="tests/KCC.IntegrationTests/KCC.IntegrationTests.csproj" />
     <Project Path="tests/KCC.UnitTests/KCC.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/KCC.ReaderEval/KCC.ReaderEval.csproj" />
+  </Folder>
 </Solution>

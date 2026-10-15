@@ -1,0 +1,129 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "found",
+    "recipe",
+    "variant",
+    "ingredients",
+    "steps",
+    "matchId",
+    "matchReason",
+    "otherRecipes",
+    "sourceLanguage"
+  ],
+  "properties": {
+    "found": {
+      "type": "boolean",
+      "description": "False when the photos hold no recipe, or a recipe that cannot be read usefully. Every other field is then empty."
+    },
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description"],
+      "properties": {
+        "name": { "$ref": "#/$defs/text", "description": "The dish, without the version, for example Pancakes." },
+        "description": { "$ref": "#/$defs/text", "description": "One or two sentences about the dish." }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "prepMinutes", "cookMinutes", "servings"],
+      "properties": {
+        "name": { "$ref": "#/$defs/text", "description": "What sets this way of making it apart, for example Buttermilk." },
+        "description": { "$ref": "#/$defs/text", "description": "One or two sentences about this version." },
+        "prepMinutes": { "$ref": "#/$defs/count" },
+        "cookMinutes": { "$ref": "#/$defs/count" },
+        "servings": { "$ref": "#/$defs/count" }
+      }
+    },
+    "ingredients": {
+      "type": "array",
+      "description": "Every ingredient in printed order, with groups such as For the sauce merged into one list.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "quantity", "unit", "toTaste", "mark"],
+        "properties": {
+          "name": { "type": "string" },
+          "quantity": {
+            "type": ["number", "null"],
+            "description": "Fractions as decimals, so 1 1/2 is 1.5. The lower number of a range. Null when there is no amount."
+          },
+          "unit": { "type": "string", "description": "As printed, or empty." },
+          "toTaste": { "type": "boolean", "description": "True for to taste, or when no amount is given." },
+          "mark": { "$ref": "#/$defs/mark" }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Every method step in order, without its number.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "mark"],
+        "properties": {
+          "text": { "type": "string" },
+          "mark": { "$ref": "#/$defs/mark" }
+        }
+      }
+    },
+    "matchId": {
+      "type": ["string", "null"],
+      "description": "The catalog id of the published recipe that these photos are a version of, or null."
+    },
+    "matchReason": {
+      "type": ["string", "null"],
+      "description": "One short sentence on why, or null."
+    },
+    "otherRecipes": {
+      "type": "array",
+      "description": "Names of any other recipes the photos show.",
+      "items": { "type": "string" }
+    },
+    "sourceLanguage": {
+      "type": ["string", "null"],
+      "description": "The language of the photos when it is not English, for example Italian. Null for English."
+    }
+  },
+  "$defs": {
+    "mark": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "reason"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["estimate", "unclear", "written"],
+              "description": "estimate: not printed, judged from the recipe. unclear: hard to read or ambiguous. written: text the photos do not contain."
+            },
+            "reason": { "type": "string", "description": "A few words for the cook, for example Printed as 2 to 3." }
+          }
+        }
+      ]
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "mark"],
+      "properties": {
+        "value": { "type": "string" },
+        "mark": { "$ref": "#/$defs/mark" }
+      }
+    },
+    "count": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "mark"],
+      "properties": {
+        "value": { "type": ["integer", "null"] },
+        "mark": { "$ref": "#/$defs/mark" }
+      }
+    }
+  }
+}

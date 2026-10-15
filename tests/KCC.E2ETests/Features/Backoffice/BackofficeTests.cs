@@ -133,21 +133,23 @@ public class BackofficeTests : BasePageTests
     {
         _ = await Page.GotoAsync("/recipes/create-recipe");
         var next = Page.GetByRole(AriaRole.Button, new() { Name = "Next" });
-        await Page.GetByPlaceholder("e.g., Mac & Cheese").FillAsync(recipeName);
-        await Page.GetByPlaceholder("A short description of this dish").FillAsync("Submitted by the backoffice E2E suite.");
+        await Page.GetByTestId("wizard-start-typing").ClickAsync();
+        await Page.GetByTestId("wizard-recipe-name").FillAsync(recipeName);
+        await Page.GetByTestId("wizard-recipe-description").FillAsync("Submitted by the backoffice E2E suite.");
         await next.ClickAsync();
-        await Page.GetByPlaceholder("e.g., Classic Stovetop").FillAsync("First Try");
-        await Page.GetByPlaceholder("What makes this variant special?").FillAsync("The first way.");
+        await Page.GetByTestId("wizard-variant-name").FillAsync("First Try");
+        await Page.GetByTestId("wizard-variant-description").FillAsync("The first way.");
         await Page.Locator("input[id$='-prep-time']").FillAsync("10");
         await Page.Locator("input[id$='-cook-time']").FillAsync("20");
         await Page.Locator("input[id$='-servings']").FillAsync("4");
         await next.ClickAsync();
-        await Page.GetByPlaceholder("Ingredient name").First.FillAsync("Eggs");
+        await Page.GetByTestId("wizard-ingredient-name").First.FillAsync("Eggs");
         await next.ClickAsync();
-        await Page.GetByPlaceholder("Describe this step").First.FillAsync("Scramble gently.");
+        await Page.GetByTestId("wizard-instruction-text").First.FillAsync("Scramble gently.");
         await next.ClickAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Submit for Review" }).ClickAsync();
-        await Expect(Page.GetByText("Recipe Submitted!")).ToBeVisibleAsync();
+        await Page.GetByTestId("wizard-submit").ClickAsync();
+        await Expect(Page.GetByTestId("wizard-submitted")).ToBeVisibleAsync();
+        await Expect(Page.GetByTestId("wizard-closing-link")).ToHaveAttributeAsync("href", "/recipes/");
     }
 
     // The submission's icon is already the name's fallback, so a suggestion alone would change nothing visible: pick

@@ -289,3 +289,18 @@ describe.each<[string, Tokens]>([
     }
   })
 })
+
+// The browser draws some surfaces itself (a select's option list, the scrollbars, an autofilled field) on its
+// own Canvas with the page's ink. Without the ramp's scheme, the dark ramp's chalk lands on a light Canvas.
+describe('browser-drawn surfaces', () => {
+  const lightRootAt = themeCss.indexOf(':root {')
+
+  it('take the light scheme from the light ramp', () => {
+    expect(lightRootAt, 'TailwindConfig.css declares no plain :root block').toBeGreaterThan(-1)
+    expect(blockAt(themeCss, lightRootAt, 'TailwindConfig.css')).toMatch(/color-scheme:\s*light;/)
+  })
+
+  it('take the dark scheme from the dark ramp', () => {
+    expect(darkBlock).toMatch(/color-scheme:\s*dark;/)
+  })
+})

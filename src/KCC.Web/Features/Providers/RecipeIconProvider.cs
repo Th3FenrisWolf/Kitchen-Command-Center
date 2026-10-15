@@ -9,7 +9,8 @@ namespace KCC.Web.Features.Providers;
 public class RecipeIconProvider(
     AnthropicClient client,
     AnthropicOptions options,
-    ILogger<RecipeIconProvider> logger
+    ILogger<RecipeIconProvider> logger,
+    TimeSpan? budget = null
 ) : IRecipeIconService
 {
     private const string ToolName = "select_icon";
@@ -24,18 +25,22 @@ public class RecipeIconProvider(
             }),
         };
 
+    private readonly TimeSpan callBudget = budget ?? TimeSpan.FromSeconds(15);
+
     public async Task<string> PickAsync(
         string name,
         string description,
         IEnumerable<string> ingredients,
         CancellationToken cancellationToken)
     {
-        // Development, CI and the test hosts run without a key, and a request that cannot authenticate only delays the
-        // same fallback.
+        // CI and the test hosts run without a key, and a request that cannot authenticate only delays the same fallback.
         if (string.IsNullOrWhiteSpace(options.ApiKey))
         {
             return RecipeIcons.Fallback(name);
         }
+
+        using var budgetSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budgetSource.CancelAfter(callBudget);
 
         try
         {
@@ -75,7 +80,9 @@ public class RecipeIconProvider(
                 ],
             };
 
-            var message = await client.Messages.Create(parameters, cancellationToken);
+            // The SDK stops passing the token on once the headers arrive.
+            using var response = await client.Messages.WithRawResponse.Create(parameters, budgetSource.Token);
+            var message = await response.Deserialize(budgetSource.Token).WaitAsync(budgetSource.Token);
 
             foreach (var block in message.Content)
             {
@@ -91,7 +98,7 @@ public class RecipeIconProvider(
 
             logger.LogWarning("Icon AI returned no valid icon for recipe {Recipe}; using fallback.", name);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
             logger.LogWarning(ex, "Icon AI call failed for recipe {Recipe}; using fallback.", name);
         }

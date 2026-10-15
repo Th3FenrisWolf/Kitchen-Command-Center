@@ -6,8 +6,15 @@ namespace KCC.E2ETests;
 
 public class BasePageTests : PageTest
 {
+    // Browsers are pooled per worker, and a test class's own launch options reach only a worker with no browser yet.
     public BasePageTests()
-        : base(new BrowserTypeLaunchOptions { Headless = true }) { }
+        : base(new BrowserTypeLaunchOptions
+        {
+            Headless = true,
+            Args = ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"],
+        })
+    {
+    }
 
     [ClassDataSource<SiteProcess>(Shared = SharedType.PerTestSession)]
     public SiteProcess Site { get; init; } = null!;

@@ -7,6 +7,7 @@
     step?: number
     unit?: string
     label?: string
+    valueLabel?: string
     decreaseLabel?: string
     increaseLabel?: string
     disabled?: boolean
@@ -24,6 +25,7 @@
     step = 1,
     unit,
     label,
+    valueLabel,
     decreaseLabel,
     increaseLabel,
     disabled,
@@ -72,9 +74,9 @@
     return `${Math.max(1, length)}ch`
   })
 
-  const valueLabel = computed(() => {
+  const valueName = computed(() => {
     const name = label ?? 'Value'
-    return unit ? `${name} in ${unit}` : name
+    return valueLabel ?? (unit ? `${name} in ${unit}` : name)
   })
   const decreaseName = computed(() => decreaseLabel ?? (label ? `Decrease ${label}` : 'Decrease'))
   const increaseName = computed(() => increaseLabel ?? (label ? `Increase ${label}` : 'Increase'))
@@ -154,7 +156,7 @@
           :min="min"
           :max="max"
           :step="step"
-          :aria-label="valueLabel"
+          :aria-label="valueName"
           :disabled="disabled"
           :placeholder="placeholder"
           :value="model"

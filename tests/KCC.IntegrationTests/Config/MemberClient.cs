@@ -25,11 +25,17 @@ public sealed partial class MemberClient : IDisposable
 
     public HttpClient Http => client;
 
-    public Task<HttpResponseMessage> PostAsync(string path, object? body = null) => SendAsync(HttpMethod.Post, path, body);
+    public Task<HttpResponseMessage> PostAsync(string path, object? body = null) => SendAsync(HttpMethod.Post, path, Json(body));
 
-    public Task<HttpResponseMessage> PutAsync(string path, object? body = null) => SendAsync(HttpMethod.Put, path, body);
+    public Task<HttpResponseMessage> PutAsync(string path, object? body = null) => SendAsync(HttpMethod.Put, path, Json(body));
 
     public Task<HttpResponseMessage> DeleteAsync(string path) => SendAsync(HttpMethod.Delete, path, null);
+
+    public Task<HttpResponseMessage> PostMultipartAsync(
+        string path,
+        MultipartFormDataContent body,
+        CancellationToken cancellationToken = default) =>
+        SendAsync(HttpMethod.Post, path, body, cancellationToken);
 
     public async Task<AuthResult> SignInAsync(string userName, string password, string? returnUrl = null)
     {
@@ -58,17 +64,18 @@ public sealed partial class MemberClient : IDisposable
 
     public void Dispose() => client.Dispose();
 
-    private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, object? body)
+    private static JsonContent? Json(object? body) => body is null ? null : JsonContent.Create(body);
+
+    private async Task<HttpResponseMessage> SendAsync(
+        HttpMethod method,
+        string path,
+        HttpContent? content,
+        CancellationToken cancellationToken = default)
     {
         await EnsureTokenAsync();
-        using var request = new HttpRequestMessage(method, path);
+        using var request = new HttpRequestMessage(method, path) { Content = content };
         request.Headers.Add("RequestVerificationToken", token);
-        if (body is not null)
-        {
-            request.Content = JsonContent.Create(body);
-        }
-
-        return await client.SendAsync(request);
+        return await client.SendAsync(request, cancellationToken);
     }
 
     private async Task EnsureTokenAsync()

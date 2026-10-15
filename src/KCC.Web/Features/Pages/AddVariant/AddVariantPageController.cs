@@ -2,6 +2,7 @@ using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Models.Generated;
 using KCC.Web.Features.Pages.Account;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.RecipeImport;
 using KCC.Web.Features.Recipes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -19,7 +20,8 @@ public class AddVariantPageController(
     AccountPageQueries accountPages,
     IRecipeQueries recipes,
     IResourceStringProvider resourceStrings,
-    PageMetadata pageMetadata)
+    PageMetadata pageMetadata,
+    ImportAvailability importAvailability)
     : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
     public async Task<IActionResult> Index([FromQuery(Name = "recipe")] Guid? recipeKey, CancellationToken cancellationToken)
@@ -44,7 +46,10 @@ public class AddVariantPageController(
             RecipeId = recipe.Key,
             RecipeName = recipe.Name,
             RecipeSlug = recipe.Url,
-            ResourceStrings = resourceStrings.GetGroup("AddVariant"),
+            PhotoImport = await importAvailability.GetAsync(),
+            ResourceStrings = resourceStrings.GetGroup("AddVariant")
+                .Concat(resourceStrings.GetGroup("RecipeWizard"))
+                .ToDictionary(StringComparer.Ordinal),
         };
         pageMetadata.Apply(page, viewModel);
 

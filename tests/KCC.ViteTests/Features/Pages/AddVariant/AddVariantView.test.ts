@@ -3,23 +3,28 @@ import '~/Utilities/StringExtensions'
 import AddVariantView from '~/Pages/AddVariant/AddVariantView.Component.vue'
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 
-// Only the keys step one composes; the rest fall back to their key, as they do in the app.
+// Only the keys the hero and step one compose, with stepper words unlike its built-in English on purpose.
 const STRINGS = {
   'AddVariant.AddVariantFor': 'Add a variant of',
   'AddVariant.Cancel': 'Cancel',
-  'AddVariant.CookTime': 'Cook time',
-  'AddVariant.Description': 'Description',
-  'AddVariant.DescriptionPlaceholder': 'What makes this one different?',
-  'AddVariant.Min': 'min',
-  'AddVariant.Next': 'Next',
-  'AddVariant.PrepTime': 'Prep time',
-  'AddVariant.Servings': 'Servings',
-  'AddVariant.VariantInfo': 'Variant info',
-  'AddVariant.VariantName': 'Variant name',
+  'RecipeWizard.CookTime': 'Cook time',
+  'RecipeWizard.Description': 'Description',
+  'RecipeWizard.VariantDescriptionPlaceholder': 'What makes this one different?',
+  'RecipeWizard.Min': 'min',
+  'RecipeWizard.Next': 'Next',
+  'RecipeWizard.PrepTime': 'Prep time',
+  'RecipeWizard.Servings': 'Servings',
+  'RecipeWizard.VariantInfo': 'Variant info',
+  'RecipeWizard.VariantName': 'Variant name',
+  'RecipeWizard.VariantNamePlaceholder': 'e.g., Classic Stovetop',
+  'RecipeWizard.ValueInUnit': '{0}, in {1}',
+  'RecipeWizard.DecreaseLabel': 'Less {0}',
+  'RecipeWizard.IncreaseLabel': 'More {0}',
+  'RecipeWizard.ProgressLabel': 'Steps',
 }
 
-// The server renders step one and nothing else: `step` starts at 1, so the ingredients, the method, the
-// review summary and the submitted sheet are client state this suite cannot reach.
+// The server renders step one and nothing else, so the ingredients, the method, the review summary and the
+// submitted sheet are client state this suite cannot reach.
 const render = () =>
   renderSsr(AddVariantView, {
     recipeId: '11111111-2222-3333-4444-555555555555',
@@ -41,6 +46,13 @@ describe('AddVariantView', () => {
   // header's dashed rule.
   it('sets the hero a rule below the header', async () => {
     expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
+  })
+
+  it('titles the hero from its own group and the wizard from the shared one', async () => {
+    const html = await render()
+
+    expect(html.slice(0, html.indexOf('aria-label="Steps"'))).toContain('Add a variant of')
+    expect(html.match(/\b(?:RecipeWizard|AddVariant)\.\w+/g) ?? []).toEqual([])
   })
 
   it('counts the four steps on the desk and marks the one being filled', async () => {
@@ -94,12 +106,13 @@ describe('AddVariantView', () => {
     expect(wizard).toMatch(/<label for="[^"]+" class="kcc-lbl">(?:<!--\[-->)?<span>Variant name<\/span>/)
   })
 
-  it('leaves the stepper its own accessible names beside the visible label', async () => {
+  it('names the stepper controls from its strings, beside the visible label', async () => {
     const wizard = wizardOf(await render())
 
-    expect(wizard).toContain('aria-label="Prep time in min"')
-    expect(wizard).toContain('aria-label="Increase Prep time"')
-    expect(wizard).toContain('aria-label="Decrease Cook time"')
+    expect(wizard).toContain('aria-label="Prep time, in min"')
+    expect(wizard).toContain('aria-label="More Prep time"')
+    expect(wizard).toContain('aria-label="Less Cook time"')
+    expect(wizard).toContain('aria-label="Servings"')
   })
 
   it('advances on submit from a marker pill, guarded until the step is filled', async () => {
@@ -127,6 +140,19 @@ describe('AddVariantView', () => {
     expect(wizard).not.toContain('fa-clipboard-check')
     expect(wizard).not.toContain('kcc-tape')
     expect(wizard).not.toContain('kcc-wash')
+  })
+
+  it('opens the wizard on the start step when the page turns the photo import on', async () => {
+    const html = await renderSsr(AddVariantView, {
+      recipeId: '11111111-2222-3333-4444-555555555555',
+      recipeName: 'Brown Butter Gnocchi',
+      recipeSlug: '/recipes/gnocchi',
+      resourceStrings: STRINGS,
+      photoImport: { enabled: true, available: true, maxImageEdge: 2000 },
+    })
+
+    expect(tagWith(html, 'data-testid="wizard-start-photos"')).toMatch(/^<button /)
+    expect(html).not.toContain('aria-current="step"')
   })
 
   it('leaves no Softbound remnant on the wizard', async () => {

@@ -22,6 +22,8 @@ umbraco-package-schema.json
 
 .env
 deploy/first-boot.env
+# The reader evaluation set holds copyrighted pages and private family recipe cards; the repository is public.
+/tools/KCC.ReaderEval/set/
 
 .vs/
 .idea/
