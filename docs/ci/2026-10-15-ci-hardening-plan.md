@@ -73,6 +73,19 @@ Re-run the failed job of run 38755092845. A green run pushes the #93 images and 
 ### Step 5. The touch-scroll E2E flake
 
 - Pause the Playwright page clock around the press, as the CI timing notes describe. Do not raise the 80 ms budget.
+- Already done: run 37394669238 tested a commit from before #85, which paused the page clock in
+  `PhonePadTests.AScrollThatStartsOnThePad_LeavesTheCardsInTheStack`. No run since has failed it. On 2026-10-15 the
+  test passed with a 500 ms gap after the press and 100 ms before each move, so it needs no change.
+
+### Steps 3 and 4: how they landed
+
+- `UmbracoSite` calls `BackofficeClient.CreateSessionUsersAsync` after seeding. The integration fixture has no
+  warm-up step. Only the E2E `SiteProcess` warms up. `UserSaveRaceTests` still creates a new user through
+  `BackofficeClient.ForNewUserAsync`, because a user save is what it races.
+- `[assembly: Timeout(120_000)]` wraps each test body only. TUnit initializes the shared site outside the limit, so
+  boot and seeding keep their own time.
+- Both fixtures copy their run folder's `*.log` files and `logs/` into `KCC_TEST_SITE_LOGS` before they delete it.
+  CI sets it to `$RUNNER_TEMP/site-logs` and copies that into `tests/results/site-logs` when the test step fails.
 
 ### Step 6. Catch flakes before a pull request does
 
