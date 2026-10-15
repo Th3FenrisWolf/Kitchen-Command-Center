@@ -165,6 +165,22 @@ public class SubmissionTests
 
         _ = await Assert.That(page.Status).IsEqualTo(HttpStatusCode.OK);
         _ = await Assert.That(page.Body).Contains("<CreateRecipeView");
+        _ = await Assert.That(page.Attribute("recipes-url")).IsEqualTo("/recipes/");
+    }
+
+    [Test]
+    public async Task WizardPages_SendTheirOwnStrings_AndTheSharedWizardStrings()
+    {
+        var recipe = await TestContent.RecipeAsync(Site.Services, "IT Wolverine Soup");
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
+
+        var create = (await RenderedPage.GetAsync(member.Visitor.Http, "/recipes/create-recipe/")).Prop("resource-strings");
+        var add = (await RenderedPage.GetAsync(member.Visitor.Http, $"/recipes/add-variant/?recipe={recipe}")).Prop("resource-strings");
+
+        _ = await Assert.That(create.GetProperty("CreateRecipe.CreateRecipe").GetString()).IsEqualTo("Create Recipe");
+        _ = await Assert.That(create.GetProperty("RecipeWizard.Next").GetString()).IsEqualTo("Next");
+        _ = await Assert.That(add.GetProperty("AddVariant.BackTo").GetString()).IsEqualTo("Back to");
+        _ = await Assert.That(add.GetProperty("RecipeWizard.Next").GetString()).IsEqualTo("Next");
     }
 
     private static object Recipe(string name) => Recipe(name, "Slow and Low");

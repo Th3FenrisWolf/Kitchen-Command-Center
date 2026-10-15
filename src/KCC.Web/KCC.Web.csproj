@@ -32,6 +32,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Remove="Features/RecipeImport/ReaderOutputSchema.json" />
+        <EmbeddedResource Include="Features/RecipeImport/ReaderOutputSchema.json" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\KCC.Admin\KCC.Admin.csproj" />
         <ProjectReference Include="..\KCC.Contributions\KCC.Contributions.csproj" />
     </ItemGroup>
