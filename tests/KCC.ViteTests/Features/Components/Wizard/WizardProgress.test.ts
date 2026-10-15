@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
 import { renderSsr } from '../../../support/ssr'
 
-const render = (current: number, total: number) => renderSsr(WizardProgress, { current, total })
+const render = (current: number, total: number, label?: string) => renderSsr(WizardProgress, { current, total, label })
 
 // Completed steps read as ink, the current step is the one marker pill, and steps still ahead stay
 // ink-soft (the kcc-kick default) — counted by one distinguishing class per state rather than the whole
@@ -52,6 +52,17 @@ describe('WizardProgress', () => {
 
     const liTags = html.match(/<li[^>]*>/g) ?? []
     expect(liTags.at(-1) ?? '').not.toContain('flex-1')
+  })
+
+  it('names the list "Steps" when a page gives no label', async () => {
+    expect(await render(2, 5)).toContain('aria-label="Steps"')
+  })
+
+  it('takes the name of the list from a page label', async () => {
+    const html = await render(2, 5, 'Recipe steps')
+
+    expect(html).toContain('aria-label="Recipe steps"')
+    expect(html).not.toContain('aria-label="Steps"')
   })
 
   it('hides the zero-padded numeral from assistive tech behind a plain sr-only number', async () => {

@@ -2,13 +2,14 @@
   export interface WizardProgressProps {
     current: number
     total: number
+    label?: string
   }
 
-  const { current, total } = defineProps<WizardProgressProps>()
+  const { current, total, label = 'Steps' } = defineProps<WizardProgressProps>()
 </script>
 
 <template>
-  <ol class="mb-6 flex items-center gap-2" role="list" aria-label="Steps">
+  <ol class="mb-6 flex items-center gap-2" role="list" :aria-label="label">
     <li
       v-for="s in total"
       :key="s"

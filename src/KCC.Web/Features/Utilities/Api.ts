@@ -3,8 +3,22 @@ export interface ApiStrings {
   requestFailed: string
 }
 
-export type ApiResult<T> =
-  { success: true; data: T; errorMessage: null } | { success: false; data: null; errorMessage: string }
+export interface ApiFailure {
+  success: false
+  data: null
+  errorMessage: string
+  status: number
+  code: string | null
+  body: Record<string, unknown> | null
+}
+
+export type ApiResult<T> = { success: true; data: T; errorMessage: null } | ApiFailure
+
+export interface ApiAborted {
+  success: false
+  data: null
+  aborted: true
+}
 
 interface ApiConfig {
   antiforgeryToken?: string
@@ -51,15 +65,25 @@ export function del<T>(url: string): Promise<ApiResult<T>> {
   return send<T>('DELETE', url)
 }
 
+// The browser writes the multipart content type itself, with the boundary the body needs.
+export async function postForm<T>(url: string, form: FormData, signal: AbortSignal): Promise<ApiResult<T> | ApiAborted> {
+  const result = await request<T>(url, { method: 'POST', headers: tokenHeader(), body: form, signal })
+  return signal.aborted ? { success: false, data: null, aborted: true } : result
+}
+
 function send<T>(method: 'POST' | 'PUT' | 'DELETE', url: string, body?: unknown): Promise<ApiResult<T>> {
   return request<T>(url, {
     method,
     headers: {
       ...(method === 'DELETE' ? {} : { 'Content-Type': 'application/json' }),
-      ...(config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}),
+      ...tokenHeader(),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
+}
+
+function tokenHeader(): Record<string, string> {
+  return config.antiforgeryToken ? { RequestVerificationToken: config.antiforgeryToken } : {}
 }
 
 async function request<T>(url: string, init: RequestInit): Promise<ApiResult<T>> {
@@ -67,13 +91,18 @@ async function request<T>(url: string, init: RequestInit): Promise<ApiResult<T>>
   try {
     response = await fetch(url, init)
   } catch {
-    return fail(config.strings.unexpectedError)
+    return fail(0, null, config.strings.unexpectedError, null)
   }
 
   const body = await readBody(response)
 
   if (!response.ok || isEnvelopeFailure(body)) {
-    return fail(messageFrom(body) ?? config.strings.requestFailed)
+    return fail(
+      response.status,
+      codeFrom(body),
+      messageFrom(body) ?? config.strings.requestFailed,
+      isObject(body) ? body : null,
+    )
   }
 
   return { success: true, data: (body ?? null) as T, errorMessage: null }
@@ -105,10 +134,16 @@ function messageFrom(body: unknown): string | null {
   return null
 }
 
+function codeFrom(body: unknown): string | null {
+  return isRecord(body) && typeof body.code === 'string' && body.code ? body.code : null
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
-function fail(errorMessage: string): { success: false; data: null; errorMessage: string } {
-  return { success: false, data: null, errorMessage }
+const isObject = (value: unknown): value is Record<string, unknown> => isRecord(value) && !Array.isArray(value)
+
+function fail(status: number, code: string | null, errorMessage: string, body: Record<string, unknown> | null): ApiFailure {
+  return { success: false, data: null, errorMessage, status, code, body }
 }

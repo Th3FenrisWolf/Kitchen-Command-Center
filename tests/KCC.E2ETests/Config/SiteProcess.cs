@@ -334,12 +334,19 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
             ["RateLimits__AccountPerMinute"] = "1000",
             ["RateLimits__ContributionsPerMinute"] = "1000",
             ["RateLimits__SubmissionsPerHour"] = "1000",
+            ["RateLimits__ImportsPerHour"] = "1000",
 
             // The site listens on plain HTTP, and the backoffice's sign-in refuses it while UseHttps is on.
             ["Umbraco__CMS__Global__UseHttps"] = "false",
 
             // The icon suggestion takes its fallback instead of calling Anthropic, whatever key the environment holds.
             ["Anthropic__ApiKey"] = string.Empty,
+
+            // A shell that ran the manual scenarios may still hold a delay or a ceiling, so both are pinned.
+            ["RecipeImport__StandInReader"] = "true",
+            ["RecipeImport__StandInDelaySeconds"] = "0",
+            ["RecipeImport__MonthlyCeilingUsd"] = "2",
+
             ["uSync__Settings__ExportOnSave"] = "None",
             ["VueSsr__Enabled"] = withSsr ? "true" : "false",
             ["VueSsr__BaseUrl"] = $"http://127.0.0.1:{ssrPort}",

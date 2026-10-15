@@ -20,6 +20,13 @@ describe('InputField', () => {
     expect(inputTag(html)).not.toContain('basis-1/3')
   })
 
+  it('lands an input class on the input, never on the pill', async () => {
+    const html = await renderSsr(InputField, { modelValue: '', inputClass: 'kcc-num' })
+    expect(inputTag(html)).toMatch(/\sclass="kcc-num"/)
+    expect(inputTag(html)).not.toMatch(/inputclass/i)
+    expect(labelTag(html)).not.toContain('kcc-num')
+  })
+
   it('lands every other attribute on the input, never on the pill', async () => {
     const html = await renderSsr(InputField, {
       modelValue: '',

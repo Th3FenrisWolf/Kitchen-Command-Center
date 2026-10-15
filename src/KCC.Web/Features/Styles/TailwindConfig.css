@@ -66,6 +66,10 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
   button,
   a,
   input,

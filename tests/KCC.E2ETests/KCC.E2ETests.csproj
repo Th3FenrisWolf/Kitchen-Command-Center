@@ -10,4 +10,7 @@
         <PackageReference Include="TUnit" />
         <PackageReference Include="TUnit.Playwright" />
     </ItemGroup>
+    <ItemGroup>
+        <None Update="Fixtures\**\*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>
