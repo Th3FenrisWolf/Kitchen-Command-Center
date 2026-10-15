@@ -17,15 +17,37 @@ public sealed class BackofficeClient : IDisposable
 {
     private const string Secret = "Integration-Client-Secret-2026";
 
+    private static readonly (Guid UserGroupKey, string Name)[] SessionUsers =
+    [
+        (Constants.Security.AdminGroupKey, "administrator"),
+        (Constants.Security.EditorGroupKey, "editor"),
+        (Constants.Security.TranslatorGroupKey, "translator"),
+    ];
+
     private readonly HttpClient client;
 
     private BackofficeClient(HttpClient client) => this.client = client;
 
-    public static Task<BackofficeClient> AdministratorAsync(UmbracoSite site) => InGroupAsync(site, Constants.Security.AdminGroupKey);
+    public static Task<BackofficeClient> AdministratorAsync(UmbracoSite site) => SignInAsync(site, ClientId("administrator"));
 
-    public static Task<BackofficeClient> EditorAsync(UmbracoSite site) => InGroupAsync(site, Constants.Security.EditorGroupKey);
+    public static Task<BackofficeClient> EditorAsync(UmbracoSite site) => SignInAsync(site, ClientId("editor"));
 
-    public static Task<BackofficeClient> TranslatorAsync(UmbracoSite site) => InGroupAsync(site, Constants.Security.TranslatorGroupKey);
+    public static Task<BackofficeClient> TranslatorAsync(UmbracoSite site) => SignInAsync(site, ClientId("translator"));
+
+    public static async Task CreateSessionUsersAsync(UmbracoSite site)
+    {
+        foreach (var (userGroupKey, name) in SessionUsers)
+        {
+            await CreateApiUserAsync(site, userGroupKey, name);
+        }
+    }
+
+    public static async Task<BackofficeClient> ForNewUserAsync(UmbracoSite site, Guid userGroupKey)
+    {
+        var name = Guid.NewGuid().ToString("N")[..12];
+        await CreateApiUserAsync(site, userGroupKey, name);
+        return await SignInAsync(site, ClientId(name));
+    }
 
     public Task<HttpResponseMessage> GetAsync(string path) => client.GetAsync(path);
 
@@ -44,36 +66,37 @@ public sealed class BackofficeClient : IDisposable
 
     public void Dispose() => client.Dispose();
 
-    private static async Task<BackofficeClient> InGroupAsync(UmbracoSite site, Guid userGroupKey)
-    {
-        var id = Guid.NewGuid().ToString("N")[..12];
-        var clientId = $"umbraco-back-office-it-{id}";
-        using (var scope = site.Services.CreateScope())
-        {
-            var created = await scope.ServiceProvider.GetRequiredService<IUserService>().CreateAsync(
-                Constants.Security.SuperUserKey,
-                new UserCreateModel
-                {
-                    Email = $"api-{id}@example.test",
-                    UserName = $"api-{id}@example.test",
-                    Name = $"API {id}",
-                    Kind = UserKind.Api,
-                    UserGroupKeys = new HashSet<Guid> { userGroupKey },
-                },
-                approveUser: true);
-            if (!created.Success)
-            {
-                throw new InvalidOperationException($"Creating an API user failed: {created.Status}.");
-            }
+    private static string ClientId(string name) => $"umbraco-back-office-it-{name}";
 
-            var saved = await scope.ServiceProvider.GetRequiredService<IBackOfficeUserClientCredentialsManager>()
-                .SaveAsync(created.Result.CreatedUser!.Key, clientId, Secret);
-            if (!saved.Success)
+    private static async Task CreateApiUserAsync(UmbracoSite site, Guid userGroupKey, string name)
+    {
+        using var scope = site.Services.CreateScope();
+        var created = await scope.ServiceProvider.GetRequiredService<IUserService>().CreateAsync(
+            Constants.Security.SuperUserKey,
+            new UserCreateModel
             {
-                throw new InvalidOperationException($"Saving client credentials failed: {saved.Result}.");
-            }
+                Email = $"api-{name}@example.test",
+                UserName = $"api-{name}@example.test",
+                Name = $"API {name}",
+                Kind = UserKind.Api,
+                UserGroupKeys = new HashSet<Guid> { userGroupKey },
+            },
+            approveUser: true);
+        if (!created.Success)
+        {
+            throw new InvalidOperationException($"Creating an API user failed: {created.Status}.");
         }
 
+        var saved = await scope.ServiceProvider.GetRequiredService<IBackOfficeUserClientCredentialsManager>()
+            .SaveAsync(created.Result.CreatedUser!.Key, ClientId(name), Secret);
+        if (!saved.Success)
+        {
+            throw new InvalidOperationException($"Saving client credentials failed: {saved.Result}.");
+        }
+    }
+
+    private static async Task<BackofficeClient> SignInAsync(UmbracoSite site, string clientId)
+    {
         // Umbraco's token endpoint refuses plain HTTP while Umbraco:CMS:Global:UseHttps is on, as it is by default.
         var http = site.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") });
         using var token = await http.PostAsync(

@@ -43,7 +43,7 @@ public class UserSaveRaceTests
     {
         Probe.CommitDuringNextSave(WriteAReview);
 
-        using var client = await Task.Run(() => BackofficeClient.EditorAsync(Site)).WaitAsync(SaveLimit);
+        using var client = await Task.Run(() => BackofficeClient.ForNewUserAsync(Site, Constants.Security.EditorGroupKey)).WaitAsync(SaveLimit);
 
         await AssertCommittedAndSignedInAsync(client);
     }
