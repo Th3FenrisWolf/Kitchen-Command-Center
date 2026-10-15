@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Identity;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Scoping;
+using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Sync;
 using Umbraco.Cms.Infrastructure.Services;
@@ -15,6 +17,9 @@ public class SqliteComposer : IComposer
     // Umbraco's handler is internal, so it can only be found by name.
     internal const string RelationsHandlerTypeName = "Umbraco.Cms.Infrastructure.Persistence.Relations.ContentRelationsUpdate";
 
+    // Umbraco's user service is internal too.
+    internal const string UserServiceTypeName = "Umbraco.Cms.Core.Services.UserService";
+
     public void Compose(IUmbracoBuilder builder)
     {
         LockRelationsUpdate<ContentSavedNotification>(builder.Services, Constants.Locks.ContentTree);
@@ -25,6 +30,7 @@ public class SqliteComposer : IComposer
         LockRelateOnTrash<ContentMovedToRecycleBinNotification>(builder.Services, Constants.Locks.ContentTree);
         LockRelateOnTrash<MediaMovedToRecycleBinNotification>(builder.Services, Constants.Locks.MediaTree);
         LockCacheInstructionSync(builder.Services);
+        LockUserWrites(builder.Services);
         builder.Services.AddScoped<IMemberWriteLock, MemberWriteLock>();
     }
 
@@ -45,6 +51,17 @@ public class SqliteComposer : IComposer
                 provider.GetRequiredService<ILastSyncedManager>(),
                 provider.GetRequiredService<ICoreScopeProvider>()));
 
+    private static void LockUserWrites(IServiceCollection services)
+    {
+        Wrap<IUserService>(services, UserServiceTypeName, (provider, inner) =>
+            new WriteLockedUserService(inner, provider.GetRequiredService<ICoreScopeProvider>()));
+        Replace<IUserStore<BackOfficeIdentityUser>>(services, typeof(BackOfficeUserStore), CreateLockedUserStore);
+        Replace<IBackOfficeUserStore>(services, typeof(BackOfficeUserStore), CreateLockedUserStore);
+    }
+
+    private static WriteLockedBackOfficeUserStore CreateLockedUserStore(IServiceProvider provider) =>
+        ActivatorUtilities.CreateInstance<WriteLockedBackOfficeUserStore>(provider);
+
     // Without the lock the site hangs for minutes under concurrent writes, so a registration that has moved in an
     // Umbraco upgrade stops the boot rather than going unwrapped. Replacing it in place with the same lifetime keeps
     // the cache-instruction service a singleton, so there is one inner service and one sync lock, and keeps each
@@ -52,15 +69,26 @@ public class SqliteComposer : IComposer
     private static void Wrap<TService>(IServiceCollection services, string implementationTypeName, Func<IServiceProvider, TService, TService> decorate)
         where TService : class
     {
-        var descriptor = services.SingleOrDefault(candidate =>
-                candidate.ServiceType == typeof(TService)
-                && candidate.ImplementationType?.FullName == implementationTypeName)
-            ?? throw new InvalidOperationException($"Umbraco no longer registers {implementationTypeName} as {typeof(TService)}.");
-
-        var implementation = descriptor.ImplementationType;
+        var descriptor = Find<TService>(services, implementationTypeName);
+        var implementation = descriptor.ImplementationType
+            ?? throw new InvalidOperationException($"Umbraco registers {implementationTypeName} as {typeof(TService)} through a factory.");
         services[services.IndexOf(descriptor)] = ServiceDescriptor.Describe(
             typeof(TService),
             provider => decorate(provider, (TService)ActivatorUtilities.CreateInstance(provider, implementation)),
             descriptor.Lifetime);
     }
+
+    // Umbraco builds the backoffice user store in a factory, so only the factory's return type names what it builds.
+    private static void Replace<TService>(IServiceCollection services, Type implementation, Func<IServiceProvider, TService> create)
+        where TService : class
+    {
+        var descriptor = Find<TService>(services, implementation.FullName);
+        services[services.IndexOf(descriptor)] = ServiceDescriptor.Describe(typeof(TService), create, descriptor.Lifetime);
+    }
+
+    private static ServiceDescriptor Find<TService>(IServiceCollection services, string implementationTypeName) =>
+        services.SingleOrDefault(candidate =>
+            candidate.ServiceType == typeof(TService)
+            && (candidate.ImplementationType ?? candidate.ImplementationFactory?.Method.ReturnType)?.FullName == implementationTypeName)
+        ?? throw new InvalidOperationException($"Umbraco no longer registers {implementationTypeName} as {typeof(TService)}.");
 }

@@ -16,6 +16,7 @@ using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Infrastructure.Examine;
+using Umbraco.Cms.Infrastructure.Persistence;
 
 namespace KCC.IntegrationTests.Config;
 
@@ -124,6 +125,10 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
             services.AddSingleton<TrashRelationProbe>();
             services.AddSingleton<INotificationHandler<RelationSavingNotification>>(
                 provider => provider.GetRequiredService<TrashRelationProbe>());
+            services.AddSingleton<UserSaveProbe>();
+            services.AddSingleton<INotificationHandler<UserSavingNotification>>(
+                provider => provider.GetRequiredService<UserSaveProbe>());
+            services.Insert(0, ServiceDescriptor.Singleton<IProviderSpecificInterceptor, CommitLog>());
         });
 
         builder.ConfigureServices(services =>
