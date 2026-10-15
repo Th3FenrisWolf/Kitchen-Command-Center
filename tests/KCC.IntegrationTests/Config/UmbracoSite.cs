@@ -16,6 +16,7 @@ using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Infrastructure.Examine;
+using Umbraco.Cms.Infrastructure.Persistence;
 
 namespace KCC.IntegrationTests.Config;
 
@@ -76,12 +77,14 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         mediaCachePath = Path.Combine(RepoPaths.WebProject, "umbraco", "Data", "TEMP", MediaCacheFolderName);
 
         await SeedTestRecipesAsync();
+        await BackofficeClient.CreateSessionUsersAsync(this);
     }
 
     public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
         SqliteConnection.ClearAllPools();
+        SiteLogs.Keep(runDirectory, SiteLogs.Destination);
         DeleteIfPresent(runDirectory);
         DeleteIfPresent(localTempPath);
         DeleteIfPresent(examineTempPath);
@@ -124,6 +127,10 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
             services.AddSingleton<TrashRelationProbe>();
             services.AddSingleton<INotificationHandler<RelationSavingNotification>>(
                 provider => provider.GetRequiredService<TrashRelationProbe>());
+            services.AddSingleton<UserSaveProbe>();
+            services.AddSingleton<INotificationHandler<UserSavingNotification>>(
+                provider => provider.GetRequiredService<UserSaveProbe>());
+            services.Insert(0, ServiceDescriptor.Singleton<IProviderSpecificInterceptor, CommitLog>());
         });
 
         builder.ConfigureServices(services =>
@@ -156,8 +163,8 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
     }
 
 
-    // Seeding saves content and members, which must not overlap a test's writes (see AssemblyInfo.cs), so it
-    // runs once, before any test.
+    // Seeding saves content and members, and the session's API users are saves too. None may overlap a test's writes
+    // (see AssemblyInfo.cs), so both run once, before any test.
     private async Task SeedTestRecipesAsync()
     {
         using var client = CreateClient();

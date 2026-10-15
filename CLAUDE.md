@@ -89,7 +89,7 @@ silently loses its styles.
 ## SQLite writes
 
 The site runs on SQLite, where a transaction that has read cannot become the writer once another connection has
-committed, and Umbraco then retries the write for about ten minutes. Four guards in `src/KCC.Web/Features/Sqlite`
+committed, and Umbraco then retries the write for about ten minutes. Five guards in `src/KCC.Web/Features/Sqlite`
 cover the paths KCC writes through. Never remove one.
 
 - `WriteLockedRelationsUpdate` wraps Umbraco's post-save relations update for content, media and member saves.
@@ -98,9 +98,13 @@ cover the paths KCC writes through. Never remove one.
   instructions are pending.
 - `IMemberWriteLock.RunAsync` takes the member write lock up front. Code that saves a member through Umbraco's
   sign-in manager, member manager or `IMemberService` runs inside it.
+- `WriteLockedUserService` and `WriteLockedBackOfficeUserStore` take the same member write lock before the first read
+  of a backoffice user write. The first wraps every write method of `IUserService`. The second replaces Umbraco's
+  `BackOfficeUserStore` and locks its `CreateAsync` and `UpdateAsync`, which sign-in and the token endpoint reach
+  outside the user service.
 
-`SqliteComposer` registers the three that wrap Umbraco's own registrations by replacing them in place. If an Umbraco
-upgrade moves one, the site refuses to boot rather than run unguarded.
+`SqliteComposer` registers the four that wrap or replace Umbraco's own registrations, in place. If an Umbraco upgrade
+moves one, the site refuses to boot rather than run unguarded.
 
 `ImportSpendLedger` in `src/KCC.Web/Features/RecipeImport` writes Umbraco's key-value table through
 `IKeyValueService`. `TryReserve` and `Settle` open one core scope and take `Constants.Locks.KeyValues` before their
@@ -112,6 +116,8 @@ The guards do not reach these paths inside Umbraco:
   `ICacheInstructionService`. Umbraco's other background jobs have not been surveyed.
 - The backoffice's member password reset and unlock: `MemberEditingService.UpdateAsync` reaches
   `MemberUserStore.UpdateAsync`, which reads the member and then saves it, outside `IMemberWriteLock`.
+- The backoffice user store's other writes, such as delete, external logins and tokens, and a user write called
+  inside an outer scope that has already read, which takes the lock too late.
 - `ObtainWriteLock` in Umbraco's EF Core SQLite lock (`SqliteEFCoreDistributedLockingMechanism`) does not await its
   own task, so a contributions write whose lock wait times out carries on unlocked.
 
@@ -128,9 +134,14 @@ the above, with `dotnet run --project tests/KCC.IntegrationTests/KCC.Integration
   index rebuilds. It fails when the member write lock is removed.
 - `CacheInstructionSyncTests` and `TrashRaceTests` reproduce their stalls deterministically and fail without their
   guards. `CacheInstructionSyncTests` also checks that an idle sync takes no write lock.
+- `UserSaveRaceTests` reproduces the user save stall deterministically, for creating a user and for recording a
+  sign-in, and fails without its guard. It also checks that the user service and the user store are wrapped.
 - `RelationsWriteLockTests` checks that the relations and relate-on-trash handlers are wrapped. No test reproduces the
   relations update's own race deterministically. Without that guard, `SqliteConcurrencyTests` stalls in some full-suite
   runs but passes when run alone.
+
+In the integration tests only, `CommitLog` records every commit on Umbraco's connections in a ring of the last 64. A
+test that fails with SQLite error 5 prints the ring and the extended error code, naming the writer that stranded it.
 
 ## Backoffice extensions
 
