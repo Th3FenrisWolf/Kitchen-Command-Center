@@ -115,9 +115,10 @@ Use consistent field names across content types and blocks:
 
 - Document types, data types and dictionary items are edited in the backoffice and exported by uSync on save in
   Development. Commit `src/KCC.Web/uSync/v17/`.
-- Baseline content (the page tree with Home's sections, site settings, taxonomy, status pages) is not exported on save.
-  Edit it in a fresh database, then run `curl -sk -X POST https://localhost:58671/api/dev/baseline/export` and commit
-  the result. The endpoint refuses to run while seeded recipes exist.
+- Baseline content (the page tree with Home's sections, site settings, taxonomy, status pages) is not exported on save,
+  and has had no export endpoint since it was retired. Edit its files under `src/KCC.Web/uSync/v17/Content` by hand.
+- A uSync file may be written by hand when the repository holds files of the same kind that show the format, as the
+  constitution allows. A test that boots a fresh site must prove that it imports.
 - A fresh database boots into the baseline home. An existing one keeps its own Home, because content imports on first
   boot only: delete `src/KCC.Web/umbraco/Data/Umbraco.sqlite.db*` and restart to see the baseline's.
 - ModelsBuilder runs in `SourceCodeManual` mode: after a schema change, use Settings → Models Builder → Generate models,
@@ -132,8 +133,7 @@ curl -sk -X POST https://localhost:58671/api/dev/seed-recipes
 ```
 
 The endpoint answers only in Development and in the Testing environment the test fixtures use. It skips recipes that
-already exist, and it is what the integration and E2E fixtures run before their first test. While seeded recipes
-exist, the baseline export refuses to run, so change the baseline from a fresh database.
+already exist, and it is what the integration and E2E fixtures run before their first test.
 
 #### Contributions
 
@@ -175,9 +175,40 @@ keyed on the `CF-Connecting-IP` header, else the socket address:
 - sign-in, sign-up and password changes: 10 a minute (`RateLimits:AccountPerMinute`)
 - review, cook-note and cooked writes: 30 a minute (`RateLimits:ContributionsPerMinute`)
 - recipe and variant submissions: 5 an hour (`RateLimits:SubmissionsPerHour`)
+- photo import reads: 10 an hour (`RateLimits:ImportsPerHour`)
 
 These are the defaults in `RateLimitOptions` (`src/KCC.Web/Features/Security/RateLimits.cs`); a `RateLimits` section in
 the configuration overrides them.
+
+#### Photo import
+
+A member can start a recipe or a variant from 1 to 10 photos. The browser sends them to the site, a reader model turns
+them into a draft, and the member reviews it before submitting. The import is off until `Anthropic:ApiKey` is set and
+`RecipeImport:Model` names a model with a price profile, or, in Development and Testing, the stand-in reader is on. These settings have defaults in `RecipeImportOptions`
+(`src/KCC.Web/Features/RecipeImport/RecipeImportOptions.cs`), so `appsettings.json` holds no `RecipeImport` section;
+override them with user-secrets in development or `RecipeImport__<Key>` environment variables:
+
+- `RecipeImport:Model` (`claude-opus-5-5`) and `RecipeImport:Effort` (`low`): the reader model, and the effort sent to
+  models that take one
+- `RecipeImport:MonthlyCeilingUsd` (`2.00`): reads stop starting once the month's spend reaches it. The spend is kept
+  in Umbraco's key-value table, one ledger per site
+- `RecipeImport:MaxImageEdge` (`2000`): the longest photo edge, in pixels, that the browser sends
+- `RecipeImport:ReadTimeoutSeconds` (`85`): how long one read may run; keep it under Cloudflare's 100-second limit
+- `RecipeImport:StandInReader` (`false`) and `RecipeImport:StandInDelaySeconds` (`0`): a canned reader that spends
+  nothing, and how long it waits before it answers. They have effect only in Development and Testing
+
+The dev site holds the Anthropic key in KCC.Web's user-secrets, so without the stand-in reader it reads for real and
+spends against its own ledger and ceiling, apart from the Pi's. To work without spending, pass the stand-in on the
+start command and never export it, so that no later command in the shell inherits it:
+
+```bash
+cd src/KCC.Web && RecipeImport__StandInReader=true dotnet watch --non-interactive
+```
+
+The E2E suite runs on the stand-in reader, and no test sets an API key. `tools/KCC.ReaderEval` is the evaluation
+tool: it compares reader models on a set of photographed recipes kept in `tools/KCC.ReaderEval/set/`, which git
+ignores. It asks before each paid run. Its steps are in
+[`specs/001-photo-recipe-import/quickstart.md`](specs/001-photo-recipe-import/quickstart.md#reader-evaluation).
 
 #### Backoffice extensions
 

@@ -21,6 +21,7 @@ services:
       Umbraco__CMS__WebRouting__UmbracoApplicationUrl: https://${KCC_HOST}/
       Umbraco__CMS__Imaging__HMACSecretKey: ${KCC_IMAGING_HMAC_KEY:?set KCC_IMAGING_HMAC_KEY in .env}
       Anthropic__ApiKey: ${ANTHROPIC_API_KEY:-}
+      RecipeImport__MonthlyCeilingUsd: ${KCC_IMPORT_CEILING_USD:-2}
       # cloudflared's address below: forwarded headers are trusted from it alone.
       Hosting__TunnelAddress: 172.30.9.10
       VueSsr__BaseUrl: http://ssr:3001
