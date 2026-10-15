@@ -2,11 +2,13 @@ using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Models.Generated;
 using KCC.Web.Features.Pages.Account;
 using KCC.Web.Features.Pages.Shared;
+using KCC.Web.Features.RecipeImport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.Controllers;
+using Umbraco.Extensions;
 
 namespace KCC.Web.Features.Pages.CreateRecipe;
 
@@ -17,7 +19,8 @@ public class CreateRecipePageController(
     IMemberManager memberManager,
     AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings,
-    PageMetadata pageMetadata)
+    PageMetadata pageMetadata,
+    ImportAvailability importAvailability)
     : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -32,7 +35,14 @@ public class CreateRecipePageController(
             return SignInRedirect.To(accountPages.GetUrls().Login, Request);
         }
 
-        var viewModel = new CreateRecipeViewModel { ResourceStrings = resourceStrings.GetGroup("CreateRecipe") };
+        var viewModel = new CreateRecipeViewModel
+        {
+            RecipesUrl = page.Parent<RecipeListingPage>()?.Url(),
+            PhotoImport = await importAvailability.GetAsync(),
+            ResourceStrings = resourceStrings.GetGroup("CreateRecipe")
+                .Concat(resourceStrings.GetGroup("RecipeWizard"))
+                .ToDictionary(StringComparer.Ordinal),
+        };
         pageMetadata.Apply(page, viewModel);
 
         return View("~/Features/Pages/CreateRecipe/Index.cshtml", viewModel);

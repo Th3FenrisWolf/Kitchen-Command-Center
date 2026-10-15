@@ -16,6 +16,16 @@ function makeSentinel(): FakeSentinel {
   return sentinel
 }
 
+function deferred<T>() {
+  let resolve: (value: T) => void = () => {}
+  const promise = new Promise<T>((settle) => {
+    resolve = settle
+  })
+  return { promise, resolve }
+}
+
+const tasksRun = () => new Promise((done) => setTimeout(done, 0))
+
 class FakeDocument extends EventTarget {
   visibilityState: 'visible' | 'hidden' = 'visible'
 }
@@ -99,5 +109,40 @@ describe('useWakeLock', () => {
     await Promise.resolve()
 
     expect(request).toHaveBeenCalledTimes(2)
+  })
+
+  it('releases a first grant that arrives after release()', async () => {
+    const sentinel = makeSentinel()
+    const grant = deferred<FakeSentinel>()
+    setWakeLock({ request: vi.fn(() => grant.promise) })
+
+    const wl = useWakeLock()
+    const requested = wl.request()
+    await wl.release()
+    grant.resolve(sentinel)
+    await requested
+
+    expect(sentinel.release).toHaveBeenCalledOnce()
+    expect(wl.isActive.value).toBe(false)
+  })
+
+  it('releases a second grant that arrives after release(), once the tab was hidden and shown', async () => {
+    const first = makeSentinel()
+    const second = makeSentinel()
+    const secondGrant = deferred<FakeSentinel>()
+    const request = vi.fn().mockResolvedValueOnce(first).mockReturnValueOnce(secondGrant.promise)
+    setWakeLock({ request })
+
+    const wl = useWakeLock()
+    await wl.request()
+    setVisibility('hidden')
+    setVisibility('visible')
+    await wl.release()
+    secondGrant.resolve(second)
+    await tasksRun()
+
+    expect(request).toHaveBeenCalledTimes(2)
+    expect(second.release).toHaveBeenCalledOnce()
+    expect(wl.isActive.value).toBe(false)
   })
 })

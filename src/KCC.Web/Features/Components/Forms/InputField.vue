@@ -3,6 +3,7 @@
 
   export interface InputFieldProps {
     icon?: string
+    inputClass?: string
   }
 
   defineOptions({
@@ -11,7 +12,7 @@
     inheritAttrs: false,
   })
 
-  const { icon } = defineProps<InputFieldProps>()
+  const { icon, inputClass } = defineProps<InputFieldProps>()
 
   const model = defineModel({
     required: true,
@@ -29,6 +30,6 @@
        shrink-wrap it. -->
   <label :class="['kcc-field', { 'kcc-field--noicon': !icon }, 'w-full', attrs.class]" :style="attrs.style as StyleValue">
     <i v-if="icon" :class="icon" aria-hidden="true"></i>
-    <input v-bind="inputAttrs" v-model="model" />
+    <input v-bind="inputAttrs" v-model="model" :class="inputClass" />
   </label>
 </template>

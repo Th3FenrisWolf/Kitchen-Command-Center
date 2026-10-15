@@ -53,17 +53,19 @@ public class MemberFlowTests : BasePageTests
         _ = await Page.GotoAsync("/recipes/create-recipe");
         var next = Page.GetByRole(AriaRole.Button, new() { Name = "Next" });
 
-        await Page.GetByPlaceholder("e.g., Mac & Cheese").FillAsync(recipeName);
-        await Page.GetByPlaceholder("A short description of this dish").FillAsync("Submitted by the E2E suite.");
+        await Page.GetByTestId("wizard-start-typing").ClickAsync();
+        await Page.GetByTestId("wizard-recipe-name").FillAsync(recipeName);
+        await Page.GetByTestId("wizard-recipe-description").FillAsync("Submitted by the E2E suite.");
         await next.ClickAsync();
-        await Page.GetByPlaceholder("e.g., Classic Stovetop").FillAsync("First Try");
+        await Page.GetByTestId("wizard-variant-name").FillAsync("First Try");
         await next.ClickAsync();
-        await Page.GetByPlaceholder("Ingredient name").First.FillAsync("Eggs");
+        await Page.GetByTestId("wizard-ingredient-name").First.FillAsync("Eggs");
         await next.ClickAsync();
-        await Page.GetByPlaceholder("Describe this step").First.FillAsync("Scramble gently.");
+        await Page.GetByTestId("wizard-instruction-text").First.FillAsync("Scramble gently.");
         await next.ClickAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Submit for Review" }).ClickAsync();
-        await Expect(Page.GetByText("Recipe Submitted!")).ToBeVisibleAsync();
+        await Page.GetByTestId("wizard-submit").ClickAsync();
+        await Expect(Page.GetByTestId("wizard-submitted")).ToBeVisibleAsync();
+        await Expect(Page.GetByTestId("wizard-closing-link")).ToHaveAttributeAsync("href", "/recipes/");
 
         _ = await Page.GotoAsync("/account");
         var group = Page.Locator("li").Filter(new() { HasText = recipeName });

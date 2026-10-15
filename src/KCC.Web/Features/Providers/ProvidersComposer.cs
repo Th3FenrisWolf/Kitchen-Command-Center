@@ -1,5 +1,4 @@
 using Anthropic;
-using Anthropic.Core;
 using KCC.Admin;
 using KCC.Contributions.Dashboard;
 using KCC.Web.Features.Models.Options;
@@ -19,7 +18,7 @@ public class ProvidersComposer : IComposer
 
         var anthropic = builder.Config.GetSection(AnthropicOptions.SectionName).Get<AnthropicOptions>() ?? new();
         builder.Services.AddSingleton(anthropic);
-        builder.Services.AddSingleton(new AnthropicClient(new ClientOptions { ApiKey = anthropic.ApiKey ?? string.Empty }));
+        builder.Services.AddSingleton(new AnthropicClient(AnthropicClientOptionsFactory.Create(anthropic)));
         builder.Services.AddSingleton<IRecipeIconService, RecipeIconProvider>();
         builder
             .AddNotificationHandler<MemberSavedNotification, AuthorNameCacheRefresher>()

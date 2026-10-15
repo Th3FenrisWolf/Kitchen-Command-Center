@@ -7,6 +7,7 @@ public static class RateLimits
 {
     public const string Account = "account";
     public const string Contributions = "contributions";
+    public const string Imports = "imports";
     public const string Submissions = "submissions";
 
     // Cloudflare puts the visitor's address in this header, and the tunnel being the only way in is what makes it
@@ -32,4 +33,6 @@ public class RateLimitOptions
     public int ContributionsPerMinute { get; set; } = 30;
 
     public int SubmissionsPerHour { get; set; } = 5;
+
+    public int ImportsPerHour { get; set; } = 10;
 }

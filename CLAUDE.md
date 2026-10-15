@@ -102,6 +102,10 @@ cover the paths KCC writes through. Never remove one.
 `SqliteComposer` registers the three that wrap Umbraco's own registrations by replacing them in place. If an Umbraco
 upgrade moves one, the site refuses to boot rather than run unguarded.
 
+`ImportSpendLedger` in `src/KCC.Web/Features/RecipeImport` writes Umbraco's key-value table through
+`IKeyValueService`. `TryReserve` and `Settle` open one core scope and take `Constants.Locks.KeyValues` before their
+first read.
+
 The guards do not reach these paths inside Umbraco:
 
 - `CacheInstructionsPruningJob` reads the newest instruction id and then deletes, every minute, outside

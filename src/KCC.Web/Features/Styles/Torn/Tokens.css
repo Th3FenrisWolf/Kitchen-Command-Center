@@ -29,6 +29,7 @@
      --wash-op is pinned by contrast.test.ts: chalk and soft chalk over a screened wash core (ink-soft is
      the binding pair; the mockup's .38 read at 2.3:1 for kicks on a wash). */
   :root[data-theme='dark'] {
+    color-scheme: dark;
     --color-desk: oklch(0.132 0.024 288);
     --color-desk-2: oklch(0.176 0.028 288);
     --color-paper: oklch(0.258 0.03 288);

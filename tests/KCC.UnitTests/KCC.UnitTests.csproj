@@ -12,5 +12,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\KCC.Web\KCC.Web.csproj" />
+        <ProjectReference Include="..\..\tools\KCC.ReaderEval\KCC.ReaderEval.csproj" />
     </ItemGroup>
 </Project>

@@ -1,10 +1,13 @@
 using Examine.Lucene.Directories;
 using KCC.Web.Features.Dictionary;
+using KCC.Web.Features.RecipeImport;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using TUnit.Core.Interfaces;
@@ -26,6 +29,9 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
     public const string TunnelAddress = "192.0.2.10";
     public const string PeerHeader = "X-Integration-Tests-Peer";
 
+    // Not the option's default, so a test that meets the ceiling also proves that the option binds.
+    public const decimal ImportCeilingUsd = 1.00m;
+
     private readonly string imagingHmacSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
     private string runDirectory = string.Empty;
@@ -34,6 +40,8 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
     private string mediaCachePath = string.Empty;
 
     public string DatabasePath => Path.Combine(runDirectory, "Umbraco.sqlite.db");
+
+    public FakeRecipePhotoReader PhotoReader => Services.GetRequiredService<FakeRecipePhotoReader>();
 
     private string MediaCacheFolderName => $"{Path.GetFileName(runDirectory)}-media-cache";
 
@@ -117,7 +125,20 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
             services.AddSingleton<INotificationHandler<RelationSavingNotification>>(
                 provider => provider.GetRequiredService<TrashRelationProbe>());
         });
+
+        builder.ConfigureServices(services =>
+        {
+            var composerReader = services.LastOrDefault(service => service.ServiceType == typeof(IRecipePhotoReader));
+            services.RemoveAll<IRecipePhotoReader>();
+            services.AddSingleton(provider => new FakeRecipePhotoReader(composerReader is null ? null : Build(provider, composerReader)));
+            services.AddSingleton<IRecipePhotoReader>(provider => provider.GetRequiredService<FakeRecipePhotoReader>());
+        });
     }
+
+    private static IRecipePhotoReader Build(IServiceProvider provider, ServiceDescriptor registration) =>
+        (IRecipePhotoReader)(registration.ImplementationInstance
+            ?? registration.ImplementationFactory?.Invoke(provider)
+            ?? ActivatorUtilities.CreateInstance(provider, registration.ImplementationType!));
 
     public string ResourceString(string key)
     {
@@ -182,6 +203,12 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
 
         // The icon suggestion takes its fallback instead of calling Anthropic, whatever key the environment holds.
         ["Anthropic:ApiKey"] = string.Empty,
+
+        ["RecipeImport:MonthlyCeilingUsd"] = ImportCeilingUsd.ToString(CultureInfo.InvariantCulture),
+
+        // A shell that ran the manual scenarios may still hold these, which would put the stand-in reader under the fake.
+        ["RecipeImport:StandInReader"] = "false",
+        ["RecipeImport:StandInDelaySeconds"] = "0",
     };
 
     // Appended after the app's own middleware, so an exception thrown here has to pass through its exception handler.

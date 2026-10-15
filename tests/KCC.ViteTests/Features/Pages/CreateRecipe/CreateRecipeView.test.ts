@@ -3,9 +3,22 @@ import CreateRecipeView from '~/Pages/CreateRecipe/CreateRecipeView.Component.vu
 import { ResourceString } from '~/Components/ResourceStrings'
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 
-// The server renders step one and nothing else: `step` starts at 1, so steps two to five, the review
-// summary and the submitted sheet are client state this suite cannot reach.
-const render = () => renderSsr(CreateRecipeView, { resourceStrings: {} }, undefined, { ResourceString })
+// Only the keys the hero and step one compose.
+const STRINGS = {
+  'CreateRecipe.CreateRecipe': 'Create Recipe',
+  'RecipeWizard.RecipeBasics': 'Recipe Basics',
+  'RecipeWizard.RecipeName': 'Recipe Name',
+  'RecipeWizard.RecipeNamePlaceholder': 'e.g., Mac & Cheese',
+  'RecipeWizard.Description': 'Description',
+  'RecipeWizard.RecipeDescriptionPlaceholder': 'A short description of this dish',
+  'RecipeWizard.ProgressLabel': 'Steps',
+  'RecipeWizard.Next': 'Next',
+}
+
+// The server renders step one and nothing else, so steps two to five, the review summary and the submitted
+// sheet are client state this suite cannot reach.
+const render = () =>
+  renderSsr(CreateRecipeView, { resourceStrings: STRINGS, recipesUrl: '/recipes/' }, undefined, { ResourceString })
 
 // The hero above the wizard is its own sheet, with its own suite; every assertion below reads the markup
 // from the progress list down.
@@ -20,6 +33,13 @@ describe('CreateRecipeView', () => {
   // header's dashed rule.
   it('sets the hero a rule below the header', async () => {
     expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
+  })
+
+  it('titles the hero from its own group and the wizard from the shared one', async () => {
+    const html = await render()
+
+    expect(html.slice(0, html.indexOf('aria-label="Steps"'))).toContain('Create Recipe')
+    expect(html.match(/\b(?:RecipeWizard|CreateRecipe)\.\w+/g) ?? []).toEqual([])
   })
 
   it('counts the five steps on the desk and marks the one being filled', async () => {
@@ -85,6 +105,22 @@ describe('CreateRecipeView', () => {
     expect(wizard).not.toContain('fa-clipboard-check')
     expect(wizard).not.toContain('kcc-tape')
     expect(wizard).not.toContain('kcc-wash')
+  })
+
+  it('opens the wizard on the start step when the page turns the photo import on', async () => {
+    const html = await renderSsr(
+      CreateRecipeView,
+      {
+        resourceStrings: STRINGS,
+        recipesUrl: '/recipes/',
+        photoImport: { enabled: true, available: true, maxImageEdge: 2000 },
+      },
+      undefined,
+      { ResourceString },
+    )
+
+    expect(tagWith(html, 'data-testid="wizard-start-photos"')).toMatch(/^<button /)
+    expect(html).not.toContain('aria-current="step"')
   })
 
   it('leaves no Softbound remnant on the wizard', async () => {

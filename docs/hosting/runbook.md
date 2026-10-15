@@ -208,7 +208,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
    - `KCC_HOST` is the hostname from section 1.
    - For `KCC_IMAGING_HMAC_KEY`, run `openssl rand -base64 64 | tr -d '\n'` and paste the output.
    - `KCC_TUNNEL_TOKEN` is from section 4, and the bucket's four values and the ping URL from section 5.
-   - `ANTHROPIC_API_KEY` is optional.
+   - `ANTHROPIC_API_KEY` is optional. It turns on the photo import (section 8) and lets the icon editor's Suggest with AI ask the model.
 2. **The first boot's administrator:**
 
    ```bash
@@ -371,6 +371,21 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   3. Delete the copies on the Pi: `sudo rm /tmp/Umbraco.sqlite.db /tmp/kcc-media.tar.gz`. They hold members' data.
 
   The development site then signs you in as the production administrator.
+- **Photo import and its spend.** `ANTHROPIC_API_KEY` in `.env` turns on the recipe wizards' import from photos
+  and lets the icon editor's Suggest with AI ask the model. Without it, the wizards offer typing only and Suggest with AI
+  picks a fallback icon from the recipe's name. Every site that holds the key
+  reads photos for real, your development site included unless it starts with `RecipeImport__StandInReader=true`, and
+  each keeps its own ledger of the month's import spend and stops starting reads at its own ceiling, US$2 a month
+  unless you set another. Members then see the import resting until the 1st of next month, and typing a recipe in
+  still works. A production-data pull brings the Pi's month total with it, so the development site can show the import
+  resting until the 1st. To change the Pi's ceiling, add
+  `KCC_IMPORT_CEILING_USD=<amount>` to `.env` and run `sudo -u kcc -H kcc up -d --wait`; the deploy timer never reacts
+  to `.env` alone. A development site takes `RecipeImport:MonthlyCeilingUsd` from its own configuration.
+
+  Nothing in the code caps the Anthropic account as a whole, so an organization spend limit of about US$20 a month in
+  the Anthropic Console backs the ledgers. Set it once, and raise it before each reader evaluation, which spends from
+  the same account. A read that the limit stops fails, the ledger gives its reservation back, and the wizard shows a
+  failed read.
 - **Updates.** Dependabot opens no pull requests. Its alerts flag a vulnerable npm, NuGet or Actions package: bump it
   by hand, and merging the bump deploys it. Alerts follow security advisories only, so Umbraco's other 17.x patches
   come unannounced, and Docker images have no alerts at all. Now and then, check for new releases of Umbraco, of the

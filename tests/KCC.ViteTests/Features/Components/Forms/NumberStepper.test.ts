@@ -22,6 +22,30 @@ describe('NumberStepper names', () => {
   })
 })
 
+describe('NumberStepper value name', () => {
+  it('names the value from its label and unit when a page gives no value label', async () => {
+    expect(await render({ label: 'Prep', unit: 'min' })).toContain('aria-label="Prep in min"')
+  })
+
+  it('calls the value "Value" when it has no label', async () => {
+    expect(await render()).toContain('aria-label="Value"')
+  })
+
+  it('lets a page name the value in its own strings, in place of "{label} in {unit}"', async () => {
+    const html = await render({ label: 'Prep', unit: 'min', valueLabel: 'Prep time in minutes' })
+
+    expect(html).toContain('aria-label="Prep time in minutes"')
+    expect(html).not.toContain('aria-label="Prep in min"')
+  })
+
+  it('lets a page name an unlabelled value in place of "Value"', async () => {
+    const html = await render({ valueLabel: 'Amount' })
+
+    expect(html).toContain('aria-label="Amount"')
+    expect(html).not.toContain('aria-label="Value"')
+  })
+})
+
 describe('NumberStepper buttons', () => {
   it('are square ghost kit pills with the glyph as their only content', async () => {
     const html = await render({ label: 'Makes' })

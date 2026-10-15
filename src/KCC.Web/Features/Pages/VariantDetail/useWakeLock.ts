@@ -27,6 +27,7 @@ export function useWakeLock(): UseWakeLock {
     try {
       sentinel = await api.request('screen')
       isActive.value = true
+      if (!wanted) await drop()
     } catch {
       // Unsupported / denied / transient failure: stay silent.
       sentinel = null

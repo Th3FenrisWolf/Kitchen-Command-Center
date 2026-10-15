@@ -3,5 +3,7 @@
 @model CreateRecipeViewModel
 
 <CreateRecipeView
+  recipes-url="@Model.RecipesUrl"
+  :photo-import="@Vue.Prop(Model.PhotoImport)"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"
 />
