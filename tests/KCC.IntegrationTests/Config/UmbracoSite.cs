@@ -77,12 +77,14 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         mediaCachePath = Path.Combine(RepoPaths.WebProject, "umbraco", "Data", "TEMP", MediaCacheFolderName);
 
         await SeedTestRecipesAsync();
+        await BackofficeClient.CreateSessionUsersAsync(this);
     }
 
     public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
         SqliteConnection.ClearAllPools();
+        SiteLogs.Keep(runDirectory, SiteLogs.Destination);
         DeleteIfPresent(runDirectory);
         DeleteIfPresent(localTempPath);
         DeleteIfPresent(examineTempPath);
@@ -161,8 +163,8 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
     }
 
 
-    // Seeding saves content and members, which must not overlap a test's writes (see AssemblyInfo.cs), so it
-    // runs once, before any test.
+    // Seeding saves content and members, and the session's API users are saves too. None may overlap a test's writes
+    // (see AssemblyInfo.cs), so both run once, before any test.
     private async Task SeedTestRecipesAsync()
     {
         using var client = CreateClient();

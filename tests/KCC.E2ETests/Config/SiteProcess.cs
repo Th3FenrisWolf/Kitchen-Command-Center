@@ -169,6 +169,7 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         log = null;
         if (runDirectory.Length > 0)
         {
+            SiteLogs.Keep(runDirectory, SiteLogs.Destination);
             try
             {
                 Directory.Delete(runDirectory, recursive: true);
