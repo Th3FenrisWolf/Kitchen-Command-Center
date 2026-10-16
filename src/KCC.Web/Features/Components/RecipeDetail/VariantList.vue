@@ -7,9 +7,10 @@
 
   export interface VariantListProps {
     variants: VariantSummary[]
+    flip?: boolean
   }
 
-  defineProps<VariantListProps>()
+  const { flip = false } = defineProps<VariantListProps>()
   const rs = useResourceStrings()
 </script>
 
@@ -20,6 +21,7 @@
       :key="variant.slug"
       :card="variantToCard(variant, rs)"
       :tear="listTearFor(index)"
+      :flip
     />
   </div>
 </template>

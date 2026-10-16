@@ -5,12 +5,19 @@ import VariantsEmptyState from '~/Components/RecipeDetail/VariantsEmptyState.vue
 const render = () => renderSsr(VariantsEmptyState)
 
 describe('VariantsEmptyState', () => {
-  it('is a taped, powder-washed sheet on the fourth tear', async () => {
+  it('is a powder-washed sheet on the fourth tear', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-tear-4')
-    expect(html).toContain('<span class="kcc-tape" aria-hidden="true"></span>')
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-4')
+    expect(html).not.toContain('kcc-tape')
     expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip--wide')
   })
 
   it('pools the wash in the top-right corner, clear of the centred copy', async () => {

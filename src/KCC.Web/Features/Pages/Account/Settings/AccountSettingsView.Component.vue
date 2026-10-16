@@ -211,7 +211,7 @@
       </form>
     </KccSheet>
 
-    <KccSheet crisp :tear="1" :pad="SHEET_PAD" icon="fa-duotone fa-circle-half-stroke">
+    <KccSheet crisp flip :tear="1" :pad="SHEET_PAD" icon="fa-duotone fa-circle-half-stroke">
       <template #label><ResourceString for="Appearance" /></template>
 
       <h2 class="sr-only">{{ rs('Appearance') }}</h2>
@@ -233,7 +233,7 @@
       </div>
     </KccSheet>
 
-    <KccSheet crisp :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket">
+    <KccSheet crisp flip :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket">
       <template #label><ResourceString for="SignOut" /></template>
 
       <h2 class="sr-only">{{ rs('SignOut') }}</h2>

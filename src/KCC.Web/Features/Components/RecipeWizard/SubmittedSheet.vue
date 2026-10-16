@@ -26,7 +26,7 @@
     wash="green"
     :at="{ x: '100%', y: '100%', w: '30%', h: '40%' }"
     :tear="2"
-    tape
+    wide
     data-testid="wizard-submitted"
   >
     <div class="grid justify-items-center gap-6 text-center">

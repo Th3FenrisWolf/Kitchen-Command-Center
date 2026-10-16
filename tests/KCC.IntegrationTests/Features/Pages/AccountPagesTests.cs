@@ -138,6 +138,27 @@ public class AccountPagesTests
         _ = await Assert.That(page.Body).Contains("href=\"/account/login/\"");
     }
 
+    [Test]
+    public async Task RegistrationCompletePage_LaysItsSheetOnOneBlank()
+    {
+        using var visitor = new MemberClient(Site);
+
+        var page = await RenderedPage.GetAsync(visitor.Http, "/account/registration-complete/");
+
+        _ = await Assert.That(Slips.EndsWithOneBlank(Slips.In(page.Body).Single())).IsTrue();
+    }
+
+    [Test]
+    public async Task RegistrationCompletePage_CarriesNoTape()
+    {
+        using var visitor = new MemberClient(Site);
+
+        var page = await RenderedPage.GetAsync(visitor.Http, "/account/registration-complete/");
+
+        _ = await Assert.That(Slips.In(page.Body).Count).IsEqualTo(1);
+        _ = await Assert.That(page.Body).DoesNotContain("kcc-tape");
+    }
+
     private static string Describe(System.Text.Json.JsonElement group)
     {
         var variants = group.GetProperty("variants").EnumerateArray()

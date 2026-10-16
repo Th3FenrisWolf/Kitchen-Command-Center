@@ -274,7 +274,7 @@
         </div>
       </div>
 
-      <div class="pad-page pad-page--1 kcc-slip kcc-slip--fill kcc-tear-2" aria-hidden="true">
+      <div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true">
         <div class="kcc-torn"><div class="kcc-sheet"></div></div>
       </div>
 
@@ -389,13 +389,6 @@
           <MenuCard :recipes="nav.recipes" :urls="nav.urls" :member="nav.member" :t />
         </PadCard>
       </div>
-
-      <div class="pad-page pad-page--2 kcc-slip kcc-slip--fill kcc-tear-5" aria-hidden="true">
-        <div class="kcc-torn"><div class="kcc-sheet"></div></div>
-      </div>
-      <div class="pad-page pad-page--3 kcc-slip kcc-slip--fill kcc-tear-6" aria-hidden="true">
-        <div class="kcc-torn"><div class="kcc-sheet"></div></div>
-      </div>
     </div>
   </header>
 </template>
@@ -431,28 +424,15 @@
     inset: 0;
     pointer-events: none;
     position: absolute;
+    transform: rotate(calc(-0.12deg + var(--blank-turn))) scale(var(--blank-scale));
+    z-index: 3;
   }
 
   .pad-page .kcc-sheet {
     background-image: none;
   }
 
-  .pad-page--1 {
-    transform: translateY(5px) rotate(0.3deg);
-    z-index: 4;
-  }
-
-  .pad-page--2 {
-    transform: translateY(9px) rotate(-0.45deg);
-    z-index: 2;
-  }
-
-  .pad-page--3 {
-    transform: translateY(13px) rotate(0.18deg);
-    z-index: 1;
-  }
-
-  /* The cards hang between the first page and the two below it. The box starts inside the top sheet, so its straight
+  /* The cards hang between the top sheet and the page under it. The box starts inside the top sheet, so its straight
      edge never shows, and runs past the pad's sides so a fanned card keeps its shadow. */
   .pad-cards {
     height: calc(100dvh - 96px);
@@ -462,7 +442,7 @@
     position: absolute;
     right: -40px;
     top: calc(100% - 14px);
-    z-index: 3;
+    z-index: 4;
   }
 
   .pad-bar {

@@ -57,7 +57,7 @@ public class HomeSectionsTests
             Stacker("Drinks", "<p>Pour.</p>", Card("Vodka"), Card("Tequila"), Card("Gin"), Card("Whiskey"), Card("Rum"), Card("Wine")))).Single();
 
         _ = await Assert.That(stacker.Tear).IsEqualTo(1);
-        _ = await Assert.That(string.Join(",", stacker.Cards.Select(card => card.Tear))).IsEqualTo("2,3,4,5,6,2");
+        _ = await Assert.That(string.Join(",", stacker.Cards.Select(card => card.Tear))).IsEqualTo("2,3,4,5,6,3");
     }
 
     [Test]
@@ -68,7 +68,24 @@ public class HomeSectionsTests
             Grid(null, "4", Card("Beef"), Card("Chicken"), Card("Pork"))));
         var grid = (CardGridSection)sections[1];
 
-        _ = await Assert.That(string.Join(",", grid.Cards.Select(card => card.Tear))).IsEqualTo("6,2,3");
+        _ = await Assert.That(string.Join(",", grid.Cards.Select(card => card.Tear))).IsEqualTo("6,3,4");
+    }
+
+    // The odd standard tears tilt one way and the even ones the other, so the parity of a tear is the sign of its tilt.
+    [Test]
+    public async Task From_ConsecutiveDraws_AlternateTheirTiltDownThePage()
+    {
+        var sections = HomeSections.From(Blocks(
+            RichText("<p>One</p>"),
+            Stacker("Drinks", "<p>Pour.</p>", Card("Vodka"), Card("Tequila"), Card("Gin"), Card("Whiskey"), Card("Rum"), Card("Wine")),
+            Grid(null, "4", Card("Beef"), Card("Chicken"), Card("Pork")),
+            Stacker("Sweets", "<p>Bake.</p>", Card("Cake"), Card("Pie")),
+            RichText("<p>Two</p>"),
+            RichText("<p>Three</p>")));
+
+        var tears = sections.SelectMany(Tears).ToList();
+
+        _ = await Assert.That(tears.Zip(tears.Skip(1)).All(pair => pair.First % 2 != pair.Second % 2)).IsTrue();
     }
 
     [Test]
@@ -118,6 +135,14 @@ public class HomeSectionsTests
         _ = await Assert.That(stacker.HasSheet).IsFalse();
         _ = await Assert.That(stacker.Cards.Single()).IsEqualTo(new StackerCard("Gin", "Botanical", "bg-green", 1));
     }
+
+    private static IEnumerable<int> Tears(HomeSection section) => section switch
+    {
+        RichTextSection richText => [richText.Tear],
+        CardGridSection grid => grid.Cards.Select(card => card.Tear),
+        StackerSection stacker => stacker.Cards.Select(card => card.Tear).Prepend(stacker.Tear),
+        _ => [],
+    };
 
     private static BlockListModel Blocks(params IPublishedElement[] contents) =>
         Blocks(contents.Select(content => (content, (IPublishedElement)null)).ToArray());

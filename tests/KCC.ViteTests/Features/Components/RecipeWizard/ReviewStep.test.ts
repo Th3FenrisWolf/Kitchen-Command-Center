@@ -51,6 +51,13 @@ const notices = (html: string) => html.split('«MissingValue»').length - 1
 const submit = (html: string) => tagWith(html, 'data-testid="wizard-submit"')
 
 describe('ReviewStep after a read', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render('recipe', READ)
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'data-testid="review-step"')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
+  })
+
   it('hooks the review on its sheet', async () => {
     expect(tagWith(await render('recipe', READ), 'data-testid="review-step"')).toContain('kcc-slip')
   })

@@ -182,6 +182,43 @@ describe('RecipeSearchView library', () => {
     expect(html).not.toContain('data-testid="recipe-card"')
   })
 
+  describe('alternates its blanks in reading order', () => {
+    const cardSlips = (html: string) => html.match(/<article class="kcc-slip kcc-slip--fill kcc-recipe[^"]*"/g) ?? []
+
+    it('turns the filters over, so they oppose the header', async () => {
+      expect(tagWith(await render(), 'kcc-tear-5')).toContain('class="kcc-slip kcc-slip--flip kcc-tear-5"')
+    })
+
+    it('turns every card over under a spotlight, which keeps its own turn', async () => {
+      const html = await render({ spotlight: hit('Top Rated Thing', 9) })
+
+      expect(tagWith(html, 'kcc-tear-hero')).not.toContain('kcc-slip--flip')
+      expect(cardSlips(html)).toHaveLength(NAMES.length)
+      cardSlips(html).forEach((slip) => expect(slip).toMatch(/ kcc-slip--flip kcc-tear-\d"$/))
+    })
+
+    it('leaves every card as it is with no spotlight', async () => {
+      const html = await render()
+
+      expect(cardSlips(html)).toHaveLength(NAMES.length)
+      cardSlips(html).forEach((slip) => expect(slip).not.toContain('kcc-slip--flip'))
+    })
+
+    it('turns the empty sheet over', async () => {
+      const html = await render({ total: 0, results: [] })
+
+      expect(tagWith(html, 'data-testid="recipes-empty"')).toContain(
+        'class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-2"',
+      )
+    })
+
+    it('turns the results over on a phone while the filters start closed', async () => {
+      const section = tagWith(await render(), 'aria-live="polite"')
+
+      expect(section).toContain('class="max-lg:[--blank-region:-1] min-w-0"')
+    })
+  })
+
   it('leaves no Softbound remnant on the page', async () => {
     const html = await render({ spotlight: hit('Top Rated Thing', 9), total: 25 })
 

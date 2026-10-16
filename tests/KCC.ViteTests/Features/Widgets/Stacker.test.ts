@@ -36,6 +36,13 @@ const sentinelEntry = (top: number, slip: ReturnType<typeof fakeSlip>) => ({
 })
 
 describe('Stacker structure', () => {
+  it('rests each card on one blank, with the standard turn', async () => {
+    const html = await render(['Prep', 'Cook', 'Plate'].map((heading) => card(heading, 'bg-paper')))
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(3)
+    expect(html).not.toContain('kcc-slip--wide')
+  })
+
   it('tears one sheet per card, cycling the six presets', async () => {
     const html = await render(
       ['Prep', 'Cook', 'Plate', 'Chill', 'Bake', 'Rest', 'Serve'].map((heading) => card(heading, 'bg-paper')),
@@ -89,6 +96,20 @@ describe('Stacker sticky mechanics', () => {
     expect(slipClasses(html)[0]).toEqual(
       expect.arrayContaining(['origin-top', 'transition-all', 'duration-100', '[.stuck]:scale-95', '[.last_div]:scale-100']),
     )
+  })
+
+  it("steps each card's blank back with its sheet, inside the slip that shrinks", async () => {
+    const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
+    const html = await render(['Prep', 'Cook', 'Plate'].map((heading) => card(heading, 'bg-paper')))
+    const cards = html.split('<div data-card').slice(1)
+
+    expect(cards).toHaveLength(3)
+    for (const stacked of cards) {
+      const slip = stacked.slice(stacked.indexOf('<div class="kcc-slip'))
+      expect(slip.slice(0, slip.indexOf('>'))).toContain('[.stuck]:scale-95')
+      expect(slip.split('kcc-blank')).toHaveLength(2)
+      expect(slip.slice(slip.indexOf(BLANK) + BLANK.length)).toMatch(/^<\/div><\/div>/)
+    }
   })
 })
 

@@ -21,6 +21,7 @@
     wash="peach"
     :at="{ x: '90%', y: '10%', w: '40%', h: '50%' }"
     :tear="6"
+    wide
   >
     <template #label><ResourceString for="Instructions" /></template>
 

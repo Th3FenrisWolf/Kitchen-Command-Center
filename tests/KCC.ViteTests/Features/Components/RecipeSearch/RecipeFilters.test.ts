@@ -39,6 +39,13 @@ describe('RecipeFilters sheet', () => {
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 
+  it('rests on one blank, with the standard turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(html).not.toContain('kcc-slip--wide')
+  })
+
   it('keeps the panel heading for assistive tech and resets through a text button', async () => {
     const html = await render()
 

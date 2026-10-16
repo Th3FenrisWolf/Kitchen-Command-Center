@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import postcss, { type Rule } from 'postcss'
 import { describe, expect, it } from 'vitest'
 import AppHeader from '~/Components/Header/AppHeader.Component.vue'
 import type { NavModel } from '~/Types/Nav'
@@ -8,6 +11,30 @@ const render = (nav: NavModel) => renderSsr(AppHeader, { logoAlt: 'Kitchen Comma
 
 const between = (html: string, from: string, to: string) =>
   html.slice(html.indexOf(from), html.indexOf(to, html.indexOf(from)))
+
+const styleRules = () => {
+  const source = readFileSync(
+    fileURLToPath(new URL('../../../../../src/KCC.Web/Features/Components/Header/AppHeader.Component.vue', import.meta.url)),
+    'utf8',
+  )
+  const rules: Rule[] = []
+  postcss
+    .parse(source.slice(source.indexOf('<style>') + '<style>'.length, source.lastIndexOf('</style>')))
+    .walkRules((rule) => {
+      rules.push(rule)
+    })
+  return rules
+}
+
+const declarationsOf = (rules: Rule[], selector: string) => {
+  const found: Record<string, string> = {}
+  for (const rule of rules.filter((candidate) => candidate.selectors.includes(selector))) {
+    rule.walkDecls((decl) => {
+      found[decl.prop] = decl.value.replace(/\s+/g, ' ')
+    })
+  }
+  return found
+}
 
 describe('AppHeader', () => {
   it('gives a visitor Recipes, search and Sign in back to this page, and nothing of a member', async () => {
@@ -111,16 +138,38 @@ describe('AppHeader', () => {
     const stack = (cards: string) =>
       sheets
         .filter((sheet) => !sheet.includes('id="pad-card-') || sheet.includes(cards))
-        .map((sheet) => sheet.match(/\bkcc-tear-\w+/)?.[0])
+        .map((sheet) => sheet.match(/\bkcc-tear-[\w-]+/)?.[0])
 
     for (const [cards, count] of [
-      ['pad-card--desk', 7],
-      ['pad-card--phone', 6],
+      ['pad-card--desk', 5],
+      ['pad-card--phone', 4],
     ] as const) {
       const tears = stack(cards)
       expect(tears).toHaveLength(count)
       expect(new Set(tears).size, tears.join(' ')).toBe(count)
     }
+  })
+
+  it('lays one centred page under the top sheet, with no blank in either', async () => {
+    const html = await render(member())
+    const pages = [...html.matchAll(/<div[^>]*\bpad-page\b[^>]*>/g)].map(([tag]) => tag)
+
+    expect(pages).toEqual([
+      '<div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true">',
+    ])
+    expect(between(html, 'class="pad-top', 'id="pad-cards"')).not.toContain('kcc-blank')
+  })
+
+  it('stacks the top sheet over the cards and the cards over the page, which turns about its centre', () => {
+    const rules = styleRules()
+
+    expect(declarationsOf(rules, '.pad-top')['z-index']).toBe('5')
+    expect(declarationsOf(rules, '.pad-cards')['z-index']).toBe('4')
+    const page = declarationsOf(rules, '.pad-page')
+    expect(page['z-index']).toBe('3')
+    expect(page.transform).toBe('rotate(calc(-0.12deg + var(--blank-turn))) scale(var(--blank-scale))')
+    expect(page.translate).toBeUndefined()
+    expect(rules.some((rule) => /\.pad-page--\d/.test(rule.selector))).toBe(false)
   })
 
   it('searches the library from a form that works before the page has its script', async () => {

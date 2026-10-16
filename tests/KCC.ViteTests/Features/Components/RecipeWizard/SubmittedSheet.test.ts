@@ -28,6 +28,20 @@ const render = (props: Record<string, unknown>) =>
 const closingLink = (html: string) => html.match(/<a[^>]*data-testid="wizard-closing-link"[^>]*>[\s\S]*?<\/a>/)?.[0] ?? ''
 
 describe('SubmittedSheet', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'data-testid="wizard-submitted"')).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
+  })
+
+  it('carries no tape', async () => {
+    const html = await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })
+
+    expect(html).toContain('data-testid="wizard-submitted"')
+    expect(html).not.toContain('kcc-tape')
+  })
+
   it('carries the wizard-submitted hook', async () => {
     expect(await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })).toContain('data-testid="wizard-submitted"')
   })

@@ -15,10 +15,17 @@ describe('VariantInstructions sheet', () => {
   it('is a peach-washed sheet on the sixth tear, labelled with the numbered list', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-tear-6')
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-6')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-list-ol" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?Instructions/s)
     expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip--wide')
   })
 
   it('pools its one wash off the right edge, clear of the steps', async () => {

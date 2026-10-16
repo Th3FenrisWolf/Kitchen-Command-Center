@@ -3,6 +3,13 @@ import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
 import { renderSsr } from '../../../support/ssr'
 
 describe('ComingSoonSection', () => {
+  it('rests on one blank, with the standard turn', async () => {
+    const html = await renderSsr(ComingSoonSection, { textKey: 'RankingComingSoon' })
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(html).not.toContain('kcc-slip--wide')
+  })
+
   it('keeps its editor hooks in the label slot and washes lavender on the default tear', async () => {
     const html = await renderSsr(ComingSoonSection, { textKey: 'RankingComingSoon' })
 

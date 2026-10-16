@@ -10,10 +10,17 @@ const render = () => renderInWizard(ReadingState, { request: REQUEST, tear: 4 })
 const region = (html: string) => html.slice(html.indexOf('data-testid="reading-state"'))
 
 describe('ReadingState', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-4')
+  })
+
   it('sits on a crisp sheet', async () => {
     const slip = tagWith(await render(), 'kcc-slip')
 
-    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-tear-4'])
+    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-slip--wide', 'kcc-tear-4'])
     expect(slip).toContain('--r:0')
   })
 

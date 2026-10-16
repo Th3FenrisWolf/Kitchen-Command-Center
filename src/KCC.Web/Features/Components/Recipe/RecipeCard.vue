@@ -8,9 +8,10 @@
   export interface RecipeCardProps {
     card: RecipeCardModel
     tear?: Exclude<Tear, 'hero'>
+    flip?: boolean
   }
 
-  const { card, tear } = defineProps<RecipeCardProps>()
+  const { card, tear, flip = false } = defineProps<RecipeCardProps>()
 
   const preset = computed(() => tear ?? sheetTearFor(card.seed))
   const rated = computed(() => card.notch.stat === 'rating')
@@ -26,8 +27,8 @@
 
 <template>
   <article
-    class="kcc-slip kcc-slip--fill kcc-recipe transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
-    :class="`kcc-tear-${preset}`"
+    class="kcc-slip kcc-slip--fill kcc-recipe kcc-slip--lift"
+    :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${preset}`]"
   >
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet">
@@ -67,5 +68,7 @@
       <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14" />
       <span class="kcc-tape" aria-hidden="true"></span>
     </div>
+
+    <span class="kcc-blank" aria-hidden="true"><span></span></span>
   </article>
 </template>

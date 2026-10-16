@@ -15,11 +15,18 @@ const hintFor = (html: string, testId: string) => {
 }
 
 describe('StartStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
+  })
+
   it('asks how to start, on a crisp sheet', async () => {
     const html = await render()
     const slip = tagWith(html, 'kcc-slip')
 
-    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-tear-2'])
+    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-slip--wide', 'kcc-tear-2'])
     expect(slip).toContain('--r:0')
     expect(html).toMatch(/<h2 class="kcc-h4">\s*«StartTitle»\s*<\/h2>/)
   })

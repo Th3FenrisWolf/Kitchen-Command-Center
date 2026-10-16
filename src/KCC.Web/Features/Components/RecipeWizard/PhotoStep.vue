@@ -78,7 +78,7 @@
 </script>
 
 <template>
-  <KccSheet crisp :tear :pad="STEP_PAD" icon="fa-duotone fa-camera">
+  <KccSheet crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-camera">
     <template #label><ResourceString for="PhotosTitle" /></template>
 
     <h2 ref="heading" class="sr-only">{{ rs('PhotosTitle') }}</h2>

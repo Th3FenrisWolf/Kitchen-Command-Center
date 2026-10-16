@@ -10,6 +10,9 @@ const countStars = (html: string) => (html.match(/fa-star\b/g) ?? []).length
 
 const count = (html: string, needle: string) => html.split(needle).length - 1
 
+const TAPED_TILEWRAP =
+  /<div class="kcc-tilewrap"[^>]*>(?:(?!<span class="kcc-blank")[\s\S])*<span class="kcc-tape" aria-hidden="true"><\/span>\s*<\/div>\s*<span class="kcc-blank"/
+
 /** The paragraph `needle` sits in, fragment anchors and all: slot content is not a tag of its own. */
 const paragraph = (html: string, needle: string) => {
   const at = html.indexOf(needle)
@@ -58,14 +61,15 @@ describe('DetailHero as a slip', () => {
     expect(wash).toContain('--h:min(60%,68px)')
   })
 
-  it('pins the large tile and its tape outside the tear, with a strip on the sheet', async () => {
+  it('pins the large tile and its tape outside the tear, with the one strip inside the tilewrap', async () => {
     const html = await render({ icon: 'fa-duotone fa-wheat' })
     const tilewrap = openTag(html, 'kcc-tilewrap').replace(/\s/g, '')
     expect(tilewrap).toContain('top:-22px')
     expect(tilewrap).toContain('left:40px')
     expect(html).toContain('kcc-tile--lg')
     expect(count(html.replace(/\s/g, ''), `--c:var(--color-${washFor(TITLE)})`)).toBe(2)
-    expect(count(html, 'kcc-tape')).toBe(2)
+    expect(count(html, 'kcc-tape')).toBe(1)
+    expect(html).toMatch(TAPED_TILEWRAP)
     expect(html.indexOf('kcc-tilewrap')).toBeGreaterThan(html.indexOf(DESCRIPTION))
   })
 
@@ -95,6 +99,15 @@ describe('DetailHero as a slip', () => {
     expect(paragraph(html, 'Pasta')).toContain('kcc-kick')
     expect(html.indexOf('Pasta')).toBeLessThan(html.indexOf(TITLE))
     expect(html.indexOf('Vegetarian')).toBeGreaterThan(html.indexOf(DESCRIPTION))
+  })
+})
+
+describe('DetailHero pile', () => {
+  it('lies on one wide blank, the last child of the slip', async () => {
+    const html = await render()
+    expect(openTag(html, 'kcc-slip')).toBe('<div class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero">')
+    expect(count(html, 'kcc-blank')).toBe(1)
+    expect(html.endsWith('<span class="kcc-blank" aria-hidden="true"><span></span></span></div>')).toBe(true)
   })
 })
 

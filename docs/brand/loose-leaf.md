@@ -10,12 +10,12 @@ Source mockup: claude.ai/design project `2bf4f7b9-045b-4b9c-b923-a5e402273b6e`, 
 ## The idea
 
 **The perfect drawing, torn out and kept.** Every panel is a sheet ripped off a pad: fibre on the edge, wax
-over the colour, a strip of tape where it was held down. Everything *drawn on* the sheet is exact: one ruled
-grid, one line weight, numbers that line up. The mess is the paper. The work is clean.
+over the colour, a blank sheet under it, knocked a little askew. Everything *drawn on* the sheet is exact: one
+ruled grid, one line weight, numbers that line up. The mess is the paper. The work is clean.
 
 Three rules follow, and every other rule in this document is one of them applied.
 
-1. **The paper is careless.** Torn on four sides, tilted up to a degree, sometimes taped, coloured in wax.
+1. **The paper is careless.** Torn on four sides, tilted up to a degree, piled two high, coloured in wax.
    Nothing about the sheet is precise, and no two sheets share an edge.
 2. **The drawing is exact.** Inside the tear a 24px rule governs everything. Type sits on it. Icons share one
    style. Every number is set in a rounded mono, tabular, so columns align without tables.
@@ -27,7 +27,7 @@ Three rules follow, and every other rule in this document is one of them applied
 
 | Torn (paper) | Printed (marks on the paper) |
 |---|---|
-| Sheets: every panel, card, hero, form, list | Buttons, segmented controls, fields, badges, checkboxes |
+| Sheets: every panel, card, hero, form, list, and the blank under each | Buttons, segmented controls, fields, badges, checkboxes |
 | Accent tiles pinned to a sheet's corner | Labels, tape, stat numbers, meta lines, step numbers |
 
 Torn things are clipped to a generated tear, carry the fibre and the fall, and may tilt. Printed things are
@@ -104,18 +104,24 @@ tile's wash.
 
 ## Edge and handling
 
-Handling is fixed at **Handled**: sheets tilt within ±1° and may take one strip of tape. Pristine (square,
-untaped) and Well-thumbed (fingerprints, smears, corner strips, heavier wax) exist in the mockup and are not
-built.
+Handling is fixed at **Handled**: top sheets tilt within ±1°, and the blank under each turns 1.5° off it, or 0.5°
+on a wide sheet. Pristine (square, no blank) and Well-thumbed (fingerprints, smears, corner strips, heavier wax)
+exist in the mockup and are not built.
 
 - **Tear**: fine and dense on all four sides, 2.4px amplitude on sheets, 1.8px on tiles, with the odd deeper
-  fibre nick. Six sheet tears, one hero tear and three tile tears exist; neighbours never share one.
+  fibre nick. Six sheet tears, two hero tears and three tile tears exist; neighbours never share one, and a
+  sheet never lies on its own tear.
 - **Cut corner**: one clean 16–20px chamfer through the tear at the top-right, bottom-right or bottom-left.
   Never top-left, where the label lives. At least one of the six standard tears is uncut (the mockup's "about
-  one in four"). Heroes take a 28px cut.
+  one in four"). The hero takes a 28px cut, and the hero's blank a 24px one.
 - **Label**: a flat marker pill overlapping the top-left edge. Sono caps. Never torn, never shadowed, no
   grain: the one thing on the sheet that was printed. It sits outside the tear and outside the shadow.
-- **Tape**: opt-in. One translucent strip, top-centre, slightly rotated. A pinned tile takes a smaller strip.
+- **Pile**: paper is piled two high. Every sheet lies on a blank sheet torn like it, with the fibre and the
+  fall but no ruling and nothing on it, turned 1.5° off the sheet above (0.5° under a wide sheet: a hero, the
+  pad, anything wider than 700px). Down a page the blanks turn left and right in turn. The header pad is a top
+  sheet on one page, and its menus slide out between the two.
+- **Tape**: holds applied items only. A sheet is never taped. A tile pinned to a sheet takes one small
+  translucent strip, slightly rotated.
 - **Wax**: a light crayon tooth over desk and paper alike (multiply in light, soft-light in dark); washes and
   tiles carry a finer grain of their own.
 - **Pencil ruling**: every sheet is ruled at 24px, faint, aligned to its padding. Always on.
@@ -127,18 +133,18 @@ a section heading 36px above its content. Margins between blocks are multiples o
 
 ## Motion
 
-Paper moves like paper. A sheet you can open lifts when you reach for it and settles when you let go. A drawer
-slides up inside its sheet, and a stacked sheet steps back as the next one covers it. The header is a notepad. A
-menu is a card in the middle of the stack: it fans out from its far corner when you reach for it, turning up to
-2.4° (past a resting sheet's degree, and only while you reach), and slides out from between the pages when you
-open it. The pad tucks away as you read and returns when you scroll up. Most motion takes 300ms, and a bigger move
-that would feel rushed at 300ms takes up to 500ms. Only a loading spinner runs longer. Reduced motion stills all of
-it.
+Paper moves like paper. A sheet you can open lifts off its blank when you reach for it and settles when you let go.
+A drawer slides up inside its sheet, and a stacked sheet steps back as the next one covers it. The header is a
+notepad. A menu is a card in the middle of the stack: it fans out from its far corner when you reach for it,
+turning up to 2.4° (past a resting sheet's degree, and only while you reach), and slides out from between the pad's
+two sheets when you open it. The pad tucks away as you read and returns when you scroll up. Most motion takes
+300ms, and a bigger move that would feel rushed at 300ms takes up to 500ms. Only a loading spinner runs longer.
+Reduced motion stills all of it.
 
 ## Applied patterns
 
-- **Recipe slip**: a plain sheet; a small torn wax tile pinned over the top-left corner with its own tape; the
-  hero stat (rating · reviews, or time) top-right in Sono; the title in APCasual 22; a Sono meta line;
+- **Recipe slip**: a plain sheet on its blank; a small torn wax tile pinned over the top-left corner with its own
+  tape; the hero stat (rating · reviews, or time) top-right in Sono; the title in APCasual 22; a Sono meta line;
   hairline badges. The tile's wash is the recipe's colour.
 - **Library**: a green-washed sheet holding search, sort and view controls; below it a grid of slips cycling
   through the six tears.
@@ -161,9 +167,12 @@ it.
 - Don't tear a control. Only paper is torn.
 - Don't let two neighbouring sheets share a tear.
 - Don't give a sheet more than one wash, one label or one hand note.
+- Don't tape a sheet, and don't leave one without its blank.
 
 ## Decisions and history
 
 - **2026-09-17**: Loose Leaf (Soft) replaces Softbound Sketch, whose drawn outlines and hatched shadows are
   retired. Light is the default ramp. The handling and ruling dials from the mockup are not built. The class
   prefix is `kcc-`. Tears are pure-CSS polygon presets; a JS `path()` tear is the fallback if fidelity needs it.
+- **2026-10-16**: Paper piles, not tape. Every sheet lies on a blank sheet, and tape holds only applied tiles. The
+  header pad drops to a top sheet on one page.

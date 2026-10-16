@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import RecipeWizard from '~/Components/RecipeWizard/RecipeWizard.vue'
 import { ResourceString } from '~/Components/ResourceStrings'
+import { stepFlips } from '~/Components/RecipeWizard/stepFlip'
 import { wizardStrings } from '../../../support/recipeWizard'
 import { renderSsr, tagWith } from '../../../support/ssr'
 
@@ -214,5 +215,36 @@ describe('RecipeWizard with the import on', () => {
     expect(html).toMatch(/data-testid="import-unavailable"[^>]*>\s*Photo import is resting until November 1, 2026\./)
     expect(tagWith(html, 'data-testid="wizard-start-photos"')).toContain('disabled')
     expect(tagWith(html, 'data-testid="wizard-start-typing"')).not.toContain('disabled')
+  })
+})
+
+describe('RecipeWizard on the step the server renders', () => {
+  const stepSlip = (html: string) => tagWith(html, 'class="kcc-slip ')
+
+  const FIRST_STEPS = [
+    ['the basics step of the recipe flow', renderRecipe],
+    ['the variant step of the variant flow', renderVariant],
+    [
+      'the start step with the import on',
+      () =>
+        renderSsr(
+          RecipeWizard,
+          {
+            flow: 'recipe',
+            recipesUrl: '/our-recipes/',
+            photoImport: { enabled: true, available: true, maxImageEdge: 2000 },
+            resourceStrings: wizardStrings(),
+          },
+          undefined,
+          { ResourceString },
+        ),
+    ],
+  ] as const
+
+  it.each(FIRST_STEPS)('turns %s over exactly when the first step flips', async (_step, render) => {
+    const slip = stepSlip(await render())
+
+    expect(stepFlips(1)).toBe(true)
+    expect(slip).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-1"')
   })
 })

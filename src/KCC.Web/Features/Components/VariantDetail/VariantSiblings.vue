@@ -8,6 +8,7 @@
 
   export interface VariantSiblingsProps {
     variants: SiblingVariant[]
+    flip?: boolean
   }
 
   const props = defineProps<VariantSiblingsProps>()
@@ -20,7 +21,13 @@
     <div class="kcc-secname"><ResourceString for="OtherVariants" as="h2" /></div>
 
     <div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-9">
-      <RecipeCardView v-for="(entry, index) in cards" :key="entry.key" :card="entry.card" :tear="listTearFor(index)" />
+      <RecipeCardView
+        v-for="(entry, index) in cards"
+        :key="entry.key"
+        :card="entry.card"
+        :tear="listTearFor(index)"
+        :flip="flip"
+      />
     </div>
   </section>
 </template>

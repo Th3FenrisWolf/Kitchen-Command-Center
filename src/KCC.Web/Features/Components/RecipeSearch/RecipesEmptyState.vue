@@ -7,7 +7,7 @@
 </script>
 
 <template>
-  <KccSheet data-testid="recipes-empty" wash="yellow" :at="{ x: '18%', y: '90%', w: '60%', h: '50%' }" :tear="2" tape>
+  <KccSheet data-testid="recipes-empty" wash="yellow" :at="{ x: '18%', y: '90%', w: '60%', h: '50%' }" :tear="2" wide>
     <div class="grid justify-items-center gap-6 text-center">
       <i class="fa-duotone fa-bowl-food text-5xl text-ink-soft" aria-hidden="true"></i>
       <ResourceString for="NoRecipesMatch" as="p" class="kcc-h4" />

@@ -44,7 +44,7 @@
 </script>
 
 <template>
-  <KccSheet crisp :tear :pad="STEP_PAD" data-testid="match-step">
+  <KccSheet crisp wide :tear :pad="STEP_PAD" data-testid="match-step">
     <h2 class="kcc-h4">{{ fill(rs('MatchTitle'), match.recipeName) }}</h2>
 
     <div class="mt-6 flex flex-col gap-6">

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using KCC.E2ETests.Config;
 using Microsoft.Playwright;
 
@@ -6,6 +7,10 @@ namespace KCC.E2ETests.Features.VariantReviews;
 [NotInParallel(MemberSession.Serial)]
 public class VariantReviewsTests : BasePageTests
 {
+    private const string ReviewedVariant = "/recipes/spicy-ramen-flight/chili-oil-shoyu";
+
+    private const int SeededReviews = 3;
+
     [Test]
     public async Task Anonymous_SeesLogInToReviewPrompt()
     {
@@ -16,6 +21,27 @@ public class VariantReviewsTests : BasePageTests
         await Expect(Page.Locator("textarea")).ToHaveCountAsync(0);
 
         await Expect(Page.GetByText("review", new() { Exact = false }).First).ToBeVisibleAsync();
+    }
+
+    [Test]
+    public async Task LoadedReviews_TurnOver_AndTheFormTurnsAgainstTheLastOne()
+    {
+        await MemberSession.SignInAsync(Page);
+        _ = await Page.GotoAsync(ReviewedVariant);
+
+        var reviews = Page.Locator("[data-testid='reviews-list'] > li.kcc-slip");
+        await Expect(reviews).ToHaveCountAsync(SeededReviews);
+        for (var i = 0; i < SeededReviews; i++)
+        {
+            await Expect(reviews.Nth(i)).ToHaveClassAsync(new Regex(@"\bkcc-slip--flip\b"));
+        }
+
+        var form = Page.Locator("main .kcc-slip", new() { Has = Page.GetByTestId("review-input") });
+        var lastTurn = await Piles.TurnAsync(reviews.Last);
+        var formTurn = await Piles.TurnAsync(form);
+
+        _ = await Assert.That(lastTurn).IsNotEqualTo(0);
+        _ = await Assert.That(formTurn).IsEqualTo(-lastTurn);
     }
 
     [Test]
@@ -36,6 +62,10 @@ public class VariantReviewsTests : BasePageTests
             await reviewInput.FillAsync("E2E review - tasty");
             await submit.ClickAsync();
             await Expect(reviewsList.GetByText("E2E review - tasty")).ToBeVisibleAsync();
+
+            var reviewSheet = reviewsList.Locator("li.kcc-slip", new() { HasText = "E2E review - tasty" });
+            await Expect(reviewSheet.Locator(".kcc-blank")).ToHaveCountAsync(1);
+            await Expect(reviewSheet).ToHaveClassAsync(new Regex(@"\bkcc-slip--wide\b"));
 
             await reviewInput.FillAsync("E2E review - edited");
             await submit.ClickAsync();

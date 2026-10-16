@@ -134,6 +134,7 @@ public class RecipeImportLeaveTests : BasePageTests
         _ = await Assert.That(Page.Url).IsEqualTo(before);
         await Expect(LeaveDialog).ToHaveAttributeAsync("role", "alertdialog");
         await Expect(LeaveDialog).ToHaveAttributeAsync("aria-modal", "true");
+        await Expect(LeaveDialog.Locator(".kcc-blank")).ToHaveCountAsync(1);
         await Expect(Page.GetByTestId("leave-stay")).ToBeFocusedAsync();
         _ = await Assert.That(await FocusTrap.HoldsAsync(Page, LeaveDialog)).IsTrue();
 

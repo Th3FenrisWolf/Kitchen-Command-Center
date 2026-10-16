@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Approved · The pile</title>
+<link rel="stylesheet" href="/kit.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; position: relative; z-index: 1; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+  .pv-option > header h2 { margin: 0; }
+  .pv-option > header .kcc-body + .kcc-body { margin-top: 12px; }
+  .pv-option + .pv-option { margin-top: 48px; border-top: 1px dashed var(--color-hair-strong); }
+  .pv-recipe { margin-top: 12px; }
+
+  /* The pile. The blank sheet sits centred on its top sheet with no offset and turns --pv-turn off the top sheet's
+     own tilt, in the direction --pv-s gives. A pile sets --pv-top (its top sheet's tilt) and --pv-s. */
+  #two-steps { --pv-turn: 1.5deg; --pv-k: 1.015; }
+  #two-steps .pv-pad-page, #two-steps .pv-pile--hero > .pv-under { --pv-turn: .5deg; --pv-k: 1.005; }
+
+  .pv-pile { position: relative; display: grid; }
+  .pv-under {
+    position: absolute; inset: 0; pointer-events: none; transform-origin: 50% 50%;
+    transform: rotate(calc(var(--pv-top, 0deg) + var(--pv-turn) * var(--pv-s, 1))) scale(var(--pv-k));
+  }
+  .pv-under .kcc-sheet, .pv-pad-page .kcc-sheet { background-image: none; }
+  .pv-top { transition: translate 300ms; }
+  .pv-pile:hover > .pv-top, .pv-pile:focus-within > .pv-top, .pv-top.pv-lifted { translate: 0 -4px; }
+  .pv-pile a.kcc-torn { display: block; }
+
+  /* Specimen layout. */
+  .pv-cap { margin-bottom: 28px; }
+  .pv-gap { margin-top: 60px; }
+  .pv-mt { margin-top: 24px; }
+  .pv-pt { padding-top: 24px; }
+  .pv-grow { flex: 1 1 auto; }
+  .pv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 28px; padding-top: 14px; }
+  .pv-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 28px; align-items: start; }
+  .pv-row--wide { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .pv-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .pv-actions { display: flex; justify-content: flex-end; gap: 12px; }
+  .pv-empty { display: grid; justify-items: center; gap: 24px; text-align: center; }
+  .pv-empty-glyph { font-size: 48px; color: var(--color-ink-soft); }
+  .pv-hero-stats { display: flex; flex-wrap: wrap; gap: 0 16px; color: var(--color-ink); margin-top: 0; }
+
+  /* The header pad, as AppHeader and PadCard draw it, with one page under the top sheet. */
+  .pv-pad { position: relative; margin-bottom: 14px; }
+  .pv-pad--open { margin-bottom: 330px; }
+  .pv-pad-top { z-index: 5; }
+  .pv-pad-page {
+    position: absolute; inset: 0; pointer-events: none; z-index: 3;
+    transform-origin: 50% 50%; transform: rotate(calc(-0.12deg + var(--pv-turn))) scale(var(--pv-k));
+  }
+  .pv-pad-cards { position: absolute; left: -40px; right: -40px; top: calc(100% - 14px); height: 340px;
+    overflow: hidden; pointer-events: none; z-index: 4; }
+  .pv-pad-card { position: absolute; left: 148px; top: 0; width: min(640px, calc(100% - 140px)); pointer-events: auto; }
+  .pv-pad-columns { display: grid; gap: 0 24px; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; }
+  .pv-pad-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; }
+  .pv-pad-bar { display: flex; align-items: center; gap: 18px; min-height: 48px; padding: 0 6px; }
+  .pv-pad-logo { display: inline-flex; flex: none; }
+  .pv-pad-logo img { display: block; height: 48px; width: auto; }
+  .pv-pad-menus { display: flex; align-items: center; gap: 4px; }
+  .pv-pad-menu { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px;
+    border-radius: var(--rd); white-space: nowrap; cursor: pointer; }
+  .pv-pad-menu:not(.kcc-pill) { color: var(--color-ink); }
+  .pv-pad-menu .fa-chevron-down { font-size: 9px; }
+  .pv-pad-menu[aria-expanded='true'] .fa-chevron-down { transform: rotate(180deg); }
+  .pv-pad-menu[aria-current='true']:not(.kcc-pill) .pv-pad-menu-label {
+    background-image: linear-gradient(to top, color-mix(in oklab, var(--color-marker) 90%, transparent) 0 6px, transparent 6px);
+    background-position: 0 1px; background-repeat: no-repeat; margin: 0 -2px; padding: 0 2px; }
+  .pv-pad-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px;
+    border-radius: 999px; background: var(--color-marker); color: var(--color-marker-ink); font-size: 10px; line-height: 18px; }
+  .pv-pad-search { width: 230px; grid-template-columns: auto 1fr auto; }
+  .pv-pad-key { border-radius: 4px; box-shadow: inset 0 0 0 1px var(--color-hair-strong); color: var(--color-ink-soft);
+    font: 400 11px/18px var(--font-sono); padding: 0 6px; }
+  .pv-lines { list-style: none; margin: 0; padding: 0; }
+  .pv-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px;
+    min-height: var(--bl); font-size: 15px; line-height: var(--bl); color: var(--color-ink); text-decoration: none; }
+  .pv-lines--glyphs .pv-line { grid-template-columns: 18px minmax(0, 1fr) auto; }
+  .pv-line > i { color: var(--color-ink-soft); font-size: 13px; text-align: center; }
+  .pv-line > .kcc-num { color: var(--color-ink-soft); font-size: 12px; }
+  .pv-line > span:not(.kcc-num) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
+        <feGaussianBlur in="d" stdDeviation="1.8" result="b"></feGaussianBlur>
+        <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="9" result="w"></feTurbulence>
+        <feComposite in="b" in2="w" operator="arithmetic" k1="0.62" k2="0.62" k3="0" k4="0"></feComposite>
+      </filter>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+  <span class="kcc-grain" aria-hidden="true"></span>
+
+  <div class="pv-bar">
+    <h1>Approved · The pile</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#two-steps">Two steps</a>
+    </nav>
+  </div>
+
+  <section class="pv-option" id="two-steps">
+    <header>
+      <p class="kcc-kick">Approved 2026-10-16 · round 3, option 2</p>
+      <h2>Two steps</h2>
+      <p class="kcc-body">Cards, panels, forms and empty states turn 1.5° and grow by 1.5%, as in round 2. The two wide sheets, the pad's page and the hero, take one fixed smaller turn of 0.5° and grow by 0.5%. At that turn the pad's ends tip out about 5px, the same as a card's.</p>
+      <p class="kcc-body">Wins on keeping what the owner picked: everything but the pad and the hero stays exactly at 1.5°. Costs: the visible edge still grows with width (a panel tips about 8px and a form about 7px, against a card's 5px), and the hero, at 3px, shows less than a card. Any new wide surface has to be marked wide by hand.</p>
+      <p class="kcc-kick pv-recipe">Card 392px · 1.5° · 1.015 · Panel and empty state 602px · 1.5° · 1.015 · Form 502px · 1.5° · 1.015</p>
+      <p class="kcc-kick">Pad page 1232px · 0.5° · 1.005 · Hero 702px · 0.5° · 1.005</p>
+      <p class="kcc-kick">Production: CSS only, with a custom property per surface. The pile sets the turn and scale by default, and a wide modifier on the pad's page and the hero sets the smaller pair. No container and no typed arithmetic are needed, so it works in every browser.</p>
+      <p class="kcc-kick">FR-003's cap moves from ±1° to ±1.5°.</p>
+    </header>
+    <p class="kcc-kick pv-cap">Header pad, closed · top sheet and one page</p>
+    <div class="pv-pad">
+      <div class="pv-pad-top kcc-slip kcc-tear-hero" style="--r: -0.12">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" style="--pad: 12px">
+            <div class="pv-pad-bar">
+              <a class="pv-pad-logo" href="#">
+                <img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="68" height="48">
+                <img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="68" height="48">
+              </a>
+              <nav class="pv-pad-menus">
+                <button type="button" class="pv-pad-menu kcc-kick" aria-current="true"><span class="pv-pad-menu-label">Recipes</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+                <button type="button" class="pv-pad-menu kcc-kick"><span class="pv-pad-menu-label">My kitchen</span><span class="pv-pad-count kcc-num">2</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+              </nav>
+              <span class="pv-grow"></span>
+              <label class="kcc-field pv-pad-search"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i><input type="text" placeholder="Search 128 recipes" aria-label="Search 128 recipes"><kbd class="pv-pad-key" aria-hidden="true">/</kbd></label>
+              <a class="kcc-btn" href="#"><i class="fa-duotone fa-plus" aria-hidden="true"></i>New recipe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-pad-page kcc-slip kcc-slip--fill kcc-tear-2" aria-hidden="true">
+        <div class="kcc-torn"><div class="kcc-sheet"></div></div>
+      </div>
+    </div>
+
+    <p class="kcc-kick pv-cap pv-gap">Header pad, Recipes open · the card hangs between the top sheet and its page</p>
+    <div class="pv-pad pv-pad--open">
+      <div class="pv-pad-top kcc-slip kcc-tear-hero" style="--r: -0.12">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" style="--pad: 12px">
+            <div class="pv-pad-bar">
+              <a class="pv-pad-logo" href="#">
+                <img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="68" height="48">
+                <img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="68" height="48">
+              </a>
+              <nav class="pv-pad-menus">
+                <button type="button" class="pv-pad-menu kcc-kick kcc-pill" aria-expanded="true"><span class="pv-pad-menu-label">Recipes</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+                <button type="button" class="pv-pad-menu kcc-kick"><span class="pv-pad-menu-label">My kitchen</span><span class="pv-pad-count kcc-num">2</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+              </nav>
+              <span class="pv-grow"></span>
+              <label class="kcc-field pv-pad-search"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i><input type="text" placeholder="Search 128 recipes" aria-label="Search 128 recipes"><kbd class="pv-pad-key" aria-hidden="true">/</kbd></label>
+              <a class="kcc-btn" href="#"><i class="fa-duotone fa-plus" aria-hidden="true"></i>New recipe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-pad-cards">
+        <div class="pv-pad-card kcc-slip kcc-tear-4" style="--r: -0.35">
+          <div class="kcc-torn">
+            <div class="kcc-sheet">
+              <span class="kcc-wash" style="--c: var(--color-peach); --x: 100%; --y: 0%; --w: 30%; --h: 68px" aria-hidden="true"></span>
+              <div class="pv-pt">
+                <div class="pv-pad-columns">
+                  <div>
+                    <p class="kcc-kick">Meals</p>
+                    <ul class="pv-lines pv-lines--glyphs">
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-egg" aria-hidden="true"></i><span>Breakfast</span><span class="kcc-num">24</span></a></li>
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-sandwich" aria-hidden="true"></i><span>Lunch</span><span class="kcc-num">31</span></a></li>
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-plate-utensils" aria-hidden="true"></i><span>Dinner</span><span class="kcc-num">58</span></a></li>
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-cake-slice" aria-hidden="true"></i><span>Dessert</span><span class="kcc-num">19</span></a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p class="kcc-kick">Diets</p>
+                    <ul class="pv-lines">
+                      <li><a class="pv-line" href="#"><span>Vegetarian</span><span class="kcc-num">41</span></a></li>
+                      <li><a class="pv-line" href="#"><span>Vegan</span><span class="kcc-num">17</span></a></li>
+                      <li><a class="pv-line" href="#"><span>Gluten-free</span><span class="kcc-num">22</span></a></li>
+                      <li><a class="pv-line" href="#"><span>Dairy-free</span><span class="kcc-num">15</span></a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p class="kcc-kick">Quick picks</p>
+                    <ul class="pv-lines pv-lines--glyphs">
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-stopwatch" aria-hidden="true"></i><span>Under <span class="kcc-num">30</span> min</span><span class="kcc-num">46</span></a></li>
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-pan-frying" aria-hidden="true"></i><span>One pan</span><span class="kcc-num">18</span></a></li>
+                      <li><a class="pv-line" href="#"><i class="fa-duotone fa-snowflake" aria-hidden="true"></i><span>Make ahead</span><span class="kcc-num">21</span></a></li>
+                    </ul>
+                  </div>
+                </div>
+                <hr class="kcc-hr">
+                <div class="pv-pad-foot">
+                  <p class="kcc-kick"><a class="kcc-link" href="#">All <span class="kcc-num">128</span> recipes</a> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></p>
+                  <p class="kcc-hand">Soup season starts Monday.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-pad-page kcc-slip kcc-slip--fill kcc-tear-2" aria-hidden="true">
+        <div class="kcc-torn"><div class="kcc-sheet"></div></div>
+      </div>
+    </div>
+
+    <p class="kcc-kick pv-cap pv-gap">Recipe grid · the middle card is drawn lifted, as on hover; hover any card to lift it</p>
+    <div class="pv-grid">
+      <div class="pv-pile" style="--pv-top: 0.3deg; --pv-s: -1">
+        <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-4" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+        <article class="pv-top kcc-slip kcc-slip--fill kcc-recipe kcc-tear-1">
+          <a href="#" class="kcc-torn">
+            <div class="kcc-sheet">
+              <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.5</span><span class="text-ink-soft">· 28</span></span>
+              <h3 class="kcc-h4">Brown Butter Gnocchi</h3>
+              <p class="kcc-meta"><span>Pasta</span><span class="kcc-num">6 var.</span><span class="kcc-num"><i class="fa-duotone fa-clock" aria-hidden="true"></i> 25 min</span></p>
+              <p class="kcc-body">Pillowy potato gnocchi crisped in nutty browned butter with sage and a snow of parmesan.</p>
+              <div class="kcc-badges pv-mt"><span class="kcc-badge">Vegetarian</span><span class="kcc-badge">One pan</span></div>
+            </div>
+          </a>
+          <div class="kcc-tilewrap">
+            <div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-2" style="--c: var(--color-peach)" aria-hidden="true"><i class="fa-duotone fa-wheat"></i></div></div>
+            <span class="kcc-tape" aria-hidden="true"></span>
+          </div>
+        </article>
+      </div>
+
+      <div class="pv-pile" style="--pv-top: -0.98deg; --pv-s: 1">
+        <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-5" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+        <article class="pv-top pv-lifted kcc-slip kcc-slip--fill kcc-recipe kcc-tear-2">
+          <a href="#" class="kcc-torn">
+            <div class="kcc-sheet">
+              <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.8</span><span class="text-ink-soft">· 41</span></span>
+              <h3 class="kcc-h4">Charred Corn Tacos</h3>
+              <p class="kcc-meta"><span>Mexican</span><span class="kcc-num">3 var.</span><span class="kcc-num"><i class="fa-duotone fa-clock" aria-hidden="true"></i> 30 min</span></p>
+              <p class="kcc-body">Blistered corn, lime crema and pickled onion piled into warm tortillas.</p>
+              <div class="kcc-badges pv-mt"><span class="kcc-badge">Weeknight</span><span class="kcc-badge">Dairy-free</span></div>
+            </div>
+          </a>
+          <div class="kcc-tilewrap">
+            <div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-3" style="--c: var(--color-yellow)" aria-hidden="true"><i class="fa-duotone fa-taco"></i></div></div>
+            <span class="kcc-tape" aria-hidden="true"></span>
+          </div>
+        </article>
+      </div>
+
+      <div class="pv-pile" style="--pv-top: 0.05deg; --pv-s: -1">
+        <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-6" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+        <article class="pv-top kcc-slip kcc-slip--fill kcc-recipe kcc-tear-3">
+          <a href="#" class="kcc-torn">
+            <div class="kcc-sheet">
+              <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.2</span><span class="text-ink-soft">· 12</span></span>
+              <h3 class="kcc-h4">Miso Glazed Salmon</h3>
+              <p class="kcc-meta"><span>Seafood</span><span class="kcc-num">2 var.</span><span class="kcc-num"><i class="fa-duotone fa-clock" aria-hidden="true"></i> 20 min</span></p>
+              <p class="kcc-body">Sweet-salty miso glaze, broiled until it catches at the edges.</p>
+              <div class="kcc-badges pv-mt"><span class="kcc-badge">Gluten-free</span></div>
+            </div>
+          </a>
+          <div class="kcc-tilewrap">
+            <div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-1" style="--c: var(--color-sky)" aria-hidden="true"><i class="fa-duotone fa-fish"></i></div></div>
+            <span class="kcc-tape" aria-hidden="true"></span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="pv-row pv-gap">
+      <div>
+        <p class="kcc-kick pv-cap">Panel · the library's controls sheet</p>
+        <div class="pv-pile" style="--pv-top: 0.63deg; --pv-s: -1">
+          <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-2" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+          <section class="pv-top kcc-slip kcc-slip--fill kcc-tear-5">
+            <div class="kcc-torn">
+              <div class="kcc-sheet">
+                <span class="kcc-wash" style="--c: var(--color-green); --x: 100%; --y: 0%; --w: 34%; --h: 68px" aria-hidden="true"></span>
+                <h3 class="kcc-h4">Find something to cook</h3>
+                <label class="kcc-field pv-mt"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i><input type="text" value="soup" aria-label="Search recipes"></label>
+                <div class="pv-controls pv-mt">
+                  <div class="kcc-seg" role="group" aria-label="Sort">
+                    <button type="button" aria-pressed="true">Top rated</button>
+                    <button type="button" aria-pressed="false">Newest</button>
+                    <button type="button" aria-pressed="false">Quickest</button>
+                  </div>
+                  <p class="kcc-kick"><span class="kcc-num">14</span> of <span class="kcc-num">128</span></p>
+                </div>
+              </div>
+            </div>
+            <span class="kcc-label"><i class="fa-duotone fa-books" aria-hidden="true"></i>Library · 128</span>
+          </section>
+        </div>
+      </div>
+
+      <div>
+        <p class="kcc-kick pv-cap">Empty state · was taped, now piled</p>
+        <div class="pv-pile" style="--pv-top: -0.98deg; --pv-s: 1">
+          <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-6" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+          <div class="pv-top kcc-slip kcc-slip--fill kcc-tear-2">
+            <div class="kcc-torn">
+              <div class="kcc-sheet">
+                <span class="kcc-wash" style="--c: var(--color-yellow); --x: 0%; --y: 100%; --w: 30%; --h: 68px" aria-hidden="true"></span>
+                <div class="pv-empty">
+                  <i class="fa-duotone fa-bowl-food pv-empty-glyph" aria-hidden="true"></i>
+                  <p class="kcc-h4">No recipes match those filters</p>
+                  <p class="kcc-body">Try fewer diets or a longer cook time, or clear the filters and start again.</p>
+                  <button type="button" class="kcc-btn kcc-btn--ghost">Clear all filters</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pv-row pv-row--wide pv-gap">
+      <div>
+        <p class="kcc-kick pv-cap">Crisp sheet · square top, tilted page under it</p>
+        <div class="pv-pile" style="--pv-top: 0deg; --pv-s: 1">
+          <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-1" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+          <form class="pv-top kcc-slip kcc-slip--fill kcc-tear-4" style="--r: 0" onsubmit="return false">
+            <div class="kcc-torn">
+              <div class="kcc-sheet">
+                <p class="kcc-lbl">Recipe name</p>
+                <span class="kcc-field kcc-field--noicon"><input type="text" value="Roasted Tomato Soup" aria-label="Recipe name"></span>
+                <p class="kcc-lbl pv-mt">Prep time</p>
+                <span class="kcc-field"><i class="fa-duotone fa-clock" aria-hidden="true"></i><input class="kcc-num" type="text" value="35" aria-label="Prep time in minutes"></span>
+                <p class="kcc-lbl pv-mt">Notes</p>
+                <span class="kcc-field kcc-field--area"><textarea rows="2" aria-label="Notes" placeholder="Anything a cook should know"></textarea></span>
+                <div class="pv-actions pv-mt">
+                  <button type="button" class="kcc-btn kcc-btn--ghost">Back</button>
+                  <button type="button" class="kcc-btn">Next step<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+                </div>
+              </div>
+            </div>
+            <span class="kcc-label"><i class="fa-duotone fa-pen-to-square" aria-hidden="true"></i>New recipe · step 2 of 4</span>
+          </form>
+        </div>
+      </div>
+
+      <div>
+        <p class="kcc-kick pv-cap">Applied item · tape holds the tile, never the sheet</p>
+        <div class="pv-pile pv-pile--hero" style="--pv-top: -0.58deg; --pv-s: -1">
+          <div class="pv-under kcc-slip kcc-slip--fill kcc-tear-3" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+          <div class="pv-top kcc-slip kcc-slip--fill kcc-recipe kcc-tear-hero">
+            <div class="kcc-torn">
+              <div class="kcc-sheet" style="--pad: 48px">
+                <span class="kcc-wash" style="--c: var(--color-red); --x: 100%; --y: 100%; --w: 34%; --h: 68px" aria-hidden="true"></span>
+                <p class="kcc-kick">Soups · from Dana's kitchen</p>
+                <h3 class="kcc-h3">Roasted Tomato Soup</h3>
+                <p class="kcc-kick pv-hero-stats"><span><i class="fa-duotone fa-star" aria-hidden="true"></i> <span class="kcc-num">4.7</span> <span class="text-ink-soft">· <span class="kcc-num">36</span> reviews</span></span><span><i class="fa-duotone fa-fire-burner" aria-hidden="true"></i> <span class="kcc-num">112</span> times cooked</span></p>
+                <p class="kcc-body pv-mt">Tomatoes, garlic and onion roasted until they slump, then blended with stock and a splash of cream.</p>
+              </div>
+            </div>
+            <div class="kcc-tilewrap" style="top: -22px; left: 40px">
+              <div class="kcc-torn"><div class="kcc-tile kcc-tile--lg kcc-tear-tile-1" style="--c: var(--color-red)" aria-hidden="true"><i class="fa-duotone fa-bowl-hot"></i></div></div>
+              <span class="kcc-tape" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <span class="kcc-crayon" aria-hidden="true"></span>
+</div>
+<script>
+  const root = document.documentElement;
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light');
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+</script>
+</body>
+</html>

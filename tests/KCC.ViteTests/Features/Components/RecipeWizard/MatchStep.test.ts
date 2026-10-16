@@ -38,11 +38,18 @@ const options = (html: string) =>
   [...html.matchAll(/<option[^>]*value="([^"]+)"[^>]*>([^<]*)<\/option>/g)].map(([, value, name]) => [value, name!.trim()])
 
 describe('MatchStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'data-testid="match-step"')).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
+  })
+
   it('hooks the match step on a crisp sheet, headed with the proposed recipe', async () => {
     const html = await render()
     const slip = tagWith(html, 'data-testid="match-step"')
 
-    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-tear-2'])
+    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-slip--wide', 'kcc-tear-2'])
     expect(slip).toContain('--r:0')
     expect(html).toMatch(/<h2 class="kcc-h4">\s*Is this a new way to make Fluffy Buttermilk Pancakes\?\s*<\/h2>/)
   })

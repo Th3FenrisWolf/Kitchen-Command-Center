@@ -21,12 +21,19 @@ describe('VariantNutrition sheet', () => {
   it('is a plain sheet on the second tear, labelled with the wheat', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-tear-2')
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-wheat" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?Nutrition/s)
     // The figures run the full width of the sheet, so there is no margin for a wash to sit under.
     expect(html).not.toContain('kcc-wash')
     expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip--wide')
   })
 
   it('keeps the section heading for assistive tech and kicks off with the serving basis', async () => {

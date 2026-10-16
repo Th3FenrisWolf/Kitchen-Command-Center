@@ -195,9 +195,15 @@ scoped block. Anything Razor also renders belongs in `@layer components`. A rule
 
 Sheets are clipped with `clip-path: var(--tear)`; the presets in `Features/Styles/Torn/Tears.css` are
 **generated** by `yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
-the CSS. No runtime JS draws anything; the SSR output is final. Two structural invariants:
+the CSS. No runtime JS draws anything; the SSR output is final. Three structural invariants:
 
 - The `filter` (fibre + fall) sits on `.kcc-torn`, **outside** the clipped `.kcc-sheet`, or the shadow is
   clipped away with the paper.
-- `.kcc-label`, `.kcc-tape` and `.kcc-tilewrap` are siblings of `.kcc-torn` inside `.kcc-slip`: outside the
-  clip and outside the filter, so they are neither torn nor shadowed.
+- `.kcc-label` and `.kcc-tilewrap` are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip and outside
+  the filter, so they are neither torn nor shadowed. The `.kcc-tape` sits inside the tilewrap: tape holds only a
+  tile, and a sheet is never taped. The one exception is a `.kcc-tilewrap--flow`, which sits in the sheet's content
+  flow with its tape.
+- Every sheet lies on a blank: `<span class="kcc-blank" aria-hidden="true"><span></span></span>`, the slip's
+  **last** child, outside the top sheet's clip and filter, with its own filter on `.kcc-blank` and its clip on the
+  inner span. The header pad is the exception: its `.pad-page` slip is the top sheet's blank, and a pad card holds
+  none.

@@ -96,11 +96,20 @@ describe('VariantDetailView', () => {
   it('keeps the stats on an At a glance sheet of their own', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'kcc-tear-3')).toContain('kcc-slip kcc-tear-3')
+    expect(tagWith(html, 'kcc-tear-3')).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-3"')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-gauge" aria-hidden="true"></i>')
     expect(html).toContain('At a glance')
     const slip = html.slice(html.indexOf('kcc-tear-3'), html.indexOf('kcc-label', html.indexOf('kcc-tear-3')))
     expect(slip).toContain('data-testid="variant-stats"')
+  })
+
+  it('rests the At a glance sheet on one blank', async () => {
+    const html = await render()
+    const glance = html.indexOf('kcc-tear-3')
+    const nextSlip = html.indexOf('class="kcc-slip ', glance)
+    const sheet = html.slice(glance, nextSlip === -1 ? undefined : nextSlip)
+
+    expect((sheet.match(/kcc-blank/g) ?? []).length).toBe(1)
   })
 
   it('stacks the ingredients over the method until 768px, then sets the method the wider of the two', async () => {
@@ -144,6 +153,41 @@ describe('VariantDetailView', () => {
 
     expect(html.indexOf('<h1')).toBeGreaterThan(-1)
     expect(html.indexOf('<h1')).toBeLessThan(html.indexOf('<h2'))
+  })
+
+  describe('alternates its blanks in reading order', () => {
+    const siblingSlips = (html: string) => html.match(/<article class="kcc-slip kcc-slip--fill[^"]*"/g) ?? []
+    const expectSiblingsFlip = (html: string, flip: boolean) => {
+      expect(siblingSlips(html)).toHaveLength(1)
+      siblingSlips(html).forEach((slip) =>
+        flip ? expect(slip).toMatch(/ kcc-slip--flip kcc-tear-1"$/) : expect(slip).not.toContain('kcc-slip--flip'),
+      )
+    }
+
+    it('turns At a glance over, to +', async () => {
+      expect(tagWith(await render(), 'kcc-tear-3')).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-3"')
+    })
+
+    it('turns nutrition over, to -', async () => {
+      const html = await render()
+
+      expect(tagWith(html, 'kcc-tear-2"')).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-2"')
+      expect(html.indexOf('kcc-tear-2"')).toBeLessThan(html.indexOf('fa-wheat'))
+    })
+
+    it.each([
+      ['signed out with reviews, under the summary', false, 3, true],
+      ['signed out with none, under cook notes', false, 0, false],
+      ['signed in with reviews, under the form', true, 3, false],
+      ['signed in with none, under the form', true, 0, true],
+    ])('sets the siblings against the sheet above them: %s', async (_, isAuthenticated, reviewCount, flip) => {
+      const html = await render({ isAuthenticated, reviewCount, averageRating: reviewCount ? 4.5 : 0 })
+
+      expect(html.includes('kcc-tear-5"')).toBe(reviewCount > 0)
+      expect(html.includes('data-testid="review-input"')).toBe(isAuthenticated)
+      expect(html).not.toContain('reviews-list')
+      expectSiblingsFlip(html, flip)
+    })
   })
 
   it('leaves no Softbound remnant on the page', async () => {
