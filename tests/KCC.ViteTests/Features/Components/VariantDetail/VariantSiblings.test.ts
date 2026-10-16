@@ -30,7 +30,9 @@ describe('VariantSiblings', () => {
   })
 
   it('gives every sibling a slip of its own, cycling the tears so no two neighbours share one', async () => {
-    const tears = [...(await render(7)).matchAll(/kcc-slip kcc-recipe[^"]*kcc-tear-(\d)/g)].map((match) => match[1])
+    const tears = [...(await render(7)).matchAll(/kcc-slip kcc-slip--fill kcc-recipe[^"]*kcc-tear-(\d)/g)].map(
+      (match) => match[1],
+    )
 
     expect(tears).toEqual(['1', '2', '3', '4', '5', '6', '1'])
   })

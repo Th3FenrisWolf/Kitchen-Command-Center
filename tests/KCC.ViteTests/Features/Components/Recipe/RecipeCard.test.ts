@@ -38,6 +38,11 @@ describe('RecipeCard slip', () => {
     expect(root).toContain(`kcc-tear-${sheetTearFor(NAME)}`)
   })
 
+  it('fills the grid row, so every card in a row ends at the same height', async () => {
+    const html = await render(hit())
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip--fill')
+  })
+
   it('takes the tear a grid hands it, so two neighbours never share one', async () => {
     const html = await render(hit(), { tear: 4 })
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-tear-4')
