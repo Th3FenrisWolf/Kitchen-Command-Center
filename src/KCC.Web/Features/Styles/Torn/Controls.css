@@ -101,6 +101,7 @@
     max-width: 100%;
     min-width: 0;
     overflow-x: auto;
+    position: relative;
     scrollbar-width: none;
   }
 
@@ -119,17 +120,19 @@
     flex: none;
     font: 400 10.5px/36px var(--font-sono);
     gap: 8px;
+    justify-content: center;
     letter-spacing: 0.12em;
     padding: 0 14px;
+    position: relative;
     text-transform: uppercase;
     white-space: nowrap;
   }
 
-  .kcc-seg button:first-child {
+  .kcc-seg button:first-of-type {
     padding-left: 16px;
   }
 
-  .kcc-seg button:last-child {
+  .kcc-seg button:last-of-type {
     padding-right: 16px;
   }
 
@@ -145,6 +148,39 @@
 
   .kcc-seg button:hover:not([aria-pressed='true'], [aria-checked='true']) {
     color: var(--color-ink);
+  }
+
+  .kcc-seg-thumb {
+    background: var(--color-ink);
+    border-radius: 999px;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    transition-duration: var(--default-transition-duration);
+    transition-property: none;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .kcc-seg-thumb--glide {
+    transition-property: transform, width;
+  }
+
+  .kcc-seg--sliding .kcc-seg-thumb {
+    opacity: 1;
+  }
+
+  .kcc-seg--sliding button[aria-checked='true'] {
+    background: none;
+  }
+
+  .kcc-seg--sliding button {
+    transition:
+      color var(--default-transition-duration),
+      outline-color 0.2s,
+      outline-offset 0.2s;
   }
 
   .kcc-field {

@@ -203,7 +203,7 @@ stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design
 | `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
 | `kcc-foot` | footer copy block | |
 | `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large; `--icon` squares the pill (36px, 48px with `--lg`) | Sono caps `.14em`; an `--icon` button is all glyph, so its name goes in `aria-label` |
-| `kcc-seg` › `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | pressed = ink fill; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments |
+| `kcc-seg` › `kcc-seg-thumb`, `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | pressed = ink fill; in `SegmentedControl.vue` the fill is an ink thumb that slides to the checked segment once the client has placed it (`kcc-seg--sliding`), and until then the checked button carries it; `kcc-seg-thumb--glide` turns the slide on after each placement that must not slide; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments |
 | `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = 2px inset ink ring |
 | `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
 | `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
@@ -249,7 +249,8 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
   itself is `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. Under `forced-colors: active`
   the field and the segments take a `CanvasText` outline, because high-contrast mode paints no box-shadow. The
   `kcc-range` thumbs have no focus ring yet.
-- **Pressed, current, checked.** A pressed or checked `kcc-seg` segment fills with ink. The current wizard step and
+- **Pressed, current, checked.** A pressed or checked `kcc-seg` segment fills with ink. In `SegmentedControl.vue` the
+  fill is the `kcc-seg-thumb`, which slides from the old segment to the new one. The current wizard step and
   an open menu button are `kcc-pill`. The section you are in is a marker underline on its menu, 5px of marker
   behind the label, hidden while that menu is open. A checked box is `kcc-box--on`, and a done checklist row
   (`li.kcc-done`) is struck through.
@@ -284,6 +285,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 | The desktop search field widens as it takes focus | 300ms `cubic-bezier(.2, .8, .2, 1)`, from 230px to 330px (170px to 230px between 768px and 1023px) | `AppHeader.Component.vue` |
 | A row's name in a pad card underlines | `text-decoration-color` from transparent to ink over 300ms on hover | `PadLines.vue` |
 | A stacked sheet steps back | `transition-all duration-100`, scale from 1 to .95 once it sticks, all but the last | `Stacker.Component.vue` |
+| A segment's ink fill slides to the checked segment | `transform` and `width` over 300ms, and the labels' colour fades with it; no slide for the first placement, after a resize, when the fonts load or when the labels change | `SegmentedControl.vue`, `Controls.css` |
 | The focus ring fades in | `transition: outline-color 0.2s, outline-offset 0.2s` on every focusable | `TailwindConfig.css` |
 | More recipes load | `fa-spin` on a `fa-circle-notch` | `RecipeSearchView.Component.vue` |
 

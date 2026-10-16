@@ -60,4 +60,11 @@ describe('VariantGrid', () => {
     expect(html).not.toMatch(/\brounded-(?:lg|xl|2xl|3xl)\b/)
     expect(html).not.toMatch(/sk-[a-z]/)
   })
+
+  it('stretches the add-variant slip to its row and centres the plus and the label on it', async () => {
+    const html = await render(3)
+
+    expect(tagWith(html, 'kcc-tear-4')).toContain('kcc-slip--fill')
+    expect(tagWith(html, 'kcc-sheet grid')).toContain('content-center')
+  })
 })
