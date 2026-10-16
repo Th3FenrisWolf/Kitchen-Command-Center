@@ -119,6 +119,32 @@ public class RecipeSearchTests : BasePageTests
         _ = await Assert.That(new Uri(Page.Url).AbsolutePath).IsEqualTo("/");
     }
 
+    [Test]
+    public async Task Sort_thumb_slides_to_the_clicked_segment()
+    {
+        await Page.GotoAsync("/recipes");
+        _ = await Page.WaitForFunctionAsync(ThumbSitsOver, "sort-relevant");
+
+        await Page.Locator("[data-testid='sort-rated']").ClickAsync();
+
+        var thumb = Page.Locator(".kcc-seg:has([data-testid='sort-rated']) .kcc-seg-thumb");
+        await Expect(thumb).ToHaveCSSAsync("transition-property", new Regex("transform"));
+        await Expect(thumb).ToHaveCSSAsync("transition-duration", new Regex(@"^0\.3s"));
+        await Expect(Page.Locator("[data-testid='sort-rated']")).ToHaveCSSAsync("background-color", "rgba(0, 0, 0, 0)");
+        _ = await Page.WaitForFunctionAsync(ThumbSitsOver, "sort-rated");
+    }
+
+    private const string ThumbSitsOver = """
+        id => {
+          const button = document.querySelector(`[data-testid='${id}']`);
+          const thumb = button?.parentElement?.querySelector('.kcc-seg-thumb');
+          if (!thumb) return false;
+          const t = thumb.getBoundingClientRect();
+          const b = button.getBoundingClientRect();
+          return getComputedStyle(thumb).opacity === '1' && Math.abs(t.left - b.left) < 1 && Math.abs(t.width - b.width) < 1;
+        }
+        """;
+
     private ILocator FilterBox(string label) =>
         Page.Locator("#recipe-filters li").Filter(new() { HasText = label }).Locator("input[type='checkbox']");
 
