@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using KCC.E2ETests.Config;
 using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.RecipeSearch;
@@ -15,6 +16,20 @@ public class RecipeSearchTests : BasePageTests
         await Expect(Page.Locator("[data-testid='recipe-spotlight']")).ToHaveAttributeAsync("data-recipe-name", "Legendary Lasagna");
         await Expect(Page.Locator("[data-testid='recipe-card']").First).ToHaveAttributeAsync("data-recipe-name", "Avocado Toast Supreme");
         await Expect(Page.Locator("[data-testid='recipe-card'][data-recipe-name='Legendary Lasagna']")).ToHaveCountAsync(0);
+    }
+
+    [Test]
+    public async Task Grid_cards_in_a_row_share_one_height()
+    {
+        await Page.GotoAsync("/recipes");
+
+        var rows = await GridRows.SheetHeightsAsync(Page.Locator("main .grid:has(> .kcc-recipe)"));
+
+        _ = await Assert.That(rows.Any(row => row.Length > 1)).IsTrue();
+        foreach (var row in rows)
+        {
+            _ = await Assert.That(row.Max() - row.Min()).IsLessThanOrEqualTo(1);
+        }
     }
 
     [Test]

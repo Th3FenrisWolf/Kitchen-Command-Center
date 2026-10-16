@@ -24,11 +24,11 @@
     />
 
     <div
-      class="kcc-slip transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
+      class="kcc-slip kcc-slip--fill transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
       :class="`kcc-tear-${listTearFor(variants.length)}`"
     >
       <a :href="addVariantUrl" class="kcc-torn block">
-        <div class="kcc-sheet grid justify-items-center gap-6 text-center" style="--pad: 48px">
+        <div class="kcc-sheet grid content-center justify-items-center gap-6 text-center" style="--pad: 48px">
           <i class="fa-duotone fa-plus text-4xl text-ink-soft" aria-hidden="true"></i>
           <ResourceString for="AddVariant" as="span" class="kcc-h4" />
         </div>
