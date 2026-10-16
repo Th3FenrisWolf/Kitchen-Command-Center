@@ -134,6 +134,19 @@ public class RecipeSearchTests : BasePageTests
         _ = await Page.WaitForFunctionAsync(ThumbSitsOver, "sort-rated");
     }
 
+    [Test]
+    [Arguments("view-grid")]
+    [Arguments("view-list")]
+    public async Task View_toggle_icon_sits_in_the_centre_of_its_segment(string testId)
+    {
+        await Page.GotoAsync("/recipes");
+
+        var segment = await Page.Locator($"[data-testid='{testId}']").BoundingBoxAsync();
+        var icon = await Page.Locator($"[data-testid='{testId}'] i").BoundingBoxAsync();
+
+        _ = await Assert.That(Math.Abs((icon!.X + (icon.Width / 2)) - (segment!.X + (segment.Width / 2)))).IsLessThan(1);
+    }
+
     private const string ThumbSitsOver = """
         id => {
           const button = document.querySelector(`[data-testid='${id}']`);

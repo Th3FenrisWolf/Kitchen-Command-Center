@@ -120,6 +120,7 @@
     flex: none;
     font: 400 10.5px/36px var(--font-sono);
     gap: 8px;
+    justify-content: center;
     letter-spacing: 0.12em;
     padding: 0 14px;
     position: relative;
