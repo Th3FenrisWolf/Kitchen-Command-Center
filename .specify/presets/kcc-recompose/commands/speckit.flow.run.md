@@ -14,8 +14,10 @@ strategy: wrap
   `recompose-branch` skill after the review loop and before the push.
 - The recomposition runs in this session. No builder plans it, builds it, pushes the branch or opens the pull
   request.
-- The recomposition plan rides on the close-out confirmation, which stays an owner stop under Stops. It is never
-  routed as an assumption, never answered by a recommendation, and never skipped on a resumed run.
+- A confident grouping is built before the close-out confirmation, which shows the new history. A grouping that is a
+  judgment call rides on the confirmation as a plan, and nothing is committed until the owner answers. The
+  confirmation stays an owner stop under Stops, because it approves the publish. It is never routed as an
+  assumption, never answered by a recommendation, and never skipped on a resumed run.
 - The run never pushes a branch or opens a pull request until the recomposition has passed its tree check. A
   resumed run skips the recomposition only when the branch's pull request is already open.
-- The Report adds the recomposed history, and the backup branch with its delete command.
+- The Report adds the recomposed history, and says that the backup branch was deleted once the pull request opened.
