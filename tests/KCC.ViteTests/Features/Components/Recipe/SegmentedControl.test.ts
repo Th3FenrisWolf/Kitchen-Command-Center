@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import SegmentedControl from '~/Components/Recipe/SegmentedControl.vue'
-import { renderSsr, expectNoRetiredMarkup } from '../../../support/ssr'
+import { renderSsr, expectNoRetiredMarkup, openTag } from '../../../support/ssr'
 
 const textOptions = [
   { value: 'grid', label: 'Grid', testId: 'view-grid' },
@@ -35,9 +35,18 @@ describe('SegmentedControl', () => {
     expect(gridButton).toContain('px-0')
   })
 
-  it('carries no sliding thumb or Softbound hook', async () => {
+  it('renders an aria-hidden thumb first in the track', async () => {
     const html = await renderSsr(SegmentedControl, { options: textOptions, modelValue: 'grid' })
-    expect(html).not.toContain('seg-thumb')
+    const track = openTag(html, 'role="radiogroup"')
+    const thumb = openTag(html, 'kcc-seg-thumb')
+    expect(thumb).toContain('aria-hidden="true"')
+    expect(html.indexOf(thumb)).toBe(html.indexOf(track) + track.length)
     expectNoRetiredMarkup(html)
+  })
+
+  it('leaves the fill on the checked button until the client places the thumb', async () => {
+    const html = await renderSsr(SegmentedControl, { options: textOptions, modelValue: 'grid' })
+    expect(openTag(html, 'role="radiogroup"')).toContain('class="kcc-seg"')
+    expect(openTag(html, 'kcc-seg-thumb')).not.toContain('kcc-seg-thumb--glide')
   })
 })
