@@ -93,6 +93,8 @@ public class PhotoValidationTests
 
     [Test]
     [Arguments("heic")]
+    [Arguments("tiff little-endian")]
+    [Arguments("tiff big-endian")]
     [Arguments("pdf")]
     [Arguments("text")]
     [Arguments("empty")]
@@ -104,6 +106,8 @@ public class PhotoValidationTests
         byte[] bytes = kind switch
         {
             "heic" => [0x00, 0x00, 0x00, 0x18, .. "ftypheic"u8, 0x00, 0x00, 0x00, 0x00],
+            "tiff little-endian" => [.. "II"u8, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00],
+            "tiff big-endian" => [.. "MM"u8, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x08],
             "pdf" => [.. "%PDF-1.7\n"u8],
             "text" => Encoding.UTF8.GetBytes("Two cups of flour."),
             "empty" => [],
