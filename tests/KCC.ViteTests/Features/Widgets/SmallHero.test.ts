@@ -23,12 +23,19 @@ const slipClasses = (html: string) => {
 }
 
 describe('SmallHero structure', () => {
-  it('is a hero-torn section, taped, padded to 48px', async () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(html.match(/<section[^>]*>/)?.[0]).toContain('kcc-slip kcc-slip--wide kcc-tear-hero')
+  })
+
+  it('is a hero-torn section, padded to 48px', async () => {
     const html = await render()
 
     expect(slipClasses(html)).toEqual(expect.arrayContaining(['kcc-slip', 'kcc-tear-hero']))
     expect(html).toContain('<div class="kcc-torn"><div class="kcc-sheet" style="--pad:48px;">')
-    expect(html).toContain('<span class="kcc-tape" aria-hidden="true"></span>')
+    expect(html).not.toContain('kcc-tape')
   })
 
   // Razor hands the widget's margins down as a class. They belong on the slip, where the tilt is, and they

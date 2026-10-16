@@ -73,6 +73,36 @@ describe('RecipeCard slip', () => {
   })
 })
 
+describe('RecipeCard pile', () => {
+  const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
+
+  it('lifts its top sheet off the blank through the kit, not through utilities', async () => {
+    const html = await render(hit(), { tear: 2 })
+    expect(tagWith(html, 'kcc-slip')).toContain('class="kcc-slip kcc-slip--fill kcc-recipe kcc-slip--lift kcc-tear-2"')
+    expect(html).not.toMatch(/transition-transform|hover:-translate-y-1|focus-within:-translate-y-1/)
+  })
+
+  it('lies on one blank, the last child of the article', async () => {
+    const html = await render(hit())
+    expect(html.split('kcc-blank')).toHaveLength(2)
+    expect(html.endsWith(`${BLANK}</article>`)).toBe(true)
+  })
+
+  it('takes the standard turn, not the wide pair', async () => {
+    expect(await render(hit())).not.toContain('kcc-slip--wide')
+  })
+
+  it('turns its blank the other way only when flipped', async () => {
+    const lift = 'kcc-slip--lift'
+    expect(tagWith(await render(hit(), { tear: 4, flip: true }), 'kcc-slip')).toContain(
+      `class="kcc-slip kcc-slip--fill kcc-recipe ${lift} kcc-slip--flip kcc-tear-4"`,
+    )
+    expect(tagWith(await render(hit(), { tear: 4 }), 'kcc-slip')).toContain(
+      `class="kcc-slip kcc-slip--fill kcc-recipe ${lift} kcc-tear-4"`,
+    )
+  })
+})
+
 describe('RecipeCard stat', () => {
   it('raises the rating to the top-right, with the review count in soft ink', async () => {
     const html = await render(hit())

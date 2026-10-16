@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import AccountView from '~/Pages/Account/AccountView.Component.vue'
+import { listTearFor } from '~/Utilities/BrandColor'
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
 
 const STRINGS = {
@@ -79,6 +80,23 @@ const creationsOf = (html: string) =>
 const comingSoonOf = (html: string) => html.slice(html.indexOf('</section>', html.indexOf('kcc-secname')))
 
 describe('AccountView', () => {
+  it('turns the recipe groups wide and leaves the profile and coming-soon sheets standard, each on one blank', async () => {
+    const html = await render()
+    const profile = html.slice(0, html.indexOf('kcc-secname'))
+    const creations = creationsOf(html)
+    const comingSoon = comingSoonOf(html)
+    const blanks = (part: string) => (part.match(/kcc-blank/g) ?? []).length
+
+    expect(blanks(profile)).toBe(1)
+    expect(profile).not.toContain('kcc-slip--wide')
+    expect(creations.match(/class="kcc-slip /g)).toHaveLength(RECIPE_GROUPS.length)
+    expect(creations.match(/class="kcc-slip kcc-slip--wide kcc-tear-[1-6]"/g)).toHaveLength(RECIPE_GROUPS.length)
+    expect(blanks(creations)).toBe(RECIPE_GROUPS.length)
+    expect(comingSoon.match(/class="kcc-slip /g)).toHaveLength(2)
+    expect(blanks(comingSoon)).toBe(2)
+    expect(comingSoon).not.toContain('kcc-slip--wide')
+  })
+
   it('pools one lavender wash in the profile sheet corner and names the member in display size', async () => {
     const html = await render()
     const profile = html.slice(0, html.indexOf('kcc-secname'))
@@ -120,8 +138,8 @@ describe('AccountView', () => {
     const creations = creationsOf(await render())
 
     expect(creations).toMatch(/<h2[^>]*>My recipes and variants<\/h2>/)
-    expect(creations).toContain('kcc-slip kcc-tear-2')
-    expect(creations).toContain('kcc-slip kcc-tear-3')
+    expect(creations).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
+    expect(creations).toContain('kcc-slip kcc-slip--wide kcc-tear-3')
     expect(creations).not.toContain('kcc-tear-1')
     expect(tagWith(creations, 'kcc-sheet')).toContain('--pad:16px')
     expect(creations).toContain('<h3 class="kcc-h4">')
@@ -164,6 +182,29 @@ describe('AccountView', () => {
     expect(comingSoon).toContain('kcc-tear-3')
     expect(comingSoon).toContain('kcc-tear-5')
     expect(comingSoon.match(/kcc-wash/g)).toHaveLength(2)
+  })
+
+  it('tears the recipe groups along the cycle from the second tear, one on from the profile sheet', async () => {
+    const groups = [...RECIPE_GROUPS, { ...RECIPE_GROUPS[1], key: 'third' }]
+    const creations = creationsOf(await render(groups))
+
+    expect(creations.match(/kcc-tear-[1-6]/g)).toEqual(groups.map((_, i) => `kcc-tear-${listTearFor(i + 1)}`))
+  })
+
+  const groupsOf = (count: number) =>
+    Array.from({ length: count }, (_, i) => ({ ...RECIPE_GROUPS[i % 2], key: `group-${i}` }))
+
+  const comingSoonSlips = async (count: number) =>
+    (comingSoonOf(await render(groupsOf(count))).match(/class="kcc-slip [^"]*"/g) ?? []).map((tag) =>
+      tag.slice('class="'.length, -1),
+    )
+
+  it.each([0, 2])('turns "Favorites" over after %i recipe groups, so it opposes the sheet before it', async (count) => {
+    expect(await comingSoonSlips(count)).toEqual(['kcc-slip kcc-slip--flip kcc-tear-3', 'kcc-slip kcc-tear-5'])
+  })
+
+  it.each([1, 3])('turns "Recent activity" over after %i recipe groups instead', async (count) => {
+    expect(await comingSoonSlips(count)).toEqual(['kcc-slip kcc-tear-3', 'kcc-slip kcc-slip--flip kcc-tear-5'])
   })
 
   it('leaves no Softbound remnant on the profile', async () => {

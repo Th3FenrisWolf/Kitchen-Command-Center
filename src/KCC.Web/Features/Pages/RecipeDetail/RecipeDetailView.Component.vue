@@ -93,7 +93,7 @@
       </template>
     </DetailHero>
 
-    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3">
+    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3" wide flip>
       <StatTiles :tiles="statTiles" />
     </KccSheet>
 
@@ -109,9 +109,14 @@
       <div class="space-y-9">
         <FeaturedRecipeCard v-if="featured" :card="variantToFeatured(featured, rs)" />
         <VariantToolbar v-model:search="search" v-model:sort="sort" v-model:tag="tag" v-model:view="view" :tags="tags" />
-        <VariantGrid v-if="view === 'grid' && filtered.length" :variants="filtered" :add-variant-url="addVariantHref" />
-        <VariantList v-else-if="view === 'list' && filtered.length" :variants="filtered" />
-        <VariantsEmptyState v-else-if="!filtered.length" @clear="clearFilters" />
+        <VariantGrid
+          v-if="view === 'grid' && filtered.length"
+          :variants="filtered"
+          :add-variant-url="addVariantHref"
+          :flip="!!featured"
+        />
+        <VariantList v-else-if="view === 'list' && filtered.length" :variants="filtered" :flip="!!featured" />
+        <VariantsEmptyState v-else-if="!filtered.length" :flip="!featured" @clear="clearFilters" />
       </div>
     </section>
   </div>

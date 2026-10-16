@@ -33,6 +33,13 @@ const CONTROLS = [
 const render = (values: WizardValues) => renderInWizard(VariantStep, { mode: 'variant', values })
 
 describe('VariantStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render(READ)
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
+  })
+
   it('shows the mark a read left on each value', async () => {
     const html = await render(READ)
 

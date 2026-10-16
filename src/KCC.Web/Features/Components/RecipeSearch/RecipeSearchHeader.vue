@@ -26,6 +26,7 @@
     wash="green"
     :at="{ x: '92%', y: '100%', w: '30%', h: '80%' }"
     :tear="3"
+    wide
     pad="24px"
     class="my-6"
   >

@@ -8,6 +8,7 @@
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
+  import { reviewsTrailingSign, tearTurn, type Turn } from '~/Components/VariantDetail/reviewsTrailingSign'
 
   export interface VariantReviewsProps {
     variantGuid: string
@@ -17,6 +18,8 @@
   }
 
   const { variantGuid, averageRating = 0, reviewCount = 0, isAuthenticated = false } = defineProps<VariantReviewsProps>()
+
+  const emit = defineEmits<{ trailingSign: [turn: Turn | null] }>()
 
   const t = useResourceStrings()
   const reviews = ref<Review[]>([])
@@ -50,6 +53,7 @@
       myRating.value = data.myReview.rating
       myText.value = data.myReview.text ?? ''
     }
+    emit('trailingSign', trailingSign.value)
   }
 
   const submit = async () => {
@@ -93,6 +97,12 @@
     reviews.value.length && listTearFor(reviews.value.length - 1) === 2 ? 3 : 2,
   )
 
+  const trailingSign = computed(() =>
+    reviewsTrailingSign({ isAuthenticated, count: count.value, loaded: reviews.value.length }),
+  )
+
+  const formFlips = computed(() => tearTurn(formTear.value) !== trailingSign.value)
+
   const formatDate = (iso: string) => {
     const d = new Date(iso)
     return Number.isNaN(d.getTime())
@@ -113,7 +123,7 @@
     </div>
 
     <div class="space-y-9">
-      <KccSheet v-if="count > 0" :tear="5">
+      <KccSheet v-if="count > 0" :tear="5" wide>
         <div class="flex flex-wrap items-start gap-x-7 gap-y-6">
           <RatingSummary :value="average" />
 
@@ -134,7 +144,7 @@
       </KccSheet>
 
       <ul v-if="reviews.length" data-testid="reviews-list" class="grid gap-9">
-        <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="listTearFor(i)" pad="16px">
+        <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="listTearFor(i)" wide flip pad="16px">
           <StarRating :model-value="review.rating" readonly />
           <p class="kcc-kick">
             {{ review.authorName }} · <span class="kcc-num">{{ formatDate(review.created) }}</span>
@@ -148,7 +158,7 @@
         <ResourceString for="LoadMore" />
       </Button>
 
-      <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" crisp>
+      <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" wide :flip="formFlips" crisp>
         <template #label><ResourceString for="YourReview" /></template>
 
         <div class="space-y-6">

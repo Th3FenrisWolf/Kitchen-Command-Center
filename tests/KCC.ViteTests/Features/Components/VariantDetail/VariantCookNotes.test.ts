@@ -12,11 +12,18 @@ describe('VariantCookNotes sheet', () => {
   it('is a section sheet on the fourth tear, labelled with the pen nib', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'kcc-slip')).toMatch(/^<section class="kcc-slip kcc-tear-4"/)
+    expect(tagWith(html, 'kcc-slip')).toMatch(/^<section class="kcc-slip kcc-slip--wide kcc-tear-4"/)
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-pen-nib" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?CookNotes/s)
     expect(html).not.toContain('kcc-wash')
     expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip--wide')
   })
 
   it('keeps the section heading for assistive tech while the label carries the printed name', async () => {

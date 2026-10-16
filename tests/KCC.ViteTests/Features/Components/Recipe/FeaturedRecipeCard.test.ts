@@ -48,6 +48,9 @@ const sonoValues = (html: string) =>
 
 const count = (html: string, needle: string) => html.split(needle).length - 1
 
+const TAPED_TILEWRAP =
+  /<div class="kcc-tilewrap"[^>]*>(?:(?!<span class="kcc-blank")[\s\S])*<span class="kcc-tape" aria-hidden="true"><\/span>\s*<\/div>\s*<span class="kcc-blank"/
+
 describe('FeaturedRecipeCard from a search hit', () => {
   it('renders the recipe name and its numeric rating', async () => {
     const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
@@ -92,14 +95,15 @@ describe('FeaturedRecipeCard from a search hit', () => {
     expect(wash).toContain('--h:min(60%,68px)')
   })
 
-  it('pins the large tile and its tape outside the tear, with a strip on the sheet', async () => {
+  it('pins the large tile and its tape outside the tear, with the one strip inside the tilewrap', async () => {
     const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
     const tilewrap = openTag(html, 'kcc-tilewrap').replace(/\s/g, '')
     expect(tilewrap).toContain('top:-22px')
     expect(tilewrap).toContain('left:40px')
     expect(html).toContain('kcc-tile--lg')
     expect(count(html.replace(/\s/g, ''), `--c:var(--color-${washFor(recipe.name)})`)).toBe(2)
-    expect(count(html, 'kcc-tape')).toBe(2)
+    expect(count(html, 'kcc-tape')).toBe(1)
+    expect(html).toMatch(TAPED_TILEWRAP)
     expect(html.indexOf('kcc-tilewrap')).toBeGreaterThan(html.indexOf('</a>'))
   })
 
@@ -132,6 +136,31 @@ describe('FeaturedRecipeCard from a search hit', () => {
     expect(openTag(html, '4.9 of 5 stars')).toContain('role="img"')
     expect(sonoValues(html)).toEqual(['4.9', '20', '6 Variants', '45 min'])
     expect(html).toContain('<span aria-hidden="true">· </span><span class="kcc-num">20</span>')
+  })
+})
+
+describe('FeaturedRecipeCard pile', () => {
+  const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
+  const LIFT = 'kcc-slip--lift'
+
+  it('lies on one wide blank, the last child of the slip', async () => {
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
+    expect(openTag(html, 'kcc-slip')).toBe(`<article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero ${LIFT}">`)
+    expect(count(html, 'kcc-blank')).toBe(1)
+    expect(html.endsWith(`${BLANK}</article>`)).toBe(true)
+  })
+
+  it('lifts its top sheet off the blank through the kit, not through utilities', async () => {
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
+    expect(openTag(html, 'kcc-slip')).toContain(LIFT)
+    expect(html).not.toMatch(/transition-transform|hover:-translate-y-1|focus-within:-translate-y-1/)
+  })
+
+  it('turns its blank the other way only when flipped', async () => {
+    const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey), flip: true })
+    expect(openTag(html, 'kcc-slip')).toBe(
+      `<article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero ${LIFT} kcc-slip--flip">`,
+    )
   })
 })
 

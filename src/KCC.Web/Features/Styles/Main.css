@@ -33,6 +33,9 @@
     grid-template-rows: auto 1fr auto;
     isolation: isolate;
     min-height: 100dvh;
+    /* clip, not hidden: hidden makes a scroll container, and the pad, the filters and the stacker would
+       stick to it instead of the viewport. */
+    overflow-x: clip;
     position: relative;
   }
 

@@ -7,9 +7,10 @@
 
   export interface FeaturedRecipeCardProps {
     card: FeaturedRecipeModel
+    flip?: boolean
   }
 
-  const { card } = defineProps<FeaturedRecipeCardProps>()
+  const { card, flip = false } = defineProps<FeaturedRecipeCardProps>()
 
   const wash = computed(() => ({
     '--c': `var(--color-${washFor(card.seed)})`,
@@ -36,7 +37,7 @@
 </script>
 
 <template>
-  <article class="kcc-slip kcc-recipe kcc-tear-hero transition-transform focus-within:-translate-y-1 hover:-translate-y-1">
+  <article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero kcc-slip--lift" :class="{ 'kcc-slip--flip': flip }">
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet" style="--pad: 48px">
         <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
@@ -82,6 +83,6 @@
       <span class="kcc-tape" aria-hidden="true"></span>
     </div>
 
-    <span class="kcc-tape" aria-hidden="true"></span>
+    <span class="kcc-blank" aria-hidden="true"><span></span></span>
   </article>
 </template>

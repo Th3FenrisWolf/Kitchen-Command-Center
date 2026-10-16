@@ -42,8 +42,19 @@ const controlIdFor = (html: string, label: string) =>
   html.match(new RegExp(`<label for="([^"]+)" class="kcc-lbl">(?:<!--\\[-->)?(?:<span>)?${label}`))?.[1] ?? ''
 
 describe('AddVariantView', () => {
-  // Nothing above the hero supplies a margin: without its own the sheet and its tape sit flush under the
-  // header's dashed rule.
+  it('rests the hero and the step each on one blank, with the wide turn', async () => {
+    const html = await render()
+    const hero = html.slice(0, html.indexOf('aria-label="Steps"'))
+    const wizard = wizardOf(html)
+
+    expect((hero.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(hero, 'kcc-tear-hero')).toContain('kcc-slip kcc-slip--wide kcc-tear-hero')
+    expect((wizard.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(wizard, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-1')
+  })
+
+  // Nothing above the hero supplies a margin: without its own the sheet sits flush under the header's dashed
+  // rule.
   it('sets the hero a rule below the header', async () => {
     expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
   })
@@ -67,9 +78,9 @@ describe('AddVariantView', () => {
   it('sets the step on one crisp sheet, the fall outside the tear', async () => {
     const wizard = wizardOf(await render())
 
-    expect(wizard).toContain('<div class="kcc-slip kcc-tear-1" style="--r:0;">')
+    expect(wizard).toContain('<div class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-1" style="--r:0;">')
     expect(wizard).toContain('<div class="kcc-torn"><div class="kcc-sheet"')
-    expect(wizard.match(/kcc-slip/g)).toHaveLength(1)
+    expect(wizard.match(/class="kcc-slip /g)).toHaveLength(1)
   })
 
   it('pads the sheet up to 48px without a media query', async () => {

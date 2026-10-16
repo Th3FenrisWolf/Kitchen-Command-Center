@@ -54,6 +54,7 @@
   } from './recipeWizardFlow'
   import ReviewStep from './ReviewStep.vue'
   import StartStep from './StartStep.vue'
+  import { stepFlips } from './stepFlip'
   import { focusHeading } from './stepSheet'
   import SubmittedSheet, { type ClosingLink } from './SubmittedSheet.vue'
   import VariantStep from './VariantStep.vue'
@@ -93,7 +94,9 @@
   )
 
   const stepProgress = computed(() => progress(wizard))
-  const tear = computed(() => listTearFor((stepProgress.value?.current ?? 1) - 1))
+  const currentStep = computed(() => stepProgress.value?.current ?? 1)
+  const tear = computed(() => listTearFor(currentStep.value - 1))
+  const flip = computed(() => stepFlips(currentStep.value))
 
   const returnsToReview = computed(() => wizard.returnTo === 'review')
 
@@ -222,6 +225,7 @@
       v-if="wizard.step === 'start'"
       :available-again-on="wizard.availableAgainOn"
       :tear
+      :flip
       @photos="choosePhotos(wizard)"
       @typing="chooseTyping(wizard)"
     />
@@ -238,6 +242,7 @@
       :returns-to-review
       :confirming-read="wizard.confirmingRead"
       :tear
+      :flip
       @add="(photos, source) => addPendingPhotos(wizard, encodeInTurn(photos), source)"
       @remove="(id) => removePhoto(wizard, id)"
       @read="read()"
@@ -248,7 +253,7 @@
       @review="backToReview(wizard)"
     />
 
-    <ReadingState v-else-if="wizard.step === 'reading' && readRequest" :request="readRequest" :tear @finish="finish" />
+    <ReadingState v-else-if="wizard.step === 'reading' && readRequest" :request="readRequest" :tear :flip @finish="finish" />
 
     <MatchStep
       v-else-if="wizard.step === 'match' && wizard.read?.match"
@@ -258,6 +263,7 @@
       :possible-duplicate="wizard.read.possibleDuplicate"
       :can-go-back="canGoBack(wizard)"
       :tear
+      :flip
       @accept="acceptMatch(wizard)"
       @pick="(recipe) => pickRecipe(wizard, recipe)"
       @keep="keepNewRecipe(wizard)"
@@ -268,6 +274,7 @@
       v-else-if="wizard.step === 'basics'"
       :values="wizard.values"
       :tear
+      :flip
       :can-go-back="canGoBack(wizard)"
       :can-proceed="canProceed(wizard)"
       :returns-to-review
@@ -282,6 +289,7 @@
       :mode="wizard.mode"
       :values="wizard.values"
       :tear
+      :flip
       :can-go-back="canGoBack(wizard)"
       :can-proceed="canProceed(wizard)"
       :returns-to-review
@@ -295,6 +303,7 @@
       v-else-if="wizard.step === 'ingredients'"
       :values="wizard.values"
       :tear
+      :flip
       :can-go-back="canGoBack(wizard)"
       :can-proceed="canProceed(wizard)"
       :returns-to-review
@@ -310,6 +319,7 @@
       v-else-if="wizard.step === 'instructions'"
       :values="wizard.values"
       :tear
+      :flip
       :can-go-back="canGoBack(wizard)"
       :can-proceed="canProceed(wizard)"
       :returns-to-review
@@ -333,6 +343,7 @@
       :can-read="canStartRead(wizard)"
       :confirming-read="wizard.confirmingRead"
       :tear
+      :flip
       :submitting
       :error="submitError"
       @back="back(wizard)"

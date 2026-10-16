@@ -64,6 +64,13 @@ describe('PadCard', () => {
     expect(card).toContain('style="--r:0.3;--pad-card-w:440px;left:120px;"')
     expect(html).toContain('<div class="kcc-torn"><div class="kcc-sheet"><span class="kcc-wash"')
   })
+
+  it('lies on no blank: the pad holds its cards over its own page', async () => {
+    const html = await renderSsr(PadCard, { id: 'pad-card-x', state: 'open', tear: 2, tilt: -0.4 })
+
+    expect(html).toContain('class="kcc-slip kcc-tear-2 pad-card is-open"')
+    expect(html).not.toContain('kcc-blank')
+  })
 })
 
 describe('RecipesCard', () => {

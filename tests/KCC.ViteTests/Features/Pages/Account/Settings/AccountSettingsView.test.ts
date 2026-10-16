@@ -48,8 +48,18 @@ const segment = (html: string, testId: string) => tagWith(html, `data-testid="${
 const sheetsOf = (html: string) => html.slice(html.indexOf('<div class="mt-6 grid'))
 
 describe('AccountSettingsView', () => {
-  // Nothing above the hero supplies a margin: without its own the sheet and its tape sit flush under the
-  // header's dashed rule.
+  it('rests each settings sheet on one standard blank, under a wide hero', async () => {
+    const html = await render()
+    const sheets = sheetsOf(html)
+
+    expect(sheets.match(/class="kcc-slip /g)).toHaveLength(4)
+    expect((sheets.match(/kcc-blank/g) ?? []).length).toBe(4)
+    expect(sheets).not.toContain('kcc-slip--wide')
+    expect(tagWith(html, 'kcc-tear-hero')).toContain('kcc-slip kcc-slip--wide kcc-tear-hero')
+  })
+
+  // Nothing above the hero supplies a margin: without its own the sheet sits flush under the header's dashed
+  // rule.
   it('sets the hero a rule below the header', async () => {
     expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
   })
@@ -57,13 +67,26 @@ describe('AccountSettingsView', () => {
   it('sets each group on its own crisp sheet, tears that never repeat', async () => {
     const sheets = sheetsOf(await render())
 
-    expect(sheets.match(/kcc-slip/g)).toHaveLength(4)
+    expect(sheets.match(/class="kcc-slip /g)).toHaveLength(4)
     expect(sheets).toContain('kcc-tear-2')
     expect(sheets).toContain('kcc-tear-5')
     expect(sheets).toContain('kcc-tear-1')
     expect(sheets).toContain('kcc-tear-6')
     expect(sheets.match(/--r:0/g)).toHaveLength(4)
     expect(sheets.match(/--pad:clamp\(24px, 7\.5vw, 48px\)/g)).toHaveLength(4)
+  })
+
+  it('turns "Appearance" and "Sign out" over so the four sheets alternate under the hero', async () => {
+    const slips = (sheetsOf(await render()).match(/class="kcc-slip [^"]*"/g) ?? []).map((tag) =>
+      tag.slice('class="'.length, -1),
+    )
+
+    expect(slips).toEqual([
+      'kcc-slip kcc-tear-2',
+      'kcc-slip kcc-tear-5',
+      'kcc-slip kcc-slip--flip kcc-tear-1',
+      'kcc-slip kcc-slip--flip kcc-tear-6',
+    ])
   })
 
   it('prints each group name on a label and keeps it in the outline', async () => {

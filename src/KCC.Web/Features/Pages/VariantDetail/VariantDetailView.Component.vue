@@ -14,6 +14,7 @@
   import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
   import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
+  import { reviewsTrailingSign } from '~/Components/VariantDetail/reviewsTrailingSign'
   import { recordRecentlyViewed } from '~/Components/Header/useRecentlyViewed'
   import CookMode from './CookMode.vue'
 
@@ -56,6 +57,10 @@
   const openCookMode = () => {
     if (hasInstructions.value) cookModeOpen.value = true
   }
+
+  const reviewsTrailing = ref(
+    reviewsTrailingSign({ isAuthenticated: props.isAuthenticated ?? false, count: props.reviewCount ?? 0, loaded: 0 }),
+  )
 
   const statTiles = computed<StatTileSpec[]>(() => {
     const tiles: StatTileSpec[] = []
@@ -119,7 +124,7 @@
       </DetailHero>
     </div>
 
-    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3">
+    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3" wide flip>
       <StatTiles :tiles="statTiles" />
     </KccSheet>
 
@@ -137,6 +142,7 @@
       :fiber-g="fiberG"
       :sugar-g="sugarG"
       :sodium-mg="sodiumMg"
+      flip
     />
 
     <VariantCookNotes :variant-guid="variantGuid" :is-authenticated="isAuthenticated" />
@@ -146,9 +152,10 @@
       :average-rating="averageRating"
       :review-count="reviewCount"
       :is-authenticated="isAuthenticated"
+      @trailing-sign="reviewsTrailing = $event"
     />
 
-    <VariantSiblings :variants="siblingVariants" />
+    <VariantSiblings :variants="siblingVariants" :flip="reviewsTrailing === -1" />
 
     <!-- Fixed UI never lives inside a slip: the tilt and the fibre filter would become its containing block. -->
     <CookMode

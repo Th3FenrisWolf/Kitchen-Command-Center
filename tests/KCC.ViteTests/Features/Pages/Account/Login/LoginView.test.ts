@@ -23,6 +23,13 @@ const formOf = (html: string) => html.slice(html.indexOf('<form'), html.indexOf(
 const switcherOf = (html: string) => html.slice(html.indexOf('</form>'))
 
 describe('LoginView', () => {
+  it('rests on one blank, with the standard turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(html).not.toContain('kcc-slip--wide')
+  })
+
   it('sets the form on one crisp sheet at a readable measure, nothing fixed to the viewport', async () => {
     const html = await render()
     const slip = tagWith(html, 'kcc-slip')

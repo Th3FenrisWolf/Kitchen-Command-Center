@@ -1,7 +1,7 @@
 import { WASHES, type Wash } from '~/Types/DesignSystem'
 import type { Tear } from '~/Components/Sheet/KccSheet.vue'
 
-// Preset counts, matching SHEET_TEARS (minus the hero) and TILE_TEARS in Features/Torn/tears.ts; kept as
+// Preset counts, matching SHEET_TEARS (minus the two hero tears) and TILE_TEARS in Features/Torn/tears.ts; kept as
 // literals so the runtime bundle does not pull the generator in.
 const SHEET_TEAR_COUNT = 6
 const TILE_TEAR_COUNT = 3

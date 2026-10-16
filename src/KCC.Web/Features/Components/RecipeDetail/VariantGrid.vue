@@ -8,9 +8,10 @@
   export interface VariantGridProps {
     variants: VariantSummary[]
     addVariantUrl: string
+    flip?: boolean
   }
 
-  defineProps<VariantGridProps>()
+  const { flip = false } = defineProps<VariantGridProps>()
   const rs = useResourceStrings()
 </script>
 
@@ -21,11 +22,12 @@
       :key="variant.slug"
       :card="variantToCard(variant, rs)"
       :tear="listTearFor(index)"
+      :flip
     />
 
     <div
-      class="kcc-slip kcc-slip--fill transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
-      :class="`kcc-tear-${listTearFor(variants.length)}`"
+      class="kcc-slip kcc-slip--fill kcc-slip--lift"
+      :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${listTearFor(variants.length)}`]"
     >
       <a :href="addVariantUrl" class="kcc-torn block">
         <div class="kcc-sheet grid content-center justify-items-center gap-6 text-center" style="--pad: 48px">
@@ -33,6 +35,8 @@
           <ResourceString for="AddVariant" as="span" class="kcc-h4" />
         </div>
       </a>
+
+      <span class="kcc-blank" aria-hidden="true"><span></span></span>
     </div>
   </div>
 </template>

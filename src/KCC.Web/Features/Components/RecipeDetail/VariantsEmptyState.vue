@@ -7,7 +7,7 @@
 </script>
 
 <template>
-  <KccSheet wash="sky" :at="{ x: '88%', y: '14%', w: '40%', h: '66%' }" :tear="4" tape>
+  <KccSheet wash="sky" :at="{ x: '88%', y: '14%', w: '40%', h: '66%' }" :tear="4" wide>
     <div class="grid justify-items-center gap-6 text-center">
       <i class="fa-duotone fa-bowl-food text-5xl text-ink-soft" aria-hidden="true"></i>
       <ResourceString for="NoVariantsMatch" as="p" class="kcc-h4" />

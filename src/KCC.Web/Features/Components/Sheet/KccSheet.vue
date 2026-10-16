@@ -16,7 +16,9 @@
     at?: { x?: string; y?: string; w?: string; h?: string }
     /** Neighbours must differ: pass `(index % 6) + 1` in a list. */
     tear?: Tear
-    tape?: boolean
+    piled?: boolean
+    wide?: boolean
+    flip?: boolean
     pad?: string
     crisp?: boolean
     as?: 'div' | 'section' | 'article' | 'li'
@@ -29,7 +31,9 @@
     wash,
     at = {},
     tear = 1,
-    tape = false,
+    piled = true,
+    wide = false,
+    flip = false,
     pad,
     crisp = false,
     as = 'div',
@@ -49,7 +53,12 @@
 </script>
 
 <template>
-  <component :is="as" class="kcc-slip" :class="`kcc-tear-${tear}`" v-bind="slipAttrs">
+  <component
+    :is="as"
+    class="kcc-slip"
+    :class="[{ 'kcc-slip--wide': tear === 'hero' || wide, 'kcc-slip--flip': flip }, `kcc-tear-${tear}`]"
+    v-bind="slipAttrs"
+  >
     <div class="kcc-torn">
       <div class="kcc-sheet" v-bind="sheetAttrs">
         <span v-if="wash" class="kcc-wash" :style="washStyle" aria-hidden="true"></span>
@@ -59,6 +68,6 @@
     <span v-if="label || $slots.label" class="kcc-label" :class="{ 'kcc-label--right': labelRight }">
       <i v-if="icon" :class="icon" aria-hidden="true"></i><slot name="label">{{ label }}</slot>
     </span>
-    <span v-if="tape" class="kcc-tape" aria-hidden="true"></span>
+    <span v-if="piled" class="kcc-blank" aria-hidden="true"><span></span></span>
   </component>
 </template>

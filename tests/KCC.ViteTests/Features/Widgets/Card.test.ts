@@ -23,6 +23,13 @@ const slipClasses = (html: string) => classesOf(html, /<div class="kcc-slip[^"]*
 const withoutComments = (html: string) => html.replace(/<!--.*?-->/g, '')
 
 describe('Card structure', () => {
+  it('rests on one blank, with the standard turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(html).not.toContain('kcc-slip--wide')
+  })
+
   it('is a slip whose hover group rides on the tilt', async () => {
     const html = await render()
 

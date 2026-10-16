@@ -39,17 +39,46 @@ const renderHit = (recipe: RecipeSearchHit) => renderSsr(RecipeCardRow, { card: 
 const renderVariant = (summary: VariantSummary) => renderSsr(RecipeCardRow, { card: variantToCard(summary, echoKey) })
 
 describe('RecipeCardRow sheet', () => {
-  it('is one link over a flat torn sheet, with the card hooks on it', async () => {
+  const LIFT = 'kcc-slip--lift'
+  const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
+
+  it('is a wide flat slip holding one link over a torn sheet, with the card hooks on the link', async () => {
     const html = await renderHit(hit())
-    const anchor = tagWith(html, 'kcc-slip')
+    const slip = tagWith(html, 'kcc-slip')
+    expect(slip).toContain(`class="kcc-slip kcc-slip--wide ${LIFT} kcc-tear-${sheetTearFor(NAME)}"`)
+    // A stack of rows reads as a list, so the sheets lie flat rather than each taking the preset's tilt.
+    expect(slip).toContain('style="--r:0;"')
+    expect(slip).not.toContain('href')
+
+    const anchor = tagWith(html, 'kcc-torn block')
     expect(html.match(/<a\b/g)).toHaveLength(1)
     expect(anchor).toContain('<a href="/recipes/chicken-piccata"')
     expect(anchor).toContain('data-testid="recipe-card"')
     expect(anchor).toContain(`data-recipe-name="${NAME}"`)
-    expect(anchor).toContain('kcc-torn')
-    expect(anchor).toContain(`kcc-tear-${sheetTearFor(NAME)}`)
-    // A stack of rows reads as a list, so the sheets lie flat rather than each taking the preset's tilt.
-    expect(anchor).toContain('style="--r:0;"')
+    expect(html).toMatch(/<a[^>]*class="kcc-torn block"[^>]*><div class="kcc-sheet/)
+
+    expect(html.startsWith(slip)).toBe(true)
+    expect(html.split('kcc-blank')).toHaveLength(2)
+    expect(html.endsWith(`</a>${BLANK}</div>`)).toBe(true)
+    expect(
+      [...html.matchAll(/class="([^"]*)"/g)].some(([, list]) => /\bkcc-slip\b/.test(list!) && /\bkcc-torn\b/.test(list!)),
+    ).toBe(false)
+  })
+
+  it('turns its blank the other way only when flipped', async () => {
+    const flipped = await renderSsr(RecipeCardRow, { card: hitToCard(hit(), echoKey), tear: 2, flip: true })
+    expect(tagWith(flipped, 'kcc-slip')).toContain(`class="kcc-slip kcc-slip--wide ${LIFT} kcc-slip--flip kcc-tear-2"`)
+    expect(await renderHit(hit())).not.toContain('kcc-slip--flip')
+  })
+
+  it('applies its tile in the flow of the sheet, under one strip of tape', async () => {
+    const html = await renderHit(hit())
+    const sheet = html.indexOf('<div class="kcc-sheet flex items-center gap-4"')
+    expect(sheet).toBeGreaterThan(-1)
+    expect(html.slice(sheet)).toMatch(
+      /^<div class="kcc-sheet[^"]*"[^>]*><div class="kcc-tilewrap kcc-tilewrap--flow flex-none"><div class="kcc-torn size-14"><div class="[^"]*\bkcc-tile\b[^"]*"[^>]*><i class="fa-solid fa-drumstick-bite"><\/i><\/div><\/div><span class="kcc-tape" aria-hidden="true"><\/span><\/div>/,
+    )
+    expect(html.split('kcc-tape')).toHaveLength(2)
   })
 
   it('pads the row tighter than a card', async () => {
@@ -57,12 +86,13 @@ describe('RecipeCardRow sheet', () => {
     expect(html).toContain('<div class="kcc-sheet flex items-center gap-4" style="--pad:16px;">')
   })
 
-  it('lifts under the pointer and under focus, exactly as the card does', async () => {
+  it('lifts its top sheet off the blank through the kit, exactly as the card does', async () => {
     const html = await renderHit(hit())
-    const anchor = tagWith(html, 'kcc-slip')
-    expect(anchor).toContain('transition-transform')
-    expect(anchor).toContain('hover:-translate-y-1')
-    expect(anchor).toContain('focus-within:-translate-y-1')
+    const slip = tagWith(html, 'kcc-slip')
+    expect(slip.startsWith('<div ')).toBe(true)
+    expect(slip).toContain(`class="kcc-slip kcc-slip--wide ${LIFT} kcc-tear-${sheetTearFor(NAME)}"`)
+    expect(html).not.toMatch(/transition-transform|hover:-translate-y-1|focus-within:-translate-y-1/)
+    expect(tagWith(html, 'kcc-torn block')).not.toContain('translate')
   })
 
   it('takes the tear a list hands it', async () => {

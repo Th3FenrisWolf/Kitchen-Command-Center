@@ -11,11 +11,11 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), radius ladder, fonts, safelist |
 | `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties; the dark ramp under `:root[data-theme='dark']` |
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
-| `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / sheet / wash / label / tape / tile, type, chrome, ramp swap |
+| `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / blank / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
 | `src/KCC.Web/Features/Styles/Layout.css` | the `.content-grid` breakout system: content, breakout and full-width columns for pages and sections |
-| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here and `#app` carries the desk colour so the overlays have a backdrop to blend with |
+| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here; `#app` carries the desk colour so the overlays have a backdrop to blend with, and clips sideways overflow |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
 | `src/KCC.Web/Features/Torn/tears.ts` | preset table and CSS emitter |
@@ -38,7 +38,7 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 | `rule` | `.58 .045 288 / .22` | `.88 .02 288 / .13` | pencil ruling |
 | `marker`, `marker-ink` | `.876 .112 126`, `.24 .03 288` | same | the accent fill and the ink that sits on it and on every wash |
 | `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-torn` |
-| `tape` | `.985 .012 92 / .6` | `.9 .012 92 / .28` | tape strips |
+| `tape` | `.985 .012 92 / .6` | `.9 .012 92 / .28` | the strip over a pinned tile |
 | `focus` | `var(--color-ink)` | same | focus ring |
 | `peach yellow green teal sky lavender pink red` | see the identity | same | the eight washes; fills only |
 
@@ -47,7 +47,9 @@ All values are `oklch(L C H [/ alpha])`.
 Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px (labels, wells,
 textareas), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .26, dark value test-pinned),
 `--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per
-element: `--pad` (sheet), `--tear` and `--r` (set by a preset class), `--c --x --y --w --h` (wash).
+element: `--pad` (sheet), `--tear`, `--r`, `--blank-tear` and `--blank-dir` (set by a preset class),
+`--blank-turn`, `--blank-scale` and `--blank-flip` (set on the slip and its modifiers), `--blank-region` (set on a
+region that turns its sheets' blanks over), `--c --x --y --w --h` (wash).
 
 **Retired** and caught by `retiredTokens.test.ts`: `ink-line`, `ink-on-wash`, `hatch`, `edge`,
 `edge-strong`, `flap-1`, `flap-2`, `link`, `danger`, `success`, `warning`, `danger-ink`, `success-ink`,
@@ -74,10 +76,11 @@ file it references exists. Nothing the kit renders sets a weight, but editor ric
 
 ## Structure
 
-A labelled, taped, washed sheet:
+Paper lies in piles two high: every sheet sits on a blank sheet, torn and shadowed like it, with nothing on it. A
+labelled, washed sheet on its blank:
 
 ```html
-<div class="kcc-slip kcc-tear-3">                 <!-- tilt via --r; position: relative -->
+<div class="kcc-slip kcc-tear-3">                 <!-- tilt via --r; position: relative; height: fit-content -->
   <div class="kcc-torn">                          <!-- filter: fibre + fall -->
     <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clip-path: var(--tear), 24px pencil rule -->
       <span class="kcc-wash" style="--c: var(--color-peach); --x: 88%; --y: 18%; --w: 38%; --h: 60%" aria-hidden="true"></span>
@@ -86,15 +89,18 @@ A labelled, taped, washed sheet:
     </div>
   </div>
   <span class="kcc-label"><i class="fa-duotone fa-scissors" aria-hidden="true"></i>Identity · 01</span>
-  <span class="kcc-tape" aria-hidden="true"></span>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>   <!-- filter here, clip on the inner span -->
 </div>
 ```
 
-A plain sheet (no label, no tape):
+A plain sheet (no label):
 
 ```html
-<div class="kcc-slip kcc-torn kcc-tear-2">
-  <div class="kcc-sheet">…</div>
+<div class="kcc-slip kcc-tear-2">
+  <div class="kcc-torn">
+    <div class="kcc-sheet">…</div>
+  </div>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>
 </div>
 ```
 
@@ -114,19 +120,26 @@ A recipe slip:
     <div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-2" style="--c: var(--color-peach)" aria-hidden="true"><i class="fa-duotone fa-wheat"></i></div></div>
     <span class="kcc-tape" aria-hidden="true"></span>
   </div>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>
 </article>
 ```
 
 When the whole slip is one link, the link **is** the `.kcc-torn` wrapper (`<a class="kcc-torn block">`): it
 sits outside the clip, so the tear never shaves its focus ring, and the click target is the whole sheet. The
-tilewrap stays a sibling of it and is pointer-transparent.
+tilewrap stays a sibling of it and is pointer-transparent, except a `.kcc-tilewrap--flow`, which sits inside the
+link's sheet in the content flow (a list row's tile).
 
 Rules of the structure:
 
 1. `clip-path` sits on `.kcc-sheet` / `.kcc-tile`. The `filter` sits on a wrapper **outside** the clipped
    element (`.kcc-torn`), or the shadow is clipped away with it.
-2. Label, tape and tilewrap are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip **and** outside
-   the filter, so they are neither torn nor shadowed.
+2. Label and tilewrap are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip **and** outside the
+   filter, so they are neither torn nor shadowed. The tape sits inside the tilewrap, never directly in the slip.
+   The one exception is a `.kcc-tilewrap--flow`, which sits in the sheet's content flow with its tape (a list
+   row's tile). The blank is a sibling too, and always the
+   slip's **last** child, once: outside the top sheet's clip and filter, with its own filter on `.kcc-blank` and
+   its own clip on the inner span. It is never a `kcc-slip`, `kcc-torn` or `kcc-sheet`, so a one-element slip
+   (`kcc-slip kcc-torn` on one element) cannot hold one.
 3. Every direct child of `.kcc-sheet` except `.kcc-wash` is lifted above the wash by the kit at class
    specificity (`:where`). A kit class that positions a sheet child itself is written `.kcc-sheet > .kcc-x`
    so it wins regardless of import order (see `kcc-stat`).
@@ -148,32 +161,56 @@ Rules of the structure:
 10. A slip placed directly in `main.content-grid` (or any grid) with `mx-auto max-w-*` needs `w-full` too:
     auto margins suppress a grid item's stretch, so without it the sheet shrink-wraps its copy and the
     wash's percentage placement drifts with content length.
+11. A slip is `height: fit-content`, so its blank (`inset: 0`) is always as tall as its sheet, even in a grid
+    that stretches its items. A slip that must fill a definite-height parent takes `kcc-slip--fill`.
+12. A page's blanks alternate in reading order: the visible sheets in `main`, in document order, at the current
+    viewport. A blank turns by its preset's `--blank-dir`, which already alternates through `(index % 6) + 1`.
+    `kcc-slip--flip` (`KccSheet flip`) turns one slip's blank the other way: set it on a fixed sheet that would
+    match its neighbour, and compute it for a sheet that follows a run of varying length. `[--blank-region:-1]` on
+    a container, usually behind a breakpoint variant (`max-lg:`), turns every blank inside it, for a run whose
+    neighbour a breakpoint hides. The header pad floats over every page and is not a neighbour; an overlay is the
+    only sheet on its screen.
+13. A sheet on a blank wider than 700px at a 1280px viewport is wide: `kcc-slip--wide` (`KccSheet wide`), and it
+    keeps the modifier at every viewport. So are every hero-torn sheet that lies on a blank, and the pad's page.
+14. `#app` takes `overflow-x: clip`, so a blank's overhang past a tall sheet's side never scrolls the page. `clip`
+    makes no scroll container, so the sticky pad, filters and stacker keep working.
+15. The header pad is the one pile written apart: its top sheet (`.pad-top`) holds no `.kcc-blank`, because the
+    `.pad-page` slip beside it, torn `kcc-tear-hero-2`, is that blank, and a pad card (`PadCard.vue`, `KccSheet
+    :piled="false"`) slides out between the two and holds none.
 
 ## Tears
 
-`Tears.css` declares `--tear-1 … --tear-6`, `--tear-hero` and `--tear-tile-1 … 3` on `:root` and the classes
+`Tears.css` declares `--tear-1 … --tear-6`, `--tear-hero`, `--tear-hero-2` and `--tear-tile-1 … 3` on `:root` and the classes
 that select them:
 
-| Class | Points / side | Amp | Chamfer | Tilt `--r` |
-|---|---|---|---|---|
-| `kcc-tear-1` | 80 | 2.4 | 19px top-right | +0.30 |
-| `kcc-tear-2` | 80 | 2.4 | 17px bottom-right | −0.98 |
-| `kcc-tear-3` | 80 | 2.4 | none | +0.05 |
-| `kcc-tear-4` | 80 | 2.4 | 18px bottom-left | −0.52 |
-| `kcc-tear-5` | 80 | 2.4 | 20px bottom-right | +0.63 |
-| `kcc-tear-6` | 80 | 2.4 | 17px bottom-left | −0.70 |
-| `kcc-tear-hero` | 160 | 2.4 | 28px top-right | −0.58 |
-| `kcc-tear-tile-1..3` | 24 | 1.8 | none | (tilewrap −2°) |
+| Class | Points / side | Amp | Chamfer | Tilt `--r` | Blank `--blank-tear`, `--blank-dir` |
+|---|---|---|---|---|---|
+| `kcc-tear-1` | 80 | 2.4 | 19px top-right | +0.30 | `tear-4`, −1 |
+| `kcc-tear-2` | 80 | 2.4 | 17px bottom-right | −0.98 | `tear-5`, +1 |
+| `kcc-tear-3` | 80 | 2.4 | none | +0.05 | `tear-6`, −1 |
+| `kcc-tear-4` | 80 | 2.4 | 18px bottom-left | −0.52 | `tear-1`, +1 |
+| `kcc-tear-5` | 80 | 2.4 | 20px bottom-right | +0.63 | `tear-2`, −1 |
+| `kcc-tear-6` | 80 | 2.4 | 17px bottom-left | −0.70 | `tear-3`, +1 |
+| `kcc-tear-hero` | 160 | 2.4 | 28px top-right | −0.58 | `tear-hero-2`, −1 |
+| `kcc-tear-hero-2` | 160 | 2.4 | 24px bottom-left | −0.36 | `tear-hero`, +1 |
+| `kcc-tear-tile-1..3` | 24 | 1.8 | none | (a pinned tilewrap −2°; a `--flow` one 0) | none |
+
+Each sheet preset names its blank: the tear three along the cycle, so a sheet never lies on its own tear, and the
+other hero tear for a hero. A standard blank turns against its sheet's tilt, so the directions alternate around the
+cycle and a list that takes `(index % 6) + 1` alternates by itself. The blank turns `--blank-turn` (1.5°, or 0.5°
+wide) × `--blank-dir` × `--blank-flip` × `--blank-region` about its centre and scales `--blank-scale` (1.015, or
+1.005 wide).
 
 Depth is constant but the wavelength stretches with the box, so each family has a size band: tile tears for
-48–128px tiles, the six sheet tears for sheets 170–700px wide, the hero tear for 330–1300px. A tile tear on a
+48–128px tiles, the six sheet tears for sheets 170–700px wide, the two hero tears for 330–1300px. A tile tear on a
 full-width sheet reads as a scallop, not a tear.
 
 **Assignment:** a list item takes `kcc-tear-${(index % 6) + 1}`, unless its page hands it one from a page-wide
 cycle (see **Razor**); a standalone sheet takes a preset from a
 stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design names; the default is
-`kcc-tear-1`. Neighbours never share a tear. The kit ships one hero tear, so two hero sheets on one page
-(RecipeDetail's hero and its featured variant) do share it; keep at least one standard sheet between them.
+`kcc-tear-1`. Neighbours never share a tear. `kcc-tear-hero-2` is the hero's blank and the pad's page, never a
+hero of its own, so two hero sheets on one page (RecipeDetail's hero and its featured variant) both take
+`kcc-tear-hero`; keep at least one standard sheet between them.
 `yarn tears` regenerates the file; `tears.test.ts` fails if the committed file drifts from the generator. Need a crisp surface (a form, cook mode)? `KccSheet crisp` sets
 `--r: 0` on the slip; Razor writes `style="--r: 0"` on the slip itself.
 
@@ -184,12 +221,17 @@ stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design
 | `kcc-grain`, `kcc-crayon` | desk grain under everything, wax tooth over everything | first and last child of `#app`; `App.vue` owns them; the crayon covers everything inside #app, so a surface teleported to body (cook mode) is deliberately untextured |
 | `kcc-slip` (+`--fill`) | tilt + positioning context; `--fill` stretches slip, torn and sheet to a definite-height parent | `--r` from the tear preset; without `--fill` a child sized in percentages computes to auto |
 | `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
+| `kcc-blank` › `span` | the blank sheet under a sheet: torn paper with the fibre and fall, no ruling | last child of a slip; `aria-hidden`; tear and base direction from the slip's tear class; turns `--blank-turn` × direction × `--blank-flip` × `--blank-region` and scales `--blank-scale`; the span is `display: block`; stays still when the slip lifts |
+| `kcc-slip--wide` | the wide pair: the blank turns 0.5° and scales 1.005 | hero-torn sheets on a blank, the pad's page, any sheet on a blank wider than 700px |
+| `kcc-slip--flip` | turns the slip's blank the other way | set where a page's reading order needs it |
+| `kcc-slip--lift` | a slip you can open lifts its top sheet 4px on focus within, or on hover with a pointer that can hover; the blank stays | no lift under reduced motion; keeps the focus ring's fade |
 | `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px, heroes 48px; compact rows (recipe rows, review slips, the account sheet) take 16px and accept a ruling 8px off a 24px neighbour's |
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y` the centre, `--w --h` the radii (any length-percentage). Copy may sit on the 70% ring, never on the core: a corner pool caps the radius that points at the copy in px (`min(60%, 68px)` keeps the ring inside a 48px padding at any sheet height) |
 | `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
 | `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; type comes from `kcc-kick` on the same element |
-| `kcc-tape` | one strip, top-centre | opt-in |
+| `kcc-tape` | one strip over an applied tile | only inside `kcc-tilewrap`; a sheet is never taped |
 | `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink`; pointer-transparent, so a link beneath it keeps the click |
+| `kcc-tilewrap--flow` | a tilewrap in the flow of a sheet's content | a list row's tile and its strip; `position: relative`, no offset and no turn |
 | `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
 | `kcc-body` | 15/24 body | a class-less link inside (editor rich text) takes the `kcc-link` look |
 | `kcc-prose` | editor rich text, with `kcc-body` | each block one rule below the last; lists keep their markers, list numbers in Sono |
@@ -259,7 +301,7 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 - **Error.** `kcc-field--error` on the field and a `kcc-well--danger` below it (see Status).
 - **Loading.** What is already shown stays. The region takes `aria-busy`, and the loader is a
   `fa-solid fa-circle-notch fa-spin` beside a `kcc-kick` message (`RecipeSearchView.Component.vue`).
-- **Empty.** A sheet, never a blank: a large duotone glyph in `ink-soft`, a `kcc-h4` line, a `kcc-body` hint and a
+- **Empty.** A sheet, never an empty page: a large duotone glyph in `ink-soft`, a `kcc-h4` line, a `kcc-body` hint and a
   ghost button that undoes whatever emptied it (`RecipesEmptyState.vue`). A recipe with no reviews says so in its
   meta line, and empty rating stars are `fa-regular` in `ink-soft`.
 - **Browser surfaces.** `accent-color` is ink, and underlines sit 3px below the text. `kcc-seg` hides its
@@ -274,7 +316,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 
 | What moves | How | Where |
 |---|---|---|
-| A slip you can open lifts 4px | `transition-transform hover:-translate-y-1 focus-within:-translate-y-1` | `RecipeCard.vue`, `RecipeCardRow.vue`, `FeaturedRecipeCard.vue`, `VariantGrid.vue` |
+| A slip you can open lifts its top sheet 4px on focus within, or on hover with a pointer that can hover; the blank stays; never under reduced motion | `kcc-slip--lift`: `translate` over 300ms `cubic-bezier(0.4, 0, 0.2, 1)`, keeping the focus ring's 0.2s fade | `RecipeCard.vue`, `RecipeCardRow.vue`, `FeaturedRecipeCard.vue`, `VariantGrid.vue` |
 | A card's drawer slides up | `transition-all`, height from 0 to full on hover or focus-within | `Card.Component.vue` |
 | A pad card fans out as you reach for its menu | 300ms `cubic-bezier(.2, .9, .3, 1.15)`: 19px out of the stack, turned −1.8° about its far top corner, the top right, or +1.8° about its top left for the mirrored desktop search card (on a phone 24px straight down, turned +2.4° about its bottom left) | `PadCard.vue` |
 | A pad card comes out of the stack | 480ms `cubic-bezier(.3, 1.2, .4, 1)` to its own tilt, its rows landing 20ms apart; back in over 280ms; switching from another card, it waits 100ms for that one to go | `PadCard.vue` |
@@ -306,23 +348,26 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 ## Vue primitives
 
 - `Components/Sheet/KccSheet.vue` — props `label` or a `#label` slot for rich content (a `<ResourceString>`
-  keeps its editor hooks that way), `icon`, `labelRight`, `wash`, `at { x y w h }`, `tear` (`1..6 | 'hero'`),
-  `tape`, `pad`, `crisp` (no tilt: forms, cook mode), `as` (`div | section | article | li`). Default slot.
-  Plain `.vue`: import it locally. Renders the Structure above with no client JS.
+  keeps its editor hooks that way), `icon`, `labelRight`, `wash`, `at { x y w h }`, `tear` (`1..6 | 'hero'`;
+  `'hero'` also adds `kcc-slip--wide`), `piled` (default `true`; `false` renders no blank, and only `PadCard.vue`
+  passes it), `wide` (`kcc-slip--wide`), `flip` (`kcc-slip--flip`), `pad`, `crisp` (no tilt: forms, cook mode),
+  `as` (`div | section | article | li`). Default slot; the blank renders after the label. Plain `.vue`: import it
+  locally. Renders the Structure above with no client JS.
 - `Components/Button/Button.vue` — `variant: 'marker' | 'ghost' | 'ink' | 'text'`, `size: 'md' | 'lg'`,
   `as: 'button' | 'a'`. Emits the `kcc-btn` classes; no directive.
 - Everything else composes the classes directly.
 
 ## Razor
 
-Razor writes the Structure by hand. `ButtonLinkTagHelper` emits `kcc-btn` plus the modifiers in `Class`.
-Loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. A page built from blocks, like Home, runs one cycle
-through all its sheets and cards instead, so neighbours never share a tear across two sections either. A stacker's
-sheet is sticky and travels, so the cycle skips its tear for the stack's cards and for the first two sheets or cards
-of the next section, where the sheet comes to rest: its half of the width sits over two cards at most, because grids
-stop at four columns. When that next section is another stacker, its own sheet's window takes over after the sheet, so
-its first card may repeat the first sheet's tear, corner to corner. Filter defs for the wax are inline in
-`Layout.cshtml`, so server-rendered washes are filtered before hydration.
+Razor writes the Structure by hand, blank included. `ButtonLinkTagHelper` emits `kcc-btn` plus the modifiers in
+`Class`. Loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. A page built from blocks, like Home, runs one
+cycle through all its sheets and cards instead, so neighbours never share a tear across two sections either. A
+stacker's sheet is sticky and travels, so the cycle skips its tear for the stack's cards and for the first two sheets
+or cards of the next section, where the sheet comes to rest: its half of the width sits over two cards at most,
+because grids stop at four columns. A skip passes the tear after it too, so the blanks keep alternating: odd and even
+tears turn their blanks opposite ways. When that next section is another stacker, its own sheet's window takes over
+after the sheet, so its first card may repeat the first sheet's tear, corner to corner. Filter defs for the wax are
+inline in `Layout.cshtml`, so server-rendered washes are filtered before hydration.
 
 ## Invariants
 
@@ -333,7 +378,10 @@ its first card may repeat the first sheet's tear, corner to corner. Filter defs 
 5. **`Tears.css` is generated.** Change `tears.ts`, run `yarn tears`, commit both.
 6. **No runtime JS draws anything.** The tear, the wash and the shadow are CSS; SSR output is final.
 7. **Both ramps, every change.** The light ramp is the default; dark is where washes and hairlines fail first.
-8. **Filter outside clip; label and tape outside both.** See Structure.
+8. **Filter outside clip; label and tape outside both**, except a `.kcc-tilewrap--flow` and its tape, which sit in
+   the sheet's content flow. See Structure.
+9. **Every sheet lies on a blank**, the slip's last child, outside the top sheet's clip and filter. A sheet is never
+   taped; tape holds only a tile. The header pad is the one exception (Structure rule 15).
 
 ## Enforcement
 
@@ -341,19 +389,23 @@ its first card may repeat the first sheet's tear, corner to corner. Filter defs 
 |---|---|
 | WCAG AA in both ramps, including ink over paper + wash | `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` |
 | No retired token, class, utility or directive in `Features/**` or CMS content | `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` (`ALLOWLIST` is empty; a new entry needs a reason in the commit message) |
-| Committed `Tears.css` equals the generator; every preset declared on `:root` with a selecting class; sheet tilts written to `--r`; one or two standard sheets uncut | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
+| Committed `Tears.css` equals the generator; every preset declared on `:root` with a selecting class; sheet tilts written to `--r`; one or two standard sheets uncut; every sheet preset writes its blank (`--blank-tear`, never its own tear, and `--blank-dir`, against its tilt and alternating around the cycle; the hero pair named) and a tile none | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
 | Tear geometry: deterministic, every vertex inside the box for every shipped preset, seam closes within a step, chamfer never top-left, amp and point-count guards | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 | The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 | Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
+| The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
+| Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
+| Every hand-written Razor `kcc-slip` ends with exactly one blank | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them, and the ramp switches only through `applyRamp` | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |
 
 ## Building a surface
 
 1. Read the neighbouring component and its test. Keep every structural hook (`data-testid`, roles, ids); e2e
    locates by hook, not markup.
-2. Sheets are `KccSheet` or the hand-written Structure. Pick the tear from the list index or a stable hash.
+2. Sheets are `KccSheet` or the hand-written Structure, blank last. Pick the tear from the list index or a stable
+   hash, mark a sheet wider than 700px `wide`, and flip a blank where the page's reading order needs it.
 3. Every class comes from the Classes table or Tailwind; no component `<style>` rule for anything Razor
    also renders.
 4. No `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text is `text-ink` or `text-ink-soft`;

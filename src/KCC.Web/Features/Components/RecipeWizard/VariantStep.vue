@@ -60,6 +60,7 @@
 <template>
   <KccSheet
     crisp
+    wide
     :tear
     :pad="STEP_PAD"
     :icon="mode === 'recipe' ? 'fa-duotone fa-layer-group' : 'fa-duotone fa-pen-to-square'"
