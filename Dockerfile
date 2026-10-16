@@ -29,7 +29,7 @@ RUN --mount=type=cache,id=yarn-ssr,target=/usr/local/share/.cache/yarn \
     node -e "const fs = require('fs'); const p = JSON.parse(fs.readFileSync('package.json')); delete p.devDependencies; fs.writeFileSync('package.json', JSON.stringify(p))" \
     && yarn install --production --frozen-lockfile --ignore-scripts --network-timeout 600000
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0.401 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0.402 AS build
 ARG TARGETARCH
 WORKDIR /repo
 COPY .editorconfig global.json nuget.config Directory.Build.props Directory.Build.targets Directory.Packages.props KCCStandardRules.ruleset ./
@@ -46,7 +46,7 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
     dotnet publish src/KCC.Web/KCC.Web.csproj -c Release -a $TARGETARCH -o /app \
     && rm -rf /app/wwwroot/ssr
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.12 AS app
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.13 AS app
 # The health check in deploy/compose.yaml needs an HTTP client, which the runtime image lacks.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
