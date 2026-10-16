@@ -33,7 +33,19 @@ For each file, check every rule below and record hits as `path:line — rule —
 **Structure (kit.md → Structure)**
 - `.kcc-sheet` or `.kcc-tile` whose `filter`/`drop-shadow` sits on the clipped element itself, or that is
   not wrapped in `.kcc-torn`.
-- `.kcc-label`, `.kcc-tape` or `.kcc-tilewrap` placed inside `.kcc-torn` or inside `.kcc-sheet`.
+- `.kcc-label`, `.kcc-tape` or `.kcc-tilewrap` placed inside `.kcc-torn` or inside `.kcc-sheet`. Exception: a
+  `.kcc-tilewrap--flow` with its tape may sit in a sheet's content flow.
+- A `.kcc-tape` anywhere but directly inside a `.kcc-tilewrap`. A taped sheet is a violation: paper is piled,
+  never taped.
+- A slip with no `.kcc-blank`, with two, or with one that is not its last child; a `.kcc-blank` that carries
+  `kcc-slip`, `kcc-torn` or `kcc-sheet`; a `KccSheet` with `:piled="false"`. Exceptions, the three pad pieces that
+  hold no `.kcc-blank`: a pad card (`PadCard.vue`), the pad's top sheet (`.pad-top`, whose blank is its
+  `.pad-page` sibling) and the `.pad-page` itself, which is that blank.
+- A sheet on a blank wider than 700px at a 1280px viewport, or a hero-torn sheet on a blank, without
+  `kcc-slip--wide` (`KccSheet wide`). The pad's top sheet (`.pad-top`) lies on no blank and is exempt.
+- Two neighbouring sheets in a page's reading order whose blanks turn the same way (kit.md → Structure, the
+  alternation rule): check the tear's `--blank-dir`, `kcc-slip--flip` and any `--blank-region`.
+- A hover or focus lift written with translate utilities on a slip instead of `kcc-slip--lift`.
 - Padding utilities (`p-`, `px-`, `py-`) on `.kcc-sheet` instead of `style="--pad: …"`.
 - A sheet with more than one `.kcc-wash`, `.kcc-label` or `.kcc-hand`.
 - Sibling sheets in one list or grid sharing a `kcc-tear-N` class (grep the loop; the index must cycle).
@@ -43,7 +55,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 - Any torn control: `clip-path` or `kcc-tear-*` on a button, field, badge, seg or label.
 - Any border or outline on paper: `border`, `border-*`, `outline` on a sheet or tile.
 - Any shadow other than the kit's fall: `shadow-*` utilities, `box-shadow` outside the inset hairlines in
-  `Controls.css`, `drop-shadow` outside `.kcc-torn`.
+  `Controls.css`, `drop-shadow` outside `.kcc-torn` and `.kcc-blank`.
 
 **Tokens and colour**
 - Literal colours (`#…`, `rgb(`, `hsl(`, `oklch(`) anywhere outside `TailwindConfig.css`, `Styles/Torn/*.css`
@@ -89,7 +101,7 @@ For each file, check every rule below and record hits as `path:line — rule —
   place.
 - `disabled` or `aria-disabled` on a field, segment, checkbox or range, which the kit has no disabled look for.
 - A loading state that clears what is already shown, or a busy region without `aria-busy`.
-- An empty state that is blank or bare text rather than a sheet with a way out.
+- An empty state that is an empty page or bare text rather than a sheet with a way out.
 
 **Both ramps**
 - Any new colour pair not covered by `contrast.test.ts` (a new token, a new fill/text combination). Name the
@@ -100,7 +112,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 From `src/KCC.Web`:
 
 ```bash
-yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography kitClasses motion
+yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography kitClasses motion pile
 ```
 
 Report failures verbatim. `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` stays empty;
