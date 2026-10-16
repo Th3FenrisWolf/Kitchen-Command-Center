@@ -26,7 +26,7 @@
 
 <template>
   <article
-    class="kcc-slip kcc-recipe transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
+    class="kcc-slip kcc-slip--fill kcc-recipe transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
     :class="`kcc-tear-${preset}`"
   >
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
