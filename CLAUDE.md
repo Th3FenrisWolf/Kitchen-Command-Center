@@ -17,7 +17,7 @@ every session needs.
 - **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`.
 - **A pull request** opens only from a recomposed branch. Development commits stay as they are until then. Card
   implement's close-out, and with it `/speckit-flow-run`, recomposes the branch once with the `recompose-branch` skill
-  after the review loop and before the push, and the owner approves the new history in the close-out question. The
+  after the review loop and before the push, and the owner approves the publish in the close-out question. The
   `kcc-recompose` preset adds that step. A branch outside Spec Kit is recomposed the same way before its pull request
   opens. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
   prefix>` holds the same tree under a different history.
