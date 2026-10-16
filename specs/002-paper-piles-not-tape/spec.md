@@ -21,6 +21,17 @@
 - Q: How does the sheet under a crisp, untilted sheet sit? → A: The top sheet stays square. The sheet under it keeps a
   small tilt.
 
+### Session 2026-10-16
+
+- Q: Which pile direction? → A: Two steps: the blank sheet sits centred under its top sheet with no offset, turned
+  1.5° and scaled 1.015 on cards, panels, forms and empty states, and turned 0.5° and scaled 1.005 on the pad page and
+  the hero; see mockups/README.md
+- Q: Which sheets take the wide turn? → A: The pad's page, the hero, and every sheet wider than 700px (such as recipe
+  list rows, the recipe search header and the "At a glance" sheets) turn 0.5° and scale 1.005; every other sheet turns
+  1.5° and scales 1.015.
+- Q: The hover lift costs render time when cards scroll under a still pointer, and no variant that keeps it passes
+  the original SC-005. Which trade? → A: Keep the hover lift and accept the cost; SC-005 records the measured cost.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Every sheet lies on another sheet (Priority: P1)
@@ -130,10 +141,13 @@ sheet under it does not move.
   blocks alike. The pad's menu cards are the one exception.
 - **FR-002**: The blank sheet MUST look like paper: torn on four sides, with the fibre and the fall, with no pencil
   ruling and no content.
-- **FR-003**: The blank sheet MUST show a torn edge that differs from its top sheet's edge, and a tilt within ±1° that
-  differs from its top sheet's tilt.
-- **FR-004**: The blank sheet MUST match its top sheet's size, including a top sheet that grows to fill its grid row.
-- **FR-005**: Under a crisp sheet, the top sheet MUST stay square and the blank sheet MUST keep a small tilt.
+- **FR-003**: The blank sheet MUST show a torn edge that differs from its top sheet's edge. It MUST sit centred under
+  its top sheet with no offset, turned 1.5° off its top sheet's tilt, or 0.5° on a wide sheet (the pad's page, the
+  hero and any sheet wider than 700px), and neighbouring blank sheets MUST turn in opposite directions.
+- **FR-004**: The blank sheet MUST match its top sheet's size scaled by 1.015, or by 1.005 on a wide sheet as FR-003
+  names it, including a top sheet that grows to fill its grid row.
+- **FR-005**: Under a crisp sheet, the top sheet MUST stay square and the blank sheet MUST keep its turn: 1.5°, or 0.5°
+  on a wide sheet.
 - **FR-006**: A sheet MUST NOT carry tape. The kit MUST offer no way to tape a sheet.
 - **FR-007**: An item applied on top of a sheet, such as an icon tile, MUST keep its strip of tape.
 - **FR-008**: The header pad MUST be two sheets tall: its top sheet and one blank page under it.
@@ -164,17 +178,96 @@ sheet under it does not move.
 - **SC-002**: Every icon tile keeps its strip of tape, and tape appears nowhere else.
 - **SC-003**: The header pad shows exactly one page under its top sheet, and both menus open between the two sheets.
 - **SC-004**: On a hover or a focus, a recipe card lifts and its blank sheet does not move.
-- **SC-005**: The recipe search grid with its full first page of results scrolls as smoothly as it does before the
-  change, with no frame drops that a visitor can see.
+- **SC-005**: The render cost of the recipe search grid, with its full first page of results, is measured against
+  `main` and recorded in the pull request. The owner accepted the measured cost of the hover lift on 2026-10-16: at a
+  4x CPU throttle, scrolling with the pointer over the grid runs at a median p95 frame of about 34 to 41ms, against
+  9.3ms on `main`.
 - **SC-006**: The brand review finds no sheet that breaks the rule in either ramp.
 
 ## Assumptions
 
-- The look of the blank sheet follows the pad's pages today: blank paper, offset a few pixels down from its top
-  sheet, with its own tear and tilt.
-- "Every sheet" means each torn sheet that holds content. Printed controls, label pills, icon tiles and the desk itself
-  are not sheets.
-- The pad's menu cards keep their size, motion and shadow. Only the pages under them change.
-- The equal-height card grid bug, `card-grid-uneven-heights`, may land first. The blank sheet then follows the
-  stretched card.
-- Every sheet in a grid doubles its paper. The plan checks the cost of the extra torn edges and shadows on a full grid.
+Reviewed: 2026-10-16
+
+- A1: The blank sheet's look: it follows the approved preview in mockups/README.md, blank paper centred under its top
+  sheet with no offset, with its own tear and turn. Alternative: the pad's pages as they are today, shifted down and
+  turned a little.
+- A2: What "every sheet" covers: each torn sheet that holds content. Printed controls, label pills, icon tiles and the
+  desk itself are not sheets. Alternative: give icon tiles a blank sheet of their own as well.
+- A3: The pad's menu cards: they keep their size, motion and shadow, and only the pages under them change.
+  Alternative: restyle the menu cards to match the new pile.
+- A4: The equal-height card grid bug, `card-grid-uneven-heights`: it may land first, and the blank sheet then follows
+  the stretched card. Alternative: this feature stretches the cards itself.
+- A5: The cost of doubling the paper in a grid: the plan checks the extra torn edges and shadows on a full grid
+  before the change ships. Alternative: drop the shadow from the blank sheet up front to halve the cost.
+- A6: Where the pile lives: the blank sheet is the last child of its top sheet's slip in the kit's global CSS, behind
+  the content, so Vue and Razor build it the same way and it turns, stretches, sticks and steps back with its sheet.
+  Alternative: a wrapper element that holds the blank sheet and the sheet side by side, as the preview drew it.
+- A7: The blank sheet's markup: a `kcc-blank` element around one clipped span, with no `kcc-torn` or `kcc-sheet`
+  class, so nothing that finds a sheet finds the blank. Alternative: reuse `kcc-torn` and `kcc-sheet` with the ruling
+  switched off.
+- A8: How the blank sheet's tear and base turn direction are chosen: the tear generator writes them into each tear
+  preset, the tear three along the cycle, and a direction opposite to the top sheet's tilt for the six standard tears,
+  with the hero tear set to turn the way the preview drew it and its second hero tear the other way. Alternative: an
+  author passes both on every sheet.
+- A9: The hero's blank sheet: a second hero tear, `tear-hero-2`, generated by `yarn tears`, also under the pad.
+  Alternative: reuse `kcc-tear-3`, as the preview did.
+- A10: How a sheet is marked wide: a `kcc-slip--wide` modifier, which `KccSheet` adds to every hero-torn sheet and to
+  a sheet given its `wide` prop, and which a hand-written slip and the pad's page write in their class list.
+  Alternative: the generator writes the wide turn into the hero tear classes.
+- A11: How a lift leaves the blank sheet still: a `kcc-slip--lift` class lifts every child of the slip but the blank
+  sheet by 4px over 300ms. Alternative: lift the slip and move the blank sheet back down by the same amount.
+- A12: The lift under reduced motion: the lift does not happen at all. Alternative: keep today's instant 4px jump.
+- A13: How the kit stops sheet tape: `KccSheet` loses its `tape` prop, the kit styles tape only inside a tile's
+  wrapper, and a source-scan test fails on tape anywhere else. Alternative: keep the class and rely on brand review.
+- A14: The pad's one page: it takes `tear-hero-2` and the wide turn, sits centred, and stacks under the menu cards,
+  which stack under the top sheet. Alternative: keep `kcc-tear-2` under the pad, as the preview did.
+- A15: How the render cost is checked: a scripted scroll and hover of the recipe search grid on `main` and on the
+  branch, on one machine, five runs each, passing when the branch's median p95 frame time is within 10% of `main`'s
+  and its median count of frames over 50ms is at most one more, recorded in the pull request. Alternative: a
+  performance test in CI.
+- A16: Test coverage: Vitest for the kit, the generator and every Vue sheet, integration tests for the Razor pages,
+  the existing browser tests for cook mode and the photo viewer, and one browser walker over every page type for
+  alternation, the blank's size, sideways overflow, the lift and the pad. Alternative: a browser test for every
+  surface.
+- A17: The recipe list row, a slip and its link on one element today: it splits into a slip and a link, so it can
+  hold a blank sheet. Alternative: leave single-element slips without a blank sheet.
+- A18: What "neighbouring" means for turn direction: the sheet before and the sheet after in reading order, on every
+  page. Sheets stacked above each other in a multi-column grid are not reading-order neighbours and can turn the same
+  way. Alternative: also alternate vertical neighbours by grid position.
+- A19: Where a sheet's width is read for the wide rule: at a 1280px viewport, the preview's measuring width, and a
+  surface marked wide keeps the modifier at every viewport. Alternative: a container query that switches at 700px.
+- A20: The recipe wizard's photo tiles: they are tiles, not sheets, so they take no blank sheet and no tape.
+  Alternative: treat each photo as a sheet with a blank sheet under it.
+- A21: What reading order covers: the visible sheets inside `main`, in document order, at the current screen width.
+  The header pad floats over every page and is no sheet's neighbour, and an overlay such as cook mode stands alone.
+  Alternative: count the pad's page as the first sheet of every page.
+- A22: How a page keeps its blank sheets alternating: a flip on a single sheet, computed from the run before it where
+  that run varies, and a flip on a container for sheets whose neighbour a breakpoint hides. Alternative: re-pick each
+  page's tears so their tilts alternate.
+- A23: Keeping the blank sheet as tall as its sheet: every slip is as tall as its content (`height: fit-content`)
+  unless it fills its parent, so a grid that stretches its items cannot stretch a blank sheet past its sheet.
+  Alternative: `items-start` on the two grids that stretch sheets today.
+- A24: A blank sheet that overhangs the screen's edge: the app's root clips sideways overflow, so a tall turned sheet
+  never makes the page scroll sideways. Alternative: turn tall sheets less.
+- A25: The recipe list row's tile: it is an applied item and gains its strip of tape through a tile wrapper that
+  stays in the row's flow, inside the sheet, the one wrapper the kit's docs allow there. Alternative: count the row's
+  tile as printed in the sheet and narrow SC-002 to pinned tiles.
+- A26: The home page's tear cycle: when it avoids a stacker's tear it skips two tears instead of one, so the tilts,
+  and the blank sheets, keep alternating. Alternative: flip the sheet after each skip.
+- A27: The variant page's first paint: the server renders no reviews, so the page works out the reviews section's last
+  blank sheet from sign-in and the review count, with the same rule the reviews section uses, for the state the server
+  renders; the reviews load on mount, and the other variants re-flip after hydration whenever the loaded reviews, or
+  more loaded later, change the section's last sheet. Alternative: render the other variants without a flip until the
+  reviews load.
+- A28: Testing "load more" reviews in the browser: the test stubs the reviews endpoint to return two pages. Alternative:
+  seed more than ten reviews on one variant in the development seeder.
+- A29: Where the render-cost check's `main` runs come from: a separate worktree of `origin/main`, built and run on the
+  same machine and port one after the other with the branch, so the feature checkout never switches branch.
+  Alternative: check out `main` in this checkout for the baseline runs and switch back.
+- A30: Which test drives a state first (the owner ruled on 2026-10-16 that browser-only states are tested E2E first,
+  with no new packages): a state only a browser reaches, such as loaded reviews, the phone's open filters, a list view,
+  a toolbar search, a wizard step past the first or a re-flip after reviews load, is driven first by an E2E test in the
+  phase that implements it; a state the server renders, and a pure helper, by Vitest; the walker's remaining
+  server-rendered pages are a regression check. Alternative: write the whole walker after every page's flips land.
+- A31: Pull requests: the feature ships as one pull request, because alternation across a page needs every surface
+  piled at once and US2 to US4 are small next to US1. Alternative: split US1 and US2 to US4 into two pull requests.
