@@ -18,7 +18,10 @@ const variant = (name: string, index: number): VariantSummary => ({
   reviewCount: 0,
 })
 
-const render = () => renderSsr(VariantList, { variants: NAMES.map(variant) })
+const render = (props: Record<string, unknown> = {}) => renderSsr(VariantList, { variants: NAMES.map(variant), ...props })
+
+const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
+const rowsOf = (html: string) => html.split('<div class="kcc-slip ').slice(1)
 
 describe('VariantList', () => {
   it('stacks the rows 36px apart', async () => {
@@ -39,5 +42,21 @@ describe('VariantList', () => {
 
     const tears = [...html.matchAll(/kcc-slip[^"]*kcc-tear-(\d)/g)].map((match) => Number(match[1]))
     expect(tears).toEqual([1, 2, 3, 4, 5, 6, 1])
+  })
+
+  it('lays each row on one blank, the last child of its slip', async () => {
+    const rows = rowsOf(await render())
+    expect(rows).toHaveLength(NAMES.length)
+    for (const row of rows) {
+      expect(row.split('kcc-blank')).toHaveLength(2)
+      expect(row).toMatch(new RegExp(`</a>${BLANK}</div>(?:<!--\\]-->)?(?:</div>)?$`))
+    }
+  })
+
+  it('flips every row only when asked', async () => {
+    const flipped = rowsOf(await render({ flip: true }))
+    expect(flipped).toHaveLength(NAMES.length)
+    expect(flipped.every((row) => row.slice(0, row.indexOf('"')).split(' ').includes('kcc-slip--flip'))).toBe(true)
+    expect(await render()).not.toContain('kcc-slip--flip')
   })
 })

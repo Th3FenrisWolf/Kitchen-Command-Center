@@ -131,6 +131,7 @@ public class RecipeWizardReviewTests : BasePageTests
 
         await Page.GetByTestId("wizard-photos").GetByTestId("photo-tile").First.ClickAsync();
         await Expect(viewer).ToBeVisibleAsync();
+        _ = await Assert.That(string.Join(Environment.NewLine, await Piles.OverlayFaultsAsync(viewer))).IsEmpty();
         await Page.Keyboard.PressAsync("Escape");
         await Expect(viewer).ToHaveCountAsync(0);
     }

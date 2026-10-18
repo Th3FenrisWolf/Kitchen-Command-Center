@@ -22,6 +22,13 @@ const render = () =>
   )
 
 describe('IngredientsStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
+  })
+
   it('hooks the name input of every ingredient row', async () => {
     const names = (await render()).match(/<input[^>]*data-testid="wizard-ingredient-name"[^>]*>/g) ?? []
 

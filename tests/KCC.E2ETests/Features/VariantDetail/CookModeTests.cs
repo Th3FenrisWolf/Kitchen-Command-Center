@@ -1,3 +1,4 @@
+using KCC.E2ETests.Config;
 using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.VariantDetail;
@@ -25,6 +26,16 @@ public class CookModeTests : BasePageTests
 
         await Expect(Page.Locator("[role=\"dialog\"]")).ToBeVisibleAsync();
         await Expect(Page.Locator("[data-test=\"cook-progress\"]")).ToContainTextAsync("1");
+    }
+
+    [Test]
+    public async Task Overlay_SheetIsWideAndCrisp_OnOneBlank()
+    {
+        await OpenOverlayAsync();
+
+        var faults = await Piles.OverlayFaultsAsync(Page.Locator("[role=\"dialog\"]"));
+
+        _ = await Assert.That(string.Join(Environment.NewLine, faults)).IsEmpty();
     }
 
     [Test]

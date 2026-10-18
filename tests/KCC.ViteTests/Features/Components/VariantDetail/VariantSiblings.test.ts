@@ -14,7 +14,10 @@ const sibling = (name: string, index: number): SiblingVariant => ({
   totalTime: 20 + index * 5,
 })
 
-const render = (count = 3) => renderSsr(VariantSiblings, { variants: NAMES.slice(0, count).map(sibling) })
+const render = (count = 3, over: Record<string, unknown> = {}) =>
+  renderSsr(VariantSiblings, { variants: NAMES.slice(0, count).map(sibling), ...over })
+
+const cardSlips = (html: string) => html.match(/<article class="kcc-slip kcc-slip--fill[^"]*"/g) ?? []
 
 describe('VariantSiblings', () => {
   it('names the section on the rule, as a heading', async () => {
@@ -44,6 +47,16 @@ describe('VariantSiblings', () => {
     expect(html).toContain('<h3 class="kcc-h4">Crispy Edge</h3>')
     // The variant page carries no minutes string, so the card prints the same literal its stat tiles do.
     expect(html).toContain('20 min')
+  })
+
+  it('turns every card over when asked, and none unasked', async () => {
+    const flipped = cardSlips(await render(3, { flip: true }))
+    expect(flipped).toHaveLength(3)
+    flipped.forEach((slip) => expect(slip).toMatch(/ kcc-slip--flip kcc-tear-\d"$/))
+
+    const unflipped = cardSlips(await render(3))
+    expect(unflipped).toHaveLength(3)
+    unflipped.forEach((slip) => expect(slip).not.toContain('kcc-slip--flip'))
   })
 
   it('renders nothing at all for a variant with no siblings', async () => {

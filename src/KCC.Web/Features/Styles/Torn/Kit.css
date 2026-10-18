@@ -34,6 +34,10 @@
   }
 
   .kcc-slip {
+    --blank-flip: 1;
+    --blank-scale: 1.015;
+    --blank-turn: 1.5deg;
+    height: fit-content;
     min-width: 0;
     position: relative;
     transform: rotate(calc(var(--r, 0) * 1deg));
@@ -48,10 +52,63 @@
     height: 100%;
   }
 
+  .kcc-slip--flip {
+    --blank-flip: -1;
+  }
+
+  .kcc-slip--wide {
+    --blank-scale: 1.005;
+    --blank-turn: 0.5deg;
+  }
+
+  /* The lifted child is often the card's link, and this rule replaces the focus-ring fade that @layer base
+     gives every link, so the fade is listed again. */
+  .kcc-slip--lift > :not(.kcc-blank) {
+    transition:
+      translate var(--default-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+      outline-color 0.2s,
+      outline-offset 0.2s;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .kcc-slip--lift:focus-within > :not(.kcc-blank) {
+      translate: 0 -4px;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .kcc-slip--lift:hover > :not(.kcc-blank) {
+      translate: 0 -4px;
+    }
+  }
+
   /* The filter has to sit outside the clipped element, or the shadow is clipped away with the paper. */
-  .kcc-torn {
+  .kcc-torn,
+  .kcc-blank {
     filter: drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall));
+  }
+
+  .kcc-torn {
     position: relative;
+  }
+
+  /* The slip's transform makes it a stacking context, so -1 paints the blank under the sheet but never
+     under the desk or a neighbouring slip. */
+  .kcc-blank {
+    --tear: var(--blank-tear);
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    transform: rotate(calc(var(--blank-turn) * var(--blank-dir) * var(--blank-flip) * var(--blank-region, 1)))
+      scale(var(--blank-scale));
+    z-index: -1;
+  }
+
+  .kcc-blank > span {
+    background-color: var(--color-paper);
+    clip-path: var(--tear);
+    display: block;
+    height: 100%;
   }
 
   .kcc-sheet {
@@ -126,24 +183,6 @@
     right: 36px;
   }
 
-  .kcc-tape {
-    background-color: var(--color-tape);
-    background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.16) 0 1px, transparent 1px 3px);
-    border-radius: 1px;
-    height: 18px;
-    left: calc(50% - 31px);
-    pointer-events: none;
-    position: absolute;
-    top: -9px;
-    transform: rotate(-2.5deg);
-    width: 62px;
-    z-index: 9;
-  }
-
-  :root[data-theme='dark'] .kcc-tape {
-    background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 3px);
-  }
-
   .kcc-tilewrap {
     /* --tear inherits from the slip's preset; without this reset an unclassed tile would take the sheet's
        80-point tear on a 56px box. */
@@ -155,6 +194,13 @@
     top: -14px;
     transform: rotate(-2deg);
     z-index: 8;
+  }
+
+  .kcc-tilewrap--flow {
+    left: auto;
+    position: relative;
+    top: auto;
+    transform: none;
   }
 
   .kcc-tile {
@@ -175,12 +221,22 @@
     width: 96px;
   }
 
-  .kcc-tilewrap .kcc-tape {
+  .kcc-tilewrap > .kcc-tape {
+    background-color: var(--color-tape);
+    background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.16) 0 1px, transparent 1px 3px);
+    border-radius: 1px;
     height: 12px;
     left: calc(50% - 17px);
+    pointer-events: none;
+    position: absolute;
     top: -6px;
     transform: rotate(-3deg);
     width: 34px;
+    z-index: 9;
+  }
+
+  :root[data-theme='dark'] .kcc-tilewrap > .kcc-tape {
+    background-image: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 3px);
   }
 
   .kcc-kick,

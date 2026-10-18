@@ -9,18 +9,93 @@ export interface TearPreset {
   pointsPerSide: number
   /** Slip tilt in degrees, written to `--r`. Tiles tilt through `.kcc-tilewrap` instead. */
   tilt?: number
+  blank?: { tear: string; dir: 1 | -1 }
 }
 
 // Seeds come from the mockup's own seed → cut / rot tables so the six standard sheets mix corners and tilts,
-// with one uncut sheet (about one in four, per the identity). The hero takes the detail page's seed.
+// with one uncut sheet (about one in four, per the identity). tear-hero takes the detail page's seed;
+// tear-hero-2, the hero's blank, has no mockup seed.
 export const SHEET_TEARS: TearPreset[] = [
-  { name: 'tear-1', seed: 312, amp: 2.4, chamfer: 19, corner: 1, pointsPerSide: 80, tilt: 0.3 },
-  { name: 'tear-2', seed: 20, amp: 2.4, chamfer: 17, corner: 2, pointsPerSide: 80, tilt: -0.98 },
-  { name: 'tear-3', seed: 33, amp: 2.4, chamfer: 0, corner: 1, pointsPerSide: 80, tilt: 0.05 },
-  { name: 'tear-4', seed: 101, amp: 2.4, chamfer: 18, corner: 3, pointsPerSide: 80, tilt: -0.52 },
-  { name: 'tear-5', seed: 266, amp: 2.4, chamfer: 20, corner: 2, pointsPerSide: 80, tilt: 0.63 },
-  { name: 'tear-6', seed: 149, amp: 2.4, chamfer: 17, corner: 3, pointsPerSide: 80, tilt: -0.7 },
-  { name: 'tear-hero', seed: 301, amp: 2.4, chamfer: 28, corner: 1, pointsPerSide: 160, tilt: -0.58 },
+  {
+    name: 'tear-1',
+    seed: 312,
+    amp: 2.4,
+    chamfer: 19,
+    corner: 1,
+    pointsPerSide: 80,
+    tilt: 0.3,
+    blank: { tear: 'tear-4', dir: -1 },
+  },
+  {
+    name: 'tear-2',
+    seed: 20,
+    amp: 2.4,
+    chamfer: 17,
+    corner: 2,
+    pointsPerSide: 80,
+    tilt: -0.98,
+    blank: { tear: 'tear-5', dir: 1 },
+  },
+  {
+    name: 'tear-3',
+    seed: 33,
+    amp: 2.4,
+    chamfer: 0,
+    corner: 1,
+    pointsPerSide: 80,
+    tilt: 0.05,
+    blank: { tear: 'tear-6', dir: -1 },
+  },
+  {
+    name: 'tear-4',
+    seed: 101,
+    amp: 2.4,
+    chamfer: 18,
+    corner: 3,
+    pointsPerSide: 80,
+    tilt: -0.52,
+    blank: { tear: 'tear-1', dir: 1 },
+  },
+  {
+    name: 'tear-5',
+    seed: 266,
+    amp: 2.4,
+    chamfer: 20,
+    corner: 2,
+    pointsPerSide: 80,
+    tilt: 0.63,
+    blank: { tear: 'tear-2', dir: -1 },
+  },
+  {
+    name: 'tear-6',
+    seed: 149,
+    amp: 2.4,
+    chamfer: 17,
+    corner: 3,
+    pointsPerSide: 80,
+    tilt: -0.7,
+    blank: { tear: 'tear-3', dir: 1 },
+  },
+  {
+    name: 'tear-hero',
+    seed: 301,
+    amp: 2.4,
+    chamfer: 28,
+    corner: 1,
+    pointsPerSide: 160,
+    tilt: -0.58,
+    blank: { tear: 'tear-hero-2', dir: -1 },
+  },
+  {
+    name: 'tear-hero-2',
+    seed: 417,
+    amp: 2.4,
+    chamfer: 24,
+    corner: 3,
+    pointsPerSide: 160,
+    tilt: -0.36,
+    blank: { tear: 'tear-hero', dir: 1 },
+  },
 ]
 
 export const TILE_TEARS: TearPreset[] = [
@@ -30,7 +105,10 @@ export const TILE_TEARS: TearPreset[] = [
 ]
 
 const declaration = (p: TearPreset) => `  --${p.name}: ${tornPolygon(p)};`
-const sheetClass = (p: TearPreset) => `  .kcc-${p.name} {\n    --tear: var(--${p.name});\n    --r: ${p.tilt ?? 0};\n  }`
+const blankDeclarations = ({ blank }: TearPreset) =>
+  blank ? `\n    --blank-tear: var(--${blank.tear});\n    --blank-dir: ${blank.dir};` : ''
+const sheetClass = (p: TearPreset) =>
+  `  .kcc-${p.name} {\n    --tear: var(--${p.name});\n    --r: ${p.tilt ?? 0};${blankDeclarations(p)}\n  }`
 const tileClass = (p: TearPreset) => `  .kcc-${p.name} {\n    --tear: var(--${p.name});\n  }`
 
 export function tearsCss(): string {

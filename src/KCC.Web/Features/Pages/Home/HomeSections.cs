@@ -48,7 +48,8 @@ public static class HomeSections
             // The sheet is sticky on wide screens, so it passes every card in the stack and comes to rest above the
             // next section. Grids stop at four columns, so its half of the width covers two of that section's sheets
             // or cards at most. So the stack's cards and the next two draws skip its tear, unless another stacker's
-            // sheet opens a window of its own first.
+            // sheet opens a window of its own first. A skip passes the tear after it too: odd and even tears tilt
+            // opposite ways, so a skip of one would turn two neighbours, and the blanks under them, the same way.
             tears.Avoid(sheetTear, cards.Count + 2);
         }
 
@@ -73,7 +74,7 @@ public static class HomeSections
         (blocks ?? Enumerable.Empty<BlockListItem>()).Select(block => block.Content).OfType<T>();
 
     // One tear cycle runs down the whole page, through sheets and cards alike, so a sheet never shares its tear with
-    // the one beside it, even across two sections.
+    // the one beside it, even across two sections, and each draw tilts the other way from the draw before it.
     private sealed class TearCycle
     {
         private int taken;
@@ -88,6 +89,7 @@ public static class HomeSections
                 drawsLeft--;
                 if (tear == avoided)
                 {
+                    Take();
                     tear = Take();
                 }
             }

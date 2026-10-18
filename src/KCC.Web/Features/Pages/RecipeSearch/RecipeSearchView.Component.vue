@@ -24,6 +24,7 @@
   import type { Breadcrumb, RecipeSearchResponse, RecipeTaxonomy } from '~/Types/Recipe'
   import { hitToCard, hitToFeatured } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
+  import { resultsRegionFlips } from './resultsRegion'
 
   export interface RecipeSearchViewProps {
     initial: RecipeSearchResponse
@@ -130,6 +131,7 @@
       ]"
     >
       <RecipeFilters
+        flip
         :facets="facets"
         :options="options"
         :selected="state"
@@ -140,7 +142,12 @@
       />
     </aside>
 
-    <section class="min-w-0" :aria-busy="loading ? 'true' : 'false'" aria-live="polite">
+    <section
+      class="min-w-0"
+      :class="{ 'max-lg:[--blank-region:-1]': resultsRegionFlips(sheetOpen) }"
+      :aria-busy="loading ? 'true' : 'false'"
+      aria-live="polite"
+    >
       <div class="kcc-secname">
         <ResourceString for="Recipes" as="h2" />
         <p class="kcc-kick">
@@ -162,6 +169,7 @@
             :key="recipe.slug"
             :card="hitToCard(recipe, rs)"
             :tear="listTearFor(index)"
+            :flip="!!spotlight"
           />
         </div>
 
@@ -171,6 +179,7 @@
             :key="recipe.slug"
             :card="hitToCard(recipe, rs)"
             :tear="listTearFor(index)"
+            :flip="!!spotlight"
           />
         </div>
 
@@ -181,7 +190,7 @@
         </div>
       </template>
 
-      <RecipesEmptyState v-else @clear="clearAll" />
+      <RecipesEmptyState v-else flip @clear="clearAll" />
     </section>
   </div>
 </template>

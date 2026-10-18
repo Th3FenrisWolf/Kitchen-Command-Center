@@ -30,11 +30,18 @@ const alerts = (html: string) => html.match(/<p[^>]*role="alert"[^>]*>[\s\S]*?<\
 const WELL = ['kcc-well', 'kcc-kick']
 
 describe('PhotoStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-3')
+  })
+
   it('sits on a crisp sheet, labelled and headed with the photos title', async () => {
     const html = await render()
     const slip = tagWith(html, 'kcc-slip')
 
-    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-tear-3'])
+    expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-slip--wide', 'kcc-tear-3'])
     expect(slip).toContain('--r:0')
     expect(html).toMatch(
       /<span class="kcc-label"><i class="fa-duotone fa-camera" aria-hidden="true"><\/i>[\s\S]*?«PhotosTitle»/,

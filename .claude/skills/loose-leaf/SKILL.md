@@ -13,8 +13,9 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 
 ## Three rules
 
-1. **The paper is careless.** Sheets are torn on four sides, tilt ±1°, may take one strip of tape, and carry
-   one off-centre wax wash. No two neighbours share a tear.
+1. **The paper is careless.** Sheets are torn on four sides, tilt ±1°, lie on a blank sheet turned 1.5° off them
+   (0.5° when wide), and carry one off-centre wax wash. Sheets are never taped; tape holds only a pinned tile. No
+   two neighbours share a tear, and neighbouring blanks turn opposite ways.
 2. **The drawing is exact.** A 24px rule governs everything. Type sits on it, numbers are Sono tabular, icons
    are duotone in `currentColor`, one weight of everything.
 3. **The tear is the frame.** Nothing is stroked or shadowed except the sheet's fibre and fall. Only printed
@@ -22,7 +23,7 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 
 ## Torn vs printed
 
-| Torn: `kcc-sheet`, `kcc-tile` | Printed: `kcc-btn`, `kcc-seg`, `kcc-field`, `kcc-badge`, `kcc-box`, `kcc-label`, `kcc-tape` |
+| Torn: `kcc-sheet`, `kcc-blank`, `kcc-tile` | Printed: `kcc-btn`, `kcc-seg`, `kcc-field`, `kcc-badge`, `kcc-box`, `kcc-label`, `kcc-tape` |
 |---|---|
 | clipped, fibre + fall, may tilt, no radius | clean, unclipped, never shadowed, pill / 6px / 3px |
 
@@ -37,13 +38,15 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
     </div>
   </div>
   <span class="kcc-label">Label</span>       <!-- outside clip and shadow -->
-  <span class="kcc-tape" aria-hidden="true"></span>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>   <!-- always the last child -->
 </div>
 ```
 
 Vue: `import KccSheet from '~/Components/Sheet/KccSheet.vue'` with `label`, `icon`, `labelRight`, `wash`,
-`at`, `tear`, `tape`, `pad`, `crisp`, `as`. Razor: write it by hand. Tear in a loop:
-`kcc-tear-${(i % 6) + 1}`.
+`at`, `tear`, `piled` (default `true`; only `PadCard.vue` passes `false`), `wide` (any sheet wider than 700px;
+`tear="hero"` is wide already), `flip` (turns the blank the other way where the page's reading order needs it),
+`pad`, `crisp`, `as`. Razor: write it by hand, blank included. Tear in a loop: `kcc-tear-${(i % 6) + 1}`; the
+blanks then alternate by themselves.
 
 ## Tokens you will reach for
 
@@ -62,7 +65,10 @@ gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
 - [ ] Both ramps asserted in the unit test where markup differs; the visual check happens before merging.
 - [ ] No `sk-*`, `v-ink`, `data-ink`, `shadow-*`, `rounded-lg`+, `font-bold/semibold/medium`, `fa-primary-*`,
       literal colours, retired tokens (`ink-on-wash`, `ink-line`, `link`, status inks, the six dropped washes).
-- [ ] Filter on `.kcc-torn`, not on the clipped element; label and tape outside both.
+- [ ] Filter on `.kcc-torn`, not on the clipped element; label and tape outside both, except a
+      `.kcc-tilewrap--flow` and its tape in a sheet's content flow.
+- [ ] Every sheet ends its slip with one `.kcc-blank`; no tape on a sheet, only over a tile; neighbouring blanks
+      turn opposite ways down the page.
 - [ ] Text never on a wash core; `text-marker-ink` only inside tiles, labels, marker buttons.
 - [ ] Numbers in `kcc-num`; meta in `kcc-kick` / `kcc-meta`; headings in APCasual.
 - [ ] Motion at the 300ms default, or up to 500ms for a bigger move; motion started from script checks
@@ -81,6 +87,8 @@ gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
 - `text-ink` on a wash **fill** (a tile) — that is `text-marker-ink`. `text-ink` on a wash **pool** under a
   sheet margin is correct.
 - A `.kcc-label` inside `.kcc-sheet` — it gets torn and shadowed. It is a sibling of `.kcc-torn`.
+- A `kcc-tape` strip on a sheet — paper is piled, not taped. Tape sits only in a `kcc-tilewrap`.
+- A hover lift from `hover:-translate-y-1` utilities — it lifts the blank too. Use `kcc-slip--lift`.
 - Using a green `text-link` — links are ink with a hair-strong underline (`kcc-link`).
 - Red text for an error — status is a `kcc-well--danger` (or `kcc-field--error`) with ink text.
 - Reaching for `font-bold` for emphasis — use a `kcc-kick`, a label, or marker.

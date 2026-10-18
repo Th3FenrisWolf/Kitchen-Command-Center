@@ -16,6 +16,13 @@ const imageIn = (tile: string) => tagWith(tile, 'src=')
 const everyClass = (html: string) => [...html.matchAll(/\sclass="([^"]*)"/g)].flatMap(([, names]) => names!.split(/\s+/))
 
 describe('PhotoStrip', () => {
+  it('lays the photo tiles on no blank and under no tape', async () => {
+    const html = await render()
+
+    expect(html).not.toContain('kcc-blank')
+    expect(html).not.toContain('kcc-tape')
+  })
+
   it('lists the photos in the flow, named by the photos title', async () => {
     const html = await render()
     const list = tagWith(html, 'aria-label="«PhotosTitle»"')

@@ -119,7 +119,7 @@
 </script>
 
 <template>
-  <KccSheet crisp :tear :pad="STEP_PAD" icon="fa-duotone fa-clipboard-check" data-testid="review-step">
+  <KccSheet crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-clipboard-check" data-testid="review-step">
     <template #label><ResourceString for="ReviewAndSubmit" /></template>
 
     <h2 ref="heading" class="sr-only">{{ rs('ReviewAndSubmit') }}</h2>

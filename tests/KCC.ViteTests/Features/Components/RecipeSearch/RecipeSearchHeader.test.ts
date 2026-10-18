@@ -10,7 +10,7 @@ describe('RecipeSearchHeader sheet', () => {
   it('is the green-washed Library sheet', async () => {
     const html = await render()
 
-    expect(html).toContain('<section class="kcc-slip kcc-tear-3 my-6">')
+    expect(html).toContain('<section class="kcc-slip kcc-slip--wide kcc-tear-3 my-6">')
     // One length: the sheet derives the pencil rule's offset from --pad, and a shorthand makes that calc()
     // invalid, so the ruling would fall back to the top edge.
     expect(html).toContain('style="--pad:24px;"')
@@ -21,6 +21,13 @@ describe('RecipeSearchHeader sheet', () => {
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-book-open" aria-hidden="true"></i>')
     expect(html).toContain('Library')
     expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-tear-3')).toContain('kcc-slip--wide')
   })
 
   it('sets the search pill with its leading glyph and keeps the input hook', async () => {

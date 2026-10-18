@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import InstructionsStep from '~/Components/RecipeWizard/InstructionsStep.vue'
 import { emptyValues } from '~/Components/RecipeWizard/wizardValues'
 import { describedBy, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
+import { tagWith } from '../../../support/ssr'
 
 const render = () =>
   renderInWizard(InstructionsStep, {
@@ -14,6 +15,13 @@ const render = () =>
 const rows = (html: string) => html.match(/<li\b[\s\S]*?<\/li>/g) ?? []
 
 describe('InstructionsStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render()
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
+  })
+
   it("shows a step's mark on its own row", async () => {
     const [first = '', second = ''] = rows(await render())
 

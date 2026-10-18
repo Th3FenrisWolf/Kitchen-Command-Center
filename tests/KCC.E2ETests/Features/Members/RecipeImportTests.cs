@@ -192,6 +192,7 @@ public class RecipeImportTests : BasePageTests
         await tile.ClickAsync();
         await Expect(viewer).ToHaveAttributeAsync("role", "dialog");
         await Expect(viewer).ToHaveAttributeAsync("aria-modal", "true");
+        _ = await Assert.That(string.Join(Environment.NewLine, await Piles.OverlayFaultsAsync(viewer))).IsEmpty();
         _ = await Assert.That(await FocusTrap.HoldsAsync(Page, viewer)).IsTrue();
         await viewer.GetByRole(AriaRole.Button, new() { Name = "Close", Exact = true }).ClickAsync();
         await Expect(viewer).ToHaveCountAsync(0);

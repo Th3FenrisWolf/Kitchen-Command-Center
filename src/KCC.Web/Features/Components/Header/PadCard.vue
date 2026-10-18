@@ -25,6 +25,7 @@
     class="pad-card"
     :class="`is-${state}`"
     :tear
+    :piled="false"
     :wash
     :at
     role="region"

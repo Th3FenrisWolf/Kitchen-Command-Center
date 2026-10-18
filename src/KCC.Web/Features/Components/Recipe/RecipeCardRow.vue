@@ -9,9 +9,10 @@
   export interface RecipeCardRowProps {
     card: RecipeCardModel
     tear?: Exclude<Tear, 'hero'>
+    flip?: boolean
   }
 
-  const { card, tear } = defineProps<RecipeCardRowProps>()
+  const { card, tear, flip = false } = defineProps<RecipeCardRowProps>()
 
   const preset = computed(() => tear ?? sheetTearFor(card.seed))
   const rating = computed(() =>
@@ -29,52 +30,57 @@
 </script>
 
 <template>
-  <a
-    :href="card.href"
-    v-bind="card.dataAttrs"
-    class="kcc-slip kcc-torn block transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
-    :class="`kcc-tear-${preset}`"
+  <div
+    class="kcc-slip kcc-slip--wide kcc-slip--lift"
+    :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${preset}`]"
     style="--r: 0"
   >
-    <div class="kcc-sheet flex items-center gap-4" style="--pad: 16px">
-      <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14 flex-none" />
-
-      <div class="min-w-0 flex-1">
-        <div class="flex flex-wrap items-center gap-x-3">
-          <h3 class="kcc-h4">{{ card.name }}</h3>
-          <div v-if="card.tags.length" class="kcc-badges">
-            <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
-          </div>
+    <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
+      <div class="kcc-sheet flex items-center gap-4" style="--pad: 16px">
+        <div class="kcc-tilewrap kcc-tilewrap--flow flex-none">
+          <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14" />
+          <span class="kcc-tape" aria-hidden="true"></span>
         </div>
 
-        <p v-if="rating || notes.length || chips.length" class="kcc-meta">
-          <span
-            v-if="rating"
-            class="kcc-num"
-            role="img"
-            :aria-label="`${rating.text} of 5 stars`"
-            data-testid="recipe-card-rating"
-            :data-average-rating="rating.average"
-          >
-            <i class="fa-duotone fa-star" aria-hidden="true"></i> {{ rating.text }}
-          </span>
-          <span v-for="note in notes" :key="note">{{ note }}</span>
-          <span
-            v-for="(chip, i) in chips"
-            :key="i"
-            :class="['kcc-num', card.trailingStat && chip.key === 'time' && 'sm:hidden']"
-          >
-            <i v-if="chip.icon" :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}
-          </span>
-        </p>
-      </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-x-3">
+            <h3 class="kcc-h4">{{ card.name }}</h3>
+            <div v-if="card.tags.length" class="kcc-badges">
+              <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
+            </div>
+          </div>
 
-      <div v-if="card.trailingStat" class="hidden flex-none text-center sm:block">
-        <span class="kcc-num block">{{ card.trailingStat.value }}</span>
-        <span class="kcc-kick block">{{ card.trailingStat.label }}</span>
-      </div>
+          <p v-if="rating || notes.length || chips.length" class="kcc-meta">
+            <span
+              v-if="rating"
+              class="kcc-num"
+              role="img"
+              :aria-label="`${rating.text} of 5 stars`"
+              data-testid="recipe-card-rating"
+              :data-average-rating="rating.average"
+            >
+              <i class="fa-duotone fa-star" aria-hidden="true"></i> {{ rating.text }}
+            </span>
+            <span v-for="note in notes" :key="note">{{ note }}</span>
+            <span
+              v-for="(chip, i) in chips"
+              :key="i"
+              :class="['kcc-num', card.trailingStat && chip.key === 'time' && 'sm:hidden']"
+            >
+              <i v-if="chip.icon" :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}
+            </span>
+          </p>
+        </div>
 
-      <i class="fa-duotone fa-arrow-right flex-none text-ink-soft" aria-hidden="true"></i>
-    </div>
-  </a>
+        <div v-if="card.trailingStat" class="hidden flex-none text-center sm:block">
+          <span class="kcc-num block">{{ card.trailingStat.value }}</span>
+          <span class="kcc-kick block">{{ card.trailingStat.label }}</span>
+        </div>
+
+        <i class="fa-duotone fa-arrow-right flex-none text-ink-soft" aria-hidden="true"></i>
+      </div>
+    </a>
+
+    <span class="kcc-blank" aria-hidden="true"><span></span></span>
+  </div>
 </template>

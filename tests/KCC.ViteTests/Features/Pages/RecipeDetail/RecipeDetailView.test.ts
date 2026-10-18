@@ -88,11 +88,20 @@ describe('RecipeDetailView', () => {
   it('keeps the stats on an At a glance sheet of their own', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'kcc-tear-3')).toContain('kcc-slip kcc-tear-3')
+    expect(tagWith(html, 'kcc-tear-3')).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-3"')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-gauge" aria-hidden="true"></i>')
     expect(html).toContain('At a glance')
     const slip = html.slice(html.indexOf('kcc-tear-3'), html.indexOf('kcc-label', html.indexOf('kcc-tear-3')))
     expect(slip).toContain('data-testid="variant-stats"')
+  })
+
+  it('rests the At a glance sheet on one blank', async () => {
+    const html = await render()
+    const glance = html.indexOf('kcc-tear-3')
+    const nextSlip = html.indexOf('class="kcc-slip ', glance)
+    const sheet = html.slice(glance, nextSlip === -1 ? undefined : nextSlip)
+
+    expect((sheet.match(/kcc-blank/g) ?? []).length).toBe(1)
   })
 
   it('counts the variants, the fastest, the average and the contributors', async () => {
@@ -136,6 +145,31 @@ describe('RecipeDetailView', () => {
     expect(html).toContain('NoVariantsMatch')
     expect(html).not.toContain('data-variant-name')
     expect(html).toContain('—')
+  })
+
+  describe('alternates its blanks in reading order', () => {
+    const cardSlips = (html: string) => html.match(/<article class="kcc-slip kcc-slip--fill[^"]*"/g) ?? []
+    const featuredSlip = (html: string) =>
+      html.match(/<article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero[^"]*"/)?.[0]
+
+    it('turns every card in the grid and the add-variant slip over under the featured variant, which keeps its own turn', async () => {
+      const html = await render()
+
+      expect(featuredSlip(html)).toBeDefined()
+      expect(featuredSlip(html)).not.toContain('kcc-slip--flip')
+      expect(cardSlips(html)).toHaveLength(NAMES.length)
+      cardSlips(html).forEach((slip) => expect(slip).toMatch(/ kcc-slip--flip kcc-tear-\d"$/))
+      expect(tagWith(html, 'kcc-slip--fill kcc-slip--lift')).toContain(
+        'class="kcc-slip--flip kcc-tear-5 kcc-slip kcc-slip--fill kcc-slip--lift"',
+      )
+    })
+
+    it('turns the empty sheet over when no featured variant sits above it', async () => {
+      const html = await render({ variants: [] })
+
+      expect(featuredSlip(html)).toBeUndefined()
+      expect(tagWith(html, 'kcc-tear-4')).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-4"')
+    })
   })
 
   it('leaves no Softbound remnant on the page', async () => {

@@ -18,11 +18,18 @@ const variant = (name: string, index: number): VariantSummary => ({
   reviewCount: 0,
 })
 
-const render = (count = NAMES.length) =>
+const render = (count = NAMES.length, props: Record<string, unknown> = {}) =>
   renderSsr(VariantGrid, {
     variants: NAMES.slice(0, count).map(variant),
     addVariantUrl: '/recipes/add-variant?recipe=abc',
+    ...props,
   })
+
+const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
+const slipClasses = (html: string) =>
+  [...html.matchAll(/class="([^"]*)"/g)]
+    .map((match) => match[1]!.split(' '))
+    .filter((classes) => classes.includes('kcc-slip'))
 
 describe('VariantGrid', () => {
   it('lays the slips out on the rule, 28px between columns and 36px between rows', async () => {
@@ -66,5 +73,29 @@ describe('VariantGrid', () => {
 
     expect(tagWith(html, 'kcc-tear-4')).toContain('kcc-slip--fill')
     expect(tagWith(html, 'kcc-sheet grid')).toContain('content-center')
+  })
+
+  it('lays the add-variant slip on one blank, its last child', async () => {
+    const html = await render(3)
+    const addSlip = html.slice(html.lastIndexOf('<div', html.indexOf('href="/recipes/add-variant')))
+    expect(tagWith(addSlip, 'class')).toMatch(/\bkcc-slip\b/)
+    expect(addSlip.split('kcc-blank')).toHaveLength(2)
+    expect(addSlip.endsWith(`</a>${BLANK}</div></div>`)).toBe(true)
+  })
+
+  it('lifts the add-variant sheet off its blank through the kit, not through utilities', async () => {
+    const html = await render(3)
+    expect(tagWith(html, 'kcc-tear-4')).toContain('class="kcc-tear-4 kcc-slip kcc-slip--fill kcc-slip--lift"')
+    expect(html).not.toMatch(/transition-transform|hover:-translate-y-1|focus-within:-translate-y-1/)
+  })
+
+  it('flips every card and the add-variant slip together, and none unasked', async () => {
+    const flipped = slipClasses(await render(3, { flip: true }))
+    expect(flipped).toHaveLength(4)
+    expect(flipped.every((classes) => classes.includes('kcc-slip--flip'))).toBe(true)
+
+    const unflipped = slipClasses(await render(3))
+    expect(unflipped).toHaveLength(4)
+    expect(unflipped.some((classes) => classes.includes('kcc-slip--flip'))).toBe(false)
   })
 })

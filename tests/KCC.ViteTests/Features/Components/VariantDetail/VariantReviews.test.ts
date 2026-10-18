@@ -1,11 +1,10 @@
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
 
 // The reviews themselves arrive from `/api/variant/{guid}/reviews` in `onMounted`, which never runs on the
 // server: every render below is the pre-fetch section, driven by the server-rendered average and count.
-// The written reviews — their slips, the author kick, the date and Load more — are covered by
-// VariantReviewsTests in the e2e suite.
+// The written reviews' slips are covered by VariantReviewsTests in the e2e suite, and Load more by PileTests.
 const render = (over: Record<string, unknown> = {}) =>
   renderSsr(VariantReviews, { variantGuid: '11111111-2222-3333-4444-555555555555', ...over })
 
@@ -27,10 +26,17 @@ describe('VariantReviews summary', () => {
     // Signed out, so the summary is the only sheet on the section and carries the whole assertion.
     const html = await render({ reviewCount: 12, averageRating: 4.5 })
 
-    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-tear-5')
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-5')
     expect(html).not.toContain('kcc-label')
     expect(html).not.toContain('kcc-tape')
     expect(html).not.toContain('kcc-wash')
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render({ reviewCount: 12, averageRating: 4.5 })
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-tear-5')).toContain('kcc-slip--wide')
   })
 
   it('prints the average as stars and a Sono number, and leaves the count to the section heading', async () => {
@@ -82,10 +88,25 @@ describe('VariantReviews form', () => {
     const html = await render({ isAuthenticated: true })
     const form = tagWith(html, 'kcc-tear-2')
 
-    expect(form).toContain('kcc-slip kcc-tear-2')
+    expect(form).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-2"')
     expect(form).toContain('--r:0')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-comment-pen" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?YourReview/s)
+  })
+
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render({ isAuthenticated: true })
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-tear-2')).toContain('kcc-slip--wide')
+  })
+
+  it('gives the summary and the form a blank each when both show', async () => {
+    const html = await render({ isAuthenticated: true, reviewCount: 12, averageRating: 4.5 })
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(2)
+    expect(tagWith(html, 'kcc-tear-5')).toContain('kcc-slip--wide')
+    expect(tagWith(html, 'kcc-tear-2')).toContain('kcc-slip--wide')
   })
 
   it('takes the rating on the slider and the text in the kit field, hooks on the controls', async () => {
@@ -122,5 +143,36 @@ describe('VariantReviews form', () => {
     expectNoRetiredMarkup(html)
     expect(html).not.toContain('bg-paper-2')
     expect(html).not.toContain('border-rule')
+  })
+})
+
+describe('VariantReviews blanks, before any review loads', () => {
+  const slipTag = (html: string, tear: number) => tagWith(html, `kcc-tear-${tear}"`)
+
+  it('leaves the summary its own - turn', async () => {
+    const html = await render({ reviewCount: 3, averageRating: 4.5 })
+
+    expect(slipTag(html, 5)).toContain('class="kcc-slip kcc-slip--wide kcc-tear-5"')
+  })
+
+  it('turns the form + under the summary when there are reviews', async () => {
+    const html = await render({ isAuthenticated: true, reviewCount: 3, averageRating: 4.5 })
+
+    expect(slipTag(html, 2)).toContain('class="kcc-slip kcc-slip--wide kcc-tear-2"')
+  })
+
+  it('turns the form over, to -, against cook notes when there are none', async () => {
+    const html = await render({ isAuthenticated: true })
+
+    expect(slipTag(html, 2)).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-2"')
+  })
+
+  it('emits no trailing sign while the server renders', async () => {
+    const onTrailingSign = vi.fn()
+
+    await render({ isAuthenticated: true, reviewCount: 3, onTrailingSign })
+    await render({ reviewCount: 3, onTrailingSign })
+
+    expect(onTrailingSign).not.toHaveBeenCalled()
   })
 })

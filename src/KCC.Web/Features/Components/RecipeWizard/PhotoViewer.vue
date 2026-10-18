@@ -82,7 +82,13 @@
       data-testid="photo-viewer"
     >
       <div ref="panel" class="h-full">
-        <KccSheet crisp :tear="sheetTearFor(photo.id)" pad="clamp(24px, 6vw, 48px)" class="kcc-slip--fill mx-auto max-w-5xl">
+        <KccSheet
+          crisp
+          wide
+          :tear="sheetTearFor(photo.id)"
+          pad="clamp(24px, 6vw, 48px)"
+          class="kcc-slip--fill mx-auto max-w-5xl"
+        >
           <div class="flex h-full flex-col gap-6">
             <div class="flex justify-end">
               <Button variant="ghost" size="lg" class="kcc-btn--icon" :aria-label="rs('ClosePhoto')" @click="emit('close')">

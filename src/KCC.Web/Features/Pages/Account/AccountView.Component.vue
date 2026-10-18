@@ -41,6 +41,7 @@
 
   const recipesStartedCount = computed(() => props.recipeGroups.filter((group) => group.startedByYou).length)
   const variantsCount = computed(() => props.recipeGroups.reduce((sum, group) => sum + group.variants.length, 0))
+  const favoritesFlips = computed(() => props.recipeGroups.length % 2 === 0)
 </script>
 
 <template>
@@ -88,7 +89,14 @@
       <!-- The profile sheet beside the list takes the first tear, so the list starts at the second and no two
            neighbours are torn alike. -->
       <ul v-else class="grid gap-9">
-        <KccSheet v-for="(group, index) in recipeGroups" :key="group.key" as="li" :tear="listTearFor(index + 1)" pad="16px">
+        <KccSheet
+          v-for="(group, index) in recipeGroups"
+          :key="group.key"
+          as="li"
+          :tear="listTearFor(index + 1)"
+          pad="16px"
+          wide
+        >
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <i v-if="group.recipeIcon" :class="group.recipeIcon" aria-hidden="true"></i>
             <h3 class="kcc-h4">
@@ -125,8 +133,8 @@
 
     <!-- No Shared.ComingSoon/Favorites/RecentActivity keys exist, so shared resolves the whole section against this page's own Account prefix. -->
     <div class="grid gap-y-9 md:col-start-1 md:row-start-2">
-      <ComingSoonSection text-key="Favorites" :shared="false" :tear="3" />
-      <ComingSoonSection text-key="RecentActivity" :shared="false" :tear="5" />
+      <ComingSoonSection text-key="Favorites" :shared="false" :tear="3" :flip="favoritesFlips" />
+      <ComingSoonSection text-key="RecentActivity" :shared="false" :tear="5" :flip="!favoritesFlips" />
     </div>
   </div>
 </template>

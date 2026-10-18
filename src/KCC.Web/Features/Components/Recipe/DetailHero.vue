@@ -40,7 +40,7 @@
 </script>
 
 <template>
-  <div class="kcc-slip kcc-recipe kcc-tear-hero">
+  <div class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero">
     <div class="kcc-torn">
       <div class="kcc-sheet" style="--pad: 48px">
         <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
@@ -86,6 +86,6 @@
       <span class="kcc-tape" aria-hidden="true"></span>
     </div>
 
-    <span class="kcc-tape" aria-hidden="true"></span>
+    <span class="kcc-blank" aria-hidden="true"><span></span></span>
   </div>
 </template>

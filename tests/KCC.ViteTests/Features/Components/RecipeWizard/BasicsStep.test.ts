@@ -17,6 +17,13 @@ const READ: WizardValues = {
 const render = (values: WizardValues) => renderInWizard(BasicsStep, { values })
 
 describe('BasicsStep', () => {
+  it('rests on one blank, with the wide turn', async () => {
+    const html = await render(READ)
+
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
+  })
+
   it('shows the mark a read left on the recipe name and on its description, with its reason', async () => {
     const html = await render(READ)
 

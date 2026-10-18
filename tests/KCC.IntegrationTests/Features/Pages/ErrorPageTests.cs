@@ -57,6 +57,17 @@ public class ErrorPageTests
     }
 
     [Test]
+    public async Task StatusPage_LaysItsSheetOnOneBlank()
+    {
+        using var client = Site.CreateClient();
+        using var response = await client.GetAsync("/this-page-does-not-exist");
+
+        var slip = Slips.In(BodyContent(await response.Content.ReadAsStringAsync())).Single();
+
+        _ = await Assert.That(Slips.EndsWithOneBlank(slip)).IsTrue();
+    }
+
+    [Test]
     public async Task ErrorRouteWithA404Code_RendersThe404PageWithA404Status()
     {
         using var client = Site.CreateClient();
