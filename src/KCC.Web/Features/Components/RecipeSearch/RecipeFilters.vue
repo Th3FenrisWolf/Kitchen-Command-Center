@@ -53,7 +53,7 @@
       </Button>
     </div>
 
-    <fieldset v-for="{ group, legend, rows } in groups" :key="group" class="mt-6">
+    <fieldset v-for="{ group, legend, rows } in groups" :key="group" class="mt-rule-1">
       <ResourceString :for="legend" as="legend" class="kcc-kick" />
       <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
            stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
@@ -74,10 +74,10 @@
       </ul>
     </fieldset>
 
-    <fieldset class="mt-6">
+    <fieldset class="mt-rule-1">
       <ResourceString for="TotalTime" as="legend" class="kcc-kick" />
       <p class="kcc-num">{{ rangeLabel }}</p>
-      <!-- The 20px track plus 2px of air on each side is exactly one 24px rule. -->
+      <!-- The 20px track plus 2px of air on each side is exactly one rule. -->
       <RangeSlider
         v-model:model-min="timeMin"
         v-model:model-max="timeMax"

@@ -67,54 +67,66 @@
 </script>
 
 <template>
-  <KccSheet crisp :tear="4" pad="clamp(24px, 7.5vw, 48px)" icon="fa-duotone fa-key" class="mx-auto my-12 w-full max-w-md">
+  <KccSheet
+    crisp
+    :tear="4"
+    pad="clamp(24px, 7.5vw, 48px)"
+    icon="fa-duotone fa-key"
+    class="mx-auto my-rule-2 w-full max-w-md"
+  >
     <template #label><ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" /></template>
 
     <h2 class="sr-only">{{ isSignIn ? rs('SignIn') : rs('SignUp') }}</h2>
 
-    <form class="flex flex-col gap-6" @submit.prevent="handleSubmit">
+    <form class="flex flex-col gap-y-rule-1" @submit.prevent="handleSubmit">
       <!-- The placeholder is the field's name here: the page has no printed labels to bind to. -->
-      <InputField
-        v-model="userName"
-        required
-        type="text"
-        name="UserName"
-        autocomplete="username"
-        :placeholder="rs('UsernamePlaceholder')"
-        :aria-label="rs('UsernamePlaceholder')"
-      />
+      <div class="flex min-h-rule-2 flex-col justify-center">
+        <InputField
+          v-model="userName"
+          required
+          type="text"
+          name="UserName"
+          autocomplete="username"
+          :placeholder="rs('UsernamePlaceholder')"
+          :aria-label="rs('UsernamePlaceholder')"
+        />
+      </div>
 
-      <InputField
-        v-if="!isSignIn"
-        v-model="email"
-        required
-        type="email"
-        name="Email"
-        autocomplete="email"
-        :placeholder="rs('EmailPlaceholder')"
-        :aria-label="rs('EmailPlaceholder')"
-      />
+      <div v-if="!isSignIn" class="flex min-h-rule-2 flex-col justify-center">
+        <InputField
+          v-model="email"
+          required
+          type="email"
+          name="Email"
+          autocomplete="email"
+          :placeholder="rs('EmailPlaceholder')"
+          :aria-label="rs('EmailPlaceholder')"
+        />
+      </div>
 
-      <InputField
-        v-model="password"
-        required
-        type="password"
-        name="Password"
-        :autocomplete="isSignIn ? 'current-password' : 'new-password'"
-        :placeholder="rs('PasswordPlaceholder')"
-        :aria-label="rs('PasswordPlaceholder')"
-      />
+      <div class="flex min-h-rule-2 flex-col justify-center">
+        <InputField
+          v-model="password"
+          required
+          type="password"
+          name="Password"
+          :autocomplete="isSignIn ? 'current-password' : 'new-password'"
+          :placeholder="rs('PasswordPlaceholder')"
+          :aria-label="rs('PasswordPlaceholder')"
+        />
+      </div>
 
-      <InputField
-        v-if="!isSignIn"
-        v-model="passwordConfirmation"
-        required
-        type="password"
-        name="PasswordConfirmation"
-        autocomplete="new-password"
-        :placeholder="rs('ConfirmPasswordPlaceholder')"
-        :aria-label="rs('ConfirmPasswordPlaceholder')"
-      />
+      <div v-if="!isSignIn" class="flex min-h-rule-2 flex-col justify-center">
+        <InputField
+          v-model="passwordConfirmation"
+          required
+          type="password"
+          name="PasswordConfirmation"
+          autocomplete="new-password"
+          :placeholder="rs('ConfirmPasswordPlaceholder')"
+          :aria-label="rs('ConfirmPasswordPlaceholder')"
+        />
+      </div>
 
       <ul v-if="isSignIn" class="kcc-check">
         <li class="cursor-pointer">
@@ -126,12 +138,14 @@
 
       <p v-if="formError" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ formError }}</p>
 
-      <Button type="submit" :disabled="isSubmitting">
-        <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
-      </Button>
+      <div class="flex min-h-rule-2 flex-col justify-center">
+        <Button type="submit" :disabled="isSubmitting">
+          <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
+        </Button>
+      </div>
     </form>
 
-    <div class="mt-12">
+    <div class="mt-rule-2">
       <ResourceString :for="isSignIn ? 'NewHere' : 'HaveAccount'" as="p" class="kcc-kick" />
       <ResourceString
         :for="isSignIn ? 'NewHereDescription' : 'HaveAccountDescription'"
@@ -139,7 +153,7 @@
         class="kcc-body text-ink-soft"
       />
 
-      <Button variant="text" class="mt-6" @click="switchMode">
+      <Button variant="text" class="mt-rule-1" @click="switchMode">
         <ResourceString :for="isSignIn ? 'SignUp' : 'SignIn'" />
       </Button>
     </div>

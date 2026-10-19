@@ -42,10 +42,10 @@
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <p class="kcc-h3">{{ instruction.text }}</p>
+  <div class="flex flex-col gap-y-rule-1">
+    <p class="kcc-section">{{ instruction.text }}</p>
 
-    <div v-if="timers.length" class="flex flex-wrap gap-9">
+    <div v-if="timers.length" class="flex flex-wrap gap-x-9 gap-y-rule-1.5">
       <StepTimer v-for="timer in timers" :key="timer.id" :seconds="timer.seconds" :label="timer.label" />
     </div>
 
@@ -54,7 +54,7 @@
 
       <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
            stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
-      <ul class="kcc-check mt-6" :aria-labelledby="uid">
+      <ul class="kcc-check mt-rule-1" :aria-labelledby="uid">
         <li
           v-for="row in rows"
           :key="row.id"

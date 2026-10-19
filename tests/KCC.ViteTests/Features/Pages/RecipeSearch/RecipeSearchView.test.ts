@@ -88,7 +88,7 @@ describe('RecipeSearchView library', () => {
     const html = await render()
 
     expect(html).toContain('<div class="kcc-secname">')
-    expect(html).toMatch(/<div class="kcc-secname"><h2>\s*Recipes\s*<\/h2>/)
+    expect(html).toMatch(/<div class="kcc-secname"><h2 class="kcc-section">\s*Recipes\s*<\/h2>/)
     expect(html).toMatch(/<p class="kcc-kick"><span class="kcc-num">7<\/span> Recipes<\/p>/)
   })
 
@@ -98,12 +98,12 @@ describe('RecipeSearchView library', () => {
     expect(html).toMatch(/<p class="kcc-kick"><span class="kcc-num">1<\/span> Recipe<\/p>/)
   })
 
-  it('lays the slips out on the rule, 28px between columns and 36px between rows', async () => {
+  it('lays the slips out on the rule, 28px between columns and a rule and a half between rows', async () => {
     const grid = tagWith(await render(), 'repeat\\(auto-fit')
 
     expect(grid).toContain('grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))]')
     expect(grid).toContain('gap-x-7')
-    expect(grid).toContain('gap-y-9')
+    expect(grid).toContain('gap-y-rule-1.5')
     expect(grid).not.toContain('row-span')
   })
 
@@ -114,16 +114,16 @@ describe('RecipeSearchView library', () => {
     expect(tears).toEqual([1, 2, 3, 4, 5, 6, 1])
   })
 
-  it('pins the spotlight above the grid, 48px clear of the count line', async () => {
+  it('pins the spotlight above the grid, two rules clear of the count line', async () => {
     const html = await render({ spotlight: hit('Top Rated Thing', 9) })
 
-    expect(tagWith(html, 'kcc-tear-hero')).toContain('mt-12')
+    expect(tagWith(html, 'kcc-tear-hero')).toContain('mt-rule-2')
   })
 
   it('opens with the trail on the rule', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'aria-label="Breadcrumb"')).toContain('mt-6')
+    expect(tagWith(html, 'aria-label="Breadcrumb"')).toContain('mt-rule-1')
   })
 
   it('keeps the results section live and the filter panel addressable', async () => {
@@ -133,7 +133,7 @@ describe('RecipeSearchView library', () => {
     expect(section).toContain('aria-busy="false"')
 
     const aside = tagWith(html, 'id="recipe-filters"')
-    expect(aside).toContain('lg:sticky lg:top-[calc(1.5rem_+_var(--pad-offset,0px))]')
+    expect(aside).toContain('lg:sticky lg:top-[calc(var(--bl)_+_var(--pad-offset,0px))]')
     expect(aside).not.toContain('rounded')
     expect(aside).not.toContain('bg-paper-2')
   })
@@ -171,7 +171,7 @@ describe('RecipeSearchView library', () => {
 
   it('keeps a kick line at the foot of the results while more are still coming', async () => {
     // The spinner itself only prints once a fetch is in flight, which no server render ever is.
-    expect(await render({ total: 25 })).toContain('<div class="kcc-kick flex items-center justify-center py-6">')
+    expect(await render({ total: 25 })).toContain('<div class="kcc-kick flex items-center justify-center py-rule-1">')
     expect(await render()).not.toContain('kcc-kick flex items-center justify-center')
   })
 

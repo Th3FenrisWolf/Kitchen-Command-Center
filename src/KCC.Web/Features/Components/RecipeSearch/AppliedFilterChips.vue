@@ -12,7 +12,7 @@
 </script>
 
 <template>
-  <div v-if="chips.length" class="kcc-badges mb-6 items-center">
+  <div v-if="chips.length" class="kcc-badges mb-rule-1 items-center">
     <button
       v-for="(chip, i) in chips"
       :key="`${chip.kind}-${chip.value ?? i}`"

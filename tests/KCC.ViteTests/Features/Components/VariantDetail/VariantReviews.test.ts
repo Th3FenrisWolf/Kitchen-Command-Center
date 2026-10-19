@@ -12,12 +12,12 @@ describe('VariantReviews section', () => {
   it('names the section on the rule and counts the reviews beside it', async () => {
     const html = await render({ reviewCount: 12 })
 
-    expect(html).toMatch(/<div class="kcc-secname"><h2>\s*RatingsReviews\s*<\/h2>/)
+    expect(html).toMatch(/<div class="kcc-secname"><h2 class="kcc-section">\s*RatingsReviews\s*<\/h2>/)
     expect(html).toMatch(/<p class="kcc-kick"><span class="kcc-num">12<\/span>\s*<span>Reviews<\/span><\/p>/)
   })
 
-  it('sets the blocks 36px apart down the section', async () => {
-    expect(await render({ reviewCount: 12 })).toContain('space-y-9')
+  it('sets the blocks a rule and a half apart down the section', async () => {
+    expect(await render({ reviewCount: 12 })).toContain('space-y-rule-1.5')
   })
 })
 

@@ -67,9 +67,9 @@
 </script>
 
 <template>
-  <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" class="mt-6" />
+  <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" class="mt-rule-1" />
 
-  <div class="mt-6 space-y-[72px]">
+  <div class="space-y-rule-3 mt-rule-1">
     <DetailHero
       :title="recipeName"
       :seed="recipeName"
@@ -87,7 +87,7 @@
       </template>
 
       <template #footer>
-        <Button as="a" :href="addVariantHref" class="mt-6">
+        <Button as="a" :href="addVariantHref" class="mt-rule-1">
           <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddVariant" />
         </Button>
       </template>
@@ -99,14 +99,14 @@
 
     <section>
       <div class="kcc-secname">
-        <ResourceString for="AllVariants" as="h2" />
+        <ResourceString for="AllVariants" as="h2" class="kcc-section" />
         <p class="kcc-kick">
           <span class="kcc-num">{{ filtered.length }}</span> {{ rs('Of') }}
           <span class="kcc-num">{{ variants.length }}</span>
         </p>
       </div>
 
-      <div class="space-y-9">
+      <div class="space-y-rule-1.5">
         <FeaturedRecipeCard v-if="featured" :card="variantToFeatured(featured, rs)" />
         <VariantToolbar v-model:search="search" v-model:sort="sort" v-model:tag="tag" v-model:view="view" :tags="tags" />
         <VariantGrid

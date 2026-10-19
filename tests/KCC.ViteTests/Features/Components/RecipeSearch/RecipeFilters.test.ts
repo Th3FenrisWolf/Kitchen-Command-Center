@@ -39,6 +39,12 @@ describe('RecipeFilters sheet', () => {
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 
+  it('gives the time slider one rule, so the labels under it stay on the ruling', async () => {
+    const slider = (await render()).match(/<div class="relative mx-0\.5 h-5 ([^"]*)"/)?.[1]
+
+    expect(slider).toBe('my-0.5')
+  })
+
   it('rests on one blank, with the standard turn', async () => {
     const html = await render()
 

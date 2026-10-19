@@ -17,7 +17,7 @@ describe('StepTimer', () => {
   it('sets the countdown in Sono at 64/72, three rules of the ruling', async () => {
     const html = await render()
 
-    expect(html).toContain('<span class="kcc-num text-[64px] leading-[72px]" data-test="timer-display">10:00</span>')
+    expect(html).toContain('<span class="kcc-num text-readout" data-test="timer-display">10:00</span>')
   })
 
   it('prints the matched phrase as a kick above the number', async () => {
@@ -30,7 +30,7 @@ describe('StepTimer', () => {
   it('marks the count with a duotone stopwatch in ink', async () => {
     const html = await render()
 
-    expect(html).toContain('<i class="fa-duotone fa-stopwatch text-2xl" aria-hidden="true"></i>')
+    expect(html).toContain('<i class="fa-duotone fa-stopwatch kcc-icon-sm" aria-hidden="true"></i>')
     expect(html).not.toContain('fa-solid fa-stopwatch')
     expect(html).not.toContain('rating-ink')
   })

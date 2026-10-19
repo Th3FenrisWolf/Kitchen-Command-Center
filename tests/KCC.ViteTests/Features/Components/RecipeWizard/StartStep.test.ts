@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import StartStep from '~/Components/RecipeWizard/StartStep.vue'
-import { buttonWith, classesOf, renderInWizard, unresolvedKeys } from '../../../support/recipeWizard'
+import { buttonWith, classesOf, enclosingTag, renderInWizard, unresolvedKeys } from '../../../support/recipeWizard'
 import { expectNoRetiredMarkup, tagWith } from '../../../support/ssr'
 
 const ENGLISH = { ImportUnavailable: 'Photo import is resting until {0}. You can still type the recipe in.' }
@@ -28,7 +28,7 @@ describe('StartStep', () => {
 
     expect(classesOf(slip)).toEqual(['kcc-slip', 'kcc-slip--wide', 'kcc-tear-2'])
     expect(slip).toContain('--r:0')
-    expect(html).toMatch(/<h2 class="kcc-h4">\s*«StartTitle»\s*<\/h2>/)
+    expect(html).toMatch(/<h2 class="kcc-heading">\s*«StartTitle»\s*<\/h2>/)
   })
 
   it('starts from photos with a large marker button', async () => {
@@ -50,6 +50,13 @@ describe('StartStep', () => {
     expect(typing).toContain('type="button"')
     expect(classesOf(typing)).toEqual(expect.arrayContaining(['kcc-btn', 'kcc-btn--ghost', 'kcc-btn--lg']))
     expect(buttonWith(html, 'data-testid="wizard-start-typing"')).toContain('«StartTyping»')
+  })
+
+  it('centres each start button in two rules, so its hint starts on the ruling', async () => {
+    const html = await render()
+
+    for (const testId of ['wizard-start-photos', 'wizard-start-typing'])
+      expect(classesOf(enclosingTag(html, `data-testid="${testId}"`))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
   })
 
   it('describes each choice with its hint', async () => {

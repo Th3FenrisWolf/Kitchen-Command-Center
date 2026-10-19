@@ -56,7 +56,7 @@ describe('AddVariantView', () => {
   // Nothing above the hero supplies a margin: without its own the sheet sits flush under the header's dashed
   // rule.
   it('sets the hero a rule below the header', async () => {
-    expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
+    expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-rule-1')
   })
 
   it('titles the hero from its own group and the wizard from the shared one', async () => {

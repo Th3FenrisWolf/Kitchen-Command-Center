@@ -26,9 +26,9 @@ describe('RecipesEmptyState', () => {
   it('says what happened at heading size and how to fix it in body copy', async () => {
     const html = await render()
 
-    expect(html).toMatch(/<p class="kcc-h4">\s*NoRecipesMatch\s*<\/p>/)
+    expect(html).toMatch(/<p class="kcc-title">\s*NoRecipesMatch\s*<\/p>/)
     expect(html).toMatch(/class="kcc-body[^"]*">\s*NoRecipesHint\s*<\/p>/)
-    expect(html).toContain('fa-duotone fa-bowl-food')
+    expect(html).toContain('fa-duotone fa-bowl-food kcc-icon-lg')
   })
 
   it('offers the way back as a hairline pill', async () => {

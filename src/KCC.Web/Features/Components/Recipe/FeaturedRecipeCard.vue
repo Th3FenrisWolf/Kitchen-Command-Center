@@ -46,7 +46,7 @@
           <template v-for="(note, i) in notes" :key="note"><span v-if="i" aria-hidden="true"> · </span>{{ note }}</template>
         </p>
 
-        <h3 class="kcc-h3">{{ card.name }}</h3>
+        <h3 class="kcc-display">{{ card.name }}</h3>
 
         <p v-if="rating || chips.length" class="kcc-kick flex flex-wrap items-center gap-x-4 text-ink">
           <span
@@ -68,7 +68,7 @@
 
         <p v-if="card.description" class="kcc-body">{{ card.description }}</p>
 
-        <div v-if="card.tags?.length" class="kcc-badges mt-6">
+        <div v-if="card.tags?.length" class="kcc-badges mt-rule-1">
           <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
         </div>
       </div>

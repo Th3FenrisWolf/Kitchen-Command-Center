@@ -38,7 +38,7 @@
 
     <h2 class="sr-only">{{ rs('RecipeBasics') }}</h2>
 
-    <form class="flex flex-col gap-6" @submit.prevent="emit('next')">
+    <form class="flex flex-col gap-y-rule-1" @submit.prevent="emit('next')">
       <Field :control-id="ids.recipeName" required>
         <template #label><ResourceString for="RecipeName" /></template>
         <InputField
@@ -51,7 +51,9 @@
           :aria-describedby="values.marks['recipe.name'] && markId(ids.recipeName)"
           @update:model-value="(name: string) => emit('edit', 'recipeName', name)"
         />
-        <ValueMark v-if="values.marks['recipe.name']" :id="markId(ids.recipeName)" :mark="values.marks['recipe.name']" />
+        <template #after>
+          <ValueMark v-if="values.marks['recipe.name']" :id="markId(ids.recipeName)" :mark="values.marks['recipe.name']" />
+        </template>
       </Field>
 
       <Field :control-id="ids.recipeDescription" required>
@@ -65,11 +67,13 @@
           :aria-describedby="values.marks['recipe.description'] && markId(ids.recipeDescription)"
           @update:model-value="(description) => emit('edit', 'recipeDescription', description)"
         />
-        <ValueMark
-          v-if="values.marks['recipe.description']"
-          :id="markId(ids.recipeDescription)"
-          :mark="values.marks['recipe.description']"
-        />
+        <template #after>
+          <ValueMark
+            v-if="values.marks['recipe.description']"
+            :id="markId(ids.recipeDescription)"
+            :mark="values.marks['recipe.description']"
+          />
+        </template>
       </Field>
 
       <StepNav :can-go-back :can-proceed :returns-to-review @back="emit('back')" @review="emit('review')" />

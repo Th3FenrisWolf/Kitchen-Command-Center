@@ -22,7 +22,7 @@
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+  <div class="flex flex-wrap items-center gap-x-7 gap-y-rule-0.5">
     <div class="flex max-w-full min-w-0 items-center gap-3">
       <ResourceString for="Sort" class="kcc-kick" />
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="t('Sort')" />

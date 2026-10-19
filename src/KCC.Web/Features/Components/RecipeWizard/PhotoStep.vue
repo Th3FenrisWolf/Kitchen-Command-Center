@@ -83,14 +83,16 @@
 
     <h2 ref="heading" class="sr-only">{{ rs('PhotosTitle') }}</h2>
 
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-y-rule-1">
       <template v-if="!availableAgainOn">
         <CameraView @capture="(still) => emit('add', [still], 'camera')" />
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <Button variant="ghost" @click="fileInput?.click()">
-            <i class="fa-duotone fa-images" aria-hidden="true"></i><ResourceString for="AddPhotos" />
-          </Button>
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+          <div class="flex min-h-rule-2 items-center">
+            <Button variant="ghost" @click="fileInput?.click()">
+              <i class="fa-duotone fa-images" aria-hidden="true"></i><ResourceString for="AddPhotos" />
+            </Button>
+          </div>
           <input
             ref="fileInput"
             type="file"
@@ -131,12 +133,12 @@
 
       <ReadAgainWarning v-if="confirmingRead" :can-confirm="canRead" @confirm="emit('confirmRead')" @cancel="keepEdits" />
 
-      <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
         <Button v-if="canGoBack" variant="ghost" @click="emit('back')">
           <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Back" />
         </Button>
 
-        <div class="ml-auto flex flex-wrap justify-end gap-x-3 gap-y-6">
+        <div class="ml-auto flex flex-wrap justify-end gap-x-3 gap-y-rule-1">
           <Button v-if="returnsToReview" variant="ghost" data-testid="back-to-review" @click="emit('review')">
             <i class="fa-duotone fa-clipboard-check" aria-hidden="true"></i><ResourceString for="BackToReview" />
           </Button>

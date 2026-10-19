@@ -16,10 +16,10 @@
 
 @if (hasHeading)
 {
-  <div class="kcc-secname"><h2 v-pre>@Model.Heading</h2></div>
+  <div class="kcc-secname"><h2 class="kcc-section" v-pre>@Model.Heading</h2></div>
 }
 
-<div class="grid gap-x-7 gap-y-9 @columns">
+<div class="grid gap-x-7 gap-y-rule-1.5 @columns">
   @foreach (var card in Model.Cards)
   {
     <Card card-color="@card.BackgroundColor" :tear="@card.Tear">
@@ -27,11 +27,11 @@
         @* Cards nest under their section's h2. A grid without a heading has none above it, so its cards take the h2. *@
         @if (hasHeading)
         {
-          <h3 class="kcc-h4" v-pre>@card.Heading</h3>
+          <h3 class="kcc-title" v-pre>@card.Heading</h3>
         }
         else
         {
-          <h2 class="kcc-h4" v-pre>@card.Heading</h2>
+          <h2 class="kcc-title" v-pre>@card.Heading</h2>
         }
         <p class="kcc-body text-ink-soft" v-pre>@card.SubHeading</p>
       </div>

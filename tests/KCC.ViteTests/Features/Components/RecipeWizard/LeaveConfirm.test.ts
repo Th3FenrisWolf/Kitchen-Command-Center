@@ -12,7 +12,7 @@ const template = readFileSync(
 describe('LeaveConfirm', () => {
   it('wraps Stay and Leave onto the next rule, never 12px under', () => {
     expect(classesOf(enclosingTag(template, 'data-testid="leave-stay"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6']),
+      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
     )
   })
 })

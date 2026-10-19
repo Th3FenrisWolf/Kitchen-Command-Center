@@ -61,7 +61,7 @@ describe('Stacker structure', () => {
   it('sets the heading and its line on the sheet', async () => {
     const html = await render([card('Prep', 'bg-paper')])
 
-    expect(html).toContain('<h3 class="kcc-h4">Prep</h3>')
+    expect(html).toContain('<h3 class="kcc-title">Prep</h3>')
     expect(html).toContain('<p class="kcc-body">Prep, in one line.</p>')
   })
 })

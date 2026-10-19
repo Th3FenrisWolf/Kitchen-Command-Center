@@ -45,7 +45,7 @@
 </script>
 
 <template>
-  <div class="mt-6 grid items-start gap-x-7 gap-y-9 md:grid-cols-content-aside">
+  <div class="mt-rule-1 grid items-start gap-x-7 gap-y-rule-1.5 md:grid-cols-content-aside">
     <KccSheet
       as="section"
       wash="lavender"
@@ -53,12 +53,12 @@
       :tear="1"
       class="md:col-start-1 md:row-start-1"
     >
-      <h1 class="kcc-h3">{{ displayName }}</h1>
+      <h1 class="kcc-display">{{ displayName }}</h1>
       <p class="kcc-kick">
         <ResourceString for="MemberSince" /> <span class="kcc-num">{{ memberSince }}</span>
       </p>
 
-      <div class="kcc-stats mt-6">
+      <div class="kcc-stats mt-rule-1">
         <div>
           <ResourceString for="RecipesLabel" as="p" class="kcc-lbl" />
           <p class="kcc-v">{{ recipesStartedCount }}</p>
@@ -69,7 +69,7 @@
         </div>
       </div>
 
-      <div class="mt-6 flex flex-wrap items-center gap-3">
+      <div class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0.5">
         <Button as="a" :href="settingsUrl" variant="ghost">
           <ResourceString for="AccountSettings" />
         </Button>
@@ -82,13 +82,13 @@
     </KccSheet>
 
     <section class="md:col-start-2 md:row-span-2 md:row-start-1">
-      <div class="kcc-secname"><ResourceString for="MyRecipesAndVariants" as="h2" /></div>
+      <div class="kcc-secname"><ResourceString for="MyRecipesAndVariants" as="h2" class="kcc-section" /></div>
 
       <ResourceString v-if="!recipeGroups.length" for="NoCreationsYet" as="p" class="kcc-body" />
 
       <!-- The profile sheet beside the list takes the first tear, so the list starts at the second and no two
            neighbours are torn alike. -->
-      <ul v-else class="grid gap-9">
+      <ul v-else class="grid gap-y-rule-1.5">
         <KccSheet
           v-for="(group, index) in recipeGroups"
           :key="group.key"
@@ -97,9 +97,9 @@
           pad="16px"
           wide
         >
-          <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-0">
             <i v-if="group.recipeIcon" :class="group.recipeIcon" aria-hidden="true"></i>
-            <h3 class="kcc-h4">
+            <h3 class="kcc-title">
               <component
                 :is="group.recipeUrl ? 'a' : 'span'"
                 :href="group.recipeUrl || undefined"
@@ -112,9 +112,9 @@
             <span v-if="group.isPending" class="kcc-badge"><ResourceString for="PendingReview" /></span>
           </div>
 
-          <ul v-if="group.variants.length" class="mt-6 grid gap-2">
+          <ul v-if="group.variants.length" class="mt-rule-1 grid">
             <li v-for="variant in group.variants" :key="variant.key" class="grid grid-cols-[1fr_auto] items-center gap-3">
-              <span class="flex flex-wrap items-center gap-2">
+              <span class="flex flex-wrap items-center gap-x-2 gap-y-0">
                 <i v-if="variant.icon" :class="variant.icon" aria-hidden="true"></i>
                 <component
                   :is="variant.url ? 'a' : 'span'"
@@ -132,7 +132,7 @@
     </section>
 
     <!-- No Shared.ComingSoon/Favorites/RecentActivity keys exist, so shared resolves the whole section against this page's own Account prefix. -->
-    <div class="grid gap-y-9 md:col-start-1 md:row-start-2">
+    <div class="grid gap-y-rule-1.5 md:col-start-1 md:row-start-2">
       <ComingSoonSection text-key="Favorites" :shared="false" :tear="3" :flip="favoritesFlips" />
       <ComingSoonSection text-key="RecentActivity" :shared="false" :tear="5" :flip="!favoritesFlips" />
     </div>

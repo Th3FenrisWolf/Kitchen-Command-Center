@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import postcss from 'postcss'
 import { describe, expect, it } from 'vitest'
 import KitchenCard from '~/Components/Header/KitchenCard.vue'
 import MenuCard from '~/Components/Header/MenuCard.vue'
@@ -10,6 +13,31 @@ import { LABELS, member, visitor } from '../../../support/nav'
 import { renderSsr, tagWith } from '../../../support/ssr'
 
 const t = navLabels(LABELS)
+
+const sourceOf = (file: string) =>
+  readFileSync(
+    fileURLToPath(new URL(`../../../../../src/KCC.Web/Features/Components/Header/${file}`, import.meta.url)),
+    'utf8',
+  )
+
+const styleOf = (file: string) => {
+  const source = sourceOf(file)
+  const start = source.indexOf('<style>')
+  if (start === -1) throw new Error(`${file} has no <style> block`)
+  return source.slice(start + '<style>'.length, source.lastIndexOf('</style>'))
+}
+
+const declarationsOf = (file: string, selector: string) => {
+  const found: Record<string, string> = {}
+  postcss.parse(styleOf(file)).walkRules((rule) => {
+    if (rule.selectors.includes(selector)) {
+      rule.walkDecls((decl) => {
+        found[decl.prop] = decl.value.replace(/\s+/g, ' ')
+      })
+    }
+  })
+  return found
+}
 
 const hit = (name: string, slug: string): RecipeSearchHit => ({
   name,
@@ -142,6 +170,10 @@ describe('RecipesCard', () => {
     expect(await render(nav)).toContain('<a class="pad-line" href="http://">')
   })
 
+  it('sizes each column to its longest row, so no label is cut short', () => {
+    expect(declarationsOf('RecipesCard.vue', '.pad-columns')['grid-auto-columns']).toBe('auto')
+  })
+
   it("sets every number in a row's label in Sono", async () => {
     const nav = visitor()
     nav.recipes.quickPicks.unshift({
@@ -155,12 +187,27 @@ describe('RecipesCard', () => {
   })
 })
 
+describe('PadLines', () => {
+  it('sets a line at the body size, its icon at the size of its text, and its count in Sono caps', () => {
+    expect(declarationsOf('PadLines.vue', '.pad-line')['font-size']).toBe('var(--text-body)')
+    expect(declarationsOf('PadLines.vue', '.pad-line > i')['font-size']).toBeUndefined()
+    expect(declarationsOf('PadLines.vue', '.pad-line > .kcc-num')['font-size']).toBe('var(--text-caps)')
+  })
+})
+
+describe('SearchForm', () => {
+  it('sets the key hint in Sono caps on the small pill', () => {
+    expect(declarationsOf('SearchForm.vue', '.pad-key').font).toBe('400 var(--text-caps)/var(--pill-sm) var(--font-sono)')
+  })
+})
+
 describe('KitchenCard', () => {
   const render = (nav = member()) => renderSsr(KitchenCard, { member: nav.member, urls: nav.urls, t })
 
   it('names the member, links to their kitchen, and counts it', async () => {
     const html = await render()
 
+    expect(html).toMatch(/<p class="kcc-title" data-row[^>]*><a class="kcc-link" href="\/account\/"/)
     expect(html).toContain('<a class="kcc-link" href="/account/" aria-current="page">Grace</a>')
     expect(html).toContain('Member since <span class="kcc-num">October 2026</span>')
     expect(html).toContain('<p class="kcc-lbl">Recipes</p><p class="kcc-v">3</p>')
@@ -198,8 +245,9 @@ describe('MenuCard', () => {
     expect(html).toContain('href="/recipes/?sort=rated"')
   })
 
-  it('keeps the diet chips on the rule, however many rows they wrap to', async () => {
-    expect(await render()).toContain('<div class="kcc-badges pad-chips"')
+  it('keeps the diet chips on the rule with the kit badges alone, however many rows they wrap to', async () => {
+    expect(await render()).toContain('<div class="kcc-badges" data-row')
+    expect(sourceOf('MenuCard.vue')).not.toContain('pad-chips')
   })
 
   it('offers a visitor Sign in and Ask for an account', async () => {
@@ -270,7 +318,7 @@ describe('SearchCard', () => {
     })
 
     expect(html).toContain('<div aria-busy="true">')
-    expect(html).toContain('<span class="kcc-h4 pad-result-name">Big-Pot Chili</span>')
+    expect(html).toContain('<span class="kcc-title pad-result-name">Big-Pot Chili</span>')
   })
 
   it('links to no more results when all of them fit', async () => {

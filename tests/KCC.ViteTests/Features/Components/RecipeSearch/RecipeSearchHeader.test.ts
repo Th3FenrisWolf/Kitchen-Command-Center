@@ -10,7 +10,7 @@ describe('RecipeSearchHeader sheet', () => {
   it('is the green-washed Library sheet', async () => {
     const html = await render()
 
-    expect(html).toContain('<section class="kcc-slip kcc-slip--wide kcc-tear-3 my-6">')
+    expect(html).toContain('<section class="kcc-slip kcc-slip--wide kcc-tear-3 my-rule-1">')
     // One length: the sheet derives the pencil rule's offset from --pad, and a shorthand makes that calc()
     // invalid, so the ruling would fall back to the top edge.
     expect(html).toContain('style="--pad:24px;"')
@@ -20,6 +20,7 @@ describe('RecipeSearchHeader sheet', () => {
     expect(html).toContain('--h:80%')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-book-open" aria-hidden="true"></i>')
     expect(html).toContain('Library')
+    expect(html).toMatch(/<h1 class="kcc-display">\s*SearchRecipes\s*<\/h1>/)
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 
@@ -39,6 +40,10 @@ describe('RecipeSearchHeader sheet', () => {
     const input = tagWith(html, 'data-testid="recipe-search-input"')
     expect(input).toContain('placeholder="SearchPlaceholder"')
     expect(tagWith(await render('gnocchi'), 'recipe-search-input')).toContain('value="gnocchi"')
+  })
+
+  it('wraps Search under the field onto a half rule, never 12px under', async () => {
+    expect(await render()).toContain('<form class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0.5">')
   })
 
   it('submits through a pill button that keeps the submit hook', async () => {

@@ -4,14 +4,14 @@
 
 @* Razor cannot use the KccSheet.vue primitive (not a *.Component.vue, so not globally registered); it
    hand-writes the same Structure from the global kit classes in Kit.css. *@
-<div class="kcc-slip kcc-tear-4 mx-auto mt-12 w-full max-w-2xl">
+<div class="kcc-slip kcc-tear-4 mx-auto mt-rule-2 w-full max-w-2xl">
   <div class="kcc-torn">
     <div class="kcc-sheet" style="--pad: 48px">
       <span class="kcc-wash" style="--c: var(--color-red); --x: 85%; --y: 90%; --w: 55%; --h: 50%" aria-hidden="true"></span>
       <p class="kcc-kick kcc-num">@Model.StatusCode</p>
       @* App.vue compiles this markup as a Vue template; v-pre keeps editors' {{ }} and v-* text from running. *@
-      <h1 class="kcc-h3 mt-6" v-pre>@Model.Heading</h1>
-      <div class="kcc-body mt-6" v-pre>@Html.Raw(Model.Body)</div>
+      <h1 class="kcc-display mt-rule-1" v-pre>@Model.Heading</h1>
+      <div class="kcc-body mt-rule-1" v-pre>@Html.Raw(Model.Body)</div>
     </div>
   </div>
   <span class="kcc-label"><i class="fa-duotone fa-triangle-exclamation" aria-hidden="true"></i>Error</span>

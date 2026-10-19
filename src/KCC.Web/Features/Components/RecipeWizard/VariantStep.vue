@@ -72,7 +72,7 @@
 
     <h2 class="sr-only">{{ mode === 'recipe' ? rs('FirstVariant') : rs('VariantInfo') }}</h2>
 
-    <form class="flex flex-col gap-6" @submit.prevent="emit('next')">
+    <form class="flex flex-col gap-y-rule-1" @submit.prevent="emit('next')">
       <ResourceString v-if="mode === 'recipe'" for="FirstVariantHint" as="p" class="kcc-body text-ink-soft" />
 
       <Field :control-id="ids.variantName" required>
@@ -87,7 +87,13 @@
           :aria-describedby="values.marks['variant.name'] && markId(ids.variantName)"
           @update:model-value="(name: string) => emit('edit', 'variantName', name)"
         />
-        <ValueMark v-if="values.marks['variant.name']" :id="markId(ids.variantName)" :mark="values.marks['variant.name']" />
+        <template #after>
+          <ValueMark
+            v-if="values.marks['variant.name']"
+            :id="markId(ids.variantName)"
+            :mark="values.marks['variant.name']"
+          />
+        </template>
       </Field>
 
       <Field :control-id="ids.variantDescription">
@@ -100,14 +106,16 @@
           :aria-describedby="values.marks['variant.description'] && markId(ids.variantDescription)"
           @update:model-value="(description) => emit('edit', 'variantDescription', description)"
         />
-        <ValueMark
-          v-if="values.marks['variant.description']"
-          :id="markId(ids.variantDescription)"
-          :mark="values.marks['variant.description']"
-        />
+        <template #after>
+          <ValueMark
+            v-if="values.marks['variant.description']"
+            :id="markId(ids.variantDescription)"
+            :mark="values.marks['variant.description']"
+          />
+        </template>
       </Field>
 
-      <div class="grid gap-x-7 gap-y-6 md:grid-cols-3">
+      <div class="grid gap-x-7 gap-y-rule-1 md:grid-cols-3">
         <Field :control-id="ids.prepTime">
           <template #label><ResourceString for="PrepTime" /></template>
           <NumberStepper
@@ -119,11 +127,13 @@
             :aria-describedby="values.marks['variant.prepTime'] && markId(ids.prepTime)"
             @update:model-value="(minutes) => emit('edit', 'prepTime', minutes)"
           />
-          <ValueMark
-            v-if="values.marks['variant.prepTime']"
-            :id="markId(ids.prepTime)"
-            :mark="values.marks['variant.prepTime']"
-          />
+          <template #after>
+            <ValueMark
+              v-if="values.marks['variant.prepTime']"
+              :id="markId(ids.prepTime)"
+              :mark="values.marks['variant.prepTime']"
+            />
+          </template>
         </Field>
 
         <Field :control-id="ids.cookTime">
@@ -137,11 +147,13 @@
             :aria-describedby="values.marks['variant.cookTime'] && markId(ids.cookTime)"
             @update:model-value="(minutes) => emit('edit', 'cookTime', minutes)"
           />
-          <ValueMark
-            v-if="values.marks['variant.cookTime']"
-            :id="markId(ids.cookTime)"
-            :mark="values.marks['variant.cookTime']"
-          />
+          <template #after>
+            <ValueMark
+              v-if="values.marks['variant.cookTime']"
+              :id="markId(ids.cookTime)"
+              :mark="values.marks['variant.cookTime']"
+            />
+          </template>
         </Field>
 
         <Field :control-id="ids.servings">
@@ -154,11 +166,13 @@
             :aria-describedby="values.marks['variant.servings'] && markId(ids.servings)"
             @update:model-value="(servings) => emit('edit', 'servings', servings)"
           />
-          <ValueMark
-            v-if="values.marks['variant.servings']"
-            :id="markId(ids.servings)"
-            :mark="values.marks['variant.servings']"
-          />
+          <template #after>
+            <ValueMark
+              v-if="values.marks['variant.servings']"
+              :id="markId(ids.servings)"
+              :mark="values.marks['variant.servings']"
+            />
+          </template>
         </Field>
       </div>
 

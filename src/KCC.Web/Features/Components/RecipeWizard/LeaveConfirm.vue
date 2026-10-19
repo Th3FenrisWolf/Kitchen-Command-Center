@@ -80,7 +80,7 @@
         <KccSheet crisp>
           <ResourceString :id="warningId" for="LeaveWarning" as="p" class="kcc-well kcc-well--warning kcc-kick" />
 
-          <div class="mt-6 flex flex-wrap gap-x-3 gap-y-6">
+          <div class="mt-rule-1 flex flex-wrap gap-x-3 gap-y-rule-1">
             <Button size="lg" data-testid="leave-stay" @click="emit('stay')">
               <ResourceString for="LeaveStay" />
             </Button>

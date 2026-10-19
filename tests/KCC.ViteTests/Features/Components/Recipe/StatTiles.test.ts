@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import postcss from 'postcss'
 import { describe, expect, it } from 'vitest'
 import StatTiles from '~/Components/Recipe/StatTiles.vue'
 import type { StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
@@ -63,6 +66,24 @@ describe('StatTiles', () => {
   it('renders an em dash for a null value', async () => {
     const html = await renderSsr(StatTiles, { tiles: [{ label: 'Contributors', value: null }] })
     expect(html).toContain('—')
+  })
+
+  it('sits the value glyph on the line with the number, unshifted', () => {
+    const controls = readFileSync(
+      fileURLToPath(new URL('../../../../../src/KCC.Web/Features/Styles/Torn/Controls.css', import.meta.url)),
+      'utf8',
+    )
+    const glyph: Record<string, string> = {}
+    postcss.parse(controls).walkRules((rule) => {
+      if (rule.selectors.includes('.kcc-stats .kcc-v i')) {
+        rule.walkDecls((decl) => {
+          glyph[decl.prop] = decl.value
+        })
+      }
+    })
+
+    expect(glyph.color).toBe('var(--color-ink-soft)')
+    expect(glyph.transform).toBeUndefined()
   })
 
   it('carries no Softbound hook', async () => {

@@ -44,7 +44,7 @@
 
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center gap-x-3">
-            <h3 class="kcc-h4">{{ card.name }}</h3>
+            <h3 class="kcc-title">{{ card.name }}</h3>
             <div v-if="card.tags.length" class="kcc-badges">
               <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
             </div>

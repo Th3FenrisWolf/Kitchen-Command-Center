@@ -38,15 +38,15 @@
       <slot name="eyebrow"></slot>
     </p>
 
-    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">
-      <h1 class="kcc-h3">
+    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-rule-0.5">
+      <h1 class="kcc-display">
         <slot name="title"></slot>
       </h1>
 
       <slot name="action-button"></slot>
     </div>
 
-    <p v-if="description" class="kcc-body mt-6">
+    <p v-if="description" class="kcc-body mt-rule-1">
       <slot name="description"></slot>
     </p>
   </KccSheet>

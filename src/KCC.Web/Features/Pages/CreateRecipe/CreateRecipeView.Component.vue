@@ -15,7 +15,7 @@
 </script>
 
 <template>
-  <SmallHero dark class="mt-6">
+  <SmallHero dark class="mt-rule-1">
     <template #title><ResourceString for="CreateRecipe" /></template>
   </SmallHero>
 

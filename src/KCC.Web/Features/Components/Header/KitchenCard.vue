@@ -22,7 +22,7 @@
   <div class="pad-kitchen">
     <div>
       <p class="kcc-kick" data-row style="--i: 0">{{ t('SignedInAs') }}</p>
-      <p class="kcc-h4" data-row style="--i: 1">
+      <p class="kcc-title" data-row style="--i: 1">
         <a
           v-if="urls.account"
           class="kcc-link"
@@ -35,7 +35,7 @@
       <p class="kcc-kick" data-row style="--i: 2">
         {{ t('MemberSince') }} <span class="kcc-num">{{ member.memberSince }}</span>
       </p>
-      <div v-if="member.kitchen" class="kcc-stats mt-6" data-row style="--i: 3">
+      <div v-if="member.kitchen" class="kcc-stats mt-rule-1" data-row style="--i: 3">
         <div>
           <p class="kcc-lbl">{{ t('Recipes') }}</p>
           <p class="kcc-v">{{ member.kitchen.recipes }}</p>

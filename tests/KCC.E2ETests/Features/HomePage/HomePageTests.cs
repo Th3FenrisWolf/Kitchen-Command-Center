@@ -27,8 +27,8 @@ public class HomePageTests : BasePageTests
         var response = await Page.APIRequest.GetAsync("/");
         var html = await response.TextAsync();
 
-        _ = await Assert.That(html.Contains("<h2 class=\"kcc-h4\">Beef</h2>", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(html.Contains("<h3 class=\"kcc-h4\">Vodka</h3>", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(html.Contains("<h2 class=\"kcc-title\">Beef</h2>", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(html.Contains("<h3 class=\"kcc-title\">Vodka</h3>", StringComparison.Ordinal)).IsTrue();
     }
 
     [Test]

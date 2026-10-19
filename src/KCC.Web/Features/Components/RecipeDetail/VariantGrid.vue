@@ -16,7 +16,7 @@
 </script>
 
 <template>
-  <div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-9">
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-rule-1.5">
     <RecipeCardView
       v-for="(variant, index) in variants"
       :key="variant.slug"
@@ -30,9 +30,9 @@
       :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${listTearFor(variants.length)}`]"
     >
       <a :href="addVariantUrl" class="kcc-torn block">
-        <div class="kcc-sheet grid content-center justify-items-center gap-6 text-center" style="--pad: 48px">
-          <i class="fa-duotone fa-plus text-4xl text-ink-soft" aria-hidden="true"></i>
-          <ResourceString for="AddVariant" as="span" class="kcc-h4" />
+        <div class="kcc-sheet grid content-center justify-items-center gap-y-rule-1 text-center" style="--pad: 48px">
+          <i class="fa-duotone fa-plus kcc-icon-md text-ink-soft" aria-hidden="true"></i>
+          <ResourceString for="AddVariant" as="span" class="kcc-title" />
         </div>
       </a>
 

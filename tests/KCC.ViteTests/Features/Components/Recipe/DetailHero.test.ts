@@ -82,7 +82,7 @@ describe('DetailHero as a slip', () => {
 
   it('keeps the page heading, at display size', async () => {
     const html = await render()
-    const heading = openTag(html, 'kcc-h3')
+    const heading = openTag(html, 'kcc-display')
     expect(heading.startsWith('<h1')).toBe(true)
     expect(html).toContain(`>${TITLE}</h1>`)
   })
@@ -90,7 +90,7 @@ describe('DetailHero as a slip', () => {
   it('sets the title beside the description in two columns from 640px', async () => {
     const html = await render()
     expect(openTag(html, 'sm:grid-cols-2')).toContain('grid')
-    expect(html.indexOf('kcc-h3')).toBeLessThan(html.indexOf(DESCRIPTION))
+    expect(html.indexOf('kcc-display')).toBeLessThan(html.indexOf(DESCRIPTION))
     expect(paragraph(html, DESCRIPTION)).toContain('kcc-body')
   })
 

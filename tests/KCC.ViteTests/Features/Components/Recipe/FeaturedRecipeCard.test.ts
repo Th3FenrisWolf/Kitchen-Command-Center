@@ -124,8 +124,8 @@ describe('FeaturedRecipeCard from a search hit', () => {
 
   it('sets the title at display size', async () => {
     const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
-    expect(inner(html, 'kcc-h3')).toContain('Sourdough Focaccia')
-    expect(openTag(html, 'kcc-h3').startsWith('<h3')).toBe(true)
+    expect(inner(html, 'kcc-display')).toContain('Sourdough Focaccia')
+    expect(openTag(html, 'kcc-display').startsWith('<h3')).toBe(true)
   })
 
   it('carries the rating hooks on a star line and sets every number in Sono', async () => {

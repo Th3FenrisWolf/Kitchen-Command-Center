@@ -2,6 +2,7 @@ import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import Field from '~/Components/Forms/Field.vue'
 import { renderSsr } from '../../../support/ssr'
+import { classesOf, enclosingTag } from '../../../support/recipeWizard'
 
 const baseProps = { label: 'Email', controlId: 'email' }
 
@@ -75,6 +76,30 @@ describe('Field', () => {
     expect(html).toContain('<p id="email-hint" class="kcc-kick text-ink">')
     expect(html).toContain('<span data-resource-key="Account.EmailComingSoon">Coming soon</span>')
     expect(html).not.toContain('kcc-well')
+  })
+
+  it('stacks label, control and message with no gap, the control alone centred in a box two rules tall', async () => {
+    const html = await renderSsr(Field, { ...baseProps, hint: 'We will not share this' }, { default: control })
+
+    expect(classesOf(html.match(/^<div[^>]*>/)?.[0] ?? '')).toEqual(['flex', 'flex-col'])
+    expect(classesOf(enclosingTag(html, 'id="email"'))).toEqual(['flex', 'min-h-rule-2', 'flex-col', 'justify-center'])
+  })
+
+  it('sets what follows the control on the next rule, outside the control box with no gap', async () => {
+    const html = await renderSsr(
+      Field,
+      { ...baseProps, hint: 'We will not share this' },
+      { default: control, after: () => h('span', { 'data-testid': 'value-mark' }, 'Read from the photo') },
+    )
+    const root = html.match(/^<div[^>]*>/)?.[0] ?? ''
+    const box = enclosingTag(html, 'id="email"')
+    const boxEnd = html.indexOf('</div>', html.indexOf(box))
+
+    expect(enclosingTag(html, 'data-testid="value-mark"')).toBe(root)
+    expect(enclosingTag(html, 'id="email-hint"')).toBe(root)
+    expect(html.indexOf('data-testid="value-mark"')).toBeGreaterThan(boxEnd)
+    expect(html.indexOf('id="email-hint"')).toBeGreaterThan(html.indexOf('data-testid="value-mark"'))
+    expect([...classesOf(root), ...classesOf(box)].filter((name) => /^(gap|space)-/.test(name))).toEqual([])
   })
 
   it('prefers the error over the hint when both are set', async () => {

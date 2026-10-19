@@ -109,7 +109,14 @@ describe('ReviewStep after a read', () => {
       expect(classes).toContain('items-center')
       expect(classes).not.toContain('items-baseline')
     }
-    expect(classesOf(tagWith(html, 'class="kcc-v'))).toEqual(['kcc-v', 'h-6'])
+    expect(classesOf(tagWith(html, 'class="kcc-v'))).toEqual(['kcc-v', 'h-rule-1'])
+  })
+
+  it('sets the recipe and variant names as titles under their labels', async () => {
+    const html = await render('recipe', READ)
+
+    expect(html).toContain('<h3 class="kcc-title mt-rule-1">Brown Butter Gnocchi</h3>')
+    expect(html).toContain('<h3 class="kcc-title mt-rule-1">Classic</h3>')
   })
 
   it('asks for each required value that a read left empty, and holds Submit', async () => {
@@ -200,7 +207,7 @@ describe('ReviewStep step links', () => {
     const html = await render('recipe', READ, [], { imported: true, canRead: true })
 
     expect(classesOf(enclosingTag(html, 'data-testid="change-photos"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6']),
+      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
     )
   })
 
@@ -208,7 +215,7 @@ describe('ReviewStep step links', () => {
     const html = await render('recipe', READ, [], { imported: true, canRead: true, confirmingRead: true })
 
     expect(classesOf(enclosingTag(html, 'data-testid="read-again-confirm"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6']),
+      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
     )
   })
 
@@ -217,7 +224,7 @@ describe('ReviewStep step links', () => {
 
     const column = classesOf(enclosingTag(html, 'data-testid="read-again-warning"'))
 
-    expect(column).toEqual(expect.arrayContaining(['flex-col', 'gap-6']))
+    expect(column).toEqual(expect.arrayContaining(['flex-col', 'gap-y-rule-1']))
     expect(column).not.toContain('gap-3')
   })
 
@@ -225,7 +232,7 @@ describe('ReviewStep step links', () => {
     const html = await render('recipe', READ)
 
     expect(classesOf(enclosingTag(html, 'data-testid="wizard-submit"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6']),
+      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
     )
   })
 
@@ -381,6 +388,7 @@ describe('ReviewStep after a match', () => {
     const change = changeMatchTag(html)
 
     expect(line).toMatch(/^<p /)
+    expect(classesOf(line)).toEqual(['kcc-heading'])
     expect(id).toBeTruthy()
     expect(change).toContain('type="button"')
     expect(classesOf(change)).toEqual(expect.arrayContaining(['kcc-btn', 'kcc-btn--text']))

@@ -53,9 +53,9 @@
 
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>
 
-    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">
+    <div class="flex flex-wrap items-start justify-between gap-x-7">
       <p class="kcc-kick">tick what you have</p>
-      <div v-if="hasScaler" class="flex items-center gap-3">
+      <div v-if="hasScaler" class="flex min-h-rule-2 items-center gap-3">
         <ResourceString for="Makes" as="span" class="kcc-lbl" />
         <NumberStepper
           v-model="current"
@@ -69,7 +69,7 @@
 
     <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
          stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
-    <ul class="kcc-check mt-6">
+    <ul class="kcc-check mt-rule-1">
       <li v-for="row in rows" :key="row.id" class="cursor-pointer" :class="{ 'kcc-done': checked[row.index] }">
         <input :id="row.id" type="checkbox" class="sr-only" :checked="checked[row.index]" @change="toggle(row.index)" />
         <label :for="row.id" class="kcc-box" :class="{ 'kcc-box--on': checked[row.index] }"></label>

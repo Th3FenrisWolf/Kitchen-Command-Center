@@ -65,8 +65,8 @@ describe('SmallHero copy', () => {
     const html = printed(await render())
 
     expect(html).toContain('<p class="kcc-kick">Kitchen notes</p>')
-    expect(html).toContain('<h1 class="kcc-h3">Account settings</h1>')
-    expect(html).toContain('<p class="kcc-body mt-6">Everything the kitchen knows about you.</p>')
+    expect(html).toContain('<h1 class="kcc-display">Account settings</h1>')
+    expect(html).toContain('<p class="kcc-body mt-rule-1">Everything the kitchen knows about you.</p>')
   })
 
   it('sets the action beside the title on one wrapping row', async () => {
@@ -76,7 +76,7 @@ describe('SmallHero copy', () => {
     expect(row?.[0], 'the title and its action are not on a row').toContain('items-center')
     expect(row?.[0]).toContain('justify-between')
     expect(row?.[0]).toContain('gap-x-7')
-    expect(row?.[1]).toContain('<h1 class="kcc-h3">Account settings</h1>')
+    expect(row?.[1]).toContain('<h1 class="kcc-display">Account settings</h1>')
     expect(row?.[1]).toContain('Back to profile')
   })
 

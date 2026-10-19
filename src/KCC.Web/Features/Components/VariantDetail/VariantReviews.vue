@@ -116,18 +116,17 @@
 <template>
   <section>
     <div class="kcc-secname">
-      <ResourceString for="RatingsReviews" as="h2" />
+      <ResourceString for="RatingsReviews" as="h2" class="kcc-section" />
       <p class="kcc-kick">
         <span class="kcc-num">{{ count }}</span> <ResourceString for="Reviews" />
       </p>
     </div>
 
-    <div class="space-y-9">
+    <div class="space-y-rule-1.5">
       <KccSheet v-if="count > 0" :tear="5" wide>
-        <div class="flex flex-wrap items-start gap-x-7 gap-y-6">
+        <div class="flex flex-wrap items-start gap-x-7 gap-y-rule-1">
           <RatingSummary :value="average" />
 
-          <!-- Each fill is 6px centred in a 24px band, so the run of bars keeps to the rule. -->
           <div class="min-w-60 flex-1">
             <div v-for="row in distRows" :key="row.star">
               <p class="kcc-kick" role="img" :aria-label="`${row.star} of 5 stars: ${row.count}`">
@@ -135,7 +134,7 @@
                 ><i class="fa-solid fa-star" aria-hidden="true"></i>
                 <span class="kcc-num">{{ row.count }}</span>
               </p>
-              <div class="flex h-6 items-center">
+              <div class="flex h-rule-1 items-center">
                 <span class="block h-1.5 bg-peach" :style="{ width: row.pct + '%' }"></span>
               </div>
             </div>
@@ -143,7 +142,7 @@
         </div>
       </KccSheet>
 
-      <ul v-if="reviews.length" data-testid="reviews-list" class="grid gap-9">
+      <ul v-if="reviews.length" data-testid="reviews-list" class="grid gap-y-rule-1.5">
         <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="listTearFor(i)" wide flip pad="16px">
           <StarRating :model-value="review.rating" readonly />
           <p class="kcc-kick">
@@ -161,7 +160,7 @@
       <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" wide :flip="formFlips" crisp>
         <template #label><ResourceString for="YourReview" /></template>
 
-        <div class="space-y-6">
+        <div class="space-y-rule-1">
           <StarRating v-model="myRating" />
 
           <!-- The e2e suite fills this textarea by hook, so the hook stays on the control, not on the field. -->
@@ -171,7 +170,7 @@
 
           <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
 
-          <div class="flex flex-wrap items-center justify-end gap-x-7 gap-y-3">
+          <div class="flex flex-wrap items-center justify-end gap-x-7 gap-y-rule-0.5">
             <Button v-if="myRating > 0" variant="text" data-testid="delete-review" @click="remove">
               <ResourceString for="DeleteReview" />
             </Button>

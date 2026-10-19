@@ -182,7 +182,20 @@ describe('PhotoStep', () => {
     const html = await render({ photos: ONE, availableAgainOn: '2026-11-01' })
     const rows = [enclosingTag(html, 'fa-arrow-left', 1), enclosingTag(html, 'data-testid="read-photos"')]
 
-    rows.forEach((row) => expect(classesOf(row)).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6'])))
+    rows.forEach((row) => expect(classesOf(row)).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1'])))
+  })
+
+  it('wraps the photo count under Add photos onto the next rule', async () => {
+    const row = classesOf(enclosingTag(await render({ photos: ONE }), 'fa-images', 2))
+
+    expect(row).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']))
+    expect(row).not.toContain('gap-3')
+  })
+
+  it('centres Add photos in two rules, so the count and the note under it land on the rule', async () => {
+    const html = await render({ photos: ONE })
+
+    expect(classesOf(enclosingTag(html, 'fa-images', 1))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
   })
 
   it('stops capturing while the import rests, and keeps the photos with their remove buttons', async () => {

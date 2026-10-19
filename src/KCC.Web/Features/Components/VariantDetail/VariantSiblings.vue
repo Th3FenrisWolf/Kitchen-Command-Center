@@ -18,9 +18,9 @@
 
 <template>
   <section v-if="variants.length">
-    <div class="kcc-secname"><ResourceString for="OtherVariants" as="h2" /></div>
+    <div class="kcc-secname"><ResourceString for="OtherVariants" as="h2" class="kcc-section" /></div>
 
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-9">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-rule-1.5">
       <RecipeCardView
         v-for="(entry, index) in cards"
         :key="entry.key"

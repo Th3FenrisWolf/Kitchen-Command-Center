@@ -28,35 +28,39 @@
 
 <template>
   <KccSheet crisp wide :tear :pad="STEP_PAD">
-    <ResourceString for="StartTitle" as="h2" class="kcc-h4" />
+    <ResourceString for="StartTitle" as="h2" class="kcc-heading" />
 
-    <div class="mt-6 grid gap-x-7 gap-y-6 sm:grid-cols-2">
-      <div class="flex flex-col items-start gap-6">
-        <Button
-          size="lg"
-          data-testid="wizard-start-photos"
-          :aria-describedby="photosDescribedBy"
-          :disabled="availableAgainOn !== null"
-          @click="emit('photos')"
-        >
-          <i class="fa-duotone fa-camera" aria-hidden="true"></i><ResourceString for="StartFromPhotos" />
-        </Button>
+    <div class="mt-rule-1 grid gap-x-7 gap-y-rule-1 sm:grid-cols-2">
+      <div class="flex flex-col items-start gap-y-rule-1">
+        <div class="flex min-h-rule-2 items-center">
+          <Button
+            size="lg"
+            data-testid="wizard-start-photos"
+            :aria-describedby="photosDescribedBy"
+            :disabled="availableAgainOn !== null"
+            @click="emit('photos')"
+          >
+            <i class="fa-duotone fa-camera" aria-hidden="true"></i><ResourceString for="StartFromPhotos" />
+          </Button>
+        </div>
         <ResourceString :id="hints.photos" for="StartFromPhotosHint" as="p" class="kcc-body text-ink-soft" />
         <p v-if="availableAgainOn" :id="noticeId" class="kcc-well kcc-kick" data-testid="import-unavailable">
           {{ fill(rs('ImportUnavailable'), longDay(availableAgainOn)) }}
         </p>
       </div>
 
-      <div class="flex flex-col items-start gap-6">
-        <Button
-          variant="ghost"
-          size="lg"
-          data-testid="wizard-start-typing"
-          :aria-describedby="hints.typing"
-          @click="emit('typing')"
-        >
-          <i class="fa-duotone fa-keyboard" aria-hidden="true"></i><ResourceString for="StartTyping" />
-        </Button>
+      <div class="flex flex-col items-start gap-y-rule-1">
+        <div class="flex min-h-rule-2 items-center">
+          <Button
+            variant="ghost"
+            size="lg"
+            data-testid="wizard-start-typing"
+            :aria-describedby="hints.typing"
+            @click="emit('typing')"
+          >
+            <i class="fa-duotone fa-keyboard" aria-hidden="true"></i><ResourceString for="StartTyping" />
+          </Button>
+        </div>
         <ResourceString :id="hints.typing" for="StartTypingHint" as="p" class="kcc-body text-ink-soft" />
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import InstructionsStep from '~/Components/RecipeWizard/InstructionsStep.vue'
 import { emptyValues } from '~/Components/RecipeWizard/wizardValues'
-import { describedBy, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
+import { classesOf, describedBy, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
 import { tagWith } from '../../../support/ssr'
 
 const render = () =>
@@ -28,6 +28,14 @@ describe('InstructionsStep', () => {
     expect(markKinds(first)).toEqual([])
     expect(markKinds(second)).toEqual(['unclear'])
     expect(second).toContain('Time cut off')
+  })
+
+  it("sets a step's mark straight under its text box, with no row gap to push it off the rule", async () => {
+    const [, second = ''] = rows(await render())
+    const row = classesOf(second.match(/^<li\b[^>]*>/)?.[0] ?? '')
+
+    expect(row).toContain('gap-y-0')
+    expect(classesOf(tagWith(second, 'data-testid="value-mark"'))).toContain('col-start-2')
   })
 
   it('describes a marked step by its mark', async () => {
