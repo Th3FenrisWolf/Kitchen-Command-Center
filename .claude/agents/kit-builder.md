@@ -28,7 +28,8 @@ Read, every time, before touching code:
    (`kcc-tear-${(i % 6) + 1}`) or a stable hash, never the same preset on two neighbours.
 4. **Keep `ALLOWLIST` empty** in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts`. A surface that
    genuinely needs an entry says why in its commit message.
-5. **Run** the last step of `docs/brand/kit.md` → *Building a surface*, from `src/KCC.Web`.
+5. **Run** the last step of `docs/brand/kit.md` → *Building a surface*, from `src/KCC.Web`, with
+   `typeScale.test.ts` among the tests.
 6. **Both ramps in the test.** Where markup differs by ramp (the `data-ramp` glyphs), assert both in the unit
    test. You have no browser: the visual check in both ramps happens before merging. Say plainly that you
    did not look at it.
@@ -48,6 +49,10 @@ Read, every time, before touching code:
   coloured text.
 - One wash, one label, one hand note per sheet. Washes under margins and corners, never under copy.
 - Icons: duotone by default in `currentColor`; solid or regular where the simpler glyph reads better.
+- Size text with a role class (`kcc-display`, `kcc-section`, `kcc-heading`, `kcc-title`, `kcc-body`, `kcc-kick`) or a
+  token utility (`text-caps|body|title|heading|section`; the display only through `kcc-display`), never `text-[…]`, `leading-*` or a default size
+  such as `text-sm`. Space blocks vertically in rule units (`mt-rule-1`, `gap-y-rule-1.5`, `space-y-rule-2`), never
+  `mt-6` or `gap-y-9`. Size a standalone icon with `kcc-icon-sm|md|lg`.
 - Always `yarn build:all` before merging, never one bundle alone.
 
 ## Report
