@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>004 · Approved · Even steps on 18 / 28</title>
+<link rel="stylesheet" href="/kit.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+
+  .pv-option { position: relative; z-index: 1; padding-bottom: 96px; }
+  .pv-option + .pv-option { border-top: 1px dashed var(--color-hair-strong); }
+  .pv-legend { border-collapse: collapse; margin-top: 24px; font: 400 14px/24px var(--font-sono); color: var(--color-ink); }
+  .pv-legend th, .pv-legend td { text-align: left; padding: 0 16px 0 0; border-bottom: 1px solid var(--color-hair); font-weight: 400; }
+  .pv-legend thead th { color: var(--color-ink-soft); text-transform: uppercase; letter-spacing: .1em; }
+
+  /* The scale under preview. Unlayered, so it beats the kit's @layer components sizes. */
+  .pv-scale { --bl: var(--pv-pitch); }
+  .pv-body { font-size: var(--t-body); line-height: var(--bl); }
+  .pv-body :is(.kcc-kick, .kcc-lbl, .kcc-meta, .kcc-badge, .kcc-btn, .kcc-seg button, .kcc-unit,
+    .kcc-label, .kcc-stats small, .kcc-n, .kcc-q, .kcc-stat, .pv-pad-key) {
+    font-size: var(--t-caps); }
+  .pv-body :is(.kcc-btn, .kcc-seg button) i { font-size: var(--t-caps); }
+  .pv-scale .kcc-label { line-height: 24px; }
+  .pv-body :is(.kcc-body, .kcc-check li, input, textarea, .kcc-field) { font-size: var(--t-body); line-height: var(--bl); }
+  .pv-body .kcc-h4 { font-size: var(--t-card); line-height: var(--lh-card); }
+  .pv-body .kcc-hand { font-size: var(--t-card); line-height: var(--lh-card); }
+  .pv-body .pv-sheet-h { font-family: var(--font-casual); font-size: var(--t-sheet); line-height: var(--lh-sheet); }
+  .pv-body .kcc-stats .kcc-v { font-size: var(--t-sheet); line-height: var(--lh-sheet); }
+  .pv-body .kcc-secname h2 { font-size: var(--t-section); line-height: var(--lh-section); }
+  .pv-body h1 { font-size: var(--t-display); line-height: var(--lh-display); }
+  .pv-scale .kcc-badge { height: auto; line-height: 24px; padding-block: 0; }
+  .pv-scale .kcc-check li { min-height: var(--bl); }
+  .pv-scale .kcc-steps li { align-items: baseline; }
+
+  .pv-phone { width: 375px; max-width: 100%; padding: 16px; background: var(--color-desk-2); border-radius: 4px; }
+  .pv-phone h1 { font-size: var(--t-display-phone) !important; line-height: var(--lh-display-phone) !important; }
+  .pv-phone .kcc-secname h2 { font-size: var(--t-section-phone) !important; line-height: var(--lh-section-phone) !important; }
+  .pv-phone-cap { margin-bottom: 12px; }
+  .pv-phone .kcc-slip { margin-bottom: 24px; }
+
+  .pv-cook-step { font-family: var(--font-casual); font-size: var(--t-section); line-height: var(--lh-section); margin-top: 12px; }
+  .pv-timer { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+  .pv-timer i { font-size: 24px; color: var(--color-ink-soft); }
+  .pv-readout { font-size: var(--t-readout); line-height: var(--lh-readout); }
+
+  /* The header pad, as AppHeader draws it, with nav items in Hazelnut at body size. */
+  .pv-pad { position: relative; margin-bottom: 48px; }
+  .pv-pad-top { z-index: 5; }
+  .pv-pad-page { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  .pv-pad-bar { display: flex; align-items: center; gap: 18px; min-height: 48px; padding: 0 6px; }
+  .pv-pad-logo { display: inline-flex; flex: none; }
+  .pv-pad-logo img { display: block; height: 48px; width: auto; }
+  :root[data-theme='light'] .pv-pad-logo [data-ramp='dark'], :root[data-theme='dark'] .pv-pad-logo [data-ramp='light'] { display: none; }
+  .pv-pad-menus { display: flex; align-items: center; gap: 4px; }
+  .pv-pad-menu { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 0; background: none;
+    border-radius: var(--rd); white-space: nowrap; cursor: pointer; color: var(--color-ink);
+    font-family: var(--font-hazelnut); font-size: var(--t-body); line-height: var(--bl); text-transform: none; letter-spacing: 0; }
+  .pv-pad-menu .fa-chevron-down { font-size: calc(var(--t-caps) - 2px); color: var(--color-ink-soft); }
+  .pv-pad-menu[aria-current='true'] .pv-pad-menu-label {
+    background-image: linear-gradient(to top, color-mix(in oklab, var(--color-marker) 90%, transparent) 0 6px, transparent 6px);
+    background-position: 0 2px; background-repeat: no-repeat; margin: 0 -2px; padding: 0 2px; }
+  .pv-pad-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
+    background: var(--color-marker); color: var(--color-marker-ink); font-size: var(--t-caps); line-height: 22px; }
+  .pv-pad-search { width: 260px; grid-template-columns: auto 1fr auto; }
+  .pv-pad-key { border-radius: 4px; box-shadow: inset 0 0 0 1px var(--color-hair-strong); color: var(--color-ink-soft);
+    font-family: var(--font-sono); line-height: 20px; padding: 0 6px; }
+  .pv-grow { flex: 1; }
+
+  .pv-sec { margin-top: 24px; }
+  .pv-toolbar { display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0 36px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 28px; align-items: start; }
+  .pv-desc { margin-top: 12px; }
+  .pv-hero { margin-top: 72px; }
+  .pv-measure { max-width: 60ch; margin-top: 12px; }
+  .pv-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .pv-split { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 36px 28px; margin-top: 48px; align-items: start; }
+  .pv-split--end { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); margin-top: 72px; }
+  .pv-stack { display: grid; gap: 36px; justify-items: start; }
+  .pv-stack > .kcc-slip { width: 100%; }
+  .pv-form { display: grid; gap: 8px; max-width: 520px; }
+  .pv-form .kcc-lbl:not(:first-child) { margin-top: 16px; }
+  @media (max-width: 1100px) {
+    .pv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pv-split, .pv-split--end { grid-template-columns: minmax(0, 1fr); }
+    .pv-pad-search { display: none; }
+  }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
+        <feGaussianBlur in="d" stdDeviation="1.8" result="b"></feGaussianBlur>
+        <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="9" result="w"></feTurbulence>
+        <feComposite in="b" in2="w" operator="arithmetic" k1="0.62" k2="0.62" k3="0" k4="0"></feComposite>
+      </filter>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+  <span class="kcc-grain" aria-hidden="true"></span>
+
+  <div class="pv-bar">
+    <h1>004 · Approved · Even steps on 18 / 28</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#even">Even steps</a>
+    </nav>
+  </div>
+  <section class="pv-option pv-scale" id="even" style="--bl: 28px; --pv-pitch: 28px; --t-caps: 14px; --lh-caps: 28px; --t-body: 18px; --lh-body: 28px; --t-card: 22px; --lh-card: 28px; --t-sheet: 28px; --lh-sheet: 28px; --t-section: 36px; --lh-section: 56px; --t-display: 44px; --lh-display: 56px; --t-readout: 72px; --lh-readout: 84px; --t-display-phone: 36px; --lh-display-phone: 56px; --t-section-phone: 28px; --lh-section-phone: 28px">
+    <header>
+      <p class="kcc-kick">Option 1 · Hierarchy · each heading one step of 1.25 above the last</p>
+      <h2>Even steps: 22, 28, 36, 44</h2>
+      <p class="kcc-body">Wins when every level should read as one even staircase: round 1's pick, unchanged. Each heading is clearly larger than the one below it, and nothing shouts.</p>
+      <p class="kcc-body">Costs some drama at the top: the display title is under two and a half times the body, so a hero reads calm rather than loud.</p>
+      <table class="pv-legend"><thead><tr><th scope="col">Role</th><th scope="col">Face</th><th scope="col">Desktop px</th><th scope="col">Phone px</th></tr></thead><tbody><tr><th scope="row">Display</th><td>APCasual</td><td class="kcc-num">44 / 56</td><td class="kcc-num">36 / 56</td></tr><tr><th scope="row">Section heading</th><td>APCasual</td><td class="kcc-num">36 / 56</td><td class="kcc-num">28 / 28</td></tr><tr><th scope="row">Sheet heading, stat value</th><td>APCasual</td><td class="kcc-num">28 / 28</td><td class="kcc-num">same</td></tr><tr><th scope="row">Card title, hand note</th><td>APCasual</td><td class="kcc-num">22 / 28</td><td class="kcc-num">same</td></tr><tr><th scope="row">Body, nav item, field</th><td>Hazelnut</td><td class="kcc-num">18 / 28</td><td class="kcc-num">same</td></tr><tr><th scope="row">Kicker, label, meta, badge, button</th><td>Sono caps</td><td class="kcc-num">14 / 28</td><td class="kcc-num">same</td></tr><tr><th scope="row">Cook Mode timer (readout)</th><td>Sono</td><td class="kcc-num">72 / 84</td><td class="kcc-num">same</td></tr></tbody></table>
+    </header>
+    <div class="pv-body">
+    
+    <div class="pv-pad">
+      <div class="pv-pad-top kcc-slip kcc-tear-hero" style="--r: -0.12">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" style="--pad: 12px">
+            <div class="pv-pad-bar">
+              <a class="pv-pad-logo" href="#"><img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="68" height="48"><img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="68" height="48"></a>
+              <nav class="pv-pad-menus" aria-label="Main">
+                <button type="button" class="pv-pad-menu" aria-current="true"><span class="pv-pad-menu-label">Recipes</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+                <button type="button" class="pv-pad-menu"><span class="pv-pad-menu-label">My Kitchen</span><span class="pv-pad-count kcc-num">2</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+              </nav>
+              <span class="pv-grow"></span>
+              <label class="kcc-field pv-pad-search"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i><input type="text" placeholder="Search 128 recipes" aria-label="Search 128 recipes"><span class="pv-pad-key">/</span></label>
+              <a class="kcc-btn" href="#"><i class="fa-duotone fa-plus" aria-hidden="true"></i>New Recipe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true"><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+    </div>
+    
+    <div class="kcc-secname pv-sec"><h2>Recipes</h2><p class="kcc-kick">128 recipes</p></div>
+    <div class="pv-toolbar">
+      <div class="kcc-seg" role="group" aria-label="View"><button type="button" aria-pressed="true"><i class="fa-duotone fa-grid-2" aria-hidden="true"></i>Grid</button><button type="button" aria-pressed="false"><i class="fa-duotone fa-list" aria-hidden="true"></i>List</button></div>
+      <div class="kcc-seg" role="group" aria-label="Sort"><button type="button" aria-pressed="true">Top rated</button><button type="button" aria-pressed="false">Newest</button><button type="button" aria-pressed="false">Quickest</button></div>
+    </div>
+    <div class="pv-grid">
+        <article class="kcc-slip kcc-recipe kcc-tear-1">
+          <a class="kcc-torn block" href="#">
+            <div class="kcc-sheet">
+              <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.5</span><span class="text-ink-soft">· 28</span></span>
+              <h3 class="kcc-h4">Brown Butter Gnocchi with Sage</h3>
+              <p class="kcc-meta"><span>Pasta</span><span>6 var.</span><span class="kcc-num">25 min</span></p>
+              <p class="kcc-body pv-desc">Crisp at the edges and soft inside, finished with a squeeze of lemon.</p>
+              <div class="kcc-badges mt-6"><span class="kcc-badge">Vegetarian</span><span class="kcc-badge">One pan</span></div>
+            </div>
+          </a>
+          <div class="kcc-tilewrap"><div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-1" style="--c: var(--color-peach)" aria-hidden="true"><i class="fa-duotone fa-wheat"></i></div></div><span class="kcc-tape" aria-hidden="true"></span></div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </article>
+        <article class="kcc-slip kcc-recipe kcc-tear-2">
+          <a class="kcc-torn block" href="#">
+            <div class="kcc-sheet">
+              <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.8</span><span class="text-ink-soft">· 41</span></span>
+              <h3 class="kcc-h4">Charred Corn and Black Bean Tacos</h3>
+              <p class="kcc-meta"><span>Mexican</span><span>3 var.</span><span class="kcc-num">30 min</span></p>
+              <p class="kcc-body pv-desc">Crisp at the edges and soft inside, finished with a squeeze of lemon.</p>
+              <div class="kcc-badges mt-6"><span class="kcc-badge">Vegan</span><span class="kcc-badge">Weeknight</span><span class="kcc-badge">Spicy</span></div>
+            </div>
+          </a>
+          <div class="kcc-tilewrap"><div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-2" style="--c: var(--color-yellow)" aria-hidden="true"><i class="fa-duotone fa-taco"></i></div></div><span class="kcc-tape" aria-hidden="true"></span></div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </article>
+        <article class="kcc-slip kcc-recipe kcc-tear-3">
+          <a class="kcc-torn block" href="#">
+            <div class="kcc-sheet">
+              <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.2</span><span class="text-ink-soft">· 12</span></span>
+              <h3 class="kcc-h4">Miso Glazed Salmon</h3>
+              <p class="kcc-meta"><span>Seafood</span><span>2 var.</span><span class="kcc-num">20 min</span></p>
+              <p class="kcc-body pv-desc">Crisp at the edges and soft inside, finished with a squeeze of lemon.</p>
+              <div class="kcc-badges mt-6"><span class="kcc-badge">Gluten free</span></div>
+            </div>
+          </a>
+          <div class="kcc-tilewrap"><div class="kcc-torn"><div class="kcc-tile kcc-tear-tile-3" style="--c: var(--color-teal)" aria-hidden="true"><i class="fa-duotone fa-fish"></i></div></div><span class="kcc-tape" aria-hidden="true"></span></div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </article>
+    </div>
+    
+    <div class="kcc-slip kcc-slip--wide kcc-tear-hero pv-hero">
+      <div class="kcc-torn">
+        <div class="kcc-sheet" style="--pad: 48px">
+          <span class="kcc-wash" style="--c: var(--color-peach); --x: 92%; --y: 20%; --w: 30%; --h: 70%" aria-hidden="true"></span>
+          <p class="kcc-kick">Pasta · Italian</p>
+          <h1>Brown Butter Gnocchi with Sage and Lemon</h1>
+          <p class="kcc-hand">Nonna's Sunday version, halved.</p>
+          <p class="kcc-body pv-measure">Pillowy potato gnocchi in nutty brown butter, with crisp sage and a little lemon to lift it. The dough comes together in ten minutes.</p>
+          <div class="kcc-stats mt-6">
+            <div><p class="kcc-lbl">Prep</p><p class="kcc-v">15<small>min</small></p></div>
+            <div><p class="kcc-lbl">Cook</p><p class="kcc-v">10<small>min</small></p></div>
+            <div><p class="kcc-lbl">Serves</p><p class="kcc-v">4</p></div>
+          </div>
+          <div class="pv-row mt-6"><a class="kcc-btn kcc-btn--lg" href="#"><i class="fa-duotone fa-fire-burner" aria-hidden="true"></i>Cook Mode</a><a class="kcc-btn kcc-btn--ghost kcc-btn--lg" href="#"><i class="fa-duotone fa-heart" aria-hidden="true"></i>Save</a></div>
+        </div>
+      </div>
+      <span class="kcc-label"><i class="fa-duotone fa-utensils" aria-hidden="true"></i>Variant · 01</span>
+      <span class="kcc-blank" aria-hidden="true"><span></span></span>
+    </div>
+    <div class="pv-split">
+      <div class="kcc-slip kcc-tear-2">
+        <div class="kcc-torn"><div class="kcc-sheet">
+          <h2 class="pv-sheet-h">Ingredients</h2>
+          <ul class="kcc-check mt-6"><li class="kcc-done"><input id="pv-even-ing-0" type="checkbox" class="sr-only" checked><label for="pv-even-ing-0" class="kcc-box kcc-box--on"></label><label for="pv-even-ing-0">Russet potatoes</label><span class="kcc-q">900 g</span></li><li><input id="pv-even-ing-1" type="checkbox" class="sr-only"><label for="pv-even-ing-1" class="kcc-box"></label><label for="pv-even-ing-1">Plain flour</label><span class="kcc-q">150 g</span></li><li><input id="pv-even-ing-2" type="checkbox" class="sr-only"><label for="pv-even-ing-2" class="kcc-box"></label><label for="pv-even-ing-2">Egg yolk</label><span class="kcc-q">1</span></li><li><input id="pv-even-ing-3" type="checkbox" class="sr-only"><label for="pv-even-ing-3" class="kcc-box"></label><label for="pv-even-ing-3">Butter</label><span class="kcc-q">80 g</span></li><li><input id="pv-even-ing-4" type="checkbox" class="sr-only"><label for="pv-even-ing-4" class="kcc-box"></label><label for="pv-even-ing-4">Fresh sage</label><span class="kcc-q">12 leaves</span></li><li><input id="pv-even-ing-5" type="checkbox" class="sr-only"><label for="pv-even-ing-5" class="kcc-box"></label><label for="pv-even-ing-5">Lemon</label><span class="kcc-q">½</span></li></ul>
+        </div></div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+      <div class="kcc-slip kcc-tear-3">
+        <div class="kcc-torn"><div class="kcc-sheet">
+          <h2 class="pv-sheet-h">Method</h2>
+          <ol class="kcc-steps mt-6"><li><span class="kcc-n">01</span><p class="kcc-body">Bake the potatoes whole until a knife slides through, then peel them while hot and pass them through a ricer.</p></li><li><span class="kcc-n">02</span><p class="kcc-body">Work in the yolk and the flour with your fingertips until the dough just holds. Roll it into ropes and cut it into pillows.</p></li><li><span class="kcc-n">03</span><p class="kcc-body">Brown the butter with the sage, then toss the boiled gnocchi through it and finish with lemon.</p></li></ol>
+        </div></div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+    </div>
+    
+    <div class="pv-split pv-split--end">
+      <div class="kcc-slip kcc-tear-4" style="--r: 0">
+        <div class="kcc-torn"><div class="kcc-sheet">
+          <p class="kcc-kick">Step 2 of 5</p>
+          <h2 class="pv-sheet-h">Tell us about it</h2>
+          <div class="pv-form mt-6">
+            <label class="kcc-lbl" for="pv-even-name">Recipe name</label>
+            <label class="kcc-field"><i class="fa-duotone fa-pen" aria-hidden="true"></i><input id="pv-even-name" type="text" value="Brown Butter Gnocchi"></label>
+            <label class="kcc-lbl" for="pv-even-desc">Description</label>
+            <label class="kcc-field kcc-field--area"><textarea id="pv-even-desc" rows="3">Pillowy potato gnocchi in nutty brown butter.</textarea></label>
+            <p class="kcc-lbl">Difficulty</p>
+            <div class="kcc-seg" role="group" aria-label="Difficulty"><button type="button" aria-pressed="false">Easy</button><button type="button" aria-pressed="true">Medium</button><button type="button" aria-pressed="false">Hard</button></div>
+            <p class="kcc-well kcc-well--danger kcc-kick" role="alert">Add at least one ingredient.</p>
+          </div>
+          <div class="pv-row mt-6"><a class="kcc-btn kcc-btn--ghost" href="#">Save draft</a><a class="kcc-btn kcc-btn--lg" href="#">Next<i class="fa-duotone fa-arrow-right" aria-hidden="true"></i></a></div>
+        </div></div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+      <div class="pv-stack">
+        <div class="kcc-slip kcc-tear-5" style="--r: 0">
+          <div class="kcc-torn"><div class="kcc-sheet pv-cook">
+            <p class="kcc-kick">Cook Mode · step 2 of 3</p>
+            <p class="pv-cook-step">Work in the yolk and the flour until the dough just holds.</p>
+            <div class="pv-timer"><i class="fa-duotone fa-stopwatch" aria-hidden="true"></i><span class="kcc-num pv-readout">04:30</span></div>
+          </div></div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </div>
+        <div class="pv-phone">
+          <p class="kcc-kick pv-phone-cap">375px phone</p>
+          <div class="kcc-slip kcc-slip--wide kcc-tear-hero">
+            <div class="kcc-torn"><div class="kcc-sheet">
+              <p class="kcc-kick">Pasta · Italian</p>
+              <h1>Brown Butter Gnocchi with Sage and Lemon</h1>
+              <p class="kcc-body">Pillowy potato gnocchi in nutty brown butter.</p>
+            </div></div>
+            <span class="kcc-blank" aria-hidden="true"><span></span></span>
+          </div>
+          <div class="kcc-secname pv-sec"><h2>More like this</h2><p class="kcc-kick">12</p></div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <span class="kcc-crayon" aria-hidden="true"></span>
+</div>
+<script>
+  const root = document.documentElement;
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light');
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+</script>
+</body>
+</html>

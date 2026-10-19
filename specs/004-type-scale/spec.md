@@ -45,6 +45,35 @@ and every Sono caps role is 10.5px.
 - Q: How do headings step up from body? → A: Decide in a look preview, from two or three scales shown on real pages.
 - Q: What do the nav items become? → A: Hazelnut at body size, in mixed case, where they are Sono caps today.
 
+### Session 2026-10-19
+
+- Q: At phone width, do the large headings keep their desktop size? → A: No. Below 768px the display heading drops to
+  a phone-only size. The other roles keep their size, so the four heading roles stay distinct at every width.
+- Q: How do Cook Mode's step text and timer fit the scale? → A: The step text takes a heading step from the scale. The
+  timer is a named readout size, counted apart like the icon sizes.
+- Q: Do the Sono caps roles share one size? → A: Yes. Every Sono caps role is 14px.
+- Q: Does the guard test also catch Tailwind text-size utilities in templates? → A: Yes. It fails on a raw
+  `font-size` in CSS and on a Tailwind text-size utility that is not a scale token.
+- Q: Which scale direction? → A: Even steps. The first approved round set an 18px body on a 28px rule. Built on the
+  site it read as zoomed, and right at 90% zoom, so the owner rescaled it to a 16px body on a 24px rule, with headings
+  20, 24, 32 and 40px; see mockups/README.md
+- Q: Who moves the vertical spacing onto the paper rule? → A: This feature. Every vertical gap, margin, padding and
+  section gap moves to rule units. Spec 003 then adds only the baseline shim and the offset.
+- Q: How are the heading roles named? → A: By role, in a clean cutover: `kcc-display`, `kcc-section`, `kcc-heading`
+  and `kcc-title` replace `kcc-h3`, `kcc-h4` and the bare `h2` size inside `kcc-secname`. The tests that pin the old
+  names change with them.
+- Q: What size are the Sono caps on the 16px scale? → A: 14px, on a 24px line.
+- Q: Do controls and icons scale down with the type? → A: No. Controls stay 36px and 48px, one and a half and two
+  rules, and standalone icons stay 24, 36 and 48px.
+- Q: Do the heading roles stay distinct at phone width? → A: Yes, at every width. Below 768px the display heading takes
+  a phone-only 36/48, and the section heading keeps 32/48.
+- Q: Which text may be smaller than 16px? → A: Only Sono: the caps roles and short Sono numbers such as times,
+  quantities and counts, at 14px.
+- Q: Does the member's New recipe button stay icon-only from 768px to 1023px? → A: Its label comes back wherever the
+  bar still shows the search field's full placeholder. It stays icon-only only where it does not.
+- Q: Where does the rescale land? → A: In the same pull request, #101 on `004-type-scale`, after a look preview.
+- Q: Which rescale direction? → A: 16 / 24, with headings 20, 24, 32 and 40px; see mockups/README.md
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Body text is easy to read (Priority: P1)
@@ -105,6 +134,8 @@ each size sits on the rule.
 3. **Given** a heading's level in the HTML, **When** a page sets its size with a role, **Then** the size follows the
    role and the level stays semantic.
 4. **Given** the scale preview, **When** the owner picks a scale, **Then** every heading role takes its step from it.
+5. **Given** a phone width, **When** a display heading renders, **Then** it takes its phone size, every other role
+   keeps its size, and no two heading roles share a size.
 
 ---
 
@@ -127,6 +158,8 @@ Open each menu.
 4. **Given** the pad at a phone width, **When** it renders, **Then** the larger items fit, or the phone menu holds
    them, with no item cut off.
 5. **Given** the lines inside an open menu card, **When** they render, **Then** they use the body size.
+6. **Given** a member's bar at a desk width, **When** the search field still shows its full placeholder beside the
+   labelled New recipe button, **Then** the button shows its label.
 
 ---
 
@@ -164,19 +197,20 @@ any font size outside the scale.
 - The hand note stays the one italic role, at most one per sheet.
 - Text inside a wash keeps its contrast at the new sizes.
 - Tile glyphs and empty-state icons are icons, not text. They take the named icon sizes.
+- Cook Mode is read from a distance. Its step text takes a heading step, and its timer takes the readout size.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: Body text MUST be Hazelnut at one body size, at least 16px. [NEEDS CLARIFICATION: the body size, between
-  16px and 20px. The owner wants to try sizes, perhaps 18px, in a look preview.]
-- **FR-002**: Text on the public site MUST NOT be smaller than 14px. Sono caps roles MAY be 14px. Every other role MUST be
-  16px or larger.
-- **FR-003**: Headings MUST step up from the body size on one scale. [NEEDS CLARIFICATION: the scale. The owner wants to
-  choose from two or three scales shown in a look preview.]
-- **FR-004**: Every heading role MUST have its own size. Two heading roles MUST NOT share a size. The HTML level stays
-  semantic, and a role class sets the size.
+- **FR-001**: Body text MUST be Hazelnut at 16px on a 24px line.
+- **FR-002**: Text on the public site MUST NOT be smaller than 14px. Every Sono caps role MUST be 14px. Only Sono text,
+  the caps roles and short Sono numbers such as times, quantities and counts, may be smaller than 16px. Every other
+  role MUST be 16px or larger.
+- **FR-003**: Headings MUST step up from the body size on one scale of about 1.25: card title 20/24, sheet heading
+  24/24, section heading 32/48 and display 40/48, as `mockups/README.md` tabulates. Sono caps roles MUST be 14/24.
+- **FR-004**: Every heading role MUST have its own size at every width. Two heading roles MUST NOT share a size. The
+  HTML level stays semantic, and a role class sets the size.
 - **FR-005**: The nav menu items MUST be Hazelnut at the body size, in mixed case.
 - **FR-006**: Every text role MUST have one face, one size, one line height and one letter spacing, and every size
   MUST sit on the paper rule.
@@ -186,14 +220,26 @@ any font size outside the scale.
   icon sizes.
 - **FR-009**: Fields, selects and textareas MUST stay at 16px or larger, so iOS does not zoom.
 - **FR-010**: The scale MUST live in tokens that the kit CSS, the component style blocks and the Razor views all read.
-  A stylesheet or a component MUST NOT set a raw font size.
-- **FR-011**: A test MUST fail when a stylesheet or a component sets a font size outside the scale tokens.
+  A stylesheet or a component MUST NOT set a raw font size. The scale tokens MUST be available as named Tailwind text
+  sizes.
+- **FR-011**: A test MUST fail when a stylesheet or a component sets a font size outside the scale tokens, through a
+  CSS `font-size` or through a Tailwind text-size utility, arbitrary values such as `text-[22px]` included.
 - **FR-012**: The brand type table MUST list every role with its face, size, line height and spacing, and the
   engineering contract MUST name the tokens and the guard test.
 - **FR-013**: Every text colour MUST pass the contrast table at its new size, in both ramps.
 - **FR-014**: Spec 003's Recipe preset MUST take its body and title sizes from this scale.
 - **FR-015**: Every structural hook that a test locates by, such as a `data-testid`, a role or a `kcc-*` class, MUST
-  survive.
+  survive, except the heading classes. `kcc-display`, `kcc-section`, `kcc-heading` and `kcc-title` replace `kcc-h3`,
+  `kcc-h4` and the section size of `kcc-secname h2` everywhere, tests included, and no old name remains.
+- **FR-016**: Below 768px, the display heading MUST take a phone-only 36/48. Every other role MUST keep one size at
+  every width.
+- **FR-017**: Cook Mode's step text MUST take a heading step from the scale. Its timer MUST take a named readout size,
+  counted apart from the text sizes like the icon sizes: 64/72.
+- **FR-018**: The paper rule MUST be 24px, and every vertical gap, margin, padding and section gap MUST be a whole or
+  half number of rules, set in rule units, so text stays in step with the ruling. Buttons, fields and segmented
+  controls keep their 36px and 48px heights, and standalone icons their 24, 36 and 48px sizes.
+- **FR-019**: The member's New recipe button MUST show its label at every desk width where the search field still shows
+  its full placeholder.
 
 ### Key Entities
 
@@ -208,8 +254,9 @@ any font size outside the scale.
 
 - **SC-001**: On every public page type, no rendered text is smaller than 14px, and all body text is the approved body
   size of at least 16px.
-- **SC-002**: The site uses at most eight distinct text sizes, each one a scale token.
-- **SC-003**: Every heading role has a size distinct from every other heading role and from body.
+- **SC-002**: The site uses at most eight distinct text sizes, each one a scale token. Icon sizes and the readout size
+  are counted apart.
+- **SC-003**: At every width, every heading role has a size distinct from every other heading role and from body.
 - **SC-004**: The guard test fails on a raw font size and passes on the current code once the change lands.
 - **SC-005**: No page scrolls sideways at 375px wide, and the header pad shows every menu item at 1024px wide.
 - **SC-006**: Every text colour passes the contrast table in both ramps.
@@ -217,13 +264,14 @@ any font size outside the scale.
 
 ## Assumptions
 
-- A look preview with `/speckit-preview-run` settles FR-001 and FR-003 before the plan. It shows body sizes of 16px,
-  18px and 20px with two or three heading scales, on the recipe search grid, a recipe detail page, a form and the
-  header pad.
+- A look preview with `/speckit-preview-run` settled the direction on 2026-10-19 on the recipe search grid, a recipe
+  detail page, a form, Cook Mode and the header pad. After the 18/28 build, a further look round confirms the 16/24
+  rescale. `mockups/` holds the approved look.
+- The rule pitch stays 24px with the 16px body. Spec 003's Recipe preset takes 16px on a 24px pitch from this scale.
 - The body size and the paper rule are chosen together, so each size sits on spec 003's rule. The preview may also
   change spec 003's pitch.
 - Sono stays the face for kickers, labels, meta, badges, buttons and numbers. Only its size changes.
 - APCasual stays the face for display and headings. Hazelnut stays the face for body and now nav items.
-- "At most eight sizes" counts text sizes only. Icon sizes are counted apart.
+- "At most eight sizes" counts text sizes only. Icon sizes and Cook Mode's readout size are counted apart.
 - The site rem stays 16px. Scale tokens are set in rem, so a reader's browser size setting scales the whole site.
 - This spec and spec 003 land in either order, but each must agree with the other's sizes when both land.
