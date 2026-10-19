@@ -13,7 +13,8 @@
 
 @layer base {
   :root {
-    --bl: 24px;
+    --bl: 1.5rem;
+    --rule-drop: calc(var(--bl) / 2 + 0.38208 * var(--text-body));
     --rd: 6px;
     --wash-blend: multiply;
     --wash-op: 0.62;
