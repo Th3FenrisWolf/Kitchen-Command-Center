@@ -39,13 +39,12 @@ public class AccountApiController(
             return Ok(new AuthResponse(true, null, Url.IsLocalUrl(request.ReturnUrl) ? request.ReturnUrl : "/"));
         }
 
-        var error = result switch
+        return Ok(result switch
         {
-            { IsLockedOut: true } => resourceStrings.GetOrDefault("Login.LockedOutError"),
-            { IsNotAllowed: true } => resourceStrings.GetOrDefault("Login.NotAllowedError"),
-            _ => resourceStrings.GetOrDefault("Login.InvalidCredentialsError"),
-        };
-        return Ok(new AuthResponse(false, [error], null));
+            { IsLockedOut: true } => new AuthResponse(false, [resourceStrings.GetOrDefault("Login.LockedOutError")], null),
+            { IsNotAllowed: true } => new AuthResponse(false, [resourceStrings.GetOrDefault("Login.NotAllowedError")], null),
+            _ => new AuthResponse(false, [resourceStrings.GetOrDefault("Login.InvalidCredentialsError")], null, AuthResponse.InvalidCredentials),
+        });
     }
 
     [HttpPost("register")]
@@ -70,4 +69,7 @@ public sealed record LoginRequest(string UserName, string Password, bool Remembe
 
 public sealed record RegisterRequest(string UserName, string Email, string Password);
 
-public sealed record AuthResponse(bool Success, string[] Errors, string RedirectUrl);
+public sealed record AuthResponse(bool Success, string[] Errors, string RedirectUrl, string Code = null)
+{
+    public const string InvalidCredentials = "invalid-credentials";
+}

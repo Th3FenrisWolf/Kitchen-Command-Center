@@ -40,7 +40,7 @@ describe('LoginView', () => {
     expect(slip).toContain('w-full')
     expect(slip).toContain('max-w-md')
     expect(slip).toContain('--r:0')
-    expect(html).toContain('<div class="kcc-torn"><div class="kcc-sheet"')
+    expect(html).toContain('<div class="kcc-torn"><div class="kcc-sheet kcc-sheet--margin"')
     expect(html.match(/kcc-slip/g)).toHaveLength(1)
     expect(html).not.toContain('fixed')
   })
@@ -57,7 +57,7 @@ describe('LoginView', () => {
 
     expect(label).toContain('<i class="fa-duotone fa-key" aria-hidden="true">')
     expect(label).toContain('Sign in')
-    expect(html).toMatch(/<div class="kcc-sheet"[^>]*>(?:<!--[^>]*-->)*<h2 class="sr-only">Sign in<\/h2>/)
+    expect(html).toMatch(/<div class="kcc-sheet kcc-sheet--margin"[^>]*>(?:<!--[^>]*-->)*<h2 class="sr-only">Sign in<\/h2>/)
   })
 
   it('keeps the selectors the sign-in helper types into', async () => {
@@ -68,7 +68,13 @@ describe('LoginView', () => {
 
     const submit = tagWith(form, 'type="submit"')
     expect(submit).toMatch(/^<button /)
-    expect(submit).toContain('class="kcc-btn"')
+    expect(submit).toContain('class="kcc-btn w-full"')
+  })
+
+  it.each([false, true])('runs the submit button the full width of the form (sign-up: %s)', async (register) => {
+    const submit = tagWith(formOf(await render(register)), 'type="submit"')
+
+    expect(submit.match(/class="([^"]*)"/)?.[1]?.split(' ')).toContain('w-full')
   })
 
   it('names each field by its placeholder rather than printing a label', async () => {
@@ -99,15 +105,13 @@ describe('LoginView', () => {
     ['sign-in', false, ['UserName', 'Password']],
     ['sign-up', true, ['UserName', 'Email', 'Password', 'PasswordConfirmation']],
   ])(
-    'centres each %s field and the submit button in two rules, so the lines after them land on the rule',
+    'starts each %s field on a line of a two-rule box and sets the submit button in a row of two, so the lines after them land on the rule',
     async (_mode, register, names) => {
       const form = formOf(await render(register as boolean))
-      const boxes = [
-        ...(names as string[]).map((name) => enclosingTag(form, `name="${name}"`, 1)),
-        enclosingTag(form, 'type="submit"'),
-      ]
+      const boxes = (names as string[]).map((name) => enclosingTag(form, `name="${name}"`, 1))
 
-      boxes.forEach((box) => expect(classesOf(box)).toEqual(['flex', 'min-h-rule-2', 'flex-col', 'justify-center']))
+      boxes.forEach((box) => expect(classesOf(box)).toEqual(['flex', 'min-h-rule-2', 'flex-col']))
+      expect(classesOf(enclosingTag(form, 'type="submit"'))).toEqual(['kcc-row'])
     },
   )
 
@@ -116,6 +120,14 @@ describe('LoginView', () => {
 
     expect(html).not.toContain('kcc-well')
     expect(html).not.toContain('role="alert"')
+  })
+
+  it.each([false, true])('marks no field before the form is sent (sign-up: %s)', async (register) => {
+    const form = formOf(await render(register))
+
+    expect(form).not.toContain('kcc-field--error')
+    expect(form).not.toContain('aria-invalid')
+    expect(form).not.toContain('aria-describedby')
   })
 
   it('offers the other mode as a kick line with a text button', async () => {
