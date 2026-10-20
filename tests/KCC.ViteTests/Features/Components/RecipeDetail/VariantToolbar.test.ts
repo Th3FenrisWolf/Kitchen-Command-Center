@@ -74,6 +74,10 @@ describe('VariantToolbar', () => {
     expect(buttons(html).filter((button) => button.open.includes('kcc-btn'))).toEqual([])
   })
 
+  it('wraps the tag pills onto a half rule, never 12px under', async () => {
+    expect(await render()).toContain('<div class="mt-rule-1 flex flex-wrap gap-x-3 gap-y-rule-0.5">')
+  })
+
   it('prints the tags as pills, the chosen one filled in ink', async () => {
     const html = await render({ tag: 'Quick' })
 

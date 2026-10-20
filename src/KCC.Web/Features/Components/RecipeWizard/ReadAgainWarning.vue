@@ -8,7 +8,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-y-rule-1">
     <ResourceString
       for="ReadAgainWarning"
       as="p"
@@ -17,7 +17,7 @@
       data-testid="read-again-warning"
     />
 
-    <div class="flex flex-wrap justify-end gap-x-3 gap-y-6">
+    <div class="flex flex-wrap justify-end gap-x-3 gap-y-rule-1">
       <Button variant="ghost" @click="emit('cancel')"><ResourceString for="ReadingCancel" /></Button>
       <Button variant="ghost" :disabled="!canConfirm" data-testid="read-again-confirm" @click="emit('confirm')">
         <ResourceString for="ReadAgain" /><i class="fa-duotone fa-rotate-right" aria-hidden="true"></i>

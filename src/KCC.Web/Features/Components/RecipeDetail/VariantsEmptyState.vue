@@ -8,9 +8,9 @@
 
 <template>
   <KccSheet wash="sky" :at="{ x: '88%', y: '14%', w: '40%', h: '66%' }" :tear="4" wide>
-    <div class="grid justify-items-center gap-6 text-center">
-      <i class="fa-duotone fa-bowl-food text-5xl text-ink-soft" aria-hidden="true"></i>
-      <ResourceString for="NoVariantsMatch" as="p" class="kcc-h4" />
+    <div class="grid justify-items-center gap-y-rule-1 text-center">
+      <i class="fa-duotone fa-bowl-food kcc-icon-lg text-ink-soft" aria-hidden="true"></i>
+      <ResourceString for="NoVariantsMatch" as="p" class="kcc-title" />
       <ResourceString for="TryDifferentFilter" as="p" class="kcc-hand" />
       <Button variant="ghost" @click="emit('clear')">
         <ResourceString for="ClearFilters" />

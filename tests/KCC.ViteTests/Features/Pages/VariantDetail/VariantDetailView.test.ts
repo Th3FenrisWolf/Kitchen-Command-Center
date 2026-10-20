@@ -47,10 +47,10 @@ const render = (over: Record<string, unknown> = {}) =>
   )
 
 describe('VariantDetailView', () => {
-  it('sets the whole page on one 72px rhythm, from a single root', async () => {
+  it('sets the whole page on one three-rule rhythm, from a single root', async () => {
     const html = await render()
 
-    expect(html.trimStart()).toMatch(/^<div class="mt-6 space-y-\[72px\]"/)
+    expect(html.trimStart()).toMatch(/^<div class="space-y-rule-3 mt-rule-1"/)
   })
 
   it('opens with the trail and the desktop controls on one row', async () => {
@@ -115,7 +115,7 @@ describe('VariantDetailView', () => {
   it('stacks the ingredients over the method until 768px, then sets the method the wider of the two', async () => {
     const html = await render()
 
-    expect(html).toContain('grid gap-x-7 gap-y-9 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]')
+    expect(html).toContain('grid gap-x-7 gap-y-rule-1.5 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]')
     expect(html.indexOf('fa-basket-shopping')).toBeLessThan(html.indexOf('fa-list-ol'))
     expect(html).not.toContain('lg:sticky')
     expect(html).not.toContain('lg:col-span-3')

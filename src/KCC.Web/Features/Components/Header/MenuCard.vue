@@ -32,8 +32,8 @@
   </template>
 
   <template v-if="recipes.diets.length">
-    <p class="kcc-kick mt-6" data-row style="--i: 4">{{ t('Diets') }}</p>
-    <div class="kcc-badges pad-chips" data-row style="--i: 4">
+    <p class="kcc-kick mt-rule-1" data-row style="--i: 4">{{ t('Diets') }}</p>
+    <div class="kcc-badges" data-row style="--i: 4">
       <a
         v-for="diet in recipes.diets"
         :key="diet.url"
@@ -46,7 +46,7 @@
   </template>
 
   <template v-if="recipes.quickPicks.length">
-    <p class="kcc-kick mt-6" data-row style="--i: 5">{{ t('QuickPicks') }}</p>
+    <p class="kcc-kick mt-rule-1" data-row style="--i: 5">{{ t('QuickPicks') }}</p>
     <PadLines :rows="recipes.quickPicks" :from="5" glyphs :current-page="urls.currentPage" />
   </template>
 
@@ -55,7 +55,7 @@
   <template v-if="member">
     <p class="kcc-kick" data-row style="--i: 7">{{ t('KitchenOf', member.firstName) }}</p>
     <PadLines :rows="kitchen" :from="7" glyphs :current-page="urls.currentPage" />
-    <div class="pad-foot mt-6" data-row style="--i: 7">
+    <div class="pad-foot mt-rule-1" data-row style="--i: 7">
       <a v-if="urls.newRecipe" class="kcc-btn" :href="urls.newRecipe">
         <i class="fa-duotone fa-plus" aria-hidden="true"></i>{{ t('NewRecipe') }}
       </a>
@@ -71,11 +71,3 @@
     <a v-if="urls.register" class="kcc-link kcc-kick" :href="urls.register">{{ t('AskForAnAccount') }}</a>
   </div>
 </template>
-
-<style>
-  /* The kit's badges are 22px tall, so each row of chips takes 24px: the rule. */
-  .pad-chips {
-    padding-bottom: 2px;
-    row-gap: 2px;
-  }
-</style>

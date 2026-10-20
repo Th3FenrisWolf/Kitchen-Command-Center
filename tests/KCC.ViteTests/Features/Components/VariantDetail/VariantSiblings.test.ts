@@ -23,13 +23,13 @@ describe('VariantSiblings', () => {
   it('names the section on the rule, as a heading', async () => {
     const html = await render()
 
-    expect(html).toMatch(/<div class="kcc-secname"><h2>\s*OtherVariants\s*<\/h2><\/div>/)
+    expect(html).toMatch(/<div class="kcc-secname"><h2 class="kcc-section">\s*OtherVariants\s*<\/h2><\/div>/)
   })
 
   it('lays the siblings out as the same card grid the recipe page uses', async () => {
     const html = await render()
 
-    expect(html).toContain('grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-9')
+    expect(html).toContain('grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-rule-1.5')
   })
 
   it('gives every sibling a slip of its own, cycling the tears so no two neighbours share one', async () => {
@@ -44,7 +44,7 @@ describe('VariantSiblings', () => {
     const html = await render(2)
 
     expect(html).toContain('href="/recipes/gnocchi/0"')
-    expect(html).toContain('<h3 class="kcc-h4">Crispy Edge</h3>')
+    expect(html).toContain('<h3 class="kcc-title">Crispy Edge</h3>')
     // The variant page carries no minutes string, so the card prints the same literal its stat tiles do.
     expect(html).toContain('20 min')
   })

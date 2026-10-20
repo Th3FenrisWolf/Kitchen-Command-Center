@@ -1,15 +1,13 @@
 @layer base {
-  /* Everything sits on the 24px rule. One weight of everything: regular. */
+  /* Everything sits on the rule. One weight of everything: regular. */
   body {
     color: var(--color-ink);
     font-family: var(--font-hazelnut);
-    font-size: 15px;
+    font-size: var(--text-body);
     font-weight: 400;
-    line-height: var(--bl, 24px);
+    line-height: var(--text-body--line-height);
   }
 
-  /* Heading level is semantic; size comes from the kcc-h3 / kcc-h4 classes. Bare h3–h6 share the 22 / 24
-     heading size so no heading ever reads as body copy. */
   h1,
   h2,
   h3,
@@ -22,32 +20,42 @@
     margin: 0;
   }
 
-  /* Display takes two rules. */
   h1 {
-    font-size: 40px;
-    line-height: 48px;
+    font-size: var(--text-display-phone);
+    line-height: var(--text-display-phone--line-height);
     text-wrap: balance;
   }
 
-  h2 {
-    font-size: 24px;
-    line-height: var(--bl);
+  @media (min-width: 768px) {
+    h1 {
+      font-size: var(--text-display);
+      line-height: var(--text-display--line-height);
+    }
   }
 
-  h3,
+  h2 {
+    font-size: var(--text-section);
+    line-height: var(--text-section--line-height);
+  }
+
+  h3 {
+    font-size: var(--text-heading);
+    line-height: var(--text-heading--line-height);
+  }
+
   h4,
   h5,
   h6 {
-    font-size: 22px;
-    line-height: var(--bl);
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
   }
 
-  /* iOS zooms the viewport into any focused field under 16px; the body is 15px. Form controls sit one pixel
-     above it, everywhere, so the kit's fields never trigger the zoom. */
+  /* iOS zooms the viewport into any focused field under 16px. Form controls take the body size everywhere,
+     so the kit's fields never trigger the zoom. */
   input,
   select,
   textarea {
-    font-size: 16px;
+    font-size: var(--text-body);
   }
 }
 

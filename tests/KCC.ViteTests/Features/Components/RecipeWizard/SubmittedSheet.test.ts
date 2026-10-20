@@ -55,7 +55,7 @@ describe('SubmittedSheet', () => {
   it('tells the member a recipe went in for review', async () => {
     const html = await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })
 
-    expect(html).toContain('Recipe Submitted!')
+    expect(html).toMatch(/<h2 class="kcc-heading">\s*Recipe Submitted!\s*<\/h2>/)
     expect(html).toContain('Your recipe has been submitted for review. An admin will review and publish it.')
     expect(html).not.toContain('Variant submitted!')
   })
@@ -63,7 +63,7 @@ describe('SubmittedSheet', () => {
   it('tells the member a variant went in for review', async () => {
     const html = await render({ mode: 'variant', recipesUrl: '/our-recipes/' })
 
-    expect(html).toContain('Variant submitted!')
+    expect(html).toMatch(/<h2 class="kcc-heading">\s*Variant submitted!\s*<\/h2>/)
     expect(html).toContain('Your variant has been submitted for review.')
     expect(html).not.toContain('Recipe Submitted!')
   })

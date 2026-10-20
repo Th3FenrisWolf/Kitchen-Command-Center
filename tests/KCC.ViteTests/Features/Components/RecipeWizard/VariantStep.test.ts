@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import VariantStep from '~/Components/RecipeWizard/VariantStep.vue'
 import { emptyValues, type WizardValues } from '~/Components/RecipeWizard/wizardValues'
-import { describedBy, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
+import { classesOf, describedBy, enclosingTag, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
 import { tagWith } from '../../../support/ssr'
 
 const READ: WizardValues = {
@@ -60,6 +60,15 @@ describe('VariantStep', () => {
       'translated',
     ])
     expect(new Set(marks).size).toBe(CONTROLS.length)
+  })
+
+  it('sets each mark on the rule under its field, outside the box that centres the control', async () => {
+    const html = await render(READ)
+
+    for (const control of CONTROLS) {
+      const markId = tagWith(html, control).match(/\saria-describedby="([^"]+)"/)?.[1]
+      expect(classesOf(enclosingTag(html, `\\sid="${markId}"`))).toEqual(['flex', 'flex-col'])
+    }
   })
 
   it('shows no mark on values the member typed', async () => {

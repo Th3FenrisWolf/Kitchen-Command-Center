@@ -31,7 +31,7 @@
 
 <template>
   <span class="flex items-start gap-x-2" data-testid="value-mark" :data-kind="mark.kind">
-    <span class="kcc-badge my-px">{{ rs(KIND_KEYS[mark.kind]) }}</span>
+    <span class="kcc-badge">{{ rs(KIND_KEYS[mark.kind]) }}</span>
     <span v-if="reason" class="kcc-body text-ink-soft">{{ reason }}</span>
   </span>
 </template>

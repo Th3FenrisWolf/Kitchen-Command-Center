@@ -130,7 +130,7 @@ describe('RecipeCard stat', () => {
 describe('RecipeCard body', () => {
   it('sets the name at heading size over a Sono meta line of category, variants and time', async () => {
     const html = await render(hit())
-    expect(html).toContain(`<h3 class="kcc-h4">${NAME}</h3>`)
+    expect(html).toContain(`<h3 class="kcc-title">${NAME}</h3>`)
     const meta = html.match(/<p class="kcc-meta">.*?<\/p>/s)?.[0] ?? ''
     expect(meta).toContain('<span>Mains</span>')
     expect(meta).toMatch(/<span class="kcc-num"><i class="fa-solid fa-layer-group"[^>]*><\/i>\s*5<\/span>/)

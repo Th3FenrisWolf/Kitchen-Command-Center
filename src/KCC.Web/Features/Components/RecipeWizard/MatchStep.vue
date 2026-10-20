@@ -45,19 +45,23 @@
 
 <template>
   <KccSheet crisp wide :tear :pad="STEP_PAD" data-testid="match-step">
-    <h2 class="kcc-h4">{{ fill(rs('MatchTitle'), match.recipeName) }}</h2>
+    <h2 class="kcc-heading">{{ fill(rs('MatchTitle'), match.recipeName) }}</h2>
 
-    <div class="mt-6 flex flex-col gap-6">
+    <div class="mt-rule-1 flex flex-col gap-y-rule-1">
       <p v-if="match.reason" class="kcc-body text-ink-soft">{{ match.reason }}</p>
 
       <PossibleDuplicateNotice v-if="possibleDuplicate" :duplicate="possibleDuplicate" />
 
-      <div class="flex flex-col items-start gap-6">
-        <Button class="h-auto py-3 text-left leading-6 whitespace-normal" data-testid="match-accept" @click="emit('accept')">
+      <div class="flex flex-col items-start gap-y-rule-1">
+        <Button
+          class="h-auto py-rule-0.5 text-left [line-height:var(--bl)] whitespace-normal"
+          data-testid="match-accept"
+          @click="emit('accept')"
+        >
           <i class="fa-duotone fa-layer-group" aria-hidden="true"></i>{{ fill(rs('AddAsVariant'), match.recipeName) }}
         </Button>
 
-        <div v-if="others.length" class="flex w-full flex-wrap items-end gap-x-3 gap-y-6">
+        <div v-if="others.length" class="flex w-full flex-wrap items-end gap-x-3 gap-y-rule-1">
           <Field :control-id="pickId" class="min-w-0 flex-1 basis-60">
             <template #label><ResourceString for="PickRecipeLabel" /></template>
             <span class="kcc-field w-full">
@@ -70,9 +74,11 @@
             </span>
           </Field>
 
-          <Button variant="ghost" data-testid="match-pick" @click="pick">
-            <ResourceString for="PickAnotherRecipe" /><i class="fa-duotone fa-arrow-right" aria-hidden="true"></i>
-          </Button>
+          <div class="flex min-h-rule-2 items-center">
+            <Button variant="ghost" data-testid="match-pick" @click="pick">
+              <ResourceString for="PickAnotherRecipe" /><i class="fa-duotone fa-arrow-right" aria-hidden="true"></i>
+            </Button>
+          </div>
         </div>
 
         <Button variant="ghost" data-testid="match-keep" @click="emit('keep')">
@@ -80,7 +86,7 @@
         </Button>
       </div>
 
-      <div v-if="canGoBack" class="flex flex-wrap justify-between gap-3">
+      <div v-if="canGoBack" class="flex flex-wrap justify-between gap-x-3 gap-y-rule-1">
         <Button variant="ghost" @click="emit('back')">
           <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Back" />
         </Button>

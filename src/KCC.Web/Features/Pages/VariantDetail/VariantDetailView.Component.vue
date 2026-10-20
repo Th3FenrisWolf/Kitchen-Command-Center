@@ -75,9 +75,9 @@
 </script>
 
 <template>
-  <div class="mt-6 space-y-[72px]">
-    <!-- The trail and the controls read as one head with the hero, so they sit 24px off it, not 72px. -->
-    <div class="space-y-6">
+  <div class="space-y-rule-3 mt-rule-1">
+    <!-- The trail and the controls read as one head with the hero, so they sit one rule off it, not three. -->
+    <div class="space-y-rule-1">
       <div class="flex items-center justify-between gap-4">
         <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" />
 
@@ -117,7 +117,7 @@
         </template>
 
         <template v-if="tags.length" #footer>
-          <div class="kcc-badges mt-6">
+          <div class="kcc-badges mt-rule-1">
             <span v-for="tag in tags" :key="tag" class="kcc-badge">{{ tag }}</span>
           </div>
         </template>
@@ -128,7 +128,7 @@
       <StatTiles :tiles="statTiles" />
     </KccSheet>
 
-    <section class="grid gap-x-7 gap-y-9 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+    <section class="grid gap-x-7 gap-y-rule-1.5 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <VariantIngredients :ingredients="ingredients" :base-servings="servings" />
       <VariantInstructions :instructions="instructions" />
     </section>

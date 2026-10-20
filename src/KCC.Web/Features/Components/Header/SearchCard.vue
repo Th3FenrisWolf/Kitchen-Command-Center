@@ -44,7 +44,7 @@
         <li v-for="hit in results" :key="hit.slug">
           <a class="pad-result" :href="hit.slug">
             <span class="min-w-0">
-              <span class="kcc-h4 pad-result-name">{{ hit.name }}</span>
+              <span class="kcc-title pad-result-name">{{ hit.name }}</span>
               <span class="kcc-kick pad-result-meta">{{ metaOf(hit) }}</span>
             </span>
             <span class="kcc-kick kcc-num">{{ hit.fastestTime }}m</span>
@@ -68,7 +68,7 @@
         <PadLines :rows="recentLines" :from="1" glyphs />
       </template>
       <template v-if="suggestions.length">
-        <p class="kcc-kick" :class="{ 'mt-6': recent.length }" data-row style="--i: 4">{{ t('Try') }}</p>
+        <p class="kcc-kick" :class="{ 'mt-rule-1': recent.length }" data-row style="--i: 4">{{ t('Try') }}</p>
         <div class="kcc-badges" data-row style="--i: 5">
           <button
             v-for="phrase in suggestions"

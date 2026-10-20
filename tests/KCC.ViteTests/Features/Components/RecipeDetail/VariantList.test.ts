@@ -24,10 +24,10 @@ const BLANK = '<span class="kcc-blank" aria-hidden="true"><span></span></span>'
 const rowsOf = (html: string) => html.split('<div class="kcc-slip ').slice(1)
 
 describe('VariantList', () => {
-  it('stacks the rows 36px apart', async () => {
+  it('stacks the rows a rule and a half apart', async () => {
     const stack = tagWith(await render(), 'flex flex-col')
 
-    expect(stack).toContain('gap-y-9')
+    expect(stack).toContain('gap-y-rule-1.5')
   })
 
   it('renders one row per variant, each keeping the variant-name hook', async () => {

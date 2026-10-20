@@ -64,7 +64,7 @@
     align-items: center;
     color: var(--color-ink);
     display: grid;
-    font-size: 15px;
+    font-size: var(--text-body);
     gap: 8px;
     grid-template-columns: minmax(0, 1fr) auto;
     line-height: var(--bl);
@@ -73,18 +73,17 @@
   }
 
   .pad-lines--glyphs .pad-line {
-    grid-template-columns: 18px minmax(0, 1fr) auto;
+    grid-template-columns: 1.25em minmax(0, 1fr) auto;
   }
 
   .pad-line > i {
     color: var(--color-ink-soft);
-    font-size: 13px;
     text-align: center;
   }
 
   .pad-line > .kcc-num {
     color: var(--color-ink-soft);
-    font-size: 12px;
+    font-size: var(--text-caps);
   }
 
   .pad-line-label {

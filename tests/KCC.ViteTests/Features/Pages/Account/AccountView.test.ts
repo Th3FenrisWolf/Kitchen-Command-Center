@@ -104,7 +104,7 @@ describe('AccountView', () => {
     expect(profile).toContain('kcc-slip kcc-tear-1')
     expect(profile).toContain('--c:var(--color-lavender)')
     expect(profile).toContain('--x:88%')
-    expect(profile).toContain('<h1 class="kcc-h3">Ada Lovelace</h1>')
+    expect(profile).toContain('<h1 class="kcc-display">Ada Lovelace</h1>')
     expect(profile.match(/kcc-wash/g)).toHaveLength(1)
   })
 
@@ -134,15 +134,21 @@ describe('AccountView', () => {
     expect(html).toMatch(/action="\/account\/logout"[^>]*>.*?<button class="kcc-btn kcc-btn--text" type="submit">/s)
   })
 
+  it('wraps Sign out under Account settings onto a half rule, never 12px under', async () => {
+    expect(await render()).toMatch(
+      /<div class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0\.5"><a[^>]*href="\/account\/settings"/,
+    )
+  })
+
   it('sets every recipe group on its own slip, never repeating a neighbour’s tear', async () => {
     const creations = creationsOf(await render())
 
-    expect(creations).toMatch(/<h2[^>]*>My recipes and variants<\/h2>/)
+    expect(creations).toMatch(/<h2 class="kcc-section">My recipes and variants<\/h2>/)
     expect(creations).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
     expect(creations).toContain('kcc-slip kcc-slip--wide kcc-tear-3')
     expect(creations).not.toContain('kcc-tear-1')
     expect(tagWith(creations, 'kcc-sheet')).toContain('--pad:16px')
-    expect(creations).toContain('<h3 class="kcc-h4">')
+    expect(creations).toContain('<h3 class="kcc-title">')
     expect(creations).toContain('Mac &amp; Cheese')
   })
 
@@ -162,6 +168,14 @@ describe('AccountView', () => {
     expect(creations).toContain('grid-cols-[1fr_auto]')
     expect(creations).toContain('Classic Stovetop')
     expect(creations).toContain('href="/recipes/mac/classic"')
+  })
+
+  it('keeps a group head and its variant rows on the rule when they wrap', async () => {
+    const creations = creationsOf(await render())
+
+    expect(creations).toContain('<div class="flex flex-wrap items-center gap-x-3 gap-y-0">')
+    expect(creations).toContain('<ul class="mt-rule-1 grid">')
+    expect(creations).toContain('<span class="flex flex-wrap items-center gap-x-2 gap-y-0">')
   })
 
   it('says so plainly when the pad is empty', async () => {

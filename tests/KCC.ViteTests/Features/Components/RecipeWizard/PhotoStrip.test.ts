@@ -80,6 +80,26 @@ describe('PhotoStrip', () => {
     tiles(html).forEach((tile) => expect(tile).not.toContain('photo-remove'))
   })
 
+  it('centres each photo in three rules and its remove button in two, with no gap, so the strip ends on the rule', async () => {
+    const html = await render({ removable: true })
+    const items = html.match(/<li\b[^>]*>/g) ?? []
+
+    expect(items).toHaveLength(PHOTOS.length)
+    items.forEach((item) => {
+      const classes = classesOf(item)
+      expect(classes).toEqual(
+        expect.arrayContaining([
+          'grid',
+          'grid-rows-[calc(var(--bl)*3)]',
+          'auto-rows-[calc(var(--bl)*2)]',
+          'place-items-center',
+        ]),
+      )
+      expect(classes.filter((name) => /^gap/.test(name))).toEqual([])
+    })
+    expect(classesOf(tagWith(html, 'src='))).toContain('size-20')
+  })
+
   it('offers no remove button in its view-only mode', async () => {
     const html = await render()
 

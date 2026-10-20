@@ -8,12 +8,12 @@ never in a component `<style>` block.
 
 | Path | Holds |
 |---|---|
-| `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), radius ladder, fonts, safelist |
-| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties; the dark ramp under `:root[data-theme='dark']` |
+| `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), the type, control, pill and icon tokens, radius ladder, fonts, safelist; the `*-rule-*` spacing utilities |
+| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties, among them the rule `--bl` and its drop `--rule-drop`; the dark ramp under `:root[data-theme='dark']` |
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / blank / sheet / wash / label / tape / tile, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
-| `src/KCC.Web/Features/Styles/Typography.css` | the 15 / 24 base, APCasual on bare `h1`–`h6`, the 16px control floor, every `@font-face` including Sono |
+| `src/KCC.Web/Features/Styles/Typography.css` | the 16 / 24 body, the type roles of bare `h1`–`h6` in APCasual, form controls at the body size, every `@font-face` including Sono |
 | `src/KCC.Web/Features/Styles/Layout.css` | the `.content-grid` breakout system: content, breakout and full-width columns for pages and sections |
 | `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here; `#app` carries the desk colour so the overlays have a backdrop to blend with, and clips sideways overflow |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
@@ -44,35 +44,101 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 
 All values are `oklch(L C H [/ alpha])`.
 
-Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 24px, `--rd` 6px (labels, wells,
-textareas), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .26, dark value test-pinned),
-`--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per
-element: `--pad` (sheet), `--tear`, `--r`, `--blank-tear` and `--blank-dir` (set by a preset class),
-`--blank-turn`, `--blank-scale` and `--blank-flip` (set on the slip and its modifiers), `--blank-region` (set on a
-region that turns its sheets' blanks over), `--c --x --y --w --h` (wash).
+The type and size tokens sit in the same `@theme static` block and are the same in both ramps. The block opens with
+`--text-*: initial`, which removes Tailwind's default sizes (`text-xs` … `text-9xl`), so the only text-size utilities
+are the scale's. Each `--text-<role>` carries its line height in `--text-<role>--line-height`, and its `text-<role>`
+utility sets both.
+
+| Token | Value | Use |
+|---|---|---|
+| `--text-display` | 2.5rem / 3rem (40 / 48) | `kcc-display` and bare `h1` from 768px |
+| `--text-display-phone` | 2.25rem / 3rem (36 / 48) | `kcc-display` and bare `h1` below 768px |
+| `--text-section` | 2rem / 3rem (32 / 48) | `kcc-section` and bare `h2` |
+| `--text-heading` | 1.5rem / 1.5rem (24 / 24) | `kcc-heading`, bare `h3`, the stat value |
+| `--text-title` | 1.25rem / 1.5rem (20 / 24) | `kcc-title`, `kcc-hand`, bare `h4`–`h6` |
+| `--text-body` | 1rem / 1.5rem (16 / 24) | `body`, `kcc-body`, `input`, `select`, `textarea`, the pad's menus and lines |
+| `--text-caps` | 0.875rem / 1.5rem (14 / 24) | every small Sono role: kick, label, meta, unit, stat, badge, button, segment |
+| `--text-readout` | 4rem / 4.5rem (64 / 72) | `text-readout`, the Cook Mode timer only; counted apart from the text sizes |
+| `--control-md`, `--control-lg` | 2.25rem, 3rem (36px, 48px) | the height and line of `kcc-btn`, `kcc-seg`, `kcc-field`; of `kcc-btn--lg` |
+| `--pill-sm` | 1.5rem (24px) | the height and line of `kcc-badge`, `kcc-label`, the pad's count and key hint |
+| `--icon-sm`, `--icon-md`, `--icon-lg` | 1.5rem, 2.25rem, 3rem (24px, 36px, 48px) | `kcc-icon-sm`, `kcc-icon-md`, `kcc-icon-lg`, the tile glyphs, the pad glyph; counted apart from the text sizes |
+
+Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 1.5rem (24px), the rule every line height and
+vertical space is counted in; `--rule-drop` (`calc(var(--bl) / 2 + 0.38208 * var(--text-body))`, how far below a
+line's top the body baseline sits, so the ruling lands on it); `--rd` 6px (labels, wells, textareas), `--wash-blend`
+(multiply / screen), `--wash-op` (.62 / .26, dark value test-pinned), `--wash-sat` (1 / 1.45), `--grain-op` (.08 /
+.16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per element: `--pad` (sheet), `--tear`, `--r`, `--blank-tear` and
+`--blank-dir` (set by a preset class), `--blank-turn`, `--blank-scale` and `--blank-flip` (set on the slip and its
+modifiers), `--blank-region` (set on a region that turns its sheets' blanks over), `--c --x --y --w --h` (wash).
 
 **Retired** and caught by `retiredTokens.test.ts`: `ink-line`, `ink-on-wash`, `hatch`, `edge`,
 `edge-strong`, `flap-1`, `flap-2`, `link`, `danger`, `success`, `warning`, `danger-ink`, `success-ink`,
 `warning-ink`, `rating-ink`, the washes `rosewater flamingo mauve maroon sapphire blue`, every `shadow-*`
 utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, the `fa-primary-*` /
 `fa-secondary-*` Tailwind utilities (the kit sets the Font Awesome custom properties itself; see Icons),
-every `sk-*` class, `v-ink`, `data-ink`. Nothing keeps them alive: the Softbound tokens, the ink module and
-the `TRANSITIONAL` blocks are gone, and the test's `ALLOWLIST` is empty. A new entry there needs a reason in
-the commit message.
+every `sk-*` class, `v-ink`, `data-ink`, the two heading classes named by level that the type roles replace.
+Nothing keeps them alive: the Softbound tokens, the ink module and the `TRANSITIONAL` blocks are gone, and the
+test's `ALLOWLIST` is empty. A new entry there needs a reason in the commit message.
 
 **Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px (small marks), `rounded-md` 6px (labels,
 wells, textareas), `rounded-full` (pills). Sheets, tiles and images take no radius.
 
 ## Type
 
-`Features/Styles/Typography.css` is the base: `body` 15 / 24 in Hazelnut regular; `h1` 40 / 48 in APCasual;
-`h2` 24 / 24; `h3`–`h6` 22 / 24. Heading *level* is semantic and heading *size* comes from `kcc-h3` /
-`kcc-h4`, so a bare `h4` is never a thing in new markup — write `<h4 class="kcc-h4">` or a `kcc-kick`.
-Form controls (`input`, `select`, `textarea`) are 16px everywhere: iOS zooms the viewport into any focused
-field below 16px, and the kit's fields inherit this floor. Sono is a static instance (MONO 1 / 400):
-`font-variation-settings` is a no-op on it. `typography.test.ts` pins these numbers and checks every font
-file it references exists. Nothing the kit renders sets a weight, but editor rich text may still carry
-`<strong>`, so `Typography.css` keeps the Hazelnut Bold faces declared for it.
+Seven text sizes in even steps, each read from a token (see Tokens), and every line height a multiple of
+the 24px rule, a control or pill height, or 1 on a glyph, number or unit inside a line:
+
+| Role | Class | Face | From 768px | Below 768px |
+|---|---|---|---|---|
+| Display | `kcc-display`; bare `h1` | APCasual | 40 / 48 | 36 / 48 |
+| Section heading | `kcc-section`; bare `h2` | APCasual | 32 / 48 | same |
+| Sheet heading, stat value | `kcc-heading`; bare `h3`; `.kcc-stats .kcc-v` | APCasual (the stat value Sono) | 24 / 24 | same |
+| Card title, hand note | `kcc-title`; bare `h4`–`h6`; `kcc-hand` | APCasual (the hand note italic) | 20 / 24 | same |
+| Body | `body`, `kcc-body`; `input`, `select`, `textarea`; `.pad-menu`, `.pad-line` | Hazelnut | 16 / 24 | same |
+| Caps | `kcc-kick`, `kcc-lbl`, `kcc-meta`, `kcc-unit`, `kcc-label`, `kcc-badge`, `kcc-btn`, `kcc-seg` buttons, `.kcc-n`, the stats `small` | Sono caps | 14 / 24 | same |
+| Readout | `text-readout`, the Cook Mode timer only | Sono | 64 / 72 | same |
+
+`kcc-stat` and `.kcc-q` take the caps size in Sono without the caps. Inside a control the caps line is the control's
+height (`--control-md`, `--control-lg`), and inside a small pill it is `--pill-sm`. Sono caps track at `.1em`, `.14em`
+on `kcc-btn` and `kcc-label`, `.12em` on `kcc-badge` and the segments, `.08em` on `kcc-meta`; the APCasual and
+Hazelnut roles at 0, the stat value at `-.01em`.
+
+`Features/Styles/Typography.css` is the base: `body` in Hazelnut regular at the body role, and bare `h1`–`h6` in
+APCasual at the roles above, so editor rich text gets a sane size. Heading *level* is semantic and heading *size*
+comes from the role classes, so a bare heading is never a thing in new markup: write `<h4 class="kcc-title">` or a
+`kcc-kick`. Below 768px the display takes its phone size, 36 / 48; every other role keeps one size at every width, so no
+two heading roles share a size. Form controls (`input`, `select`, `textarea`) take the body size, 16px, everywhere:
+iOS zooms the viewport into any focused field below 16px, and the kit's fields inherit this. Sono is a static
+instance (MONO 1 / 400): `font-variation-settings` is a no-op on it. Nothing the kit renders sets a weight, but
+editor rich text may still carry `<strong>`, so `Typography.css` keeps the Hazelnut Bold faces declared for it.
+
+An icon beside text sets no size and inherits the text's. A standalone icon takes `kcc-icon-sm` (24px),
+`kcc-icon-md` (36px) or `kcc-icon-lg` (48px), or reads `--icon-*` in kit CSS.
+
+The rules for authors ([the type scale contract](../../specs/004-type-scale/contracts/type-scale.md)):
+
+- **May** size text with a role class (`kcc-display`, `kcc-section`, `kcc-heading`, `kcc-title`, `kcc-body`,
+  `kcc-hand`, `kcc-kick`, `kcc-lbl`, `kcc-meta`, `kcc-unit`), or, where no role class fits, with a token utility
+  (`text-caps`, `text-body`, `text-title`, `text-heading`, `text-section`, `text-readout`), which carries its own
+  line height. The display size steps down below 768px, so reach it only through `kcc-display` or a bare `h1`, never
+  `text-display` or `text-display-phone`.
+- **May** read a token in a kit stylesheet or a style block: `var(--text-<role>)`, `var(--text-<role>--line-height)`,
+  `var(--bl)`, `var(--control-md)`, `var(--control-lg)`, `var(--pill-sm)`, `var(--icon-sm|md|lg)`.
+- **May** space blocks vertically in rule units (see the spacing paragraph under Classes).
+- **Must not** write a `font-size`, a `font` shorthand size or a px `line-height` outside the tokens. A `font-size` is
+  a `var(--text-*)`, a `var(--icon-*)`, `inherit` or `1em`; a `line-height` is `var(--bl)`, a
+  `var(--text-*--line-height)`, a control or pill token, `1`, or a `calc()` of `var(--bl)` times a number.
+- **Must not** use `text-[<length>]`, a `text-<role>/<line>` modifier, any `leading-*`, or a default size name
+  (`text-xs` … `text-9xl`, which do not generate).
+- **Must not** space blocks vertically on Tailwind's spacing scale: `mt`, `mb`, `my`, `pt`, `pb`, `py`, `gap-y` or
+  `space-y` with `3`, `6`, `9`, `12`, `18` or an arbitrary length, or a two-axis `gap-6`, `gap-9`, `gap-12`, `gap-18`
+  or arbitrary `gap` on a grid or a column.
+- **Must not** size a heading by its level: the two level-named heading classes are retired (see Tokens).
+
+`typeScale.test.ts` enforces these rules on every `.css`, `.vue`, `.cshtml` and `.ts` file under `Features/` but the
+generated `Tears.css`, naming the file, the line and the value, and fails when `TailwindConfig.css` declares more than
+eight text sizes besides the readout. `typography.test.ts` pins the token values, the roles of `body`, the form
+controls and the bare headings, the phone step, and checks every font file it references exists.
 
 ## Structure
 
@@ -85,7 +151,7 @@ labelled, washed sheet on its blank:
     <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clip-path: var(--tear), 24px pencil rule -->
       <span class="kcc-wash" style="--c: var(--color-peach); --x: 88%; --y: 18%; --w: 38%; --h: 60%" aria-hidden="true"></span>
       <p class="kcc-kick">Kitchen Command Center</p>
-      <h2 class="kcc-h3">The perfect drawing, torn out and kept.</h2>
+      <h2 class="kcc-display">The perfect drawing, torn out and kept.</h2>
     </div>
   </div>
   <span class="kcc-label"><i class="fa-duotone fa-scissors" aria-hidden="true"></i>Identity · 01</span>
@@ -111,9 +177,9 @@ A recipe slip:
   <div class="kcc-torn">
     <div class="kcc-sheet">
       <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.5</span><span class="text-ink-soft">· 28</span></span>
-      <h3 class="kcc-h4">Brown Butter Gnocchi</h3>
+      <h3 class="kcc-title">Brown Butter Gnocchi</h3>
       <p class="kcc-meta"><span>Pasta</span><span>6 var.</span><span class="kcc-num">25 min</span></p>
-      <div class="kcc-badges mt-6"><span class="kcc-badge">Vegetarian</span><span class="kcc-badge">One pan</span></div>
+      <div class="kcc-badges mt-rule-1"><span class="kcc-badge">Vegetarian</span><span class="kcc-badge">One pan</span></div>
     </div>
   </div>
   <div class="kcc-tilewrap">
@@ -144,9 +210,10 @@ Rules of the structure:
    specificity (`:where`). A kit class that positions a sheet child itself is written `.kcc-sheet > .kcc-x`
    so it wins regardless of import order (see `kcc-stat`).
 4. `--pad` on the sheet also positions the pencil rule: pass padding as `style="--pad: …"`, not as padding
-   utilities. It is **one length**: the rule's offset is `calc(var(--pad) - 5px)`, and a shorthand
-   (`24px 36px 24px 24px`) makes that invalid, so the ruling silently falls back to the top edge. Asymmetric
-   room comes from a utility on the content, never from `--pad`.
+   utilities. It is **one length**: the rule's offset is `calc(var(--pad) + var(--rule-drop) - var(--bl) + 1px)`,
+   which puts the top of its line on the first body baseline, and a shorthand (`24px 36px 24px 24px`) makes that
+   invalid, so the ruling silently falls back to the top edge. Asymmetric room comes from a utility on the content,
+   never from `--pad`.
 5. One wash, one label, one hand note per sheet at most.
 6. `clip-path` clips descendants too. Keep interactive children at least 4px inside the sheet edge (the
    default 24px padding does this), or the focus ring is shaved by the tear.
@@ -227,37 +294,45 @@ hero of its own, so two hero sheets on one page (RecipeDetail's hero and its fea
 | `kcc-slip--lift` | a slip you can open lifts its top sheet 4px on focus within, or on hover with a pointer that can hover; the blank stays | no lift under reduced motion; keeps the focus ring's fade |
 | `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px, heroes 48px; compact rows (recipe rows, review slips, the account sheet) take 16px and accept a ruling 8px off a 24px neighbour's |
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y` the centre, `--w --h` the radii (any length-percentage). Copy may sit on the 70% ring, never on the core: a corner pool caps the radius that points at the copy in px (`min(60%, 68px)` keeps the ring inside a 48px padding at any sheet height) |
-| `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge | Sono caps, optional leading `<i>` |
-| `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; type comes from `kcc-kick` on the same element |
+| `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge, 24px (`--pill-sm`) | Sono caps 14px, optional leading `<i>` |
+| `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; sets no type: the step keeps its `kcc-kick`, the pad's menu button its body size |
 | `kcc-tape` | one strip over an applied tile | only inside `kcc-tilewrap`; a sheet is never taped |
-| `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink`; pointer-transparent, so a link beneath it keeps the click |
+| `kcc-tilewrap` › `kcc-torn` › `kcc-tile` (+`--lg`) | pinned torn wax tile | `--c` the wash, glyph in `marker-ink` at `--icon-sm` (`--icon-md` on `--lg`); pointer-transparent, so a link beneath it keeps the click |
 | `kcc-tilewrap--flow` | a tilewrap in the flow of a sheet's content | a list row's tile and its strip; `position: relative`, no offset and no turn |
-| `kcc-kick`, `kcc-lbl` | Sono caps 10.5/24 in ink-soft | section kickers, field labels |
-| `kcc-body` | 15/24 body | a class-less link inside (editor rich text) takes the `kcc-link` look |
+| `kcc-kick`, `kcc-lbl` | Sono caps 14/24 in ink-soft | section kickers, field labels |
+| `kcc-body` | Hazelnut 16/24 body | a class-less link inside (editor rich text) takes the `kcc-link` look |
 | `kcc-prose` | editor rich text, with `kcc-body` | each block one rule below the last; lists keep their markers, list numbers in Sono |
-| `kcc-h3`, `kcc-h4` | APCasual 40/48, 22/24 | size and leading only; bare `h1`–`h3` already take APCasual from `Typography.css`, so these go on any element that needs display or heading size |
-| `kcc-hand` | APCasual italic 17/24 ink-soft | one per sheet |
+| `kcc-display` | APCasual 40/48, 36/48 below 768px | a page's or a hero's title; bare `h1` takes the same role |
+| `kcc-section` | APCasual 32/48 | a section heading, the heading in `kcc-secname`, Cook Mode's step text; bare `h2` takes the same role |
+| `kcc-heading` | APCasual 24/24 | a whole sheet's title; bare `h3` takes the same role |
+| `kcc-title` | APCasual 20/24 | a card's, a row's, a tile's or an empty state's title; bare `h4`–`h6` take the same role |
+| `kcc-hand` | APCasual italic 20/24 ink-soft | one per sheet |
+| `kcc-icon-sm`, `kcc-icon-md`, `kcc-icon-lg` | standalone icon 24px, 36px, 48px (`--icon-sm\|md\|lg`) | the Cook Mode stopwatch; the add-variant glyph; empty-state glyphs. The tile and pad glyphs read the same tokens in CSS. An icon beside text takes no class and inherits the text's size |
 | `kcc-num` | Sono tabular | every number |
-| `kcc-unit` | Sono caps 11px in ink-soft | a unit beside a number (min, g, servings); the same small caps a stats row gives its `<small>` |
+| `kcc-unit` | Sono caps 14px in ink-soft | a unit beside a number (min, g, servings); the same small caps a stats row gives its `<small>` |
 | `kcc-hr` | dashed hair rule | |
 | `kcc-link` | ink + hair-strong underline | prose links, breadcrumbs |
-| `kcc-link--icon` | icon-only link (the home crumb), with `kcc-kick` on the item for size | body-size icon (15px) in a 24px min-height/min-width box, no underline; ink-soft, ink on hover |
-| `kcc-secname` | section heading row: `h2` + `kcc-kick` with a dashed underline | |
+| `kcc-link--icon` | icon-only link (the home crumb), with `kcc-kick` on the item for size | body-size icon (16px) in a 24px (`--bl`) min-height/min-width box, no underline; ink-soft, ink on hover |
+| `kcc-secname` | section heading row: a `kcc-section` heading + `kcc-kick` with a dashed underline | one and a half rules below it |
 | `kcc-foot` | footer copy block | |
-| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px; hairline ghost; ink fill; underlined text; 48px large; `--icon` squares the pill (36px, 48px with `--lg`) | Sono caps `.14em`; an `--icon` button is all glyph, so its name goes in `aria-label` |
-| `kcc-seg` › `kcc-seg-thumb`, `button[aria-pressed\|aria-checked]` | pill group, pressed = ink fill | pressed = ink fill; in `SegmentedControl.vue` the fill is an ink thumb that slides to the checked segment once the client has placed it (`kcc-seg--sliding`), and until then the checked button carries it; `kcc-seg-thumb--glide` turns the slide on after each placement that must not slide; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments |
-| `kcc-field` (+`--noicon`, `--area`) | 36px pill with inset hairline and leading icon; block variant for textareas | focus = 2px inset ink ring |
+| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px (`--control-md`); hairline ghost; ink fill; underlined text on the rule; 48px large (`--control-lg`); `--icon` squares the pill (36px, 48px with `--lg`) | Sono caps 14px `.14em`; an `--icon` button is all glyph, so its name goes in `aria-label` |
+| `kcc-seg` › `kcc-seg-thumb`, `button[aria-pressed\|aria-checked]` | pill group 36px (`--control-md`), Sono caps 14px, pressed = ink fill | pressed = ink fill; in `SegmentedControl.vue` the fill is an ink thumb that slides to the checked segment once the client has placed it (`kcc-seg--sliding`), and until then the checked button carries it; `kcc-seg-thumb--glide` turns the slide on after each placement that must not slide; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments |
+| `kcc-field` (+`--noicon`, `--area`) | 36px (`--control-md`) pill with inset hairline and leading icon; block variant for textareas | field text Hazelnut 16px; focus = 2px inset ink ring |
 | `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
-| `kcc-badge`, `kcc-badges` | 22px hairline pill, Sono 10 caps; wrapping row | |
+| `kcc-badge`, `kcc-badges` | 24px (`--pill-sm`) hairline pill, Sono caps 14px; wrapping row | |
 | `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | the checkbox is `sr-only`, so a focused checkbox rings its box instead |
-| `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, Sono 26 | `<small>` for the unit |
+| `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, values Sono 24/24 (`--text-heading`) | `<small>` for the unit, Sono caps 14px |
 | `kcc-steps` › `li` › `kcc-n` + `kcc-body` | numbered method | numbers `01`, `02`, … |
 | `kcc-well` (+`--danger`, `--success`, `--warning`) | paper tinted 28% with the wash, ink text, 6px radius | status messages; the message itself is a `kcc-kick` |
 | `kcc-field--error` | the field's own fill tinted with red | pair with a `kcc-well--danger` message below the field |
 | `kcc-recipe`, `kcc-stat`, `kcc-meta` | recipe slip modifiers | see Structure; the stat is `.kcc-sheet > .kcc-stat` |
 
-Spacing between things uses Tailwind utilities on the 24px rule: `mt-6` (24px), `gap-9` (36px),
-`gap-x-7` (28px), `mt-12` (48px), `gap-y-[72px]` for sections.
+Vertical space between things is counted in rules, so text stays on the ruling. `TailwindConfig.css` defines
+`<prefix>-rule-<n>` as `calc(var(--bl) * n)` for `mt`, `mb`, `my`, `pt`, `pb`, `py`, `gap-y`, `space-y`, `h`,
+`min-h` and `top`, with `n` a whole or half number: `mt-rule-1` (24px), `gap-y-rule-1.5` (36px), `mt-rule-2`
+(48px), `mt-rule-0.5` (12px), `gap-y-rule-3` between sections. A grid or a wrapping row splits its gap,
+`gap-x-6 gap-y-rule-1`; horizontal space and a gap along a single row stay on Tailwind's spacing scale (`gap-x-7`,
+`gap-3`).
 
 ## Status
 
@@ -301,7 +376,7 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 - **Error.** `kcc-field--error` on the field and a `kcc-well--danger` below it (see Status).
 - **Loading.** What is already shown stays. The region takes `aria-busy`, and the loader is a
   `fa-solid fa-circle-notch fa-spin` beside a `kcc-kick` message (`RecipeSearchView.Component.vue`).
-- **Empty.** A sheet, never an empty page: a large duotone glyph in `ink-soft`, a `kcc-h4` line, a `kcc-body` hint and a
+- **Empty.** A sheet, never an empty page: a large duotone glyph in `ink-soft`, a `kcc-title` line, a `kcc-body` hint and a
   ghost button that undoes whatever emptied it (`RecipesEmptyState.vue`). A recipe with no reviews says so in its
   meta line, and empty rating stars are `fa-regular` in `ink-soft`.
 - **Browser surfaces.** `accent-color` is ink, and underlines sit 3px below the text. `kcc-seg` hides its
@@ -324,7 +399,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 | Sticky neighbours follow the pad | `transition-[top]`: their top, which adds `--pad-offset`, eases over 300ms as the pad tucks and comes back, and a stacker card's sentinel eases with it | `RecipeSearchView.Component.vue`, `StackerBlock.cshtml`, `Stacker.Component.vue` |
 | A pad menu fades to and from its marker pill | `background-color` and `color` over 300ms, keeping the focus ring's 0.2s fade | `AppHeader.Component.vue` |
 | A pad menu's chevron flips | 180° over 300ms while its card is open | `AppHeader.Component.vue` |
-| The desktop search field widens as it takes focus | 300ms `cubic-bezier(.2, .8, .2, 1)`, from 230px to 330px (170px to 230px between 768px and 1023px) | `AppHeader.Component.vue` |
+| The desktop search field widens as it takes focus | 300ms `cubic-bezier(.2, .8, .2, 1)`, from 250px to 330px (200px to 240px between 768px and 1023px) | `AppHeader.Component.vue` |
 | A row's name in a pad card underlines | `text-decoration-color` from transparent to ink over 300ms on hover | `PadLines.vue` |
 | A stacked sheet steps back | `transition-all duration-100`, scale from 1 to .95 once it sticks, all but the last | `Stacker.Component.vue` |
 | A segment's ink fill slides to the checked segment | `transform` and `width` over 300ms, and the labels' colour fades with it; no slide for the first placement, after a resize, when the fonts load or when the labels change | `SegmentedControl.vue`, `Controls.css` |
@@ -393,7 +468,8 @@ inline in `Layout.cshtml`, so server-rendered washes are filtered before hydrati
 | Tear geometry: deterministic, every vertex inside the box for every shipped preset, seam closes within a step, chamfer never top-left, amp and point-count guards | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
-| The 15 / 24 base, heading sizes, the 16px control floor and every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
+| The type, control, pill and icon token values and the cleared default sizes; `--bl` 24px and `--rule-drop`; `body` and the form controls at the body size; the bare headings' roles; the display's phone step and the section's one size; every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
+| Every `font-size` reads a text or icon token; a `font` shorthand sizes with a text token; a `line-height` is the rule, a token or `1`; no Tailwind text size outside the scale and no `leading-*`; vertical spacing in rule units; at most eight text sizes besides the readout | `tests/KCC.ViteTests/Features/Styles/typeScale.test.ts` |
 | Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
 | The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
@@ -408,7 +484,8 @@ inline in `Layout.cshtml`, so server-rendered washes are filtered before hydrati
    hash, mark a sheet wider than 700px `wide`, and flip a blank where the page's reading order needs it.
 3. Every class comes from the Classes table or Tailwind; no component `<style>` rule for anything Razor
    also renders.
-4. No `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text is `text-ink` or `text-ink-soft`;
+4. No `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text size comes from a role class or a type token,
+   vertical space from the rule utilities (see Type). Text is `text-ink` or `text-ink-soft`;
    `text-marker-ink` only inside a tile, a label or a marker button.
 5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
 6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
@@ -416,5 +493,5 @@ inline in `Layout.cshtml`, so server-rendered washes are filtered before hydrati
    and only buttons have a disabled look (see States).
 8. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
    message says why.
-9. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens contrast motion`, `yarn type-check`, `yarn format`;
+9. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens typeScale contrast motion`, `yarn type-check`, `yarn format`;
    before merging also `yarn build:all` and the browser check in both ramps. Commit.

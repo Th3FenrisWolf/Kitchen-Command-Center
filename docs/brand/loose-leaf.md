@@ -80,17 +80,23 @@ Links are ink with a hair-strong underline; there is no link colour.
 
 ## Type
 
-Everything sits on a 24px rule. Display takes two rules. One weight of everything: regular.
+Everything sits on a 24px rule. Every line height is a multiple of the rule, a control's or a pill's height, or 1
+on a glyph, number or unit inside a line. Sizes 14, 16, 20, 24, 32 and 40, with the display at 36 on phones, and at no width do two headings
+share a size. Nothing under 14px, and nothing but Sono under 16px. One weight of everything: regular.
 
-| Role | Face | Size / line |
-|---|---|---|
-| Display | APCasual | 40 / 48, letter-spacing 0 |
-| Heading | APCasual | 22 / 24 |
-| Chrome mark, section name | APCasual | 24 / 24 |
-| Body | Hazelnut | 15 / 24 |
-| Kick, label, meta | Sono, caps, `.1em` | 10.5 / 24 |
-| Numbers | Sono, tabular | inherit; stats 26 / 24 |
-| Hand note | APCasual italic | 17 / 24 |
+| Role | Face | Size / line, from 768px | Below 768px |
+|---|---|---|---|
+| Display | APCasual | 40 / 48 | 36 / 48 |
+| Section heading | APCasual | 32 / 48 | same |
+| Sheet heading, stat value | APCasual (stat value Sono) | 24 / 24 | same |
+| Card title, hand note | APCasual (hand note italic) | 20 / 24 | same |
+| Body, nav item, field | Hazelnut | 16 / 24 | same |
+| Kick, label, meta, button, badge | Sono, caps, `.1em` (`.14em` on buttons and labels, `.12em` on badges and segments, `.08em` on meta) | 14 / 24 | same |
+| Numbers | Sono, tabular | inherit | same |
+| Readout (the Cook Mode timer only) | Sono | 64 / 72 | same |
+
+Controls are 36px tall, and 48px when large. Small pills (badge, label, count) are 24px. A standalone icon is 24,
+36 or 48px; an icon beside text takes the text's size.
 
 Sono is a rounded mono (`MONO` axis at 1) that keeps the two hand fonts company. Hand notes are casual
 italic, at most one per sheet, and never carry information the sheet needs. No bold, no semibold, no medium:
@@ -128,8 +134,9 @@ exist in the mockup and are not built.
 
 ## Layout rhythm
 
-Sheet padding 24px (heroes 48px). Grid gaps 36px between rows, 28px between columns. Sections 72px apart,
-a section heading 36px above its content. Margins between blocks are multiples of 24px.
+Sheet padding 24px (heroes 48px). Grid gaps 36px between rows (a rule and a half), 28px between columns.
+Sections 72px apart (three rules), a section heading 36px above its content. Vertical margins between blocks are
+whole or half rules.
 
 ## Motion
 
@@ -144,7 +151,7 @@ Reduced motion stills all of it.
 ## Applied patterns
 
 - **Recipe slip**: a plain sheet on its blank; a small torn wax tile pinned over the top-left corner with its own
-  tape; the hero stat (rating · reviews, or time) top-right in Sono; the title in APCasual 22; a Sono meta line;
+  tape; the hero stat (rating · reviews, or time) top-right in Sono; the title in APCasual 20; a Sono meta line;
   hairline badges. The tile's wash is the recipe's colour.
 - **Library**: a green-washed sheet holding search, sort and view controls; below it a grid of slips cycling
   through the six tears.
@@ -176,3 +183,6 @@ Reduced motion stills all of it.
   prefix is `kcc-`. Tears are pure-CSS polygon presets; a JS `path()` tear is the fallback if fidelity needs it.
 - **2026-10-16**: Paper piles, not tape. Every sheet lies on a blank sheet, and tape holds only applied tiles. The
   header pad drops to a top sheet on one page.
+- **2026-10-19**: The type scale moves from a 15px body to one scale of even steps, 16/24 on the same 24px rule. Headings are
+  named by role: `kcc-display`, `kcc-section`, `kcc-heading` and `kcc-title`. Sono caps set at 14px, and vertical
+  spacing counts in rule units.

@@ -119,7 +119,7 @@
       transparent 0 calc(var(--bl) - 1px),
       var(--color-rule) calc(var(--bl) - 1px) var(--bl)
     );
-    background-position: 0 calc(var(--pad, 24px) - 5px);
+    background-position: 0 calc(var(--pad, 24px) + var(--rule-drop) - var(--bl) + 1px);
     clip-path: var(--tear, var(--tear-1));
     color: var(--color-ink);
     isolation: isolate;
@@ -160,22 +160,18 @@
     color: var(--color-marker-ink);
     display: inline-flex;
     font-family: var(--font-sono);
-    font-size: 10.5px;
+    font-size: var(--text-caps);
     gap: 8px;
-    height: 22px;
+    height: var(--pill-sm);
     left: 20px;
     letter-spacing: 0.14em;
-    line-height: 22px;
+    line-height: var(--pill-sm);
     padding: 0 12px;
     position: absolute;
     text-transform: uppercase;
-    top: -11px;
+    top: calc(var(--pill-sm) / -2);
     white-space: nowrap;
     z-index: 8;
-  }
-
-  .kcc-label i {
-    font-size: 11px;
   }
 
   .kcc-label--right {
@@ -209,14 +205,14 @@
     color: var(--color-marker-ink);
     display: grid;
     filter: url(#kcc-wax-flat);
-    font-size: 22px;
+    font-size: var(--icon-sm);
     height: 56px;
     place-items: center;
     width: 56px;
   }
 
   .kcc-tile--lg {
-    font-size: 38px;
+    font-size: var(--icon-md);
     height: 96px;
     width: 96px;
   }
@@ -243,7 +239,7 @@
   .kcc-lbl {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);
-    font-size: 10.5px;
+    font-size: var(--text-caps);
     letter-spacing: 0.1em;
     line-height: var(--bl);
     margin: 0;
@@ -260,8 +256,8 @@
   }
 
   .kcc-body {
-    font-size: 15px;
-    line-height: var(--bl);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
     margin: 0;
     text-wrap: pretty;
   }
@@ -296,29 +292,62 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .kcc-h3 {
+  .kcc-display,
+  .kcc-section,
+  .kcc-heading,
+  .kcc-title {
     font-family: var(--font-casual);
-    font-size: 40px;
     letter-spacing: 0;
-    line-height: 48px;
     margin: 0;
+  }
+
+  .kcc-display {
+    font-size: var(--text-display-phone);
+    line-height: var(--text-display-phone--line-height);
     text-wrap: balance;
   }
 
-  .kcc-h4 {
-    font-family: var(--font-casual);
-    font-size: 22px;
-    line-height: var(--bl);
-    margin: 0;
+  @media (min-width: 768px) {
+    .kcc-display {
+      font-size: var(--text-display);
+      line-height: var(--text-display--line-height);
+    }
+  }
+
+  .kcc-section {
+    font-size: var(--text-section);
+    line-height: var(--text-section--line-height);
+  }
+
+  .kcc-heading {
+    font-size: var(--text-heading);
+    line-height: var(--text-heading--line-height);
+  }
+
+  .kcc-title {
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
   }
 
   .kcc-hand {
     color: var(--color-ink-soft);
     font-family: var(--font-casual);
-    font-size: 17px;
+    font-size: var(--text-title);
     font-style: italic;
-    line-height: var(--bl);
+    line-height: var(--text-title--line-height);
     margin: 0;
+  }
+
+  .kcc-icon-sm {
+    font-size: var(--icon-sm);
+  }
+
+  .kcc-icon-md {
+    font-size: var(--icon-md);
+  }
+
+  .kcc-icon-lg {
+    font-size: var(--icon-lg);
   }
 
   .kcc-num {
@@ -350,13 +379,13 @@
     text-decoration-color: currentColor;
   }
 
-  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline. A fixed 24px box holds the
-     target size steady no matter what font-size the surrounding kick sets. */
+  /* Icon-only link (the home crumb): the glyph is the affordance, so no underline. A box one rule square holds
+     the target size steady no matter what font-size the surrounding kick sets. */
   .kcc-link--icon {
     align-items: center;
     color: var(--color-ink-soft);
     display: inline-flex;
-    font-size: 15px;
+    font-size: var(--text-body);
     justify-content: center;
     min-height: var(--bl);
     min-width: var(--bl);
@@ -372,14 +401,7 @@
     display: grid;
     gap: 16px;
     grid-template-columns: auto 1fr;
-    margin: 0 0 36px;
-  }
-
-  .kcc-secname h2 {
-    font-family: var(--font-casual);
-    font-size: 24px;
-    line-height: var(--bl);
-    margin: 0;
+    margin: 0 0 calc(var(--bl) * 1.5);
   }
 
   .kcc-secname .kcc-kick {
@@ -390,7 +412,7 @@
   .kcc-foot {
     color: var(--color-ink-soft);
     max-width: 70ch;
-    padding: 0 0 48px;
+    padding: 0 0 calc(var(--bl) * 2);
   }
 
   /* ---- duotone glyphs: ink over a faint second layer, never coloured ---- */

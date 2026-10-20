@@ -32,12 +32,12 @@ const slipClasses = (html: string) =>
     .filter((classes) => classes.includes('kcc-slip'))
 
 describe('VariantGrid', () => {
-  it('lays the slips out on the rule, 28px between columns and 36px between rows', async () => {
+  it('lays the slips out on the rule, 28px between columns and a rule and a half between rows', async () => {
     const grid = tagWith(await render(), 'repeat\\(auto-fit')
 
     expect(grid).toContain('grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))]')
     expect(grid).toContain('gap-x-7')
-    expect(grid).toContain('gap-y-9')
+    expect(grid).toContain('gap-y-rule-1.5')
     expect(grid).not.toContain('row-span')
   })
 
@@ -60,7 +60,7 @@ describe('VariantGrid', () => {
 
     const link = tagWith(html, 'href="/recipes/add-variant\\?recipe=abc"')
     expect(link).toContain('kcc-torn')
-    expect(html).toContain('AddVariant')
+    expect(html).toMatch(/<span class="kcc-title">\s*[\w.]*AddVariant\s*<\/span>/)
     // The three cards took tears 1-3, so the invitation takes the fourth.
     expect(tagWith(html, 'kcc-tear-4')).toContain('kcc-slip')
     expect(html).not.toMatch(/\bborder-dashed\b/)
@@ -73,6 +73,7 @@ describe('VariantGrid', () => {
 
     expect(tagWith(html, 'kcc-tear-4')).toContain('kcc-slip--fill')
     expect(tagWith(html, 'kcc-sheet grid')).toContain('content-center')
+    expect(html).toContain('fa-duotone fa-plus kcc-icon-md')
   })
 
   it('lays the add-variant slip on one blank, its last child', async () => {

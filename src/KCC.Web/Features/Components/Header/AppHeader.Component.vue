@@ -178,7 +178,7 @@
                 <button
                   id="pad-menu-recipes"
                   type="button"
-                  class="pad-menu kcc-kick"
+                  class="pad-menu"
                   :class="{ 'kcc-pill': open === 'recipes' }"
                   :aria-expanded="open === 'recipes'"
                   aria-controls="pad-card-recipes"
@@ -192,7 +192,7 @@
                   v-if="nav.member"
                   id="pad-menu-kitchen"
                   type="button"
-                  class="pad-menu kcc-kick"
+                  class="pad-menu"
                   :class="{ 'kcc-pill': open === 'kitchen' }"
                   :aria-expanded="open === 'kitchen'"
                   aria-controls="pad-card-kitchen"
@@ -223,8 +223,14 @@
                 @pointerleave="(event: PointerEvent) => press.leave('search', event)"
               />
 
-              <a v-if="nav.urls.newRecipe" class="kcc-btn" :href="nav.urls.newRecipe">
-                <i class="fa-duotone fa-plus" aria-hidden="true"></i>{{ t('NewRecipe') }}
+              <a
+                v-if="nav.urls.newRecipe"
+                class="kcc-btn max-[820px]:w-(--control-md) max-[820px]:px-0"
+                :href="nav.urls.newRecipe"
+                :title="t('NewRecipe')"
+              >
+                <i class="fa-duotone fa-plus" aria-hidden="true"></i
+                ><span class="max-[820px]:sr-only">{{ t('NewRecipe') }}</span>
               </a>
               <a v-else-if="nav.urls.signIn" class="kcc-btn kcc-btn--ghost" :href="nav.urls.signIn">
                 <i class="fa-duotone fa-right-to-bracket" aria-hidden="true"></i>{{ t('SignIn') }}
@@ -256,7 +262,7 @@
                 <button
                   id="pad-menu-menu"
                   type="button"
-                  class="pad-menu kcc-kick"
+                  class="pad-menu"
                   :class="{ 'kcc-pill': open === 'menu' }"
                   :aria-expanded="open === 'menu'"
                   aria-controls="pad-card-menu"
@@ -356,10 +362,10 @@
             labelled-by="pad-menu-find"
             @keydown="(event: KeyboardEvent) => pad.onCardKeydown('find', event)"
           >
-            <div data-row style="--i: 0">
+            <div class="min-h-rule-2" data-row style="--i: 0">
               <SearchForm v-model="query" input-id="pad-find-input" :action="nav.urls.library" :label="searchLabel" />
             </div>
-            <div class="mt-3" data-row style="--i: 1">
+            <div data-row style="--i: 1">
               <SearchCard
                 :query
                 :searched
@@ -487,8 +493,11 @@
     border-radius: var(--rd);
     cursor: pointer;
     display: inline-flex;
+    font-family: var(--font-hazelnut);
+    font-size: var(--text-body);
     gap: 8px;
-    height: 30px;
+    line-height: var(--bl);
+    min-height: var(--control-md);
     padding: 0 12px;
     transition:
       background-color 300ms,
@@ -503,7 +512,6 @@
   }
 
   .pad-menu .fa-chevron-down {
-    font-size: 9px;
     transition: transform 300ms;
   }
 
@@ -528,11 +536,12 @@
     border-radius: 999px;
     color: var(--color-marker-ink);
     display: inline-grid;
-    font-size: 10px;
-    height: 18px;
-    line-height: 18px;
-    min-width: 18px;
-    padding: 0 5px;
+    font-family: var(--font-sono);
+    font-size: var(--text-caps);
+    height: var(--pill-sm);
+    line-height: var(--pill-sm);
+    min-width: var(--pill-sm);
+    padding: 0 7px;
     place-items: center;
   }
 
@@ -545,15 +554,15 @@
     cursor: pointer;
     display: grid;
     flex: none;
-    font-size: 17px;
-    height: 36px;
+    font-size: var(--icon-sm);
+    height: var(--control-md);
     place-items: center;
     transition:
       background-color 300ms,
       color 300ms,
       outline-color 0.2s,
       outline-offset 0.2s;
-    width: 36px;
+    width: var(--control-md);
   }
 
   .pad-glyph:not(.kcc-pill) {
@@ -567,7 +576,7 @@
   .pad-bar--desk .pad-search-field {
     max-width: 100%;
     transition: width 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
-    width: 230px;
+    width: 250px;
   }
 
   .pad-bar--desk .pad-search-field:focus-within {
@@ -577,11 +586,11 @@
   @media (min-width: 768px) and (max-width: 1023.98px) {
     .pad-bar--desk .pad-search-field {
       grid-template-columns: auto 1fr;
-      width: 170px;
+      width: 200px;
     }
 
     .pad-bar--desk .pad-search-field:focus-within {
-      width: 230px;
+      width: 240px;
     }
 
     .pad-bar--desk .pad-key {

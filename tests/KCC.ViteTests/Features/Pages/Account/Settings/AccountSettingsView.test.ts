@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import AccountSettingsView from '~/Pages/Account/Settings/AccountSettingsView.Component.vue'
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../../support/ssr'
+import { classesOf, enclosingTag } from '../../../../support/recipeWizard'
 
 const STRINGS = {
   'Account.AccountSettings': 'Account settings',
@@ -45,7 +46,7 @@ const segment = (html: string, testId: string) => tagWith(html, `data-testid="${
 
 // The hero is a sheet of its own; these assertions count and describe the form's four sheets, so they read
 // the markup from the grid below it down.
-const sheetsOf = (html: string) => html.slice(html.indexOf('<div class="mt-6 grid'))
+const sheetsOf = (html: string) => html.slice(html.indexOf('<div class="mt-rule-1 grid'))
 
 describe('AccountSettingsView', () => {
   it('rests each settings sheet on one standard blank, under a wide hero', async () => {
@@ -61,7 +62,7 @@ describe('AccountSettingsView', () => {
   // Nothing above the hero supplies a margin: without its own the sheet sits flush under the header's dashed
   // rule.
   it('sets the hero a rule below the header', async () => {
-    expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-6')
+    expect(tagWith(await render(), 'kcc-tear-hero')).toContain('mt-rule-1')
   })
 
   it('sets each group on its own crisp sheet, tears that never repeat', async () => {
@@ -159,6 +160,13 @@ describe('AccountSettingsView', () => {
     expect(html).toContain(
       `<p id="${hintId}" class="kcc-kick text-ink"><span>Device follows the setting on your phone or computer.</span></p>`,
     )
+  })
+
+  it('centres the ramp control in two rules with its hint straight under them, so the hint sits on the ruling', async () => {
+    const html = await render()
+
+    expect(classesOf(enclosingTag(html, 'role="radiogroup"'))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
+    expect(classesOf(enclosingTag(html, 'role="radiogroup"', 1))).toEqual(['flex', 'flex-col'])
   })
 
   it('keeps every status well off the page until something answers', async () => {

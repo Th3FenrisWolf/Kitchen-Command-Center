@@ -65,10 +65,10 @@
     <h2 class="sr-only">{{ t('CookNotes') }}</h2>
 
     <!-- The heading takes no room, so the rhythm is between the blocks, never above the first of them. -->
-    <div class="space-y-6">
-      <div v-if="isAuthenticated" class="space-y-6">
+    <div class="space-y-rule-1">
+      <div v-if="isAuthenticated" class="space-y-rule-1">
         <!-- The e2e suite fills this textarea by hook, so the hook stays on the control, not on the field. -->
-        <label class="kcc-field kcc-field--area">
+        <label class="kcc-field kcc-field--area min-h-rule-4">
           <textarea
             v-model="draft"
             :placeholder="t('CookNotePlaceholder')"
@@ -77,12 +77,14 @@
           ></textarea>
         </label>
         <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
-        <Button data-testid="add-cook-note" :disabled="!draft.trim()" @click="add">
-          <ResourceString for="AddCookNote" />
-        </Button>
+        <div class="flex min-h-rule-2 items-center">
+          <Button data-testid="add-cook-note" :disabled="!draft.trim()" @click="add">
+            <ResourceString for="AddCookNote" />
+          </Button>
+        </div>
       </div>
 
-      <ul v-if="notes.length" data-testid="cook-notes-list" class="space-y-6">
+      <ul v-if="notes.length" data-testid="cook-notes-list" class="space-y-rule-1">
         <li v-for="note in notes" :key="note.id">
           <div class="flex items-baseline justify-between gap-3">
             <p class="kcc-kick">{{ note.authorName }}</p>

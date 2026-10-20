@@ -22,6 +22,7 @@ export const RETIRED = new RegExp(
     `${EDGE[0]}${VARIANTS}fa-(?:primary|secondary)-[a-z0-9-]+${EDGE[1]}`, // coloured icon layers
     `${EDGE[0]}sk-[a-z][a-z0-9-]*`, // the Softbound kit
     '\\bv-ink\\b|\\bdata-ink\\b', // the drawn outline
+    `${EDGE[0]}kcc-h[34]${EDGE[1]}`, // heading sizes by level; the type roles replace them
     'font-weight:\\s*(?:[5-9]00|bold(?:er)?)', // weight in CSS
     `var\\(--color-(?:${RETIRED_TOKEN})\\)`, // retired tokens read from CSS
   ].join('|'),

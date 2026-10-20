@@ -50,6 +50,13 @@ describe('VariantCookNotes sheet', () => {
     expect(add).toContain('disabled')
   })
 
+  it('sizes the compose box and its button in whole rules, so the notes under them sit on the ruling', async () => {
+    const html = await render({ isAuthenticated: true })
+
+    expect(html).toMatch(/<label class="kcc-field kcc-field--area min-h-rule-4">/)
+    expect(html).toMatch(/<div class="flex min-h-rule-2 items-center"><button[^>]*data-testid="add-cook-note"/)
+  })
+
   it('shows no compose box to a reader who is not signed in', async () => {
     const html = await render()
 

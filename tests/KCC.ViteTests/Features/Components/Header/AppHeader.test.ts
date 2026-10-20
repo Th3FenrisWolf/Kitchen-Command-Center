@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import postcss, { type Rule } from 'postcss'
+import postcss, { type AtRule, type Rule } from 'postcss'
 import { describe, expect, it } from 'vitest'
 import AppHeader from '~/Components/Header/AppHeader.Component.vue'
 import type { NavModel } from '~/Types/Nav'
@@ -57,7 +57,9 @@ describe('AppHeader', () => {
     const kitchen = between(html, 'id="pad-menu-kitchen"', '</button>')
 
     expect(kitchen).toContain('<span class="pad-count kcc-num">1<span class="sr-only"> Waiting for review</span></span>')
-    expect(html).toContain('<a class="kcc-btn" href="/recipes/create-recipe/">')
+    expect(between(html, 'id="pad-bar-desk"', 'id="pad-bar-phone"')).toContain(
+      '<a class="kcc-btn max-[820px]:w-(--control-md) max-[820px]:px-0" href="/recipes/create-recipe/" title="New recipe"><i class="fa-duotone fa-plus" aria-hidden="true"></i><span class="max-[820px]:sr-only">New recipe</span></a>',
+    )
     expect(html).not.toContain('Sign in')
     expect(html).not.toContain('Ask for an account')
   })
@@ -170,6 +172,59 @@ describe('AppHeader', () => {
     expect(page.transform).toBe('rotate(calc(-0.12deg + var(--blank-turn))) scale(var(--blank-scale))')
     expect(page.translate).toBeUndefined()
     expect(rules.some((rule) => /\.pad-page--\d/.test(rule.selector))).toBe(false)
+  })
+
+  it('sets the menu items in Hazelnut at the body size, in mixed case', async () => {
+    const html = await render(member())
+    const menus = [...html.matchAll(/<button[^>]*class="pad-menu[" ][^>]*>/g)].map(([tag]) => tag)
+
+    expect(menus).toHaveLength(3)
+    expect(menus.some((tag) => tag.includes('kcc-kick'))).toBe(false)
+    const menu = declarationsOf(styleRules(), '.pad-menu')
+    expect(menu['font-family']).toBe('var(--font-hazelnut)')
+    expect(menu['font-size']).toBe('var(--text-body)')
+    expect(menu['min-height']).toBe('var(--control-md)')
+    expect(menu['text-transform']).toBeUndefined()
+    expect(menu['letter-spacing']).toBeUndefined()
+  })
+
+  it('lets the chevron inherit the item size, and sets the count and the glyph on the scale', () => {
+    const rules = styleRules()
+
+    expect(declarationsOf(rules, '.pad-menu .fa-chevron-down')['font-size']).toBeUndefined()
+    const count = declarationsOf(rules, '.pad-count')
+    expect(count['font-size']).toBe('var(--text-caps)')
+    expect(count['line-height']).toBe('var(--pill-sm)')
+    expect(count.height).toBe('var(--pill-sm)')
+    expect(count['min-width']).toBe('var(--pill-sm)')
+    expect(declarationsOf(rules, '.pad-glyph')['font-size']).toBe('var(--icon-sm)')
+  })
+
+  it('sizes the glyph buttons as controls', () => {
+    const glyph = declarationsOf(styleRules(), '.pad-glyph')
+
+    expect(glyph.height).toBe('var(--control-md)')
+    expect(glyph.width).toBe('var(--control-md)')
+  })
+
+  it('starts the phone search results on a rule, under a field row two rules tall', async () => {
+    const card = between(await render(visitor()), 'id="pad-card-find"', 'id="pad-card-menu"')
+
+    expect(card).toMatch(/<div class="min-h-rule-2" data-row[^>]*><form class="pad-search"/)
+    expect(card).not.toContain('mt-rule-0.5')
+  })
+
+  it('keeps the search field wide enough for a four-digit count in its placeholder, leaving New recipe its label from 820px', () => {
+    const rules = styleRules()
+    const desk = rules.filter((rule) => rule.parent?.type === 'root')
+    const tablet = rules.filter(
+      (rule) => rule.parent?.type === 'atrule' && (rule.parent as AtRule).params.includes('max-width: 1023.98px'),
+    )
+
+    expect(declarationsOf(desk, '.pad-bar--desk .pad-search-field').width).toBe('250px')
+    expect(declarationsOf(desk, '.pad-bar--desk .pad-search-field:focus-within').width).toBe('330px')
+    expect(declarationsOf(tablet, '.pad-bar--desk .pad-search-field').width).toBe('200px')
+    expect(declarationsOf(tablet, '.pad-bar--desk .pad-search-field:focus-within').width).toBe('240px')
   })
 
   it('searches the library from a form that works before the page has its script', async () => {

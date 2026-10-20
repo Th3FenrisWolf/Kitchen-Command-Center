@@ -9,19 +9,15 @@
     color: var(--color-marker-ink);
     cursor: pointer;
     display: inline-flex;
-    font: 400 10.5px/36px var(--font-sono);
+    font: 400 var(--text-caps)/var(--control-md) var(--font-sono);
     gap: 10px;
-    height: 36px;
+    height: var(--control-md);
     justify-content: center;
     letter-spacing: 0.14em;
     padding: 0 20px;
     text-decoration: none;
     text-transform: uppercase;
     white-space: nowrap;
-  }
-
-  .kcc-btn i {
-    font-size: 12px;
   }
 
   .kcc-btn:hover:not(:disabled, [aria-disabled='true']) {
@@ -65,9 +61,8 @@
   }
 
   .kcc-btn--lg {
-    font-size: 12px;
-    height: 48px;
-    line-height: 48px;
+    height: var(--control-lg);
+    line-height: var(--control-lg);
     padding: 0 26px;
   }
 
@@ -80,11 +75,11 @@
      padding win over the large pill's own. */
   .kcc-btn--icon {
     padding: 0;
-    width: 36px;
+    width: var(--control-md);
   }
 
   .kcc-btn--lg.kcc-btn--icon {
-    width: 48px;
+    width: var(--control-lg);
   }
 
   .kcc-btn:disabled,
@@ -97,7 +92,7 @@
     border-radius: 999px;
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
     display: inline-flex;
-    height: 36px;
+    height: var(--control-md);
     max-width: 100%;
     min-width: 0;
     overflow-x: auto;
@@ -118,7 +113,7 @@
     cursor: pointer;
     display: inline-flex;
     flex: none;
-    font: 400 10.5px/36px var(--font-sono);
+    font: 400 var(--text-caps)/var(--control-md) var(--font-sono);
     gap: 8px;
     justify-content: center;
     letter-spacing: 0.12em;
@@ -134,10 +129,6 @@
 
   .kcc-seg button:last-of-type {
     padding-right: 16px;
-  }
-
-  .kcc-seg button i {
-    font-size: 12px;
   }
 
   .kcc-seg button[aria-pressed='true'],
@@ -191,7 +182,7 @@
     display: grid;
     gap: 10px;
     grid-template-columns: auto 1fr;
-    height: 36px;
+    height: var(--control-md);
     padding: 0 14px;
   }
 
@@ -201,7 +192,6 @@
 
   .kcc-field i {
     color: var(--color-ink-soft);
-    font-size: 13px;
   }
 
   .kcc-field input,
@@ -209,8 +199,7 @@
     background: none;
     border: 0;
     color: inherit;
-    /* 16px, not the body's 15: iOS zooms the viewport into any focused field below 16px. */
-    font: 400 16px/36px var(--font-hazelnut);
+    font: 400 var(--text-body)/var(--control-md) var(--font-hazelnut);
     min-width: 0;
     outline: 0;
     padding: 0;
@@ -245,7 +234,7 @@
     border: 0;
     color: inherit;
     display: block;
-    font: 400 16px/24px var(--font-hazelnut);
+    font: 400 var(--text-body)/var(--text-body--line-height) var(--font-hazelnut);
     min-width: 0;
     outline: 0;
     padding: 0;
@@ -371,9 +360,10 @@
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
     color: var(--color-ink-soft);
     display: inline-flex;
-    font: 400 10px/22px var(--font-sono);
-    height: 22px;
+    font: 400 var(--text-caps)/var(--pill-sm) var(--font-sono);
+    height: var(--pill-sm);
     letter-spacing: 0.12em;
+    margin-block: 2px;
     padding: 0 10px;
     text-transform: uppercase;
     white-space: nowrap;
@@ -382,7 +372,7 @@
   .kcc-badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 0 6px;
   }
 
   .kcc-check {
@@ -422,7 +412,7 @@
   .kcc-check .kcc-q {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);
-    font-size: 12px;
+    font-size: var(--text-caps);
     font-variant-numeric: tabular-nums;
   }
 
@@ -441,33 +431,34 @@
     align-items: baseline;
     display: flex;
     font-family: var(--font-sono);
-    font-size: 26px;
+    font-size: var(--text-heading);
     font-variant-numeric: tabular-nums;
     gap: 6px;
+    height: var(--bl);
     letter-spacing: -0.01em;
-    line-height: var(--bl);
+    line-height: var(--text-heading--line-height);
     margin: 0;
   }
 
   .kcc-stats .kcc-v small {
     color: var(--color-ink-soft);
-    font-size: 11px;
+    font-size: var(--text-caps);
     letter-spacing: 0.1em;
+    line-height: 1;
     text-transform: uppercase;
   }
 
   .kcc-unit {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);
-    font-size: 11px;
+    font-size: var(--text-caps);
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
   .kcc-stats .kcc-v i {
     color: var(--color-ink-soft);
-    font-size: 15px;
-    transform: translateY(-1px);
+    line-height: 1;
   }
 
   .kcc-steps {
@@ -490,7 +481,7 @@
   .kcc-steps .kcc-n {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);
-    font-size: 11px;
+    font-size: var(--text-caps);
     letter-spacing: 0.1em;
     line-height: var(--bl);
   }
@@ -506,7 +497,7 @@
     color: var(--color-ink);
     display: flex;
     font-family: var(--font-sono);
-    font-size: 12px;
+    font-size: var(--text-caps);
     font-variant-numeric: tabular-nums;
     gap: 8px;
     line-height: var(--bl);
@@ -517,7 +508,6 @@
 
   .kcc-stat i {
     color: var(--color-ink-soft);
-    font-size: 11px;
   }
 
   .kcc-meta {
@@ -525,7 +515,7 @@
     display: flex;
     flex-wrap: wrap;
     font-family: var(--font-sono);
-    font-size: 10.5px;
+    font-size: var(--text-caps);
     gap: 10px;
     letter-spacing: 0.08em;
     line-height: var(--bl);

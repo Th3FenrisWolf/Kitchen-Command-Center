@@ -93,14 +93,28 @@ describe('IngredientsStep with an eyeballed ingredient', () => {
       )
   })
 
-  it('steps every row by whole rules: 12px between its lines, the rest of the rule under it', async () => {
+  it('centres each line of controls in two rules and gives a mark one, so every row and its text land on the rule', async () => {
     const html = await renderEyeballed()
     const [salt = ''] = rows(html)
+    const row = classesOf(salt.match(/^<li\b[^>]*>/)?.[0] ?? '')
 
-    expect(classesOf(salt.match(/^<li\b[^>]*>/)?.[0] ?? '')).toEqual(
-      expect.arrayContaining(['gap-x-2', 'gap-y-3', 'pb-9', 'sm:pb-3']),
+    expect(row).toEqual(
+      expect.arrayContaining([
+        'grid-rows-[repeat(2,calc(var(--bl)*2))]',
+        'sm:grid-rows-[calc(var(--bl)*2)]',
+        'auto-rows-[minmax(var(--bl),auto)]',
+        'items-center',
+        'gap-x-2',
+      ]),
     )
+    expect(row.filter((name) => /^(sm:)?gap-y-/.test(name))).toEqual([])
     expect(classesOf(enclosingTag(html, '<li\\b')).filter((name) => /^gap/.test(name))).toEqual([])
+  })
+
+  it('separates the two-line rows of a phone by a rule, and the one-line rows from sm up by nothing more', async () => {
+    const [salt = ''] = rows(await renderEyeballed())
+
+    expect(classesOf(salt.match(/^<li\b[^>]*>/)?.[0] ?? '')).toEqual(expect.arrayContaining(['pb-rule-1', 'sm:pb-0']))
   })
 
   it('keeps the quantity and unit of a measured row', async () => {
@@ -140,10 +154,12 @@ describe('IngredientsStep after a read', () => {
     expect(second).toContain('Printed as 1 to 1 1/4')
   })
 
-  it('puts a mark under its whole row, with the rest of a rule under it', async () => {
+  it('puts a mark under its whole row, straight on the next rule', async () => {
     const [, second = ''] = rows(await renderRead())
+    const mark = classesOf(tagWith(second, 'data-testid="value-mark"'))
 
-    expect(classesOf(tagWith(second, 'data-testid="value-mark"'))).toEqual(expect.arrayContaining(['col-span-full', 'mb-3']))
+    expect(mark).toContain('col-span-full')
+    expect(mark.filter((name) => /^(sm:)?m[tby]?-/.test(name))).toEqual([])
   })
 
   it('describes the name of a marked ingredient by its mark', async () => {

@@ -211,7 +211,7 @@
 <template>
   <SubmittedSheet v-if="wizard.step === 'submitted'" ref="submittedSheet" :mode="wizard.mode" :recipes-url :closing-link />
 
-  <section v-else ref="stepSection" class="mt-6">
+  <section v-else ref="stepSection" class="mt-rule-1">
     <WizardProgress
       v-if="stepProgress"
       :current="stepProgress.current"
@@ -219,7 +219,7 @@
       :label="rs('ProgressLabel')"
     />
 
-    <PhotoStrip v-if="showsPhotoStrip(wizard)" :photos="wizard.photos" class="mb-6" data-testid="wizard-photos" />
+    <PhotoStrip v-if="showsPhotoStrip(wizard)" :photos="wizard.photos" class="mb-rule-1" data-testid="wizard-photos" />
 
     <StartStep
       v-if="wizard.step === 'start'"

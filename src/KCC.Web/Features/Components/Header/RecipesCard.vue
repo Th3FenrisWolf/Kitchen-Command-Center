@@ -46,7 +46,7 @@
   .pad-columns {
     display: grid;
     gap: 0 24px;
-    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-columns: auto;
     grid-auto-flow: column;
   }
 </style>

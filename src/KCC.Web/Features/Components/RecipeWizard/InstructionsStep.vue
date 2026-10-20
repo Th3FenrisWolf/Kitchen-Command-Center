@@ -46,9 +46,13 @@
 
     <h2 class="sr-only">{{ rs('Instructions') }}</h2>
 
-    <form class="flex flex-col gap-6" @submit.prevent="emit('next')">
+    <form class="flex flex-col gap-y-rule-1" @submit.prevent="emit('next')">
       <ol class="kcc-steps">
-        <li v-for="(instruction, index) in values.instructions" :key="index" class="grid-cols-[28px_minmax(0,1fr)_auto]">
+        <li
+          v-for="(instruction, index) in values.instructions"
+          :key="index"
+          class="grid-cols-[28px_minmax(0,1fr)_auto] gap-y-0"
+        >
           <span class="kcc-n">{{ stepNumber(index) }}</span>
 
           <TextAreaField

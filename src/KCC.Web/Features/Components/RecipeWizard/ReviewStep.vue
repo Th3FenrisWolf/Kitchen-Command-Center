@@ -124,9 +124,9 @@
 
     <h2 ref="heading" class="sr-only">{{ rs('ReviewAndSubmit') }}</h2>
 
-    <div class="space-y-12" :aria-busy="submitting">
-      <div v-if="changesMatch" class="flex flex-wrap items-center justify-between gap-x-3 gap-y-6">
-        <p :id="matchLineId" class="kcc-h4">{{ matchLine }}</p>
+    <div class="space-y-rule-2" :aria-busy="submitting">
+      <div v-if="changesMatch" class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+        <p :id="matchLineId" class="kcc-heading">{{ matchLine }}</p>
         <Button variant="text" :disabled="submitting" :aria-describedby="matchLineId" @click="emit('changeMatch')">
           <i class="fa-duotone fa-arrows-rotate" aria-hidden="true"></i><ResourceString for="ChangeMatch" />
         </Button>
@@ -137,7 +137,7 @@
       <p v-if="otherRecipesSeen" class="kcc-well kcc-kick">{{ otherRecipesSeen }}</p>
 
       <div v-if="mode === 'recipe'">
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
           <ResourceString for="ReviewRecipe" as="p" class="kcc-kick" />
           <Button
             variant="text"
@@ -153,23 +153,23 @@
           v-if="missing.recipeName"
           for="MissingValue"
           as="p"
-          class="kcc-well kcc-well--warning kcc-kick mt-6"
+          class="kcc-well kcc-well--warning kcc-kick mt-rule-1"
         />
-        <h3 v-else class="kcc-h4 mt-6">{{ values.recipeName }}</h3>
+        <h3 v-else class="kcc-title mt-rule-1">{{ values.recipeName }}</h3>
         <ValueMark v-if="values.marks['recipe.name']" :mark="values.marks['recipe.name']" />
 
         <ResourceString
           v-if="missing.recipeDescription"
           for="MissingValue"
           as="p"
-          class="kcc-well kcc-well--warning kcc-kick mt-6"
+          class="kcc-well kcc-well--warning kcc-kick mt-rule-1"
         />
-        <p v-else class="kcc-body mt-6">{{ values.recipeDescription }}</p>
+        <p v-else class="kcc-body mt-rule-1">{{ values.recipeDescription }}</p>
         <ValueMark v-if="values.marks['recipe.description']" :mark="values.marks['recipe.description']" />
       </div>
 
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
           <ResourceString :for="variantTitle" as="p" class="kcc-kick" />
           <Button
             variant="text"
@@ -185,18 +185,18 @@
           v-if="missing.variantName"
           for="MissingValue"
           as="p"
-          class="kcc-well kcc-well--warning kcc-kick mt-6"
+          class="kcc-well kcc-well--warning kcc-kick mt-rule-1"
         />
-        <h3 v-else class="kcc-h4 mt-6">{{ values.variantName }}</h3>
+        <h3 v-else class="kcc-title mt-rule-1">{{ values.variantName }}</h3>
         <ValueMark v-if="values.marks['variant.name']" :mark="values.marks['variant.name']" />
 
-        <p v-if="values.variantDescription" class="kcc-body mt-6">{{ values.variantDescription }}</p>
+        <p v-if="values.variantDescription" class="kcc-body mt-rule-1">{{ values.variantDescription }}</p>
         <ValueMark v-if="values.marks['variant.description']" :mark="values.marks['variant.description']" />
 
-        <div v-if="stats.length" class="kcc-stats mt-6">
+        <div v-if="stats.length" class="kcc-stats mt-rule-1">
           <div v-for="stat in stats" :key="stat.label">
             <ResourceString :for="stat.label" as="p" class="kcc-lbl" />
-            <p v-if="stat.value" class="kcc-v h-6">
+            <p v-if="stat.value" class="kcc-v h-rule-1">
               {{ stat.value }}<small v-if="stat.unit"><ResourceString :for="stat.unit" /></small>
             </p>
             <ValueMark v-if="stat.mark" class="flex-wrap" :mark="stat.mark" />
@@ -205,7 +205,7 @@
       </div>
 
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
           <h4 class="kcc-kick flex items-baseline gap-2">
             <ResourceString for="Ingredients" /><span class="kcc-num">{{ ingredients.length }}</span>
           </h4>
@@ -224,9 +224,9 @@
           v-if="missing.ingredients"
           for="MissingValue"
           as="p"
-          class="kcc-well kcc-well--warning kcc-kick mt-6"
+          class="kcc-well kcc-well--warning kcc-kick mt-rule-1"
         />
-        <ul v-else class="kcc-check mt-6">
+        <ul v-else class="kcc-check mt-rule-1">
           <li v-for="(ingredient, index) in ingredients" :key="index" class="grid-cols-[1fr_auto] gap-y-0">
             <span>{{ ingredient.name }}</span>
             <span class="kcc-q">{{ amount(ingredient) }}</span>
@@ -236,7 +236,7 @@
       </div>
 
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
           <h4 class="kcc-kick flex items-baseline gap-2">
             <ResourceString for="Instructions" /><span class="kcc-num">{{ instructions.length }}</span>
             <ResourceString :for="stepLabelKey(instructions.length)" />
@@ -256,9 +256,9 @@
           v-if="missing.instructions"
           for="MissingValue"
           as="p"
-          class="kcc-well kcc-well--warning kcc-kick mt-6"
+          class="kcc-well kcc-well--warning kcc-kick mt-rule-1"
         />
-        <ol v-else class="kcc-steps mt-6">
+        <ol v-else class="kcc-steps mt-rule-1">
           <li v-for="(instruction, index) in instructions" :key="index" class="gap-y-0">
             <span class="kcc-n">{{ stepNumber(index) }}</span>
             <p class="kcc-body">{{ instruction.text }}</p>
@@ -268,8 +268,8 @@
       </div>
     </div>
 
-    <div v-if="imported" class="mt-12 flex flex-col gap-6">
-      <div class="flex flex-wrap gap-x-3 gap-y-6">
+    <div v-if="imported" class="mt-rule-2 flex flex-col gap-y-rule-1">
+      <div class="flex flex-wrap gap-x-3 gap-y-rule-1">
         <Button variant="ghost" :disabled="submitting" data-testid="change-photos" @click="emit('changePhotos')">
           <i class="fa-duotone fa-images" aria-hidden="true"></i><ResourceString for="ChangePhotos" />
         </Button>
@@ -292,11 +292,11 @@
       />
     </div>
 
-    <p v-if="error" class="kcc-well kcc-well--danger kcc-kick mt-6" role="alert" data-testid="submit-error">
+    <p v-if="error" class="kcc-well kcc-well--danger kcc-kick mt-rule-1" role="alert" data-testid="submit-error">
       {{ rs(error) }}
     </p>
 
-    <div class="mt-12 flex flex-wrap justify-between gap-x-3 gap-y-6">
+    <div class="mt-rule-2 flex flex-wrap justify-between gap-x-3 gap-y-rule-1">
       <Button variant="ghost" :disabled="submitting" @click="emit('back')">
         <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Back" />
       </Button>

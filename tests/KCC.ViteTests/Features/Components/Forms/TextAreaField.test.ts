@@ -15,6 +15,18 @@ describe('TextAreaField', () => {
     const html = await renderSsr(TextAreaField, { class: 'shrink grow', modelValue: '' })
 
     expect(html).toMatch(/<label class="kcc-field kcc-field--area relative w-full shrink grow"/)
-    expect(html).toContain('height:75px')
+  })
+
+  it('opens three rules tall, so whatever follows the field starts on the ruling', async () => {
+    const html = await renderSsr(TextAreaField, { modelValue: '' })
+
+    expect(html).toContain('height:72px')
+  })
+
+  it('lets the resize grip inherit the body size', async () => {
+    const html = await renderSsr(TextAreaField, { modelValue: '' })
+
+    expect(html).toContain('fa-grip-lines')
+    expect(html).not.toMatch(/fa-grip-lines[^"]*text-\[/)
   })
 })

@@ -159,6 +159,16 @@ public class AccountPagesTests
         _ = await Assert.That(page.Body).DoesNotContain("kcc-tape");
     }
 
+    [Test]
+    public async Task RegistrationCompletePage_WrapsItsActionsOntoAHalfRule()
+    {
+        using var visitor = new MemberClient(Site);
+
+        var page = await RenderedPage.GetAsync(visitor.Http, "/account/registration-complete/");
+
+        _ = await Assert.That(page.Body).Contains("class=\"mt-rule-1 flex flex-wrap gap-x-4 gap-y-rule-0.5\"");
+    }
+
     private static string Describe(System.Text.Json.JsonElement group)
     {
         var variants = group.GetProperty("variants").EnumerateArray()

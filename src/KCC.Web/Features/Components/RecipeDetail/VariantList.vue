@@ -15,7 +15,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-9">
+  <div class="flex flex-col gap-y-rule-1.5">
     <RecipeCardRow
       v-for="(variant, index) in variants"
       :key="variant.slug"

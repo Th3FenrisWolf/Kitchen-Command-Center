@@ -35,7 +35,7 @@ public class HomeSectionsPageTests
     {
         var page = await HomeAsync();
 
-        _ = await Assert.That(page.Body.Contains("<div class=\"full-width content-grid mt-12 gap-y-[72px] overflow-x-clip\">", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(page.Body.Contains("<div class=\"full-width content-grid mt-rule-2 gap-y-rule-3 overflow-x-clip\">", StringComparison.Ordinal)).IsTrue();
     }
 
     [Test]
@@ -57,10 +57,10 @@ public class HomeSectionsPageTests
         _ = await Assert.That(page.Body.Contains(
             "<div class=\"kcc-body kcc-prose\" v-pre><h1 style=\"text-align: center\">Welcome to Kitchen Command Center!</h1></div>",
             StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(page.Body.Contains("<div class=\"kcc-secname\"><h2 v-pre>How About Something Sweeter?</h2></div>", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(page.Body.Contains("<h2 class=\"kcc-h4\" v-pre>Beef</h2>", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(page.Body.Contains("<h3 class=\"kcc-h4\" v-pre>Cake</h3>", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(page.Body.Contains("<div class=\"kcc-secname\"><h2 v-pre>Delicious Drinks</h2></div>", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(page.Body.Contains("<div class=\"kcc-secname\"><h2 class=\"kcc-section\" v-pre>How About Something Sweeter?</h2></div>", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(page.Body.Contains("<h2 class=\"kcc-title\" v-pre>Beef</h2>", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(page.Body.Contains("<h3 class=\"kcc-title\" v-pre>Cake</h3>", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(page.Body.Contains("<div class=\"kcc-secname\"><h2 class=\"kcc-section\" v-pre>Delicious Drinks</h2></div>", StringComparison.Ordinal)).IsTrue();
     }
 
     [Test]
@@ -75,7 +75,7 @@ public class HomeSectionsPageTests
         _ = await Assert.That(string.Join(",", sheetTears)).IsEqualTo("1,4,1,2");
         _ = await Assert.That(string.Join(",", gridTears)).IsEqualTo("2,3,4,5,6,1,2,3");
         _ = await Assert.That(string.Join(",", stackerTears)).IsEqualTo("5,6,1,2,3,6");
-        _ = await Assert.That(page.Body.Contains("class=\"grid gap-x-7 gap-y-9 lg:grid-cols-4\"", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(page.Body.Contains("class=\"grid gap-x-7 gap-y-rule-1.5 lg:grid-cols-4\"", StringComparison.Ordinal)).IsTrue();
     }
 
     [Test]

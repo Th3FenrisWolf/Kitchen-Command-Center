@@ -56,9 +56,16 @@ pink red` as fills only. Light is the default ramp; dark overrides live in `Feat
 
 ## Type on the rule
 
-`kcc-h3` 40/48 · `kcc-h4` 22/24 · `kcc-body` 15/24 · `kcc-kick` Sono caps 10.5/24 · `kcc-num` Sono tabular ·
-`kcc-hand` italic 17/24, one per sheet. Type sits on the 24px rule (`mt-6` is one rule, `mt-12` two); grid
-gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
+Roles: `kcc-display` APCasual 40/48 (36/48 below 768px) · `kcc-section` 32/48 · `kcc-heading`
+24/24 · `kcc-title` 20/24 · `kcc-body` Hazelnut 16/24 · `kcc-kick` Sono caps 14/24 · `kcc-num` Sono tabular ·
+`kcc-hand` italic 20/24, one per sheet. Bare `h1`, `h2`, `h3` and `h4`-`h6` take display, section, heading and
+title. Only the Cook Mode timer takes `text-readout` (64/72). Standalone icons take `kcc-icon-sm|md|lg`
+(24/36/48); an icon beside text inherits.
+
+Type sits on the 24px rule. Space blocks vertically in rule units: `mt-rule-1`, `gap-y-rule-1.5`,
+`space-y-rule-2`, `mt-rule-0.5`; rows gap 1.5 rules, sections sit 3 apart. No `leading-*`, no `text-[…]`, no
+Tailwind default sizes (`text-sm`, `text-xl`: they do not generate), and no `mt|mb|my|pt|pb|py|gap-y|space-y`
+with `3`, `6`, `9`, `12` or `18`. `tests/KCC.ViteTests/Features/Styles/typeScale.test.ts` fails on each.
 
 ## Before you finish
 
@@ -70,7 +77,8 @@ gaps are 36px rows / 28px columns (`gap-9`, `gap-x-7`).
 - [ ] Every sheet ends its slip with one `.kcc-blank`; no tape on a sheet, only over a tile; neighbouring blanks
       turn opposite ways down the page.
 - [ ] Text never on a wash core; `text-marker-ink` only inside tiles, labels, marker buttons.
-- [ ] Numbers in `kcc-num`; meta in `kcc-kick` / `kcc-meta`; headings in APCasual.
+- [ ] Numbers in `kcc-num`; meta in `kcc-kick` / `kcc-meta`; headings in APCasual from a role class.
+- [ ] Sizes from the roles and tokens, vertical spacing in rule units; `typeScale.test.ts` passes.
 - [ ] Motion at the 300ms default, or up to 500ms for a bigger move; motion started from script checks
       `prefers-reduced-motion`.
 - [ ] Every focusable shows a ring. Only buttons have a disabled look, so add one to the kit before disabling

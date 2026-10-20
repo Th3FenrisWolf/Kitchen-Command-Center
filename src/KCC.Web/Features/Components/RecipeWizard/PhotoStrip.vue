@@ -37,8 +37,12 @@
 
 <template>
   <div>
-    <ul class="flex flex-wrap gap-x-3 gap-y-6" :aria-label="rs('PhotosTitle')">
-      <li v-for="(photo, index) in photos" :key="photo.id" class="flex flex-col items-center gap-3">
+    <ul class="flex flex-wrap gap-x-3 gap-y-rule-1" :aria-label="rs('PhotosTitle')">
+      <li
+        v-for="(photo, index) in photos"
+        :key="photo.id"
+        class="grid auto-rows-[calc(var(--bl)*2)] grid-rows-[calc(var(--bl)*3)] place-items-center"
+      >
         <button
           type="button"
           class="kcc-torn block cursor-pointer"

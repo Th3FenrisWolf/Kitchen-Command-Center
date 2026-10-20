@@ -37,7 +37,7 @@
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+  <div class="flex flex-wrap items-center gap-x-7 gap-y-rule-0.5">
     <div class="kcc-field min-w-50 flex-1">
       <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
       <input v-model="search" type="search" :placeholder="rs('SearchVariants')" />
@@ -55,7 +55,7 @@
 
   <!-- `tagOptions` always opens with the All option, so a recipe whose variants carry no tags has
        nothing to filter by and the row is left off. -->
-  <div v-if="tags.length > 1" class="mt-6 flex flex-wrap gap-3">
+  <div v-if="tags.length > 1" class="mt-rule-1 flex flex-wrap gap-x-3 gap-y-rule-0.5">
     <Button
       v-for="option in tags"
       :key="option"

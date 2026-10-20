@@ -270,7 +270,7 @@ public class PileTests : BasePageTests
         await Page.SetViewportSizeAsync(width, 900);
         await MemberSession.SignInAsync(Page);
         await OpenAsync(width, "/account");
-        await Expect(Page.Locator("main section h1.kcc-h3")).ToBeVisibleAsync();
+        await Expect(Page.Locator("main section h1.kcc-display")).ToBeVisibleAsync();
         await Expect(Page.Locator("main .kcc-slip:has(> .kcc-label .fa-hourglass-half)")).ToHaveCountAsync(ComingSoonSheets);
         var groups = await Page.Locator(RecipeGroups).CountAsync();
 

@@ -49,7 +49,7 @@
     border-radius: 4px;
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
     color: var(--color-ink-soft);
-    font: 400 11px/18px var(--font-sono);
+    font: 400 var(--text-caps)/var(--pill-sm) var(--font-sono);
     padding: 0 6px;
   }
 </style>

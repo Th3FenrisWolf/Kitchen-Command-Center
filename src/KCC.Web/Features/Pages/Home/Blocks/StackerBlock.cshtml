@@ -2,15 +2,15 @@
 
 @model StackerSection
 
-<div class="kcc-secname"><h2 v-pre>@Model.Heading</h2></div>
+<div class="kcc-secname"><h2 class="kcc-section" v-pre>@Model.Heading</h2></div>
 
-<div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-2">
+<div class="grid items-start gap-x-7 gap-y-rule-1.5 lg:grid-cols-2">
   @if (Model.HasSheet)
   {
     <div class="kcc-slip kcc-tear-@Model.Tear w-full lg:sticky lg:top-[calc(2rem_+_var(--pad-offset,0px))] lg:transition-[top]">
       <div class="kcc-torn">
         <div class="kcc-sheet">
-          <div class="grid gap-6">
+          <div class="grid gap-y-rule-1">
             @if (!string.IsNullOrWhiteSpace(Model.BodyHtml))
             {
               <div class="kcc-body kcc-prose" v-pre>@Html.Raw(Model.BodyHtml)</div>

@@ -104,7 +104,7 @@ describe('RecipeCardRow sheet', () => {
 describe('RecipeCardRow body', () => {
   it('sets the name at heading size and keeps the rating hook on the meta line', async () => {
     const html = await renderHit(hit())
-    expect(html).toContain(`<h3 class="kcc-h4">${NAME}</h3>`)
+    expect(html).toContain(`<h3 class="kcc-title">${NAME}</h3>`)
     const rating = tagWith(html, 'data-testid="recipe-card-rating"')
     expect(rating).toContain('class="kcc-num"')
     expect(rating).toContain('data-average-rating="4.8"')
@@ -120,7 +120,7 @@ describe('RecipeCardRow body', () => {
 
   it('closes a variant row with its total time in Sono over a kick', async () => {
     const html = await renderVariant(variant())
-    expect(html).toContain(`<h3 class="kcc-h4">${VARIANT}</h3>`)
+    expect(html).toContain(`<h3 class="kcc-title">${VARIANT}</h3>`)
     expect(html).toContain('<span class="kcc-num block">35Min</span>')
     expect(html).toContain('<span class="kcc-kick block">Total</span>')
     expect(html).toContain('<span class="kcc-badge">')

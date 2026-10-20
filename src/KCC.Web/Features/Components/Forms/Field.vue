@@ -11,15 +11,18 @@
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col">
     <label :for="controlId" class="kcc-lbl">
       <slot name="label">{{ label }}</slot>
       <span v-if="required" aria-hidden="true"> *</span>
     </label>
-    <slot
-      :describedby="error ? `${controlId}-error` : hint || $slots.hint ? `${controlId}-hint` : undefined"
-      :error="!!error"
-    />
+    <div class="flex min-h-rule-2 flex-col justify-center">
+      <slot
+        :describedby="error ? `${controlId}-error` : hint || $slots.hint ? `${controlId}-hint` : undefined"
+        :error="!!error"
+      />
+    </div>
+    <slot name="after" />
     <p v-if="error" :id="`${controlId}-error`" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
     <p v-else-if="hint || $slots.hint" :id="`${controlId}-hint`" class="kcc-kick text-ink">
       <slot name="hint">{{ hint }}</slot>

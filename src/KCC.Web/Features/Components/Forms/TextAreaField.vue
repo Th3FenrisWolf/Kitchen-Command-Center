@@ -27,7 +27,7 @@
 
   const textareaRef = ref<HTMLTextAreaElement | null>(null)
   const isResizing = ref(false)
-  const height = ref(75)
+  const height = ref(72)
   const delta = ref(0)
 
   const startResize = (event: MouseEvent) => {
@@ -75,7 +75,7 @@
       class="h-full resize-none"
     ></textarea>
     <span class="absolute right-1 bottom-0">
-      <i class="fa-duotone fa-grip-lines rotate-135 cursor-ns-resize text-[15px] text-ink-soft" @mousedown="startResize"></i>
+      <i class="fa-duotone fa-grip-lines rotate-135 cursor-ns-resize text-ink-soft" @mousedown="startResize"></i>
     </span>
   </label>
 </template>

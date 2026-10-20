@@ -47,7 +47,7 @@
           <span v-if="reviewCount" class="text-ink-soft"><span aria-hidden="true">· </span>{{ reviewCount }}</span>
         </span>
 
-        <h3 class="kcc-h4">{{ card.name }}</h3>
+        <h3 class="kcc-title">{{ card.name }}</h3>
 
         <p v-if="notes.length || chips.length" class="kcc-meta">
           <span v-for="note in notes" :key="note">{{ note }}</span>
@@ -58,7 +58,7 @@
 
         <p v-if="card.description" class="kcc-body">{{ card.description }}</p>
 
-        <div v-if="card.tags.length" class="kcc-badges mt-6">
+        <div v-if="card.tags.length" class="kcc-badges mt-rule-1">
           <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
         </div>
       </div>

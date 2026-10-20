@@ -34,7 +34,7 @@
     :inert="state !== 'open'"
     :style="{ '--r': tilt, '--pad-card-w': width, left: left === undefined ? undefined : `${left}px` }"
   >
-    <div class="pt-6">
+    <div class="pt-rule-1">
       <slot />
     </div>
   </KccSheet>

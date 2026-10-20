@@ -53,7 +53,7 @@
     <ResourceString for="PerServing" as="p" class="kcc-kick" />
 
     <template v-if="provided">
-      <div v-if="headline.length" class="kcc-stats mt-6">
+      <div v-if="headline.length" class="kcc-stats mt-rule-1">
         <div v-for="row in headline" :key="row.key">
           <p class="kcc-lbl">{{ row.label }}</p>
           <p class="kcc-v">
@@ -62,17 +62,16 @@
         </div>
       </div>
 
-      <!-- Each fill is 6px centred in a 24px band, so the run of bars keeps to the rule. -->
-      <div v-if="bars.length" class="mt-6">
+      <div v-if="bars.length" class="mt-rule-1">
         <div v-for="bar in bars" :key="bar.key">
           <p class="kcc-kick">{{ bar.label }}</p>
-          <div class="flex h-6 items-center">
+          <div class="flex h-rule-1 items-center">
             <span class="block h-1.5 bg-peach" :style="{ width: bar.width }"></span>
           </div>
         </div>
       </div>
 
-      <dl v-if="rest.length" class="mt-6 grid grid-cols-[1fr_auto] items-baseline gap-x-7">
+      <dl v-if="rest.length" class="mt-rule-1 grid grid-cols-[1fr_auto] items-baseline gap-x-7">
         <template v-for="row in rest" :key="row.key">
           <dt class="kcc-lbl">{{ row.label }}</dt>
           <dd class="kcc-num text-right">
@@ -82,6 +81,6 @@
       </dl>
     </template>
 
-    <ResourceString v-else for="NutritionNotProvided" as="p" class="kcc-body mt-6" />
+    <ResourceString v-else for="NutritionNotProvided" as="p" class="kcc-body mt-rule-1" />
   </KccSheet>
 </template>

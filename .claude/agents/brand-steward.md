@@ -77,9 +77,14 @@ For each file, check every rule below and record hits as `path:line — rule —
   `kcc-q`, `kcc-n`. Utility classes, ids and aria attributes are not text.
 - Meta or kick text not in Sono (`kcc-kick`, `kcc-lbl`, `kcc-meta`).
 - Display or heading text whose font is not APCasual: a heading element with a font-family override, or
-  display-size text on a non-heading element without `kcc-h3`, `kcc-h4` or `kcc-mark`. Bare `h1`–`h3`
+  display-size text on a non-heading element without a role class (`kcc-display`, `kcc-section`, `kcc-heading`
+  or `kcc-title`), or any use of the two retired heading classes named by level. Bare `h1`–`h6`
   already take APCasual from `Typography.css`.
-- Line-heights off the 24px rule (`leading-*` other than `leading-6` / `leading-12`, arbitrary `leading-[…]`).
+- Any `leading-*`, arbitrary `text-[…]`, Tailwind default size (`text-xs` to `text-9xl`) or line-height off the 24px
+  rule; a `font-size` outside the `--text-*` and `--icon-*` tokens. `typeScale.test.ts` is the guard.
+- Vertical spacing not in rule units: `mt|mb|my|pt|pb|py|gap-y|space-y` with `3`, `6`, `9`, `12`, `18` or an
+  arbitrary length, and a `gap-6|9|12|18` on a stacking flex or grid. Use `mt-rule-*`, `gap-y-rule-*`,
+  `space-y-rule-*`.
 - More than one `kcc-hand` on a sheet, or a hand note carrying information the sheet needs.
 
 **Icons**
@@ -112,7 +117,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 From `src/KCC.Web`:
 
 ```bash
-yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography kitClasses motion pile
+yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile
 ```
 
 Report failures verbatim. `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` stays empty;

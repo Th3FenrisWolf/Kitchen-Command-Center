@@ -100,7 +100,7 @@
 </script>
 
 <template>
-  <SmallHero dark class="mt-6">
+  <SmallHero dark class="mt-rule-1">
     <template #title>
       <ResourceString for="AccountSettings" />
     </template>
@@ -112,13 +112,13 @@
     </template>
   </SmallHero>
 
-  <div class="mt-6 grid gap-x-7 gap-y-9 lg:grid-cols-2">
+  <div class="mt-rule-1 grid gap-x-7 gap-y-rule-1.5 lg:grid-cols-2">
     <KccSheet crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
       <template #label><ResourceString for="Profile" /></template>
 
       <h2 class="sr-only">{{ rs('Profile') }}</h2>
 
-      <form class="flex flex-col gap-6" @submit.prevent="saveProfile">
+      <form class="flex flex-col gap-y-rule-1" @submit.prevent="saveProfile">
         <Field :control-id="ids.firstName">
           <template #label><ResourceString for="FirstName" /></template>
           <InputField :id="ids.firstName" v-model="firstName" type="text" name="FirstName" autocomplete="given-name" />
@@ -166,7 +166,7 @@
 
       <h2 class="sr-only">{{ rs('ChangePassword') }}</h2>
 
-      <form class="flex flex-col gap-6" @submit.prevent="changePassword">
+      <form class="flex flex-col gap-y-rule-1" @submit.prevent="changePassword">
         <Field :control-id="ids.currentPassword" required>
           <template #label><ResourceString for="CurrentPassword" /></template>
           <InputField
@@ -216,16 +216,17 @@
 
       <h2 class="sr-only">{{ rs('Appearance') }}</h2>
 
-      <div class="flex flex-col gap-6">
-        <div class="flex flex-col gap-2">
-          <SegmentedControl
-            :model-value="rampSetting"
-            :options="rampOptions"
-            :aria-label="rs('Appearance')"
-            :aria-describedby="ids.rampHint"
-            class="self-start"
-            @update:model-value="chooseRamp"
-          />
+      <div class="flex flex-col gap-y-rule-1">
+        <div class="flex flex-col">
+          <div class="flex min-h-rule-2 items-center">
+            <SegmentedControl
+              :model-value="rampSetting"
+              :options="rampOptions"
+              :aria-label="rs('Appearance')"
+              :aria-describedby="ids.rampHint"
+              @update:model-value="chooseRamp"
+            />
+          </div>
           <p :id="ids.rampHint" class="kcc-kick text-ink"><ResourceString for="AppearanceHint" /></p>
         </div>
 

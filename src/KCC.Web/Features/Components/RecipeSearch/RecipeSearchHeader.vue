@@ -28,18 +28,18 @@
     :tear="3"
     wide
     pad="24px"
-    class="my-6"
+    class="my-rule-1"
   >
     <ResourceString for="BrowseTheKitchen" as="p" class="kcc-kick" />
 
-    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-3">
-      <ResourceString for="SearchRecipes" as="h1" class="kcc-h3" />
+    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-rule-0.5">
+      <ResourceString for="SearchRecipes" as="h1" class="kcc-display" />
       <Button as="a" :href="createRecipeUrl">
         <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="CreateRecipe" />
       </Button>
     </div>
 
-    <form class="mt-6 flex flex-wrap items-center gap-3" @submit.prevent="emit('submit')">
+    <form class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0.5" @submit.prevent="emit('submit')">
       <div class="kcc-field min-w-0 flex-1 grid-cols-[auto_1fr_auto]">
         <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
         <input v-model="draft" :placeholder="searchPlaceholder" data-testid="recipe-search-input" />
@@ -58,6 +58,6 @@
       </Button>
     </form>
 
-    <div v-if="$slots.default" class="mt-6"><slot /></div>
+    <div v-if="$slots.default" class="mt-rule-1"><slot /></div>
   </KccSheet>
 </template>

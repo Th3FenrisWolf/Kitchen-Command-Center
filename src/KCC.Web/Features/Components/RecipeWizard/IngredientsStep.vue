@@ -47,12 +47,12 @@
 
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>
 
-    <form class="flex flex-col gap-6" @submit.prevent="emit('next')">
+    <form class="flex flex-col gap-y-rule-1" @submit.prevent="emit('next')">
       <ul>
         <li
           v-for="(ingredient, index) in values.ingredients"
           :key="index"
-          class="grid grid-cols-[36px_minmax(0,1fr)_minmax(0,1fr)_36px] items-center gap-x-2 gap-y-3 pb-9 sm:grid-cols-[minmax(0,1fr)_36px_5rem_5rem_36px] sm:pb-3"
+          class="grid auto-rows-[minmax(var(--bl),auto)] grid-cols-[36px_minmax(0,1fr)_minmax(0,1fr)_36px] grid-rows-[repeat(2,calc(var(--bl)*2))] items-center gap-x-2 pb-rule-1 sm:grid-cols-[minmax(0,1fr)_36px_5rem_5rem_36px] sm:grid-rows-[calc(var(--bl)*2)] sm:pb-0"
         >
           <InputField
             :id="nameId(index)"
@@ -109,7 +109,7 @@
             <i class="fa-duotone fa-xmark" aria-hidden="true"></i>
           </Button>
 
-          <ValueMark v-if="ingredient.mark" :id="markId(nameId(index))" class="col-span-full mb-3" :mark="ingredient.mark" />
+          <ValueMark v-if="ingredient.mark" :id="markId(nameId(index))" class="col-span-full" :mark="ingredient.mark" />
         </li>
       </ul>
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import LoginView from '~/Pages/Account/Login/LoginView.Component.vue'
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../../support/ssr'
+import { classesOf, enclosingTag } from '../../../../support/recipeWizard'
 
 const STRINGS = {
   'Login.SignIn': 'Sign in',
@@ -93,6 +94,22 @@ describe('LoginView', () => {
     expect(form).toMatch(/<label for="[^"]+" class="kcc-box"><\/label>/)
     expect(form).toContain('Remember me')
   })
+
+  it.each([
+    ['sign-in', false, ['UserName', 'Password']],
+    ['sign-up', true, ['UserName', 'Email', 'Password', 'PasswordConfirmation']],
+  ])(
+    'centres each %s field and the submit button in two rules, so the lines after them land on the rule',
+    async (_mode, register, names) => {
+      const form = formOf(await render(register as boolean))
+      const boxes = [
+        ...(names as string[]).map((name) => enclosingTag(form, `name="${name}"`, 1)),
+        enclosingTag(form, 'type="submit"'),
+      ]
+
+      boxes.forEach((box) => expect(classesOf(box)).toEqual(['flex', 'min-h-rule-2', 'flex-col', 'justify-center']))
+    },
+  )
 
   it('keeps the error well off the sheet until a sign-in fails', async () => {
     const html = await render()

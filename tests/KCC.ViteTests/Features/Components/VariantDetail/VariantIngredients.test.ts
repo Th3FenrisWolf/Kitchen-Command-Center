@@ -59,6 +59,13 @@ describe('VariantIngredients sheet', () => {
     expect(kick).not.toContain('kcc-num')
   })
 
+  it('holds the kick on the first rule and the stepper on two more, so the list starts on the ruling', async () => {
+    const html = await render()
+
+    expect(html).toMatch(/<div class="flex flex-wrap items-start justify-between gap-x-7">\s*<p class="kcc-kick">/)
+    expect(html).toMatch(/<div class="flex min-h-rule-2 items-center gap-3">\s*<span class="kcc-lbl">\s*Makes/)
+  })
+
   it('prints the ingredients as a checklist on the rule: box, name, quantity in Sono', async () => {
     const html = await render()
 

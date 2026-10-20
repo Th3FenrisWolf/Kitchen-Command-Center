@@ -13,6 +13,33 @@
 /* `static` keeps every token in the output even when no utility references it: the kit CSS and the dark
    ramp read these variables directly, so Tailwind's unused-variable pruning would silently break them. */
 @theme static {
+  /* Tailwind's default sizes would let a size outside the scale back in through a utility. */
+  --text-*: initial;
+  --text-display: 2.5rem;
+  --text-display--line-height: 3rem;
+  --text-display-phone: 2.25rem;
+  --text-display-phone--line-height: 3rem;
+  --text-section: 2rem;
+  --text-section--line-height: 3rem;
+  --text-heading: 1.5rem;
+  --text-heading--line-height: 1.5rem;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.5rem;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5rem;
+  --text-caps: 0.875rem;
+  --text-caps--line-height: 1.5rem;
+  --text-readout: 4rem;
+  --text-readout--line-height: 4.5rem;
+
+  --control-md: 2.25rem;
+  --control-lg: 3rem;
+  --pill-sm: 1.5rem;
+
+  --icon-sm: 1.5rem;
+  --icon-md: 2.25rem;
+  --icon-lg: 3rem;
+
   /* Desk, paper, ink — light is the default ramp; Torn/Tokens.css redefines these for data-theme="dark". */
   --color-desk: oklch(0.884 0.016 288);
   --color-desk-2: oklch(0.836 0.018 288);
@@ -63,6 +90,52 @@
   --font-mono: var(--font-sono);
 
   --grid-template-columns-content-aside: min(calc(50% - 16px), 24rem) minmax(calc(50% - 16px), 1fr);
+}
+
+@utility mt-rule-* {
+  margin-top: calc(var(--bl) * --value(number));
+}
+
+@utility mb-rule-* {
+  margin-bottom: calc(var(--bl) * --value(number));
+}
+
+@utility my-rule-* {
+  margin-block: calc(var(--bl) * --value(number));
+}
+
+@utility pt-rule-* {
+  padding-top: calc(var(--bl) * --value(number));
+}
+
+@utility pb-rule-* {
+  padding-bottom: calc(var(--bl) * --value(number));
+}
+
+@utility py-rule-* {
+  padding-block: calc(var(--bl) * --value(number));
+}
+
+@utility gap-y-rule-* {
+  row-gap: calc(var(--bl) * --value(number));
+}
+
+@utility space-y-rule-* {
+  :where(& > :not(:last-child)) {
+    margin-block-end: calc(var(--bl) * --value(number));
+  }
+}
+
+@utility h-rule-* {
+  height: calc(var(--bl) * --value(number));
+}
+
+@utility min-h-rule-* {
+  min-height: calc(var(--bl) * --value(number));
+}
+
+@utility top-rule-* {
+  top: calc(var(--bl) * --value(number));
 }
 
 @layer base {

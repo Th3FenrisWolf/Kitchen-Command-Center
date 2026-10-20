@@ -23,7 +23,7 @@ describe('CookModeStep', () => {
   it('sets the instruction at display size, to be read from across the kitchen', async () => {
     const html = await render()
 
-    expect(html).toMatch(/<p class="kcc-h3">\s*Simmer the sauce for 10-12 minutes, stirring often\.\s*<\/p>/)
+    expect(html).toMatch(/<p class="kcc-section">\s*Simmer the sauce for 10-12 minutes, stirring often\.\s*<\/p>/)
   })
 
   it('drops the number disc: the header kick counts the steps', async () => {

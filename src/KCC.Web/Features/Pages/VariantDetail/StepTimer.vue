@@ -68,12 +68,17 @@
 </script>
 
 <template>
-  <div role="timer" aria-live="off" :aria-label="`${label}: ${formatted}`" class="flex flex-wrap items-center gap-6">
+  <div
+    role="timer"
+    aria-live="off"
+    :aria-label="`${label}: ${formatted}`"
+    class="flex flex-wrap items-center gap-x-6 gap-y-rule-1"
+  >
     <div>
       <p class="kcc-kick">{{ label }}</p>
       <p class="flex items-center gap-3">
-        <i class="fa-duotone fa-stopwatch text-2xl" aria-hidden="true"></i>
-        <span class="kcc-num text-[64px] leading-[72px]" data-test="timer-display">{{ formatted }}</span>
+        <i class="fa-duotone fa-stopwatch kcc-icon-sm" aria-hidden="true"></i>
+        <span class="kcc-num text-readout" data-test="timer-display">{{ formatted }}</span>
       </p>
     </div>
     <div class="flex items-center gap-3">

@@ -104,7 +104,7 @@
 </script>
 
 <template>
-  <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" class="mt-6" />
+  <Breadcrumbs v-if="breadcrumbs?.length" :items="breadcrumbs" class="mt-rule-1" />
 
   <RecipeSearchHeader v-model:draft="draft" :create-recipe-url="createRecipeUrl" @submit="onSubmit" @clear="onClearSearch">
     <RecipeResultsToolbar v-model:sort="state.sort" v-model:view="state.view" />
@@ -112,7 +112,7 @@
 
   <Button
     :variant="sheetOpen ? 'ink' : 'ghost'"
-    class="mb-6 lg:hidden"
+    class="mb-rule-1 lg:hidden"
     :aria-expanded="sheetOpen"
     aria-controls="recipe-filters"
     @click="sheetOpen = !sheetOpen"
@@ -122,11 +122,11 @@
     <span v-if="activeCount" class="kcc-num">{{ activeCount }}</span>
   </Button>
 
-  <div class="grid items-start gap-x-7 gap-y-9 lg:grid-cols-[244px_1fr]">
+  <div class="grid items-start gap-x-7 gap-y-rule-1.5 lg:grid-cols-[244px_1fr]">
     <aside
       id="recipe-filters"
       :class="[
-        'lg:sticky lg:top-[calc(1.5rem_+_var(--pad-offset,0px))] lg:block lg:transition-[top]',
+        'lg:sticky lg:top-[calc(var(--bl)_+_var(--pad-offset,0px))] lg:block lg:transition-[top]',
         { hidden: !sheetOpen },
       ]"
     >
@@ -149,7 +149,7 @@
       aria-live="polite"
     >
       <div class="kcc-secname">
-        <ResourceString for="Recipes" as="h2" />
+        <ResourceString for="Recipes" as="h2" class="kcc-section" />
         <p class="kcc-kick">
           <span class="kcc-num">{{ total }}</span> {{ countNote }}
         </p>
@@ -157,12 +157,12 @@
 
       <AppliedFilterChips :chips="chips" @remove="removeChip" @clear-all="clearAll" />
 
-      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" class="mt-12 mb-9" />
+      <FeaturedRecipeCard v-if="spotlight" :card="hitToFeatured(spotlight, rs)" class="mt-rule-2 mb-rule-1.5" />
 
       <template v-if="listed.length || spotlight">
         <div
           v-if="state.view === 'grid'"
-          class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-9"
+          class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-x-7 gap-y-rule-1.5"
         >
           <RecipeCard
             v-for="(recipe, index) in listed"
@@ -173,7 +173,7 @@
           />
         </div>
 
-        <div v-else class="flex flex-col gap-y-9">
+        <div v-else class="flex flex-col gap-y-rule-1.5">
           <RecipeCardRow
             v-for="(recipe, index) in listed"
             :key="recipe.slug"
@@ -183,7 +183,7 @@
           />
         </div>
 
-        <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-6">
+        <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-rule-1">
           <span v-if="loading" class="flex items-center gap-2.5">
             <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i> <ResourceString for="LoadingMore" />
           </span>

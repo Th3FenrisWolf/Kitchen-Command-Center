@@ -33,7 +33,7 @@
 </script>
 
 <template>
-  <div ref="containerRef" class="grid items-center gap-9">
+  <div ref="containerRef" class="grid items-center gap-y-rule-1.5">
     <div
       v-for="(card, index) in props.cards"
       :key="card.heading"
@@ -52,7 +52,7 @@
         :at="{ x: '85%', y: '90%', w: '55%', h: '50%' }"
         class="origin-top transition-all duration-100 [.last_div]:scale-100 [.stuck]:scale-95"
       >
-        <h3 class="kcc-h4">{{ card.heading }}</h3>
+        <h3 class="kcc-title">{{ card.heading }}</h3>
         <p class="kcc-body">{{ card.subHeading }}</p>
       </KccSheet>
     </div>

@@ -45,11 +45,11 @@
       <div class="kcc-sheet" style="--pad: 48px">
         <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
 
-        <div class="grid gap-x-7 gap-y-6 sm:grid-cols-2">
+        <div class="grid gap-x-7 gap-y-rule-1 sm:grid-cols-2">
           <div>
             <p v-if="eyebrow" class="kcc-kick"><slot name="eyebrow" /></p>
 
-            <h1 class="kcc-h3">{{ title }}</h1>
+            <h1 class="kcc-display">{{ title }}</h1>
 
             <p class="kcc-kick flex flex-wrap items-center gap-x-4 text-ink">
               <span v-if="reviewCount" class="inline-flex items-center gap-2">

@@ -57,11 +57,11 @@ const render = (over: Record<string, unknown> = {}) =>
   )
 
 describe('RecipeDetailView', () => {
-  it('opens with the trail on the rule and sets the page 72px apart', async () => {
+  it('opens with the trail on the rule and sets the page three rules apart', async () => {
     const html = await render()
 
-    expect(tagWith(html, 'aria-label="Breadcrumb"')).toContain('mt-6')
-    expect(html).toContain('space-y-[72px]')
+    expect(tagWith(html, 'aria-label="Breadcrumb"')).toContain('mt-rule-1')
+    expect(html).toContain('space-y-rule-3')
   })
 
   it('hands the hero the one marker action, carrying the recipe to the variant form', async () => {
@@ -119,7 +119,7 @@ describe('RecipeDetailView', () => {
   it('names the variants section and counts the shown against the whole', async () => {
     const html = await render()
 
-    expect(html).toMatch(/<div class="kcc-secname"><h2>\s*All Variants\s*<\/h2>/)
+    expect(html).toMatch(/<div class="kcc-secname"><h2 class="kcc-section">\s*All Variants\s*<\/h2>/)
     expect(html).toMatch(/<p class="kcc-kick"><span class="kcc-num">4<\/span> of <span class="kcc-num">4<\/span><\/p>/)
   })
 
@@ -131,10 +131,10 @@ describe('RecipeDetailView', () => {
     expect(html.indexOf('<h2')).toBeLessThan(html.indexOf('<h3'))
   })
 
-  it('lists the variants under the toolbar, 36px clear of it', async () => {
+  it('lists the variants under the toolbar, a rule and a half clear of it', async () => {
     const html = await render()
 
-    expect(html).toContain('space-y-9')
+    expect(html).toContain('space-y-rule-1.5')
     expect(html.indexOf('data-testid="sort-newest"')).toBeLessThan(html.indexOf('data-variant-name'))
     expect((html.match(/data-variant-name=/g) ?? []).length).toBe(4)
   })

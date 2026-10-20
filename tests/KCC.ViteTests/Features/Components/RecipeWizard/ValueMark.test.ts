@@ -57,14 +57,14 @@ describe('ValueMark', () => {
     expect(classesOf(reasonTag(html, text))).toEqual(expect.arrayContaining(['kcc-body']))
   })
 
-  it('takes whole rules: a block row that stacks its lines with no gap, and a 22px badge padded to the first rule', async () => {
+  it('takes whole rules: a block row that stacks its lines with no gap, and a 24px badge the kit centres on the first rule', async () => {
     const html = await render(mark({ kind: 'unclear', reason: 'Printed as 2 to 3' }))
     const root = classesOf(tagWith(html, 'data-testid="value-mark"'))
 
     expect(root).toEqual(expect.arrayContaining(['flex', 'items-start', 'gap-x-2']))
     expect(root).not.toEqual(expect.arrayContaining(['inline-flex']))
     expect(root.filter((name) => /^gap-(y-)?\d/.test(name))).toEqual([])
-    expect(classesOf(tagWith(html, 'class="kcc-badge'))).toEqual(['kcc-badge', 'my-px'])
+    expect(classesOf(tagWith(html, 'class="kcc-badge'))).toEqual(['kcc-badge'])
   })
 
   it('shows the kind alone when the mark gives no reason', async () => {

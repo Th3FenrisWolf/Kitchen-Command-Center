@@ -10,7 +10,7 @@ describe('StepNav', () => {
     const forward = classesOf(enclosingTag(html, 'data-testid="back-to-review"'))
     const row = classesOf(enclosingTag(html, 'data-testid="back-to-review"', 1))
 
-    expect(forward).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6']))
-    expect(row).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-6']))
+    expect(forward).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']))
+    expect(row).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']))
   })
 })

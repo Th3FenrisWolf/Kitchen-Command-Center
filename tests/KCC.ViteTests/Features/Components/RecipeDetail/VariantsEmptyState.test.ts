@@ -31,10 +31,10 @@ describe('VariantsEmptyState', () => {
   it('says what happened at heading size and leaves the hint as the one hand note', async () => {
     const html = await render()
 
-    expect(html).toMatch(/<p class="kcc-h4">\s*NoVariantsMatch\s*<\/p>/)
+    expect(html).toMatch(/<p class="kcc-title">\s*NoVariantsMatch\s*<\/p>/)
     expect(html).toMatch(/<p class="kcc-hand">\s*TryDifferentFilter\s*<\/p>/)
     expect((html.match(/kcc-hand/g) ?? []).length).toBe(1)
-    expect(html).toContain('fa-duotone fa-bowl-food')
+    expect(html).toContain('fa-duotone fa-bowl-food kcc-icon-lg')
   })
 
   it('offers the way back as a hairline pill', async () => {

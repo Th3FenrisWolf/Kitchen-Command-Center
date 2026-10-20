@@ -31,7 +31,7 @@
       <span class="kcc-num">{{ instructions.length }}</span> steps
     </p>
 
-    <ol class="kcc-steps mt-6">
+    <ol class="kcc-steps mt-rule-1">
       <li v-for="(instruction, i) in instructions" :key="i">
         <span class="kcc-n">{{ stepNumber(instruction, i) }}</span>
         <p class="kcc-body">{{ instruction.text }}</p>
