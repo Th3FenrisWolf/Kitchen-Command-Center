@@ -29,6 +29,17 @@ describe('IngredientsStep', () => {
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
   })
 
+  it('sizes the icon-button tracks of each row to a 32px icon button, not a 36px control', async () => {
+    const row = classesOf(tagWith(await render(), 'grid-cols-'))
+    const tracks = row.filter((name) => /grid-cols-/.test(name))
+
+    expect(tracks.length).toBe(2)
+    for (const track of tracks) {
+      expect(track).not.toContain('36px')
+      expect(track).toContain('var(--control-sm)')
+    }
+  })
+
   it('hooks the name input of every ingredient row', async () => {
     const names = (await render()).match(/<input[^>]*data-testid="wizard-ingredient-name"[^>]*>/g) ?? []
 
@@ -79,7 +90,7 @@ describe('IngredientsStep with an eyeballed ingredient', () => {
     const [salt = '', flour = ''] = rows(await renderEyeballed())
     const row = (html: string) => classesOf(html.match(/^<li\b[^>]*>/)?.[0] ?? '')
 
-    expect(row(salt)).toEqual(expect.arrayContaining(['grid', 'items-center']))
+    expect(row(salt)).toEqual(expect.arrayContaining(['grid', 'items-start']))
     expect(row(salt)).toEqual(row(flour))
     expect(classesOf(tagWith(salt, '>\\s*«ToTaste»'))).toContain('col-span-2')
   })
@@ -93,7 +104,7 @@ describe('IngredientsStep with an eyeballed ingredient', () => {
       )
   })
 
-  it('centres each line of controls in two rules and gives a mark one, so every row and its text land on the rule', async () => {
+  it('starts each line of controls on a rule in two rules and gives a mark one, so every row and its text land on the rule', async () => {
     const html = await renderEyeballed()
     const [salt = ''] = rows(html)
     const row = classesOf(salt.match(/^<li\b[^>]*>/)?.[0] ?? '')
@@ -103,12 +114,18 @@ describe('IngredientsStep with an eyeballed ingredient', () => {
         'grid-rows-[repeat(2,calc(var(--bl)*2))]',
         'sm:grid-rows-[calc(var(--bl)*2)]',
         'auto-rows-[minmax(var(--bl),auto)]',
-        'items-center',
+        'items-start',
         'gap-x-2',
       ]),
     )
     expect(row.filter((name) => /^(sm:)?gap-y-/.test(name))).toEqual([])
     expect(classesOf(enclosingTag(html, '<li\\b')).filter((name) => /^gap/.test(name))).toEqual([])
+  })
+
+  it('sets Add ingredient in a kit row, so the step nav below it starts on the rule', async () => {
+    const html = await render()
+
+    expect(classesOf(enclosingTag(html, 'fa-plus', 1))).toEqual(['kcc-row'])
   })
 
   it('separates the two-line rows of a phone by a rule, and the one-line rows from sm up by nothing more', async () => {

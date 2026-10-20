@@ -12,30 +12,51 @@ const template = readFileSync(
 const header = template.match(/<header[\s\S]*?<\/header>/)?.[0] ?? ''
 
 describe('CookMode header', () => {
-  it('stacks its rows with no gap, so a wrapped header still ends on a rule', () => {
+  it('starts every item on a line and stacks its rows with no gap, so a wrapped header still ends on a rule', () => {
     expect(classesOf(header.match(/^<header[^>]*>/)?.[0] ?? '')).toEqual([
       'flex',
       'flex-wrap',
-      'items-center',
+      'items-start',
       'justify-between',
       'gap-x-6',
     ])
   })
 
-  it('starts the step count on the first rule below 640px, where the row is two rules tall', () => {
-    expect(classesOf(tagWith(header, 'data-test="cook-progress"'))).toEqual(['kcc-kick', 'self-start', 'sm:self-auto'])
+  it('starts the step count on the first rule at every width', () => {
+    expect(classesOf(tagWith(header, 'data-test="cook-progress"'))).toEqual(['kcc-kick'])
   })
 
-  it('centres the close button in two rules', () => {
-    expect(classesOf(enclosingTag(header, 'data-test="cook-close"'))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
+  it('starts the close button on the line of its two-rule row, so the control shift lands it', () => {
+    expect(classesOf(enclosingTag(header, 'data-test="cook-close"'))).toEqual(['flex', 'min-h-rule-2', 'items-start'])
   })
 
-  it('sets the servings stepper in two rules under its label, three rules in all', () => {
+  it('sets the servings stepper in two rules under its label, its count on the first, three rules in all', () => {
     expect(classesOf(enclosingTag(header, 'data-test="cook-servings-dec"'))).toEqual([
       'flex',
       'min-h-rule-2',
-      'items-center',
+      'items-start',
       'gap-3',
     ])
+  })
+})
+
+describe('CookMode servings', () => {
+  it.each(['cook-servings-dec', 'cook-servings-inc'])(
+    'centres %s on the line of the count, which is set at the title size',
+    (hook) => {
+      const button = header.match(new RegExp(`<Button[^>]*data-test="${hook}"[^>]*>`))?.[0] ?? ''
+      expect(classesOf(button)).toContain('[--centre-size:var(--text-title)]')
+      expect(header).toMatch(/<span class="kcc-num[^"]*\btext-title\b/)
+    },
+  )
+})
+
+describe('CookMode frame', () => {
+  it('rounds its column down to whole rules, so the footer at its foot starts on one', () => {
+    expect(template).toContain('<div class="flex h-[round(down,100%,var(--bl))] flex-col">')
+  })
+
+  it('wraps the step check two rules below the navigation pills', () => {
+    expect(classesOf(template.match(/<footer[^>]*>/)?.[0] ?? '')).toContain('gap-y-rule-1')
   })
 })

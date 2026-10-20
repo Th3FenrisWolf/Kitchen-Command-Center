@@ -59,6 +59,7 @@
 
 <template>
   <KccSheet
+    margin
     crisp
     wide
     :tear

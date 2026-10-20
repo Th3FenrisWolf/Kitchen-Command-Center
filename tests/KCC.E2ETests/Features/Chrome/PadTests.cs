@@ -162,7 +162,7 @@ public class PadTests : BasePageTests
         await Page.Mouse.WheelAsync(0, -120);
 
         await Expect(header).Not.ToHaveClassAsync(tucked);
-        await Expect(filters).ToHaveCSSAsync("top", "126px");
+        await Expect(filters).ToHaveCSSAsync("top", "138px");
     }
 
     [Test]

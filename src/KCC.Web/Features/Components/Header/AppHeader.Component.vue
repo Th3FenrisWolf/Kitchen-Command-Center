@@ -178,7 +178,7 @@
                 <button
                   id="pad-menu-recipes"
                   type="button"
-                  class="pad-menu"
+                  class="pad-menu kcc-control"
                   :class="{ 'kcc-pill': open === 'recipes' }"
                   :aria-expanded="open === 'recipes'"
                   aria-controls="pad-card-recipes"
@@ -192,7 +192,7 @@
                   v-if="nav.member"
                   id="pad-menu-kitchen"
                   type="button"
-                  class="pad-menu"
+                  class="pad-menu kcc-control"
                   :class="{ 'kcc-pill': open === 'kitchen' }"
                   :aria-expanded="open === 'kitchen'"
                   aria-controls="pad-card-kitchen"
@@ -250,7 +250,7 @@
                   v-if="nav.urls.library"
                   id="pad-menu-find"
                   type="button"
-                  class="pad-glyph"
+                  class="pad-glyph kcc-control"
                   :class="{ 'kcc-pill': open === 'find' }"
                   :aria-label="searchLabel"
                   :aria-expanded="open === 'find'"
@@ -262,7 +262,7 @@
                 <button
                   id="pad-menu-menu"
                   type="button"
-                  class="pad-menu"
+                  class="pad-menu kcc-control"
                   :class="{ 'kcc-pill': open === 'menu' }"
                   :aria-expanded="open === 'menu'"
                   aria-controls="pad-card-menu"
@@ -356,6 +356,7 @@
           <PadCard
             id="pad-card-find"
             class="pad-card--phone"
+            scroll
             :state="stateOf('find')"
             :tear="1"
             :tilt="0.25"
@@ -386,6 +387,7 @@
         <PadCard
           id="pad-card-menu"
           class="pad-card--phone"
+          scroll
           :state="stateOf('menu')"
           :tear="4"
           :tilt="-0.3"
@@ -426,6 +428,12 @@
     z-index: 5;
   }
 
+  /* The controls shift up onto the bar's first line, and the hero tear bites up to 8px into the top edge, so the
+     bar starts a whole rule down or the tear would cut their focus rings. */
+  .pad-top > .kcc-torn > .kcc-sheet {
+    padding-top: var(--bl);
+  }
+
   .pad-page {
     inset: 0;
     pointer-events: none;
@@ -452,15 +460,18 @@
   }
 
   .pad-bar {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     gap: 18px;
     min-height: 48px;
     padding: 0 6px;
   }
 
+  /* The hero tear cuts its top-right corner away diagonally, and the menu's small radius brings its ring's corner
+     into that cut unless it ends a little further in. */
   .pad-bar--phone {
     display: none;
+    padding-inline-end: 12px;
   }
 
   .pad-grow {
@@ -483,9 +494,16 @@
   }
 
   .pad-menus {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     gap: 4px;
+  }
+
+  /* The kit centres a control on a Sono line; a menu's label is Hazelnut at the body size, so the Sono size
+     that shares its centre stands in for it. */
+  .pad-menu,
+  .pad-glyph {
+    --centre-size: calc(var(--k-hazelnut) / var(--k-sono) * var(--text-body));
   }
 
   .pad-menu {
@@ -550,19 +568,20 @@
   }
 
   .pad-glyph {
+    --h: var(--control-sm);
     border-radius: 999px;
     cursor: pointer;
     display: grid;
     flex: none;
     font-size: var(--icon-sm);
-    height: var(--control-md);
+    height: var(--control-sm);
     place-items: center;
     transition:
       background-color 300ms,
       color 300ms,
       outline-color 0.2s,
       outline-offset 0.2s;
-    width: var(--control-md);
+    width: var(--control-sm);
   }
 
   .pad-glyph:not(.kcc-pill) {

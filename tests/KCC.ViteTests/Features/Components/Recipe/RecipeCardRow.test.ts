@@ -73,7 +73,7 @@ describe('RecipeCardRow sheet', () => {
 
   it('applies its tile in the flow of the sheet, under one strip of tape', async () => {
     const html = await renderHit(hit())
-    const sheet = html.indexOf('<div class="kcc-sheet flex items-center gap-4"')
+    const sheet = html.indexOf('<div class="kcc-sheet flex items-start gap-4"')
     expect(sheet).toBeGreaterThan(-1)
     expect(html.slice(sheet)).toMatch(
       /^<div class="kcc-sheet[^"]*"[^>]*><div class="kcc-tilewrap kcc-tilewrap--flow flex-none"><div class="kcc-torn size-14"><div class="[^"]*\bkcc-tile\b[^"]*"[^>]*><i class="fa-solid fa-drumstick-bite"><\/i><\/div><\/div><span class="kcc-tape" aria-hidden="true"><\/span><\/div>/,
@@ -83,7 +83,7 @@ describe('RecipeCardRow sheet', () => {
 
   it('pads the row tighter than a card', async () => {
     const html = await renderHit(hit())
-    expect(html).toContain('<div class="kcc-sheet flex items-center gap-4" style="--pad:16px;">')
+    expect(html).toContain('<div class="kcc-sheet flex items-start gap-4" style="--pad:16px;">')
   })
 
   it('lifts its top sheet off the blank through the kit, exactly as the card does', async () => {
@@ -109,6 +109,15 @@ describe('RecipeCardRow body', () => {
     expect(rating).toContain('class="kcc-num"')
     expect(rating).toContain('data-average-rating="4.8"')
     expect(html).toMatch(/<i class="fa-duotone fa-star"[^>]*><\/i>\s*4\.8/)
+  })
+
+  it('starts the name, the meta and the badges each on a line of their own, top-aligned beside the tile', async () => {
+    const html = await renderHit(hit())
+    const column = html.slice(html.indexOf('<div class="min-w-0 flex-1">'))
+
+    expect(column).toMatch(
+      /^<div class="min-w-0 flex-1"><h3 class="kcc-title">[^<]*<\/h3><p class="kcc-meta">[\s\S]*?<\/p><div class="kcc-badges">/,
+    )
   })
 
   it('says a recipe is unrated instead of showing it a zero', async () => {

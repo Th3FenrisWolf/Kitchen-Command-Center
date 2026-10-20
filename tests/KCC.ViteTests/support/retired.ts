@@ -23,6 +23,7 @@ export const RETIRED = new RegExp(
     `${EDGE[0]}sk-[a-z][a-z0-9-]*`, // the Softbound kit
     '\\bv-ink\\b|\\bdata-ink\\b', // the drawn outline
     `${EDGE[0]}kcc-h[34]${EDGE[1]}`, // heading sizes by level; the type roles replace them
+    `${EDGE[0]}kcc-field--noicon${EDGE[1]}`, // the X is every field's one leading mark, so all fields share a shape
     'font-weight:\\s*(?:[5-9]00|bold(?:er)?)', // weight in CSS
     `var\\(--color-(?:${RETIRED_TOKEN})\\)`, // retired tokens read from CSS
   ].join('|'),

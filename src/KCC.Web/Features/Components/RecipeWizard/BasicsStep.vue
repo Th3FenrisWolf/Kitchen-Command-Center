@@ -33,7 +33,7 @@
 </script>
 
 <template>
-  <KccSheet crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-pen-to-square">
+  <KccSheet margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-pen-to-square">
     <template #label><ResourceString for="RecipeBasics" /></template>
 
     <h2 class="sr-only">{{ rs('RecipeBasics') }}</h2>

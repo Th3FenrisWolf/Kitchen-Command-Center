@@ -42,7 +42,7 @@
 </script>
 
 <template>
-  <KccSheet crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-check">
+  <KccSheet margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-check">
     <template #label><ResourceString for="Ingredients" /></template>
 
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>
@@ -52,7 +52,7 @@
         <li
           v-for="(ingredient, index) in values.ingredients"
           :key="index"
-          class="grid auto-rows-[minmax(var(--bl),auto)] grid-cols-[36px_minmax(0,1fr)_minmax(0,1fr)_36px] grid-rows-[repeat(2,calc(var(--bl)*2))] items-center gap-x-2 pb-rule-1 sm:grid-cols-[minmax(0,1fr)_36px_5rem_5rem_36px] sm:grid-rows-[calc(var(--bl)*2)] sm:pb-0"
+          class="grid auto-rows-[minmax(var(--bl),auto)] grid-cols-[var(--control-sm)_minmax(0,1fr)_minmax(0,1fr)_var(--control-sm)] grid-rows-[repeat(2,calc(var(--bl)*2))] items-start gap-x-2 pb-rule-1 sm:grid-cols-[minmax(0,1fr)_var(--control-sm)_5rem_5rem_var(--control-sm)] sm:grid-rows-[calc(var(--bl)*2)] sm:pb-0"
         >
           <InputField
             :id="nameId(index)"
@@ -113,9 +113,11 @@
         </li>
       </ul>
 
-      <Button variant="ghost" class="self-start" @click="emit('add')">
-        <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddIngredient" />
-      </Button>
+      <div class="kcc-row">
+        <Button variant="ghost" @click="emit('add')">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddIngredient" />
+        </Button>
+      </div>
 
       <StepNav :can-go-back :can-proceed :returns-to-review @back="emit('back')" @review="emit('review')" />
     </form>

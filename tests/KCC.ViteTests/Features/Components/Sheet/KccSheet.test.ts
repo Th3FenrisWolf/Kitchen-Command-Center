@@ -35,6 +35,21 @@ describe('KccSheet', () => {
     )
   })
 
+  it('rules a margin with margin', async () => {
+    expect(await render({ margin: true })).toContain('<div class="kcc-sheet kcc-sheet--margin">')
+    expect(await render()).not.toContain('kcc-sheet--margin')
+  })
+
+  it('marks a sheet that scrolls itself with scroll', async () => {
+    expect(await render({ scroll: true })).toContain('<div class="kcc-sheet kcc-sheet--scroll">')
+    expect(await render()).not.toContain('kcc-sheet--scroll')
+  })
+
+  it('draws no ruling with blank', async () => {
+    expect(await render({ blank: true })).toContain('<div class="kcc-sheet kcc-sheet--blank">')
+    expect(await render()).not.toContain('kcc-sheet--blank')
+  })
+
   it('offers no way to tape a sheet', async () => {
     expect(await render({ label: 'Identity · 01', tape: true })).not.toContain('kcc-tape')
   })

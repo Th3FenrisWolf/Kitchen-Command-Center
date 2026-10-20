@@ -31,19 +31,22 @@ describe('RecipeSearchHeader sheet', () => {
     expect(tagWith(html, 'kcc-tear-3')).toContain('kcc-slip--wide')
   })
 
-  it('sets the search pill with its leading glyph and keeps the input hook', async () => {
+  it('writes the search on a line with no leading glyph and keeps the input hook', async () => {
     const html = await render()
 
-    // Icon, input and the clear glyph share the pill's track.
+    // The X, the input and the clear glyph share the field's track.
     expect(tagWith(html, 'kcc-field')).toContain('grid-cols-[auto_1fr_auto]')
-    expect(html).toContain('<i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>')
+    expect(html).not.toContain('fa-magnifying-glass')
     const input = tagWith(html, 'data-testid="recipe-search-input"')
     expect(input).toContain('placeholder="SearchPlaceholder"')
     expect(tagWith(await render('gnocchi'), 'recipe-search-input')).toContain('value="gnocchi"')
   })
 
-  it('wraps Search under the field onto a half rule, never 12px under', async () => {
-    expect(await render()).toContain('<form class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0.5">')
+  it('sets the field and Search in a kit row, so each line fills two rules and the slot below starts on the rule', async () => {
+    const html = await render()
+    expect(html).toContain('<form class="kcc-row mt-rule-1">')
+    expect(html).toContain('<div class="flex flex-wrap items-start justify-between gap-x-7">')
+    expect(html).toMatch(/<div class="flex pt-rule-1 pb-rule-0.5"><a class="kcc-btn"/)
   })
 
   it('submits through a pill button that keeps the submit hook', async () => {

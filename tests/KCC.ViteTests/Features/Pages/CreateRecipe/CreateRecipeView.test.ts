@@ -66,7 +66,7 @@ describe('CreateRecipeView', () => {
     const wizard = wizardOf(await render())
 
     expect(wizard).toContain('<div class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-1" style="--r:0;">')
-    expect(wizard).toContain('<div class="kcc-torn"><div class="kcc-sheet"')
+    expect(wizard).toContain('<div class="kcc-torn"><div class="kcc-sheet kcc-sheet--margin"')
     expect(wizard.match(/class="kcc-slip /g)).toHaveLength(1)
   })
 
@@ -82,7 +82,9 @@ describe('CreateRecipeView', () => {
 
     expect(label).toContain('fa-duotone fa-pen-to-square')
     expect(label).toContain('Recipe Basics')
-    expect(wizard).toMatch(/<div class="kcc-sheet"[^>]*>(?:<!--[^>]*-->)*<h2 class="sr-only">Recipe Basics<\/h2>/)
+    expect(wizard).toMatch(
+      /<div class="kcc-sheet kcc-sheet--margin"[^>]*>(?:<!--[^>]*-->)*<h2 class="sr-only">Recipe Basics<\/h2>/,
+    )
   })
 
   it('binds each visible label to the control it names', async () => {

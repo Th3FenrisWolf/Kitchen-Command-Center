@@ -16,7 +16,7 @@
       <slot name="label">{{ label }}</slot>
       <span v-if="required" aria-hidden="true"> *</span>
     </label>
-    <div class="flex min-h-rule-2 flex-col justify-center">
+    <div class="flex min-h-rule-2 flex-col">
       <slot
         :describedby="error ? `${controlId}-error` : hint || $slots.hint ? `${controlId}-hint` : undefined"
         :error="!!error"

@@ -68,12 +68,7 @@
 </script>
 
 <template>
-  <div
-    role="timer"
-    aria-live="off"
-    :aria-label="`${label}: ${formatted}`"
-    class="flex flex-wrap items-center gap-x-6 gap-y-rule-1"
-  >
+  <div role="timer" aria-live="off" :aria-label="`${label}: ${formatted}`" class="kcc-row gap-x-6 gap-y-rule-1 pb-0">
     <div>
       <p class="kcc-kick">{{ label }}</p>
       <p class="flex items-center gap-3">
@@ -81,7 +76,7 @@
         <span class="kcc-num text-readout" data-test="timer-display">{{ formatted }}</span>
       </p>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex min-h-rule-2 items-start gap-3">
       <Button
         variant="ghost"
         size="lg"

@@ -124,7 +124,7 @@
       </DetailHero>
     </div>
 
-    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3" wide flip>
+    <KccSheet label="At a glance" icon="fa-duotone fa-gauge" :tear="3" wide flip margin>
       <StatTiles :tiles="statTiles" />
     </KccSheet>
 

@@ -27,7 +27,7 @@
 </script>
 
 <template>
-  <KccSheet crisp wide :tear :pad="STEP_PAD">
+  <KccSheet margin crisp wide :tear :pad="STEP_PAD">
     <ResourceString for="StartTitle" as="h2" class="kcc-heading" />
 
     <div class="mt-rule-1 grid gap-x-7 gap-y-rule-1 sm:grid-cols-2">

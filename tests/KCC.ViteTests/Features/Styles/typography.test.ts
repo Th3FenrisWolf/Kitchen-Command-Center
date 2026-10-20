@@ -88,7 +88,7 @@ describe('the type scale tokens', () => {
 
   it('rules every sheet at 24px and drops the rule to the body text’s baseline', () => {
     expect(declaration(tokens, '--bl')).toBe('1.5rem')
-    expect(declaration(tokens, '--rule-drop')).toBe('calc(var(--bl) / 2 + 0.38208 * var(--text-body))')
+    expect(declaration(tokens, '--rule-drop')).toBe('calc(var(--bl) / 2 + var(--k-hazelnut) * var(--text-body))')
   })
 })
 

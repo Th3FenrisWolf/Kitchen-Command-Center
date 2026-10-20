@@ -22,8 +22,8 @@
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center gap-x-7 gap-y-rule-0.5">
-    <div class="flex max-w-full min-w-0 items-center gap-3">
+  <div class="flex flex-wrap items-start gap-x-7 gap-y-rule-0.5">
+    <div class="kcc-row max-w-full min-w-0">
       <ResourceString for="Sort" class="kcc-kick" />
       <SegmentedControl v-model="sort" :options="sortOptions" :aria-label="t('Sort')" />
     </div>

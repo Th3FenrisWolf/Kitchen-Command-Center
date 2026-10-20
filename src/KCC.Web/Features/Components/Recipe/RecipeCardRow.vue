@@ -36,19 +36,14 @@
     style="--r: 0"
   >
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
-      <div class="kcc-sheet flex items-center gap-4" style="--pad: 16px">
+      <div class="kcc-sheet flex items-start gap-4" style="--pad: 16px">
         <div class="kcc-tilewrap kcc-tilewrap--flow flex-none">
           <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14" />
           <span class="kcc-tape" aria-hidden="true"></span>
         </div>
 
         <div class="min-w-0 flex-1">
-          <div class="flex flex-wrap items-center gap-x-3">
-            <h3 class="kcc-title">{{ card.name }}</h3>
-            <div v-if="card.tags.length" class="kcc-badges">
-              <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
-            </div>
-          </div>
+          <h3 class="kcc-title">{{ card.name }}</h3>
 
           <p v-if="rating || notes.length || chips.length" class="kcc-meta">
             <span
@@ -70,6 +65,10 @@
               <i v-if="chip.icon" :class="chip.icon" aria-hidden="true"></i> {{ chip.text }}
             </span>
           </p>
+
+          <div v-if="card.tags.length" class="kcc-badges">
+            <span v-for="tag in card.tags" :key="tag" class="kcc-badge">{{ tag }}</span>
+          </div>
         </div>
 
         <div v-if="card.trailingStat" class="hidden flex-none text-center sm:block">
@@ -77,7 +76,7 @@
           <span class="kcc-kick block">{{ card.trailingStat.label }}</span>
         </div>
 
-        <i class="fa-duotone fa-arrow-right flex-none text-ink-soft" aria-hidden="true"></i>
+        <i class="fa-duotone fa-arrow-right flex-none self-center text-ink-soft" aria-hidden="true"></i>
       </div>
     </a>
 

@@ -131,7 +131,7 @@
 </script>
 
 <template>
-  <div class="flex items-center gap-2">
+  <div class="flex items-start gap-2">
     <button
       type="button"
       class="kcc-btn kcc-btn--ghost kcc-btn--icon shrink-0"
@@ -145,8 +145,8 @@
       <i class="fa-duotone fa-minus" aria-hidden="true"></i>
     </button>
 
-    <label class="kcc-field kcc-field--noicon min-w-24 flex-1 cursor-text">
-      <span class="flex items-center justify-center gap-1.5">
+    <label class="kcc-field kcc-field--stepper min-w-24 flex-1 cursor-text">
+      <span class="flex items-start justify-center gap-1.5">
         <!-- Invisible mirror of the unit: balances the real unit on the right so the number stays centered. -->
         <span v-if="unit" aria-hidden="true" class="kcc-unit invisible shrink-0">{{ unit }}</span>
         <input

@@ -2,6 +2,7 @@
   import { computed, ref, useId } from 'vue'
   import Button from '~/Components/Button/Button.vue'
   import Field from '~/Components/Forms/Field.vue'
+  import SelectField from '~/Components/Forms/SelectField.vue'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import PossibleDuplicateNotice from './PossibleDuplicateNotice.vue'
@@ -44,7 +45,7 @@
 </script>
 
 <template>
-  <KccSheet crisp wide :tear :pad="STEP_PAD" data-testid="match-step">
+  <KccSheet margin crisp wide :tear :pad="STEP_PAD" data-testid="match-step">
     <h2 class="kcc-heading">{{ fill(rs('MatchTitle'), match.recipeName) }}</h2>
 
     <div class="mt-rule-1 flex flex-col gap-y-rule-1">
@@ -54,7 +55,7 @@
 
       <div class="flex flex-col items-start gap-y-rule-1">
         <Button
-          class="h-auto py-rule-0.5 text-left [line-height:var(--bl)] whitespace-normal"
+          class="h-auto py-rule-0.5 text-left [line-height:var(--bl)] whitespace-normal [--h:calc(var(--bl)*2)]"
           data-testid="match-accept"
           @click="emit('accept')"
         >
@@ -64,29 +65,28 @@
         <div v-if="others.length" class="flex w-full flex-wrap items-end gap-x-3 gap-y-rule-1">
           <Field :control-id="pickId" class="min-w-0 flex-1 basis-60">
             <template #label><ResourceString for="PickRecipeLabel" /></template>
-            <span class="kcc-field w-full">
-              <i class="fa-duotone fa-book-open" aria-hidden="true"></i>
-              <select :id="pickId" @change="picked = ($event.target as HTMLSelectElement).value">
-                <option v-for="recipe in others" :key="recipe.key" :value="recipe.key" :selected="recipe.key === picked">
-                  {{ recipe.name }}
-                </option>
-              </select>
-            </span>
+            <SelectField :id="pickId" @change="picked = ($event.target as HTMLSelectElement).value">
+              <option v-for="recipe in others" :key="recipe.key" :value="recipe.key" :selected="recipe.key === picked">
+                {{ recipe.name }}
+              </option>
+            </SelectField>
           </Field>
 
-          <div class="flex min-h-rule-2 items-center">
+          <div class="kcc-row">
             <Button variant="ghost" data-testid="match-pick" @click="pick">
               <ResourceString for="PickAnotherRecipe" /><i class="fa-duotone fa-arrow-right" aria-hidden="true"></i>
             </Button>
           </div>
         </div>
 
-        <Button variant="ghost" data-testid="match-keep" @click="emit('keep')">
-          <i class="fa-duotone fa-file-circle-plus" aria-hidden="true"></i><ResourceString for="KeepNewRecipe" />
-        </Button>
+        <div class="kcc-row">
+          <Button variant="ghost" data-testid="match-keep" @click="emit('keep')">
+            <i class="fa-duotone fa-file-circle-plus" aria-hidden="true"></i><ResourceString for="KeepNewRecipe" />
+          </Button>
+        </div>
       </div>
 
-      <div v-if="canGoBack" class="flex flex-wrap justify-between gap-x-3 gap-y-rule-1">
+      <div v-if="canGoBack" class="kcc-row justify-between">
         <Button variant="ghost" @click="emit('back')">
           <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Back" />
         </Button>

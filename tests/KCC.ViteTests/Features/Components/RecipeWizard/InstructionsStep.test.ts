@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import InstructionsStep from '~/Components/RecipeWizard/InstructionsStep.vue'
 import { emptyValues } from '~/Components/RecipeWizard/wizardValues'
-import { classesOf, describedBy, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
+import { classesOf, describedBy, enclosingTag, markKinds, readerMark, renderInWizard } from '../../../support/recipeWizard'
 import { tagWith } from '../../../support/ssr'
 
 const render = () =>
@@ -20,6 +20,10 @@ describe('InstructionsStep', () => {
 
     expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-1')
+  })
+
+  it('sets Add step in a row of two rules, so the step navigation under it starts on a rule', async () => {
+    expect(classesOf(enclosingTag(await render(), 'fa-plus', 1))).toEqual(['kcc-row'])
   })
 
   it("shows a step's mark on its own row", async () => {

@@ -90,7 +90,7 @@
           class="kcc-slip--fill mx-auto max-w-5xl"
         >
           <div class="flex h-full flex-col gap-y-rule-1">
-            <div class="flex justify-end">
+            <div class="flex min-h-rule-2 items-start justify-end">
               <Button variant="ghost" size="lg" class="kcc-btn--icon" :aria-label="rs('ClosePhoto')" @click="emit('close')">
                 <i class="fa-duotone fa-xmark" aria-hidden="true"></i>
               </Button>

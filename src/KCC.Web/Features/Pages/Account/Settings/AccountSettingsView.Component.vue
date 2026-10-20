@@ -113,7 +113,7 @@
   </SmallHero>
 
   <div class="mt-rule-1 grid gap-x-7 gap-y-rule-1.5 lg:grid-cols-2">
-    <KccSheet crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
+    <KccSheet margin crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
       <template #label><ResourceString for="Profile" /></template>
 
       <h2 class="sr-only">{{ rs('Profile') }}</h2>
@@ -161,7 +161,7 @@
       </form>
     </KccSheet>
 
-    <KccSheet crisp :tear="5" :pad="SHEET_PAD" icon="fa-duotone fa-key">
+    <KccSheet margin crisp :tear="5" :pad="SHEET_PAD" icon="fa-duotone fa-key">
       <template #label><ResourceString for="ChangePassword" /></template>
 
       <h2 class="sr-only">{{ rs('ChangePassword') }}</h2>
@@ -211,14 +211,14 @@
       </form>
     </KccSheet>
 
-    <KccSheet crisp flip :tear="1" :pad="SHEET_PAD" icon="fa-duotone fa-circle-half-stroke">
+    <KccSheet margin crisp flip :tear="1" :pad="SHEET_PAD" icon="fa-duotone fa-circle-half-stroke">
       <template #label><ResourceString for="Appearance" /></template>
 
       <h2 class="sr-only">{{ rs('Appearance') }}</h2>
 
       <div class="flex flex-col gap-y-rule-1">
         <div class="flex flex-col">
-          <div class="flex min-h-rule-2 items-center">
+          <div class="kcc-row">
             <SegmentedControl
               :model-value="rampSetting"
               :options="rampOptions"
@@ -234,7 +234,7 @@
       </div>
     </KccSheet>
 
-    <KccSheet crisp flip :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket">
+    <KccSheet margin crisp flip :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket">
       <template #label><ResourceString for="SignOut" /></template>
 
       <h2 class="sr-only">{{ rs('SignOut') }}</h2>

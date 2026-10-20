@@ -134,10 +134,10 @@ describe('AccountView', () => {
     expect(html).toMatch(/action="\/account\/logout"[^>]*>.*?<button class="kcc-btn kcc-btn--text" type="submit">/s)
   })
 
-  it('wraps Sign out under Account settings onto a half rule, never 12px under', async () => {
-    expect(await render()).toMatch(
-      /<div class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0\.5"><a[^>]*href="\/account\/settings"/,
-    )
+  it('sets Account settings and Sign out in a kit row one rule down', async () => {
+    const row = (await render()).match(/<div class="([^"]*)"><a[^>]*href="\/account\/settings"/)?.[1]
+
+    expect(row?.split(' ').sort()).toEqual(['kcc-row', 'mt-rule-1'])
   })
 
   it('sets every recipe group on its own slip, never repeating a neighbour’s tear', async () => {

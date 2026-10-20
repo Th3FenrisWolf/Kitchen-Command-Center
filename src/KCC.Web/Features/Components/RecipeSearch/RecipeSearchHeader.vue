@@ -32,16 +32,17 @@
   >
     <ResourceString for="BrowseTheKitchen" as="p" class="kcc-kick" />
 
-    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-rule-0.5">
+    <div class="flex flex-wrap items-start justify-between gap-x-7">
       <ResourceString for="SearchRecipes" as="h1" class="kcc-display" />
-      <Button as="a" :href="createRecipeUrl">
-        <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="CreateRecipe" />
-      </Button>
+      <div class="flex pt-rule-1 pb-rule-0.5">
+        <Button as="a" :href="createRecipeUrl">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="CreateRecipe" />
+        </Button>
+      </div>
     </div>
 
-    <form class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0.5" @submit.prevent="emit('submit')">
+    <form class="kcc-row mt-rule-1" @submit.prevent="emit('submit')">
       <div class="kcc-field min-w-0 flex-1 grid-cols-[auto_1fr_auto]">
-        <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
         <input v-model="draft" :placeholder="searchPlaceholder" data-testid="recipe-search-input" />
         <button
           v-if="draft.length"
