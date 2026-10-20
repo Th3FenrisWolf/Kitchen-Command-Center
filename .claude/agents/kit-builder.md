@@ -29,7 +29,7 @@ Read, every time, before touching code:
 4. **Keep `ALLOWLIST` empty** in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts`. A surface that
    genuinely needs an entry says why in its commit message.
 5. **Run** the last step of `docs/brand/kit.md` → *Building a surface*, from `src/KCC.Web`, with
-   `typeScale.test.ts` among the tests.
+   `typeScale.test.ts` and `paperRule.test.ts` among the tests.
 6. **Both ramps in the test.** Where markup differs by ramp (the `data-ramp` glyphs), assert both in the unit
    test. You have no browser: the visual check in both ramps happens before merging. Say plainly that you
    did not look at it.
@@ -45,14 +45,27 @@ Read, every time, before touching code:
 - No `rounded-lg`+, no `shadow-*`, no `font-bold/semibold/medium`, no `fa-primary-*`, no literal colours.
 - `text-marker-ink` only inside a tile, a label or a marker button. Everywhere else text is `text-ink` or
   `text-ink-soft`.
-- Status is a `kcc-well--danger|success|warning` (or `kcc-field--error` on the field) with ink text; never
-  coloured text.
+- Status is a `kcc-well--danger|success|warning` with ink text; never coloured text. A field in error takes
+  `kcc-field--error`, which draws a 2px ink line, and the `kcc-well--danger` below it carries the red.
 - One wash, one label, one hand note per sheet. Washes under margins and corners, never under copy.
 - Icons: duotone by default in `currentColor`; solid or regular where the simpler glyph reads better.
 - Size text with a role class (`kcc-display`, `kcc-section`, `kcc-heading`, `kcc-title`, `kcc-body`, `kcc-kick`) or a
   token utility (`text-caps|body|title|heading|section`; the display only through `kcc-display`), never `text-[…]`, `leading-*` or a default size
   such as `text-sm`. Space blocks vertically in rule units (`mt-rule-1`, `gap-y-rule-1.5`, `space-y-rule-2`), never
   `mt-6` or `gap-y-9`. Size a standalone icon with `kcc-icon-sm|md|lg`.
+- Every line on a sheet sits on the rule by itself (`kit.md` → Paper rule). Never nudge text, a control or a field
+  by a few px to land it: the shim does that, and a line that is off means a block whose height is not a whole or
+  half number of rules. Fix the height or the spacing.
+- A label beside a `kcc-btn` or `kcc-seg` goes in a `kcc-row` with it, never in an `items-center` row. An action
+  beside a display title sits one rule down (`pt-rule-1 pb-rule-0.5` on its wrapper).
+- Fields are lines: `InputField`, `TextAreaField`, `SelectField`, `NumberStepper`, or `kcc-field` markup in Razor. No icon before
+  an input; the X is the field's one leading mark. Icon buttons are `kcc-btn--icon`, 32px at every size.
+- A sheet read down the page takes the margin rule (`KccSheet margin`, `kcc-sheet--margin` in Razor), the wizard's
+  centred status sheets included; a dialog, a hero, a toolbar, a card, the header pad, a home block, the stacker and
+  an empty state never do. `KccSheet blank` gives a sheet no ruling.
+- A change that moves layout on a sheet runs `tests/KCC.E2ETests/Features/Chrome/RuleTests.cs` (`dotnet run
+  --project tests/KCC.E2ETests/KCC.E2ETests.csproj -- --treenode-filter "/*/*/RuleTests/*"`, after `yarn build:all`)
+  as well as `paperRule.test.ts`.
 - Always `yarn build:all` before merging, never one bundle alone.
 
 ## Report
