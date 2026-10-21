@@ -5,8 +5,7 @@ namespace KCC.E2ETests.Features.HomePage;
 
 public class HomePageTests : BasePageTests
 {
-    // The drawer eases open, so its height is fractional mid-transition, and each card opens to its own height.
-    // Two digits clears the shut 0px without pinning a final size.
+    // Each card opens to its own height. Two digits clears the shut 0px without pinning a final size.
     private static readonly Regex Opened = new(@"^[1-9]\d+(\.\d+)?px$");
 
     [Test]
@@ -40,6 +39,7 @@ public class HomePageTests : BasePageTests
         await Expect(drawer).ToHaveCSSAsync("height", "0px");
 
         await beef.HoverAsync();
+        await FinishTransitionsAsync(drawer);
 
         await Expect(drawer).ToHaveCSSAsync("height", Opened);
         await beef.GetByRole(AriaRole.Link, new() { Name = "View Recipes" }).ClickAsync();
@@ -51,10 +51,12 @@ public class HomePageTests : BasePageTests
     {
         await Page.GotoAsync("/");
         var cake = Card("Cake");
+        var drawer = cake.Locator("[data-card-drawer]");
 
         await cake.GetByRole(AriaRole.Link, new() { Name = "View Recipes" }).FocusAsync();
+        await FinishTransitionsAsync(drawer);
 
-        await Expect(cake.Locator("[data-card-drawer]")).ToHaveCSSAsync("height", Opened);
+        await Expect(drawer).ToHaveCSSAsync("height", Opened);
     }
 
     [Test]
@@ -74,6 +76,11 @@ public class HomePageTests : BasePageTests
 
         await Expect(slip).ToContainClassAsync("stuck");
     }
+
+    // A transition advances only when the page draws a frame, and a busy CI runner can go seconds without one, so
+    // the drawer would still read its starting 0px when the assertion times out.
+    private static Task FinishTransitionsAsync(ILocator element) =>
+        element.EvaluateAsync("element => element.getAnimations().forEach((animation) => animation.finish())");
 
     private ILocator Card(string heading) =>
         Page.Locator(".kcc-slip").Filter(new() { Has = Page.GetByRole(AriaRole.Heading, new() { Name = heading, Exact = true }) });
