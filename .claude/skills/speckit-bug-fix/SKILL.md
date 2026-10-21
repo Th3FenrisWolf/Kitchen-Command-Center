@@ -1,11 +1,24 @@
 ---
 name: speckit-bug-fix
-description: Apply the remediation from a bug assessment and record what was changed
+description: Apply the remediation from a bug assessment, then run the definition
+  of done before the fix is reported, and the review loop of speckit.review.run on
+  the open pull request. The review fixes land as one commit.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: github-spec-kit
-  source: bug:commands/speckit.bug.fix.md
+  source: preset:kcc-recompose
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Speckit Bug Fix Skill
+
+## Before you begin
+
+This command fixes a bug, and a fix is code like any other. The **Gates** section at the end of
+this file runs after the fix and before the report. Read this whole file before you act on any
+part of it.
+
 
 # Fix Bug
 
@@ -41,6 +54,44 @@ Once resolved, set `BUG_SLUG` and `BUG_DIR = .specify/bugs/<BUG_SLUG>`, and brie
 - `BUG_DIR/assessment.md` MUST exist. If it does not, stop and instruct the user to run `/speckit-bug-assess` first.
 - If `BUG_DIR/fix.md` already exists, ask the user whether to overwrite it before continuing (interactive mode) or refuse (automated mode).
 - Read `BUG_DIR/assessment.md` in full. Treat its **Proposed Remediation**, **Files likely to change**, **Tests to add or update**, and **Risks & Considerations** sections as the contract for this command.
+
+## Pre-Execution Checks
+
+By this point `BUG_SLUG` and `BUG_DIR` have been resolved, so a hook command run in this session can reuse them from the conversation; nothing is passed to it automatically.
+
+**Check for extension hooks (before bug fixing)**:
+- Check if `.specify/extensions.yml` exists in the project root.
+- If it exists, read it and look for entries under the `hooks.before_bug_fix` key
+- If the YAML cannot be parsed or is invalid, do not skip silently: tell the user that `.specify/extensions.yml` could not be read (include the parser error) and that no hooks were checked, including any mandatory (`optional: false`) hooks registered there, then continue normally
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+- When constructing command invocations from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
+- For each executable hook, output the following based on its `optional` flag:
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Pre-Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+  - **Mandatory hook** (`optional: false`):
+    ```
+    ## Extension Hooks
+
+    **Automatic Pre-Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+
+    Wait for the result of the hook command before proceeding to Execution.
+    ```
+    After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
+- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
 
 ## Execution
 
@@ -104,10 +155,50 @@ Once resolved, set `BUG_SLUG` and `BUG_DIR = .specify/bugs/<BUG_SLUG>`, and brie
    - <suggested cleanup, monitoring, doc update, etc.>
    ```
 
-5. **Report back** with:
-   - The slug and `BUG_DIR/fix.md` path.
-   - The status (`applied`, `partial`, `not-applied`).
-   - The next suggested step: `/speckit-bug-test slug=<BUG_SLUG>`.
+## Mandatory Post-Execution Hooks
+
+**You MUST complete this section before reporting completion to the user.**
+
+By this point `BUG_SLUG` and `BUG_DIR` have been resolved and the written report is available, so a hook command run in this session can reuse them from the conversation; nothing is passed to it automatically.
+
+Check if `.specify/extensions.yml` exists in the project root.
+- If it does not exist, or no hooks are registered under `hooks.after_bug_fix`, skip to the Completion Report.
+- If it exists, read it and look for entries under the `hooks.after_bug_fix` key.
+- If the YAML cannot be parsed or is invalid, do not skip silently: tell the user that `.specify/extensions.yml` could not be read (include the parser error) and that no hooks were checked, including any mandatory (`optional: false`) hooks registered there, then continue to the Completion Report.
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+- When constructing command invocations from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
+- For each executable hook, output the following based on its `optional` flag:
+  - **Mandatory hook** (`optional: false`) — **You MUST emit `EXECUTE_COMMAND:` for each mandatory hook**:
+    ```
+    ## Extension Hooks
+
+    **Automatic Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+    ```
+    After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+
+## Completion Report
+
+**Report back** with:
+
+- The slug and `BUG_DIR/fix.md` path.
+- The status (`applied`, `partial`, `not-applied`).
+- The next suggested step: `/speckit-bug-test slug=<BUG_SLUG>`.
 
 ## Guardrails
 
@@ -115,3 +206,40 @@ Once resolved, set `BUG_SLUG` and `BUG_DIR = .specify/bugs/<BUG_SLUG>`, and brie
 - Never edit `assessment.md` — it is the contract you are working against. Record disagreements in `fix.md` under **Deviations from Assessment**.
 - Never delete files unless the assessment explicitly required it.
 - Never overwrite an existing `fix.md` without confirmation.
+
+
+## Gates
+
+Run these after the fix is applied and before the report the command above writes. A fix is not
+done until both pass.
+
+1. **Definition of done.** Run every row of the definition-of-done table in
+   `.specify/memory/constitution.md`, in the working directory each row names. A failed row is a
+   stop: report it, and do not report the bug as fixed. A project without the table runs the
+   tests the command above runs.
+2. **Review loop, on the open pull request.** The review runs after the pull request is open, never
+   before it. When this session opens the pull request for the fix, open it first, then run this
+   gate on its branch. When no pull request is open, report the review as not run yet and name
+   that it runs once the pull request opens; do not hold the pull request for it. When
+   `.specify/extensions/review/` does not exist, report the review as not run, and name
+   `specify extension add review`. Otherwise invoke `speckit.review.run` as a command in this
+   session, and wait for its report. When no skill of that name is registered, read its file
+   `.specify/extensions/review/commands/speckit.review.run.md` and follow it. It reviews the diff
+   and fixes what is real, and it commits nothing: commit its fixes on the same branch and push
+   them to the same pull request. Name its checks: the rows of gate 1. A review that did not run
+   is reported as not run, never as clean.
+
+Add both results to the report: each definition-of-done row with its result, and the review
+table of `speckit.review.run` with its final-round status, or why the review did not run.
+
+
+## Review fixes as one commit
+
+> This section changes gate 2 of the Gates above. Where the two conflict, this section wins.
+
+- A pull request this session opens for the fix opens from a branch recomposed with the `recompose-branch` skill.
+  `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until it is.
+- Commit nothing until `speckit.review.run` has finished every round. Then commit every fix from every round as one
+  commit, `fix(<bug slug>): address review feedback`, on the same branch, and push it to the same pull request. A
+  review that fixed nothing adds no commit.
+- Never recompose the branch again after its pull request opens.

@@ -3,8 +3,8 @@ schema_version: "1.0"
 preset:
   id: "kcc-recompose"
   name: "Recompose Before the Pull Request"
-  version: "0.1.0"
-  description: "Wraps card implement and the autopilot flow so that each branch is recomposed into clean commits once, after the review loop and before its pull request opens."
+  version: "0.3.0"
+  description: "Wraps card implement, the autopilot flow and bug fix so that each branch is recomposed into clean commits once, after the commit and before its pull request opens, with the review fixes as one commit after it."
   author: "Th3FenrisWolf"
   repository: "https://github.com/Th3FenrisWolf/Kitchen-Command-Center"
 
@@ -16,13 +16,19 @@ provides:
     - type: "command"
       name: "speckit.card.implement"
       file: "commands/speckit.card.implement.md"
-      description: "Recompose the branch before the close-out publishes it"
+      description: "Recompose the branch before the close-out publishes it, and land the review fixes as one commit"
       strategy: "wrap"
 
     - type: "command"
       name: "speckit.flow.run"
       file: "commands/speckit.flow.run.md"
       description: "Keep the recomposition inside the autopilot's close-out"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.bug.fix"
+      file: "commands/speckit.bug.fix.md"
+      description: "Land the review fixes on the bug fix's pull request as one commit"
       strategy: "wrap"
 
 tags:

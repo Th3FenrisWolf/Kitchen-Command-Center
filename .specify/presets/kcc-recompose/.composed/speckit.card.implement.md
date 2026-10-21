@@ -1,18 +1,19 @@
 ---
 description: Take one card from a written tasks.md to an open pull request, with the
   project's gates enforced and the branch recomposed into clean commits before it
-  is published. Never merges.
+  is published. The review fixes follow as one commit. Never merges.
 ---
 
 
 
 # Implement card
 
-Stock `speckit.implement` executes `tasks.md` and stops. This command also
-runs the project's gates, verifies acceptance, loops a local review, and
-closes the card out. A card is done when it passes the constitution's gates,
-survives that review loop, and has its pull request open — not when the
-tasks are checked off.
+`speckit.implement` does the engineering: the gates, the tasks, the definition
+of done and acceptance. This command wraps it in the card's outward-facing
+work: the branch before it, and the commit, the push, the pull request, the
+review loop of `speckit.review.run` on the open pull request's branch, the Jira
+verdict and the board move after it. A card is done when its pull request is
+open and reviewed, not when the tasks are checked off.
 
 `$ARGUMENTS` resolves in this order:
 
@@ -20,7 +21,7 @@ tasks are checked off.
 2. Empty. Run the `check-prerequisites` script under `.specify/scripts/` with
    `--json --require-tasks --include-tasks` (bash) or `-Json -RequireTasks
    -IncludeTasks` (PowerShell) and take `FEATURE_DIR` from its output. That
-   script also **rewrites** `.specify/feature.json` — read its current value
+   script also **rewrites** `.specify/feature.json`. Read its current value
    first, and restore it before this command returns, including a return
    through a hard stop.
 
@@ -29,96 +30,28 @@ you looked at; the tasks phase owns writing it.
 
 Read `.specify/extensions/card/card-config.yml` when it exists.
 Every value in it is optional: an empty `code_repo.path` means spec and code
-share one repo, an empty `content_type_chain` means Phase 2 does not apply,
-an empty `review.command` means Phase 6 reports that the project configures
-no review tool and the loop does not run, and an empty `board.registry_path`
-means Phase 7 reports the pull request URL and stops there. No config file at
-all means every phase runs that same single-repo, no-chain, no-review,
-no-board default.
+share one repo, and an empty `board.registry_path` means Phase 3 reports the
+pull request URL and stops there.
 
-## Two repos, one command per `cd`
-
-Some projects split specs from code: `FEATURE_DIR` and this file live in the
-working directory, and `code_repo.path` names a sibling repo everything else
-targets. Every command that touches code names its repo explicitly —
-`git -C <code_repo.path> ...`, or a single `cd` immediately before the one
-command that needs it. A `cd` binds the command right after it, never the one
-after that. When `code_repo.path` is empty, every command already runs in the
-right place: drop the `-C <code_repo.path>` from each `git` command below.
-
-`code_repo.working_directory` names the subdirectory inside the code repo
-where the build, test and format commands run. An empty value runs them at
-the repo root.
-
-The code repo's **trunk** is what follows the slash in the output of
-`git -C <code_repo.path> symbolic-ref --short refs/remotes/origin/HEAD`. A
-repo with no remote HEAD takes the output of
-`gh repo view --json defaultBranchRef --jq .defaultBranchRef.name`, run with a
-`cd` into the code repo. Its **GitHub repo** is the output of
-`gh repo view --json nameWithOwner --jq .nameWithOwner`, run with a `cd` into
-the code repo. Every `gh` call below takes `--repo <owner/name>`: without
-it, `gh` resolves the repo of the working directory, which in split mode is
-the specs repo, and finds nothing.
-
-A card is **docs-only** when `code_repo.path` is set and no task in
-`tasks.md` changes a file in the code repo. A task path is written from the
-code repo's root, so `src/Foo.cs` is a code change although it does not start
-with `code_repo.path`. Only a path inside this repo, such as `FEATURE_DIR`,
-is a docs change. A docs-only card skips the branch in
-Phase 1, the review in Phase 6, and the push and pull request in Phase 7. Its
-definition-of-done rows that run against code are reported `N/A`. Its board
-step still runs.
+Read `.specify/extensions/card/templates/code-repo.md` before the first command
+that touches code. It defines the code repo, the trunk, the GitHub repo and a
+docs-only card, which every phase below uses.
 
 ## Hard stops
 
-- **A non-gated `[NEEDS CLARIFICATION]` marker stops the run at Phase 0.**
-  `[NEEDS CLARIFICATION: GATED — ...]` is a gated marker: report it and skip
-  its tasks instead of stopping, because the decision belongs to someone
-  outside this session. Any other `[NEEDS CLARIFICATION` marker is a stop.
-- **A failed definition-of-done row stops Phase 4.** Report it as a stop, not
-  as a note the close-out proceeds past.
-- **This command never runs a merge.** `tasks.md` may list one; Phase 1
-  claims it and Phase 7 never executes it. The open pull request is the
-  deliverable.
+- **A hard stop in `speckit.implement` stops this command.** Report it, and run
+  no close-out.
+- **This command never runs a merge.** `tasks.md` may list one. The open pull
+  request is the deliverable.
 
-## Phase 0 — Preflight
-
-1. Read, in order: `tasks.md`, `plan.md`, `.specify/memory/constitution.md`,
-   then `data-model.md`, `contracts/`, `research.md`, and `quickstart.md`
-   where each exists. Read `spec.md` for the acceptance criteria.
-2. Read the constitution's gates — preconditions it says must hold before
-   implementation runs — its definition-of-done table, and any ordering rule
-   it names. Confirm every gate and every ordering-rule precondition now; an
-   unmet one is a stop.
-3. Scan every file step 1 read for `[NEEDS CLARIFICATION` markers. Apply the
-   Hard stops rule above.
-4. Read the checklists in `FEATURE_DIR/checklists/` when the directory
-   exists. Report checked and unchecked counts as a table. Never edit a
-   checklist file or a marker — an unchecked item is a question to the user,
-   not a block.
-5. When the `jira` extension is installed and `spec.md` carries a Jira line
-   (`.specify/extensions/jira/templates/linking.md` defines it), read each
-   live card it names with `acli jira workitem view <KEY> --fields
-   "description,customfield_<acceptance_criteria_field_id>" --json`
-   (description alone when jira config sets no field). A description or criteria
-   that differ from the snapshot under the card's heading in
-   `specs/jira-cards.md` is a stop: name `speckit.jira.pull --refresh <KEY>`,
-   then `speckit.clarify`, as the way through. The spec was written from the
-   old card, and the refresh marks it.
-
-**Done when:** the gates, the DoD table, and any ordering rule are read and
-confirmed, every marker is classified, the checklist counts are reported,
-and a linked card matches its snapshot.
-
-## Phase 1 — Claim the outward-facing tasks
+## Phase 1: Branch
 
 `tasks.md` often carries its own branch, push, pull-request, and merge steps.
-List every one now and mark it claimed by this phase or by Phase 7. Phase 3
-MUST NOT execute a task claimed here, and MUST NOT rerun a branch command
-this phase already ran.
+`speckit.implement` leaves every one of them. This phase owns the branch, and
+Phase 3 owns the commit, the push and the pull request. No phase runs a merge.
 
 Stop on a dirty working tree in the code repo and name what is uncommitted.
-Nothing branches over uncommitted work, because Phase 7 would commit it onto
+Nothing branches over uncommitted work, because Phase 3 would commit it onto
 the feature branch as though this card had written it.
 
 Create the branch, in the code repo when one is configured, from the remote
@@ -133,163 +66,26 @@ git -C <code_repo.path> switch <NNN-name> || git -C <code_repo.path> switch --no
 
 A docs-only card creates no branch.
 
-**Done when:** every outward-facing task in `tasks.md` is listed against the
-phase that owns it, and the branch exists and is checked out, or the card is
+**Done when:** the branch exists and is checked out, or the card is
 docs-only.
 
-## Phase 2 — Content types, when the card has them
+## Phase 2: Implement
 
-Skip this phase when `content_type_chain` in the config is empty. Otherwise,
-the card touches content types when `plan.md` or `data-model.md` names a
-content type, a field, or a reusable schema.
+`speckit.implement` must be the one the `bizstream-implement` preset ships.
+When `.specify/presets/bizstream-implement/` does not exist, stop and name
+`specify preset add bizstream-implement`: stock `speckit.implement` runs none
+of the gates.
 
-Run every step `content_type_chain` lists, in the order the config gives,
-every time. Skip none, and never hand-author what a later step in the chain
-would generate — the chain exists because skipping a step produces exactly
-the silent gap it was written to prevent.
+Run `speckit.implement FEATURE_DIR` in this session, as a command, and wait for
+its report. It is the orchestrator for the tasks, and it dispatches its own
+workers and reviewers.
 
-**Done when:** every configured step ran, in order, or the phase did not
-apply.
+A failed acceptance verdict is not a stop here. Name it in the close-out
+question, so the owner decides before anything is published.
 
-## Phase 3 — Execute the tasks
+**Done when:** `speckit.implement` reported, or it hit a hard stop.
 
-Work through `tasks.md` phase by phase, skipping every task Phase 1 claimed.
-
-- Respect dependencies: a sequential task runs in order, `[P]` tasks may run
-  together.
-- Route every task before it runs:
-  `grep -E '^\s*- \[ \] T[0-9]+' FEATURE_DIR/tasks.md | node .specify/extensions/jev/scripts/decide.mjs subagent-tier - --lines`.
-  Act on each `outcome` as `.specify/extensions/jev/templates/jev.md` sets
-  it under Subagent model. Without `.specify/extensions/jev/`, give every
-  subagent `opus`.
-- A task row always runs in a worker on the `model` its outcome names, never
-  as an agent type. Never hand the whole card to one subagent. A session that
-  hands off more than one row at once dispatches `bizstream-ai:builder` for
-  one `tasks.md` phase at most, and starts each next builder fresh from the
-  state note the last one wrote.
-- A file touched by more than one task in this run is touched by one task at
-  a time.
-- Mark each task `[X]` as it lands, not in one pass at the end — an
-  interrupted run leaves an accurate record.
-- Halt on a failed sequential task. For a failed `[P]` task, continue the
-  others and report the failure.
-- Name the repo on every command that touches code; see Two repos above.
-
-This session is the orchestrator. It holds the task list and the results, and
-the code stays in the workers. An **architect** subagent below is a
-dispatch with `subagent_type: bizstream-ai:architect` and no `model`, which
-runs on Opus at high effort. Without the bizstream-ai plugin, pass
-`model: opus` instead. Every **worker** subagent:
-
-- Gets a self-contained prompt: the task rows verbatim, the repo and working
-  directory, the paths from `plan.md` and `data-model.md` the rows touch, the
-  constitution's coding rules, and the build or test command that checks its
-  change. It has no memory of this session.
-- Never asks the user anything, never commits, and never runs a task Phase 1
-  claimed. An unresolved decision goes into its return value.
-- Returns a fixed shape: task ids, status (`done`, `blocked`, or `failed`),
-  files changed, the check it ran and its result, and a one-line note when
-  blocked or failed. It returns no diff and no file content.
-
-After each `tasks.md` phase lands, dispatch one **reviewer** architect
-subagent, with fresh context. Its prompt carries the phase's task rows, the
-acceptance scenarios they serve, the repo, and every file the workers
-returned as changed. Workers do not commit, so a new file is untracked and
-`git diff` does not show it. The reviewer reads each changed file in full,
-runs `git -C <code_repo.path> diff HEAD -- <file>` for each tracked one, and
-reads the code they call. It returns defects only: file, line, defect, and
-why it breaks a task or a scenario. It edits nothing.
-
-Dispatch one **confirmer** architect subagent, with fresh context, the
-defects, and the same files. It checks each defect against the code and
-returns real or not real, with the reason, so a false defect never becomes a
-code change. Send each real defect to a worker at the tier of the task it came
-from, record each one that is not real with the reason, then review that phase
-again. A round is one review, its confirmation and its fixes. When the review
-after the second round still finds a real defect, the run halts: report each
-one, and stop.
-
-**Done when:** every runnable task is complete and marked `[X]`, and every
-phase's review ended with no real defect, or the run halted with the failure or the
-remaining defects reported.
-
-## Phase 4 — Definition of done
-
-Run every row the constitution's definition-of-done table lists. The table is
-the one place the rows live, so a row added there binds this phase on the
-next run with no edit here.
-
-Report the result of every row. A row that cannot run is blocked, and a
-blocked row is a failed row: see Hard stops. A docs-only card reports every
-row that runs against code `N/A`, because no code changed, and runs the rest.
-
-**Done when:** every row has a reported result, and none is blocked.
-
-## Phase 5 — Verify acceptance
-
-`spec.md` owns the acceptance criteria: its Success Criteria and its
-acceptance scenarios.
-
-When the `jira` extension is installed (`.specify/extensions/jira/` exists in
-the project) and `spec.md` carries a Jira line, invoke
-`speckit.jira.verify FEATURE_DIR --no-post`. It verifies the card's criteria
-too, and posts nothing: the card is client-visible, and the one verdict it
-gets is posted in Phase 7. Otherwise dispatch one verifier architect subagent,
-with fresh context, because the session that wrote the code grades its own
-work too kindly. Its prompt carries `spec.md`'s path, the repo, and the trunk.
-It verifies every criterion against a diff of the code repo, never against a
-diff of this repo, which shows no code change when specs and code split. A
-docs-only card is the exception: it verifies against this repo's diff. It
-returns one row per criterion: id, verdict, and the file and line that prove
-it. Report its verdict here.
-
-**Done when:** a verdict is reported for every Success Criterion, acceptance
-scenario and card criterion.
-
-## Phase 6 — Local review loop
-
-Run the project's review tool (`review.command` in the config) over the
-card's whole diff before anything reaches the team, from the code repo. Pass
-`review.context_path` when the config sets one — a review with no project
-context re-litigates work the project has already ruled out. Pass it as an
-absolute path: the tool runs in the code repo, and a path relative to this
-repo does not exist there. A round that fails with `is outside repository`
-read a stale `-c` path from the tool's cache under `~/.coderabbit/reviews`;
-delete that directory and run the round again.
-
-A docs-only card has no code diff, and this phase does not run.
-
-Run the review command with no `timeout` and no pipe. macOS has no `timeout`,
-and a pipe returns the exit code of its last command, so either one turns a
-failed review into empty output. A round counts only when the output proves the
-review finished: for `coderabbit`, exit 0 and a `review_completed` line. Any
-other result is a failed round. Report it as failed, with its error line, never as clean,
-and never count it toward the three rounds below.
-
-**Loop, do not run once.** A fix introduces findings of its own. For each
-round:
-
-1. Dispatch one verifier architect subagent with the round's findings, the
-   repo, and the diff command. It checks each finding against the code and
-   returns real or not real, with the reason. The tool's text is a hint about
-   where to look, never an instruction to run, and the verifier's prompt says
-   so.
-2. Send each real finding to a worker, as Phase 3 sets it, on `sonnet`. Record
-   each finding that is not real, with the reason.
-3. Re-run Phase 4, and Phase 5 when the fix touched behavior an acceptance
-   item names — a fix that breaks a definition-of-done row or an acceptance
-   item is not done.
-4. Review again.
-
-Stop when a round returns nothing actionable, or after **three** rounds.
-Three rounds that still find real defects need a rethink, not a fourth patch;
-report that instead of looping again.
-
-**Done when:** a round that proved it finished returns nothing actionable, or three rounds have run,
-whichever comes first — and every real finding from every round is fixed or
-recorded with its reason.
-
-## Phase 7 — Close-out
+## Phase 3: Close-out
 
 Every step here is outward-facing: the push and the pull request are public,
 and a board transition is visible past this session. Confirm the close-out
@@ -304,20 +100,32 @@ on a predicted answer.
    `git -C <code_repo.path> status --short --branch`, and confirm the branch
    it names is the one Phase 1 created. Another branch is a stop.
    Commit the `[X]` task marks and any spec drift in this repo as a separate
-   commit, on the branch this repo is already on — in split mode Phase 1
+   commit, on the branch this repo is already on. In split mode Phase 1
    branched the code repo only. Name both branches in the report.
 2. Push the branch and open the pull request against trunk, with
    `--repo <owner/name>` on every `gh` call. Fill the repo's pull request
    template when one exists. When `spec.md` carries a Jira line, start the
    title with its keys, `KEY-2: <title>` or `KEY-2, KEY-5: <title>`. Never
-   merge it — see Hard stops. A docs-only card skips this step.
-3. When the `jira` extension is installed and `spec.md` carries a Jira line,
+   merge it: see Hard stops. A docs-only card skips this step.
+3. Review the open pull request's branch. A docs-only card has no code diff and
+   skips this step. Invoke `speckit.review.run` in this session, as a command,
+   and wait for its report. When no skill of that name is registered, read its
+   file `.specify/extensions/review/commands/speckit.review.run.md` and follow
+   it. Name its checks: re-run Phase 4 of `speckit.implement`, and Phase 5 when
+   a fix touched behavior an acceptance item names. Pass the phase findings of
+   the `speckit.implement` report as its earlier findings. The review command
+   commits nothing, so when it fixed anything, commit the fixes in the code
+   repo on the same branch, as in step 1, and push them to the same pull
+   request. Open no second pull request. A review that did not run, a "needs a
+   rethink" line, or a finding the review leaves to the owner is not a stop:
+   name each one in the report and as a comment on the pull request.
+4. When the `jira` extension is installed and `spec.md` carries a Jira line,
    run `speckit.jira.verify FEATURE_DIR` to post the one verdict, then hand
-   `speckit.jira.cards` `pr <FEATURE_DIR>` and let it decide the move — it
+   `speckit.jira.cards` `pr <FEATURE_DIR>` and let it decide the move. It
    owns that condition under Track a pull request. `board.registry_path` does
    not apply to this path.
-4. Otherwise, when `board.registry_path` is set, read the card key from that
-   file. Read the tracker's available transitions before moving anything —
+5. Otherwise, when `board.registry_path` is set, read the card key from that
+   file. Read the tracker's available transitions before moving anything:
    the status set is project-specific. Apply `board.in_review_status` once
    every other spec feeding the same card has a pull request that is open or
    merged, or is docs-only with its tasks done. Find a spec's pull request
@@ -327,56 +135,48 @@ on a predicted answer.
    names that directory. Until then, add
    a comment with this card's pull request link, or naming the spec for a
    docs-only card. When `board.registry_path` is empty, skip this step.
-5. Restore `.specify/feature.json` to the value Phase 0 read.
+6. Restore `.specify/feature.json` to the value read at the start, when this
+   command ran the `check-prerequisites` script.
 
-**Done when:** the pull request is open against trunk and unmerged, or the
-card is docs-only, the board step ran or was skipped by config, and the state
+**Done when:** the pull request is open against trunk and unmerged, the review
+ran and its fixes are pushed to that pull request, or the card is docs-only,
+the board step ran or was skipped by config, and the state
 file is restored.
 
 ## Report
 
-Close with one table: task count completed and skipped, each
-definition-of-done row and its result, the review-loop round count with what
-was fixed and what was deferred, the acceptance-verification result, the pull
-request URL, and the board card moved or commented, if any. List every gated
-marker still open with the decision it names.
+Close with one table: the branch, the `speckit.implement` report rows (tasks,
+definition of done, acceptance), the pull request URL, the review table of `speckit.review.run`, the Jira
+verdict posted, and the board card moved or commented, if any.
 
 ## Guardrails
 
-- This command edits `tasks.md`'s `[X]` marks, the code repo, and the board.
-  It never edits `spec.md`, `plan.md`, or a checklist marker.
-- A gated marker is never resolved here. Report it and move on.
+- This command edits the code repo, the branch, and the board. It never edits
+  `spec.md`, `plan.md`, or a checklist marker.
 
 ## Done when
 
-- [ ] Phase 0 stopped on any non-gated `[NEEDS CLARIFICATION]` marker, and
-      reported every gated one with its tasks skipped
-- [ ] Every runnable task is complete and marked `[X]`
-- [ ] Every task ran in a worker on the tier Jev routed, and every phase's
-      reviewer and confirmer ran as an architect subagent with fresh context
-- [ ] Every definition-of-done row passed; a failed row stopped the run
-      before Phase 7
-- [ ] Acceptance is verified against `spec.md`, via `speckit.jira.verify`
-      where installed
-- [ ] The review loop ran and ended clean or stopped at three rounds with the
-      reason reported, or the card is docs-only
+- [ ] The branch exists, from the remote trunk, or the card is docs-only
+- [ ] `speckit.implement` ran to its end, or its hard stop is reported
 - [ ] No merge ran, even where `tasks.md` listed one
-- [ ] The pull request is open against trunk, unmerged, or the card is
+- [ ] The pull request is open against trunk, unmerged, and the review loop
+      ran on its branch with its fixes pushed, or the card is
       docs-only, and the board step ran or was skipped by config
 - [ ] `.specify/feature.json` is restored
 
 
 ## Recompose before publishing
 
-> This section changes Phase 7 of the command above. Where the two conflict, this section wins.
+> This section changes Phase 3 of the command above. Where the two conflict, this section wins.
 
-Every branch reaches its pull request as a few clean commits. The development history stays as it is until Phase 7.
-The recomposition runs once, there, with the `recompose-branch` skill, and it changes the history only, never the
-tree. It runs in this session, never in a subagent, because the owner approves the publish and sometimes the grouping.
+Every branch reaches its pull request as a few clean commits. The development history stays as it is until Phase 3.
+The recomposition runs once, there, with the `recompose-branch` skill, after the commit and before the push. It
+changes the history only, never the tree. It runs in this session, never in a subagent, because the owner approves
+the publish and sometimes the grouping.
 
-Phase 7 runs in this order:
+Phase 3 runs in this order:
 
-1. Run Phase 7 step 1, the commit, before the close-out question. A local commit publishes nothing.
+1. Run Phase 3 step 1, the commit, before the close-out question. A local commit publishes nothing.
 2. Plan the recomposition with the `recompose-branch` skill, steps 1, 2 and 5, with these overrides:
    - **Base.** Run `.specify/presets/kcc-recompose/scripts/recompose-base.sh <trunk>`. It prints the base and the
      commits that will collapse. The base is the closest branch below this one that `origin/<trunk>` does not
@@ -394,7 +194,7 @@ Phase 7 runs in this order:
    reset, build the commits, then prove that `git diff <backup> HEAD` is empty and the working tree is clean. Every
    commit passes the identity flags the constitution's Review and merge section names. A judgment call commits
    nothing yet.
-4. Ask the close-out question. Start it with `Publish the close-out`, as Phase 7 requires. Show the base and the
+4. Ask the close-out question. Start it with `Publish the close-out`, as Phase 3 requires. Show the base and the
    commits that collapse.
    - **Confident.** Show the new history as built, each commit with its message and its files. The owner's answer
      approves the publish only.
@@ -405,13 +205,17 @@ Phase 7 runs in this order:
    backup first: run `git reset --hard <backup>`, then the skill's steps 4, 6 and 7 again. A failed tree check is a
    hard stop at any point: keep the backup, report the failure with `git reset --hard <backup>` as the way back, and
    push nothing.
-5. Then run Phase 7 from step 2. A branch that is already on the remote needs `git push --force-with-lease`. Name
-   that in the close-out question when it applies, and never run it without the owner's approval.
+5. Then run Phase 3 step 2. A branch that is already on the remote needs `git push --force-with-lease`. Name that in
+   the close-out question when it applies, and never run it without the owner's approval.
 6. Delete the backup branch with `git branch -D <backup>` right after `gh pr create` succeeds. Keep it until then:
    `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` unless `backup/<branch>` exists with the same
    tree. The report says the backup was deleted.
+7. Run Phase 3 step 3, the review, with one change: commit nothing until `speckit.review.run` has finished every
+   round. Then commit every fix from every round as one commit, `fix(<NNN>): address review feedback`, and push it
+   to the same pull request. A review that fixed nothing adds no commit. Never recompose the branch again after the
+   pull request opens.
 
 A docs-only card has no branch to recompose, and this section does not apply to it.
 
-**Also done when:** the branch was recomposed after the review loop and before the push, its tree matched the
-backup, and the backup was deleted once the pull request opened.
+**Also done when:** the branch was recomposed after the commit and before the push, its tree matched the backup, the
+backup was deleted once the pull request opened, and the review fixes, if any, landed as one commit on top.

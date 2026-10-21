@@ -73,6 +73,9 @@ owner questions, each with a recommended answer, and its assumption count.
 | 8 | `speckit.qa.walk` | `bizstream-ai:scout` | the wizard exists, or the `qa` extension is absent |
 | 9 | `speckit.card.implement` | this session | never |
 
+Dispatch phases 7 and 8 in one turn. Analyze edits nothing, and the walk reads
+`tasks.md` only for where the code lives, so a later tasks redo does not rerun it.
+
 Phase 9 runs in this session. When it hands work to a builder, it gives one
 `tasks.md` phase or one pull request per dispatch, as
 `.specify/extensions/jev/templates/jev.md` sets it under Subagent model, and
@@ -90,32 +93,30 @@ After each subagent returns:
 ### Red team
 
 Try to break the plan before any code exists, when a flaw is cheapest to fix.
+The red team runs one round.
 
 1. Dispatch one **breaker** architect subagent with fresh context. Its prompt carries
    the paths of `spec.md`, `plan.md`, the design artifacts and the
    constitution, and one job: find where the plan fails. A flaw is a scenario,
    a Success Criterion, a constitution rule or a definition-of-done row that
    the plan as written cannot meet, or an assumption that the plan contradicts.
-   Each flaw names the plan section, what it fails, and the case that breaks
-   it. The breaker edits nothing.
-2. Dispatch one **confirmer** architect subagent with fresh context, the flaws, and the
-   same paths. It returns each flaw as real or not real, with the reason.
-3. Route each real flaw. A flaw that is a decision takes its route under
-   Decisions. Send every other real flaw to plan: dispatch it one more time
-   with the flaws in the prompt.
-4. After a plan redo, run steps 1 and 2 one more time, and route its real
-   flaws the same way. Send its plan flaws to plan one last time. No breaker
-   reviews that last redo: a breaker always finds something, so the bound is
-   two rounds.
+   Each flaw names the plan section, what it fails, the case that breaks it,
+   and its evidence: a line in an artifact, or a file and line in the code.
+   The breaker returns at most five flaws, worst first, and hands back after
+   about 30 tool calls. It edits nothing.
+2. Route each flaw that is a decision under Decisions. Send every other flaw,
+   and each assumption this step recorded, to plan: dispatch it one more time
+   with them in the prompt. The plan subagent checks each flaw against its
+   evidence first, fixes each real flaw, and returns each flaw that is not real
+   with the reason. A breaker always finds something, so no second breaker
+   reviews the redo.
    List every flaw fixed in the assumption review, so the owner sees what the
    red team changed.
 
-After round 1, add a line `Red team round 1: <date>, <real flaws>` to
-`plan.md`, so a run that stops on an owner question resumes at round 2. After
-the last redo, add a line `Red team: <date>, <real flaws found>, <fixed>`.
+Add a line `Red team: <date>, <flaws found>, <fixed>, <not real>` to `plan.md`.
 
-**Done when:** every real flaw was sent to plan or routed under Decisions,
-and `plan.md` carries the `Red team:` line.
+**Done when:** every flaw was routed under Decisions, fixed, or returned as
+not real with its reason, and `plan.md` carries the `Red team:` line.
 
 ### Assumption review
 
@@ -153,7 +154,7 @@ Stop and put it to the owner for:
 - The assumption review.
 - A hard stop in `speckit.card.implement`.
 - A second `blocked` or `failed` from one phase.
-- The close-out confirmation in `speckit.card.implement` Phase 7.
+- The close-out confirmation in `speckit.card.implement`.
 
 Everything else is routine: take it without asking.
 
@@ -167,10 +168,10 @@ and the pull request URL or the stop that came before it. Restore
 
 ## Done when
 
-- [ ] Every phase ran or was skipped by its rule, in table order
+- [ ] Every phase ran or was skipped by its rule, in table order, with 7 and 8 together
 - [ ] Every subagent ran as the agent type the table names
 - [ ] Every decision took one route: GATED, owner, or a recorded assumption
-- [ ] The red team ran at most two rounds, and every real flaw is fixed or routed
+- [ ] The red team ran one round, and every flaw is fixed, routed, or not real with its reason
 - [ ] The owner reviewed every assumption before tasks ran
 - [ ] Analyze ended with no CRITICAL or HIGH finding, or the owner ruled on each
 - [ ] `speckit.card.implement` ended with the pull request open, or on a hard stop that is reported
@@ -183,7 +184,8 @@ and the pull request URL or the stop that came before it. Restore
 > this section wins.
 
 - Phase 9 runs `speckit.card.implement` as this project wraps it. Its close-out recomposes the branch with the
-  `recompose-branch` skill after the review loop and before the push.
+  `recompose-branch` skill after the commit and before the push, and lands every review fix as one commit after the
+  pull request opens.
 - The recomposition runs in this session. No builder plans it, builds it, pushes the branch or opens the pull
   request.
 - A confident grouping is built before the close-out confirmation, which shows the new history. A grouping that is a
@@ -192,4 +194,5 @@ and the pull request URL or the stop that came before it. Restore
   assumption, never answered by a recommendation, and never skipped on a resumed run.
 - The run never pushes a branch or opens a pull request until the recomposition has passed its tree check. A
   resumed run skips the recomposition only when the branch's pull request is already open.
-- The Report adds the recomposed history, and says that the backup branch was deleted once the pull request opened.
+- The Report adds the recomposed history and the review-feedback commit, and says that the backup branch was deleted
+  once the pull request opened.
