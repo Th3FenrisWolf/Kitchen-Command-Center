@@ -132,25 +132,24 @@
       <div ref="panel" tabindex="-1" class="h-full outline-none">
         <!-- The sheet is the viewport: height flows down the slip and the torn wrapper into the paper, and
              the step column scrolls inside the padding rather than past the tear. -->
-        <KccSheet crisp wide :tear="3" pad="clamp(24px, 6vw, 48px)" class="kcc-slip--fill mx-auto max-w-3xl">
-          <div class="flex h-full flex-col">
-            <header class="flex flex-wrap items-center justify-between gap-x-6">
+        <KccSheet margin crisp wide :tear="3" pad="clamp(24px, 6vw, 48px)" class="kcc-slip--fill mx-auto max-w-3xl">
+          <!-- Whole rules tall, so the footer pinned to its foot starts on a rule at any window height. -->
+          <div class="flex h-[round(down,100%,var(--bl))] flex-col">
+            <header class="flex flex-wrap items-start justify-between gap-x-6">
               <!-- Interpolated rather than two <ResourceString>: a whitespace-only text node between two
                    elements is dropped by the template compiler, and the count would read "STEP 1OF 2". -->
-              <p class="kcc-kick self-start sm:self-auto" aria-live="polite" data-test="cook-progress">
+              <p class="kcc-kick" aria-live="polite" data-test="cook-progress">
                 {{ t('Step') }} <span class="kcc-num">{{ index + 1 }}</span> {{ t('Of') }}
                 <span class="kcc-num">{{ total }}</span>
               </p>
 
-              <!-- Narrow screens give the scaler a rule of its own so the count and the close button keep
-                   their 48px targets side by side. -->
               <div v-if="hasScaler" class="order-last flex w-full flex-col items-center sm:order-none sm:w-auto">
                 <ResourceString for="Servings" as="span" class="kcc-kick" />
-                <div class="flex min-h-rule-2 items-center gap-3">
+                <div class="flex min-h-rule-2 items-start gap-3">
                   <Button
                     variant="ghost"
                     size="lg"
-                    class="kcc-btn--icon shrink-0"
+                    class="kcc-btn--icon shrink-0 [--centre-size:var(--text-title)]"
                     data-test="cook-servings-dec"
                     :aria-label="t('Fewer')"
                     @click="decServings"
@@ -161,7 +160,7 @@
                   <Button
                     variant="ghost"
                     size="lg"
-                    class="kcc-btn--icon shrink-0"
+                    class="kcc-btn--icon shrink-0 [--centre-size:var(--text-title)]"
                     data-test="cook-servings-inc"
                     :aria-label="t('More')"
                     @click="incServings"
@@ -171,7 +170,7 @@
                 </div>
               </div>
 
-              <div class="flex min-h-rule-2 items-center">
+              <div class="flex min-h-rule-2 items-start">
                 <Button
                   variant="ghost"
                   size="lg"
@@ -195,13 +194,13 @@
               />
             </main>
 
-            <footer class="flex flex-wrap items-center justify-between gap-x-6 gap-y-rule-0.5">
+            <footer class="flex flex-wrap items-center justify-between gap-x-6 gap-y-rule-1">
               <Button variant="ghost" size="lg" data-test="cook-prev" :disabled="isFirst" @click="prev">
                 <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Previous" />
               </Button>
 
               <!-- Same rule as the header: below sm the three pills do not fit on one line, so the step
-                   check takes a rule of its own between the two navigation pills. -->
+                   check takes two rules of its own below the two navigation pills. -->
               <div class="order-last flex w-full justify-center sm:order-none sm:w-auto">
                 <Button
                   :variant="checked[index] ? 'ink' : 'ghost'"

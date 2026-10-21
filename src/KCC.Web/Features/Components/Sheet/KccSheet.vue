@@ -21,6 +21,9 @@
     flip?: boolean
     pad?: string
     crisp?: boolean
+    margin?: boolean
+    blank?: boolean
+    scroll?: boolean
     as?: 'div' | 'section' | 'article' | 'li'
   }
 
@@ -36,6 +39,9 @@
     flip = false,
     pad,
     crisp = false,
+    margin = false,
+    blank = false,
+    scroll = false,
     as = 'div',
   } = defineProps<KccSheetProps>()
 
@@ -60,7 +66,11 @@
     v-bind="slipAttrs"
   >
     <div class="kcc-torn">
-      <div class="kcc-sheet" v-bind="sheetAttrs">
+      <div
+        class="kcc-sheet"
+        :class="{ 'kcc-sheet--margin': margin, 'kcc-sheet--blank': blank, 'kcc-sheet--scroll': scroll }"
+        v-bind="sheetAttrs"
+      >
         <span v-if="wash" class="kcc-wash" :style="washStyle" aria-hidden="true"></span>
         <slot />
       </div>

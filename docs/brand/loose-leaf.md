@@ -17,8 +17,8 @@ Three rules follow, and every other rule in this document is one of them applied
 
 1. **The paper is careless.** Torn on four sides, tilted up to a degree, piled two high, coloured in wax.
    Nothing about the sheet is precise, and no two sheets share an edge.
-2. **The drawing is exact.** Inside the tear a 24px rule governs everything. Type sits on it. Icons share one
-   style. Every number is set in a rounded mono, tabular, so columns align without tables.
+2. **The drawing is exact.** Inside the tear a 24px rule governs everything. Every line of type sits on it, and
+   so does every control's text, with no nudge by hand. Icons share one style. Every number is set in a rounded mono, tabular, so columns align without tables.
 3. **The tear is the frame.** Nothing is stroked. No borders, no radii on paper, no drawn shadows. Depth is a
    hair of fibre along the edge and a soft fall beneath the silhouette. *The edge is the border; nothing is
    drawn around anything.*
@@ -31,8 +31,8 @@ Three rules follow, and every other rule in this document is one of them applied
 | Accent tiles pinned to a sheet's corner | Labels, tape, stat numbers, meta lines, step numbers |
 
 Torn things are clipped to a generated tear, carry the fibre and the fall, and may tilt. Printed things are
-clean, unclipped, never shadowed, and take the only radii in the system: pills for controls, 6px for labels,
-wells and textareas, 4px for small marks, 3px for checkboxes.
+clean, unclipped, never shadowed, and take the only radii in the system: pills for buttons and segments, 6px for
+labels and wells, 4px for small marks, 3px for checkboxes. A field has no radius: it is a line to write on.
 
 ## Stock
 
@@ -45,7 +45,8 @@ lilac-grey. Marker green is the one accent and the only strong fill: primary act
 | paper / paper-2 | `oklch(.958 .009 92)` / `oklch(.972 .008 92)` | `oklch(.258 .030 288)` / `oklch(.222 .028 288)` |
 | ink / ink-soft | `oklch(.232 .026 288)` / `oklch(.432 .024 288)`\* | `oklch(.945 .012 92)` / `oklch(.735 .018 288)` |
 | hair / hair-strong | ink at 16% / 56%\* | chalk at 18% / 45% |
-| rule | `oklch(.58 .045 288 / .22)` | `oklch(.88 .02 288 / .13)` |
+| rule (feint blue ruling) | `oklch(.698 .048 239.5 / .55)` | `oklch(.74 .05 240 / .24)` |
+| margin (red margin rule, field X) | `oklch(.631 .178 20 / .75)` | `oklch(.66 .15 22 / .58)` |
 | marker / marker-ink | `oklch(.876 .112 126)` / `oklch(.24 .03 288)` | same |
 | fiber / fall | `oklch(1 .006 92)` / `oklch(.25 .03 288 / .28)` | `oklch(.435 .034 288)` / `oklch(.04 .02 288 / .7)` |
 | tape | `oklch(.985 .012 92 / .6)` | `oklch(.9 .012 92 / .28)` |
@@ -95,8 +96,31 @@ share a size. Nothing under 14px, and nothing but Sono under 16px. One weight of
 | Numbers | Sono, tabular | inherit | same |
 | Readout (the Cook Mode timer only) | Sono | 64 / 72 | same |
 
-Controls are 36px tall, and 48px when large. Small pills (badge, label, count) are 24px. A standalone icon is 24,
-36 or 48px; an icon beside text takes the text's size.
+Controls are 36px tall, and 48px when large. Icon buttons are 32px at every size. Small pills (badge, label,
+count) are 24px. A standalone icon is 24, 36 or 48px; an icon beside text takes the text's size.
+
+## On the rule
+
+The ruling is feint blue, 1px, at 24px. Its top lies 2px under the body baseline, and it is measured from the
+sheet's content box, so a sheet's padding cannot move it out from under the text. Body text sits on it by its own
+metrics. Every other role sits on it by a shift in the kit: display, section and sheet headings, titles, hand notes,
+kicks, labels, meta lines, units and numbers. No role is nudged by hand, and a line of badges is one rule tall, so
+the text after it stays on the rule.
+
+- **Margin rule**: a red line two rules in from the left edge, with the copy starting one rule after it. It runs
+  down the sheets you read down: the recipe and variant main column, the wizard and account forms, the wizard's
+  status sheets, and cook mode. Heroes, toolbars, cards, the header pad, home blocks, empty states and dialogs have
+  none.
+  It is gone below 480px, where the extra padding goes with it.
+- **Controls** centre on the caps of the line they start on, so a button's text lands on the rule beside its label,
+  and a row of controls and labels ends on a half rule so the text below is back on the rule. On a sheet a control
+  or a badge is filled with paper, so no rule runs through it.
+- **Fields** are written on the line. No pill, no box, no fill of its own: the text sits on the rule, the underline is that
+  rule drawn in hair-strong (2px ink while it is being written in), and a hand-drawn red X in the margin colour
+  starts the line, search fields included. A stepper is set with buttons, so it draws no X. The label stays above
+  the line. An error draws the line 2px ink, because the red is a wash and reads under 3:1 on paper; the well below
+  the field carries the red. A textarea has no box either: it writes on the sheet's own rules, and focus outlines
+  it in 2px ink.
 
 Sono is a rounded mono (`MONO` axis at 1) that keeps the two hand fonts company. Hand notes are casual
 italic, at most one per sheet, and never carry information the sheet needs. No bold, no semibold, no medium:
@@ -129,14 +153,17 @@ exist in the mockup and are not built.
 - **Tape**: holds applied items only. A sheet is never taped. A tile pinned to a sheet takes one small
   translucent strip, slightly rotated.
 - **Wax**: a light crayon tooth over desk and paper alike (multiply in light, soft-light in dark); washes and
-  tiles carry a finer grain of their own.
-- **Pencil ruling**: every sheet is ruled at 24px, faint, aligned to its padding. Always on.
+  tiles carry a finer grain of their own. Each sheet adds a workbench grain over its ground, at 6% in light and 8%
+  in dark, which sits on top of the wax and does not replace it.
+- **Ruling**: every sheet is ruled in feint blue at 24px, drawn from its content box so the text sits just above
+  each line. A blank sheet carries none. Always on. The margin rule is its companion on reading sheets (see On the
+  rule).
 
 ## Layout rhythm
 
 Sheet padding 24px (heroes 48px). Grid gaps 36px between rows (a rule and a half), 28px between columns.
 Sections 72px apart (three rules), a section heading 36px above its content. Vertical margins between blocks are
-whole or half rules.
+whole or half rules, and a row of controls ends so the text beneath it sits back on the rule.
 
 ## Motion
 
@@ -175,6 +202,10 @@ Reduced motion stills all of it.
 - Don't let two neighbouring sheets share a tear.
 - Don't give a sheet more than one wash, one label or one hand note.
 - Don't tape a sheet, and don't leave one without its blank.
+- Don't nudge anything onto the rule by a pixel: no `translate-y-px`, `top-[3px]` or hand-tuned padding. The
+  kit's shift puts every text role there, and a row of controls takes `kcc-row`. If a line is off the rule, fix the
+  kit.
+- Don't put a margin rule on a hero, a toolbar, a card or a dialog. It belongs to sheets you read down.
 
 ## Decisions and history
 
@@ -186,3 +217,9 @@ Reduced motion stills all of it.
 - **2026-10-19**: The type scale moves from a 15px body to one scale of even steps, 16/24 on the same 24px rule. Headings are
   named by role: `kcc-display`, `kcc-section`, `kcc-heading` and `kcc-title`. Sono caps set at 14px, and vertical
   spacing counts in rule units.
+- **2026-10-19**: Everything sits on the rule. The ruling turns feint blue, drawn from the content box with its top
+  2px under the body baseline. A red margin rule runs two rules in on the sheets you read down, and each sheet
+  adds a workbench grain to the wax. Every text role sits on the rule by the kit's shift, with no pixel nudges.
+  Controls centre on the caps of their line and fill with paper on a sheet; icon buttons are 32px and badges 24px.
+  Fields drop the pill for a line to write on, with a red hand-drawn X before it; an error is a 2px ink line with
+  the red in the well.

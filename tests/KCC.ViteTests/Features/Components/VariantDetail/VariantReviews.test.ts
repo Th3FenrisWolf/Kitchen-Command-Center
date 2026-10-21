@@ -109,11 +109,24 @@ describe('VariantReviews form', () => {
     expect(tagWith(html, 'kcc-tear-2')).toContain('kcc-slip--wide')
   })
 
+  it('gives the stars two rules and sets the buttons in a kit row, so the form stays on the rule', async () => {
+    const html = await render({ isAuthenticated: true })
+
+    expect(html).toMatch(/<div class="flex h-rule-2 items-center">(<!--[\s\S]*?-->)*<div[^>]*role="slider"/)
+    expect(html).toContain('<label class="kcc-field kcc-field--area relative w-full"')
+    expect(tagWith(html, 'data-testid="review-input"')).toContain('class="h-full resize-none"')
+    expect(html).toMatch(
+      /<label class="kcc-field kcc-field--area[^"]*" style="height:calc\(var\(--bl\) \* 4\);">(<!--[\s\S]*?-->)*<textarea /,
+    )
+    expect(html).not.toContain('kcc-field--noicon')
+    expect(html).toMatch(/<div class="kcc-row justify-end gap-x-7">(<!--[^>]*-->)*<button[^>]*data-testid="submit-review"/)
+  })
+
   it('takes the rating on the slider and the text in the kit field, hooks on the controls', async () => {
     const html = await render({ isAuthenticated: true })
 
     expect(html).toContain('role="slider"')
-    expect(html).toMatch(/<label class="kcc-field kcc-field--area">/)
+    expect(html).toContain('<label class="kcc-field kcc-field--area relative w-full"')
     expect(tagWith(html, 'data-testid="review-input"')).toMatch(/^<textarea /)
     expect(html).toContain('placeholder="WriteReview"')
   })

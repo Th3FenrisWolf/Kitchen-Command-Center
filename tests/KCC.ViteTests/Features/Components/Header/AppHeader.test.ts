@@ -200,11 +200,43 @@ describe('AppHeader', () => {
     expect(declarationsOf(rules, '.pad-glyph')['font-size']).toBe('var(--icon-sm)')
   })
 
-  it('sizes the glyph buttons as controls', () => {
+  it('starts every item of the bar on the bar’s first line, so the text in it lies on the pad’s rules', () => {
+    const rules = styleRules()
+
+    expect(['flex-start', 'start']).toContain(declarationsOf(rules, '.pad-bar')['align-items'])
+    expect(['flex-start', 'start']).toContain(declarationsOf(rules, '.pad-menus')['align-items'])
+  })
+
+  it('lets the kit place the menus and the glyph on the line they start on, centred on the menu label’s rule', async () => {
+    const html = await render(member())
+    const controls = [...html.matchAll(/<button[^>]*class="pad-(?:menu|glyph)[" ][^>]*>/g)].map(([tag]) => tag)
+    const rules = styleRules()
+
+    expect(controls.length).toBeGreaterThan(0)
+    for (const tag of controls) expect(tag).toMatch(/class="[^"]*\bkcc-control\b/)
+    for (const selector of ['.pad-menu', '.pad-glyph']) {
+      expect(declarationsOf(rules, selector).translate).toBeUndefined()
+    }
+    for (const selector of ['.pad-menu', '.pad-glyph']) {
+      expect(declarationsOf(rules, selector)['--centre-size']?.replace(/\s+/g, '')).toBe(
+        'calc(var(--k-hazelnut)/var(--k-sono)*var(--text-body))',
+      )
+    }
+    expect(declarationsOf(rules, '.pad-menu')['--h'], 'a menu takes kcc-control’s default height').toBeUndefined()
+  })
+
+  it('sizes the glyph as an icon button', () => {
     const glyph = declarationsOf(styleRules(), '.pad-glyph')
 
-    expect(glyph.height).toBe('var(--control-md)')
-    expect(glyph.width).toBe('var(--control-md)')
+    expect(glyph['--h']).toBe('var(--control-sm)')
+    expect(glyph.height).toBe('var(--control-sm)')
+    expect(glyph.width).toBe('var(--control-sm)')
+  })
+
+  it.each(['.pad-menu', '.pad-glyph'])('leaves %s’s paper fill at rest to kcc-control', (selector) => {
+    const rules = styleRules()
+    expect(declarationsOf(rules, selector)['background-color']).toBeUndefined()
+    expect(declarationsOf(rules, `${selector}:not(.kcc-pill)`)['background-color']).toBeUndefined()
   })
 
   it('starts the phone search results on a rule, under a field row two rules tall', async () => {
@@ -235,7 +267,7 @@ describe('AppHeader', () => {
     expect(field).toContain('placeholder="Search 25 recipes"')
     expect(field).toContain('aria-label="Search 25 recipes"')
     expect(field).toContain('aria-keyshortcuts="/"')
-    expect(html).toContain('<kbd class="pad-key" aria-hidden="true">/</kbd>')
+    expect(html).toContain('<kbd class="pad-key kcc-num" aria-hidden="true">/</kbd>')
   })
 
   it('leaves search out when there is no library to search', async () => {

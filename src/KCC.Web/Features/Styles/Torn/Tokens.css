@@ -14,13 +14,21 @@
 @layer base {
   :root {
     --bl: 1.5rem;
-    --rule-drop: calc(var(--bl) / 2 + 0.38208 * var(--text-body));
+    /* (ascent - descent) / 2 of each pinned face: a line's baseline lies at line-height / 2 + k * font-size. */
+    --k-hazelnut: 0.38208;
+    --k-casual: 0.25;
+    --k-sono: 0.312;
+    --rule-drop: calc(var(--bl) / 2 + var(--k-hazelnut) * var(--text-body));
+    --rule-offset: 2px;
     --rd: 6px;
     --wash-blend: multiply;
     --wash-op: 0.62;
     --wash-sat: 1;
     --grain-op: 0.08;
     --wax-op: 0.3;
+    --sheet-grain-op: 0.06;
+    --sheet-grain-blend: multiply;
+    --sheet-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23g)'/></svg>");
     --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)'/></svg>");
     --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.85'/></svg>");
   }
@@ -38,7 +46,8 @@
     --color-ink: oklch(0.945 0.012 92);
     --color-ink-soft: oklch(0.735 0.018 288);
     --color-hair-strong: oklch(0.945 0.012 92 / 0.45);
-    --color-rule: oklch(0.88 0.02 288 / 0.13);
+    --color-rule: oklch(0.74 0.05 240 / 0.24);
+    --color-margin: oklch(0.66 0.15 22 / 0.58);
     --color-fiber: oklch(0.435 0.034 288);
     --color-fall: oklch(0.04 0.02 288 / 0.7);
     --color-tape: oklch(0.9 0.012 92 / 0.28);
@@ -47,5 +56,7 @@
     --wash-sat: 1.45;
     --grain-op: 0.16;
     --wax-op: 0.36;
+    --sheet-grain-op: 0.08;
+    --sheet-grain-blend: soft-light;
   }
 }

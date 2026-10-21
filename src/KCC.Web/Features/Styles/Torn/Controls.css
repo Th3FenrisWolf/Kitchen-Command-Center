@@ -2,6 +2,8 @@
    these classes directly (ButtonLinkTagHelper, the Button widget); Vue components compose the same ones. */
 @layer components {
   .kcc-btn {
+    --centre-size: var(--text-caps);
+    --h: var(--control-md);
     align-items: center;
     background: var(--color-marker);
     border: 0;
@@ -45,6 +47,7 @@
   }
 
   .kcc-btn--text {
+    --h: var(--bl);
     background: transparent;
     color: var(--color-ink);
     height: auto;
@@ -61,6 +64,7 @@
   }
 
   .kcc-btn--lg {
+    --h: var(--control-lg);
     height: var(--control-lg);
     line-height: var(--control-lg);
     padding: 0 26px;
@@ -71,15 +75,14 @@
     padding: 0;
   }
 
-  /* A square pill for a button whose glyph is its whole label. After --lg, so the width and the dropped
-     padding win over the large pill's own. */
+  /* A circle for a button whose glyph is its whole label, one size at every button size. After --lg, so it
+     wins over the large pill's height and padding. */
   .kcc-btn--icon {
+    --h: var(--control-sm);
+    height: var(--control-sm);
+    line-height: var(--control-sm);
     padding: 0;
-    width: var(--control-md);
-  }
-
-  .kcc-btn--lg.kcc-btn--icon {
-    width: var(--control-lg);
+    width: var(--control-sm);
   }
 
   .kcc-btn:disabled,
@@ -88,7 +91,25 @@
     opacity: 0.45;
   }
 
+  /* A control the kit does not draw, placed on the line like a button. */
+  .kcc-control {
+    --centre-size: var(--text-caps);
+    --h: var(--control-md);
+  }
+
+  /* A control centres on the caps of the line it starts on, so the Sono label beside it and its own text sit
+     on the same rule. --centre-size is the size of that Sono line, when it is not the caps. */
+  .kcc-sheet :where(.kcc-btn, .kcc-seg, .kcc-control) {
+    translate: 0
+      calc(
+        mod(calc(var(--rule-drop) - var(--k-sono) * var(--centre-size) - var(--h) / 2 + var(--bl) / 2), var(--bl)) -
+          var(--bl) / 2
+      );
+  }
+
   .kcc-seg {
+    --centre-size: var(--text-caps);
+    --h: var(--control-md);
     border-radius: 999px;
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
     display: inline-flex;
@@ -174,35 +195,58 @@
       outline-offset 0.2s;
   }
 
+  /* A field is written on the line: its text sits on the rule, its underline lies where the sheet's rule
+     would, and the control height is kept as the hit area. */
   .kcc-field {
-    align-items: center;
-    border-radius: 999px;
-    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    align-items: start;
+    background: linear-gradient(var(--color-hair-strong), var(--color-hair-strong)) 0
+      calc(var(--rule-drop) + var(--rule-offset)) / 100% 1px no-repeat;
     color: var(--color-ink);
     display: grid;
     gap: 10px;
     grid-template-columns: auto 1fr;
     height: var(--control-md);
-    padding: 0 14px;
+    padding: 0;
   }
 
-  .kcc-field--noicon {
-    grid-template-columns: 1fr;
+  /* The alternative text after the slash keeps the X out of the field's accessible name: a wrapping label's
+     generated content is otherwise read as part of it. The plain declaration is the fallback where the
+     alternative-text syntax is not supported. */
+  .kcc-field::before {
+    --k: var(--k-casual);
+    --lh: var(--text-title--line-height);
+    --own: calc(var(--lh) / 2 + var(--k) * 1em);
+    color: var(--color-margin);
+    content: 'X';
+    content: 'X' / '';
+    font: 400 var(--text-title) / var(--text-title--line-height) var(--font-casual);
+    rotate: -6deg;
+    translate: 0 calc(mod(calc(var(--rule-drop) - var(--own) + var(--bl) / 2), var(--bl)) - var(--bl) / 2);
   }
 
-  .kcc-field i {
-    color: var(--color-ink-soft);
+  /* On a sheet a control or a badge is filled with paper, so no rule runs through it. A kcc-control in its
+     pill state keeps the marker. */
+  .kcc-sheet :where(.kcc-btn--ghost, .kcc-seg, .kcc-field, .kcc-badge, .kcc-control:not(.kcc-pill)) {
+    background-color: var(--color-paper);
   }
 
+  .kcc-sheet .kcc-btn--ghost:hover:not(:disabled, [aria-disabled='true']) {
+    background: var(--color-paper);
+  }
+
+  /* The control fills the field's hit area, and the padding below its one line keeps its text on the rule. */
   .kcc-field input,
   .kcc-field select {
     background: none;
     border: 0;
     color: inherit;
-    font: 400 var(--text-body)/var(--control-md) var(--font-hazelnut);
+    font: 400 var(--text-body) / var(--bl) var(--font-hazelnut);
+    height: var(--control-md);
     min-width: 0;
     outline: 0;
-    padding: 0;
+    padding-bottom: calc(var(--control-md) - var(--bl));
+    padding-inline: 0;
+    padding-top: 0;
     width: 100%;
   }
 
@@ -217,16 +261,40 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .kcc-field:focus-within {
-    box-shadow: inset 0 0 0 2px var(--color-ink);
+  /* Ink, not red: red reads under 3:1 on paper, so the well below the field carries the colour. */
+  .kcc-field--error {
+    background-image: linear-gradient(var(--color-ink), var(--color-ink));
+    background-size: 100% 2px;
   }
 
-  /* A textarea cannot be a pill: it takes the label radius and grows on the rule. */
+  .kcc-field--error.kcc-field--area {
+    background-image: none;
+    outline: 2px solid var(--color-ink);
+  }
+
+  .kcc-field:focus-within {
+    background-image: linear-gradient(var(--color-ink), var(--color-ink));
+    background-size: 100% 2px;
+  }
+
+  /* A stepper's number is set with buttons, not written, so it draws no X. */
+  .kcc-field--stepper {
+    grid-template-columns: 1fr;
+  }
+
+  .kcc-field--stepper::before {
+    content: none;
+  }
+
+  /* A textarea has no box and no fill: it writes on the sheet's own rules. */
   .kcc-field--area {
-    border-radius: var(--rd);
-    display: block;
+    background: none;
     height: auto;
-    padding: 6px 14px;
+  }
+
+  .kcc-field--area:focus-within {
+    background-image: none;
+    outline: 2px solid var(--color-ink);
   }
 
   .kcc-field--area textarea {
@@ -234,7 +302,7 @@
     border: 0;
     color: inherit;
     display: block;
-    font: 400 var(--text-body)/var(--text-body--line-height) var(--font-hazelnut);
+    font: 400 var(--text-body) / var(--bl) var(--font-hazelnut);
     min-width: 0;
     outline: 0;
     padding: 0;
@@ -350,10 +418,7 @@
     background: color-mix(in oklab, var(--color-yellow) 28%, var(--color-paper));
   }
 
-  .kcc-field--error {
-    background: color-mix(in oklab, var(--color-red) 28%, var(--color-paper));
-  }
-
+  /* A badge is one rule tall, so a line of badges, wrapped or not, keeps the text after it on the ruling. */
   .kcc-badge {
     align-items: center;
     border-radius: 999px;
@@ -363,7 +428,6 @@
     font: 400 var(--text-caps)/var(--pill-sm) var(--font-sono);
     height: var(--pill-sm);
     letter-spacing: 0.12em;
-    margin-block: 2px;
     padding: 0 10px;
     text-transform: uppercase;
     white-space: nowrap;
@@ -382,11 +446,15 @@
   }
 
   .kcc-check li {
-    align-items: center;
+    align-items: start;
     display: grid;
     gap: 12px;
     grid-template-columns: 12px 1fr auto;
     min-height: var(--bl);
+  }
+
+  .kcc-check .kcc-box {
+    margin-top: calc((var(--bl) - 12px) / 2);
   }
 
   .kcc-box {
@@ -456,7 +524,9 @@
     text-transform: uppercase;
   }
 
+  /* Centred, so the glyph's taller ascent does not set the row's baseline and push the value off its line. */
   .kcc-stats .kcc-v i {
+    align-self: center;
     color: var(--color-ink-soft);
     line-height: 1;
   }
@@ -487,7 +557,7 @@
   }
 
   .kcc-recipe .kcc-sheet {
-    /* One full rule of headroom for the pinned tile; a 12px offset would put every baseline off the ruling. */
+    /* Headroom for the pinned tile. The ruling starts at the content box, so it follows the extra padding. */
     padding-top: calc(var(--pad, 24px) + var(--bl));
   }
 
@@ -516,19 +586,36 @@
     flex-wrap: wrap;
     font-family: var(--font-sono);
     font-size: var(--text-caps);
-    gap: 10px;
+    gap: 0 10px;
     letter-spacing: 0.08em;
     line-height: var(--bl);
     margin: 0;
     text-transform: uppercase;
   }
 
-  /* Windows high-contrast paints no box-shadow, so the inset rings above vanish there. */
+  /* Forced colours paint no box-shadow and no gradient, so the inset rings and the field's underline vanish
+     there. A border is kept. */
   @media (forced-colors: active) {
     .kcc-field:focus-within,
     .kcc-seg button:focus-visible {
       outline: 2px solid CanvasText;
       outline-offset: 2px;
+    }
+
+    .kcc-field {
+      position: relative;
+    }
+
+    .kcc-field:not(.kcc-field--area)::after {
+      border-top: 1px solid CanvasText;
+      content: '';
+      inset-inline: 0;
+      position: absolute;
+      top: calc(var(--rule-drop) + var(--rule-offset));
+    }
+
+    .kcc-field--area {
+      outline: 1px solid CanvasText;
     }
   }
 }

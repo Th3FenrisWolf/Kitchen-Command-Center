@@ -2,32 +2,41 @@ import { describe, expect, it } from 'vitest'
 import InputField from '~/Components/Forms/InputField.vue'
 import { renderSsr } from '../../../support/ssr'
 
-// The component's root is the pill (`<label>`), not the control, so the attribute split is the contract:
-// class/style dress the pill, everything else belongs to the <input>.
+// The component's root is the line (`<label>`), not the control, so the attribute split is the contract:
+// class/style dress the line, everything else belongs to the <input>.
 const labelTag = (html: string) => html.match(/<label[^>]*>/)![0]
 const inputTag = (html: string) => html.match(/<input[^>]*>/)![0]
 
 describe('InputField', () => {
-  it('is a full-width pill wrapped around the input', async () => {
-    const html = await renderSsr(InputField, { modelValue: '' })
-    expect(html).toContain('<label class="kcc-field kcc-field--noicon w-full"')
-    expect(html).toContain('<input')
+  it('keeps a caller aria-invalid when the field has no error, and still marks an error invalid', async () => {
+    const forwarded = await renderSsr(InputField, { modelValue: '', 'aria-invalid': 'true' })
+    const errored = await renderSsr(InputField, { modelValue: '', 'aria-invalid': 'false', error: true })
+
+    expect(inputTag(forwarded)).toContain('aria-invalid="true"')
+    expect(inputTag(errored)).toContain('aria-invalid="true"')
   })
 
-  it('lands a caller class on the pill beside the kit classes, never on the input', async () => {
+  it('is a full-width line wrapped around the input, with no icon', async () => {
+    const html = await renderSsr(InputField, { modelValue: '' })
+    expect(html).toContain('<label class="kcc-field w-full"')
+    expect(html).toContain('<input')
+    expect(html).not.toMatch(/<i[\s>]/)
+  })
+
+  it('lands a caller class on the line beside the kit classes, never on the input', async () => {
     const html = await renderSsr(InputField, { modelValue: '', class: 'basis-1/3' })
-    expect(labelTag(html)).toContain('class="kcc-field kcc-field--noicon w-full basis-1/3"')
+    expect(labelTag(html)).toContain('class="kcc-field w-full basis-1/3"')
     expect(inputTag(html)).not.toContain('basis-1/3')
   })
 
-  it('lands an input class on the input, never on the pill', async () => {
+  it('lands an input class on the input, never on the line', async () => {
     const html = await renderSsr(InputField, { modelValue: '', inputClass: 'kcc-num' })
     expect(inputTag(html)).toMatch(/\sclass="kcc-num"/)
     expect(inputTag(html)).not.toMatch(/inputclass/i)
     expect(labelTag(html)).not.toContain('kcc-num')
   })
 
-  it('lands every other attribute on the input, never on the pill', async () => {
+  it('lands every other attribute on the input, never on the line', async () => {
     const html = await renderSsr(InputField, {
       modelValue: '',
       id: 'email',
@@ -42,12 +51,23 @@ describe('InputField', () => {
     }
   })
 
-  it('drops --noicon and prints the leading glyph when an icon is given', async () => {
-    const html = await renderSsr(InputField, { modelValue: '', icon: 'fa-duotone fa-magnifying-glass' })
-    expect(html).toContain('<label class="kcc-field w-full"')
+  it('takes no icon: the X before the line is the field’s one leading mark', async () => {
+    expect(Object.keys(InputField.props ?? {})).not.toContain('icon')
+    const html = await renderSsr(InputField, { modelValue: '' })
     expect(html).not.toContain('kcc-field--noicon')
-    expect(html).toContain('<i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>')
-    // The icon is the pill's first grid column, so it has to render before the control.
-    expect(html.indexOf('<i ')).toBeLessThan(html.indexOf('<input'))
+    expect(html).not.toMatch(/<i[\s>]/)
+  })
+
+  it('draws the error line and marks the input invalid when the field has an error', async () => {
+    const html = await renderSsr(InputField, { modelValue: '', error: true, class: 'basis-1/3' })
+    expect(labelTag(html)).toContain('class="kcc-field kcc-field--error w-full basis-1/3"')
+    expect(inputTag(html)).toContain('aria-invalid="true"')
+    expect(inputTag(html)).not.toContain('error')
+  })
+
+  it('draws no error line and claims nothing invalid without an error', async () => {
+    const html = await renderSsr(InputField, { modelValue: '' })
+    expect(html).not.toContain('kcc-field--error')
+    expect(html).not.toContain('aria-invalid')
   })
 })

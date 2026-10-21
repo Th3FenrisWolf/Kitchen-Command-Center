@@ -22,6 +22,7 @@
 
 <template>
   <KccSheet
+    margin
     class="mt-rule-1"
     wash="green"
     :at="{ x: '100%', y: '100%', w: '30%', h: '40%' }"

@@ -9,6 +9,7 @@
     tear: Exclude<Tear, 'hero'>
     tilt: number
     labelledBy?: string
+    scroll?: boolean
     label?: string
     width?: string
     left?: number
@@ -16,7 +17,7 @@
     at?: { x?: string; y?: string; w?: string; h?: string }
   }
 
-  const { id, state, tear, tilt, labelledBy, label, width, left, wash, at } = defineProps<PadCardProps>()
+  const { id, state, tear, tilt, labelledBy, label, width, left, wash, at, scroll = false } = defineProps<PadCardProps>()
 </script>
 
 <template>
@@ -26,6 +27,7 @@
     :class="`is-${state}`"
     :tear
     :piled="false"
+    :scroll="scroll"
     :wash
     :at
     role="region"
@@ -84,10 +86,10 @@
   }
 
   .pad-foot {
-    align-items: center;
+    align-items: flex-start;
+    column-gap: 16px;
     display: flex;
     flex-wrap: wrap;
-    gap: 0 16px;
     justify-content: space-between;
   }
 
@@ -127,7 +129,6 @@
     }
 
     .pad-card--phone .kcc-sheet {
-      background-attachment: local;
       max-height: min(520px, calc(100dvh - 128px));
       overflow-y: auto;
       overscroll-behavior: contain;

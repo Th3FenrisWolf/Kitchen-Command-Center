@@ -69,15 +69,17 @@ describe('SmallHero copy', () => {
     expect(html).toContain('<p class="kcc-body mt-rule-1">Everything the kitchen knows about you.</p>')
   })
 
-  it('sets the action beside the title on one wrapping row', async () => {
+  it('sets the action beside the title on one wrapping row, one rule down, so its text shares the title’s rule', async () => {
     const html = printed(await render())
     const row = html.match(/<div class="flex flex-wrap[^"]*">([\s\S]*?)<\/div>/)
 
-    expect(row?.[0], 'the title and its action are not on a row').toContain('items-center')
+    expect(row?.[0], 'the title and its action are not on a row').toContain('items-start')
     expect(row?.[0]).toContain('justify-between')
     expect(row?.[0]).toContain('gap-x-7')
+    expect(row?.[0], 'a row gap would set a wrapped action a second rule under the title').not.toMatch(/gap-y-/)
     expect(row?.[1]).toContain('<h1 class="kcc-display">Account settings</h1>')
     expect(row?.[1]).toContain('Back to profile')
+    expect(row?.[1]).toContain('<div class="flex pt-rule-1 pb-rule-0.5">')
   })
 
   it('leaves out the eyebrow and the description when nothing fills them', async () => {

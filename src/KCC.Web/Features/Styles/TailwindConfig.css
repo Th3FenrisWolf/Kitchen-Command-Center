@@ -32,6 +32,7 @@
   --text-readout: 4rem;
   --text-readout--line-height: 4.5rem;
 
+  --control-sm: 2rem;
   --control-md: 2.25rem;
   --control-lg: 3rem;
   --pill-sm: 1.5rem;
@@ -52,7 +53,8 @@
      headroom for the crayon overlay that multiplies everything by ~0.97 (contrast.test.ts UI pairs; desk-2
      is the binding ground). */
   --color-hair-strong: oklch(0.232 0.026 288 / 0.56);
-  --color-rule: oklch(0.58 0.045 288 / 0.22);
+  --color-rule: oklch(0.698 0.048 239.5 / 0.55);
+  --color-margin: oklch(0.631 0.178 20 / 0.75);
   /* Marker repeats green's literal rather than aliasing it: it is the primary-action role, and re-valuing
      the green wash must not silently move every button with it. */
   --color-marker: oklch(0.876 0.112 126);

@@ -59,6 +59,12 @@ describe('StepTimer', () => {
     expect(html).toContain('data-test="timer-display">90:00</span>')
   })
 
+  it('starts its buttons on the kick’s line, in a kit row whole rules apart, since its lines are whole rules tall', async () => {
+    const timer = tagWith(await render(), 'role="timer"')
+
+    expect(timer).toContain('class="kcc-row gap-x-6 gap-y-rule-1 pb-0"')
+  })
+
   it('is printed on the sheet, not in a pill of its own: no ground, no radius, no weight', async () => {
     const html = await render()
 

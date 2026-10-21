@@ -47,6 +47,7 @@
 <template>
   <div class="mt-rule-1 grid items-start gap-x-7 gap-y-rule-1.5 md:grid-cols-content-aside">
     <KccSheet
+      margin
       as="section"
       wash="lavender"
       :at="{ x: '88%', y: '18%', w: '38%', h: '60%' }"
@@ -69,7 +70,7 @@
         </div>
       </div>
 
-      <div class="mt-rule-1 flex flex-wrap items-center gap-x-3 gap-y-rule-0.5">
+      <div class="kcc-row mt-rule-1">
         <Button as="a" :href="settingsUrl" variant="ghost">
           <ResourceString for="AccountSettings" />
         </Button>

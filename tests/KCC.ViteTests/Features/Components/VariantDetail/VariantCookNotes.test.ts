@@ -36,7 +36,7 @@ describe('VariantCookNotes sheet', () => {
   it('gives a signed-in cook the kit textarea, with the e2e hook on the textarea itself', async () => {
     const html = await render({ isAuthenticated: true })
 
-    expect(html).toMatch(/<label class="kcc-field kcc-field--area[^"]*">/)
+    expect(html).toMatch(/<label class="kcc-field kcc-field--area[^"]*"/)
     expect(tagWith(html, 'data-testid="cook-note-input"')).toMatch(/^<textarea /)
     expect(html).toContain('placeholder="CookNotePlaceholder"')
   })
@@ -53,8 +53,13 @@ describe('VariantCookNotes sheet', () => {
   it('sizes the compose box and its button in whole rules, so the notes under them sit on the ruling', async () => {
     const html = await render({ isAuthenticated: true })
 
-    expect(html).toMatch(/<label class="kcc-field kcc-field--area min-h-rule-4">/)
-    expect(html).toMatch(/<div class="flex min-h-rule-2 items-center"><button[^>]*data-testid="add-cook-note"/)
+    expect(html).toContain('<label class="kcc-field kcc-field--area relative w-full"')
+    expect(tagWith(html, 'data-testid="cook-note-input"')).toContain('class="h-full resize-none"')
+    expect(html).toMatch(
+      /<label class="kcc-field kcc-field--area[^"]*" style="height:calc\(var\(--bl\) \* 4\);">(<!--[\s\S]*?-->)*<textarea /,
+    )
+    expect(html).not.toContain('kcc-field--noicon')
+    expect(html).toMatch(/<div class="kcc-row"><button[^>]*data-testid="add-cook-note"/)
   })
 
   it('shows no compose box to a reader who is not signed in', async () => {

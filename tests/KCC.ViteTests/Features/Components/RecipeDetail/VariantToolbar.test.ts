@@ -39,11 +39,11 @@ describe('VariantToolbar', () => {
     expect(html).not.toMatch(/\bfont-(?:bold|semibold|medium)\b/)
   })
 
-  it('sets the search as a pill with its leading glyph', async () => {
+  it('writes the search on a line with no leading glyph', async () => {
     const html = await render({ search: 'jalapeno' })
 
     expect(tagWith(html, 'kcc-field')).toContain('kcc-field')
-    expect(html).toContain('<i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>')
+    expect(html).not.toContain('fa-magnifying-glass')
     const input = tagWith(html, 'placeholder="SearchVariants"')
     expect(input).toContain('value="jalapeno"')
   })

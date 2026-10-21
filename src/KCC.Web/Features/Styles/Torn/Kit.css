@@ -112,20 +112,101 @@
   }
 
   .kcc-sheet {
+    --k: var(--k-hazelnut);
+    --lh: var(--bl);
+    background-clip: border-box;
     background-color: var(--color-paper);
-    /* The pencil rule, aligned to the padding so the first line of type sits on it. */
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0 calc(var(--bl) - 1px),
-      var(--color-rule) calc(var(--bl) - 1px) var(--bl)
-    );
-    background-position: 0 calc(var(--pad, 24px) + var(--rule-drop) - var(--bl) + 1px);
+    /* Anchored to the content box, where the first line of text starts, so a padding set by a utility rather
+       than --pad cannot move the rules out from under the text. */
+    background-image: linear-gradient(to bottom, var(--color-rule) 1px, transparent 0);
+    background-origin: content-box;
+    background-position: 0 calc(var(--rule-drop) + var(--rule-offset));
+    background-size: 100% var(--bl);
     clip-path: var(--tear, var(--tear-1));
     color: var(--color-ink);
     isolation: isolate;
     min-width: 0;
     padding: var(--pad, 24px);
     position: relative;
+  }
+
+  .kcc-sheet--blank {
+    background-image: none;
+  }
+
+  /* A sheet that is its own scroll container would leave an absolutely placed grain behind at the top of its
+     content, so it lays the grain in its scrolling background instead: blended with the paper, under a veil of
+     paper that leaves the grain's opacity showing, and under the ruling. It lies under the wash, which such a
+     sheet does not take. */
+  .kcc-sheet--scroll {
+    background-attachment: local;
+    background-blend-mode: normal, normal, var(--sheet-grain-blend);
+    background-image:
+      linear-gradient(to bottom, var(--color-rule) 1px, transparent 0),
+      linear-gradient(color-mix(in oklab, var(--color-paper) calc((1 - var(--sheet-grain-op)) * 100%), transparent)),
+      var(--sheet-grain);
+    background-origin: content-box, padding-box, padding-box;
+    background-position:
+      0 calc(var(--rule-drop) + var(--rule-offset)),
+      0 0,
+      0 0;
+    background-size:
+      100% var(--bl),
+      100% 100%,
+      180px 180px;
+  }
+
+  /* The slip, not the sheet, is the container: a container cannot query itself. Only a margin sheet's slip
+     gets one, because inline-size containment stops a slip from sizing to its content. */
+  .kcc-slip:has(> .kcc-torn > .kcc-sheet--margin) {
+    container-name: kcc-margin;
+    container-type: inline-size;
+  }
+
+  .kcc-sheet--margin {
+    padding-inline-start: calc(var(--bl) * 3);
+  }
+
+  .kcc-sheet--margin::before {
+    background: linear-gradient(
+      to right,
+      transparent calc(var(--bl) * 2),
+      var(--color-margin) calc(var(--bl) * 2),
+      var(--color-margin) calc(var(--bl) * 2 + 1px),
+      transparent calc(var(--bl) * 2 + 1px)
+    );
+    content: '';
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  @container kcc-margin (width < 480px) {
+    .kcc-sheet--margin {
+      padding-inline-start: var(--pad, 24px);
+    }
+
+    .kcc-sheet--margin::before {
+      display: none;
+    }
+  }
+
+  .kcc-sheet::after {
+    background-image: var(--sheet-grain);
+    background-size: 180px 180px;
+    content: '';
+    inset: 0;
+    mix-blend-mode: var(--sheet-grain-blend);
+    opacity: var(--sheet-grain-op);
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  /* After the overlay every sheet draws, which has the same specificity. */
+  .kcc-sheet--scroll::after {
+    content: none;
   }
 
   /* Content sits above the wash. :where() keeps this at class specificity so a kit class or a utility that
@@ -354,6 +435,188 @@
     font-family: var(--font-sono);
     font-variant-numeric: tabular-nums;
     letter-spacing: 0;
+  }
+
+  /* Translate, not padding and a negative margin: the rule utilities sit in a later layer and would override
+     the margin. */
+  .kcc-sheet
+    :where(
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .kcc-display,
+      .kcc-section,
+      .kcc-heading,
+      .kcc-title,
+      .kcc-hand,
+      .kcc-kick,
+      .kcc-lbl,
+      .kcc-meta,
+      .kcc-unit,
+      .kcc-num,
+      .text-caps,
+      .text-title,
+      .text-heading,
+      .text-section,
+      .text-readout
+    ),
+  .kcc-sheet :where(.kcc-q, .kcc-n, .kcc-stat, .kcc-v, .kcc-badge) {
+    --own: calc(var(--lh) / 2 + var(--k) * 1em);
+    translate: 0 calc(mod(calc(var(--rule-drop) - var(--own) + var(--bl) / 2), var(--bl)) - var(--bl) / 2);
+  }
+
+  /* A role inside another role, or inside a button, a segment or a kcc-control, already rides on the outer
+     shift. A field is not shifted: it starts on a line, so a role inside it takes its own. */
+  .kcc-sheet
+    :where(
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .kcc-display,
+      .kcc-section,
+      .kcc-heading,
+      .kcc-title,
+      .kcc-hand,
+      .kcc-kick,
+      .kcc-lbl,
+      .kcc-meta,
+      .kcc-stat,
+      .kcc-v,
+      .kcc-btn,
+      .kcc-seg,
+      .kcc-control,
+      .kcc-badge
+    )
+    :where(.kcc-kick, .kcc-lbl, .kcc-meta, .kcc-unit, .kcc-num, .text-caps, .text-title, .text-heading) {
+    translate: none;
+  }
+
+  /* Bare headings first, so a role class on a heading (an h3 set as kcc-display) gives its own line height. */
+  .kcc-sheet :where(h1) {
+    --lh: var(--text-display-phone--line-height);
+  }
+
+  @media (min-width: 768px) {
+    .kcc-sheet :where(h1) {
+      --lh: var(--text-display--line-height);
+    }
+  }
+
+  .kcc-sheet :where(h2) {
+    --lh: var(--text-section--line-height);
+  }
+
+  .kcc-sheet :where(h3) {
+    --lh: var(--text-heading--line-height);
+  }
+
+  .kcc-sheet :where(h4, h5, h6) {
+    --lh: var(--text-title--line-height);
+  }
+
+  .kcc-sheet :where(h1, h2, h3, h4, h5, h6, .kcc-display, .kcc-section, .kcc-heading, .kcc-title, .kcc-hand) {
+    --k: var(--k-casual);
+  }
+
+  .kcc-sheet :where(.kcc-display) {
+    --lh: var(--text-display-phone--line-height);
+  }
+
+  @media (min-width: 768px) {
+    .kcc-sheet :where(.kcc-display) {
+      --lh: var(--text-display--line-height);
+    }
+  }
+
+  .kcc-sheet :where(.kcc-section) {
+    --lh: var(--text-section--line-height);
+  }
+
+  .kcc-sheet :where(.kcc-heading) {
+    --lh: var(--text-heading--line-height);
+  }
+
+  .kcc-sheet :where(.kcc-title, .kcc-hand) {
+    --lh: var(--text-title--line-height);
+  }
+
+  .kcc-sheet :where(.kcc-kick, .kcc-lbl, .kcc-meta, .kcc-unit, .kcc-num, .kcc-q, .kcc-n, .kcc-stat) {
+    --k: var(--k-sono);
+    --lh: var(--bl);
+  }
+
+  .kcc-sheet :where(.kcc-badge) {
+    --k: var(--k-sono);
+    --lh: var(--pill-sm);
+  }
+
+  .kcc-sheet :where(.kcc-v) {
+    --k: var(--k-sono);
+    --lh: var(--text-heading--line-height);
+  }
+
+  .kcc-sheet :where(.text-caps) {
+    --lh: var(--text-caps--line-height);
+  }
+
+  .kcc-sheet :where(.text-title) {
+    --lh: var(--text-title--line-height);
+  }
+
+  .kcc-sheet :where(.text-heading) {
+    --lh: var(--text-heading--line-height);
+  }
+
+  .kcc-sheet :where(.text-section) {
+    --lh: var(--text-section--line-height);
+  }
+
+  .kcc-sheet :where(.text-readout) {
+    --lh: var(--text-readout--line-height);
+  }
+
+  .kcc-sheet :where(.font-casual) {
+    --k: var(--k-casual);
+  }
+
+  .kcc-sheet :where(.font-mono) {
+    --k: var(--k-sono);
+  }
+
+  /* Not centred: a label centred beside a taller control lands off the rule. The half-rule gap and padding
+     make every wrapped line of 36px controls two rules. */
+  .kcc-row {
+    align-items: flex-start;
+    column-gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: calc(var(--bl) / 2);
+    row-gap: calc(var(--bl) / 2);
+  }
+
+  /* A label's lines are whole rules, so the half rule below it makes its row line fill whole rules as a
+     control's does, whether it shares that line or wraps onto its own, and however many lines it runs to. :is,
+     so it outweighs a role's own margin: 0. */
+  .kcc-row > :is(.kcc-kick, .kcc-lbl, .kcc-meta, .kcc-title, .kcc-heading) {
+    margin-bottom: calc(var(--bl) / 2);
+  }
+
+  /* A text button is only as tall as its own line, and an icon button or a kcc-control can be smaller than a
+     control, so their margin box is made a control's height, whatever their size: below it for a small one, a
+     negative margin for a large one. */
+  .kcc-row > .kcc-btn--text,
+  .kcc-row > .kcc-btn--icon,
+  .kcc-row > .kcc-control,
+  .kcc-row > form > .kcc-btn--text,
+  .kcc-row > form > .kcc-btn--icon,
+  .kcc-row > form > .kcc-control {
+    margin-bottom: calc(var(--control-md) - var(--h));
   }
 
   .kcc-hr {

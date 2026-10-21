@@ -30,9 +30,13 @@
       :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${listTearFor(variants.length)}`]"
     >
       <a :href="addVariantUrl" class="kcc-torn block">
-        <div class="kcc-sheet grid content-center justify-items-center gap-y-rule-1 text-center" style="--pad: 48px">
-          <i class="fa-duotone fa-plus kcc-icon-md text-ink-soft" aria-hidden="true"></i>
-          <ResourceString for="AddVariant" as="span" class="kcc-title" />
+        <div class="kcc-sheet" style="--pad: 48px">
+          <div class="kcc-row justify-center">
+            <span class="kcc-btn kcc-btn--icon" aria-hidden="true"
+              ><i class="fa-duotone fa-plus" aria-hidden="true"></i
+            ></span>
+            <ResourceString for="AddVariant" as="span" class="kcc-title" />
+          </div>
         </div>
       </a>
 

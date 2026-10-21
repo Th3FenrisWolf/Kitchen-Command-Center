@@ -119,13 +119,13 @@
 </script>
 
 <template>
-  <KccSheet crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-clipboard-check" data-testid="review-step">
+  <KccSheet margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-clipboard-check" data-testid="review-step">
     <template #label><ResourceString for="ReviewAndSubmit" /></template>
 
     <h2 ref="heading" class="sr-only">{{ rs('ReviewAndSubmit') }}</h2>
 
     <div class="space-y-rule-2" :aria-busy="submitting">
-      <div v-if="changesMatch" class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+      <div v-if="changesMatch" class="kcc-row justify-between">
         <p :id="matchLineId" class="kcc-heading">{{ matchLine }}</p>
         <Button variant="text" :disabled="submitting" :aria-describedby="matchLineId" @click="emit('changeMatch')">
           <i class="fa-duotone fa-arrows-rotate" aria-hidden="true"></i><ResourceString for="ChangeMatch" />
@@ -137,7 +137,7 @@
       <p v-if="otherRecipesSeen" class="kcc-well kcc-kick">{{ otherRecipesSeen }}</p>
 
       <div v-if="mode === 'recipe'">
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+        <div class="kcc-row justify-between">
           <ResourceString for="ReviewRecipe" as="p" class="kcc-kick" />
           <Button
             variant="text"
@@ -169,7 +169,7 @@
       </div>
 
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+        <div class="kcc-row justify-between">
           <ResourceString :for="variantTitle" as="p" class="kcc-kick" />
           <Button
             variant="text"
@@ -205,7 +205,7 @@
       </div>
 
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+        <div class="kcc-row justify-between">
           <h4 class="kcc-kick flex items-baseline gap-2">
             <ResourceString for="Ingredients" /><span class="kcc-num">{{ ingredients.length }}</span>
           </h4>
@@ -236,7 +236,7 @@
       </div>
 
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-rule-1">
+        <div class="kcc-row justify-between">
           <h4 class="kcc-kick flex items-baseline gap-2">
             <ResourceString for="Instructions" /><span class="kcc-num">{{ instructions.length }}</span>
             <ResourceString :for="stepLabelKey(instructions.length)" />
@@ -269,7 +269,7 @@
     </div>
 
     <div v-if="imported" class="mt-rule-2 flex flex-col gap-y-rule-1">
-      <div class="flex flex-wrap gap-x-3 gap-y-rule-1">
+      <div class="kcc-row">
         <Button variant="ghost" :disabled="submitting" data-testid="change-photos" @click="emit('changePhotos')">
           <i class="fa-duotone fa-images" aria-hidden="true"></i><ResourceString for="ChangePhotos" />
         </Button>
@@ -296,7 +296,7 @@
       {{ rs(error) }}
     </p>
 
-    <div class="mt-rule-2 flex flex-wrap justify-between gap-x-3 gap-y-rule-1">
+    <div class="kcc-row mt-rule-2 justify-between">
       <Button variant="ghost" :disabled="submitting" @click="emit('back')">
         <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Back" />
       </Button>

@@ -6,8 +6,8 @@ import { classesOf, enclosingTag } from '../../../support/recipeWizard'
 
 const baseProps = { label: 'Email', controlId: 'email' }
 
-// The slotted control (InputField, TextAreaField, …) reads `error` off the scoped slot to add
-// `kcc-field--error` to its own pill; a plain input stands in for it here.
+// A caller hands the scoped slot's `error` to its control, and InputField, TextAreaField and SelectField add
+// `kcc-field--error` to their line from it; a plain input stands in for them here.
 const control = (slotProps?: { error?: boolean }) =>
   h('input', { id: 'email', class: { 'kcc-field--error': !!slotProps?.error } })
 
@@ -78,11 +78,11 @@ describe('Field', () => {
     expect(html).not.toContain('kcc-well')
   })
 
-  it('stacks label, control and message with no gap, the control alone centred in a box two rules tall', async () => {
+  it('stacks label, control and message with no gap, the control at the top of a box two rules tall, on a line', async () => {
     const html = await renderSsr(Field, { ...baseProps, hint: 'We will not share this' }, { default: control })
 
     expect(classesOf(html.match(/^<div[^>]*>/)?.[0] ?? '')).toEqual(['flex', 'flex-col'])
-    expect(classesOf(enclosingTag(html, 'id="email"'))).toEqual(['flex', 'min-h-rule-2', 'flex-col', 'justify-center'])
+    expect(classesOf(enclosingTag(html, 'id="email"'))).toEqual(['flex', 'min-h-rule-2', 'flex-col'])
   })
 
   it('sets what follows the control on the next rule, outside the control box with no gap', async () => {

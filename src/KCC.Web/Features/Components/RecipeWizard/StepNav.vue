@@ -14,12 +14,12 @@
 </script>
 
 <template>
-  <div class="flex flex-wrap justify-between gap-x-3 gap-y-rule-1">
+  <div class="kcc-row justify-between">
     <Button v-if="canGoBack" variant="ghost" @click="emit('back')">
       <i class="fa-duotone fa-arrow-left" aria-hidden="true"></i><ResourceString for="Back" />
     </Button>
 
-    <div class="ml-auto flex flex-wrap justify-end gap-x-3 gap-y-rule-1">
+    <div class="ml-auto flex flex-wrap justify-end gap-x-3 gap-y-rule-0.5">
       <Button v-if="returnsToReview" variant="ghost" data-testid="back-to-review" @click="emit('review')">
         <i class="fa-duotone fa-clipboard-check" aria-hidden="true"></i><ResourceString for="BackToReview" />
       </Button>

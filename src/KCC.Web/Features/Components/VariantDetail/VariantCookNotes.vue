@@ -5,6 +5,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
+  import TextAreaField from '~/Components/Forms/TextAreaField.vue'
 
   export interface VariantCookNotesProps {
     variantGuid: string
@@ -59,7 +60,7 @@
 </script>
 
 <template>
-  <KccSheet as="section" icon="fa-duotone fa-pen-nib" :tear="4" wide>
+  <KccSheet margin as="section" icon="fa-duotone fa-pen-nib" :tear="4" wide>
     <template #label><ResourceString for="CookNotes" /></template>
 
     <h2 class="sr-only">{{ t('CookNotes') }}</h2>
@@ -67,17 +68,9 @@
     <!-- The heading takes no room, so the rhythm is between the blocks, never above the first of them. -->
     <div class="space-y-rule-1">
       <div v-if="isAuthenticated" class="space-y-rule-1">
-        <!-- The e2e suite fills this textarea by hook, so the hook stays on the control, not on the field. -->
-        <label class="kcc-field kcc-field--area min-h-rule-4">
-          <textarea
-            v-model="draft"
-            :placeholder="t('CookNotePlaceholder')"
-            rows="3"
-            data-testid="cook-note-input"
-          ></textarea>
-        </label>
+        <TextAreaField v-model="draft" :rules="4" :placeholder="t('CookNotePlaceholder')" data-testid="cook-note-input" />
         <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
-        <div class="flex min-h-rule-2 items-center">
+        <div class="kcc-row">
           <Button data-testid="add-cook-note" :disabled="!draft.trim()" @click="add">
             <ResourceString for="AddCookNote" />
           </Button>

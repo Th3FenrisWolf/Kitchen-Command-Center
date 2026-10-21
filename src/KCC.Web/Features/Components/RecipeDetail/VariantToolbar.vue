@@ -39,7 +39,6 @@
 <template>
   <div class="flex flex-wrap items-center gap-x-7 gap-y-rule-0.5">
     <div class="kcc-field min-w-50 flex-1">
-      <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
       <input v-model="search" type="search" :placeholder="rs('SearchVariants')" />
     </div>
 

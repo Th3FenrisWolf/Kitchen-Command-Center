@@ -9,11 +9,11 @@ never in a component `<style>` block.
 | Path | Holds |
 |---|---|
 | `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), the type, control, pill and icon tokens, radius ladder, fonts, safelist; the `*-rule-*` spacing utilities |
-| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties, among them the rule `--bl` and its drop `--rule-drop`; the dark ramp under `:root[data-theme='dark']` |
+| `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties, among them the rule `--bl`, its drop `--rule-drop` and offset `--rule-offset`, and the baseline constants `--k-*`; the dark ramp under `:root[data-theme='dark']` |
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
-| `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / blank / sheet / wash / label / tape / tile, type, chrome, ramp swap |
+| `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk, slip / torn / blank / sheet / wash / label / tape / tile, the ruling, the margin rule, the grain, the shim, `kcc-row`, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
-| `src/KCC.Web/Features/Styles/Typography.css` | the 16 / 24 body, the type roles of bare `h1`–`h6` in APCasual, form controls at the body size, every `@font-face` including Sono |
+| `src/KCC.Web/Features/Styles/Typography.css` | the 16 / 24 body, the type roles of bare `h1`–`h6` in APCasual, form controls at the body size, every `@font-face` including Sono, each with its pinned metrics (see Paper rule) |
 | `src/KCC.Web/Features/Styles/Layout.css` | the `.content-grid` breakout system: content, breakout and full-width columns for pages and sections |
 | `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here; `#app` carries the desk colour so the overlays have a backdrop to blend with, and clips sideways overflow |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
@@ -34,8 +34,9 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 | `desk`, `desk-2` | `.884 .016 288`, `.836 .018 288` | `.132 .024 288`, `.176 .028 288` | page ground, raised desk |
 | `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for inset panels inside a sheet and the neutral `kcc-well` |
 | `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` (test-pinned; mockup .452) | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
-| `hair`, `hair-strong` | ink / .16, ink / .56 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines and underlines |
-| `rule` | `.58 .045 288 / .22` | `.88 .02 288 / .13` | pencil ruling |
+| `hair`, `hair-strong` | ink / .16, ink / .56 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines, link and field underlines |
+| `rule` | `.698 .048 239.5 / .55` | `.74 .05 240 / .24` | the feint blue ruling |
+| `margin` | `.631 .178 20 / .75` | `.66 .15 22 / .58` | the margin rule and a field's X; never text |
 | `marker`, `marker-ink` | `.876 .112 126`, `.24 .03 288` | same | the accent fill and the ink that sits on it and on every wash |
 | `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-torn` |
 | `tape` | `.985 .012 92 / .6` | `.9 .012 92 / .28` | the strip over a pinned tile |
@@ -59,29 +60,35 @@ utility sets both.
 | `--text-body` | 1rem / 1.5rem (16 / 24) | `body`, `kcc-body`, `input`, `select`, `textarea`, the pad's menus and lines |
 | `--text-caps` | 0.875rem / 1.5rem (14 / 24) | every small Sono role: kick, label, meta, unit, stat, badge, button, segment |
 | `--text-readout` | 4rem / 4.5rem (64 / 72) | `text-readout`, the Cook Mode timer only; counted apart from the text sizes |
-| `--control-md`, `--control-lg` | 2.25rem, 3rem (36px, 48px) | the height and line of `kcc-btn`, `kcc-seg`, `kcc-field`; of `kcc-btn--lg` |
+| `--control-sm` | 2rem (32px) | the width and height of `kcc-btn--icon`, at every button size |
+| `--control-md`, `--control-lg` | 2.25rem, 3rem (36px, 48px) | the height and line of `kcc-btn` and `kcc-seg`, and the hit area of `kcc-field`; of `kcc-btn--lg` |
 | `--pill-sm` | 1.5rem (24px) | the height and line of `kcc-badge`, `kcc-label`, the pad's count and key hint |
 | `--icon-sm`, `--icon-md`, `--icon-lg` | 1.5rem, 2.25rem, 3rem (24px, 36px, 48px) | `kcc-icon-sm`, `kcc-icon-md`, `kcc-icon-lg`, the tile glyphs, the pad glyph; counted apart from the text sizes |
 
 Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 1.5rem (24px), the rule every line height and
-vertical space is counted in; `--rule-drop` (`calc(var(--bl) / 2 + 0.38208 * var(--text-body))`, how far below a
-line's top the body baseline sits, so the ruling lands on it); `--rd` 6px (labels, wells, textareas), `--wash-blend`
-(multiply / screen), `--wash-op` (.62 / .26, dark value test-pinned), `--wash-sat` (1 / 1.45), `--grain-op` (.08 /
-.16), `--wax-op` (.3 / .36), `--grain`, `--crayon`. Per element: `--pad` (sheet), `--tear`, `--r`, `--blank-tear` and
-`--blank-dir` (set by a preset class), `--blank-turn`, `--blank-scale` and `--blank-flip` (set on the slip and its
-modifiers), `--blank-region` (set on a region that turns its sheets' blanks over), `--c --x --y --w --h` (wash).
+vertical space is counted in; `--k-hazelnut` .38208, `--k-casual` .25 and `--k-sono` .312, each face's baseline
+constant (see Paper rule); `--rule-drop` (`calc(var(--bl) / 2 + var(--k-hazelnut) * var(--text-body))`, how far
+below a line's top the body baseline sits); `--rule-offset` 2px, how far below that baseline each rule lies; `--rd`
+6px (labels, pills, wells), `--wash-blend` (multiply / screen), `--wash-op` (.62 / .26, dark value test-pinned),
+`--wash-sat` (1 / 1.45), `--grain-op` (.08 / .16), `--wax-op` (.3 / .36), `--sheet-grain-op` (.06 / .08) and
+`--sheet-grain-blend` (multiply / soft-light), `--grain`, `--crayon`, `--sheet-grain`. Per element: `--pad` (sheet),
+`--tear`, `--r`, `--blank-tear` and `--blank-dir` (set by a preset class), `--blank-turn`, `--blank-scale` and
+`--blank-flip` (set on the slip and its modifiers), `--blank-region` (set on a region that turns its sheets' blanks
+over), `--k`, `--lh` and `--own` (set by the kit on each text role for the shim), `--h` and `--centre-size` (a
+control's height and the Sono size it centres on), `--c --x --y --w --h` (wash, where `--h` is a radius).
 
 **Retired** and caught by `retiredTokens.test.ts`: `ink-line`, `ink-on-wash`, `hatch`, `edge`,
 `edge-strong`, `flap-1`, `flap-2`, `link`, `danger`, `success`, `warning`, `danger-ink`, `success-ink`,
 `warning-ink`, `rating-ink`, the washes `rosewater flamingo mauve maroon sapphire blue`, every `shadow-*`
 utility, `rounded-lg` and larger, `font-bold`, `font-semibold`, `font-medium`, the `fa-primary-*` /
 `fa-secondary-*` Tailwind utilities (the kit sets the Font Awesome custom properties itself; see Icons),
-every `sk-*` class, `v-ink`, `data-ink`, the two heading classes named by level that the type roles replace.
+every `sk-*` class, `v-ink`, `data-ink`, the two heading classes named by level that the type roles replace, the
+field modifier that dropped a field's icon (the X is every field's one leading mark).
 Nothing keeps them alive: the Softbound tokens, the ink module and the `TRANSITIONAL` blocks are gone, and the
 test's `ALLOWLIST` is empty. A new entry there needs a reason in the commit message.
 
 **Radius ladder:** `rounded-xs` 3px (checkbox), `rounded-sm` 4px (small marks), `rounded-md` 6px (labels,
-wells, textareas), `rounded-full` (pills). Sheets, tiles and images take no radius.
+wells), `rounded-full` (pills). Sheets, tiles and images take no radius.
 
 ## Type
 
@@ -140,6 +147,134 @@ generated `Tears.css`, naming the file, the line and the value, and fails when `
 eight text sizes besides the readout. `typography.test.ts` pins the token values, the roles of `body`, the form
 controls and the bare headings, the phone step, and checks every font file it references exists.
 
+## Paper rule
+
+Every line on a sheet is written on its ruling: the baseline of each line of text, the text of each control and the
+line of each field sits on a rule. CSS does it, from the type alone, in Vue and Razor alike; no author nudges
+anything.
+
+**Pinned metrics.** Every `@font-face` in `Typography.css` carries `ascent-override`, `descent-override` and
+`line-gap-override: 0%` from its hhea table, so every platform reads the same ascent and descent and a baseline lands
+at `line-height / 2 + k * font-size`, where `k = (ascent - descent) / 2`. Without them APCasual drifts about 0.04em
+on Windows, whose OS/2 table disagrees with the hhea.
+
+| Family | Faces | ascent / descent override | k | Constant |
+|---|---|---|---|---|
+| Hazelnut | 400, 700, italic, bold italic | 101.0742% / 24.6582% | 0.38208 | `--k-hazelnut` |
+| APCasual | regular, italic | 75% / 25% | 0.25 | `--k-casual` |
+| Sono | latin, latin-ext | 91.2% / 28.8% | 0.312 | `--k-sono` |
+
+**The ruling.** `.kcc-sheet` draws a 1px `--color-rule` line every `--bl` from its **content box**, at
+`calc(var(--rule-drop) + var(--rule-offset))`: `--rule-drop` puts it on the first body baseline and `--rule-offset`,
+2px, lays the top of each rule just under it, in the descender band. Because it hangs from the content box, padding
+in any form, `--pad` or a utility, moves the text and the rules together. Body text needs nothing more. A sheet is
+ruled; `kcc-sheet--blank` (`KccSheet blank`) drops the rules and keeps the rhythm, so its text still sits where they
+would be. `kcc-sheet--scroll` keeps the ruling and the grain in its own scrolling background. The blank under a sheet
+is never ruled.
+
+**The shim.** One kit rule moves every other text role onto the nearest rule with a signed `translate`, which changes
+no layout and survives the rule utilities' margins, which sit in a later layer:
+
+```css
+--own: calc(var(--lh) / 2 + var(--k) * 1em);
+translate: 0 calc(mod(calc(var(--rule-drop) - var(--own) + var(--bl) / 2), var(--bl)) - var(--bl) / 2);
+```
+
+It applies on a sheet to bare `h1`–`h6`, `kcc-display`, `kcc-section`, `kcc-heading`, `kcc-title`, `kcc-hand`,
+`kcc-kick`, `kcc-lbl`, `kcc-meta`, `kcc-unit`, `kcc-num`, `.kcc-q`, `.kcc-n`, `kcc-stat`, `.kcc-v`, `kcc-badge` and the
+`text-caps`, `text-title`, `text-heading`, `text-section` and `text-readout` utilities. `--lh` comes from the role or
+the token utility, and `--k` from the face: the sheet sets `--k-hazelnut`, the APCasual roles and `font-casual` set
+`--k-casual`, and the Sono roles and `font-mono` set `--k-sono`. The shift lies in (−12px, 12px], so it reaches the
+nearest rule either way:
+
+| Role | Face | Size / line | Shift |
+|---|---|---|---|
+| body, `kcc-body` | Hazelnut | 16 / 24 | none |
+| `kcc-display`, `h1` | APCasual | 40 / 48, 36 / 48 below 768px | +8.1px, +9.1px |
+| `kcc-section`, `h2` | APCasual | 32 / 48 | +10.1px |
+| `kcc-heading`, `h3` | APCasual | 24 / 24 | +0.1px |
+| `kcc-title`, `kcc-hand`, `h4`–`h6` | APCasual | 20 / 24 | +1.1px |
+| caps roles, `text-caps` | Sono | 14 / 24 | +1.7px |
+| `text-readout` | Sono | 64 / 72 | −9.9px |
+
+`translate` moves no inline box, so a `kcc-num` or a `text-caps` span inside a line of body text stays on that line's
+baseline; only a block, a flex item or a grid item moves. A role inside another role, a button, a segment or a `kcc-control`
+rides on the outer shift and takes none of its own. The shift assumes the element's line box starts on a line of the sheet,
+so blocks are spaced in rule units (see Type) and a block is a whole or half number of rules tall, a half only where
+another half pairs with it.
+
+**The margin rule.** `kcc-sheet--margin` (`KccSheet margin`) draws a 1px `--color-margin` line in `::before`, two
+rules in from the sheet's left edge, and starts the copy one rule after it (`padding-inline-start: calc(var(--bl) *
+3)`). The slip of a margin sheet is an inline-size container, and below 480px of sheet width the line goes and the
+start padding returns to `--pad`, so a form in a narrow column drops it as a phone does. Only margin slips are
+containers, because inline-size containment stops a slip sizing to its content. It goes on sheets read down the
+page: the recipe page's At a glance; the variant page's At a glance, ingredients, instructions, nutrition, cook notes
+and reviews (the summary and the form; a single review in the list is a card); every wizard step and wizard sheet; the account, login and settings sheets and `RegistrationComplete`;
+cook mode. The wizard's centred status sheets (`ReadingState`, `SubmittedSheet`) carry it too, their centred content
+shifting with the copy inset. Never on a dialog (`LeaveConfirm`, `PhotoViewer`), a hero, a toolbar, a card, the header
+pad, a home block, the stacker or an empty state.
+
+**Rows of controls.** A label centred beside a taller control lands off the rule, which the shim cannot see. A row of
+36px controls and their labels is a `kcc-row`: a wrapping flex row, top-aligned, 12px apart, half a rule between
+lines and below the last, so each line fills two rules and the text below is back on the rule. A label or a `kcc-heading` ends
+half a rule down, so its row line fills whole rules however many lines it runs to, and a text or icon button or a
+`kcc-control` in the row keeps a control's height in its margin box. A `kcc-check` row that runs onto a second line keeps its box and its amount on its first.
+
+**Controls on the line.** On a sheet `kcc-btn` and `kcc-seg` shift to centre on the Sono caps of the line they start
+on, so the label beside them and their own text share a rule:
+
+```css
+translate: 0 calc(mod(calc(var(--rule-drop) - var(--k-sono) * var(--centre-size) - var(--h) / 2 + var(--bl) / 2), var(--bl)) - var(--bl) / 2);
+```
+
+`--h` is the control's height (`--control-md`, `--control-lg`, `--control-sm` on an icon button, `--bl` on a text
+button), and `--centre-size` the Sono size it centres on, `--text-caps` unless the line beside it is larger (cook
+mode's servings buttons take `[--centre-size:var(--text-title)]`, the size of their count). A control the kit does not
+draw takes `kcc-control` and the same shift: it sets `--h` when it is not 36px, and `--centre-size` when its own line
+is not Sono caps (the pad's menus and search glyph centre on a Hazelnut body line, so they take
+`calc(var(--k-hazelnut) / var(--k-sono) * var(--text-body))`). On a sheet a ghost button,
+a segmented control, a field, a badge and a `kcc-control` fill with paper, so no rule runs through them; a ghost
+button keeps that fill on hover, and a `kcc-control` in its `kcc-pill` state takes the marker instead. An action beside a display title sits one rule down (`pt-rule-1 pb-rule-0.5` on its wrapper), so its text
+shares the title's baseline rule. A badge is one rule tall (`--pill-sm`), its caps on the rule. The header pad's
+sheets are ruled, and the text in its bar and its card footers sits on their rules like any other sheet.
+
+**Icon buttons.** `kcc-btn--icon` is a 32px circle (`--control-sm`) at every button size, `kcc-btn--lg` included:
+the camera shutter, the photo viewer's close, cook mode and its timer. 32px is above WCAG 2.5.8's 24px target.
+
+**Fields are lines.** A `kcc-field` is a line to write on: no radius, no ring, no fill of its own, its children
+aligned to the start. Its underline is a 1px `hair-strong` line where the sheet's rule would be, at
+`calc(var(--rule-drop) + var(--rule-offset))`, and 2px `ink` on `:focus-within`. Its input or select takes
+`line-height: var(--bl)`, so the text sits on the rule, and the field keeps `height: var(--control-md)` as its hit
+area. Before the line, `::before` writes an X: APCasual at `--text-title`, `--color-margin`, turned −6deg, with the
+title role's shim. It is the field's one leading mark, so no icon goes before an input. It is decorative: `content:
+'X' / ''` keeps it out of the label's accessible name. `kcc-field--stepper` (`NumberStepper`'s count) is set with
+buttons, not written, so it draws no X. `kcc-field--area` has no box: its transparent textarea writes on the sheet's
+own rules at `line-height: var(--bl)`, the X before its first line, and focus draws a 2px `ink` outline with no
+radius. `kcc-field--error` draws the underline 2px in `ink`, because red reads under 3:1 on paper; the
+`kcc-well--danger` message below carries the red.
+
+**The grain.** `.kcc-sheet::after` lays a stitched four-octave noise tile over the paper, under the content, at
+`--sheet-grain-op` (.06 multiplied in light, .08 soft-lit in dark). It adds to the wax; the page's `kcc-grain` and
+`kcc-crayon` stay.
+
+**Known limits.** A textarea scrolled by pixels shows its lines between the rules until it scrolls back to a whole
+line, so `TextAreaField`'s drag handle snaps its height to whole rules. Where `content: 'X' / ''` is unsupported
+(Safari before 17.4, Firefox before 128), the fallback X is read with the field's label.
+
+The rules for authors ([the paper rule contract](../../specs/003-paper-rule-scheme/contracts/paper-rule.md)):
+
+- **May** pick a ruling: a `kcc-sheet` is ruled, `kcc-sheet--blank` is not.
+- **May** add the margin rule to a sheet read down the page, with `KccSheet margin` or `kcc-sheet--margin` in Razor.
+- **May** set text in any role or token utility (see Type) and get it on the rule.
+- **May** read `--rule-drop`, `--rule-offset`, `--k-hazelnut`, `--k-casual`, `--k-sono`, `--color-rule`,
+  `--color-margin` and `--control-sm` in a kit stylesheet or a style block.
+- **Must not** write a pixel nudge to put text on the rule: the shim does it.
+- **Must not** centre a label beside a control with `items-center`: use `kcc-row`.
+- **Must not** put an icon before a field's input: the X is the field's one leading mark.
+- **Must not** give a block a height that is not a whole or half number of rules, unless a half rule pairs with
+  another.
+- **Must not** put the margin rule on a hero, a toolbar, a card, the header, a home block or an empty state.
+
 ## Structure
 
 Paper lies in piles two high: every sheet sits on a blank sheet, torn and shadowed like it, with nothing on it. A
@@ -148,7 +283,7 @@ labelled, washed sheet on its blank:
 ```html
 <div class="kcc-slip kcc-tear-3">                 <!-- tilt via --r; position: relative; height: fit-content -->
   <div class="kcc-torn">                          <!-- filter: fibre + fall -->
-    <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clip-path: var(--tear), 24px pencil rule -->
+    <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clip-path: var(--tear), 24px feint ruling -->
       <span class="kcc-wash" style="--c: var(--color-peach); --x: 88%; --y: 18%; --w: 38%; --h: 60%" aria-hidden="true"></span>
       <p class="kcc-kick">Kitchen Command Center</p>
       <h2 class="kcc-display">The perfect drawing, torn out and kept.</h2>
@@ -209,11 +344,10 @@ Rules of the structure:
 3. Every direct child of `.kcc-sheet` except `.kcc-wash` is lifted above the wash by the kit at class
    specificity (`:where`). A kit class that positions a sheet child itself is written `.kcc-sheet > .kcc-x`
    so it wins regardless of import order (see `kcc-stat`).
-4. `--pad` on the sheet also positions the pencil rule: pass padding as `style="--pad: …"`, not as padding
-   utilities. It is **one length**: the rule's offset is `calc(var(--pad) + var(--rule-drop) - var(--bl) + 1px)`,
-   which puts the top of its line on the first body baseline, and a shorthand (`24px 36px 24px 24px`) makes that
-   invalid, so the ruling silently falls back to the top edge. Asymmetric room comes from a utility on the content,
-   never from `--pad`.
+4. The ruling hangs from the sheet's content box (see Paper rule), so padding in any form, `--pad` or a utility,
+   moves the text and the rules together. `--pad` stays **one length** on a margin sheet: below 480px its start
+   padding falls back to `var(--pad, 24px)`, which a shorthand (`24px 36px 24px 24px`) makes invalid. Content
+   starts at the top of the content box, so a sheet's first line sits on its first rule.
 5. One wash, one label, one hand note per sheet at most.
 6. `clip-path` clips descendants too. Keep interactive children at least 4px inside the sheet edge (the
    default 24px padding does this), or the focus ring is shaved by the tear.
@@ -292,7 +426,10 @@ hero of its own, so two hero sheets on one page (RecipeDetail's hero and its fea
 | `kcc-slip--wide` | the wide pair: the blank turns 0.5° and scales 1.005 | hero-torn sheets on a blank, the pad's page, any sheet on a blank wider than 700px |
 | `kcc-slip--flip` | turns the slip's blank the other way | set where a page's reading order needs it |
 | `kcc-slip--lift` | a slip you can open lifts its top sheet 4px on focus within, or on hover with a pointer that can hover; the blank stays | no lift under reduced motion; keeps the focus ring's fade |
-| `kcc-sheet` | paper, clip, ruling, padding | `--pad` default 24px, heroes 48px; compact rows (recipe rows, review slips, the account sheet) take 16px and accept a ruling 8px off a 24px neighbour's |
+| `kcc-sheet` | paper, clip, ruling, grain, padding | the ruling hangs from the content box, the grain lies in `::after`; `--pad` default 24px, heroes 48px; compact rows (recipe rows, review slips, the account sheet) take 16px and accept a ruling 8px off a 24px neighbour's |
+| `kcc-sheet--blank` | a sheet with no ruling, at the same rhythm | text still sits where the rules would be |
+| `kcc-sheet--scroll` | a sheet that is its own scroll container (the phone pad cards): the ruling and the grain scroll with its content | `KccSheet`'s `scroll` prop; the grain lies under the wash, so such a sheet takes none |
+| `kcc-sheet--margin` | the red margin rule two rules in, copy one rule after it | `KccSheet`'s `margin` prop; reading sheets only (see Paper rule); its slip is an inline-size container, and below 480px of sheet width the rule and its padding go |
 | `kcc-wash` | the pool of colour | `--c` a wash token, `--x --y` the centre, `--w --h` the radii (any length-percentage). Copy may sit on the 70% ring, never on the core: a corner pool caps the radius that points at the copy in px (`min(60%, 68px)` keeps the ring inside a 48px padding at any sheet height) |
 | `kcc-label`, `kcc-label--right` | marker pill over the top-left (or right) edge, 24px (`--pill-sm`) | Sono caps 14px, optional leading `<i>` |
 | `kcc-pill` | the label's marker fill and ink on an element that stays in the flow | a current wizard step, an open menu button; sets no type: the step keeps its `kcc-kick`, the pad's menu button its body size |
@@ -315,16 +452,18 @@ hero of its own, so two hero sheets on one page (RecipeDetail's hero and its fea
 | `kcc-link--icon` | icon-only link (the home crumb), with `kcc-kick` on the item for size | body-size icon (16px) in a 24px (`--bl`) min-height/min-width box, no underline; ink-soft, ink on hover |
 | `kcc-secname` | section heading row: a `kcc-section` heading + `kcc-kick` with a dashed underline | one and a half rules below it |
 | `kcc-foot` | footer copy block | |
-| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px (`--control-md`); hairline ghost; ink fill; underlined text on the rule; 48px large (`--control-lg`); `--icon` squares the pill (36px, 48px with `--lg`) | Sono caps 14px `.14em`; an `--icon` button is all glyph, so its name goes in `aria-label` |
-| `kcc-seg` › `kcc-seg-thumb`, `button[aria-pressed\|aria-checked]` | pill group 36px (`--control-md`), Sono caps 14px, pressed = ink fill | pressed = ink fill; in `SegmentedControl.vue` the fill is an ink thumb that slides to the checked segment once the client has placed it (`kcc-seg--sliding`), and until then the checked button carries it; `kcc-seg-thumb--glide` turns the slide on after each placement that must not slide; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments |
-| `kcc-field` (+`--noicon`, `--area`) | 36px (`--control-md`) pill with inset hairline and leading icon; block variant for textareas | field text Hazelnut 16px; focus = 2px inset ink ring |
+| `kcc-btn` (+`--ghost`, `--ink`, `--text`, `--lg`, `--icon`) | marker pill 36px (`--control-md`); hairline ghost; ink fill; underlined text on the rule; 48px large (`--control-lg`); `--icon` a 32px circle (`--control-sm`) at every size, `--lg` included | Sono caps 14px `.14em`; on a sheet it centres on the caps of the line it starts on, and a ghost fills with paper; an `--icon` button is all glyph, so its name goes in `aria-label` |
+| `kcc-control` | a control the kit does not draw, placed on the line like `kcc-btn` | sets `--h` (36px) and `--centre-size` (`--text-caps`) for the shift; fills with paper on a sheet unless it is a `kcc-pill`; keeps a control's height in a `kcc-row`; the pad's menus and search glyph |
+| `kcc-row` | a wrapping row of 36px controls and their labels, top-aligned, 12px apart, half a rule between lines and below the last | each line fills two rules, so the text below is back on the rule; use it in place of `items-center` beside a control; a label or `kcc-heading` ends half a rule down, and a text or icon button or a `kcc-control` keeps one |
+| `kcc-seg` › `kcc-seg-thumb`, `button[aria-pressed\|aria-checked]` | pill group 36px (`--control-md`), Sono caps 14px, pressed = ink fill | pressed = ink fill; in `SegmentedControl.vue` the fill is an ink thumb that slides to the checked segment once the client has placed it (`kcc-seg--sliding`), and until then the checked button carries it; `kcc-seg-thumb--glide` turns the slide on after each placement that must not slide; an unpressed segment goes from ink-soft to ink on hover; labels never wrap; the group scrolls horizontally when narrower than its segments; on a sheet it fills with paper and centres on the caps of its line |
+| `kcc-field` (+`--area`, `--stepper`) | a line to write on: a 1px `hair-strong` underline where the sheet's rule lies, a 36px (`--control-md`) hit area, the margin-red X in `::before`; `--area` writes a textarea on the sheet's rules with no box; `--stepper` is `NumberStepper`'s count, set with buttons rather than written, so it draws no X | field text Hazelnut 16/24 on the rule; no leading icon; on a sheet it fills with paper; focus = 2px ink underline, 2px ink outline with no radius on `--area` |
 | `kcc-range` › `kcc-range-track`, `kcc-range-fill` | paper track with an inset hairline, marker fill, ink thumbs with a paper ring | both thumbs are native range inputs stacked over the track; the ring keeps the thumb off the marker fill |
-| `kcc-badge`, `kcc-badges` | 24px (`--pill-sm`) hairline pill, Sono caps 14px; wrapping row | |
-| `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | the checkbox is `sr-only`, so a focused checkbox rings its box instead |
+| `kcc-badge`, `kcc-badges` | 24px (`--pill-sm`) hairline pill, Sono caps 14px; wrapping row | one rule tall, its caps on the rule; on a sheet it fills with paper |
+| `kcc-check` › `li` › `kcc-box` (+`--on`), text, `kcc-q`; `li.kcc-done` | checklist on the rule | a row that runs on keeps its box and amount on its first line; the checkbox is `sr-only`, so a focused checkbox rings its box instead |
 | `kcc-stats` › `div` › `kcc-lbl` + `kcc-v` | stat row, values Sono 24/24 (`--text-heading`) | `<small>` for the unit, Sono caps 14px |
 | `kcc-steps` › `li` › `kcc-n` + `kcc-body` | numbered method | numbers `01`, `02`, … |
 | `kcc-well` (+`--danger`, `--success`, `--warning`) | paper tinted 28% with the wash, ink text, 6px radius | status messages; the message itself is a `kcc-kick` |
-| `kcc-field--error` | the field's own fill tinted with red | pair with a `kcc-well--danger` message below the field |
+| `kcc-field--error` | the field's underline 2px in ink; on `--area` a 2px ink outline | red reads under 3:1 on paper, so a `kcc-well--danger` message below the field carries it; `InputField`, `TextAreaField` and `SelectField` add it from their `error` prop |
 | `kcc-recipe`, `kcc-stat`, `kcc-meta` | recipe slip modifiers | see Structure; the stat is `.kcc-sheet > .kcc-stat` |
 
 Vertical space between things is counted in rules, so text stays on the ruling. `TailwindConfig.css` defines
@@ -343,8 +482,13 @@ Status is never coloured text. It is a **well**: paper tinted 28% with the statu
 <p class="kcc-well kcc-well--danger kcc-kick" role="alert">Something we need is missing.</p>
 ```
 
-`kcc-well--danger` (red), `kcc-well--success` (green), `kcc-well--warning` (yellow). A field in error adds
-`kcc-field--error` to the field and puts the message in a `kcc-well--danger` directly below it. Icons inside a
+`kcc-well--danger` (red), `kcc-well--success` (green), `kcc-well--warning` (yellow). A field in error takes
+`kcc-field--error`, which draws its underline 2px in ink, and puts the message in a `kcc-well--danger` directly below
+it: the well carries the red. `InputField`, `TextAreaField` and `SelectField` add the class, with `aria-invalid`, when
+their `error` prop is set; inside `Field`, bind it from the slot's `error`. Only a field the message is about takes
+it, with an `aria-describedby` that names the well: `LoginView` marks the name and the password when the credentials
+are wrong and the two passwords when they do not match, and an error about the account, such as one waiting for
+approval or locked out, or one the sign-up server reports, stands in the well alone. Icons inside a
 well are duotone in ink like everywhere else. `contrast.test.ts` asserts ink on every well in both ramps.
 
 ## Icons
@@ -357,14 +501,16 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 ## States
 
 - **Hover.** `kcc-btn` mixes 12% `marker-ink` into its marker, and `kcc-btn--ink` mixes 12% paper into its ink. The
-  hairline of `kcc-btn--ghost` turns ink, and the underline of `kcc-btn--text` and `kcc-link` goes from `hair-strong`
+  hairline of `kcc-btn--ghost` turns ink, its paper fill kept on a sheet, and the underline of `kcc-btn--text` and `kcc-link` goes from `hair-strong`
   to ink. An unpressed `kcc-seg` segment and `kcc-link--icon` go from `ink-soft` to ink. A slip you can open lifts,
   and a pad menu fans its card out with no underline of its own (see Motion). A row or search result in a pad card
   underlines its name in ink, and the hairline of a Try chip, or of a diet chip in the phone menu, turns ink.
 - **Focus.** A 2px ink outline, 2px out, on every focusable (`:focus-visible` in `TailwindConfig.css`). `kcc-field`
-  rings inside instead, 2px inset ink on `focus-within`. A `kcc-check` rings its `kcc-box`, because the checkbox
-  itself is `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. Under `forced-colors: active`
-  the field and the segments take a `CanvasText` outline, because high-contrast mode paints no box-shadow. The
+  draws its underline 2px in ink on `focus-within`, with no ring, and `kcc-field--area`, which has no underline,
+  takes a 2px ink outline with no radius. A `kcc-check` rings its `kcc-box`, because the checkbox itself is
+  `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. Under `forced-colors: active`, which
+  paints no box-shadow and no gradient, a focused field and segment take a 2px `CanvasText` outline, a field's
+  underline is a 1px `CanvasText` border and an area a 1px `CanvasText` outline. The
   `kcc-range` thumbs have no focus ring yet.
 - **Pressed, current, checked.** A pressed or checked `kcc-seg` segment fills with ink. In `SegmentedControl.vue` the
   fill is the `kcc-seg-thumb`, which slides from the old segment to the new one. The current wizard step and
@@ -373,7 +519,8 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
   (`li.kcc-done`) is struck through.
 - **Disabled.** Buttons only: 45% opacity, a `not-allowed` cursor and no hover. Nothing else in the kit has a
   disabled look, so a field, segment, checkbox or range gets one here before anything disables it.
-- **Error.** `kcc-field--error` on the field and a `kcc-well--danger` below it (see Status).
+- **Error.** `kcc-field--error` draws the field's underline 2px in ink, and a `kcc-well--danger` below it carries the
+  red (see Status).
 - **Loading.** What is already shown stays. The region takes `aria-busy`, and the loader is a
   `fa-solid fa-circle-notch fa-spin` beside a `kcc-kick` message (`RecipeSearchView.Component.vue`).
 - **Empty.** A sheet, never an empty page: a large duotone glyph in `ink-soft`, a `kcc-title` line, a `kcc-body` hint and a
@@ -395,7 +542,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 | A card's drawer slides up | `transition-all`, height from 0 to full on hover or focus-within | `Card.Component.vue` |
 | A pad card fans out as you reach for its menu | 300ms `cubic-bezier(.2, .9, .3, 1.15)`: 19px out of the stack, turned −1.8° about its far top corner, the top right, or +1.8° about its top left for the mirrored desktop search card (on a phone 24px straight down, turned +2.4° about its bottom left) | `PadCard.vue` |
 | A pad card comes out of the stack | 480ms `cubic-bezier(.3, 1.2, .4, 1)` to its own tilt, its rows landing 20ms apart; back in over 280ms; switching from another card, it waits 100ms for that one to go | `PadCard.vue` |
-| The pad tucks away as you read | 300ms `cubic-bezier(.2, .8, .2, 1)`: up by its height plus 28px (130px for the 102px pad) as you scroll down, once the page is past 150px; back on any scroll up or when focus moves into it; never under reduced motion | `AppHeader.Component.vue` |
+| The pad tucks away as you read | 300ms `cubic-bezier(.2, .8, .2, 1)`: up by its height plus 28px (142px for the 114px pad) as you scroll down, once the page is past 150px; back on any scroll up or when focus moves into it; never under reduced motion | `AppHeader.Component.vue` |
 | Sticky neighbours follow the pad | `transition-[top]`: their top, which adds `--pad-offset`, eases over 300ms as the pad tucks and comes back, and a stacker card's sentinel eases with it | `RecipeSearchView.Component.vue`, `StackerBlock.cshtml`, `Stacker.Component.vue` |
 | A pad menu fades to and from its marker pill | `background-color` and `color` over 300ms, keeping the focus ring's 0.2s fade | `AppHeader.Component.vue` |
 | A pad menu's chevron flips | 180° over 300ms while its card is open | `AppHeader.Component.vue` |
@@ -426,15 +573,27 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
   keeps its editor hooks that way), `icon`, `labelRight`, `wash`, `at { x y w h }`, `tear` (`1..6 | 'hero'`;
   `'hero'` also adds `kcc-slip--wide`), `piled` (default `true`; `false` renders no blank, and only `PadCard.vue`
   passes it), `wide` (`kcc-slip--wide`), `flip` (`kcc-slip--flip`), `pad`, `crisp` (no tilt: forms, cook mode),
-  `as` (`div | section | article | li`). Default slot; the blank renders after the label. Plain `.vue`: import it
+  `margin` (`kcc-sheet--margin`), `blank` (`kcc-sheet--blank`), `scroll` (`kcc-sheet--scroll`), `as` (`div |
+  section | article | li`). Default slot; the blank renders after the label. Plain `.vue`: import it
   locally. Renders the Structure above with no client JS.
+- `Components/Forms/InputField.vue` — a `kcc-field` label around one input, on the line with the X; `v-model`,
+  `inputClass` for the input, and `error`, which adds `kcc-field--error` and `aria-invalid`. Every attribute but
+  `class` and `style` lands on the input; those two style the field. No icon.
+- `Components/Forms/TextAreaField.vue` — a `kcc-field--area` around a textarea; `v-model`, `required`, `readonly`,
+  `placeholder` and `error`. Three rules tall, and its drag handle snaps the height to whole rules, two at least.
+- `Components/Forms/SelectField.vue` — a `kcc-field` around one select, its options in the default slot, and `error`.
+  Every attribute but `class` and `style` lands on the select.
+- `Components/Forms/NumberStepper.vue` — a `kcc-field--stepper` between two 32px ghost icon buttons.
+- `Components/Forms/Field.vue` — a `kcc-lbl` label over its control, with a hint, or an error in a
+  `kcc-well--danger`. Its slot hands the control `describedby` and `error`.
 - `Components/Button/Button.vue` — `variant: 'marker' | 'ghost' | 'ink' | 'text'`, `size: 'md' | 'lg'`,
   `as: 'button' | 'a'`. Emits the `kcc-btn` classes; no directive.
 - Everything else composes the classes directly.
 
 ## Razor
 
-Razor writes the Structure by hand, blank included. `ButtonLinkTagHelper` emits `kcc-btn` plus the modifiers in
+Razor writes the Structure by hand, blank included, and `kcc-sheet--margin` and `kcc-sheet--blank` where a
+sheet takes them. `ButtonLinkTagHelper` emits `kcc-btn` plus the modifiers in
 `Class`. Loops pick tears from their index: `kcc-tear-@((i % 6) + 1)`. A page built from blocks, like Home, runs one
 cycle through all its sheets and cards instead, so neighbours never share a tear across two sections either. A
 stacker's sheet is sticky and travels, so the cycle skips its tear for the stack's cards and for the first two sheets
@@ -457,6 +616,8 @@ inline in `Layout.cshtml`, so server-rendered washes are filtered before hydrati
    the sheet's content flow. See Structure.
 9. **Every sheet lies on a blank**, the slip's last child, outside the top sheet's clip and filter. A sheet is never
    taped; tape holds only a tile. The header pad is the one exception (Structure rule 15).
+10. **No nudge to the rule.** The shim puts text on the rule and `kcc-row` puts labels beside controls on it; a pixel
+    offset to land a line is a bug in the block's height or spacing (see Paper rule).
 
 ## Enforcement
 
@@ -474,6 +635,8 @@ inline in `Layout.cshtml`, so server-rendered washes are filtered before hydrati
 | The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Every hand-written Razor `kcc-slip` ends with exactly one blank | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
+| The pinned metrics and `--k-*`; the ruling from the content box at `--rule-drop` + `--rule-offset` and the blank sheet; the shim's formula and role list; `--color-rule` and `--color-margin` in both ramps; the margin rule, its container and its 480px query; `kcc-row` and the checklist row; the controls' shift and paper fills; the field as a line, its X, its focus and error lines and the area; the 32px icon button; the grain | `tests/KCC.ViteTests/Features/Styles/paperRule.test.ts` |
+| Real baselines on the rule in a browser, at 375px and 1280px: every text block, field and control row label on the recipe, variant, search, login, account, settings, cook mode and wizard pages, the header pad, a Razor sheet and a list whose rows run on, to their last lines; the heading action; the margin rule's reach; no sideways scroll | `tests/KCC.E2ETests/Features/Chrome/RuleTests.cs` |
 | Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them, and the ramp switches only through `applyRamp` | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |
 
 ## Building a surface
@@ -487,11 +650,14 @@ inline in `Layout.cshtml`, so server-rendered washes are filtered before hydrati
 4. No `rounded-lg`+, `shadow-*`, `font-bold/semibold/medium`. Text size comes from a role class or a type token,
    vertical space from the rule utilities (see Type). Text is `text-ink` or `text-ink-soft`;
    `text-marker-ink` only inside a tile, a label or a marker button.
-5. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
-6. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
-7. Motion takes the 300ms default, or up to 500ms for a bigger move (see Motion). Every focusable shows a ring,
+5. Text lands on the rule by itself: no pixel nudge. Controls beside labels go in a `kcc-row`, fields are
+   `InputField`, `TextAreaField`, `SelectField`, `NumberStepper` or `kcc-field` markup with no leading icon, and a sheet read down
+   the page takes the margin rule (see Paper rule).
+6. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
+7. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
+8. Motion takes the 300ms default, or up to 500ms for a bigger move (see Motion). Every focusable shows a ring,
    and only buttons have a disabled look (see States).
-8. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
+9. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
    message says why.
-9. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens typeScale contrast motion`, `yarn type-check`, `yarn format`;
+10. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens typeScale contrast motion`, `yarn type-check`, `yarn format`;
    before merging also `yarn build:all` and the browser check in both ramps. Commit.

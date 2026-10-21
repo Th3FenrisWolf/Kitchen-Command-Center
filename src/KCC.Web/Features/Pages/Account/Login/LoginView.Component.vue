@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { ref, useId } from 'vue'
+  import { useId } from 'vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
-  import { post } from '~/Utilities/Api'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
+  import { useLoginForm, type LoginField } from './useLoginForm'
 
   export interface LoginViewProps {
     returnUrl?: string
@@ -19,55 +19,31 @@
 
   const rs = provideResourceStrings(props.resourceStrings, 'Login')
 
-  const isSignIn = ref(!props.register)
-  const isSubmitting = ref(false)
+  const {
+    isSignIn,
+    isSubmitting,
+    userName,
+    email,
+    password,
+    passwordConfirmation,
+    rememberMe,
+    formError,
+    fieldsInError,
+    switchMode,
+    handleSubmit,
+  } = useLoginForm(props)
 
-  const userName = ref(props.defaultUserName ?? '')
-  const email = ref('')
-  const password = ref(props.defaultPassword ?? '')
-  const passwordConfirmation = ref('')
-  const rememberMe = ref(props.defaultRememberMe ?? false)
-  const formError = ref<string | null>(null)
+  const formId = useId()
+  const rememberMeId = `${formId}-remember-me`
+  const errorId = `${formId}-error`
 
-  const rememberMeId = `${useId()}-remember-me`
-
-  const switchMode = () => {
-    isSignIn.value = !isSignIn.value
-    userName.value = ''
-    email.value = ''
-    password.value = ''
-    passwordConfirmation.value = ''
-    formError.value = null
-  }
-
-  const handleSubmit = async () => {
-    formError.value = null
-
-    if (!isSignIn.value && password.value !== passwordConfirmation.value) {
-      formError.value = 'Passwords do not match.'
-      return
-    }
-
-    isSubmitting.value = true
-    const endpoint = isSignIn.value ? '/api/account/login' : '/api/account/register'
-    const body = isSignIn.value
-      ? { userName: userName.value, password: password.value, rememberMe: rememberMe.value, returnUrl: props.returnUrl }
-      : { userName: userName.value, email: email.value, password: password.value }
-
-    const result = await post<{ redirectUrl?: string }>(endpoint, body)
-    isSubmitting.value = false
-
-    if (!result.success) {
-      formError.value = result.errorMessage
-      return
-    }
-
-    window.location.href = result.data.redirectUrl ?? '/'
-  }
+  const inError = (field: LoginField) => fieldsInError.value.includes(field)
+  const describedBy = (field: LoginField) => (inError(field) ? errorId : undefined)
 </script>
 
 <template>
   <KccSheet
+    margin
     crisp
     :tear="4"
     pad="clamp(24px, 7.5vw, 48px)"
@@ -80,7 +56,7 @@
 
     <form class="flex flex-col gap-y-rule-1" @submit.prevent="handleSubmit">
       <!-- The placeholder is the field's name here: the page has no printed labels to bind to. -->
-      <div class="flex min-h-rule-2 flex-col justify-center">
+      <div class="flex min-h-rule-2 flex-col">
         <InputField
           v-model="userName"
           required
@@ -89,10 +65,12 @@
           autocomplete="username"
           :placeholder="rs('UsernamePlaceholder')"
           :aria-label="rs('UsernamePlaceholder')"
+          :error="inError('UserName')"
+          :aria-describedby="describedBy('UserName')"
         />
       </div>
 
-      <div v-if="!isSignIn" class="flex min-h-rule-2 flex-col justify-center">
+      <div v-if="!isSignIn" class="flex min-h-rule-2 flex-col">
         <InputField
           v-model="email"
           required
@@ -104,7 +82,7 @@
         />
       </div>
 
-      <div class="flex min-h-rule-2 flex-col justify-center">
+      <div class="flex min-h-rule-2 flex-col">
         <InputField
           v-model="password"
           required
@@ -113,10 +91,12 @@
           :autocomplete="isSignIn ? 'current-password' : 'new-password'"
           :placeholder="rs('PasswordPlaceholder')"
           :aria-label="rs('PasswordPlaceholder')"
+          :error="inError('Password')"
+          :aria-describedby="describedBy('Password')"
         />
       </div>
 
-      <div v-if="!isSignIn" class="flex min-h-rule-2 flex-col justify-center">
+      <div v-if="!isSignIn" class="flex min-h-rule-2 flex-col">
         <InputField
           v-model="passwordConfirmation"
           required
@@ -125,6 +105,8 @@
           autocomplete="new-password"
           :placeholder="rs('ConfirmPasswordPlaceholder')"
           :aria-label="rs('ConfirmPasswordPlaceholder')"
+          :error="inError('PasswordConfirmation')"
+          :aria-describedby="describedBy('PasswordConfirmation')"
         />
       </div>
 
@@ -136,10 +118,10 @@
         </li>
       </ul>
 
-      <p v-if="formError" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ formError }}</p>
+      <p v-if="formError" :id="errorId" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ formError }}</p>
 
-      <div class="flex min-h-rule-2 flex-col justify-center">
-        <Button type="submit" :disabled="isSubmitting">
+      <div class="kcc-row">
+        <Button type="submit" class="w-full" :disabled="isSubmitting">
           <ResourceString :for="isSignIn ? 'SignIn' : 'SignUp'" />
         </Button>
       </div>

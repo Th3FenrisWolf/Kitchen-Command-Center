@@ -2,17 +2,17 @@
   import { computed, useAttrs, type StyleValue } from 'vue'
 
   export interface InputFieldProps {
-    icon?: string
     inputClass?: string
+    error?: boolean
   }
 
   defineOptions({
     // Attributes land on the <input> itself rather than being split across the wrapper — except
-    // class/style, which style the pill (the label) a caller sees as this component's root.
+    // class/style, which style the field (the label) a caller sees as this component's root.
     inheritAttrs: false,
   })
 
-  const { icon, inputClass } = defineProps<InputFieldProps>()
+  const { inputClass, error = false } = defineProps<InputFieldProps>()
 
   const model = defineModel({
     required: true,
@@ -26,10 +26,14 @@
 </script>
 
 <template>
-  <!-- `w-full` because the root is the pill, not the input: a caller with `items-start` would otherwise
+  <!-- `w-full` because the root is the field, not the input: a caller with `items-start` would otherwise
        shrink-wrap it. -->
-  <label :class="['kcc-field', { 'kcc-field--noicon': !icon }, 'w-full', attrs.class]" :style="attrs.style as StyleValue">
-    <i v-if="icon" :class="icon" aria-hidden="true"></i>
-    <input v-bind="inputAttrs" v-model="model" :class="inputClass" />
+  <label :class="['kcc-field', { 'kcc-field--error': error }, 'w-full', attrs.class]" :style="attrs.style as StyleValue">
+    <input
+      v-bind="inputAttrs"
+      v-model="model"
+      :class="inputClass"
+      :aria-invalid="error || (inputAttrs['aria-invalid'] as 'true' | 'false' | undefined) || undefined"
+    />
   </label>
 </template>

@@ -42,6 +42,10 @@ describe('SubmittedSheet', () => {
     expect(html).not.toContain('kcc-tape')
   })
 
+  it('carries the margin rule, like every other wizard sheet', async () => {
+    expect(await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })).toContain('kcc-sheet kcc-sheet--margin')
+  })
+
   it('carries the wizard-submitted hook', async () => {
     expect(await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })).toContain('data-testid="wizard-submitted"')
   })

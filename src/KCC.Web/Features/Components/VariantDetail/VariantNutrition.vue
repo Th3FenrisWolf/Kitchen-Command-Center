@@ -45,7 +45,7 @@
 </script>
 
 <template>
-  <KccSheet as="section" icon="fa-duotone fa-wheat" :tear="2" wide>
+  <KccSheet margin as="section" icon="fa-duotone fa-wheat" :tear="2" wide>
     <template #label><ResourceString for="Nutrition" /></template>
 
     <h2 class="sr-only">{{ rs('Nutrition') }}</h2>

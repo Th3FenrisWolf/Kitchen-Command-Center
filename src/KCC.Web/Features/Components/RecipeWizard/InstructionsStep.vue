@@ -41,7 +41,7 @@
 </script>
 
 <template>
-  <KccSheet crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-ol">
+  <KccSheet margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-ol">
     <template #label><ResourceString for="Instructions" /></template>
 
     <h2 class="sr-only">{{ rs('Instructions') }}</h2>
@@ -79,9 +79,11 @@
         </li>
       </ol>
 
-      <Button variant="ghost" class="self-start" @click="emit('add')">
-        <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddStep" />
-      </Button>
+      <div class="kcc-row">
+        <Button variant="ghost" @click="emit('add')">
+          <i class="fa-duotone fa-plus" aria-hidden="true"></i><ResourceString for="AddStep" />
+        </Button>
+      </div>
 
       <StepNav :can-go-back :can-proceed :returns-to-review @back="emit('back')" @review="emit('review')" />
     </form>

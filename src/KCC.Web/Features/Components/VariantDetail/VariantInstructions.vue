@@ -16,6 +16,7 @@
 
 <template>
   <KccSheet
+    margin
     as="section"
     icon="fa-duotone fa-list-ol"
     wash="peach"

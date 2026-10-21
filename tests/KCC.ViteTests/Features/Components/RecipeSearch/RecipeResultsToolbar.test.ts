@@ -17,6 +17,9 @@ describe('RecipeResultsToolbar', () => {
     const html = await render()
 
     expect(html).toMatch(/<span class="kcc-kick">\s*Sort\s*<\/span>/)
+    expect(html).toMatch(
+      /^<div class="flex flex-wrap items-start gap-x-7 gap-y-rule-0.5"><div class="kcc-row max-w-full min-w-0"><span class="kcc-kick">/,
+    )
     expect(html.match(/class="kcc-seg"/g)).toHaveLength(2)
     expect(tagWith(html, 'aria-label="Sort"')).toContain('role="radiogroup"')
     expect(tagWith(html, 'aria-label="View"')).toContain('role="radiogroup"')
