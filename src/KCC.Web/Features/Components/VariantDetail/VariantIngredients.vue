@@ -43,6 +43,7 @@
 
 <template>
   <KccSheet
+    margin
     as="section"
     icon="fa-duotone fa-basket-shopping"
     wash="teal"
@@ -55,7 +56,7 @@
 
     <div class="flex flex-wrap items-start justify-between gap-x-7">
       <p class="kcc-kick">tick what you have</p>
-      <div v-if="hasScaler" class="flex min-h-rule-2 items-center gap-3">
+      <div v-if="hasScaler" class="kcc-row">
         <ResourceString for="Makes" as="span" class="kcc-lbl" />
         <NumberStepper
           v-model="current"

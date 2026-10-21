@@ -38,12 +38,14 @@
       <slot name="eyebrow"></slot>
     </p>
 
-    <div class="flex flex-wrap items-center justify-between gap-x-7 gap-y-rule-0.5">
+    <div class="flex flex-wrap items-start justify-between gap-x-7">
       <h1 class="kcc-display">
         <slot name="title"></slot>
       </h1>
 
-      <slot name="action-button"></slot>
+      <div v-if="$slots['action-button']" class="flex pt-rule-1 pb-rule-0.5">
+        <slot name="action-button"></slot>
+      </div>
     </div>
 
     <p v-if="description" class="kcc-body mt-rule-1">

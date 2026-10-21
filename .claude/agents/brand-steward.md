@@ -46,13 +46,16 @@ For each file, check every rule below and record hits as `path:line — rule —
 - Two neighbouring sheets in a page's reading order whose blanks turn the same way (kit.md → Structure, the
   alternation rule): check the tear's `--blank-dir`, `kcc-slip--flip` and any `--blank-region`.
 - A hover or focus lift written with translate utilities on a slip instead of `kcc-slip--lift`.
-- Padding utilities (`p-`, `px-`, `py-`) on `.kcc-sheet` instead of `style="--pad: …"`.
+- A `--pad` of more than one length on a `kcc-sheet--margin` sheet: below 480px its start padding falls back to
+  `var(--pad, 24px)`, which a shorthand makes invalid.
 - A sheet with more than one `.kcc-wash`, `.kcc-label` or `.kcc-hand`.
 - Sibling sheets in one list or grid sharing a `kcc-tear-N` class (grep the loop; the index must cycle).
 
 **Torn vs printed**
 - Any radius on paper: `rounded-*` on `.kcc-sheet`, `.kcc-tile`, or an `<img>`.
 - Any torn control: `clip-path` or `kcc-tear-*` on a button, field, badge, seg or label.
+- A field drawn as a box: a radius, a ring, a border or a fill of its own on a `kcc-field`, or an input styled
+  outside `kcc-field` and the field primitives. A field is a line.
 - Any border or outline on paper: `border`, `border-*`, `outline` on a sheet or tile.
 - Any shadow other than the kit's fall: `shadow-*` utilities, `box-shadow` outside the inset hairlines in
   `Controls.css`, `drop-shadow` outside `.kcc-torn` and `.kcc-blank`.
@@ -87,6 +90,26 @@ For each file, check every rule below and record hits as `path:line — rule —
   `space-y-rule-*`.
 - More than one `kcc-hand` on a sheet, or a hand note carrying information the sheet needs.
 
+**Paper rule (kit.md → Paper rule)**
+- A pixel nudge to land text, a control or a field on a line: an arbitrary `translate-y-[…]`, `top-[…]`, `-mt-[…]`
+  or `pt-[…]`, a `relative top-px`, or a few px of `translate`, `top` or margin in a style block on anything inside a
+  sheet. The shim does it; a line that is off means a block whose height is not a whole or half number of rules.
+- `items-center` (or `align-items: center`) on a row in a sheet that holds a label beside a `kcc-btn` or `kcc-seg`.
+  It is a `kcc-row`.
+- An icon (`<i>`, `<svg>`) before the input in a `kcc-field`, or `kcc-field--noicon`: the X is the field's one
+  leading mark.
+- The margin rule (`margin` on `KccSheet`, `kcc-sheet--margin`) on a dialog, a hero, a toolbar, a card, the header
+  pad, a home block, the stacker or an empty state; or a sheet read down the page (a recipe or variant reading sheet,
+  a wizard step or wizard sheet, an account, login or settings sheet, cook mode) without it
+  (*judgement*).
+- A ghost button, segmented control, field or badge on a sheet given a transparent or tinted background, so a rule
+  runs through it.
+- An icon button (`kcc-btn--icon`) sized anything but `--control-sm`: a width, height or size utility on it, or a
+  `.kcc-btn--lg.kcc-btn--icon` rule that resizes it. `size="lg"` on an icon button is fine; the circle stays 32px.
+- A field error drawn in red (a red underline, red text): `kcc-field--error` draws an ink line and the
+  `kcc-well--danger` below carries the red.
+- A new text role or token utility a sheet renders that the shim's role list in `Torn/Kit.css` does not name.
+
 **Icons**
 - Coloured icon layers: the `fa-primary-*` / `fa-secondary-*` Tailwind utilities, or `--fa-primary-color` /
   `--fa-secondary-color` set to anything but `currentColor` anywhere except `Styles/Torn/Kit.css`; or an icon
@@ -117,10 +140,11 @@ For each file, check every rule below and record hits as `path:line — rule —
 From `src/KCC.Web`:
 
 ```bash
-yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile
+yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule
 ```
 
-Report failures verbatim. `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` stays empty;
+Report failures verbatim. A change that moves layout on a sheet also needs
+`tests/KCC.E2ETests/Features/Chrome/RuleTests.cs`, which measures real baselines in a browser; say whether it was run. `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` stays empty;
 an entry whose commit message gives no reason is a hit.
 
 ## Report

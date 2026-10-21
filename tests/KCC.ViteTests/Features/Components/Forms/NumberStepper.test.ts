@@ -46,7 +46,30 @@ describe('NumberStepper value name', () => {
   })
 })
 
+describe('NumberStepper field', () => {
+  it('is a stepper field, which draws no X: a stepper is a control, not a line to write on', async () => {
+    const field = tagWith(await render({ label: 'Makes' }), 'kcc-field')
+
+    expect(field).toContain('kcc-field kcc-field--stepper')
+  })
+
+  it('starts its unit on the number’s line, now the number fills the field’s height, so the unit stays on the rule', async () => {
+    const row = tagWith(await render({ label: 'Makes', unit: 'min' }), 'justify-center')
+
+    expect(row).toContain('items-start')
+    expect(row).not.toContain('items-center')
+  })
+})
+
 describe('NumberStepper buttons', () => {
+  it('start on the field’s line, so the kit centres them on its rule', async () => {
+    const html = await render({ label: 'Makes' })
+    const row = html.match(/^(?:<!--[\s\S]*?-->)*(<div[^>]*>)/)?.[1] ?? ''
+
+    expect(row).toContain('items-start')
+    expect(row).not.toContain('items-center')
+  })
+
   it('are square ghost kit pills with the glyph as their only content', async () => {
     const html = await render({ label: 'Makes' })
     const decrease = tagWith(html, 'aria-label="Decrease Makes"')

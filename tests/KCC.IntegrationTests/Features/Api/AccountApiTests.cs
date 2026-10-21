@@ -40,6 +40,7 @@ public class AccountApiTests
 
         _ = await Assert.That(again.Success).IsFalse();
         _ = await Assert.That(again.Errors!.Length).IsGreaterThan(0);
+        _ = await Assert.That(again.Code).IsNull();
     }
 
     [Test]
@@ -53,6 +54,7 @@ public class AccountApiTests
 
         _ = await Assert.That(result.Success).IsFalse();
         _ = await Assert.That(result.Errors!.Single()).IsEqualTo(Site.ResourceString("Login.NotAllowedError"));
+        _ = await Assert.That(result.Code).IsNull();
         _ = await Assert.That(await visitor.IsSignedInAsync(VariantPath)).IsFalse();
     }
 
@@ -96,6 +98,7 @@ public class AccountApiTests
         var result = await visitor.SignInAsync(userName, TestMembers.Password);
 
         _ = await Assert.That(result.Errors!.Single()).IsEqualTo(Site.ResourceString("Login.LockedOutError"));
+        _ = await Assert.That(result.Code).IsNull();
         _ = await Assert.That(await visitor.IsSignedInAsync(VariantPath)).IsFalse();
     }
 
@@ -109,6 +112,7 @@ public class AccountApiTests
         var result = await visitor.SignInAsync(userName, "not-the-password");
 
         _ = await Assert.That(result.Errors!.Single()).IsEqualTo(Site.ResourceString("Login.InvalidCredentialsError"));
+        _ = await Assert.That(result.Code).IsEqualTo("invalid-credentials");
     }
 
     [Test]

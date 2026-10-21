@@ -178,24 +178,32 @@ describe('PhotoStep', () => {
     expect(buttonHolding(html, '«TypeInstead»')).toContain('type="button"')
   })
 
-  it('wraps Back, Type it in and Read recipe onto the next rule while the import rests', async () => {
+  it('wraps Back, Type it in and Read recipe two rules apart while the import rests', async () => {
     const html = await render({ photos: ONE, availableAgainOn: '2026-11-01' })
-    const rows = [enclosingTag(html, 'fa-arrow-left', 1), enclosingTag(html, 'data-testid="read-photos"')]
 
-    rows.forEach((row) => expect(classesOf(row)).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1'])))
+    expect(classesOf(enclosingTag(html, 'fa-arrow-left', 1))).toEqual(expect.arrayContaining(['kcc-row', 'justify-between']))
+    expect(classesOf(enclosingTag(html, 'data-testid="read-photos"'))).toEqual(
+      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-0.5']),
+    )
   })
 
-  it('wraps the photo count under Add photos onto the next rule', async () => {
-    const row = classesOf(enclosingTag(await render({ photos: ONE }), 'fa-images', 2))
-
-    expect(row).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']))
-    expect(row).not.toContain('gap-3')
-  })
-
-  it('centres Add photos in two rules, so the count and the note under it land on the rule', async () => {
+  it('keeps the camera on the rule: a rule between its lines, and a preview a whole number of rules tall', async () => {
     const html = await render({ photos: ONE })
+    const column = classesOf(enclosingTag(html, 'data-testid="camera-view"', 0))
 
-    expect(classesOf(enclosingTag(html, 'fa-images', 1))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
+    expect(column).toContain('gap-y-rule-1')
+    expect(column).not.toContain('gap-3')
+    expect(classesOf(tagWith(html, 'data-testid="camera-view"'))).toEqual(
+      expect.arrayContaining(['h-[round(down,60vh,var(--bl))]', 'object-contain', 'bg-paper-2']),
+    )
+  })
+
+  it('sets Add photos and the photo count in a kit row, so the count sits on the rule and the note under it too', async () => {
+    const html = await render({ photos: ONE })
+    const row = classesOf(enclosingTag(html, 'fa-images', 1))
+
+    expect(row).toEqual(['kcc-row', 'justify-between'])
+    expect(enclosingTag(html, 'class="kcc-kick" aria-live', 0)).toContain('kcc-row')
   })
 
   it('stops capturing while the import rests, and keeps the photos with their remove buttons', async () => {

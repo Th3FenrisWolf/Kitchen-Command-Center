@@ -86,6 +86,7 @@ describe('MatchStep', () => {
     const accept = classesOf(tagWith(html, 'data-testid="match-accept"'))
 
     expect(accept).toContain('py-rule-0.5')
+    expect(accept).toContain('[--h:calc(var(--bl)*2)]')
     expect(classesOf(enclosingTag(html, 'data-testid="match-accept"'))).toEqual(
       expect.arrayContaining(['flex-col', 'gap-y-rule-1']),
     )
@@ -97,10 +98,10 @@ describe('MatchStep', () => {
     expect(row).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']))
   })
 
-  it('lines Add to another recipe up with the list, both centred in the two rules under the label', async () => {
+  it('lines Add to another recipe up with the list, in a row of two rules under the label', async () => {
     const html = await render()
 
-    expect(classesOf(enclosingTag(html, 'data-testid="match-pick"'))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
+    expect(classesOf(enclosingTag(html, 'data-testid="match-pick"'))).toEqual(['kcc-row'])
     expect(classesOf(enclosingTag(html, 'data-testid="match-pick"', 1))).toContain('items-end')
   })
 
@@ -166,11 +167,11 @@ describe('MatchStep', () => {
     expect(classesOf(back)).toEqual(expect.arrayContaining(['kcc-btn', 'kcc-btn--ghost']))
   })
 
-  it('wraps the Back row onto the next rule, never 12px under', async () => {
-    const row = classesOf(enclosingTag(await render(), 'fa-arrow-left', 1))
+  it('sets Keep it as a new recipe and the Back row in whole rules, so whatever follows starts on one', async () => {
+    const html = await render()
 
-    expect(row).toEqual(expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']))
-    expect(row).not.toContain('gap-3')
+    expect(classesOf(enclosingTag(html, 'data-testid="match-keep"'))).toEqual(['kcc-row'])
+    expect(classesOf(enclosingTag(html, 'fa-arrow-left', 1))).toEqual(['kcc-row', 'justify-between'])
   })
 
   it('offers no Back when the step has nowhere to go back to', async () => {

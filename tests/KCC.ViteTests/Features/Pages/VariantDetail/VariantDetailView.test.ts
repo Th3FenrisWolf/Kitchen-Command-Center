@@ -103,6 +103,13 @@ describe('VariantDetailView', () => {
     expect(slip).toContain('data-testid="variant-stats"')
   })
 
+  it('draws the margin rule on the At a glance sheet, as on every sheet of the reading column', async () => {
+    const html = await render()
+    const glance = html.slice(html.indexOf('kcc-tear-3'), html.indexOf('kcc-label', html.indexOf('kcc-tear-3')))
+
+    expect(glance).toContain('<div class="kcc-sheet kcc-sheet--margin"')
+  })
+
   it('rests the At a glance sheet on one blank', async () => {
     const html = await render()
     const glance = html.indexOf('kcc-tear-3')

@@ -162,10 +162,10 @@ describe('AccountSettingsView', () => {
     )
   })
 
-  it('centres the ramp control in two rules with its hint straight under them, so the hint sits on the ruling', async () => {
+  it('sets the ramp control in a row of two rules with its hint straight under them, so the hint sits on the ruling', async () => {
     const html = await render()
 
-    expect(classesOf(enclosingTag(html, 'role="radiogroup"'))).toEqual(['flex', 'min-h-rule-2', 'items-center'])
+    expect(classesOf(enclosingTag(html, 'role="radiogroup"'))).toEqual(['kcc-row'])
     expect(classesOf(enclosingTag(html, 'role="radiogroup"', 1))).toEqual(['flex', 'flex-col'])
   })
 

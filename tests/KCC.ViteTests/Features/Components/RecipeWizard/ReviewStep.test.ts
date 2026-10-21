@@ -94,7 +94,7 @@ describe('ReviewStep after a read', () => {
     expect(classesOf(enclosingTag(html, 'data-kind="estimate"'))).toEqual(expect.arrayContaining(['gap-y-0']))
   })
 
-  it('keeps every section on the rule: a heading row one rule tall, and a stat with its unit on one rule', async () => {
+  it('keeps every section on the rule: a heading row is a kit row, and a stat with its unit on one rule', async () => {
     const html = await render('recipe', READ, [], { changesMatch: true })
     const rows = [
       'data-testid="review-edit-basics"',
@@ -105,9 +105,7 @@ describe('ReviewStep after a read', () => {
     ]
 
     for (const row of rows) {
-      const classes = classesOf(enclosingTag(html, row))
-      expect(classes).toContain('items-center')
-      expect(classes).not.toContain('items-baseline')
+      expect(classesOf(enclosingTag(html, row))).toEqual(['kcc-row', 'justify-between'])
     }
     expect(classesOf(tagWith(html, 'class="kcc-v'))).toEqual(['kcc-v', 'h-rule-1'])
   })
@@ -203,20 +201,16 @@ describe('ReviewStep step links', () => {
     expect(buttonWith(html, 'data-testid="read-again"')).toContain('«ReadAgain»')
   })
 
-  it('wraps Change photos and Read again onto the next rule, never 12px under', async () => {
+  it('sets Change photos and Read again in a kit row', async () => {
     const html = await render('recipe', READ, [], { imported: true, canRead: true })
 
-    expect(classesOf(enclosingTag(html, 'data-testid="change-photos"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
-    )
+    expect(classesOf(enclosingTag(html, 'data-testid="change-photos"'))).toEqual(['kcc-row'])
   })
 
   it("wraps the read-again warning's Cancel and Read again onto the next rule", async () => {
     const html = await render('recipe', READ, [], { imported: true, canRead: true, confirmingRead: true })
 
-    expect(classesOf(enclosingTag(html, 'data-testid="read-again-confirm"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
-    )
+    expect(classesOf(enclosingTag(html, 'data-testid="read-again-confirm"'))).toEqual(['kcc-row', 'justify-end'])
   })
 
   it("keeps the read-again warning's buttons a rule below its well", async () => {
@@ -228,12 +222,14 @@ describe('ReviewStep step links', () => {
     expect(column).not.toContain('gap-3')
   })
 
-  it('wraps Back and Submit onto the next rule, never 12px under', async () => {
+  it('sets Back and Submit in a kit row two rules down, pushed apart', async () => {
     const html = await render('recipe', READ)
 
-    expect(classesOf(enclosingTag(html, 'data-testid="wizard-submit"'))).toEqual(
-      expect.arrayContaining(['flex-wrap', 'gap-x-3', 'gap-y-rule-1']),
-    )
+    expect(classesOf(enclosingTag(html, 'data-testid="wizard-submit"')).sort()).toEqual([
+      'justify-between',
+      'kcc-row',
+      'mt-rule-2',
+    ])
   })
 
   it('holds Read again while the flow cannot start a read', async () => {

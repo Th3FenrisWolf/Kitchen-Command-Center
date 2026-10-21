@@ -199,6 +199,14 @@ describe('SearchForm', () => {
   it('sets the key hint in Sono caps on the small pill', () => {
     expect(declarationsOf('SearchForm.vue', '.pad-key').font).toBe('400 var(--text-caps)/var(--pill-sm) var(--font-sono)')
   })
+
+  it('fills the key hint with paper, so the field’s underline does not run through it', () => {
+    expect(declarationsOf('SearchForm.vue', '.pad-key').background).toBe('var(--color-paper)')
+  })
+
+  it('sets the key hint as a Sono role, so the shim puts its "/" on the rule', () => {
+    expect(sourceOf('SearchForm.vue')).toMatch(/<kbd[^>]*class="pad-key kcc-num"/)
+  })
 })
 
 describe('KitchenCard', () => {
@@ -266,6 +274,41 @@ describe('MenuCard', () => {
     expect(html).toContain('href="/recipes/create-recipe/"')
     expect(html).toContain('action="/account/logout?returnUrl=%2F"')
     expect(html).not.toContain('Sign in')
+  })
+})
+
+describe('A phone card', () => {
+  it('scrolls itself, so it carries its grain in its scrolling background', () => {
+    expect(sourceOf('PadCard.vue')).toMatch(/<KccSheet[^>]*:scroll="scroll"/)
+    expect(
+      sourceOf('AppHeader.Component.vue')
+        .match(/<PadCard[^>]*pad-card--phone[^>]*>/g)
+        ?.every((tag) => /\bscroll\b/.test(tag)),
+    ).toBe(true)
+    expect(declarationsOf('PadCard.vue', '.pad-card--phone .kcc-sheet')['background-attachment']).toBeUndefined()
+  })
+})
+
+describe('A card footer', () => {
+  it('starts its items on the line, so their text lies on the card’s rules', () => {
+    expect(['flex-start', 'start']).toContain(declarationsOf('PadCard.vue', '.pad-foot')['align-items'])
+  })
+
+  it('sets no row gap of its own, so a kit row keeps its half-rule gap', () => {
+    const foot = declarationsOf('PadCard.vue', '.pad-foot')
+
+    expect(foot.gap).toBeUndefined()
+    expect(foot['row-gap']).toBeUndefined()
+  })
+
+  it.each([
+    ['a visitor', visitor()],
+    ['a member', member()],
+  ])('holds the phone menu’s buttons for %s in a kit row, so a wrapped line fills two rules', async (_who, nav) => {
+    const html = await renderSsr(MenuCard, { recipes: nav.recipes, urls: nav.urls, member: nav.member, t })
+    const footer = html.match(/<div class="([^"]*pad-foot[^"]*)"/)?.[1]?.split(' ')
+
+    expect(footer).toEqual(expect.arrayContaining(['kcc-row', 'pad-foot']))
   })
 })
 

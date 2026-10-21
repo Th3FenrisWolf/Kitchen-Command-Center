@@ -32,6 +32,25 @@ public class MemberFlowTests : BasePageTests
     }
 
     [Test]
+    public async Task WrongCredentials_DrawTheErrorLineUnderTheNameAndThePassword()
+    {
+        _ = await Page.GotoAsync("/account/login");
+        await Page.FillAsync("input[name='UserName']", "nobody-by-this-name");
+        await Page.FillAsync("input[name='Password']", "Not-The-Passw0rd");
+        await Page.ClickAsync("form button[type='submit']");
+
+        var alert = Page.GetByRole(AriaRole.Alert);
+        await Expect(alert).ToBeVisibleAsync();
+        foreach (var name in new[] { "UserName", "Password" })
+        {
+            var input = Page.Locator($"input[name='{name}']");
+            await Expect(input.Locator("xpath=..")).ToHaveClassAsync(new System.Text.RegularExpressions.Regex(@"\bkcc-field--error\b"));
+            await Expect(input).ToHaveAttributeAsync("aria-invalid", "true");
+            await Expect(input).ToHaveAttributeAsync("aria-describedby", (await alert.GetAttributeAsync("id"))!);
+        }
+    }
+
+    [Test]
     public async Task ApprovedMember_SignsIn_AndSignsOutFromTheHeader()
     {
         await MemberSession.SignInAsync(Page);

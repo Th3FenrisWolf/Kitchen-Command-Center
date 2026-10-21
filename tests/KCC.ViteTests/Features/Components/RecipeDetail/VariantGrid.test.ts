@@ -68,12 +68,14 @@ describe('VariantGrid', () => {
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 
-  it('stretches the add-variant slip to its row and centres the plus and the label on it', async () => {
+  it('stretches the add-variant slip to its row and sets the plus circle and the label in a kit row on the rule', async () => {
     const html = await render(3)
 
     expect(tagWith(html, 'kcc-tear-4')).toContain('kcc-slip--fill')
-    expect(tagWith(html, 'kcc-sheet grid')).toContain('content-center')
-    expect(html).toContain('fa-duotone fa-plus kcc-icon-md')
+    expect(html).not.toMatch(/kcc-sheet[^"]*content-center/)
+    expect(html).toMatch(
+      /<div class="kcc-row justify-center"><span class="kcc-btn kcc-btn--icon" aria-hidden="true"><i class="fa-duotone fa-plus" aria-hidden="true"><\/i><\/span><span class="kcc-title">/,
+    )
   })
 
   it('lays the add-variant slip on one blank, its last child', async () => {

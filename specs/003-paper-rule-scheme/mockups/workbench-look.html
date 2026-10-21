@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>003 · Workbench look</title>
+<link rel="stylesheet" href="/kit.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+  .pv-axes { margin: 12px 0 0; padding: 0; list-style: none; }
+
+  /* ---- The proposed scheme: pinned metrics ---------------------------------------------------------- */
+  @font-face { font-family: PvHazel; src: url(/assets/HazelnutMilkTeaRegular-BD58nX5h.woff2) format('woff2');
+    font-weight: 400; ascent-override: 101.0742%; descent-override: 24.6582%; line-gap-override: 0%; }
+  @font-face { font-family: PvHazel; src: url(/assets/HazelnutMilkTeaBold-DvFuEXAF.woff2) format('woff2');
+    font-weight: 700; ascent-override: 101.0742%; descent-override: 24.6582%; line-gap-override: 0%; }
+  @font-face { font-family: PvAP; src: url(/assets/AmericanPurposeCasualRegular-BGlnlj_L.woff2) format('woff2');
+    ascent-override: 75%; descent-override: 25%; line-gap-override: 0%; }
+  @font-face { font-family: PvAP; src: url(/assets/AmericanPurposeCasualItalic-BNl8iDnb.woff2) format('woff2');
+    font-style: italic; ascent-override: 75%; descent-override: 25%; line-gap-override: 0%; }
+  @font-face { font-family: PvSono; src: url(/assets/Sono-Regular-latin-CsABAJKF.woff2) format('woff2');
+    ascent-override: 91.2%; descent-override: 28.8%; line-gap-override: 0%; }
+
+  .pv-scheme {
+    --font-hazelnut: PvHazel, sans-serif;
+    --font-casual: PvAP, sans-serif;
+    --font-sono: PvSono, ui-monospace, monospace;
+    --off: 2px;
+    --mx: calc(var(--bl) * 2);
+    --pv-rule: hsl(205 28% 62% / 0.55);
+    --pv-margin: hsl(356 70% 60% / 0.75);
+    --pv-grain-op: 0.06;
+    --pv-grain-blend: multiply;
+    font-family: var(--font-hazelnut);
+  }
+  :root[data-pv-check] .pv-scheme { --pv-rule: oklch(0.62 0.26 330 / 0.9); }
+
+  /* ---- Ruling: the top of each 1px rule lies 2px below the body baseline --------------------------- */
+  .pv-scheme .kcc-sheet {
+    background-image: linear-gradient(to bottom, var(--pv-rule) 1px, transparent 0);
+    background-size: 100% var(--bl);
+    background-repeat: repeat;
+    background-origin: content-box;
+    background-clip: border-box;
+    background-position: 0 calc(var(--rule-drop) + var(--off));
+    container-type: inline-size;
+    font-family: var(--font-hazelnut);
+  }
+  .pv-scheme .kcc-sheet[data-ruling='blank'] { background-image: none; }
+
+  /* ---- Margin rule: two columns in, copy one column after it ---------------------------------------- */
+  .pv-scheme .kcc-sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent var(--mx), var(--pv-margin) var(--mx),
+      var(--pv-margin) calc(var(--mx) + 1px), transparent calc(var(--mx) + 1px));
+    opacity: 0;
+  }
+  .pv-scheme .kcc-sheet.pv-margin::before { opacity: 1; }
+  .pv-scheme .kcc-sheet.pv-margin { padding-inline-start: calc(var(--mx) + var(--bl)); }
+
+  /* ---- Workbench grain, per sheet ------------------------------------------------------------------- */
+  .pv-scheme .kcc-sheet::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--pv-grain-op);
+    mix-blend-mode: var(--pv-grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  /* ---- The shim: each role moves its baseline onto the rule and gives the space straight back ------- */
+  .pv-scheme .kcc-sheet :where(.kcc-display, .kcc-section, .kcc-heading, .kcc-title, .kcc-hand, .kcc-kick,
+    .kcc-lbl, .kcc-meta, .kcc-body, .pv-readout, .pv-run > li, .pv-stepper .kcc-num) {
+    --k: 0.38208;
+    --lh: var(--bl);
+    --own: calc(var(--lh) / 2 + var(--k) * 1em);
+    --shim: mod(calc(var(--rule-drop) - var(--own)), var(--bl));
+    padding-top: var(--shim);
+    margin-bottom: calc(-1 * var(--shim));
+  }
+  .pv-scheme .kcc-sheet :where(.kcc-display, .kcc-section, .kcc-heading, .kcc-title, .kcc-hand) {
+    font-family: var(--font-casual);
+    --k: 0.25;
+  }
+  .pv-scheme .kcc-sheet :where(.kcc-display, .kcc-section) { --lh: calc(var(--bl) * 2); }
+  .pv-scheme .kcc-sheet :where(.kcc-kick, .kcc-lbl, .kcc-meta, .pv-readout, .pv-stepper .kcc-num) {
+    font-family: var(--font-sono);
+    --k: 0.312;
+  }
+  .pv-scheme .kcc-sheet .pv-readout {
+    --lh: calc(var(--bl) * 3);
+    font-size: var(--text-readout);
+    line-height: var(--lh);
+    margin-top: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Round layout ---------------------------------------------------------------------------------- */
+  .pv-desk { display: grid; gap: 36px 28px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .pv-desk > * { grid-column: 1 / -1; }
+  @media (min-width: 960px) {
+    .pv-desk > .pv-w8 { grid-column: span 8; }
+    .pv-desk > .pv-w4 { grid-column: span 4; }
+    .pv-desk > .pv-w6 { grid-column: span 6; }
+  }
+  .pv-side { display: grid; gap: 36px; align-content: start; }
+  .pv-sp1 { margin-top: var(--bl); }
+  .pv-sp2 { margin-top: calc(var(--bl) * 2); }
+  .pv-half { margin-top: calc(var(--bl) / 2); }
+  .pv-ctl { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+  .pv-ctl > .kcc-seg { min-width: 0; }
+  .pv-ctl > .kcc-field { flex: 1; min-width: 0; }
+  .pv-run { margin: 0; padding: 0; list-style: none; }
+  .pv-run > li { display: grid; grid-template-columns: 6ch 1fr; gap: 12px; }
+  .pv-run .pv-q { font-family: var(--font-sono); font-size: var(--text-caps); font-variant-numeric: tabular-nums;
+    text-align: right; color: var(--color-ink-soft); }
+  .pv-steps { counter-reset: s; }
+  .pv-steps > li { grid-template-columns: 3ch 1fr; }
+  .pv-steps > li::before { counter-increment: s; content: counter(s) '.'; font-family: var(--font-sono);
+    font-size: var(--text-caps); color: var(--color-ink-soft); text-align: right; }
+  .pv-stepper { display: flex; align-items: flex-start; gap: 8px; }
+  .pv-ctl--36 { padding-bottom: calc(var(--bl) / 2); }
+  .pv-stepper .kcc-num { font-family: var(--font-sono); font-size: var(--text-title); min-width: 2ch; text-align: center; }
+  .pv-tile { display: flex; align-items: flex-start; gap: 16px; }
+  .pv-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  .pv-legend span::before { content: ''; display: inline-block; width: 24px; height: 1px; margin-right: 8px;
+    vertical-align: middle; background: currentColor; }
+
+  /* ---- Option 1 · Reading sheets ---------------------------------------------------------------------- */
+  :root[data-theme='dark'] .pv-o1 {
+    --pv-rule: oklch(0.74 0.05 240 / 0.24);
+    --pv-margin: oklch(0.66 0.15 22 / 0.58);
+    --pv-grain-op: 0.08;
+    --pv-grain-blend: soft-light;
+  }
+
+
+  /* ---- Round 3 · shared: paper-filled controls, 32px circles, wrapping rows ----------------------------- */
+  .pv-scheme .kcc-sheet :where(.kcc-field, .kcc-seg, .kcc-btn--ghost) { background-color: var(--color-paper); }
+  .pv-scheme .kcc-sheet :where(.pv-stepper, .pv-tile) .kcc-btn { width: 32px; height: 32px; min-height: 32px; }
+  .pv-scheme .kcc-sheet :where(.kcc-field, .kcc-seg, .kcc-btn) { position: relative; }
+  .pv-scheme .pv-ctl { flex-wrap: wrap; row-gap: calc(var(--bl) / 2); }
+  .pv-scheme .pv-ctl > .kcc-field { flex: 1 1 200px; }
+  .pv-scheme .kcc-sheet .pv-ctl > :where(.kcc-lbl, .kcc-meta, .kcc-title) {
+    box-sizing: border-box;
+    height: var(--control-md);
+    margin-bottom: 0;
+  }
+  .pv-scheme .kcc-sheet .pv-stepper .kcc-num {
+    padding-top: 0;
+    margin-bottom: 0;
+    position: relative;
+    top: calc(mod(calc(var(--rule-drop) - var(--own) + var(--bl) / 2), var(--bl)) - var(--bl) / 2);
+  }
+  .pv-scheme .kcc-sheet { --sono-mid: calc(var(--rule-drop) - 0.31 * var(--text-caps)); }
+
+  /* ---- Written on the line: a field is the rule itself ------------------------------------------------ */
+  .pv-r3 .kcc-sheet :where(.kcc-seg, .kcc-btn) { top: calc(var(--sono-mid) - var(--control-md) / 2); }
+  .pv-r3 .kcc-sheet .pv-stepper .kcc-btn { top: calc(var(--sono-mid) - 16px); }
+  .pv-r3 .kcc-sheet .pv-tile .kcc-btn { top: calc(var(--rule-drop) - 0.35 * var(--text-title) - 16px); }
+  .pv-r3 .kcc-sheet .kcc-field {
+    align-items: start;
+    background: linear-gradient(var(--color-hair-strong), var(--color-hair-strong)) 0 calc(var(--rule-drop) + var(--off)) / 100% 1px no-repeat;
+    border-radius: 0;
+    box-shadow: none;
+    padding-inline: 0;
+  }
+  .pv-r3 .kcc-sheet .kcc-field:focus-within {
+    background-image: linear-gradient(var(--color-ink), var(--color-ink));
+    background-size: 100% 2px;
+    box-shadow: none;
+  }
+  .pv-r3 .kcc-sheet .kcc-field input { line-height: var(--bl); }
+  .pv-r3 .kcc-sheet .kcc-field i { line-height: var(--bl); }
+
+  /* ---- Round 4: the sign-here mark ---------------------------------------------------------------------- */
+  .pv-r3 .kcc-sheet .kcc-field { display: flex; gap: 10px; }
+  .pv-r3 .kcc-sheet .kcc-field input { flex: 1; min-width: 0; }
+  .pv-x {
+    color: var(--color-ink);
+    flex: none;
+    font: 400 var(--text-title) / var(--bl) var(--font-casual);
+    transform: rotate(-6deg);
+    padding-top: calc(var(--rule-drop) - var(--bl) / 2 - 0.25 * var(--text-title));
+  }
+  .pv-s1 .kcc-sheet .kcc-field i { display: none; }
+  .pv-s2 .kcc-sheet .pv-x--search { display: none; }
+  .pv-s1 .kcc-sheet .pv-caption { display: none; }
+  .pv-s2 .kcc-sheet .pv-above { display: none; }
+  .pv-s2 .kcc-sheet .pv-sign { height: var(--bl); margin-top: var(--bl); }
+  .pv-s2 .kcc-sheet .pv-caption + .pv-ctl { margin-top: 0; }
+  .pv-red-rule .pv-x { color: var(--pv-margin); }
+  .pv-red-pen .pv-x { color: hsl(355 55% 52%); }
+  :root[data-theme='dark'] .pv-red-pen .pv-x { color: oklch(0.7 0.14 18); }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
+        <feGaussianBlur in="d" stdDeviation="1.8" result="b"></feGaussianBlur>
+        <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="9" result="w"></feTurbulence>
+        <feComposite in="b" in2="w" operator="arithmetic" k1="0.62" k2="0.62" k3="0" k4="0"></feComposite>
+      </filter>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+  <span class="kcc-grain" aria-hidden="true"></span>
+
+  <div class="pv-bar">
+    <h1>The workbench look</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-check>Rule check</button>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#margin-red">Margin red</a>
+    </nav>
+  </div>
+
+
+
+  <section class="pv-option pv-scheme pv-o1 pv-r3 pv-s1 pv-red-rule" id="margin-red" data-margin="detail form cook">
+    <header>
+      <p class="kcc-kick">Approved · reading sheets, written on the line, margin red</p>
+      <h2>Margin red</h2>
+      <p class="kcc-body">The X takes the margin rule's colour and strength, so it reads as part of the ruled sheet, printed before anyone wrote on it. It wins on one red for the whole sheet. It costs weight: at 75% in light and 58% in dark, the X is quiet.</p>
+    </header>
+    <div class="pv-stage"></div>
+  </section>
+
+
+
+
+
+  <template id="pv-sheets">
+    <div class="pv-desk">
+      <div class="kcc-slip kcc-tear-3">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" data-kind="hero" style="--pad: 48px">
+            <span class="kcc-wash" style="--c: var(--color-peach); --x: 92%; --y: 20%; --w: 30%; --h: 70%" aria-hidden="true"></span>
+            <p class="kcc-kick">Kitchen Command Center</p>
+            <h2 class="kcc-display">Sunday sauce, written down once and kept.</h2>
+            <p class="kcc-body pv-sp1">Two hundred and twelve recipes, each one tried at this table. Every line of this sheet sits two pixels above a feint blue rule.</p>
+          </div>
+        </div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="kcc-slip kcc-tear-1">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" data-kind="toolbar">
+            <div class="pv-ctl">
+              <div class="kcc-field" style="max-width: 360px"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i><span class="pv-x pv-x--search" aria-hidden="true">X</span><input type="search" placeholder="Search recipes" aria-label="Search recipes"></div>
+              <span class="kcc-lbl">Sort</span>
+              <div class="kcc-seg" role="group" aria-label="Sort">
+                <button type="button" aria-pressed="true">Rating</button>
+                <button type="button" aria-pressed="false">Newest</button>
+                <button type="button" aria-pressed="false">Time</button>
+              </div>
+            </div>
+            <p class="kcc-meta pv-half">212 recipes · 14 categories</p>
+          </div>
+        </div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="kcc-slip kcc-tear-5 pv-w8">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" data-kind="detail" style="--pad: 48px">
+            <span class="kcc-wash" style="--c: var(--color-green); --x: 96%; --y: 6%; --w: min(40%, 160px); --h: 120px" aria-hidden="true"></span>
+            <p class="kcc-kick">Pasta · Italian</p>
+            <h2 class="kcc-display">Brown Butter Gnocchi with Sage and Lemon</h2>
+            <p class="kcc-meta">25 min · Serves 4 · ★ 4.5 · 28 reviews</p>
+            <p class="kcc-hand pv-sp1">Brown the butter until it smells of hazelnuts.</p>
+            <div class="pv-ctl pv-ctl--36 pv-sp1">
+              <span class="kcc-lbl">Makes</span>
+              <div class="pv-stepper">
+                <button type="button" class="kcc-btn kcc-btn--ghost kcc-btn--icon" aria-label="Fewer">−</button>
+                <span class="kcc-num">4</span>
+                <button type="button" class="kcc-btn kcc-btn--ghost kcc-btn--icon" aria-label="More">+</button>
+              </div>
+            </div>
+            <h3 class="kcc-section pv-sp1">Ingredients</h3>
+            <ul class="pv-run">
+              <li><span class="pv-q">500 g</span><span>potato gnocchi</span></li>
+              <li><span class="pv-q">90 g</span><span>unsalted butter</span></li>
+              <li><span class="pv-q">12</span><span>sage leaves</span></li>
+              <li><span class="pv-q">1</span><span>lemon, zest only</span></li>
+              <li><span class="pv-q">40 g</span><span>parmesan, finely grated</span></li>
+            </ul>
+            <div class="pv-ctl pv-ctl--36 pv-sp1">
+              <span class="kcc-lbl">Salt</span>
+              <div class="kcc-field kcc-field--noicon" style="max-width: 120px"><span class="pv-x" aria-hidden="true">X</span><input class="kcc-num" value="" placeholder="—" aria-label="Salt"></div>
+              <span class="kcc-meta">To taste</span>
+            </div>
+            <h3 class="kcc-heading pv-sp2">Method</h3>
+            <ol class="pv-run pv-steps">
+              <li><span>Boil the gnocchi in well-salted water until they float, then lift them out.</span></li>
+              <li><span>Melt the butter over medium heat and cook it until the solids turn golden brown and the kitchen smells of toasted hazelnuts.</span></li>
+              <li><span>Add the sage, then the gnocchi, and toss until crisp at the edges.</span></li>
+            </ol>
+          </div>
+        </div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="pv-side pv-w4">
+        <div class="kcc-slip kcc-recipe kcc-tear-2">
+          <div class="kcc-torn">
+            <div class="kcc-sheet" data-kind="card">
+              <h3 class="kcc-title">Charred Leek Risotto</h3>
+              <p class="kcc-meta">Rice · 3 var. · 40 min</p>
+              <div class="kcc-badges mt-rule-1"><span class="kcc-badge">Vegetarian</span></div>
+            </div>
+          </div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </div>
+        <div class="kcc-slip kcc-recipe kcc-tear-4">
+          <div class="kcc-torn">
+            <div class="kcc-sheet" data-kind="card">
+              <h3 class="kcc-title">Miso Glazed Aubergine with a Long Name That Wraps</h3>
+              <p class="kcc-meta">Vegetables · 2 var. · 35 min</p>
+            </div>
+          </div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </div>
+        <div class="kcc-slip kcc-tear-6">
+          <div class="kcc-torn">
+            <div class="kcc-sheet" data-kind="card">
+              <div class="pv-tile pv-ctl--36">
+                <button type="button" class="kcc-btn kcc-btn--icon" aria-label="Add a variant">+</button>
+                <h3 class="kcc-title">Add Variant</h3>
+              </div>
+            </div>
+          </div>
+          <span class="kcc-blank" aria-hidden="true"><span></span></span>
+        </div>
+      </div>
+
+      <div class="kcc-slip kcc-tear-2 pv-w6">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" data-kind="form">
+            <h3 class="kcc-heading">Add a variant</h3>
+            <p class="kcc-body">Name it for what you changed.</p>
+            <p class="kcc-lbl pv-sp1 pv-above">Variant name</p>
+            <div class="kcc-field kcc-field--noicon pv-sign"><span class="pv-x" aria-hidden="true">X</span><input placeholder="Extra lemon, no parmesan" aria-label="Variant name"></div>
+            <p class="kcc-lbl pv-caption">Variant name</p>
+            <div class="pv-ctl pv-half">
+              <button type="button" class="kcc-btn kcc-btn--ghost">Add photo</button>
+              <span class="kcc-meta">3 / 8 photos</span>
+            </div>
+            <div class="pv-ctl pv-sp1" style="margin-top: 36px">
+              <button type="button" class="kcc-btn">Save variant</button>
+            </div>
+          </div>
+        </div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="kcc-slip kcc-tear-4 pv-w6">
+        <div class="kcc-torn">
+          <div class="kcc-sheet" data-kind="cook">
+            <p class="kcc-kick">Cook mode · Step 2 of 3</p>
+            <p class="pv-readout">04:30</p>
+            <p class="kcc-body">Brown the butter. Watch the solids, not the clock.</p>
+          </div>
+        </div>
+        <span class="kcc-blank" aria-hidden="true"><span></span></span>
+      </div>
+    </div>
+  </template>
+
+  <span class="kcc-crayon" aria-hidden="true"></span>
+</div>
+<script>
+  const root = document.documentElement;
+  const template = document.getElementById('pv-sheets');
+  document.querySelectorAll('.pv-option').forEach((option) => {
+    const stage = option.querySelector('.pv-stage');
+    stage.append(template.content.cloneNode(true));
+    const kinds = option.dataset.margin.split(' ');
+    stage.querySelectorAll('.kcc-sheet').forEach((sheet) => {
+      if (kinds.includes(sheet.dataset.kind)) sheet.classList.add('pv-margin');
+    });
+  });
+
+
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light');
+
+  const check = document.querySelector('[data-pv-check]');
+  check.addEventListener('click', () => check.setAttribute('aria-pressed', String(root.toggleAttribute('data-pv-check'))));
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+</script>
+</body>
+</html>

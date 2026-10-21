@@ -100,4 +100,4 @@ public sealed partial class MemberClient : IDisposable
     private static partial Regex ApiConfig();
 }
 
-public sealed record AuthResult(bool Success, string[]? Errors, string? RedirectUrl);
+public sealed record AuthResult(bool Success, string[]? Errors, string? RedirectUrl, string? Code = null);

@@ -24,6 +24,10 @@ describe('ReadingState', () => {
     expect(slip).toContain('--r:0')
   })
 
+  it('carries the margin rule, like every other wizard sheet', async () => {
+    expect(await render()).toContain('kcc-sheet kcc-sheet--margin')
+  })
+
   it('marks its region busy while the read runs', async () => {
     expect(tagWith(await render(), 'data-testid="reading-state"')).toContain('aria-busy="true"')
   })

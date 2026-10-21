@@ -17,7 +17,6 @@
 <template>
   <form class="pad-search" role="search" :action method="get">
     <label class="kcc-field pad-search-field" :class="{ 'pad-search-field--hint': keyHint }">
-      <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
       <input
         :id="inputId"
         v-model="query"
@@ -35,7 +34,7 @@
         @input="emit('reach')"
         @keydown="(event) => emit('keydown', event)"
       />
-      <kbd v-if="keyHint" class="pad-key" aria-hidden="true">/</kbd>
+      <kbd v-if="keyHint" class="pad-key kcc-num" aria-hidden="true">/</kbd>
     </label>
   </form>
 </template>
@@ -46,6 +45,7 @@
   }
 
   .pad-key {
+    background: var(--color-paper);
     border-radius: 4px;
     box-shadow: inset 0 0 0 1px var(--color-hair-strong);
     color: var(--color-ink-soft);

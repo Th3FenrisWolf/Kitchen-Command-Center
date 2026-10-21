@@ -65,11 +65,11 @@
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-3" :aria-busy="status === 'starting'">
+  <div class="flex flex-col items-center gap-y-rule-1" :aria-busy="status === 'starting'">
     <video
       v-show="status === 'live'"
       ref="video"
-      class="block h-auto max-h-[60vh] w-auto max-w-full"
+      class="block h-[round(down,60vh,var(--bl))] w-auto max-w-full bg-paper-2 object-contain"
       autoplay
       muted
       playsinline
@@ -89,17 +89,18 @@
       {{ rs(status) }}
     </p>
 
-    <Button
-      v-if="status === 'starting' || status === 'live'"
-      variant="ghost"
-      size="lg"
-      class="kcc-btn--icon"
-      :disabled="status !== 'live' || capturing"
-      :aria-label="rs('TakePhoto')"
-      data-testid="camera-shutter"
-      @click="shoot"
-    >
-      <i class="fa-duotone fa-camera" aria-hidden="true"></i>
-    </Button>
+    <div v-if="status === 'starting' || status === 'live'" class="flex min-h-rule-2 items-start">
+      <Button
+        variant="ghost"
+        size="lg"
+        class="kcc-btn--icon"
+        :disabled="status !== 'live' || capturing"
+        :aria-label="rs('TakePhoto')"
+        data-testid="camera-shutter"
+        @click="shoot"
+      >
+        <i class="fa-duotone fa-camera" aria-hidden="true"></i>
+      </Button>
+    </div>
   </div>
 </template>

@@ -199,10 +199,21 @@ const UI_PAIRS: [string, string][] = [
   ['focus', 'desk'],
 ]
 
+// The colours a field's error state draws its line (and its area's outline) in, read from the kit: the line is
+// the only mark of the error on the field itself, so it is UI and reads at 3:1 against the paper it lies on.
+const errorLineColours = [
+  ...read('Torn/Controls.css').matchAll(/\.kcc-field--error(?:\.kcc-field--area)?\s*\{([^}]*)\}/g),
+].flatMap(([, body]) => [...body!.matchAll(/var\(--color-([a-z0-9-]+)\)/g)].map(([, colour]) => colour!))
+
 describe.each<[string, Tokens, WashRender]>([
   ['light', light, lightWash],
   ['dark', dark, darkWash],
 ])('%s ramp', (name, tokens, wash) => {
+  it('draws a field’s error line in a colour that reads at AA for UI against paper (≥ 3:1)', () => {
+    expect(errorLineColours.length).toBeGreaterThan(0)
+    for (const colour of errorLineColours) expect(contrast(tokens, colour, 'paper'), colour).toBeGreaterThanOrEqual(3)
+  })
+
   it.each(TEXT_PAIRS)('%s on %s reads at AA for text (≥ 4.5:1)', (fg, bg) => {
     expect(contrast(tokens, fg, bg)).toBeGreaterThanOrEqual(4.5)
   })

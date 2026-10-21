@@ -63,7 +63,7 @@ describe('VariantIngredients sheet', () => {
     const html = await render()
 
     expect(html).toMatch(/<div class="flex flex-wrap items-start justify-between gap-x-7">\s*<p class="kcc-kick">/)
-    expect(html).toMatch(/<div class="flex min-h-rule-2 items-center gap-3">\s*<span class="kcc-lbl">\s*Makes/)
+    expect(html).toMatch(/<div class="kcc-row">\s*<span class="kcc-lbl">\s*Makes/)
   })
 
   it('prints the ingredients as a checklist on the rule: box, name, quantity in Sono', async () => {

@@ -5,6 +5,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
+  import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
@@ -123,7 +124,7 @@
     </div>
 
     <div class="space-y-rule-1.5">
-      <KccSheet v-if="count > 0" :tear="5" wide>
+      <KccSheet margin v-if="count > 0" :tear="5" wide>
         <div class="flex flex-wrap items-start gap-x-7 gap-y-rule-1">
           <RatingSummary :value="average" />
 
@@ -157,20 +158,19 @@
         <ResourceString for="LoadMore" />
       </Button>
 
-      <KccSheet v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" wide :flip="formFlips" crisp>
+      <KccSheet margin v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" wide :flip="formFlips" crisp>
         <template #label><ResourceString for="YourReview" /></template>
 
         <div class="space-y-rule-1">
-          <StarRating v-model="myRating" />
+          <div class="flex h-rule-2 items-center">
+            <StarRating v-model="myRating" />
+          </div>
 
-          <!-- The e2e suite fills this textarea by hook, so the hook stays on the control, not on the field. -->
-          <label class="kcc-field kcc-field--area">
-            <textarea v-model="myText" :placeholder="t('WriteReview')" rows="3" data-testid="review-input"></textarea>
-          </label>
+          <TextAreaField v-model="myText" :rules="4" :placeholder="t('WriteReview')" data-testid="review-input" />
 
           <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
 
-          <div class="flex flex-wrap items-center justify-end gap-x-7 gap-y-rule-0.5">
+          <div class="kcc-row justify-end gap-x-7">
             <Button v-if="myRating > 0" variant="text" data-testid="delete-review" @click="remove">
               <ResourceString for="DeleteReview" />
             </Button>

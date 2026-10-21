@@ -55,7 +55,7 @@
   <template v-if="member">
     <p class="kcc-kick" data-row style="--i: 7">{{ t('KitchenOf', member.firstName) }}</p>
     <PadLines :rows="kitchen" :from="7" glyphs :current-page="urls.currentPage" />
-    <div class="pad-foot mt-rule-1" data-row style="--i: 7">
+    <div class="kcc-row pad-foot mt-rule-1" data-row style="--i: 7">
       <a v-if="urls.newRecipe" class="kcc-btn" :href="urls.newRecipe">
         <i class="fa-duotone fa-plus" aria-hidden="true"></i>{{ t('NewRecipe') }}
       </a>
@@ -64,7 +64,7 @@
       </SignOutForm>
     </div>
   </template>
-  <div v-else class="pad-foot" data-row style="--i: 7">
+  <div v-else class="kcc-row pad-foot" data-row style="--i: 7">
     <a v-if="urls.signIn" class="kcc-btn kcc-btn--ghost" :href="urls.signIn">
       <i class="fa-duotone fa-right-to-bracket" aria-hidden="true"></i>{{ t('SignIn') }}
     </a>
