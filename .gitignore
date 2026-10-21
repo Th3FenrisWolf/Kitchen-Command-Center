@@ -51,3 +51,6 @@ deploy/first-boot.env
 
 # Spec Kit's pointer to the active feature is local to each checkout.
 .specify/feature.json
+
+# Built by tools/offline-page/build.mjs
+tools/offline-page/dist/
