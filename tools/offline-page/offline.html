@@ -31,7 +31,7 @@
         --color-paper: oklch(0.958 0.009 92);
         --color-ink: oklch(0.232 0.026 288);
         --color-ink-soft: oklch(0.432 0.024 288);
-        --color-rule: oklch(0.58 0.045 288 / 0.22);
+        --color-rule: oklch(0.698 0.048 239.5 / 0.55);
         --color-marker: oklch(0.876 0.112 126);
         --color-marker-ink: oklch(0.24 0.03 288);
         --color-fiber: oklch(1 0.006 92);
@@ -49,7 +49,7 @@
           --color-paper: oklch(0.258 0.03 288);
           --color-ink: oklch(0.945 0.012 92);
           --color-ink-soft: oklch(0.735 0.018 288);
-          --color-rule: oklch(0.88 0.02 288 / 0.13);
+          --color-rule: oklch(0.74 0.05 240 / 0.24);
           --color-fiber: oklch(0.435 0.034 288);
           --color-fall: oklch(0.04 0.02 288 / 0.7);
           --grain-op: 0.16;
@@ -124,12 +124,10 @@
 
       .sheet {
         background-color: var(--color-paper);
-        background-image: repeating-linear-gradient(
-          to bottom,
-          transparent 0 calc(var(--bl) - 1px),
-          var(--color-rule) calc(var(--bl) - 1px) var(--bl)
-        );
-        background-position: 0 calc(32px - 5px);
+        background-image: linear-gradient(to bottom, var(--color-rule) 1px, transparent 0);
+        background-origin: content-box;
+        background-position: 0 calc(var(--bl) / 2 + 0.38208 * 16px + 2px);
+        background-size: 100% var(--bl);
         clip-path: var(--tear-sheet);
         padding: 32px;
       }
