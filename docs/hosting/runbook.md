@@ -20,6 +20,8 @@ keeps it running. The design and its reasons are in `docs/replatform/specs/2026-
   GHCR.
 - **Cloudflare** holds the domain's DNS. Cloudflare Access asks for a one-time PIN before anyone reaches the site:
   until launch for the whole site, and always for `/umbraco`. R2 holds the backups.
+- **A Cloudflare Worker**, `kcc-offline`, sits in front of the tunnel. It passes every request through, and serves an
+  offline page when the tunnel cannot reach the Pi or while its `MAINTENANCE` switch is on.
 
 Commands below that start with `sudo -u kcc -H kcc` run Docker Compose for the stack, as `kcc`, from any folder.
 
@@ -90,6 +92,7 @@ Start this first: the switch can take up to two days, and nothing else waits for
 
    Run `sudo systemctl reload ssh`, then open a second SSH session to check the key still works before you close the
    first.
+
 5. **Tailscale,** for SSH from anywhere:
 
    ```bash
@@ -98,6 +101,7 @@ Start this first: the switch can take up to two days, and nothing else waits for
    ```
 
    Open the link it prints, and approve the Pi in your tailnet. From then on `ssh <you>@kcc` works over the tailnet.
+
 6. **The firewall.** Allow SSH from the tailnet and your LAN only, and replace `192.168.1.0/24` with your LAN's range:
 
    ```bash
@@ -110,6 +114,7 @@ Start this first: the switch can take up to two days, and nothing else waits for
 
    Ports that Docker publishes bypass these rules. The stack publishes none, and must never publish one: the site
    trusts the tunnel's headers only because the tunnel is the only way in.
+
 7. **Docker Engine,** from Docker's Debian repository (Docker's page for Raspberry Pi OS covers 32-bit only):
 
    ```bash
@@ -124,6 +129,7 @@ Start this first: the switch can take up to two days, and nothing else waits for
    ```
 
    Compose must be 2.24 or later.
+
 8. **The stack's user and folder:**
 
    ```bash
@@ -160,6 +166,27 @@ Once the domain is active in Cloudflare:
 
    The more specific application wins, so `/umbraco` stays yours alone. Launch (replatform Phase 8) deletes this
    application.
+
+6. **The offline page.** Build the Worker on the Mac, which copies it to the clipboard:
+
+   ```bash
+   node tools/offline-page/build.mjs && pbcopy < tools/offline-page/dist/worker.js
+   ```
+
+   Then, in Workers & Pages:
+   - **Create** → **Worker** → start from Hello World, name it `kcc-offline`, and **Deploy**;
+   - **Edit code**, replace all of it with the clipboard, and **Deploy**;
+   - Settings → Domains & Routes → **Add** → **Route**: `KCC_HOST/*` in the domain's zone, failure mode **Fail open**,
+     so traffic over the free plan's 100,000 requests a day still reaches the site. Never add it as a **Custom
+     domain**: that replaces the tunnel's DNS record;
+   - on the same panel, turn off the `workers.dev` URL;
+   - Settings → Variables and Secrets → **Add**: plain text `MAINTENANCE`, value `false`, and **Deploy**;
+   - open the site, through Access, and check that it loads as before: the Worker passes your request on with its
+     cookies.
+
+   The page lives in `tools/offline-page/offline.html`. After changing it, build and paste again. It carries its own
+   copy of the colours, the tears and three fonts, because the site's stylesheet is on the Pi;
+   `tests/KCC.ViteTests/Tools/offlineWorker.test.ts` fails when its colours drift from the site's ramps.
 
 ## 5. The backup bucket, and the check that it ran
 
@@ -209,6 +236,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
    - For `KCC_IMAGING_HMAC_KEY`, run `openssl rand -base64 64 | tr -d '\n'` and paste the output.
    - `KCC_TUNNEL_TOKEN` is from section 4, and the bucket's four values and the ping URL from section 5.
    - `ANTHROPIC_API_KEY` is optional. It turns on the photo import (section 8) and lets the icon editor's Suggest with AI ask the model.
+
 2. **The first boot's administrator:**
 
    ```bash
@@ -217,6 +245,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
    ```
 
    Set your name, your email and a password of at least 10 characters. Keep them in your password manager.
+
 3. **Sign in to GHCR** as `kcc`, pasting the classic token when Docker asks for the password:
 
    ```bash
@@ -224,6 +253,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
    ```
 
    Docker stores it in `/srv/kcc/.docker/config.json`, readable by `kcc` alone.
+
 4. **Boot:**
 
    ```bash
@@ -234,6 +264,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
 
    The first pull takes a few minutes. The `grep` must print a line: uSync imports the baseline on the first boot only,
    and never tries again if that boot failed (section 11). `ps` shows `app`, `ssr` and `cloudflared` as healthy.
+
 5. **Look at it** from a phone off your Wi-Fi:
    - open `https://KCC_HOST`, pass Access with your email and the PIN it sends, and the site appears;
    - open `/umbraco`, and sign in to Umbraco as the administrator from `first-boot.env`.
@@ -246,6 +277,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
 
    Without `first-boot.env` the site never installs Umbraco. So a lost database stops at Umbraco's installer, behind
    Access, and the health check fails, instead of the site quietly becoming an empty one.
+
 7. **The timers:**
 
    ```bash
@@ -256,6 +288,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
    ```
 
    The units are copies. If a later commit changes them, copy them again and reload.
+
 8. **The first backup, now:**
 
    ```bash
@@ -295,6 +328,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
 
   With no ref, a run deploys once, snapshot first: the first run after the timers are enabled, and the first after the
   ref is deleted.
+
 - **Status and logs.** `sudo -u kcc -H kcc ps`, and `sudo -u kcc -H kcc logs --tail 100 app`. The backoffice's
   Settings → Log Viewer reads Umbraco's own logs, kept for 31 days on the data volume.
 - **Pause for maintenance**, so no deploy or backup starts in the middle:
@@ -308,6 +342,13 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   The first two lines pause; the third, afterwards, resumes. Stopping a timer does not stop a run already in progress,
   and what you run by hand does not take `/srv/kcc/kcc.lock` as the timers' jobs do, so the second line stops the
   services too.
+
+- **Take the site offline.** The `kcc-offline` Worker serves the offline page by itself whenever the tunnel cannot
+  reach the Pi: it answers 530, 502 to 504, or 520 to 526, or the request fails. For downtime you plan, set the
+  Worker's `MAINTENANCE` variable to `true` and deploy, before you stop anything; set it back to `false` afterwards.
+  Page visits get the page with a 503 status; any other request gets a short plain-text 503. A write, such as a POST,
+  gets it only on 502 or 530, when the request never reached the app; any other error passes through, because the
+  write may have committed.
 - **Roll back a bad deploy.** A bad image goes back by pinning the last good one:
   1. Pause the timers and stop their services, as in Pause for maintenance above.
   2. Find the last good commit's full SHA in the repository's history. Each image carries its commit's SHA as a tag.
@@ -330,6 +371,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   `sudo -u kcc -H kcc up -d --wait`. The timer does not do it for you: a revert of a change that never deployed leaves
   `deploy/` exactly as the Pi last deployed it, so the timer sees nothing to change, and the stack keeps the failed
   configuration until you run the command.
+
 - **Restore from the bucket,** when the database is lost or damaged:
 
   ```bash
@@ -344,6 +386,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   Name an archive instead of `latest` to go further back, such as `daily/kcc-2026-10-01.tar.gz` or
   `weekly/kcc-2026-09-27.tar.gz`. To list them:
   `sudo -u kcc -H kcc run --rm --entrypoint sh backup -c 'rclone lsf -R "bucket:$KCC_BACKUP_BUCKET"'`.
+
 - **Production data down to your computer** (spec §12), over Tailscale.
   1. On the Pi:
 
@@ -371,6 +414,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   3. Delete the copies on the Pi: `sudo rm /tmp/Umbraco.sqlite.db /tmp/kcc-media.tar.gz`. They hold members' data.
 
   The development site then signs you in as the production administrator.
+
 - **Photo import and its spend.** `ANTHROPIC_API_KEY` in `.env` turns on the recipe wizards' import from photos
   and lets the icon editor's Suggest with AI ask the model. Without it, the wizards offer typing only and Suggest with AI
   picks a fallback icon from the recipe's name. Every site that holds the key
@@ -386,6 +430,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   the Anthropic Console backs the ledgers. Set it once, and raise it before each reader evaluation, which spends from
   the same account. A read that the limit stops fails, the ledger gives its reservation back, and the wizard shows a
   failed read.
+
 - **Updates.** Dependabot opens no pull requests. Its alerts flag a vulnerable npm, NuGet or Actions package: bump it
   by hand, and merging the bump deploys it. Alerts follow security advisories only, so Umbraco's other 17.x patches
   come unannounced, and Docker images have no alerts at all. Now and then, check for new releases of Umbraco, of the
@@ -415,6 +460,7 @@ Once a quarter, and before launch, restore the latest backup from the bucket int
 
    `KCC_FIRST_BOOT_ENV` names a file that never exists, written out as a full path, so that a `first-boot.env` in the
    checkout cannot turn the install on and make the drill's boot prove nothing.
+
 3. From `deploy/` in a checkout of `main`:
 
    ```bash
@@ -437,6 +483,7 @@ Note the date and the archive's name. A drill that fails is the most useful thin
 ## 10. Moving to a VPS
 
 The same compose file runs on any Linux host with Docker (spec §13.7).
+
 - An x86 host needs amd64 images. Add `"linux/amd64"` to `platforms` in `docker-bake.hcl`. The images job then has to
   build on QEMU and push both platforms in one step, because a multi-platform image cannot be loaded into the runner's
   Docker for the smoke test. Plan that change when it is needed.
@@ -460,6 +507,7 @@ Then, in this order:
    `kcc-backup` would upload to the same `daily/kcc-<date>.tar.gz` names as the VPS, where the later upload wins. The
    tunnel stops before the backup, so no write reaches the Pi after it. The journal must end with
    `uploaded daily/kcc-<date>.tar.gz`. Leave the tunnel stopped: any `up` on the Pi starts it again.
+
 2. **On the VPS, set the host up** as in section 3 from step 3 (steps 1 and 2 flash and fit the Pi's SSD). Skip step 5,
    Tailscale, if you do not want it, and in step 6 allow SSH from your own address instead of the LAN range.
 3. **Write `.env` and sign in to GHCR** as in section 7, steps 1 and 3, with the same values as the Pi's. Skip
@@ -473,6 +521,7 @@ Then, in this order:
 
    `latest` is the archive step 1 just uploaded. The restore fills the new volumes before the first `up`, so the app
    boots on the restored database.
+
 5. **Install and enable the timers** on the VPS as in section 7, step 7.
 
 ## 11. Troubleshooting
