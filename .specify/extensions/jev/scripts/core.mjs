@@ -18,6 +18,7 @@ export const PROJECT_CASES = ".claude/jev/calibration.jsonl";
 const ENDPOINT = "https://api.typesafe.ai/v1/systemone";
 const RETRY_STATUS = new Set([429, 529]);
 const MAX_ATTEMPTS = 5;
+const REQUEST_TIMEOUT_MS = 60_000;
 
 export const SKIPPED = "skipped";
 export const PASS = "pass";
@@ -149,17 +150,30 @@ function toApiQuestion(question) {
 
 async function post(payload) {
   for (let attempt = 0; ; attempt += 1) {
-    const response = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${process.env.JEV_API_KEY}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    if (response.ok) return response.json();
-    const detail = await response.text();
-    if (!RETRY_STATUS.has(response.status) || attempt >= MAX_ATTEMPTS - 1) {
+    const last = attempt >= MAX_ATTEMPTS - 1;
+    // One hung request would otherwise stall every caller behind it. The
+    // signal also covers the body read.
+    const signal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+    let response;
+    let detail;
+    try {
+      response = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${process.env.JEV_API_KEY}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal,
+      });
+      if (response.ok) return await response.json();
+      detail = await response.text();
+    } catch (error) {
+      if (!signal.aborted || last) throw error;
+      await new Promise((wake) => setTimeout(wake, 2 ** attempt * 500));
+      continue;
+    }
+    if (!RETRY_STATUS.has(response.status) || last) {
       throw new Error(`jev ${response.status}: ${detail}`);
     }
     await new Promise((wake) => setTimeout(wake, 2 ** attempt * 500));

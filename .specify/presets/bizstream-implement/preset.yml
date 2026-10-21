@@ -1,0 +1,27 @@
+schema_version: "1.0"
+
+preset:
+  id: "bizstream-implement"
+  name: "Implement With Gates"
+  version: "0.5.0"
+  description: "Replaces speckit.implement: the constitution's gates, subagent workers with a review per phase, every definition-of-done row, acceptance verified, and a local review loop. Never pushes. Reads the card extension's config and code-repo template, so install card with it."
+  author: "BizStream"
+  repository: "https://github.com/BizStream/bizstream.ai"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.14.4"
+
+provides:
+  templates:
+    - type: "command"
+      name: "speckit.implement"
+      file: "commands/speckit.implement.md"
+      description: "Execute tasks.md with the gates, a review per phase, the definition of done, acceptance, and a local review loop"
+      strategy: "replace"
+
+tags:
+  - "implement"
+  - "gates"
+  - "review"
+  - "bizstream"

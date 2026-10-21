@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: jev
   name: "Jev Decisions"
-  version: "0.3.1"
+  version: "0.6.0"
   description: "Typed decisions with Jev as a smart switch statement: regex floor cases in code, one Jev question for the residue, a declared fallback for every unsure answer. Ships the engine, the question bank and the calibration harness every other command calls."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai
@@ -19,7 +19,7 @@ provides:
   templates:
     - name: jev
       file: templates/jev.md
-      description: "Every Jev rule: the switch, the banks, authoring, calibration, subagent routing, owner steering, model bumps"
+      description: "Every Jev rule: the switch, the banks, authoring, calibration, subagent routing, owner steering, the history reader, model bumps"
     - name: steer-session
       file: templates/steer-session.md
       description: "The steering rules the session steer adds to every session"
@@ -30,10 +30,16 @@ provides:
     - name: steer
       file: scripts/steer.mjs
       description: "Owner steering: the plugin's hook events, a report and a case export over the local steer log"
+    - name: history
+      file: scripts/history.mjs
+      description: "History reader: classify past session turns through Jev, write a local baseline report, draw the owner sample, scrub rows"
   commands:
     - name: speckit.jev.decide
       file: commands/speckit.jev.decide.md
       description: "Route one decision through the Jev switch, or add and calibrate a question"
+    - name: speckit.jev.history
+      file: commands/speckit.jev.history.md
+      description: "Measure the autonomy baseline from local session history and propose Jev question candidates"
 
 tags:
   - "jev"

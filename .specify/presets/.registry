@@ -3,7 +3,10 @@
   "presets": {
     "bizstream-grilling": {
       "version": "0.3.0",
-      "source": "local",
+      "source": {
+        "kind": "catalog",
+        "catalog": "bizstream"
+      },
       "manifest_hash": "sha256:0bf8b4f213f367b3694638cf0c8c9f44443cf901da9ab085dd8cf87f91b5cf15",
       "enabled": true,
       "priority": 50,
@@ -35,27 +38,71 @@
           "speckit-assess-decide"
         ]
       },
-      "installed_at": "2026-10-07T15:10:51.776642+00:00"
+      "installed_at": "2026-10-21T17:12:05.864376+00:00"
+    },
+    "bizstream-implement": {
+      "version": "0.5.0",
+      "source": {
+        "kind": "catalog",
+        "catalog": "bizstream"
+      },
+      "manifest_hash": "sha256:8ebe6ede9cb2702950dc5ab57077fcd6195957b2a9e173fc26785901bee9f345",
+      "enabled": true,
+      "priority": 50,
+      "registered_commands": {
+        "claude": [
+          "speckit.implement"
+        ]
+      },
+      "registered_skills": {
+        "claude": [
+          "speckit-implement"
+        ]
+      },
+      "installed_at": "2026-10-21T17:12:07.247707+00:00"
+    },
+    "bizstream-bugfix": {
+      "version": "0.3.0",
+      "source": {
+        "kind": "catalog",
+        "catalog": "bizstream"
+      },
+      "manifest_hash": "sha256:b16fac5a1542be7340c860de88dd53cb3d54400aa758abd7e8dc3ae1c5476b71",
+      "enabled": true,
+      "priority": 50,
+      "registered_commands": {
+        "claude": [
+          "speckit.bug.fix"
+        ]
+      },
+      "registered_skills": {
+        "claude": [
+          "speckit-bug-fix"
+        ]
+      },
+      "installed_at": "2026-10-21T17:12:08.064990+00:00"
     },
     "kcc-recompose": {
-      "version": "0.1.0",
+      "version": "0.3.0",
       "source": "local",
-      "manifest_hash": "sha256:b382e9a2ae2e402aacb31b66a2c10e5e2340dcf794a9b95257a5bbffa38ae667",
+      "manifest_hash": "sha256:44c7fdf94f64c1ec0d811676e4354a28032b2e6e0618e9d77fe170e9ac7810ec",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
         "claude": [
           "speckit.card.implement",
-          "speckit.flow.run"
+          "speckit.flow.run",
+          "speckit.bug.fix"
         ]
       },
       "registered_skills": {
         "claude": [
           "speckit-card-implement",
-          "speckit-flow-run"
+          "speckit-flow-run",
+          "speckit-bug-fix"
         ]
       },
-      "installed_at": "2026-10-07T16:27:40.292569+00:00"
+      "installed_at": "2026-10-21T17:16:57.180621+00:00"
     }
   }
 }

@@ -1,0 +1,10 @@
+# Config for the batch extension. speckit.batch.run reads this file; edit the
+# value, never the key.
+
+# Path, relative to the project root, to the file listing cards for the
+# specify phase. Each card is a level-2 heading (## <id> <title>) followed by
+# its scope text. A card carries an optional "Gate: <owner> — <question>"
+# line naming a decision its owner holds; the spec is still written, with
+# the gate as a GATED marker. Cards pulled from Jira are read from
+# specs/jira-cards.md instead, so they never go in this file.
+card_source: ingest/cards.md

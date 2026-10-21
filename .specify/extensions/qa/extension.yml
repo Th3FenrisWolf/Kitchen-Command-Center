@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: qa
   name: "QA Walk"
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Builds a QA wizard for a feature: one stage per acceptance scenario, each opening the page to check and recording pass or fail. For the manual pass a developer does before hand-off."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai
