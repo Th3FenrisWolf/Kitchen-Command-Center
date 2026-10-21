@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex" />
+    <title>Back soon · Kitchen Command Center</title>
+    <style>
+      @font-face {
+        font-display: swap;
+        font-family: 'APCasual';
+        src: url('{{FONT:casual}}') format('woff2');
+      }
+      @font-face {
+        font-display: swap;
+        font-family: 'Hazelnut';
+        src: url('{{FONT:hazelnut}}') format('woff2');
+      }
+      @font-face {
+        font-display: swap;
+        font-family: 'Sono';
+        src: url('{{FONT:sono}}') format('woff2');
+      }
+
+      :root {
+        color-scheme: light;
+        --bl: 24px;
+        --rd: 6px;
+        --color-desk: oklch(0.884 0.016 288);
+        --color-paper: oklch(0.958 0.009 92);
+        --color-ink: oklch(0.232 0.026 288);
+        --color-ink-soft: oklch(0.432 0.024 288);
+        --color-rule: oklch(0.698 0.048 239.5 / 0.55);
+        --color-marker: oklch(0.876 0.112 126);
+        --color-marker-ink: oklch(0.24 0.03 288);
+        --color-fiber: oklch(1 0.006 92);
+        --color-fall: oklch(0.25 0.03 288 / 0.28);
+        --grain-op: 0.08;
+        --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)'/></svg>");
+        --tear-sheet: {{TEAR:1}};
+        --tear-blank: {{TEAR:4}};
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --color-desk: oklch(0.132 0.024 288);
+          --color-paper: oklch(0.258 0.03 288);
+          --color-ink: oklch(0.945 0.012 92);
+          --color-ink-soft: oklch(0.735 0.018 288);
+          --color-rule: oklch(0.74 0.05 240 / 0.24);
+          --color-fiber: oklch(0.435 0.034 288);
+          --color-fall: oklch(0.04 0.02 288 / 0.7);
+          --grain-op: 0.16;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--color-desk);
+        color: var(--color-ink);
+        display: grid;
+        font-family: 'Hazelnut', sans-serif;
+        font-size: 16px;
+        line-height: var(--bl);
+        margin: 0;
+        min-height: 100dvh;
+        padding: 48px 16px;
+        place-items: center;
+        position: relative;
+      }
+
+      body::before {
+        background-image: var(--grain);
+        background-size: 180px 180px;
+        content: '';
+        inset: 0;
+        mix-blend-mode: multiply;
+        opacity: var(--grain-op);
+        pointer-events: none;
+        position: fixed;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body::before {
+          mix-blend-mode: normal;
+        }
+      }
+
+      .slip {
+        max-width: 480px;
+        position: relative;
+        rotate: -0.8deg;
+        width: 100%;
+      }
+
+      .torn,
+      .blank {
+        filter: drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall));
+      }
+
+      .torn {
+        position: relative;
+      }
+
+      .blank {
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        transform: rotate(1.5deg) scale(1.015);
+        z-index: -1;
+      }
+
+      .blank > span {
+        background-color: var(--color-paper);
+        clip-path: var(--tear-blank);
+        display: block;
+        height: 100%;
+      }
+
+      .sheet {
+        background-color: var(--color-paper);
+        background-image: linear-gradient(to bottom, var(--color-rule) 1px, transparent 0);
+        background-origin: content-box;
+        background-position: 0 calc(var(--bl) / 2 + 0.38208 * 16px + 2px);
+        background-size: 100% var(--bl);
+        clip-path: var(--tear-sheet);
+        padding: 32px;
+      }
+
+      .kick {
+        color: var(--color-ink-soft);
+        font-family: 'Sono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 14px;
+        letter-spacing: 0.1em;
+        line-height: var(--bl);
+        margin: 0;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        font-family: 'APCasual', sans-serif;
+        font-size: 36px;
+        font-weight: 400;
+        line-height: 48px;
+        margin: 0 0 var(--bl);
+        text-wrap: balance;
+      }
+
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 40px;
+        }
+      }
+
+      p {
+        margin: 0 0 var(--bl);
+      }
+
+      .label {
+        background: var(--color-marker);
+        border-radius: var(--rd);
+        color: var(--color-marker-ink);
+        font-family: 'Sono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 14px;
+        height: 24px;
+        left: 20px;
+        letter-spacing: 0.14em;
+        line-height: 24px;
+        margin: 0;
+        padding: 0 12px;
+        position: absolute;
+        text-transform: uppercase;
+        top: -12px;
+        white-space: nowrap;
+        z-index: 1;
+      }
+
+      .sheet > :last-child {
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="slip">
+      <div class="torn">
+        <div class="sheet">
+          <p class="kick">Kitchen Command Center</p>
+          <h1>The kitchen is closed for a little while.</h1>
+          <p>The site is offline while its server gets some care. Every recipe is safe, and nothing you saved is lost.</p>
+        </div>
+      </div>
+      <p class="label">Back soon</p>
+      <span class="blank" aria-hidden="true"><span></span></span>
+    </main>
+  </body>
+</html>
