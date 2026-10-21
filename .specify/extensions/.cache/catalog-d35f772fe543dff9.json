@@ -1,22 +1,40 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-10-07T00:00:00Z",
+  "updated_at": "2026-10-20T00:00:00Z",
   "catalog_url": "https://raw.githubusercontent.com/BizStream/bizstream.ai/main/extensions/catalog.json",
   "extensions": {
     "coderabbit": {
       "name": "CodeRabbit Review",
       "id": "coderabbit",
-      "version": "0.1.2",
-      "description": "Runs the CodeRabbit command-line review over the feature's diff at the end of implement, and loops on the findings until the branch is clean. Catches on a local run what a pull-request review would cost a push and a review cycle.",
+      "version": "0.4.0",
+      "description": "Runs one CodeRabbit command-line round over the feature's diff under a machine-wide lock, and never waits on a rate limit. speckit.review.run calls it as the final round of its review loop. Ships the review marker the plugin's pull-request guard checks.",
       "author": "BizStream",
       "repository": "https://github.com/BizStream/bizstream.ai",
       "license": "MIT",
-      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.11.1/coderabbit-0.1.2.zip",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.18.0/coderabbit-0.4.0.zip",
       "requires": {
         "speckit_version": ">=0.14.4"
       },
       "tags": [
         "coderabbit",
+        "review",
+        "implement",
+        "bizstream"
+      ]
+    },
+    "review": {
+      "name": "Review Loop",
+      "id": "review",
+      "version": "0.3.0",
+      "description": "Reviews the feature's diff at the end of implement: agent reviewers find, a verifier sorts the findings, workers fix them, and CodeRabbit runs one final round that never waits on a rate limit.",
+      "author": "BizStream",
+      "repository": "https://github.com/BizStream/bizstream.ai",
+      "license": "MIT",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.18.0/review-0.3.0.zip",
+      "requires": {
+        "speckit_version": ">=0.14.4"
+      },
+      "tags": [
         "review",
         "implement",
         "bizstream"
@@ -44,12 +62,12 @@
     "qa": {
       "name": "QA Walk",
       "id": "qa",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "description": "Builds a QA wizard for a feature: one stage per acceptance scenario, each opening the page to check and recording pass or fail. For the manual pass a developer does before hand-off.",
       "author": "BizStream",
       "repository": "https://github.com/BizStream/bizstream.ai",
       "license": "MIT",
-      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.6.0/qa-0.2.0.zip",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.16.0/qa-0.3.0.zip",
       "requires": {
         "speckit_version": ">=0.14.4"
       },
@@ -101,12 +119,12 @@
     "card": {
       "name": "Implement Card",
       "id": "card",
-      "version": "0.5.1",
-      "description": "Takes one card from a written tasks.md to an open pull request: preflight against the constitution's gates, execute tasks.md, run every definition-of-done row, verify acceptance, loop a local review, then close out. Never merges.",
+      "version": "0.8.0",
+      "description": "Takes one card from a written tasks.md to an open pull request: branch from trunk, run speckit.implement from the bizstream-implement preset, then commit, push, open the pull request, post the Jira verdict and move the card. Never merges.",
       "author": "BizStream",
       "repository": "https://github.com/BizStream/bizstream.ai",
       "license": "MIT",
-      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.11.1/card-0.5.1.zip",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.18.0/card-0.8.0.zip",
       "requires": {
         "speckit_version": ">=0.14.4"
       },
@@ -120,12 +138,12 @@
     "jev": {
       "name": "Jev Decisions",
       "id": "jev",
-      "version": "0.3.1",
+      "version": "0.6.0",
       "description": "Typed decisions with Jev as a smart switch statement: regex floor cases in code, one Jev question for the residue, a declared fallback for every unsure answer. Ships the engine, the question bank and the calibration harness every other command calls.",
       "author": "BizStream",
       "repository": "https://github.com/BizStream/bizstream.ai",
       "license": "MIT",
-      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.11.1/jev-0.3.1.zip",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.20.0/jev-0.6.0.zip",
       "requires": {
         "speckit_version": ">=0.14.4"
       },
@@ -139,12 +157,12 @@
     "flow": {
       "name": "Autopilot Flow",
       "id": "flow",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "description": "Runs one feature from an idea to an open pull request: specify, clarify, plan, tasks, analyze, QA wizard, then card implement. Each phase runs in a fresh subagent on a chosen model. Routine decisions become recorded assumptions the owner reviews once, so the run stops only for an owner decision, the review, a gate or the push.",
       "author": "BizStream",
       "repository": "https://github.com/BizStream/bizstream.ai",
       "license": "MIT",
-      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.11.1/flow-0.2.0.zip",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.12.0/flow-0.3.0.zip",
       "requires": {
         "speckit_version": ">=0.14.4"
       },

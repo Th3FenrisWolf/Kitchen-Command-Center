@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: flow
   name: "Autopilot Flow"
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Runs one feature from an idea to an open pull request: specify, clarify, plan, tasks, analyze, QA wizard, then card implement. Each phase runs in a fresh subagent on a chosen model. Routine decisions become recorded assumptions the owner reviews once, so the run stops only for an owner decision, the review, a gate or the push."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai

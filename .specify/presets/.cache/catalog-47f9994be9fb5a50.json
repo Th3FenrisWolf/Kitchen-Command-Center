@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-09-23T00:00:00Z",
+  "updated_at": "2026-10-20T00:00:00Z",
   "catalog_url": "https://raw.githubusercontent.com/BizStream/bizstream.ai/main/presets/catalog.json",
   "presets": {
     "bizstream-grilling": {
@@ -25,6 +25,53 @@
         "questions",
         "bizstream"
       ]
+    },
+    "bizstream-implement": {
+      "name": "Implement With Gates",
+      "id": "bizstream-implement",
+      "version": "0.5.0",
+      "description": "Replaces speckit.implement: the constitution's gates, subagent workers with a review per phase, every definition-of-done row, acceptance verified, and a local review loop. Never pushes. Reads the card extension's config and code-repo template, so install card with it.",
+      "author": "BizStream",
+      "repository": "https://github.com/BizStream/bizstream.ai",
+      "license": "MIT",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.18.0/bizstream-implement-0.5.0.zip",
+      "requires": {
+        "speckit_version": ">=0.14.4"
+      },
+      "provides": {
+        "commands": 1,
+        "templates": 0
+      },
+      "tags": [
+        "implement",
+        "gates",
+        "review",
+        "bizstream"
+      ]
+    },
+    "bizstream-bugfix": {
+      "name": "Bug Fix With Gates",
+      "id": "bizstream-bugfix",
+      "version": "0.3.0",
+      "description": "Wraps speckit.bug.fix so a fix runs the constitution's definition of done and the review loop of speckit.review.run before it is reported fixed. Requires the bug and review extensions.",
+      "author": "BizStream",
+      "repository": "https://github.com/BizStream/bizstream.ai",
+      "license": "MIT",
+      "download_url": "https://github.com/BizStream/bizstream.ai/releases/download/v0.18.0/bizstream-bugfix-0.3.0.zip",
+      "requires": {
+        "speckit_version": ">=0.14.4"
+      },
+      "provides": {
+        "commands": 1,
+        "templates": 0
+      },
+      "tags": [
+        "bug",
+        "gates",
+        "review",
+        "bizstream"
+      ],
+      "verified": false
     }
   }
 }

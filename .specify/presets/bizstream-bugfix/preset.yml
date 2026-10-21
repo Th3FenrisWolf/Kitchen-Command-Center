@@ -1,0 +1,27 @@
+schema_version: "1.0"
+
+preset:
+  id: "bizstream-bugfix"
+  name: "Bug Fix With Gates"
+  version: "0.3.0"
+  description: "Wraps speckit.bug.fix so a fix runs the constitution's definition of done and the review loop of speckit.review.run before it is reported fixed. Requires the bug and review extensions."
+  author: "BizStream"
+  repository: "https://github.com/BizStream/bizstream.ai"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.14.4"
+
+provides:
+  templates:
+    - type: "command"
+      name: "speckit.bug.fix"
+      file: "commands/speckit.bug.fix.md"
+      description: "Apply the bug remediation, then run the definition of done and speckit.review.run"
+      strategy: "wrap"
+
+tags:
+  - "bug"
+  - "gates"
+  - "review"
+  - "bizstream"

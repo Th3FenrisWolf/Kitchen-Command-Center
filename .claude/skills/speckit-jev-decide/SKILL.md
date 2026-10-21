@@ -3,7 +3,7 @@ name: speckit-jev-decide
 description: Route one decision through the Jev switch, or add and calibrate a Jev question for this project.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
-  author: github-spec-kit
+  author: BizStream
   source: jev:commands/speckit.jev.decide.md
 ---
 

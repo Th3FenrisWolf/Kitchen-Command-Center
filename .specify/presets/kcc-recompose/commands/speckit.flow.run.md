@@ -11,7 +11,8 @@ strategy: wrap
 > this section wins.
 
 - Phase 9 runs `speckit.card.implement` as this project wraps it. Its close-out recomposes the branch with the
-  `recompose-branch` skill after the review loop and before the push.
+  `recompose-branch` skill after the commit and before the push, and lands every review fix as one commit after the
+  pull request opens.
 - The recomposition runs in this session. No builder plans it, builds it, pushes the branch or opens the pull
   request.
 - A confident grouping is built before the close-out confirmation, which shows the new history. A grouping that is a
@@ -20,4 +21,5 @@ strategy: wrap
   assumption, never answered by a recommendation, and never skipped on a resumed run.
 - The run never pushes a branch or opens a pull request until the recomposition has passed its tree check. A
   resumed run skips the recomposition only when the branch's pull request is already open.
-- The Report adds the recomposed history, and says that the backup branch was deleted once the pull request opened.
+- The Report adds the recomposed history and the review-feedback commit, and says that the backup branch was deleted
+  once the pull request opened.

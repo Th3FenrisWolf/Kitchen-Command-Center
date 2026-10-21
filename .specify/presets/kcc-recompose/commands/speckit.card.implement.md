@@ -1,5 +1,5 @@
 ---
-description: Take one card from a written tasks.md to an open pull request, with the project's gates enforced and the branch recomposed into clean commits before it is published. Never merges.
+description: Take one card from a written tasks.md to an open pull request, with the project's gates enforced and the branch recomposed into clean commits before it is published. The review fixes follow as one commit. Never merges.
 strategy: wrap
 ---
 
@@ -7,15 +7,16 @@ strategy: wrap
 
 ## Recompose before publishing
 
-> This section changes Phase 7 of the command above. Where the two conflict, this section wins.
+> This section changes Phase 3 of the command above. Where the two conflict, this section wins.
 
-Every branch reaches its pull request as a few clean commits. The development history stays as it is until Phase 7.
-The recomposition runs once, there, with the `recompose-branch` skill, and it changes the history only, never the
-tree. It runs in this session, never in a subagent, because the owner approves the publish and sometimes the grouping.
+Every branch reaches its pull request as a few clean commits. The development history stays as it is until Phase 3.
+The recomposition runs once, there, with the `recompose-branch` skill, after the commit and before the push. It
+changes the history only, never the tree. It runs in this session, never in a subagent, because the owner approves
+the publish and sometimes the grouping.
 
-Phase 7 runs in this order:
+Phase 3 runs in this order:
 
-1. Run Phase 7 step 1, the commit, before the close-out question. A local commit publishes nothing.
+1. Run Phase 3 step 1, the commit, before the close-out question. A local commit publishes nothing.
 2. Plan the recomposition with the `recompose-branch` skill, steps 1, 2 and 5, with these overrides:
    - **Base.** Run `.specify/presets/kcc-recompose/scripts/recompose-base.sh <trunk>`. It prints the base and the
      commits that will collapse. The base is the closest branch below this one that `origin/<trunk>` does not
@@ -33,7 +34,7 @@ Phase 7 runs in this order:
    reset, build the commits, then prove that `git diff <backup> HEAD` is empty and the working tree is clean. Every
    commit passes the identity flags the constitution's Review and merge section names. A judgment call commits
    nothing yet.
-4. Ask the close-out question. Start it with `Publish the close-out`, as Phase 7 requires. Show the base and the
+4. Ask the close-out question. Start it with `Publish the close-out`, as Phase 3 requires. Show the base and the
    commits that collapse.
    - **Confident.** Show the new history as built, each commit with its message and its files. The owner's answer
      approves the publish only.
@@ -44,13 +45,17 @@ Phase 7 runs in this order:
    backup first: run `git reset --hard <backup>`, then the skill's steps 4, 6 and 7 again. A failed tree check is a
    hard stop at any point: keep the backup, report the failure with `git reset --hard <backup>` as the way back, and
    push nothing.
-5. Then run Phase 7 from step 2. A branch that is already on the remote needs `git push --force-with-lease`. Name
-   that in the close-out question when it applies, and never run it without the owner's approval.
+5. Then run Phase 3 step 2. A branch that is already on the remote needs `git push --force-with-lease`. Name that in
+   the close-out question when it applies, and never run it without the owner's approval.
 6. Delete the backup branch with `git branch -D <backup>` right after `gh pr create` succeeds. Keep it until then:
    `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` unless `backup/<branch>` exists with the same
    tree. The report says the backup was deleted.
+7. Run Phase 3 step 3, the review, with one change: commit nothing until `speckit.review.run` has finished every
+   round. Then commit every fix from every round as one commit, `fix(<NNN>): address review feedback`, and push it
+   to the same pull request. A review that fixed nothing adds no commit. Never recompose the branch again after the
+   pull request opens.
 
 A docs-only card has no branch to recompose, and this section does not apply to it.
 
-**Also done when:** the branch was recomposed after the review loop and before the push, its tree matched the
-backup, and the backup was deleted once the pull request opened.
+**Also done when:** the branch was recomposed after the commit and before the push, its tree matched the backup, the
+backup was deleted once the pull request opened, and the review fixes, if any, landed as one commit on top.

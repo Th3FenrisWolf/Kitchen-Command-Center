@@ -133,13 +133,13 @@
       "id": "subagent-tier",
       "scope": "task-row",
       "primitive": "noul",
-      "text": "Does this task require reading a file outside the paths its description names?",
+      "text": "Does this task change, remove, render, write tests for, or wire into code that already exists outside the files it names?",
       "criteria": {
-        "true": "The worker has to find something the named paths do not hold before it can write the change: a caller of code it deletes or changes, a type or model it binds to, a registration, an existing convention elsewhere, or a live page.",
-        "false": "Every file the change reads or writes is a named path or sits inside a named directory. Reading the named files themselves is not discovery."
+        "true": "The change depends on existing code the row does not name: it deletes, renames, moves, retypes or retargets a symbol other files use, renders or writes tests for an existing type, registers into an existing pipeline, or must match an existing convention the row does not spell out.",
+        "false": "The change stands on what the row names: a doc, spec, checklist or config edit, a stated value or command, a prescribed build or test run, or a new file whose content and rules the row spells out."
       },
       "band": [
-        0.35,
+        0.4,
         0.65
       ],
       "failWhen": "true",
@@ -162,9 +162,9 @@
         "pass": "sonnet",
         "fail": "opus"
       },
-      "fallback": "opus",
+      "fallback": "sonnet",
       "blocking": true,
-      "hash": "1d14a0ebf48e94ef",
+      "hash": "9e174fe11e6bedcd",
       "samples": 3
     },
     {
@@ -201,12 +201,12 @@
       "primitive": "noul",
       "text": "The agent ended its turn early: work it can do alone is still open, and it waits on no owner decision, no owner action and no running job.",
       "criteria": {
-        "true": "The message offers or asks permission for a routine, local, reversible next step the agent can take itself, such as a local commit, a check or a test run, watching a running job, or the next listed task. Or it stops while it names open work that nothing blocks.",
-        "false": "The message waits on something only the owner can give, such as a merge, a walk, an unlock, a login, a choice between real alternatives, or approval of a destructive or outward step. Or it waits on a running job, or it reports that the work is done with nothing open."
+        "true": "The message offers or asks permission for a routine, local, reversible next step the agent can take itself: a local commit of finished work, applying edits it already proposed, a check or a test run, watching a running job, the next listed task, or the next workflow command, such as a message that ends with \"Next, run /speckit-tasks\". Or it stops while it names open work that nothing blocks, such as finished work it left uncommitted.",
+        "false": "The message waits on something only the owner can give, such as a merge, a walk, an unlock, a login, a value only the owner knows, a choice between real alternatives, or approval of a destructive or outward step such as a push. Or it waits on agents, jobs or runs it started and says it continues when they report. Or it reports that the work is done with nothing open."
       },
       "band": [
         0.3,
-        0.45
+        0.55
       ],
       "failWhen": "true",
       "samples": 1,
@@ -240,7 +240,7 @@
       "fallback": "stop",
       "blocking": false,
       "rule": "Owner steering: a turn ends only for an owner decision, an owner action or a running job",
-      "hash": "87a298d16ca12a4d"
+      "hash": "e6b3e83c1fba7f78"
     },
     {
       "id": "steer-owner-takes-default",
@@ -340,6 +340,65 @@
       "blocking": false,
       "rule": "Owner steering: prompt capture",
       "hash": "528544097d161029"
+    },
+    {
+      "id": "history-turn-class",
+      "scope": "history",
+      "primitive": "choice",
+      "text": "Classify what this human turn did in a coding session, given the assistant text the person read just before it.",
+      "criteria": {
+        "lookup": "The person supplied a fact the agent could have found itself: a file path, a command, a value in the repository, a document, a ticket or a tool.",
+        "decision": "The person made a real choice the agent could not look up: a scope, a priority, a trade-off, a preference or an approval of a proposed option.",
+        "misread": "The person corrected a wrong understanding of the domain or the task: what a term means, what the client wants, or what the feature should do.",
+        "late-steer": "The person redirected work that was already done or under way, and the redirect could have come before the work started.",
+        "other": "None of the above: a new request, a greeting, a status question, a go-ahead, or a slash command."
+      },
+      "samples": 1,
+      "minConfidence": 0.6,
+      "fallback": "review",
+      "blocking": false,
+      "rule": "History reader: classify past human turns",
+      "hash": "084a48cd7a7d55f0"
+    },
+    {
+      "id": "history-task-start",
+      "scope": "history",
+      "primitive": "noul",
+      "text": "Does this human prompt start new work, rather than continue the work in the assistant text just before it?",
+      "criteria": {
+        "true": "The prompt asks for something the preceding work did not cover: a new feature, a new bug, a new question or a different file set.",
+        "false": "The prompt answers, corrects, approves or extends the work the assistant was doing just before it."
+      },
+      "band": [
+        0.35,
+        0.65
+      ],
+      "failWhen": "false",
+      "samples": 1,
+      "fallback": "review",
+      "blocking": false,
+      "rule": "History reader: classify past human turns",
+      "hash": "985829879cb79677"
+    },
+    {
+      "id": "history-task-autonomous",
+      "scope": "history",
+      "primitive": "noul",
+      "text": "Could the agent have reached the outcome at the end of this task from the first human prompt and the data it could look up, with no further human turn?",
+      "criteria": {
+        "true": "Every later human turn only approved, nudged or supplied a fact the agent could have looked up, or there is no later human turn and the outcome is reached.",
+        "false": "A later human turn made a real decision, corrected a misread, or redirected the work, or the task ended without its outcome."
+      },
+      "band": [
+        0.35,
+        0.65
+      ],
+      "failWhen": "false",
+      "samples": 1,
+      "fallback": "review",
+      "blocking": false,
+      "rule": "History reader: classify past human turns",
+      "hash": "38dfcc1564b5eb93"
     }
   ]
 }
