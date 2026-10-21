@@ -1,0 +1,15 @@
+# Jira Cards extension configuration
+# Copied to .specify/extensions/jira/jira-config.yml on install
+
+# Custom field ID that holds Test Notes on a Story, for this Jira project.
+# It differs per project. Find it on any existing work item:
+#   acli jira workitem view <existing-key> --json | grep -i customfield
+test_notes_field_id: ""
+
+# Custom field ID that holds Acceptance Criteria on a card made in Jira, when
+# the project keeps them in a field. Leave empty to read them from an
+# Acceptance Criteria heading in the description instead.
+acceptance_criteria_field_id: ""
+
+# Default Jira project key. Leave empty to require --project on every run.
+project_key: ""

@@ -105,25 +105,31 @@ function Confirm([string]$Question) {
 }
 
 # Check "expected" states the Then and records pass, fail or skip for the
-# current stage. A fail or a skip takes a one-line note.
+# current stage. Every verdict takes a one-line note; a skip asks again until
+# it has a reason. q saves the rows so far and ends the walk.
 function Check([string]$Expected) {
   if ($script:Skipping) { return }
   Write-Host "  $BOLD✔ Expected:$RESET $Expected"
   $verdict = $null
   while (-not $verdict) {
-    Write-Host -NoNewline "  ${YELLOW}? pass / fail / skip [p/f/s]$RESET "
+    Write-Host -NoNewline "  ${YELLOW}? pass / fail / skip / quit [p/f/s/q]$RESET "
     $reply = Read-Line
     if ($null -eq $reply) { $verdict = 'skip'; break }   # end of input
     switch -Regex ($reply.Trim()) {
       '^[pP]' { $verdict = 'pass' }
       '^[fF]' { $verdict = 'fail' }
       '^[sS]' { $verdict = 'skip' }
+      '^[qQ]' { Finish; exit 0 }
     }
   }
   $note = ''
-  if ($verdict -ne 'pass') {
-    Write-Host -NoNewline "  ${BOLD}Note (what you saw, or why skipped):$RESET "
-    $note = [string](Read-Line)
+  $label = if ($verdict -eq 'skip') { 'Why skipped:' } else { 'Note (optional):' }
+  while ($true) {
+    Write-Host -NoNewline "  $BOLD$label$RESET "
+    $line = Read-Line
+    if ($null -eq $line) { break }   # end of input keeps an empty reason
+    $note = $line.Trim()
+    if ($verdict -ne 'skip' -or $note) { break }
   }
   $colour = switch ($verdict) { 'pass' { $GREEN } 'fail' { $RED } default { $YELLOW } }
   Write-Host "  $colour$verdict$RESET"
@@ -148,16 +154,20 @@ function Finish {
     $cell = { param($s) ($s -replace '\|', '\|') }
     $rows.Add("| $($r.Id) | $(& $cell $r.Check) | $($r.Result) | $(& $cell $r.Note) |")
   }
-  $all = foreach ($row in $rows) { ($row -split '\|')[3].Trim() }
+  $all = foreach ($row in $rows) { ([regex]::Split($row, '(?<!\\)\|')[3]).Trim() }
   $pass = @($all | Where-Object { $_ -eq 'pass' }).Count
   $fail = @($all | Where-Object { $_ -eq 'fail' }).Count
   $skip = @($all | Where-Object { $_ -eq 'skip' }).Count
+
+  Write-Host -NoNewline "  ${BOLD}Note for the whole walk (optional):$RESET "
+  $walkNote = ([string](Read-Line)).Trim()
 
   $md = @(
     '# QA walk results'
     ''
     "- **Run**: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
     "- **Result**: $pass pass, $fail fail, $skip skip"
+  ) + @(if ($walkNote) { "- **Note**: $walkNote" }) + @(
     ''
     '| Id | Check | Result | Note |'
     '|---|---|---|---|'

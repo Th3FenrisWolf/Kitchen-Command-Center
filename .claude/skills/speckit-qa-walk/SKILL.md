@@ -3,7 +3,7 @@ name: speckit-qa-walk
 description: Build the QA wizard for a feature. One stage per acceptance scenario, each opening the page to check and recording pass or fail. For the manual pass a developer does by hand before hand-off.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
-  author: github-spec-kit
+  author: BizStream
   source: qa:commands/speckit.qa.walk.md
 ---
 

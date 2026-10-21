@@ -158,25 +158,30 @@ confirm() {
 }
 
 # check "expected" states the Then and records pass, fail or skip for the
-# current stage. A fail or a skip takes a one-line note.
+# current stage. Every verdict takes a one-line note; a skip asks again until
+# it has a reason. q saves the rows so far and ends the walk.
 check() {
   [[ -n "$_SKIPPING" ]] && return 0
   printf '  %s✔ Expected:%s %s\n' "$BOLD" "$RESET" "$1"
   local verdict="" reply="" note_text="" colour=""
   while [[ -z "$verdict" ]]; do
-    printf '  %s? pass / fail / skip [p/f/s]%s ' "$YELLOW" "$RESET"
+    printf '  %s? pass / fail / skip / quit [p/f/s/q]%s ' "$YELLOW" "$RESET"
     # End of input records a skip, so a piped run never spins.
     if ! read -r reply; then verdict="skip"; break; fi
     case "${reply//[[:space:]]/}" in
       [pP]*) verdict="pass" ;;
       [fF]*) verdict="fail" ;;
       [sS]*) verdict="skip" ;;
+      [qQ]*) finish; exit 0 ;;
     esac
   done
-  if [[ "$verdict" != "pass" ]]; then
-    printf '  %sNote (what you saw, or why skipped):%s ' "$BOLD" "$RESET"
-    read -r note_text || true
-  fi
+  local label="Note (optional):"
+  [[ "$verdict" == "skip" ]] && label="Why skipped:"
+  while :; do
+    printf '  %s%s%s ' "$BOLD" "$label" "$RESET"
+    read -r note_text || { note_text=""; break; }   # end of input keeps an empty reason
+    [[ "$verdict" != "skip" || -n "${note_text//[[:space:]]/}" ]] && break
+  done
   case "$verdict" in
     pass) colour="$GREEN" ;;
     fail) colour="$RED" ;;
@@ -235,10 +240,16 @@ finish() {
     esac
   done
 
+  local walk_note=""
+  printf '  %sNote for the whole walk (optional):%s ' "$BOLD" "$RESET"
+  read -r walk_note || true
+
   {
     printf '# QA walk results\n\n'
     printf -- '- **Run**: %s\n' "$(date '+%Y-%m-%d %H:%M')"
-    printf -- '- **Result**: %s pass, %s fail, %s skip\n\n' "$pass" "$fail" "$skip"
+    printf -- '- **Result**: %s pass, %s fail, %s skip\n' "$pass" "$fail" "$skip"
+    [[ -n "${walk_note//[[:space:]]/}" ]] && printf -- '- **Note**: %s\n' "$walk_note"
+    printf '\n'
     printf '| Id | Check | Result | Note |\n|---|---|---|---|\n'
     for line in ${rows[@]+"${rows[@]}"}; do printf '%s\n' "$line"; done
   } > "$RESULTS"

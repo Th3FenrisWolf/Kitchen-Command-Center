@@ -3,7 +3,7 @@ name: speckit-grill-run
 description: Interview the user in dependency-ordered rounds until the named artifact has no open decision left. Works on an idea, a plan, one spec, or a batch of specs.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
-  author: github-spec-kit
+  author: BizStream
   source: grill:commands/speckit.grill.run.md
 ---
 

@@ -16,7 +16,7 @@ const MODES = new Set(["off", "shadow", "on"]);
 const SESSION_TEXT = fileURLToPath(new URL("../templates/steer-session.md", import.meta.url));
 
 export const DEFAULTS = {
-  mode: { stop: "shadow", ask: "shadow", prompt: "on", session: "on" },
+  mode: { stop: "shadow", ask: "shadow", prompt: "shadow", session: "on" },
   jev: true,
   floors: [],
   neverHeaders: [],
@@ -192,9 +192,12 @@ export function steerAskResult(input) {
   return { row: { event: "ask-result", tool_use_id: input.tool_use_id, results }, output: null };
 }
 
+// Text the harness injects as a prompt: task and teammate messages, subagent hand-backs, local-command echoes.
+const NOT_OWNER = /^(<(task-notification|agent-message|teammate-message|cross-session-message|local-command-caveat|local-command-stdout|local-command-stderr|command-name|command-message|system-reminder)[\s>]|Caveat: The messages below were generated)/;
+
 export async function steerPrompt(input, { mode, transport, bank }) {
   const prompt = String(input.prompt ?? "").trim();
-  if (!prompt) return { row: null, output: null };
+  if (!prompt || NOT_OWNER.test(prompt)) return { row: null, output: null };
   const prior = redact(lastAssistantText(input.transcript_path).slice(-800));
   const state = `Agent's prior message (tail): ${prior || "(none)"}\n\nOwner's message: ${redact(prompt).slice(0, 1500)}`;
   const intent = await decide(state, findQuestion("owner-intent", bank), { transport });
@@ -267,8 +270,9 @@ export function readLog(days = 7) {
 }
 
 // A shadow stop is judged by the owner's next prompt in the same session: a
-// nudge or a status check means the agent stopped short.
-const NUDGES = new Set(["proceed", "status"]);
+// nudge means the agent stopped short. A status check does not: it mostly follows
+// a stop that waits on running agents, which is a correct stop.
+const NUDGES = new Set(["proceed"]);
 const JUDGMENT = new Set(["decision", "signal", "directive", "observation"]);
 
 // A question the steer answered never reached the owner, so its result only
