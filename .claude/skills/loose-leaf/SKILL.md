@@ -14,7 +14,7 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 ## Three rules
 
 1. **The paper is careless.** Sheets are torn on four sides, tilt ±1°, lie on a blank sheet turned 1.5° off them
-   (0.5° when wide), and carry one off-centre wax wash. Sheets are never taped; tape holds only a pinned tile. No
+   (0.5° when wide), and gain up to four ink washes, one at a time, over the first five minutes of a visit. Sheets are never taped; tape holds only a pinned tile. No
    two neighbours share a tear, and neighbouring blanks turn opposite ways.
 2. **The drawing is exact.** A 24px feint blue ruling governs everything. Type, controls and fields sit on it, numbers are Sono tabular, icons
    are duotone in `currentColor`, one weight of everything.
@@ -33,8 +33,8 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 <div class="kcc-slip kcc-tear-3">            <!-- tilt -->
   <div class="kcc-torn">                     <!-- shadow filter: outside the clip -->
     <div class="kcc-sheet" style="--pad: 24px">
-      <span class="kcc-wash" style="--c: var(--color-peach); --x: 88%; --y: 18%; --w: 38%; --h: 60%" aria-hidden="true"></span>
-      …content (auto-lifted above the wash)…
+      <span class="kcc-washes" aria-hidden="true">…<span class="kcc-wash" data-wash="5c0e19a2" style="--wash-x:.281;…"></span></span>
+      …content (auto-lifted above the washes)…
     </div>
   </div>
   <span class="kcc-label">Label</span>       <!-- outside clip and shadow -->
@@ -42,10 +42,11 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 </div>
 ```
 
-Vue: `import KccSheet from '~/Components/Sheet/KccSheet.vue'` with `label`, `icon`, `labelRight`, `wash`,
-`at`, `tear`, `piled` (default `true`; only `PadCard.vue` passes `false`), `wide` (any sheet wider than 700px;
+Vue: `import KccSheet from '~/Components/Sheet/KccSheet.vue'` with `label`, `icon`, `labelRight`, `washKey`
+(required, stable: a fixed name per call site, a list item's id, never its index), `wash` (the first wash's colour),
+`bloom` (`card | reading | page | none`), `tear`, `piled` (default `true`; only `PadCard.vue` passes `false`), `wide` (any sheet wider than 700px;
 `tear="hero"` is wide already), `flip` (turns the blank the other way where the page's reading order needs it),
-`pad`, `crisp`, `margin` (the margin rule), `blank` (no ruling), `scroll`, `as`. Razor: write it by hand, blank included. Tear in a loop: `kcc-tear-${(i % 6) + 1}`; the
+`pad`, `crisp`, `margin` (the margin rule), `blank` (no ruling), `scroll`, `as`. Razor: write it by hand, blank included, with `<KccWashes wash-key="…" size="reading" />` as the sheet's first child where the sheet blooms. Tear in a loop: `kcc-tear-${(i % 6) + 1}`; the
 blanks then alternate by themselves.
 
 ## Tokens you will reach for
@@ -98,7 +99,7 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
       `.kcc-tilewrap--flow` and its tape in a sheet's content flow.
 - [ ] Every sheet ends its slip with one `.kcc-blank`; no tape on a sheet, only over a tile; neighbouring blanks
       turn opposite ways down the page.
-- [ ] Text never on a wash core; `text-marker-ink` only inside tiles, labels, marker buttons.
+- [ ] Every `KccSheet` and `KccWashes` has a stable `wash-key`, no hand-written wash, no `:at`; no grain, crayon or texture on anything but the desk, a wash or a tile; `text-marker-ink` only inside tiles, labels, marker buttons.
 - [ ] Numbers in `kcc-num`; meta in `kcc-kick` / `kcc-meta`; headings in APCasual from a role class.
 - [ ] Sizes from the roles and tokens, vertical spacing in rule units; `typeScale.test.ts` passes.
 - [ ] Every line on the rule with no nudge: labels beside controls in a `kcc-row`, fields with no leading icon, the
@@ -116,8 +117,10 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
 
 - Putting `filter: drop-shadow` on `.kcc-sheet` — the shadow is clipped away. Use `.kcc-torn`.
 - Rounding a sheet or an image — paper has no radius.
-- `text-ink` on a wash **fill** (a tile) — that is `text-marker-ink`. `text-ink` on a wash **pool** under a
-  sheet margin is correct.
+- `text-ink` on a wash **fill** (a tile) — that is `text-marker-ink`. `text-ink` over a wash **pool**, on a sheet, is
+  correct: washes are capped so ink holds AA.
+- A `KccSheet` with no `wash-key`, or one keyed by a list index — the wash arrangement jumps when the list reorders. Key by the item's id.
+- A grain, crayon or noise layer on paper, a control or a label — only the desk, the washes and the tiles carry texture.
 - A `.kcc-label` inside `.kcc-sheet` — it gets torn and shadowed. It is a sibling of `.kcc-torn`.
 - A `kcc-tape` strip on a sheet — paper is piled, not taped. Tape sits only in a `kcc-tilewrap`.
 - A hover lift from `hover:-translate-y-1` utilities — it lifts the blank too. Use `kcc-slip--lift`.

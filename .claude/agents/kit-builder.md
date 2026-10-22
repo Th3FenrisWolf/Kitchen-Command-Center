@@ -47,7 +47,13 @@ Read, every time, before touching code:
   `text-ink-soft`.
 - Status is a `kcc-well--danger|success|warning` with ink text; never coloured text. A field in error takes
   `kcc-field--error`, which draws a 2px ink line, and the `kcc-well--danger` below it carries the red.
-- One wash, one label, one hand note per sheet. Washes under margins and corners, never under copy.
+- One label and one hand note per sheet. Washes are not placed: `KccSheet` renders a sheet's wash field, up to four
+  washes two deep at most, which may lie under copy (the AA cap is in `--wash-strength`). Give every `KccSheet` and
+  `KccWashes` a stable `wash-key` (a fixed name per call site, a list item's own id, never its index); pass `wash`
+  only to choose the first colour, `bloom` when the size rule picks wrong and `bloom="none"` for a sheet that stays
+  bare. Never write a `kcc-wash`, `kcc-washes` or `:at`.
+- Grain and crayon lie on the desk, the washes and the tiles only. Add no grain, crayon, texture image or
+  `feTurbulence` layer to paper, controls, labels, wells, blanks or tape; `grain.test.ts` fails on it.
 - Icons: duotone by default in `currentColor`; solid or regular where the simpler glyph reads better.
 - Size text with a role class (`kcc-display`, `kcc-section`, `kcc-heading`, `kcc-title`, `kcc-body`, `kcc-kick`) or a
   token utility (`text-caps|body|title|heading|section`; the display only through `kcc-display`), never `text-[…]`, `leading-*` or a default size

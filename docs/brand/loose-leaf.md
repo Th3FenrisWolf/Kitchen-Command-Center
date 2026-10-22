@@ -53,7 +53,7 @@ lilac-grey. Marker green is the one accent and the only strong fill: primary act
 
 \* Two values are pinned by `contrast.test.ts` rather than by the mockup: `ink-soft` (the mockup's `.452`
 fails WCAG AA for small caps on desk-2) and light `hair-strong` (the mockup's 40% alpha composites to 2.4:1
-against paper; a control boundary needs 3:1, so it ships at 56%, with headroom for the wax overlay). `hair`
+against paper; a control boundary needs 3:1, so it ships at 56%, with headroom for a wash beneath). `hair`
 keeps the mockup's lightness for dividers.
 
 Light leads. Dark is the same identity on a dark desk: chalk for ink, washes screened instead of multiplied,
@@ -61,8 +61,20 @@ the wax tooth soft-lit instead of multiplied. Every visual change is checked in 
 
 ## Washes
 
-Eight crayons. One wash per sheet, off-centre, bleeding past the tear, under the sheet's margin or a
-corner. **Never under running text.** Identical in both ramps; the blend mode changes, the pigment does not.
+Eight crayons. A sheet starts bare, and washes bloom onto it as the reader stays: one at a time, each at its own
+moment, until about five minutes into the visit every sheet wears its share. A card carries one or two, a reading
+sheet three, the largest sheets four, never more. The colour a reader has earned carries from page to page within
+the visit; a visit that has been away half an hour starts bare again, in a different arrangement.
+
+Each wash is one or two of the eight, as they are and never blended into a third, with its own size, shape and
+place, so no two sheets look stamped from one mould and neighbours do not bloom in step. Where a sheet has a colour of
+its own (a recipe's, or the one the owner picked for a Home card) its first wash wears it. A Home card left unset
+stays bare paper.
+
+Washes lie where they fall: under margins and corners, and under running text. They bleed past the margin, never past
+the tear, and overlap two deep at most. Their strength is capped so ink and soft ink stay AA over the strongest overlap, and
+control hairlines 3:1, in both ramps. Identical in both ramps; the blend mode changes, the pigment does not. Under
+reduced motion a wash fades in where it will stay and does not grow.
 
 | Token | Name | Value |
 |---|---|---|
@@ -152,9 +164,10 @@ exist in the mockup and are not built.
   sheet on one page, and its menus slide out between the two.
 - **Tape**: holds applied items only. A sheet is never taped. A tile pinned to a sheet takes one small
   translucent strip, slightly rotated.
-- **Wax**: a light crayon tooth over desk and paper alike (multiply in light, soft-light in dark); washes and
-  tiles carry a finer grain of their own. Each sheet adds a workbench grain over its ground, at 6% in light and 8%
-  in dark, which sits on top of the wax and does not replace it.
+- **Grain**: on the desk, the washes and the tiles only. The desk keeps its grain and a light crayon tooth (multiply in
+  light, soft-light in dark), painted under the paper; washes and tiles carry a finer grain of their own, which is
+  what makes a wash read as pigment. Paper, text, inputs and every other control, labels, wells, blank sheets and
+  tape are clean. The tape's weave is the tape's own material, not grain.
 - **Ruling**: every sheet is ruled in feint blue at 24px, drawn from its content box so the text sits just above
   each line. A blank sheet carries none. Always on. The margin rule is its companion on reading sheets (see On the
   rule).
@@ -172,20 +185,20 @@ A drawer slides up inside its sheet, and a stacked sheet steps back as the next 
 notepad. A menu is a card in the middle of the stack: it fans out from its far corner when you reach for it,
 turning up to 2.4° (past a resting sheet's degree, and only while you reach), and slides out from between the pad's
 two sheets when you open it. The pad tucks away as you read and returns when you scroll up. Most motion takes
-300ms, and a bigger move that would feel rushed at 300ms takes up to 500ms. Only a loading spinner runs longer.
-Reduced motion stills all of it.
+300ms, and a bigger move that would feel rushed at 300ms takes up to 500ms. Only a loading spinner and the bloom run longer.
+A wash blooms onto its sheet over a minute and a half, beginning at its own moment in the visit. Reduced motion stills
+all of it but the washes, which fade in without growing.
 
 ## Applied patterns
 
 - **Recipe slip**: a plain sheet on its blank; a small torn wax tile pinned over the top-left corner with its own
   tape; the hero stat (rating · reviews, or time) top-right in Sono; the title in APCasual 20; a Sono meta line;
   hairline badges. The tile's wash is the recipe's colour.
-- **Library**: a green-washed sheet holding search, sort and view controls; below it a grid of slips cycling
+- **Library**: a sheet holding search, sort and view controls, whose first wash is green; below it a grid of slips cycling
   through the six tears.
-- **Detail**: a hero slip with a 28px cut, the recipe's wash pooled in the bottom-right corner (the kick lines
-  run along the left, and soft ink never sits on a core), a large pinned tile; then an
-  "At a glance" stats sheet; then ingredients (checklist, teal wash) beside method (numbered steps, peach
-  wash). One hand note at most.
+- **Detail**: a hero slip with a 28px cut, four washes that bloom onto it with the recipe's colour first, a large
+  pinned tile; then an "At a glance" stats sheet; then ingredients (checklist, teal first) beside method (numbered
+  steps, peach first). One hand note at most.
 - **Lists**: checklists on the rule: 12px box, quantity in Sono right-aligned, done rows struck through.
 
 ## Don't
@@ -195,12 +208,14 @@ Reduced motion stills all of it.
 - Don't shadow anything except the sheet's fall. No `shadow-*` utilities; no shadow on labels or tape. (Tiles
   are torn paper and carry the fall like any sheet.)
 - Don't round paper. No radius on sheets, tiles or images.
-- Don't put text on a wash core. Washes go under margins and corners.
 - Don't colour icons, links or status text.
 - Don't use bold.
 - Don't tear a control. Only paper is torn.
 - Don't let two neighbouring sheets share a tear.
-- Don't give a sheet more than one wash, one label or one hand note.
+- Don't give a sheet more than one label or one hand note.
+- Don't put grain or crayon on paper, text, inputs, labels, wells, blank sheets or tape: only the desk, the washes and
+  the tiles carry it.
+- Don't place or colour a wash by hand: the bloom places them, in the eight colours as they are.
 - Don't tape a sheet, and don't leave one without its blank.
 - Don't nudge anything onto the rule by a pixel: no `translate-y-px`, `top-[3px]` or hand-tuned padding. The
   kit's shift puts every text role there, and a row of controls takes `kcc-row`. If a line is off the rule, fix the
@@ -223,3 +238,8 @@ Reduced motion stills all of it.
   Controls centre on the caps of their line and fill with paper on a sheet; icon buttons are 32px and badges 24px.
   Fields drop the pill for a line to write on, with a red hand-drawn X before it; an error is a 2px ink line with
   the red in the well.
+- **2026-10-21**: The ink wash blooms. A sheet starts bare and gains up to four washes over the first five minutes of
+  a visit, pseudo-randomly, two deep at most, under running text when they fall there, with strength capped so
+  ink holds AA over them. "One wash per sheet", "never under running text" and author-placed washes are retired. Grain
+  moves to the desk, the washes and the tiles only: the workbench grain each sheet carried is removed, and the crayon
+  tooth lies under the paper with the desk's grain.
