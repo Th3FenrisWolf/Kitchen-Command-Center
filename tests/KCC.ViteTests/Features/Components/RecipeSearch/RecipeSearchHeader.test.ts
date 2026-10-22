@@ -1,4 +1,5 @@
 import { renderSsr, tagWith } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
@@ -14,10 +15,9 @@ describe('RecipeSearchHeader sheet', () => {
     // One length: the sheet derives the pencil rule's offset from --pad, and a shorthand makes that calc()
     // invalid, so the ruling would fall back to the top edge.
     expect(html).toContain('style="--pad:24px;"')
-    expect(html).toContain('--c:var(--color-green)')
-    expect(html).toContain('--x:92%')
-    expect(html).toContain('--y:100%')
-    expect(html).toContain('--h:80%')
+    const [field] = washFields(html)
+    expect(field).toHaveLength(4)
+    expect(inkOf(field[0])).toBe(chosenInk('green'))
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-book-open" aria-hidden="true"></i>')
     expect(html).toContain('Library')
     expect(html).toMatch(/<h1 class="kcc-display">\s*SearchRecipes\s*<\/h1>/)

@@ -1,4 +1,5 @@
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeSearchView from '~/Pages/RecipeSearch/RecipeSearchView.Component.vue'
@@ -179,6 +180,7 @@ describe('RecipeSearchView library', () => {
     const html = await render({ total: 0, results: [] })
 
     expect(html).toContain('data-testid="recipes-empty"')
+    expect(washFields(html).some((field) => field.length === 3 && inkOf(field[0]) === chosenInk('yellow'))).toBe(true)
     expect(html).not.toContain('data-testid="recipe-card"')
   })
 

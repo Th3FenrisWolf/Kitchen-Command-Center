@@ -1,8 +1,22 @@
 import { describe, expect, it } from 'vitest'
+import { planSheet } from '~/Bloom/washes'
 import KccSheet from '~/Components/Sheet/KccSheet.vue'
 import { renderSsr } from '../../../support/ssr'
 
-const render = (props: Record<string, unknown> = {}) => renderSsr(KccSheet, props, { default: () => 'Hello' })
+const render = (props: Record<string, unknown> = {}) =>
+  renderSsr(KccSheet, { washKey: 'sheet', ...props }, { default: () => 'Hello' })
+
+const washCount = (html: string) => html.split('class="kcc-wash"').length - 1
+
+const fieldOf = (washKey: string, size: 'card' | 'reading' | 'page') =>
+  `<span class="kcc-washes" aria-hidden="true"><!--[-->${planSheet({ seed: 0, key: `|${washKey}`, size })
+    .map((wash) => {
+      const style = Object.entries(wash.style)
+        .map(([property, value]) => `${property}:${value}`)
+        .join(';')
+      return `<span class="kcc-wash" data-wash="${wash.id}" style="${style}"></span>`
+    })
+    .join('')}<!--]--></span>`
 
 describe('KccSheet', () => {
   // Two comment artifacts are baked into this markup. `<slot />` is always wrapped in `<!--[-->`/`<!--]-->`
@@ -14,15 +28,55 @@ describe('KccSheet', () => {
   it('renders slip › torn › sheet with the default tear', async () => {
     const html = await render()
     expect(html).toContain(
-      '<div class="kcc-slip kcc-tear-1"><div class="kcc-torn"><div class="kcc-sheet"><!--v-if--><!--[-->Hello<!--]--></div></div><!--v-if--><span class="kcc-blank" aria-hidden="true"><span></span></span></div>',
+      `<div class="kcc-slip kcc-tear-1"><div class="kcc-torn"><div class="kcc-sheet">${fieldOf('sheet', 'card')}<!--[-->Hello<!--]--></div></div><!--v-if--><span class="kcc-blank" aria-hidden="true"><span></span></span></div>`,
     )
   })
 
-  it('pools the wash under the content with its placement', async () => {
-    const html = await render({ wash: 'peach', at: { x: '88%', y: '18%', w: '38%', h: '60%' } })
-    expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:88%;--y:18%;--w:38%;--h:60%;" aria-hidden="true"></span><!--[-->Hello<!--]-->',
-    )
+  describe('the washes', () => {
+    it('lie in a field that is the sheet’s first child, inside its tear', async () => {
+      const html = await render({ label: 'Method' })
+      expect(html).toContain(`<div class="kcc-torn"><div class="kcc-sheet">${fieldOf('sheet', 'card')}<!--[-->`)
+      expect(html.indexOf('kcc-washes')).toBeLessThan(html.indexOf('</div></div>'))
+    })
+
+    it('take no placement from at', async () => {
+      const html = await render({ wash: 'peach', at: { x: '88%', y: '18%', w: '38%', h: '60%' } })
+      expect(html).not.toContain('--x:88%')
+      expect(html).not.toContain('--c:')
+      expect(html).not.toMatch(/<span class="kcc-wash" style=/)
+    })
+
+    it('wear the chosen colour on wash 0', async () => {
+      const html = await render({ wash: 'peach' })
+      expect(html).toMatch(
+        /<span class="kcc-washes" aria-hidden="true"><!--\[--><span class="kcc-wash" data-wash="[0-9a-f]{8}" style="[^"]*--wash-ink:var\(--color-peach\);/,
+      )
+    })
+
+    it('number four on a hero tear, three with a margin, four on a wide sheet, else one or two', async () => {
+      expect(washCount(await render({ tear: 'hero' }))).toBe(4)
+      expect(washCount(await render({ margin: true }))).toBe(3)
+      expect(washCount(await render({ margin: true, wide: true }))).toBe(3)
+      expect(washCount(await render({ wide: true }))).toBe(4)
+      const cards = await Promise.all(Array.from({ length: 12 }, (_, i) => render({ washKey: `card-${i}` })))
+      expect(new Set(cards.map(washCount))).toEqual(new Set([1, 2]))
+    })
+
+    it('follow bloom over the sheet’s shape', async () => {
+      expect(washCount(await render({ tear: 'hero', bloom: 'card', washKey: 'card-0' }))).toBeLessThanOrEqual(2)
+      expect(washCount(await render({ bloom: 'page' }))).toBe(4)
+    })
+
+    it('leave no field with bloom none', async () => {
+      expect(await render({ bloom: 'none', wash: 'peach', tear: 'hero' })).not.toContain('kcc-wash')
+    })
+
+    it('pass the wash key and slots through', async () => {
+      const html = await render({ washKey: '@pad', washSlots: [0, 4, 8, 12], tear: 'hero' })
+      const pad = planSheet({ seed: 0, key: '@pad', size: 'page' })
+      expect(pad.map((wash) => `data-wash="${wash.id}"`).every((id) => html.includes(id))).toBe(true)
+      expect(html).not.toContain(planSheet({ seed: 0, key: '|sheet', size: 'page' })[0].id)
+    })
   })
 
   it('keeps the label outside the torn wrapper', async () => {
@@ -71,7 +125,7 @@ describe('KccSheet', () => {
   it('renders rich content passed to the label slot', async () => {
     const html = await renderSsr(
       KccSheet,
-      { icon: 'fa-duotone fa-hourglass-half' },
+      { washKey: 'sheet', icon: 'fa-duotone fa-hourglass-half' },
       { default: () => 'Hello', label: () => 'Soon' },
     )
     expect(html).toMatch(

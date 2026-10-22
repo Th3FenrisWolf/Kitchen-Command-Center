@@ -66,6 +66,7 @@ public class BackofficeTests : BasePageTests
         _ = await Page.GotoAsync($"/recipes/{recipeName.ToLowerInvariant().Replace(' ', '-')}/first-try");
         await Expect(Page.GetByText("Chives").First).ToBeVisibleAsync();
         await Expect(Page.GetByText("Garnish.").First).ToBeVisibleAsync();
+        await RecipeIndex.CurrentAsync(Page);
     }
 
     [Test]

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { WASH_WINDOW_S } from '~/Bloom/washes'
 import { files } from '../../support/files'
 
 const WEB = fileURLToPath(new URL('../../../../src/KCC.Web/', import.meta.url))
@@ -15,7 +16,15 @@ const TIME = /(\d*\.?\d+)(ms|s)\b/g
 
 const toMs = (amount: string, unit: string) => Number(amount) * (unit === 's' ? 1000 : 1)
 
-const durations: { at: string; ms: number }[] = []
+const tokens = new Map<string, string>()
+for (const [, name, value] of read('Features/Styles/Torn/Tokens.css').matchAll(/(--[\w-]+)\s*:\s*([^;{}]+);/g)) {
+  if (!tokens.has(name!)) tokens.set(name!, value!.trim())
+}
+const withTokens = (value: string) => value.replace(/var\((--[\w-]+)\)/g, (whole, name: string) => tokens.get(name) ?? whole)
+
+const BLOOM = /^kcc-bloom\s+var\(--wash-bloom\)/
+
+const durations: { at: string; ms: number; declared: string }[] = []
 for (const file of files(`${WEB}Features`, /\.(vue|cshtml|css|ts)$/)) {
   const source = readFileSync(file, 'utf8')
   const where = (index: number) =>
@@ -23,14 +32,18 @@ for (const file of files(`${WEB}Features`, /\.(vue|cshtml|css|ts)$/)) {
 
   for (const match of source.matchAll(UTILITY)) {
     const [token, whole, amount, unit] = match
-    durations.push({ at: `${where(match.index)} ${token}`, ms: whole ? Number(whole) : toMs(amount!, unit!) })
+    durations.push({
+      at: `${where(match.index)} ${token}`,
+      ms: whole ? Number(whole) : toMs(amount!, unit!),
+      declared: token,
+    })
   }
 
   for (const match of source.matchAll(DECLARATION)) {
-    const value = match[1]!
-    if (value.includes('infinite')) continue
-    for (const [time, amount, unit] of value.matchAll(TIME)) {
-      durations.push({ at: `${where(match.index)} ${time}`, ms: toMs(amount!, unit!) })
+    const declared = match[1]!.trim()
+    if (declared.includes('infinite')) continue
+    for (const [time, amount, unit] of withTokens(declared).matchAll(TIME)) {
+      durations.push({ at: `${where(match.index)} ${time}`, ms: toMs(amount!, unit!), declared })
     }
   }
 }
@@ -47,23 +60,101 @@ const blockAfter = (css: string, at: string) => {
   return ''
 }
 
+const keyframes = (name: string) => {
+  const kit = read('Features/Styles/Torn/Kit.css')
+  const at = kit.match(new RegExp(`@keyframes ${name}\\s*\\{`))
+  if (!at) return undefined
+  const frames = blockAfter(kit.slice(at.index), `@keyframes ${name}`)
+  const declarations = (frame: string) =>
+    Object.fromEntries(
+      blockAfter(frames, `${frame} {`)
+        .split(';')
+        .map((declaration) => declaration.split(/:(.*)/s).map((part) => part.trim().replace(/\s+/g, ' ')))
+        .filter(([property]) => property),
+    )
+  return { from: declarations('from'), to: declarations('to') }
+}
+
+const PEAK = 'calc(var(--wash-strength) * var(--wash-peak))'
+
+const reducedWash = () => {
+  const kit = read('Features/Styles/Torn/Kit.css')
+  for (const match of kit.matchAll(/@media \(prefers-reduced-motion: reduce\)\s*\{/g)) {
+    const block = blockAfter(kit.slice(match.index), '@media (prefers-reduced-motion: reduce)')
+    if (/(?:^|[\s,}])\.kcc-wash\s*\{/.test(block)) return blockAfter(block, '.kcc-wash {')
+  }
+  return undefined
+}
+
+const kitFreezeSelectors = () => {
+  const kit = read('Features/Styles/Torn/Kit.css')
+  const start = kit.indexOf(':root[data-theme-switching]')
+  const prelude = kit.slice(start, kit.indexOf('{', start))
+  return prelude.split(',').map((selector) => selector.trim().replace(/\s+/g, ' '))
+}
+
 describe('motion', () => {
   it('finds the durations it measures', () => {
     expect(durations.length).toBeGreaterThan(3)
   })
 
-  it('runs nothing longer than 500ms but a loop', () => {
-    const tooLong = durations.filter(({ ms }) => ms > CEILING_MS).map(({ at }) => at)
+  it('runs nothing longer than 500ms but a loop and the bloom', () => {
+    const tooLong = durations.filter(({ ms, declared }) => ms > CEILING_MS && !BLOOM.test(declared)).map(({ at }) => at)
     expect(tooLong, 'over the 500ms ceiling in docs/brand/kit.md → Motion').toEqual([])
+  })
+
+  it('makes the bloom on .kcc-wash the one non-loop animation over 500ms', () => {
+    const kit = read('Features/Styles/Torn/Kit.css')
+    expect(blockAfter(kit, '.kcc-wash {')).toMatch(/animation:\s*kcc-bloom\s+var\(--wash-bloom\)/)
+
+    const blooms = durations.filter(({ ms, declared }) => ms > CEILING_MS && BLOOM.test(declared)).map(({ at }) => at)
+    expect(blooms).toHaveLength(1)
+    expect(blooms[0]).toMatch(/^Features\/Styles\/Torn\/Kit\.css:\d+ 90s$/)
+  })
+
+  it('finishes the last wash at 300s: --wash-bloom plus the arrival window', () => {
+    const bloom = tokens.get('--wash-bloom')?.match(/^(\d*\.?\d+)s$/)?.[1]
+    expect(bloom, 'Torn/Tokens.css declares --wash-bloom in seconds').toBeDefined()
+    expect(Number(bloom) + WASH_WINDOW_S).toBe(300)
+  })
+
+  it('blooms from a faint, smaller wash to its peak at full size', () => {
+    expect(keyframes('kcc-bloom'), 'Kit.css declares @keyframes kcc-bloom').toEqual({
+      from: { opacity: '0', scale: '0.72' },
+      to: { opacity: PEAK, scale: '1' },
+    })
+  })
+
+  it('fades a wash in at full size to the same peak under reduced motion', () => {
+    expect(keyframes('kcc-bloom-fade'), 'Kit.css declares @keyframes kcc-bloom-fade').toEqual({
+      from: { opacity: '0' },
+      to: { opacity: PEAK },
+    })
+    expect(
+      blockAfter(read('Features/Styles/Torn/Kit.css'), '.kcc-wash {'),
+      'a scale on the wash would show under the fade',
+    ).not.toMatch(/(?<![\w-])scale\s*:/)
+  })
+
+  it('swaps only the keyframes of .kcc-wash under reduced motion, keeping its duration and delay', () => {
+    const reduced = reducedWash()
+    expect(reduced, 'Kit.css has a reduced-motion .kcc-wash rule').toBeDefined()
+    const declarations = reduced!
+      .split(';')
+      .map((declaration) => declaration.trim().replace(/\s+/g, ' '))
+      .filter(Boolean)
+    expect(declarations).toEqual(['animation-name: kcc-bloom-fade'])
   })
 
   it('gives a transition that names no duration the 300ms standard', () => {
     expect(read('Features/Styles/Main.css')).toMatch(/--default-transition-duration:\s*300ms;/)
   })
 
-  it('stills every transition and animation under reduced motion', () => {
+  it('stills every transition and animation but the wash fade under reduced motion', () => {
     const reduced = blockAfter(read('Features/Styles/Main.css'), '@media (prefers-reduced-motion: reduce)')
-    expect(reduced).toMatch(/\*,\s*\*::before,\s*\*::after\s*\{/)
+    expect(reduced, 'the !important rule in @layer base would still the bloom fade').toMatch(
+      /\*:not\(\.kcc-wash\),\s*\*::before,\s*\*::after\s*\{/,
+    )
     expect(reduced).toMatch(/transition-duration:\s*0\.01ms !important;/)
     expect(reduced).toMatch(/animation-duration:\s*0\.01ms !important;/)
     expect(reduced).toMatch(/animation-iteration-count:\s*1 !important;/)
@@ -74,6 +165,12 @@ describe('motion', () => {
     const frozen = blockAfter(read('Features/Styles/Torn/Kit.css'), ':root[data-theme-switching] *')
     expect(frozen).toMatch(/animation:\s*none !important;/)
     expect(frozen).toMatch(/transition:\s*none !important;/)
+
+    const selectors = kitFreezeSelectors()
+    expect(selectors, 'the freeze sets animation: none, which would restart every bloom').toContain(
+      ':root[data-theme-switching] *:not(.kcc-wash)',
+    )
+    expect(selectors.filter((selector) => selector.endsWith('*'))).toEqual([])
 
     const ramp = read('Features/Utilities/Ramp.ts')
     expect(ramp).toContain("setAttribute('data-theme-switching'")

@@ -12,12 +12,7 @@
 </script>
 
 <template>
-  <KccSheet
-    wash="lavender"
-    :at="{ x: '85%', y: '15%', w: '50%', h: '55%' }"
-    icon="fa-duotone fa-hourglass-half"
-    :tear="tear"
-  >
+  <KccSheet :wash-key="`coming-soon:${textKey}`" wash="lavender" icon="fa-duotone fa-hourglass-half" :tear="tear">
     <template #label><ResourceString :shared="shared" for="ComingSoon" /></template>
     <ResourceString :shared="shared" :for="textKey" as="p" class="kcc-body" />
   </KccSheet>

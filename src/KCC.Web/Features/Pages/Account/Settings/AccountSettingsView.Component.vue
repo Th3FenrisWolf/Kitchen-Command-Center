@@ -113,7 +113,7 @@
   </SmallHero>
 
   <div class="mt-rule-1 grid gap-x-7 gap-y-rule-1.5 lg:grid-cols-2">
-    <KccSheet margin crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
+    <KccSheet wash-key="settings-profile" margin crisp :tear="2" :pad="SHEET_PAD" icon="fa-duotone fa-user">
       <template #label><ResourceString for="Profile" /></template>
 
       <h2 class="sr-only">{{ rs('Profile') }}</h2>
@@ -161,7 +161,7 @@
       </form>
     </KccSheet>
 
-    <KccSheet margin crisp :tear="5" :pad="SHEET_PAD" icon="fa-duotone fa-key">
+    <KccSheet wash-key="settings-password" margin crisp :tear="5" :pad="SHEET_PAD" icon="fa-duotone fa-key">
       <template #label><ResourceString for="ChangePassword" /></template>
 
       <h2 class="sr-only">{{ rs('ChangePassword') }}</h2>
@@ -211,7 +211,15 @@
       </form>
     </KccSheet>
 
-    <KccSheet margin crisp flip :tear="1" :pad="SHEET_PAD" icon="fa-duotone fa-circle-half-stroke">
+    <KccSheet
+      wash-key="settings-appearance"
+      margin
+      crisp
+      flip
+      :tear="1"
+      :pad="SHEET_PAD"
+      icon="fa-duotone fa-circle-half-stroke"
+    >
       <template #label><ResourceString for="Appearance" /></template>
 
       <h2 class="sr-only">{{ rs('Appearance') }}</h2>
@@ -234,7 +242,15 @@
       </div>
     </KccSheet>
 
-    <KccSheet margin crisp flip :tear="6" :pad="SHEET_PAD" icon="fa-duotone fa-right-from-bracket">
+    <KccSheet
+      wash-key="settings-sign-out"
+      margin
+      crisp
+      flip
+      :tear="6"
+      :pad="SHEET_PAD"
+      icon="fa-duotone fa-right-from-bracket"
+    >
       <template #label><ResourceString for="SignOut" /></template>
 
       <h2 class="sr-only">{{ rs('SignOut') }}</h2>

@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import Stacker from '~/Widgets/Stacker/Stacker.Component.vue'
 import { markStuckCards } from '~/Widgets/Stacker/markStuckCards'
 import { renderSsr, expectNoRetiredMarkup } from '../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../support/washes'
 
 const card = (heading: string, backgroundColor: string, tear?: 1 | 2 | 3 | 4 | 5 | 6) => ({
+  key: `key-${heading.toLowerCase()}`,
   heading,
   subHeading: `${heading}, in one line.`,
   backgroundColor,
@@ -136,18 +138,24 @@ describe('Stacker stuck marking', () => {
 })
 
 describe('Stacker wash', () => {
-  it('pools the editor colour under the bottom-right corner', async () => {
-    const html = await render([card('Prep', 'bg-peach')])
+  it("blooms each card, its first wash in the card's colour", async () => {
+    const fields = washFields(await render([card('Prep', 'bg-peach'), card('Cook', 'bg-teal')]))
 
-    expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:85%;--y:90%;--w:55%;--h:50%;" aria-hidden="true">',
-    )
-    expect(html.match(/kcc-wash/g)).toHaveLength(1)
+    expect(fields).toHaveLength(2)
+    expect(fields.map((field) => inkOf(field[0]))).toEqual([chosenInk('peach'), chosenInk('teal')])
+  })
+
+  // The key is the card's own, so a card inserted above another leaves the other's washes where they were.
+  it("keys each card's washes on the card, not its place in the stack", async () => {
+    const [alone] = washFields(await render([card('Cook', 'bg-teal')]))
+    const [, below] = washFields(await render([card('Prep', 'bg-peach'), card('Cook', 'bg-teal')]))
+
+    expect(below).toEqual(alone)
   })
 
   // Until the migrated content is restored into the database, a stored card can still name a retired
   // hue. The sheet then renders bare paper rather than a `var(--color-rosewater)` that resolves to nothing.
-  it('leaves a retired hue and a paper ground unwashed', async () => {
+  it('leaves a retired hue and a paper ground bare', async () => {
     expect(await render([card('Prep', 'bg-rosewater')])).not.toContain('kcc-wash')
     expect(await render([card('Prep', 'bg-paper')])).not.toContain('kcc-wash')
   })

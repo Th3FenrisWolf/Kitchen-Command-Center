@@ -23,6 +23,10 @@ export const RETIRED = new RegExp(
     `${EDGE[0]}sk-[a-z][a-z0-9-]*`, // the Softbound kit
     '\\bv-ink\\b|\\bdata-ink\\b', // the drawn outline
     `${EDGE[0]}kcc-h[34]${EDGE[1]}`, // heading sizes by level; the type roles replace them
+    `${EDGE[0]}--wash-op${EDGE[1]}`, // replaced by --wash-strength, one cap per ramp
+    `${EDGE[0]}--sheet-grain(?:-op|-blend)?${EDGE[1]}`, // the paper carries no grain; the desk, the washes and the tiles do
+    'url\\(#kcc-wax\\)', // the wash filter is #kcc-bloom; #kcc-wax-flat stays for tiles
+    `${EDGE[0]}:at=`, // author placement of a wash; the bloom places every wash from the sheet's key
     `${EDGE[0]}kcc-field--noicon${EDGE[1]}`, // the X is every field's one leading mark, so all fields share a shape
     'font-weight:\\s*(?:[5-9]00|bold(?:er)?)', // weight in CSS
     `var\\(--color-(?:${RETIRED_TOKEN})\\)`, // retired tokens read from CSS

@@ -1,3 +1,5 @@
+using KCC.Web.Features.Bloom;
+
 namespace KCC.Web.Features.Models.Common;
 
 public record SsrResult
@@ -11,6 +13,8 @@ public record SsrResult
     public string BodyContent { get; set; }
     public string FooterContent { get; set; }
     public bool IsPreview { get; set; }
+    public BloomInputs Bloom { get; set; }
+    public string Schedule { get; set; }
 
     // Populated only in Development when the SSR service reports a render
     // exception; SsrHtmlContent re-emits it for the dev error overlay.
@@ -22,6 +26,7 @@ public class SsrResponse
 {
     public string Html { get; set; }
     public string Css { get; set; }
+    public string Schedule { get; set; }
     public int RenderTime { get; set; }
 }
 

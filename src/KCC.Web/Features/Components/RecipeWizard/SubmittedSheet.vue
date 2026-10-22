@@ -21,15 +21,7 @@
 </script>
 
 <template>
-  <KccSheet
-    margin
-    class="mt-rule-1"
-    wash="green"
-    :at="{ x: '100%', y: '100%', w: '30%', h: '40%' }"
-    :tear="2"
-    wide
-    data-testid="wizard-submitted"
-  >
+  <KccSheet wash-key="wizard-submitted" margin class="mt-rule-1" wash="green" :tear="2" wide data-testid="wizard-submitted">
     <div class="grid justify-items-center gap-y-rule-1 text-center">
       <template v-if="mode === 'recipe'">
         <ResourceString for="RecipeSubmitted" as="h2" class="kcc-heading" />

@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using KCC.Web.Features.Bloom;
 using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,18 +22,20 @@ public class VueSsrService(
     private HttpClient HttpClient => httpClientFactory.CreateClient("VueSsr");
     private TimeSpan CacheDuration => TimeSpan.FromSeconds(configuration.GetValue("VueSsr:CacheDurationSeconds", 60));
 
-    public async Task<IHtmlContent> RenderVueSsrAsync(
+    public async Task<SsrHtmlContent> RenderVueSsrAsync(
         IHtmlContent headerContent,
         IHtmlContent bodyContent,
         IHtmlContent footerContent,
+        BloomInputs bloom,
         bool isPreview = false,
         CancellationToken cancellationToken = default) =>
-        new SsrHtmlContent(await RenderAsync(Html(headerContent), Html(bodyContent), Html(footerContent), isPreview, cancellationToken));
+        new SsrHtmlContent(await RenderAsync(Html(headerContent), Html(bodyContent), Html(footerContent), bloom, isPreview, cancellationToken));
 
     public async Task<SsrResult> RenderAsync(
         string headerContent,
         string bodyContent,
         string footerContent,
+        BloomInputs bloom,
         bool isPreview = false,
         CancellationToken cancellationToken = default)
     {
@@ -41,7 +44,8 @@ public class VueSsrService(
             HeaderContent = headerContent,
             BodyContent = bodyContent,
             FooterContent = footerContent,
-            IsPreview = isPreview
+            IsPreview = isPreview,
+            Bloom = bloom,
         };
 
         if (!IsEnabled)
@@ -49,13 +53,13 @@ public class VueSsrService(
             return baseResult;
         }
 
-        var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent, isPreview);
+        var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent, bloom, isPreview);
 
         if (cache.TryGetValue(cacheKey, out CachedRender cached) && cached is not null)
         {
             logger.LogDebug("SSR cache hit for key {CacheKey}", cacheKey[..16]);
 
-            return baseResult with { Html = cached.Html, Css = cached.Css };
+            return baseResult with { Html = cached.Html, Css = cached.Css, Schedule = cached.Schedule };
         }
 
         try
@@ -64,7 +68,7 @@ public class VueSsrService(
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "/render");
             request.Headers.Add("X-Request-Id", requestId);
-            request.Content = JsonContent.Create(new { headerContent, bodyContent, footerContent, isPreview });
+            request.Content = JsonContent.Create(new { headerContent, bodyContent, footerContent, isPreview, bloom = new { seed = bloom.Seed, page = bloom.Page } });
 
             var response = await HttpClient.SendAsync(request, cancellationToken);
 
@@ -103,9 +107,9 @@ public class VueSsrService(
                 result.RenderTime,
                 requestId);
 
-            cache.Set(cacheKey, new CachedRender(result.Html, result.Css), CacheDuration);
+            cache.Set(cacheKey, new CachedRender(result.Html, result.Css, result.Schedule), CacheDuration);
 
-            return baseResult with { Html = result.Html, Css = result.Css };
+            return baseResult with { Html = result.Html, Css = result.Css, Schedule = result.Schedule };
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -150,12 +154,12 @@ public class VueSsrService(
         }
     }
 
-    private static string GenerateCacheKey(string header, string body, string footer, bool isPreview)
+    private static string GenerateCacheKey(string header, string body, string footer, BloomInputs bloom, bool isPreview)
     {
-        var combined = $"{(isPreview ? "preview" : "live")}\n{header}{body}{footer}";
+        var combined = $"{(isPreview ? "preview" : "live")}\n{bloom.Seed}\n{bloom.Page}\n{header}{body}{footer}";
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(combined));
         return $"ssr:{Convert.ToHexString(hashBytes)}";
     }
 
-    private sealed record CachedRender(string Html, string Css);
+    private sealed record CachedRender(string Html, string Css, string Schedule);
 }

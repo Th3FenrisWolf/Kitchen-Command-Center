@@ -93,7 +93,7 @@
       </template>
     </DetailHero>
 
-    <KccSheet margin label="At a glance" icon="fa-duotone fa-gauge" :tear="3" wide flip>
+    <KccSheet wash-key="recipe-glance" margin label="At a glance" icon="fa-duotone fa-gauge" :tear="3" wide flip>
       <StatTiles :tiles="statTiles" />
     </KccSheet>
 

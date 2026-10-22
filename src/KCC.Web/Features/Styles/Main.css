@@ -22,9 +22,9 @@
     color: var(--color-ink);
   }
 
-  /* The grain is #app's absolutely-positioned first child and the crayon tooth its absolutely-positioned
-     last child; positioning the siblings between them paints the grain under the page and the crayon over
-     it. :where() keeps specificity at zero so a sticky/fixed utility on a child still wins. */
+  /* The grain and the crayon tooth are #app's first two children, absolutely positioned at z-index 0; positioning
+     the siblings after them paints both under the page. :where() keeps specificity at zero so a sticky/fixed
+     utility on a child still wins. */
   #app {
     /* The overlays blend with their backdrop and #app is an isolated group, so the desk must be painted
        inside it; html keeps the same colour for overscroll. */
@@ -50,9 +50,10 @@
   }
 
   /* Durations go to 0.01ms rather than `none` so transitionend/animationend still fire — anything waiting
-     on them keeps working, while nothing perceptibly animates. */
+     on them keeps working, while nothing perceptibly animates. A wash is left out: it fades in at full size on
+     its bloom schedule (Kit.css), which this !important rule would collapse to an instant. */
   @media (prefers-reduced-motion: reduce) {
-    *,
+    *:not(.kcc-wash),
     *::before,
     *::after {
       animation-duration: 0.01ms !important;

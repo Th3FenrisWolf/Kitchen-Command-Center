@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
+  import KccWashes from '~/Components/Sheet/KccWashes.Component.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import { washFor } from '~/Utilities/BrandColor'
   import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
@@ -11,15 +12,6 @@
   }
 
   const { card, flip = false } = defineProps<FeaturedRecipeCardProps>()
-
-  const wash = computed(() => ({
-    '--c': `var(--color-${washFor(card.seed)})`,
-    '--x': '100%',
-    '--y': '100%',
-    '--w': '34%',
-    // Capped like DetailHero's: the ring ends inside the bottom padding, so the badge row never meets the core.
-    '--h': 'min(60%, 68px)',
-  }))
 
   const rating = computed(() =>
     card.rating && card.rating.count > 0
@@ -40,7 +32,7 @@
   <article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero kcc-slip--lift" :class="{ 'kcc-slip--flip': flip }">
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet" style="--pad: 48px">
-        <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
+        <KccWashes :wash-key="`featured-recipe:${card.href}`" size="page" :chosen="washFor(card.seed)" />
 
         <p v-if="notes.length" class="kcc-kick">
           <template v-for="(note, i) in notes" :key="note"><span v-if="i" aria-hidden="true"> · </span>{{ note }}</template>

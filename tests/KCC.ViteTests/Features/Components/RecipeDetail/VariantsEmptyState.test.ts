@@ -1,4 +1,5 @@
 import { renderSsr, tagWith } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import VariantsEmptyState from '~/Components/RecipeDetail/VariantsEmptyState.vue'
 
@@ -20,12 +21,12 @@ describe('VariantsEmptyState', () => {
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip--wide')
   })
 
-  it('pools the wash in the top-right corner, clear of the centred copy', async () => {
-    const wash = tagWith(await render(), 'kcc-wash')
+  it('blooms three washes as a reading sheet, the first in sky', async () => {
+    const fields = washFields(await render())
 
-    expect(wash).toContain('--c:var(--color-sky)')
-    expect(wash).toContain('--x:88%')
-    expect(wash).toContain('--y:14%')
+    expect(fields).toHaveLength(1)
+    expect(fields[0]).toHaveLength(3)
+    expect(inkOf(fields[0][0])).toBe(chosenInk('sky'))
   })
 
   it('says what happened at heading size and leaves the hint as the one hand note', async () => {

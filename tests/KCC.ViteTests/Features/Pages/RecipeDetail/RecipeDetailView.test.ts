@@ -1,4 +1,5 @@
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeDetailView from '~/Pages/RecipeDetail/RecipeDetailView.Component.vue'
@@ -143,6 +144,7 @@ describe('RecipeDetailView', () => {
     const html = await render({ variants: [] })
 
     expect(html).toContain('NoVariantsMatch')
+    expect(washFields(html).some((field) => field.length === 3 && inkOf(field[0]) === chosenInk('sky'))).toBe(true)
     expect(html).not.toContain('data-variant-name')
     expect(html).toContain('—')
   })

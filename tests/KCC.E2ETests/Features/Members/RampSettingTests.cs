@@ -17,7 +17,7 @@ public class RampSettingTests : BasePageTests
             await Expect(Page.Locator("html")).ToHaveAttributeAsync("data-theme", "dark");
 
             var home = await (await Page.APIRequest.GetAsync("/")).TextAsync();
-            _ = await Assert.That(home).Contains("<html lang=\"en\" data-theme=\"dark\">");
+            _ = await Assert.That(home).Contains("<html lang=\"en\" data-theme=\"dark\" ");
 
             await Page.Locator("main form[action='/account/logout'] button[type='submit']").ClickAsync();
             await Page.WaitForURLAsync(url => new Uri(url).AbsolutePath == "/");

@@ -5,6 +5,7 @@
   import { sheetTearFor } from '~/Utilities/BrandColor'
 
   export interface CardProps {
+    washKey: string
     cardColor?: BackgroundColor
     tear?: 1 | 2 | 3 | 4 | 5 | 6
     seed?: string
@@ -15,20 +16,16 @@
     drawer?: () => void
   }
 
-  const { cardColor = 'bg-paper', tear, seed = '' } = defineProps<CardProps>()
+  const { washKey, cardColor = 'bg-paper', tear, seed = '' } = defineProps<CardProps>()
 
   const { drawer } = defineSlots<CardSlots>()
 
   const resolvedTear = computed(() => tear ?? sheetTearFor(seed))
+  const wash = computed(() => washOf(cardColor))
 </script>
 
 <template>
-  <KccSheet
-    :wash="washOf(cardColor)"
-    :at="{ x: '100%', y: '0%', w: '38%', h: 'min(40%, 68px)' }"
-    :tear="resolvedTear"
-    class="group/card kcc-slip--fill"
-  >
+  <KccSheet :wash-key :wash :bloom="wash ? undefined : 'none'" :tear="resolvedTear" class="group/card kcc-slip--fill">
     <div class="flex h-full flex-col">
       <slot />
 

@@ -23,8 +23,8 @@
     as="section"
     label="Library"
     icon="fa-duotone fa-book-open"
+    wash-key="recipe-search-header"
     wash="green"
-    :at="{ x: '92%', y: '100%', w: '30%', h: '80%' }"
     :tear="3"
     wide
     pad="24px"

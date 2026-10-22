@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { WASH_REACH_PX } from '~/Bloom/washes'
 
 const stylesDir = new URL('../../../../src/KCC.Web/Features/Styles/', import.meta.url)
 const read = (path: string) => readFileSync(fileURLToPath(new URL(path, stylesDir)), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
@@ -706,56 +707,62 @@ describe('R8: icon buttons are 32px', () => {
   })
 })
 
-describe('R9: the workbench grain', () => {
-  it('lays a stitched four-octave noise tile over each sheet’s ground', () => {
-    const grain = merged(kitRules.filter((rule) => rule.selectors.some((selector) => /^\.kcc-sheet::after$/.test(selector))))
-    expect(grain.content).toBeDefined()
-    expect(grain.position).toBe('absolute')
-    expect(grain.inset).toBe('0')
-    expect(grain['z-index']).toBe('0')
-    expect(grain['pointer-events']).toBe('none')
-    expect(grain.opacity).toBe('var(--sheet-grain-op)')
-    expect(grain['mix-blend-mode']).toBe('var(--sheet-grain-blend)')
-    const image = grain['background-image'] ?? grain.background ?? ''
-    const tile = decodeURIComponent(image.match(/^var\((--[\w-]+)\)$/) ? (rootToken(image.slice(4, -1)) ?? '') : image)
-    expect(tile).toMatch(/feTurbulence/)
-    expect(tile).toMatch(/baseFrequency=['"]0?\.8['"]/)
-    expect(tile).toMatch(/numOctaves=['"]4['"]/)
-    expect(tile).toMatch(/stitchTiles=['"]stitch['"]/)
+describe('R9: the paper carries no grain', () => {
+  it('no .kcc-sheet::after rule paints a grain', () => {
+    const after = kitRules.filter((rule) =>
+      rule.selectors.some((selector) => /^\.kcc-sheet(?:--[\w-]+)?::after$/.test(selector)),
+    )
+    expect(after).toEqual([])
   })
 
-  it('a sheet that scrolls itself carries the grain in its own scrolling background, under the rules, so it covers every line', () => {
+  it('a sheet that scrolls itself paints the ruling layers only', () => {
     const scroll = mergedFor('.kcc-sheet--scroll')
     const layers = splitTop(scroll['background-image'] ?? '', ',').map((layer) => squash(layer))
-    expect(layers).toHaveLength(3)
-    expect(layers[0]).toBe('linear-gradient(tobottom,var(--color-rule)1px,transparent0)')
-    expect(layers[1]).toContain('var(--sheet-grain-op)')
-    expect(layers[2]).toBe('var(--sheet-grain)')
+    expect(layers).toEqual(['linear-gradient(tobottom,var(--color-rule)1px,transparent0)'])
     expect(scroll['background-attachment']).toBe('local')
-    expect(squash(scroll['background-blend-mode'])).toBe('normal,normal,var(--sheet-grain-blend)')
-    expect(squash(scroll['background-position'])).toBe('0calc(var(--rule-drop)+var(--rule-offset)),00,00')
-    expect(squash(scroll['background-origin'])).toBe('content-box,padding-box,padding-box')
-    const after = merged(kitRules.filter((rule) => rule.selectors.includes('.kcc-sheet--scroll::after')))
-    expect(after.content).toBe('none')
+    expect(scroll['background-blend-mode']).toBeUndefined()
+    expect(squash(scroll['background-position'])).toBe('0calc(var(--rule-drop)+var(--rule-offset))')
+    expect(scroll['background-origin']).toBe('content-box')
+    expect(squash(scroll['background-size'])).toBe('100%var(--bl)')
   })
 
-  it('a sheet that scrolls itself turns off the grain overlay every sheet draws, later in the cascade', () => {
-    const lastIndexOf = (selector: string) =>
-      Math.max(
-        ...kitRules.map((rule, index) =>
-          outsideQueries(rule) && rule.declarations.content && rule.selectors.includes(selector) ? index : -1,
-        ),
-      )
-    expect(lastIndexOf('.kcc-sheet--scroll::after')).toBeGreaterThan(lastIndexOf('.kcc-sheet::after'))
+  it.each([
+    ['light', rootToken],
+    ['dark', darkToken],
+  ])('declares no --sheet-grain token in the %s ramp', (_, tokenOf) => {
+    for (const name of ['--sheet-grain', '--sheet-grain-op', '--sheet-grain-blend'])
+      expect(tokenOf(name), name).toBeUndefined()
+  })
+})
+
+describe('the bloom filter in Layout.cshtml', () => {
+  const layout = readFileSync(fileURLToPath(new URL('../Pages/Shared/Layout.cshtml', stylesDir)), 'utf8')
+  const filter = (id: string) => layout.match(new RegExp(`<filter id="${id}"[^>]*>([\\s\\S]*?)</filter>`))?.[1]
+  const attribute = (element: string, name: string) => element.match(new RegExp(`\\s${name}="([^"]*)"`))?.[1]
+
+  it('replaces #kcc-wax with #kcc-bloom and keeps #kcc-wax-flat for tiles', () => {
+    expect(filter('kcc-bloom'), '#kcc-bloom').toBeDefined()
+    expect(filter('kcc-wax'), '#kcc-wax').toBeUndefined()
+    expect(filter('kcc-wax-flat'), '#kcc-wax-flat').toBeDefined()
   })
 
-  it('light: 0.06, multiplied', () => {
-    expect(rootToken('--sheet-grain-op')).toBe('0.06')
-    expect(rootToken('--sheet-grain-blend')).toBe('multiply')
+  it('sets --wash-reach to WASH_REACH_PX, twice the bleed’s stdDeviation', () => {
+    const blurs = filter('kcc-bloom')?.match(/<feGaussianBlur\b[^>]*>/g) ?? []
+    expect(blurs, 'one Gaussian bleed in #kcc-bloom').toHaveLength(1)
+    const deviation = Number(attribute(blurs[0]!, 'stdDeviation'))
+    expect(rootToken('--wash-reach')).toBe(`${WASH_REACH_PX}px`)
+    expect(WASH_REACH_PX).toBe(2 * deviation)
   })
 
-  it('dark: 0.08, soft-lit', () => {
-    expect(darkToken('--sheet-grain-op')).toBe('0.08')
-    expect(darkToken('--sheet-grain-blend')).toBe('soft-light')
+  it('keeps the grain composite contrast.test.ts is calibrated against', () => {
+    const composites = (filter('kcc-bloom')?.match(/<feComposite\b[^>]*>/g) ?? []).filter(
+      (element) => attribute(element, 'operator') === 'arithmetic',
+    )
+    expect(composites).toHaveLength(1)
+    const k = (name: string) => Number(attribute(composites[0]!, name) ?? 0)
+    expect(k('k1')).toBe(0.62)
+    expect(k('k2')).toBe(0.62)
+    expect(k('k3')).toBe(0)
+    expect(k('k4')).toBe(0)
   })
 })

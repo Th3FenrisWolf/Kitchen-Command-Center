@@ -83,6 +83,7 @@
     >
       <div ref="panel" class="h-full">
         <KccSheet
+          wash-key="photo-viewer"
           crisp
           wide
           :tear="sheetTearFor(photo.id)"

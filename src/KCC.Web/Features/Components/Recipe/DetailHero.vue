@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import AccentTile from './AccentTile.vue'
+  import KccWashes from '~/Components/Sheet/KccWashes.Component.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
   import { washFor } from '~/Utilities/BrandColor'
   import { ResourceString } from '~/Components/ResourceStrings'
@@ -26,16 +27,6 @@
     defineProps<DetailHeroProps>()
   const { eyebrow } = defineSlots<DetailHeroSlots>()
 
-  const wash = computed(() => ({
-    '--c': `var(--color-${washFor(seed)})`,
-    '--x': '100%',
-    '--y': '100%',
-    '--w': '34%',
-    // The vertical radius is capped so the pool's 70% ring ends inside the 48px bottom padding: whatever
-    // the footer holds (badges are soft ink) meets at most the ring, at any sheet height.
-    '--h': 'min(60%, 68px)',
-  }))
-
   const ratingText = computed(() => formatRating(averageRating ?? 0))
 </script>
 
@@ -43,7 +34,7 @@
   <div class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero">
     <div class="kcc-torn">
       <div class="kcc-sheet" style="--pad: 48px">
-        <span class="kcc-wash" :style="wash" aria-hidden="true"></span>
+        <KccWashes wash-key="recipe-hero" size="page" :chosen="washFor(seed)" />
 
         <div class="grid gap-x-7 gap-y-rule-1 sm:grid-cols-2">
           <div>

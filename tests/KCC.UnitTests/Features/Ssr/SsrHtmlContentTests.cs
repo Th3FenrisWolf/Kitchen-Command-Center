@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using KCC.Web.Features.Bloom;
 using KCC.Web.Features.Models.Common;
 
 namespace KCC.UnitTests.Features.Ssr;
@@ -7,6 +8,7 @@ namespace KCC.UnitTests.Features.Ssr;
 public class SsrHtmlContentTests
 {
     private const string SsrErrorScriptOpen = "<script id=\"ssr-error\" type=\"application/json\">";
+    private const string ServerContentScriptOpen = "<script id=\"server-content\" type=\"application/json\">";
 
     [Test]
     public async Task WriteTo_WithoutError_OmitsSsrErrorScript()
@@ -94,6 +96,24 @@ public class SsrHtmlContentTests
         _ = await Assert.That(html).Contains("<\\/style><img src=x>");
     }
 
+    [Test]
+    public async Task WriteTo_ServerContent_CarriesTheBloomSeedAsAnUnsignedIntegerAndThePage()
+    {
+        var html = Render(new SsrResult
+        {
+            HeaderContent = "h",
+            BodyContent = "b",
+            FooterContent = "f",
+            Bloom = new BloomInputs(4294967295, "/recipes/brown-butter-gnocchi"),
+        });
+
+        using var doc = JsonDocument.Parse(ExtractJson(html, ServerContentScriptOpen));
+        var bloom = doc.RootElement.GetProperty("bloom");
+
+        _ = await Assert.That(bloom.GetProperty("seed").GetRawText()).IsEqualTo("4294967295");
+        _ = await Assert.That(bloom.GetProperty("page").GetString()).IsEqualTo("/recipes/brown-butter-gnocchi");
+    }
+
     private static string Render(SsrResult result)
     {
         using var writer = new StringWriter();
@@ -101,15 +121,17 @@ public class SsrHtmlContentTests
         return writer.ToString();
     }
 
-    private static string ExtractSsrErrorJson(string html)
+    private static string ExtractSsrErrorJson(string html) => ExtractJson(html, SsrErrorScriptOpen);
+
+    private static string ExtractJson(string html, string scriptOpen)
     {
-        var start = html.IndexOf(SsrErrorScriptOpen, StringComparison.Ordinal);
+        var start = html.IndexOf(scriptOpen, StringComparison.Ordinal);
         if (start < 0)
         {
-            throw new InvalidOperationException("ssr-error script not found");
+            throw new InvalidOperationException($"{scriptOpen} not found");
         }
 
-        var jsonStart = start + SsrErrorScriptOpen.Length;
+        var jsonStart = start + scriptOpen.Length;
         var end = html.IndexOf("</script>", jsonStart, StringComparison.Ordinal);
         return html[jsonStart..end];
     }

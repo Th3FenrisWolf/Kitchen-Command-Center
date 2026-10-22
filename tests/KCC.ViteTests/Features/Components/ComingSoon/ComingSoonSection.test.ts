@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ComingSoonSection from '~/Components/ComingSoon/ComingSoonSection.vue'
 import { renderSsr } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 describe('ComingSoonSection', () => {
   it('rests on one blank, with the standard turn', async () => {
@@ -14,7 +15,9 @@ describe('ComingSoonSection', () => {
     const html = await renderSsr(ComingSoonSection, { textKey: 'RankingComingSoon' })
 
     expect(html).toContain('kcc-slip kcc-tear-3')
-    expect(html).toContain('--c:var(--color-lavender)')
+    const [field] = washFields(html)
+    expect(field.length).toBeGreaterThan(0)
+    expect(inkOf(field[0])).toBe(chosenInk('lavender'))
     expect(html.match(/kcc-label/g)).toHaveLength(1)
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-hourglass-half" aria-hidden="true">')
     // No resource-strings provider in this render: <ResourceString> falls back to its own resolved key.

@@ -14,10 +14,22 @@
     width?: string
     left?: number
     wash?: Wash
-    at?: { x?: string; y?: string; w?: string; h?: string }
+    washSlots?: readonly number[]
   }
 
-  const { id, state, tear, tilt, labelledBy, label, width, left, wash, at, scroll = false } = defineProps<PadCardProps>()
+  const {
+    id,
+    state,
+    tear,
+    tilt,
+    labelledBy,
+    label,
+    width,
+    left,
+    wash,
+    washSlots,
+    scroll = false,
+  } = defineProps<PadCardProps>()
 </script>
 
 <template>
@@ -29,7 +41,8 @@
     :piled="false"
     :scroll="scroll"
     :wash
-    :at
+    :wash-key="`@${id}`"
+    :wash-slots
     role="region"
     :aria-labelledby="labelledBy"
     :aria-label="label"

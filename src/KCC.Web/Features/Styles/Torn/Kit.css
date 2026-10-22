@@ -26,7 +26,7 @@
     opacity: var(--wax-op);
     pointer-events: none;
     position: absolute;
-    z-index: 40;
+    z-index: 0;
   }
 
   :root[data-theme='dark'] .kcc-crayon {
@@ -134,26 +134,12 @@
     background-image: none;
   }
 
-  /* A sheet that is its own scroll container would leave an absolutely placed grain behind at the top of its
-     content, so it lays the grain in its scrolling background instead: blended with the paper, under a veil of
-     paper that leaves the grain's opacity showing, and under the ruling. It lies under the wash, which such a
-     sheet does not take. */
   .kcc-sheet--scroll {
     background-attachment: local;
-    background-blend-mode: normal, normal, var(--sheet-grain-blend);
-    background-image:
-      linear-gradient(to bottom, var(--color-rule) 1px, transparent 0),
-      linear-gradient(color-mix(in oklab, var(--color-paper) calc((1 - var(--sheet-grain-op)) * 100%), transparent)),
-      var(--sheet-grain);
-    background-origin: content-box, padding-box, padding-box;
-    background-position:
-      0 calc(var(--rule-drop) + var(--rule-offset)),
-      0 0,
-      0 0;
-    background-size:
-      100% var(--bl),
-      100% 100%,
-      180px 180px;
+    background-image: linear-gradient(to bottom, var(--color-rule) 1px, transparent 0);
+    background-origin: content-box;
+    background-position: 0 calc(var(--rule-drop) + var(--rule-offset));
+    background-size: 100% var(--bl);
   }
 
   /* The slip, not the sheet, is the container: a container cannot query itself. Only a margin sheet's slip
@@ -192,45 +178,89 @@
     }
   }
 
-  .kcc-sheet::after {
-    background-image: var(--sheet-grain);
-    background-size: 180px 180px;
-    content: '';
-    inset: 0;
-    mix-blend-mode: var(--sheet-grain-blend);
-    opacity: var(--sheet-grain-op);
-    pointer-events: none;
-    position: absolute;
-    z-index: 0;
-  }
-
-  /* After the overlay every sheet draws, which has the same specificity. */
-  .kcc-sheet--scroll::after {
-    content: none;
-  }
-
-  /* Content sits above the wash. :where() keeps this at class specificity so a kit class or a utility that
+  /* Content sits above the washes. :where() keeps this at class specificity so a kit class or a utility that
      positions a child (kcc-stat) still wins. */
-  .kcc-sheet > :where(:not(.kcc-wash)) {
+  .kcc-sheet > :where(:not(.kcc-washes)) {
     position: relative;
     z-index: 1;
   }
 
-  /* A pool of colour under the content. Set --c to a wash token and place it with --x --y --w --h. */
-  .kcc-wash {
-    background: radial-gradient(
-      var(--w, 52%) var(--h, 48%) at var(--x, 32%) var(--y, 38%),
-      var(--c) 0 48%,
-      color-mix(in oklab, var(--c) 38%, transparent) 70%,
-      transparent 86%
-    );
-    filter: url(#kcc-wax) saturate(var(--wash-sat));
+  /* clip, not hidden: hidden would make the field a scroll container. The field blends as one group, so washes
+     stack source-over and only their sum meets the paper. */
+  .kcc-washes {
+    container-type: size;
     inset: 0;
     mix-blend-mode: var(--wash-blend);
-    opacity: var(--wash-op);
+    overflow: clip;
     pointer-events: none;
     position: absolute;
     z-index: 0;
+  }
+
+  /* The width cap keeps the circle round a wash, bleed included, inside half the distance to its pair partner,
+     so no point lies under more than two washes. The alphas are the ones contrast.test.ts models: the rim
+     lifts the first ink's alpha, never its colour. */
+  .kcc-wash {
+    animation: kcc-bloom var(--wash-bloom) cubic-bezier(0.17, 0.72, 0.24, 1) both;
+    animation-delay: calc(var(--wash-at, var(--wash-fallback-at)) - var(--wash-elapsed, 0s) - var(--wash-lag, 0s));
+    aspect-ratio: var(--wash-aspect);
+    background:
+      radial-gradient(
+        closest-side at var(--wash-o1) var(--wash-o2),
+        oklch(from var(--wash-ink) l c h / 0.34) 0%,
+        oklch(from var(--wash-ink) l c h / 0.3) 56%,
+        oklch(from var(--wash-ink) l c h / 0.345) 82%,
+        oklch(from var(--wash-ink) l c h / 0) 97%
+      ),
+      radial-gradient(
+        closest-side at var(--wash-o3) var(--wash-o4),
+        oklch(from var(--wash-ink-2) l c h / 0.26) 0%,
+        oklch(from var(--wash-ink-2) l c h / 0) 100%
+      );
+    border-radius: var(--wash-r1) var(--wash-r2) var(--wash-r3) var(--wash-r4) / var(--wash-r4) var(--wash-r1) var(--wash-r2)
+      var(--wash-r3);
+    filter: url(#kcc-bloom) saturate(var(--wash-sat));
+    left: calc(var(--wash-x) * 100%);
+    opacity: 0;
+    position: absolute;
+    rotate: var(--wash-turn);
+    top: calc(var(--wash-y) * 100%);
+    translate: -50% -50%;
+    width: max(
+      0px,
+      min(
+        calc(var(--wash-d) * 100cqw),
+        calc((hypot(calc(var(--wash-dx) * 100cqw), calc(var(--wash-dy) * 100cqh)) - 2 * var(--wash-reach)) / var(--wash-s))
+      )
+    );
+  }
+
+  @keyframes kcc-bloom {
+    from {
+      opacity: 0;
+      scale: 0.72;
+    }
+
+    to {
+      opacity: calc(var(--wash-strength) * var(--wash-peak));
+      scale: 1;
+    }
+  }
+
+  @keyframes kcc-bloom-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: calc(var(--wash-strength) * var(--wash-peak));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kcc-wash {
+      animation-name: kcc-bloom-fade;
+    }
   }
 
   /* The label: printed, never torn, never shadowed. A sibling of .kcc-torn, overlapping the top-left edge. */
@@ -692,8 +722,9 @@
   }
 
   /* Switching ramps repaints every token at once; any in-flight transition would interpolate between the
-     two palettes. applyRamp (Utilities/Ramp.ts) sets this until the switch has rendered. */
-  :root[data-theme-switching] *,
+     two palettes. applyRamp (Utilities/Ramp.ts) sets this until the switch has rendered. A wash is left out:
+     animation: none would restart its bloom. */
+  :root[data-theme-switching] *:not(.kcc-wash),
   :root[data-theme-switching] *::before,
   :root[data-theme-switching] *::after {
     animation: none !important;

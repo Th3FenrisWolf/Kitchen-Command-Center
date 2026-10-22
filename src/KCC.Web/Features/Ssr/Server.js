@@ -28,6 +28,7 @@ const log = {
 
 let moduleInvalidated = true
 let createApp
+let scheduleWashes
 let vite
 
 const metrics = {
@@ -41,11 +42,13 @@ async function loadModule() {
   if (isDev && vite) {
     const ssrModule = await vite.ssrLoadModule(SSR_ENTRY_PATH)
     createApp = ssrModule.createApp
+    scheduleWashes = ssrModule.scheduleWashes
     moduleInvalidated = false
     log.info('SSR module loaded via Vite dev server')
   } else {
     const ssrModule = await import(SSR_BUNDLE_PATH)
     createApp = ssrModule.createApp
+    scheduleWashes = ssrModule.scheduleWashes
     log.info('SSR bundle loaded')
   }
 }
@@ -129,12 +132,16 @@ async function createServer() {
     const startTime = Date.now()
 
     try {
-      const { headerContent, bodyContent, footerContent, isPreview } = req.body
+      const { headerContent, bodyContent, footerContent, isPreview, bloom } = req.body
 
       if (typeof headerContent !== 'string' || typeof bodyContent !== 'string' || typeof footerContent !== 'string') {
         return res.status(400).json({
           error: 'headerContent, bodyContent, and footerContent must be strings',
         })
+      }
+
+      if (!Number.isInteger(bloom?.seed) || typeof bloom?.page !== 'string') {
+        return res.status(400).json({ error: 'bloom must carry an integer seed and a page string' })
       }
 
       log.debug(`[${req.id}] SSR render started`)
@@ -143,8 +150,15 @@ async function createServer() {
         await loadModule()
       }
 
-      const ssrApp = createApp({ headerContent, bodyContent, footerContent, isPreview: !!isPreview })
+      const { app: ssrApp, bloom: ssrBloom } = createApp({
+        headerContent,
+        bodyContent,
+        footerContent,
+        isPreview: !!isPreview,
+        bloom: { seed: bloom.seed, page: bloom.page },
+      })
       const html = await renderToString(ssrApp)
+      const schedule = scheduleWashes(ssrBloom.seed, ssrBloom.collected())
 
       // SFC <style> blocks reach the browser as JS style modules, so nothing links them on a
       // server-rendered first paint. Prod solves this with a manifest <link> on the chunk CSS the
@@ -158,7 +172,7 @@ async function createServer() {
       metrics.renderCount++
       metrics.lastRenderTime = duration
 
-      res.json({ html, css, renderTime: duration })
+      res.json({ html, css, schedule, renderTime: duration })
     } catch (err) {
       const duration = Date.now() - startTime
       log.error(`[${req.id}] SSR render failed after ${duration}ms:`, err.message)

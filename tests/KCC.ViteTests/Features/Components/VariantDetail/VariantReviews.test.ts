@@ -1,6 +1,15 @@
+// @vitest-environment happy-dom
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
-import { describe, expect, it, vi } from 'vitest'
+import { washFields } from '../../../support/washes'
+import { createApp, nextTick } from 'vue'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { BLOOM_KEY, createBloom } from '~/Bloom/bloomContext'
+import { planSheet } from '~/Bloom/washes'
 import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
+import type { Review, ReviewsResponse } from '~/Types/Recipe'
+import { get, put } from '~/Utilities/Api'
+
+vi.mock('~/Utilities/Api', () => ({ get: vi.fn(), put: vi.fn(), del: vi.fn() }))
 
 // The reviews themselves arrive from `/api/variant/{guid}/reviews` in `onMounted`, which never runs on the
 // server: every render below is the pre-fetch section, driven by the server-rendered average and count.
@@ -29,7 +38,7 @@ describe('VariantReviews summary', () => {
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-5')
     expect(html).not.toContain('kcc-label')
     expect(html).not.toContain('kcc-tape')
-    expect(html).not.toContain('kcc-wash')
+    expect(washFields(html).map((field) => field.length)).toEqual([3])
   })
 
   it('rests on one blank, with the wide turn', async () => {
@@ -187,5 +196,97 @@ describe('VariantReviews blanks, before any review loads', () => {
     await render({ reviewCount: 3, onTrailingSign })
 
     expect(onTrailingSign).not.toHaveBeenCalled()
+  })
+})
+
+describe('VariantReviews review sheets, once the reviews load', () => {
+  const SEED = 2671381617
+  const PAGE = '/recipes/brown-butter-gnocchi/classic'
+  const ada: Review = { authorName: 'Ada', rating: 4, text: 'Lovely', created: '2026-10-01T10:00:00Z', isMine: false }
+  const bea: Review = { authorName: 'Bea', rating: 4, text: 'Rich', created: '2026-10-02T10:00:00Z', isMine: false }
+  const mine: Review = { authorName: 'Cy', rating: 5, text: 'Mine', created: '2026-10-03T10:00:00Z', isMine: true }
+
+  const response = (reviews: Review[]): { success: true; data: ReviewsResponse; errorMessage: null } => ({
+    success: true,
+    data: {
+      average: 4.3,
+      count: reviews.length,
+      distribution: [0, 0, 0, 2, 1],
+      total: reviews.length,
+      page: 0,
+      pageSize: 10,
+      reviews,
+      myReview: { rating: 5, text: 'Mine' },
+    },
+    errorMessage: null,
+  })
+
+  const settle = async () => {
+    for (let i = 0; i < 4; i++) {
+      await new Promise((resolve) => setTimeout(resolve))
+      await nextTick()
+    }
+  }
+
+  const mount = async (first: Review[]) => {
+    vi.mocked(get).mockResolvedValueOnce(response(first))
+    const bloom = createBloom(SEED, PAGE)
+    bloom.markHydrated()
+    const host = document.createElement('div')
+    const app = createApp(VariantReviews, { variantGuid: '11111111-2222-3333-4444-555555555555', isAuthenticated: true })
+    app.provide(BLOOM_KEY, bloom)
+    app.mount(host)
+    await settle()
+    return { host, unmount: () => app.unmount() }
+  }
+
+  const reviewSheets = (host: HTMLElement) => [...host.querySelectorAll('[data-testid="reviews-list"] > li')]
+
+  const washesOf = (sheet: Element) =>
+    [...sheet.querySelectorAll('.kcc-wash')].map((wash) => ({
+      id: wash.getAttribute('data-wash'),
+      style: wash.getAttribute('style'),
+    }))
+
+  const sheetBy = (host: HTMLElement, author: string) =>
+    reviewSheets(host).find((sheet) => sheet.textContent?.includes(author)) as Element
+
+  afterEach(() => vi.mocked(get).mockReset())
+
+  it('gives each review sheet one or two washes, as a card', async () => {
+    const { host, unmount } = await mount([ada, bea])
+
+    expect(reviewSheets(host)).toHaveLength(2)
+    for (const sheet of reviewSheets(host)) expect([1, 2]).toContain(sheet.querySelectorAll('.kcc-wash').length)
+    unmount()
+  })
+
+  it('keys each review sheet by its author and date, so two reviews with the same rating differ', async () => {
+    const { host, unmount } = await mount([ada, bea])
+    const idsOf = (review: Review) =>
+      planSheet({ seed: SEED, key: `${PAGE}|review:${review.authorName}|${review.created}`, size: 'card' }).map(
+        (wash) => wash.id,
+      )
+
+    expect(washesOf(sheetBy(host, 'Ada')).map((wash) => wash.id)).toEqual(idsOf(ada))
+    expect(washesOf(sheetBy(host, 'Bea')).map((wash) => wash.id)).toEqual(idsOf(bea))
+    expect(idsOf(ada)).not.toEqual(idsOf(bea))
+    unmount()
+  })
+
+  it('keeps every review’s washes when a reload puts a new review first', async () => {
+    const { host, unmount } = await mount([ada, bea])
+    const before = { ada: washesOf(sheetBy(host, 'Ada')), bea: washesOf(sheetBy(host, 'Bea')) }
+    vi.mocked(put).mockResolvedValueOnce({ success: true, data: null, errorMessage: null })
+    vi.mocked(get).mockResolvedValueOnce(response([mine, ada, bea]))
+
+    ;(host.querySelector('[data-testid="submit-review"]') as HTMLButtonElement).click()
+    await settle()
+
+    expect(reviewSheets(host)).toHaveLength(3)
+    expect(reviewSheets(host)[0].textContent).toContain('Cy')
+    expect(washesOf(sheetBy(host, 'Ada'))).toEqual(before.ada)
+    expect(washesOf(sheetBy(host, 'Bea'))).toEqual(before.bea)
+    unmount()
   })
 })

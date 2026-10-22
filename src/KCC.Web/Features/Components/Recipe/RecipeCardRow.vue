@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import AccentTile from '~/Components/Recipe/AccentTile.vue'
+  import KccWashes from '~/Components/Sheet/KccWashes.Component.vue'
   import { formatRating } from '~/Components/StarRating/starDisplay'
-  import { sheetTearFor } from '~/Utilities/BrandColor'
+  import { sheetTearFor, washFor } from '~/Utilities/BrandColor'
   import type { Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { RecipeCardModel } from '~/Components/Recipe/recipeCardModel'
 
@@ -37,6 +38,7 @@
   >
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet flex items-start gap-4" style="--pad: 16px">
+        <KccWashes :wash-key="`recipe-card-row:${card.href}`" size="card" :chosen="washFor(card.seed)" />
         <div class="kcc-tilewrap kcc-tilewrap--flow flex-none">
           <AccentTile :seed="card.seed" :icon="card.icon" :image="card.image" class="size-14" />
           <span class="kcc-tape" aria-hidden="true"></span>

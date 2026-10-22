@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import RecipeCardRow from '~/Components/Recipe/RecipeCardRow.vue'
 import { hitToCard, variantToCard } from '~/Components/Recipe/recipeCardModel'
-import { sheetTearFor } from '~/Utilities/BrandColor'
+import { sheetTearFor, washFor } from '~/Utilities/BrandColor'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
 
 const NAME = 'Weeknight Chicken Piccata'
@@ -37,6 +38,26 @@ const variant = (over: Partial<VariantSummary> = {}): VariantSummary => ({
 
 const renderHit = (recipe: RecipeSearchHit) => renderSsr(RecipeCardRow, { card: hitToCard(recipe, echoKey) })
 const renderVariant = (summary: VariantSummary) => renderSsr(RecipeCardRow, { card: variantToCard(summary, echoKey) })
+
+describe('RecipeCardRow washes', () => {
+  it("blooms a card of washes as the sheet's first child, though the row is wide", async () => {
+    const html = await renderHit(hit())
+    const fields = washFields(html)
+
+    expect(html).toMatch(/<div class="kcc-sheet flex items-start gap-4" style="--pad:\s?16px;?"><span class="kcc-washes"/)
+    expect(fields).toHaveLength(1)
+    expect(fields[0]!.length).toBeGreaterThanOrEqual(1)
+    expect(fields[0]!.length).toBeLessThanOrEqual(2)
+    expect(inkOf(fields[0]![0])).toBe(chosenInk(washFor(NAME)))
+    expect(html).not.toMatch(/<span class="kcc-wash"[^>]*--c:/)
+  })
+
+  it('keys its washes by the recipe, so two rows bloom apart', async () => {
+    const ids = async (html: Promise<string>) => washFields(await html)[0]!.map((wash) => wash.id)
+
+    expect(await ids(renderHit(hit()))).not.toEqual(await ids(renderVariant(variant())))
+  })
+})
 
 describe('RecipeCardRow sheet', () => {
   const LIFT = 'kcc-slip--lift'
@@ -76,7 +97,7 @@ describe('RecipeCardRow sheet', () => {
     const sheet = html.indexOf('<div class="kcc-sheet flex items-start gap-4"')
     expect(sheet).toBeGreaterThan(-1)
     expect(html.slice(sheet)).toMatch(
-      /^<div class="kcc-sheet[^"]*"[^>]*><div class="kcc-tilewrap kcc-tilewrap--flow flex-none"><div class="kcc-torn size-14"><div class="[^"]*\bkcc-tile\b[^"]*"[^>]*><i class="fa-solid fa-drumstick-bite"><\/i><\/div><\/div><span class="kcc-tape" aria-hidden="true"><\/span><\/div>/,
+      /^<div class="kcc-sheet[^"]*"[^>]*><span class="kcc-washes"[^>]*>(?:<!--\[-->)?(?:<span class="kcc-wash"[^>]*><\/span>)*(?:<!--\]-->)?<\/span><div class="kcc-tilewrap kcc-tilewrap--flow flex-none"><div class="kcc-torn size-14"><div class="[^"]*\bkcc-tile\b[^"]*"[^>]*><i class="fa-solid fa-drumstick-bite"><\/i><\/div><\/div><span class="kcc-tape" aria-hidden="true"><\/span><\/div>/,
     )
     expect(html.split('kcc-tape')).toHaveLength(2)
   })
