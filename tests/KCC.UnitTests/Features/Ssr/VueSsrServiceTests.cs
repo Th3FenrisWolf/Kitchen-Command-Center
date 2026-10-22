@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using KCC.Web.Features.Bloom;
 using KCC.Web.Features.Ssr;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -93,7 +92,19 @@ public class VueSsrServiceTests
         _ = await Assert.That(second.Html).IsEqualTo("<div></div>");
     }
 
-    private static VueSsrService CreateService(HttpMessageHandler handler)
+    [Test]
+    public async Task RenderAsync_AnEntryLargerThanTheCacheLimit_IsNeverStored()
+    {
+        var handler = new CountingHandler();
+        var service = CreateService(handler, cacheLimit: 8);
+
+        _ = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+        _ = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+
+        _ = await Assert.That(handler.Calls).IsEqualTo(2);
+    }
+
+    private static VueSsrService CreateService(HttpMessageHandler handler, long cacheLimit = 1_000_000)
     {
         var factory = new Mock<IHttpClientFactory>();
         factory.Setup(f => f.CreateClient("VueSsr")).Returns(() => new HttpClient(handler, disposeHandler: false) { BaseAddress = new Uri("http://ssr.test") });
@@ -107,7 +118,7 @@ public class VueSsrServiceTests
 
         return new VueSsrService(
             factory.Object,
-            new MemoryCache(new MemoryCacheOptions()),
+            new SsrRenderCache(cacheLimit),
             configuration,
             environment.Object,
             NullLogger<VueSsrService>.Instance);

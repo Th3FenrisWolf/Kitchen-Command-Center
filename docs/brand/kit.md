@@ -23,7 +23,7 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Components/Sheet/KccSheet.vue` | the sheet primitive for Vue |
 | `src/KCC.Web/Features/Components/Sheet/KccWashes.Component.vue` | a sheet's wash field, global so Razor can use it; `KccSheet` renders one as its first child |
 | `src/KCC.Web/Features/Bloom/` | the bloom: `washes.ts` (pure: sheet size, each wash's numbers, the arrival schedule), `bloomContext.ts` (key claims, the page's washes, late arrivals), `visitHeartbeat.ts`, and the visit in C# (`Visit`, `VisitCookie`, `VisitClock`, `BloomInputs`) |
-| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | renders a signed-in member's saved ramp or runs the pre-paint ramp script; font preloads, `#kcc-bloom` / `#kcc-wax-flat` filter defs, `--wash-elapsed` on `<html>`, the schedule a `<style>` tag, `#kcc-bloom-schedule`, |
+| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | renders a signed-in member's saved ramp or runs the pre-paint ramp script; font preloads, `#kcc-bloom` / `#kcc-wax-flat` filter defs, `--wash-elapsed` on `<html>`, the schedule's `<style>` in `<head>`, `#kcc-bloom-schedule`, |
 | `src/KCC.Web/Features/Utilities/Ramp.ts` | `applyRamp`, the one way to switch the ramp after the first paint; `deviceRamp` and `rampFor`, the ramp a device or a saved setting asks for |
 
 ## Tokens
@@ -394,7 +394,7 @@ Rules of the structure:
 A sheet starts bare and gains colour as the visit goes on. Washes are not placed by authors: `KccWashes` derives each
 one's numbers from the visit's seed and the sheet's own key, and the kit CSS draws it from custom properties.
 
-**The visit.** A visit is one reader's stay: a visit cookie (named in `VisitCookie`) (seed and start time, 30-minute sliding expiry, not
+**The visit.** A visit is one reader's stay: a visit cookie, named in `VisitCookie`, holding the seed and start time (30-minute sliding expiry, not
 HttpOnly) that every page renews, with a once-a-minute heartbeat while a page is open. `Layout.cshtml` writes the elapsed
 time as `--wash-elapsed` on `<html>`; the seed and the page's key go to the SSR sidecar. Each wash's `animation-delay` is
 its arrival minus `--wash-elapsed` (and `--wash-lag` for a sheet mounted after hydration), so a page opened mid-visit
@@ -403,7 +403,7 @@ than 30 minutes starts again, bare and in a new arrangement. Same page, same vis
 
 **The sheets.** Every top sheet blooms unless it passes `bloom="none"`; blank sheets, wells, tiles, labels, tape and
 controls never do. Size sets the count: `card` one or two washes, `reading` three, `page` four. `bloom` picks it, or
-the sheet's props do: `bloom`, then `tear="hero"` and `wide` to `page`, `margin` to `reading`, else `card`. A Home card
+the sheet's props do: `bloom`, then `tear="hero"` to `page`, `margin` to `reading`, `wide` to `page`, else `card`. A Home card
 or stacker card whose backoffice wash is unset passes `none` and stays bare paper.
 
 **The washes.** Each has a pseudo-random size, shape, rotation, position and one or two of the eight brand washes as
@@ -414,10 +414,9 @@ past the sheet's margin, never past its tear. `--wash-strength` caps it so ink a
 washes at their peak in both ramps, judged on text's 3px average. The dried edge is a lift in the first ink's alpha, never a darker colour.
 
 **The schedule.** Washes arrive one at a time on golden-ratio slots across 210 seconds by hash rank, each spreading
-over 90 seconds, so every page is fully bloomed at five minutes and none starts after 3 minutes 30. The pad and its cards
-name sixteen visit beats in markup (`wash-slots`), so the pad blooms on the same clock on every page; page washes keep
-clear of them. `scheduleWashes` writes the page's arrivals once, after the render, as a `<style>` tag, `#kcc-bloom-schedule`,
-in `<head>`. Reduced motion keeps the schedule and fades each wash in at its final size.
+over 90 seconds, so every page is fully bloomed at five minutes and none starts after 3 minutes 30. The visit has sixteen beats; the pad and its cards
+name theirs in markup (`wash-slots`), so the pad blooms on the same clock on every page; page washes keep
+clear of them. `scheduleWashes` writes the page's arrivals once, after the render, as the `<style>` in `<head>`, `#kcc-bloom-schedule`. Reduced motion keeps the schedule and fades each wash in at its final size.
 
 **Keys.** Every `KccSheet` and `KccWashes` carries a stable `wash-key`, qualified by the page path unless it starts with
 `@` (the pad and its cards, the same on every page). A repeat on one page takes `~2`, `~3` with a development warning.

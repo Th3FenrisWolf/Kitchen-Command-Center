@@ -13,7 +13,7 @@ namespace KCC.Web.Features.Ssr;
 
 public class VueSsrService(
     IHttpClientFactory httpClientFactory,
-    IMemoryCache cache,
+    SsrRenderCache cache,
     IConfiguration configuration,
     IHostEnvironment environment,
     ILogger<VueSsrService> logger)
@@ -55,7 +55,7 @@ public class VueSsrService(
 
         var cacheKey = GenerateCacheKey(headerContent, bodyContent, footerContent, bloom, isPreview);
 
-        if (cache.TryGetValue(cacheKey, out CachedRender cached) && cached is not null)
+        if (cache.Entries.TryGetValue(cacheKey, out CachedRender cached) && cached is not null)
         {
             logger.LogDebug("SSR cache hit for key {CacheKey}", cacheKey[..16]);
 
@@ -107,7 +107,11 @@ public class VueSsrService(
                 result.RenderTime,
                 requestId);
 
-            cache.Set(cacheKey, new CachedRender(result.Html, result.Css, result.Schedule), CacheDuration);
+            var render = new CachedRender(result.Html, result.Css, result.Schedule);
+            cache.Entries.Set(
+                cacheKey,
+                render,
+                new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = CacheDuration, Size = render.Size });
 
             return baseResult with { Html = result.Html, Css = result.Css, Schedule = result.Schedule };
         }
@@ -161,5 +165,13 @@ public class VueSsrService(
         return $"ssr:{Convert.ToHexString(hashBytes)}";
     }
 
-    private sealed record CachedRender(string Html, string Css, string Schedule);
+    private sealed record CachedRender(string Html, string Css, string Schedule)
+    {
+        public long Size => Html.Length + (Css?.Length ?? 0) + (Schedule?.Length ?? 0);
+    }
+}
+
+public sealed class SsrRenderCache(long sizeLimit)
+{
+    public MemoryCache Entries { get; } = new(new MemoryCacheOptions { SizeLimit = sizeLimit });
 }

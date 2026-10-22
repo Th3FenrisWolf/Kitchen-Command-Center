@@ -325,6 +325,22 @@ describe('A phone card', () => {
   })
 })
 
+describe('The card variant off the current breakpoint', () => {
+  const states = ['', '.is-peek', '.is-open']
+
+  it.each([
+    ['desk', '.pad-card--desk'],
+    ['phone', '.pad-card--phone'],
+  ])('keeps the %s variant rendered, so its washes keep their clock, and out of reach in every state', (_, variant) => {
+    for (const state of states) {
+      const declarations = declarationsOf('PadCard.vue', `.pad-card${variant}${state}`)
+      expect(declarations.display, state).toBeUndefined()
+      expect(declarations.visibility, state).toBe('hidden')
+      expect(declarations['pointer-events'], state).toBe('none')
+    }
+  })
+})
+
 describe('A card footer', () => {
   it('starts its items on the line, so their text lies on the card’s rules', () => {
     expect(['flex-start', 'start']).toContain(declarationsOf('PadCard.vue', '.pad-foot')['align-items'])

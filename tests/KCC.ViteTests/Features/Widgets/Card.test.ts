@@ -83,8 +83,7 @@ describe('Card wash', () => {
     expect(other[0]!.map((wash) => wash.id)).not.toEqual(once[0]!.map((wash) => wash.id))
   })
 
-  // An editor who leaves a card's wash unset keeps it bare paper, rather than letting the bloom pick a colour.
-  it('leaves a paper ground bare', async () => {
+  it('leaves a paper ground bare, its wash unset', async () => {
     expect(await render({ cardColor: 'bg-paper' })).not.toContain('kcc-wash')
   })
 

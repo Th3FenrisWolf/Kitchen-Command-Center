@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onUnmounted } from 'vue'
+  import { onBeforeUnmount } from 'vue'
   import { useBloom } from '~/Bloom/bloomContext'
   import { isGlobalKey, planSheet, toFixed3, type PlannedWash, type WashSize } from '~/Bloom/washes'
   import type { Wash } from '~/Types/DesignSystem'
@@ -13,13 +13,13 @@
 
   const bloom = useBloom()
   const key = bloom.claimKey(washKey)
-  onUnmounted(() => bloom.releaseKey(key))
+  onBeforeUnmount(() => bloom.releaseKey(key))
   const sheet = { seed: bloom.seed, key, size, chosen }
   const planned = planSheet(sheet)
-  const starts = bloom.lateStarts(planned.length)
+  const slots = isGlobalKey(key) ? washSlots : undefined
+  const starts = isGlobalKey(key) ? bloom.visitStarts(key, planned.length, slots) : bloom.lateStarts(planned.length)
   const washes = starts ? planSheet({ ...sheet, starts }) : planned
 
-  const slots = isGlobalKey(key) ? washSlots : undefined
   for (const { id, index } of washes) bloom.collect({ id, key, index, slot: slots?.[index] })
 
   const styleOf = (wash: PlannedWash) =>

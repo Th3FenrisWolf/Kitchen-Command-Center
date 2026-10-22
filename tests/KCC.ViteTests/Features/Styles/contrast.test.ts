@@ -189,7 +189,6 @@ function saturate({ r, g, b }: Rgb, s: number): Rgb {
   }
 }
 
-/** One wash at its peak: its two inks stacked, saturated, then the ramp's strength and the grain composite's gain. */
 function washAtPeak(tokens: Tokens, [first, second]: WashPair, { blend, strength, sat }: WashRender): Premultiplied {
   const { rgb, alpha } = sourceOver(
     inkLayer(tokens, first, FIRST_INK_RIM_ALPHA),
@@ -200,7 +199,6 @@ function washAtPeak(tokens: Tokens, [first, second]: WashPair, { blend, strength
   return { rgb: { r: colour.r * peak, g: colour.g * peak, b: colour.b * peak }, alpha: peak }
 }
 
-/** Paper under the strongest point of two washes lying one over the other, as the field blends onto it. */
 function stackedPaper(tokens: Tokens, [top, bottom]: [WashPair, WashPair], render: WashRender): Rgb {
   const { blend } = render
   const field = sourceOver(washAtPeak(tokens, top, render), washAtPeak(tokens, bottom, render))

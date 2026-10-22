@@ -137,8 +137,11 @@
       width: auto;
     }
 
-    .pad-card--desk {
-      display: none;
+    .pad-card.pad-card--desk,
+    .pad-card.pad-card--desk.is-peek,
+    .pad-card.pad-card--desk.is-open {
+      pointer-events: none;
+      visibility: hidden;
     }
 
     .pad-card--phone .kcc-sheet {
@@ -151,8 +154,11 @@
   }
 
   @media (min-width: 768px) {
-    .pad-card--phone {
-      display: none;
+    .pad-card.pad-card--phone,
+    .pad-card.pad-card--phone.is-peek,
+    .pad-card.pad-card--phone.is-open {
+      pointer-events: none;
+      visibility: hidden;
     }
   }
 

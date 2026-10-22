@@ -129,8 +129,17 @@ describe('a wash', () => {
     expect(asking).toEqual([])
   })
 
-  it('bleeds through #kcc-bloom', () => {
-    expect(wash.filter).toMatch(/^url\(#kcc-bloom\)/)
+  it('bleeds through #kcc-bloom and takes its saturation from the ramp', () => {
+    expect(wash.filter).toBe('url(#kcc-bloom) saturate(var(--wash-sat))')
+  })
+
+  it('declares no mix-blend-mode or isolation on a wash', () => {
+    const blending = rules.filter(
+      (rule) =>
+        rule.selectors.some((selector) => selector.includes('.kcc-wash') && !selector.includes('.kcc-washes')) &&
+        (rule.declarations['mix-blend-mode'] !== undefined || rule.declarations.isolation !== undefined),
+    )
+    expect(blending).toEqual([])
   })
 
   it('caps its width against its pair partner, bleed included, and takes its height from its aspect', () => {

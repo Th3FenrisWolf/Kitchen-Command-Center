@@ -33,9 +33,9 @@ public static class VisitClock
         return visit;
     }
 
-    private static Visit Start(DateTimeOffset now) =>
-        new(
-            BitConverter.ToUInt32(RandomNumberGenerator.GetBytes(sizeof(uint))),
-            DateTimeOffset.FromUnixTimeSeconds(now.ToUnixTimeSeconds()),
-            now);
+    private static Visit Start(DateTimeOffset now)
+    {
+        var started = DateTimeOffset.FromUnixTimeSeconds(now.ToUnixTimeSeconds());
+        return new(BitConverter.ToUInt32(RandomNumberGenerator.GetBytes(sizeof(uint))), started, started);
+    }
 }

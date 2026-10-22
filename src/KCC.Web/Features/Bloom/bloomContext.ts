@@ -1,5 +1,5 @@
 import { inject, warn, type InjectionKey } from 'vue'
-import { arrivals, isGlobalKey, pageOfKey, type CollectedWash } from './washes'
+import { arrivals, isGlobalKey, pageOfKey, visitStarts, type CollectedWash } from './washes'
 
 export interface Bloom {
   readonly seed: number
@@ -10,6 +10,7 @@ export interface Bloom {
   collected(): readonly CollectedWash[]
   lag(): number
   lateStarts(count: number): number[] | undefined
+  visitStarts(key: string, count: number, slots?: readonly number[]): number[] | undefined
   markHydrated(): void
 }
 
@@ -49,6 +50,7 @@ export function createBloom(seed: number, page: string, { collect = true }: Bloo
       if (!nextLateStart) return undefined
       return Array.from({ length: count }, nextLateStart)
     },
+    visitStarts: (key, count, slots) => (hydrated ? visitStarts(seed, key, count, slots) : undefined),
     markHydrated() {
       if (hydrated) return
       hydrated = true

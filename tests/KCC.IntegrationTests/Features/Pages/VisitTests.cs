@@ -99,6 +99,19 @@ public partial class VisitTests
     }
 
     [Test]
+    public async Task RegistrationComplete_BloomsItsSheetAsAReadingSheetInGreen()
+    {
+        var regions = await RegionsAsync("/account/registration-complete/");
+
+        var render = await Ssr.RenderAsync(string.Empty, regions.Body, string.Empty, regions.Seed, regions.Page);
+        var slip = Slips.In(render.Html).Single();
+
+        _ = await Assert.That(SheetOpensWithWashes().IsMatch(slip)).IsTrue();
+        _ = await Assert.That(Washes().Count(slip)).IsEqualTo(3);
+        _ = await Assert.That(FirstInk(slip)).IsEqualTo("var(--color-green)");
+    }
+
+    [Test]
     public async Task Home_BloomsItsRichTextAndStackerSheetsAsReadingSheets()
     {
         var regions = await RegionsAsync("/");
@@ -180,7 +193,7 @@ public partial class VisitTests
 
     private static string? FirstInk(string slip) => WashInk().Match(slip) is { Success: true } match ? match.Groups[1].Value : null;
 
-    [GeneratedRegex("<div class=\"kcc-sheet\"[^>]*><span class=\"kcc-washes\"")]
+    [GeneratedRegex("<div class=\"kcc-sheet(?: [^\"]*)?\"[^>]*><span class=\"kcc-washes\"")]
     private static partial Regex SheetOpensWithWashes();
 
     [GeneratedRegex("<span class=\"kcc-wash\" data-wash=\"([0-9a-f]{8})\"")]

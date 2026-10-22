@@ -143,8 +143,6 @@ public class HomeSectionsTests
         _ = await Assert.That(stacker.Cards.Single()).IsEqualTo(new StackerCard(GinKey, "Gin", "Botanical", "bg-green", 1));
     }
 
-    // A sheet's washes are keyed on its block, so reordering or inserting blocks leaves every other sheet's arrangement
-    // where it was.
     [Test]
     public async Task From_KeysEachSectionOnItsBlocksContentKey()
     {

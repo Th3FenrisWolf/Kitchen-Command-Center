@@ -164,6 +164,43 @@ describe('KccWashes', () => {
     expect(bloom.collected()).toEqual([])
   })
 
+  it('plans a global sheet set up after hydration from the beats of its slots, not the page late starts', async () => {
+    const bloom = createBloom(SEED, PAGE)
+    const twin = createBloom(SEED, PAGE)
+    bloom.markHydrated()
+    twin.markHydrated()
+
+    const html = await renderIn(bloom, { washKey: '@late', size: 'page', washSlots: [3, 7, 11, 15] })
+
+    const planned = planSheet({ seed: SEED, key: '@late', size: 'page', starts: twin.visitStarts('@late', 4, [3, 7, 11, 15]) })
+    expect(html).toContain(planned.map(washMarkup).join(''))
+    expect(bloom.lateStarts(1)).toEqual(twin.lateStarts(1))
+  })
+
+  it('hands the key to a sheet swapped in within the same flush, with no suffix', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const bloom = createBloom(SEED, PAGE)
+    const first = ref(true)
+    const host = document.createElement('div')
+    const app = createApp({
+      render: () =>
+        first.value
+          ? h(KccWashes as Component, { key: 'a', washKey: 'swap', size: 'reading' })
+          : h(KccWashes as Component, { key: 'b', washKey: 'swap', size: 'reading' }),
+    })
+    app.provide(BLOOM_KEY, bloom)
+    app.mount(host)
+    const before = host.innerHTML
+
+    first.value = false
+    await nextTick()
+
+    expect(host.innerHTML).toBe(before)
+    expect(warn).not.toHaveBeenCalled()
+    app.unmount()
+    warn.mockRestore()
+  })
+
   it('adds no lag before hydration', async () => {
     const html = await renderIn(createBloom(SEED, PAGE), { washKey: 'hero', size: 'page' })
 

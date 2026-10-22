@@ -16,12 +16,12 @@ type Rule = { selectors: string[]; declarations: [property: string, value: strin
 const SOURCE_NAMES = new Set(['--grain', '--crayon'])
 const WHOLE_NAME = /(?<![\w-])--(?:grain|crayon)(?![\w-])/
 const TEXTURE = {
-  bloom: /url\(\s*#kcc-bloom\s*\)/,
-  waxFlat: /url\(\s*#kcc-wax-flat\s*\)/,
-  turbulence: /feTurbulence/,
-  dataSvg: /url\(\s*["']?data:image\/svg/,
-  repeatingLinear: /repeating-linear-gradient/,
-  repeatingRadial: /repeating-radial-gradient/,
+  bloom: /url\(\s*#kcc-bloom\s*\)/i,
+  waxFlat: /url\(\s*#kcc-wax-flat\s*\)/i,
+  turbulence: /feTurbulence/i,
+  dataSvg: /url\(\s*["']?data:image\/svg/i,
+  repeatingLinear: /repeating-linear-gradient/i,
+  repeatingRadial: /repeating-radial-gradient/i,
 }
 
 const normalise = (selector: string) =>
@@ -30,6 +30,7 @@ const normalise = (selector: string) =>
     .replace(/\s*>\s*/g, ' > ')
     .trim()
 
+const DESK_CLASS = /\.kcc-(?:grain|crayon)(?![\w-])/
 const DARK = ":root[data-theme='dark'] "
 const withDark = (selector: string) => [selector, DARK + selector]
 const DESK = new Set([...withDark('.kcc-grain'), ...withDark('.kcc-crayon')])
@@ -69,7 +70,7 @@ const declarationsOf = (body: string) =>
 
 const rulesOf = (css: string): Rule[] => {
   const rules: Rule[] = []
-  const open: string[] = []
+  const open: { selector: string; declarations: [string, string][] }[] = []
   let prelude = ''
   let quote = ''
   for (const char of css.replace(/\/\*[\s\S]*?\*\//g, '')) {
@@ -80,12 +81,16 @@ const rulesOf = (css: string): Rule[] => {
       quote = char
       prelude += char
     } else if (char === '{') {
-      open.push(prelude.trim())
+      const parts = splitTop(prelude, ';')
+      const selector = parts.pop()!.trim()
+      open.at(-1)?.declarations.push(...declarationsOf(parts.join(';')))
+      open.push({ selector, declarations: [] })
       prelude = ''
     } else if (char === '}') {
-      const selector = open.pop() ?? ''
-      const declarations = declarationsOf(prelude)
-      if (declarations.length) rules.push({ selectors: splitTop(selector, ',').map(normalise), declarations })
+      const rule = open.pop()
+      rule?.declarations.push(...declarationsOf(prelude))
+      if (rule?.declarations.length)
+        rules.push({ selectors: splitTop(rule.selector, ',').map(normalise), declarations: rule.declarations })
       prelude = ''
     } else {
       prelude += char
@@ -95,13 +100,13 @@ const rulesOf = (css: string): Rule[] => {
 }
 
 const STYLE_BLOCK = /<style\b[^>]*>([\s\S]*?)<\/style>/gi
-const STYLE_ATTRIBUTE = /(?<![\w-])style="([^"]*)"/g
+const STYLE_ATTRIBUTE = /(?<![\w-])style=(?:"([^"]*)"|'([^']*)')/gi
 
 const split = ({ path, text }: Source) => {
   if (path.endsWith('.css')) return { rules: rulesOf(text), markup: '' }
   const rules = [...text.matchAll(STYLE_BLOCK)].flatMap((block) => rulesOf(block[1]!))
   const inline = [...text.matchAll(STYLE_ATTRIBUTE)].flatMap((attribute) => {
-    const declarations = declarationsOf(attribute[1]!)
+    const declarations = declarationsOf(attribute[1] ?? attribute[2]!)
     return declarations.length ? [{ selectors: ['[style]'], declarations }] : []
   })
   return { rules: [...rules, ...inline], markup: text.replace(STYLE_BLOCK, '') }
@@ -175,7 +180,14 @@ const featureSources = (): Source[] =>
 
 describe('grain lies only on the desk, the washes and the tiles', () => {
   it('no source is declared or used anywhere else in Features', () => {
-    expect(scan(featureSources())).toEqual([])
+    const sources = featureSources()
+    const paths = sources.map((source) => source.path)
+    expect(paths).toContain(TOKENS)
+    expect(paths).toContain(LAYOUT)
+    const tokens = rulesOf(sources.find((source) => source.path === TOKENS)!.text)
+    const root = tokens.filter((rule) => rule.selectors.includes(':root')).flatMap((rule) => rule.declarations)
+    expect(root.map(([property]) => property)).toEqual(expect.arrayContaining(['--grain', '--crayon']))
+    expect(scan(sources)).toEqual([])
   })
 
   it('App.vue opens with the grain and the crayon, both at z-index 0', () => {
@@ -185,10 +197,15 @@ describe('grain lies only on the desk, the washes and the tiles', () => {
     expect(first![2]).toMatch(/class="kcc-grain"/)
     expect(second![2]).toMatch(/class="kcc-crayon"/)
 
-    const kit = rulesOf(readFileSync(join(FEATURES, 'Styles/Torn/Kit.css'), 'utf8'))
+    const desk = featureSources()
+      .flatMap((source) => split(source).rules)
+      .filter((rule) => rule.selectors.some((selector) => DESK_CLASS.test(selector)))
+    for (const rule of desk)
+      for (const [property, value] of rule.declarations)
+        if (property === 'z-index') expect(value, `${rule.selectors.join(', ')} z-index`).toBe('0')
     for (const selector of ['.kcc-grain', '.kcc-crayon']) {
-      const zIndexes = kit
-        .filter((rule) => rule.selectors.length === 1 && rule.selectors[0] === selector)
+      const zIndexes = desk
+        .filter((rule) => rule.selectors.includes(selector))
         .flatMap((rule) => rule.declarations.filter(([property]) => property === 'z-index'))
       expect(zIndexes.at(-1)?.[1], `${selector} z-index`).toBe('0')
     }
@@ -256,6 +273,20 @@ describe('the scanner', () => {
     expect(scan(css('.kcc-field { background-image: repeating-radial-gradient(#fff, #000 2px); }'))).not.toEqual([])
     expect(scan(css('<svg><filter><feTurbulence/></filter></svg>', 'Features/Components/Thing.vue'))).not.toEqual([])
     expect(scan(css('<svg><filter><feTurbulence/></filter></svg>', LAYOUT))).toEqual([])
+  })
+
+  it('reads declarations before a nested rule as the enclosing rule’s own', () => {
+    const nested = '.kcc-field { background-image: var(--grain); &:hover { opacity: 1; } }'
+    expect(scan(css(nested))).not.toEqual([])
+    const onDesk = '.kcc-grain { background-image: var(--grain); &:hover { opacity: 1; } }'
+    expect(scan(css(onDesk))).toEqual([])
+  })
+
+  it('matches texture names and style attributes whatever their case or quotes', () => {
+    expect(scan(css('.kcc-field { filter: URL(#KCC-bloom); }'))).not.toEqual([])
+    expect(scan(css('.kcc-field { background-image: Repeating-Radial-Gradient(#fff, #000 2px); }'))).not.toEqual([])
+    const single = "<template><div style='background-image: var(--grain)'></div></template>"
+    expect(scan(css(single, 'Features/Components/Thing.vue'))).not.toEqual([])
   })
 
   it('reads inline style attributes', () => {

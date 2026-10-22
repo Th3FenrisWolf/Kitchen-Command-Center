@@ -219,6 +219,32 @@ describe('createBloom: late starts', () => {
   })
 })
 
+describe('createBloom: visit starts', () => {
+  it('offers none before hydration', () => {
+    expect(createBloom(5, PAGE).visitStarts('@pad', 4, PAD_SLOTS)).toBeUndefined()
+  })
+
+  it('gives a global sheet the visit beats of its slots, in order, and leaves the page sequence alone', () => {
+    for (const seed of THOUSAND_SEEDS.slice(0, 50)) {
+      const washes = pageOf(PAGE, 6)
+      const bloom = hydrated(seed, PAGE, washes)
+      const beats = visitBeatsOf(seed)
+      const starts = bloom.visitStarts('@late', 4, [9, 1, 13, 5])
+      expect(starts).toEqual([1, 5, 9, 13].map((slot) => beats[slot]))
+      expect(bloom.lateStarts(2)).toEqual(candidates(seed, PAGE, 6, 8).slice(6))
+    }
+  })
+
+  it('falls back to the key hash when a global sheet names no slots', () => {
+    const seed = THOUSAND_SEEDS[3]
+    const bloom = hydrated(seed, PAGE, [])
+    const beats = visitBeatsOf(seed)
+    expect(bloom.visitStarts('@late', 2)).toEqual(
+      [0, 1].map((index) => beats[hash('@late', index) % 16]).sort((a, b) => a - b),
+    )
+  })
+})
+
 describe('useBloom', () => {
   it('returns the provided bloom', () => {
     const bloom = createBloom(3, '/recipes')

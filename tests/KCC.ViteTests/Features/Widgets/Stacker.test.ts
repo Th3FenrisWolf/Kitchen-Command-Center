@@ -145,7 +145,6 @@ describe('Stacker wash', () => {
     expect(fields.map((field) => inkOf(field[0]))).toEqual([chosenInk('peach'), chosenInk('teal')])
   })
 
-  // The key is the card's own, so a card inserted above another leaves the other's washes where they were.
   it("keys each card's washes on the card, not its place in the stack", async () => {
     const [alone] = washFields(await render([card('Cook', 'bg-teal')]))
     const [, below] = washFields(await render([card('Prep', 'bg-peach'), card('Cook', 'bg-teal')]))

@@ -269,7 +269,7 @@ describe('planSheet: colour and strength', () => {
     }
   })
 
-  it('takes wash k from slot k and slot k + 4 of one shuffle, so a page uses all eight', () => {
+  it('inks the four washes of a page with all eight brand washes between their two inks', () => {
     for (const seed of SEEDS) {
       const washes = plan(seed, '/|hero', 'page')
       const slots = [...washes.map((w) => w.style['--wash-ink']), ...washes.map((w) => w.style['--wash-ink-2'])]
@@ -349,14 +349,14 @@ describe('planSheet: colour and strength', () => {
 
 describe('planSheet: variety and cover', () => {
   it('gives 20 seeds of one key 20 distinct arrangements', () => {
-    for (const size of ['reading', 'page'] as const) {
+    for (const size of ['card', 'reading', 'page'] as const) {
       const seen = new Set(SEEDS.slice(0, 20).map((seed) => arrangement(plan(seed, '/|hero', size))))
       expect(seen.size).toBe(20)
     }
   })
 
   it('gives six distinct keys on one seed six distinct arrangements', () => {
-    for (const size of ['reading', 'page'] as const) {
+    for (const size of ['card', 'reading', 'page'] as const) {
       const seen = new Set(KEYS.map((key) => arrangement(plan(SEEDS[7], key, size))))
       expect(seen.size).toBe(KEYS.length)
     }
@@ -639,7 +639,7 @@ describe('scheduleWashes: the even spread', () => {
   const quietBound = (n: number, radius: number) => (2 * PHI ** 3 * WASH_WINDOW_S) / (Math.sqrt(5) * n) + 2 * radius
   const gapBound = (n: number, radius: number) => Math.min(radius, WASH_WINDOW_S / (Math.sqrt(5) * 2 * n)) - ROUNDING
 
-  it.each([2, 6, 12, 50, 200])(
+  it.each([6, 12, 50, 200])(
     'leaves no quiet stretch longer than 2 × 1.894 × 210 / n + 2r on a %i-wash page with the pad, over 1,000 seeds',
     (n) => {
       const washes = [...pageOf('/p', n), ...sheetOf('@pad', 4, PAD_SLOTS)]

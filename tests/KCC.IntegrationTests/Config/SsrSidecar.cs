@@ -44,29 +44,37 @@ public sealed class SsrSidecar : IAsyncInitializer, IAsyncDisposable
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
-        using var http = new HttpClient { BaseAddress = baseUrl, Timeout = TimeSpan.FromSeconds(5) };
-        for (var deadline = DateTime.UtcNow.AddSeconds(60); DateTime.UtcNow < deadline; await Task.Delay(250))
+        try
         {
-            if (process.HasExited)
+            using var http = new HttpClient { BaseAddress = baseUrl, Timeout = TimeSpan.FromSeconds(5) };
+            for (var deadline = DateTime.UtcNow.AddSeconds(60); DateTime.UtcNow < deadline; await Task.Delay(250))
             {
-                throw new InvalidOperationException($"The SSR service exited with {process.ExitCode}.{Environment.NewLine}{Output()}");
-            }
-
-            try
-            {
-                using var response = await http.GetAsync("health");
-                if (response.IsSuccessStatusCode)
+                if (process.HasExited)
                 {
-                    return;
+                    throw new InvalidOperationException($"The SSR service exited with {process.ExitCode}.{Environment.NewLine}{Output()}");
+                }
+
+                try
+                {
+                    using var response = await http.GetAsync("health");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return;
+                    }
+                }
+                catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+                {
+                    // Not listening yet.
                 }
             }
-            catch (HttpRequestException)
-            {
-                // Not listening yet.
-            }
-        }
 
-        throw new TimeoutException($"The SSR service did not answer /health within a minute.{Environment.NewLine}{Output()}");
+            throw new TimeoutException($"The SSR service did not answer /health within a minute.{Environment.NewLine}{Output()}");
+        }
+        catch
+        {
+            process.Kill(entireProcessTree: true);
+            throw;
+        }
     }
 
     public async ValueTask DisposeAsync()

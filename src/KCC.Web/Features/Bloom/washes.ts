@@ -271,6 +271,16 @@ function priorityOrder(seed: number) {
     hash(seed, a.key, a.index) - hash(seed, b.key, b.index) || (a.key < b.key ? -1 : a.key > b.key ? 1 : a.index - b.index)
 }
 
+function beatOf(visit: readonly number[], key: string, index: number, slot: number | undefined): number {
+  const wanted = slot ?? hash(key, index)
+  return visit[((wanted % VISIT_BEATS) + VISIT_BEATS) % VISIT_BEATS] / 1000
+}
+
+export function visitStarts(seed: number, key: string, count: number, slots?: readonly number[]): number[] {
+  const visit = visitBeatsMs(seed)
+  return Array.from({ length: count }, (_, index) => beatOf(visit, key, index, slots?.[index])).sort((a, b) => a - b)
+}
+
 export function scheduleStarts(seed: number, washes: readonly CollectedWash[]): ScheduledStart[] {
   const claims = new Map<CollectedWash, number>()
   const ranked = washes.filter((w) => !isGlobalKey(w.key)).sort(priorityOrder(seed))
@@ -281,8 +291,7 @@ export function scheduleStarts(seed: number, washes: readonly CollectedWash[]): 
   const visit = visitBeatsMs(seed)
   for (const wash of washes) {
     if (!isGlobalKey(wash.key)) continue
-    const slot = wash.slot ?? hash(wash.key, wash.index)
-    claims.set(wash, visit[((slot % VISIT_BEATS) + VISIT_BEATS) % VISIT_BEATS] / 1000)
+    claims.set(wash, beatOf(visit, wash.key, wash.index, wash.slot))
   }
 
   const sheets = new Map<string, CollectedWash[]>()

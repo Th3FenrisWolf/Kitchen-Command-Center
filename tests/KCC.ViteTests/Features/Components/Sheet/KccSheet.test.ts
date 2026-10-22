@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { createSSRApp, h } from 'vue'
+import { renderToString } from '@vue/server-renderer'
+import { BLOOM_KEY, createBloom } from '~/Bloom/bloomContext'
 import { planSheet } from '~/Bloom/washes'
 import KccSheet from '~/Components/Sheet/KccSheet.vue'
 import { renderSsr } from '../../../support/ssr'
@@ -69,6 +72,16 @@ describe('KccSheet', () => {
 
     it('leave no field with bloom none', async () => {
       expect(await render({ bloom: 'none', wash: 'peach', tear: 'hero' })).not.toContain('kcc-wash')
+    })
+
+    it('collect the slots of a global key into the provided bloom', async () => {
+      const bloom = createBloom(0, '/')
+      const app = createSSRApp({ render: () => h(KccSheet, { washKey: '@pad', washSlots: [0, 4, 8, 12], tear: 'hero' }) })
+      app.provide(BLOOM_KEY, bloom)
+      await renderToString(app)
+      expect(bloom.collected().map(({ key, index, slot }) => ({ key, index, slot }))).toEqual(
+        [0, 4, 8, 12].map((slot, index) => ({ key: '@pad', index, slot })),
+      )
     })
 
     it('pass the wash key and slots through', async () => {

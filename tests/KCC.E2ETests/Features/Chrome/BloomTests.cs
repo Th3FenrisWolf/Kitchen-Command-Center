@@ -69,8 +69,7 @@ public partial class BloomTests : BasePageTests
         _ = await Assert.That(await Visit.ReadAsync(Page.Context)).Matches(VisitValue());
         _ = await Assert.That(washes).IsNotEmpty();
 
-        // A new visit starts on the whole second, so the page renders up to a second in, and a wash due in that
-        // second shows a hair of its bloom on the first frame.
+        // The page is read a moment after it paints, so a wash due in that moment shows a hair of its bloom.
         _ = await Assert.That(washes.Where(wash => wash.At >= elapsed && wash.Opacity != 0).Select(wash => wash.ToString())).IsEmpty();
         _ = await Assert.That(washes.Where(wash => wash.Opacity > Hair).Select(wash => wash.ToString())).IsEmpty();
     }

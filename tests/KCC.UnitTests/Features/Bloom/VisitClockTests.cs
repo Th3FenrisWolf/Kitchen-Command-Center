@@ -19,7 +19,7 @@ public class VisitClockTests
         var visit = VisitClock.Resolve(context, new FixedClock(Now));
 
         _ = await Assert.That(visit.StartedAt).IsEqualTo(NowInWholeSeconds);
-        _ = await Assert.That(visit.Elapsed).IsEqualTo(TimeSpan.FromMilliseconds(750));
+        _ = await Assert.That(visit.Elapsed).IsEqualTo(TimeSpan.Zero);
         var cookie = SetCookie(context);
         _ = await Assert.That(cookie.Name.ToString()).IsEqualTo("kcc-visit");
         _ = await Assert.That(cookie.Value.ToString()).IsEqualTo(VisitCookie.Format(visit));
@@ -67,7 +67,18 @@ public class VisitClockTests
         var visit = VisitClock.Resolve(context, new FixedClock(Now));
 
         _ = await Assert.That(visit.StartedAt).IsEqualTo(NowInWholeSeconds);
+        _ = await Assert.That(visit.Seed).IsNotEqualTo(0x9f3a0c71u);
         _ = await Assert.That(SetCookie(context).Value.ToString()).IsEqualTo(VisitCookie.Format(visit));
+    }
+
+    [Test]
+    public async Task Resolve_WithNoCookieTwice_MintsDifferentSeeds()
+    {
+        var seeds = Enumerable.Range(0, 8)
+            .Select(_ => VisitClock.Resolve(new DefaultHttpContext(), new FixedClock(Now)).Seed)
+            .Distinct();
+
+        _ = await Assert.That(seeds.Count()).IsGreaterThan(1);
     }
 
     [Test]

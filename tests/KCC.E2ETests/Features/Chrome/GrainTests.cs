@@ -5,6 +5,14 @@ namespace KCC.E2ETests.Features.Chrome;
 
 public class GrainTests : BasePageTests
 {
+    private const string Login = "/account/login";
+
+    private const string Home = "/";
+
+    private const string Library = "/recipes/";
+
+    private const string Recipe = "/recipes/spicy-ramen-flight/";
+
     private const int PatchWidth = 40;
 
     private const int PatchHeight = 16;
@@ -101,10 +109,16 @@ public class GrainTests : BasePageTests
 
     private const string GrainAboveASheet = """
         () => {
+          const grained = (style) => /url\("?data:image\/svg|repeating-(linear|radial)-gradient/.test(style.backgroundImage)
           const textured = (element) => {
             const style = getComputedStyle(element)
-            return /url\("?data:image\/svg|repeating-(linear|radial)-gradient/.test(style.backgroundImage) || /url\(/.test(style.filter)
+            return grained(style) || /url\(/.test(style.filter)
           }
+          const pseudoGrain = (sheet) =>
+            [sheet, ...sheet.querySelectorAll('*')].flatMap((element) =>
+              ['::before', '::after']
+                .filter((pseudo) => grained(getComputedStyle(element, pseudo)))
+                .map((pseudo) => `${element.tagName.toLowerCase()}.${[...element.classList].join('.')}${pseudo} in ${sheet.className}`))
           const exempt = (element) => element.matches('.kcc-wash, .kcc-tile, .kcc-tilewrap > .kcc-tape')
           const lift = document.createElement('style')
           lift.textContent = '* { pointer-events: auto !important; }'
@@ -122,6 +136,7 @@ public class GrainTests : BasePageTests
               const at = stack.indexOf(sheet)
               if (at < 0) continue
               sampled++
+              faults.push(...pseudoGrain(sheet))
               stack.slice(0, at).filter((element) => textured(element) && !exempt(element) && !element.contains(sheet))
                 .forEach((element) => faults.push(`${element.tagName.toLowerCase()}.${[...element.classList].join('.')} over ${sheet.className}`))
             }
@@ -133,11 +148,17 @@ public class GrainTests : BasePageTests
         """;
 
     [Test]
-    [Arguments("light")]
-    [Arguments("dark")]
-    public async Task BarePaper_HasNoGrain_WhileTheDeskKeepsIts(string ramp)
+    [Arguments("light", Login)]
+    [Arguments("dark", Login)]
+    [Arguments("light", Home)]
+    [Arguments("dark", Home)]
+    [Arguments("light", Library)]
+    [Arguments("dark", Library)]
+    [Arguments("light", Recipe)]
+    [Arguments("dark", Recipe)]
+    public async Task BarePaper_HasNoGrain_WhileTheDeskKeepsIts(string ramp, string page)
     {
-        await OpenAsync(ramp);
+        await OpenAsync(ramp, page);
 
         var paper = await Page.EvaluateAsync<Spot?>(FindPaperStrip, new { width = 72, height = 72 });
         var desk = await Page.EvaluateAsync<Spot?>(FindDesk, new { width = PatchWidth, height = PatchHeight });
@@ -153,11 +174,17 @@ public class GrainTests : BasePageTests
     }
 
     [Test]
-    [Arguments("light")]
-    [Arguments("dark")]
-    public async Task NoGrainLayer_PaintsAboveASheet(string ramp)
+    [Arguments("light", Login)]
+    [Arguments("dark", Login)]
+    [Arguments("light", Home)]
+    [Arguments("dark", Home)]
+    [Arguments("light", Library)]
+    [Arguments("dark", Library)]
+    [Arguments("light", Recipe)]
+    [Arguments("dark", Recipe)]
+    public async Task NoGrainLayer_PaintsAboveASheet(string ramp, string page)
     {
-        await OpenAsync(ramp);
+        await OpenAsync(ramp, page);
 
         var read = await Page.EvaluateAsync<Stacking>(GrainAboveASheet);
 
@@ -165,14 +192,13 @@ public class GrainTests : BasePageTests
         _ = await Assert.That(read.Faults).IsEmpty();
     }
 
-    // A wash due in the visit's first second can show a hair of its bloom on the first frame, so the fields are hidden
-    // from the paper's sample.
-    private async Task OpenAsync(string ramp)
+    private async Task OpenAsync(string ramp, string page)
     {
+        await RecipeIndex.CurrentAsync(Page);
         await Page.EmulateMediaAsync(new() { ColorScheme = ramp == "dark" ? ColorScheme.Dark : ColorScheme.Light });
         await Visit.BeginAsync(Page.Context, Site.BaseUrl, 0);
         await Washes.FreezeAsync(Page);
-        await Page.GotoAsync("/account/login");
+        await Page.GotoAsync(page);
         await Expect(Page.Locator("html")).ToHaveAttributeAsync("data-theme", ramp);
         await Page.AddStyleTagAsync(new() { Content = ".kcc-washes { display: none !important; }" });
         await Page.EvaluateAsync("() => document.fonts.ready");
