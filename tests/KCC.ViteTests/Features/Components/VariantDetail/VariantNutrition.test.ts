@@ -1,4 +1,5 @@
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
+import { washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import VariantNutrition from '~/Components/VariantDetail/VariantNutrition.vue'
 
@@ -24,8 +25,7 @@ describe('VariantNutrition sheet', () => {
     expect(tagWith(html, 'kcc-slip')).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-wheat" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?Nutrition/s)
-    // The figures run the full width of the sheet, so there is no margin for a wash to sit under.
-    expect(html).not.toContain('kcc-wash')
+    expect(washFields(html).map((field) => field.length)).toEqual([3])
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 

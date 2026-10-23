@@ -60,7 +60,7 @@
 </script>
 
 <template>
-  <KccSheet margin as="section" icon="fa-duotone fa-pen-nib" :tear="4" wide>
+  <KccSheet wash-key="variant-cook-notes" margin as="section" icon="fa-duotone fa-pen-nib" :tear="4" wide>
     <template #label><ResourceString for="CookNotes" /></template>
 
     <h2 class="sr-only">{{ t('CookNotes') }}</h2>

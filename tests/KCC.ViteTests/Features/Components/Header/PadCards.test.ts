@@ -8,9 +8,14 @@ import PadCard from '~/Components/Header/PadCard.vue'
 import RecipesCard from '~/Components/Header/RecipesCard.vue'
 import SearchCard from '~/Components/Header/SearchCard.vue'
 import { navLabels } from '~/Components/Header/navLabels'
+import { planSheet } from '~/Bloom/washes'
+import { BLOOM_KEY, createBloom } from '~/Bloom/bloomContext'
+import { createSSRApp, h } from 'vue'
+import { renderToString } from '@vue/server-renderer'
 import type { RecipeSearchHit } from '~/Types/Recipe'
 import { LABELS, member, visitor } from '../../../support/nav'
 import { renderSsr, tagWith } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 const t = navLabels(LABELS)
 
@@ -84,13 +89,44 @@ describe('PadCard', () => {
       width: '440px',
       left: 120,
       wash: 'lavender',
-      at: { x: '100%', y: '100%', w: '30%', h: '62%' },
     })
     const card = tagWith(html, 'id="pad-card-x"')
 
     expect(card).toContain('class="kcc-slip kcc-tear-6 pad-card is-open"')
     expect(card).toContain('style="--r:0.3;--pad-card-w:440px;left:120px;"')
-    expect(html).toContain('<div class="kcc-torn"><div class="kcc-sheet"><span class="kcc-wash"')
+    expect(html).toContain('<div class="kcc-torn"><div class="kcc-sheet"><span class="kcc-washes"')
+    expect(inkOf(washFields(html)[0]?.[0])).toBe(chosenInk('lavender'))
+  })
+
+  it.each(['pad-card-recipes', 'pad-card-kitchen', 'pad-card-search', 'pad-card-find', 'pad-card-menu'])(
+    'keys the %s sheet by @ and its id, the same on every page',
+    async (id) => {
+      const html = await renderSsr(PadCard, { id, state: 'rest', tear: 4, tilt: 0 })
+
+      expect(washFields(html).map((field) => field.map((wash) => wash.id))).toEqual([
+        planSheet({ seed: 0, key: `@${id}`, size: 'card' }).map((wash) => wash.id),
+      ])
+    },
+  )
+
+  it('hands its fixed beats to its sheet, one per wash', async () => {
+    for (let seed = 1; seed <= 20; seed++) {
+      const bloom = createBloom(seed, '/recipes')
+      const app = createSSRApp({
+        render: () => h(PadCard, { id: 'pad-card-x', state: 'rest', tear: 4, tilt: 0, washSlots: [3, 11] }),
+      })
+      app.provide(BLOOM_KEY, bloom)
+      await renderToString(app)
+
+      const washes = bloom.collected()
+      expect(washes.map((wash) => wash.slot)).toEqual([3, 11].slice(0, washes.length))
+    }
+  })
+
+  it('takes no placement: the card declares no at, and the header passes none', () => {
+    expect(sourceOf('PadCard.vue')).not.toMatch(/\bat\??:/)
+    expect(sourceOf('PadCard.vue')).not.toContain(':at')
+    expect(sourceOf('AppHeader.Component.vue')).not.toContain(':at=')
   })
 
   it('lies on no blank: the pad holds its cards over its own page', async () => {
@@ -286,6 +322,22 @@ describe('A phone card', () => {
         ?.every((tag) => /\bscroll\b/.test(tag)),
     ).toBe(true)
     expect(declarationsOf('PadCard.vue', '.pad-card--phone .kcc-sheet')['background-attachment']).toBeUndefined()
+  })
+})
+
+describe('The card variant off the current breakpoint', () => {
+  const states = ['', '.is-peek', '.is-open']
+
+  it.each([
+    ['desk', '.pad-card--desk'],
+    ['phone', '.pad-card--phone'],
+  ])('keeps the %s variant rendered, so its washes keep their clock, and out of reach in every state', (_, variant) => {
+    for (const state of states) {
+      const declarations = declarationsOf('PadCard.vue', `.pad-card${variant}${state}`)
+      expect(declarations.display, state).toBeUndefined()
+      expect(declarations.visibility, state).toBe('hidden')
+      expect(declarations['pointer-events'], state).toBe('none')
+    }
   })
 })
 

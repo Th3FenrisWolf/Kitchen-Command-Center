@@ -77,7 +77,7 @@
       data-testid="leave-dialog"
     >
       <div ref="panel" class="w-full max-w-md">
-        <KccSheet crisp>
+        <KccSheet wash-key="leave-confirm" crisp>
           <ResourceString :id="warningId" for="LeaveWarning" as="p" class="kcc-well kcc-well--warning kcc-kick" />
 
           <div class="mt-rule-1 flex flex-wrap gap-x-3 gap-y-rule-1">

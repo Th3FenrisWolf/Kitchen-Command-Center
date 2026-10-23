@@ -10,6 +10,13 @@ namespace KCC.UnitTests.Features.Pages.Home;
 
 public class HomeSectionsTests
 {
+    private static readonly Guid RichTextKey = Guid.Parse("0b8f6a1e-52c4-4d0a-9f3e-6c1d2e3f4a5b");
+    private static readonly Guid StackerKey = Guid.Parse("1c9a7b2f-63d5-4e1b-8a4f-7d2e3f4a5b6c");
+    private static readonly Guid CakeKey = Guid.Parse("2d0b8c3a-74e6-4f2c-9b5a-8e3f4a5b6c7d");
+    private static readonly Guid PieKey = Guid.Parse("3e1c9d4b-85f7-4a3d-8c6b-9f4a5b6c7d8e");
+    private static readonly Guid GinKey = Guid.Parse("4f2d0e5c-96a8-4b4e-9d7c-0a5b6c7d8e9f");
+    private static readonly Guid RumKey = Guid.Parse("5a3e1f6d-a7b9-4c5f-8e8d-1b6c7d8e9f0a");
+
     [Test]
     public async Task From_KeepsTheEditorsOrder()
     {
@@ -113,9 +120,9 @@ public class HomeSectionsTests
     {
         var link = new Link { Name = "View Recipes", Url = "/recipes/", Target = "_blank" };
 
-        var grid = (CardGridSection)HomeSections.From(Blocks(Grid("Sweets", "4", Card("Cake", "Rich", "Layers.", "Red", link)))).Single();
+        var grid = (CardGridSection)HomeSections.From(Blocks(Grid("Sweets", "4", (CakeKey, Card("Cake", "Rich", "Layers.", "Red", link))))).Single();
 
-        _ = await Assert.That(grid.Cards.Single()).IsEqualTo(new HomeCard("Cake", "Rich", "Layers.", "bg-red", new HomeLink("View Recipes", "/recipes/", "_blank"), 1));
+        _ = await Assert.That(grid.Cards.Single()).IsEqualTo(new HomeCard(CakeKey, "Cake", "Rich", "Layers.", "bg-red", new HomeLink("View Recipes", "/recipes/", "_blank"), 1));
     }
 
     [Test]
@@ -129,11 +136,31 @@ public class HomeSectionsTests
     [Test]
     public async Task From_Stacker_GivesTheComponentItsCards()
     {
-        var stacker = (StackerSection)HomeSections.From(Blocks(Stacker("Drinks", Card("Gin", "Botanical", wash: "Green")))).Single();
+        var stacker = (StackerSection)HomeSections.From(Blocks(Stacker("Drinks", null, (GinKey, Card("Gin", "Botanical", wash: "Green"))))).Single();
 
         _ = await Assert.That(stacker.Heading).IsEqualTo("Drinks");
         _ = await Assert.That(stacker.HasSheet).IsFalse();
-        _ = await Assert.That(stacker.Cards.Single()).IsEqualTo(new StackerCard("Gin", "Botanical", "bg-green", 1));
+        _ = await Assert.That(stacker.Cards.Single()).IsEqualTo(new StackerCard(GinKey, "Gin", "Botanical", "bg-green", 1));
+    }
+
+    [Test]
+    public async Task From_KeysEachSectionOnItsBlocksContentKey()
+    {
+        var sections = HomeSections.From(Keyed((RichTextKey, RichText("<p>One</p>")), (StackerKey, Stacker("Drinks", "<p>Pour.</p>", Card("Gin")))));
+
+        _ = await Assert.That(((RichTextSection)sections[0]).Key).IsEqualTo(RichTextKey);
+        _ = await Assert.That(((StackerSection)sections[1]).Key).IsEqualTo(StackerKey);
+    }
+
+    [Test]
+    public async Task From_KeysEachCardOnItsBlocksContentKey()
+    {
+        var sections = HomeSections.From(Blocks(
+            Grid(null, "2", (CakeKey, Card("Cake")), (PieKey, Card("Pie"))),
+            Stacker("Drinks", null, (GinKey, Card("Gin")), (RumKey, Card("Rum")))));
+
+        _ = await Assert.That(string.Join(",", ((CardGridSection)sections[0]).Cards.Select(card => card.Key))).IsEqualTo($"{CakeKey},{PieKey}");
+        _ = await Assert.That(string.Join(",", ((StackerSection)sections[1]).Cards.Select(card => card.Key))).IsEqualTo($"{GinKey},{RumKey}");
     }
 
     private static IEnumerable<int> Tears(HomeSection section) => section switch
@@ -149,6 +176,9 @@ public class HomeSectionsTests
 
     private static BlockListModel Blocks(params (IPublishedElement Content, IPublishedElement Settings)[] blocks) =>
         new(blocks.Select(block => new BlockListItem(Guid.NewGuid(), block.Content, block.Settings is null ? null : Guid.NewGuid(), block.Settings)).ToList());
+
+    private static BlockListModel Keyed(params (Guid Key, IPublishedElement Content)[] blocks) =>
+        new(blocks.Select(block => new BlockListItem(block.Key, block.Content, null, null)).ToList());
 
     private static T Element<T>(Action<Mock<T>> setup)
         where T : PublishedElementModel
@@ -168,6 +198,13 @@ public class HomeSectionsTests
         block.SetupGet(b => b.Cards).Returns(Blocks(cards));
     });
 
+    private static CardGridBlock Grid(string heading, string columns, params (Guid Key, Card Card)[] cards) => Element<CardGridBlock>(block =>
+    {
+        block.SetupGet(b => b.Heading).Returns(heading);
+        block.SetupGet(b => b.Columns).Returns(columns);
+        block.SetupGet(b => b.Cards).Returns(Keyed(cards.Select(card => (card.Key, (IPublishedElement)card.Card)).ToArray()));
+    });
+
     private static StackerBlock Stacker(string heading, params Card[] cards) => Stacker(heading, null, cards);
 
     private static StackerBlock Stacker(string heading, string body, params Card[] cards) => Element<StackerBlock>(block =>
@@ -175,6 +212,13 @@ public class HomeSectionsTests
         block.SetupGet(b => b.Heading).Returns(heading);
         block.SetupGet(b => b.Body).Returns(body is null ? null : new HtmlEncodedString(body));
         block.SetupGet(b => b.Cards).Returns(Blocks(cards));
+    });
+
+    private static StackerBlock Stacker(string heading, string body, params (Guid Key, Card Card)[] cards) => Element<StackerBlock>(block =>
+    {
+        block.SetupGet(b => b.Heading).Returns(heading);
+        block.SetupGet(b => b.Body).Returns(body is null ? null : new HtmlEncodedString(body));
+        block.SetupGet(b => b.Cards).Returns(Keyed(cards.Select(card => (card.Key, (IPublishedElement)card.Card)).ToArray()));
     });
 
     private static Card Card(string heading, string subHeading = null, string body = null, string wash = null, Link link = null) => Element<Card>(card =>

@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest'
 
 // Both ramps must pass WCAG AA on the pairs the identity actually uses. Light is the default ramp and the
 // binding constraint for small caps on the desk; dark is the binding constraint for chalk over a screened
-// wash. Three values are pinned here rather than by the mockup: light ink-soft, light hair-strong and dark
-// --wash-op. Lower a failing token's L (or the alpha / opacity) and rerun.
+// wash. Three values are pinned here rather than by the mockup: light ink-soft, light hair-strong and the
+// --wash-strength of each ramp. Lower a failing token's L (or the alpha / opacity) and rerun.
 const stylesDir = new URL('../../../../src/KCC.Web/Features/Styles/', import.meta.url)
 const read = (name: string) => readFileSync(fileURLToPath(new URL(name, stylesDir)), 'utf8')
 
@@ -54,14 +54,16 @@ if (darkOverrides.size !== darkDeclared)
   throw new Error(`parsed ${darkOverrides.size} of ${darkDeclared} dark tokens in Torn/Tokens.css`)
 if (resolve(dark, 'paper').l === resolve(light, 'paper').l) throw new Error('the dark ramp did not override paper')
 
-type WashRender = { blend: 'multiply' | 'screen'; opacity: number }
+type WashRender = { blend: 'multiply' | 'screen'; strength: number; sat: number }
 
 function washRender(css: string, base: Partial<WashRender> = {}): WashRender {
   const blend = (css.match(/--wash-blend:\s*(multiply|screen)/)?.[1] as WashRender['blend'] | undefined) ?? base.blend
-  const opacityText = css.match(/--wash-op:\s*([\d.]+)/)?.[1]
-  const opacity = opacityText === undefined ? base.opacity : Number(opacityText)
-  if (!blend || opacity === undefined) throw new Error('Torn/Tokens.css declares no --wash-blend / --wash-op')
-  return { blend, opacity }
+  const strengthText = css.match(/--wash-strength:\s*([\d.]+)/)?.[1]
+  const satText = css.match(/--wash-sat:\s*([\d.]+)/)?.[1]
+  const sat = satText === undefined ? base.sat : Number(satText)
+  if (!blend || strengthText === undefined || sat === undefined)
+    throw new Error('Torn/Tokens.css declares no --wash-blend / --wash-strength / --wash-sat')
+  return { blend, strength: Number(strengthText), sat }
 }
 
 const rootAt = tokensCss.indexOf(':root {')
@@ -151,28 +153,80 @@ function tintedPaper(tokens: Tokens, wash: string, amount = 0.28): Rgb {
   return toLinearRgb({ l: L, c: Math.hypot(a, b), h: ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360, alpha: 1 })
 }
 
-/**
- * Paper with a wash pool over it. `coverage` is the pool's own alpha at the point under test: 1 at the core,
- * .38 at the 70% ring (the radial gradient's second stop). The #kcc-wax filter and saturate() are ignored:
- * the grain composite slightly lightens the pool's weight and saturate() moves chroma, not lightness.
- */
-function washedPaper(tokens: Tokens, wash: string, { blend, opacity }: WashRender, coverage: number): Rgb {
-  const paper = mapRgb(toLinearRgb(resolve(tokens, 'paper')), encode)
-  const pool = mapRgb(toLinearRgb(resolve(tokens, wash)), encode)
-  const blended: Rgb =
-    blend === 'multiply'
-      ? { r: paper.r * pool.r, g: paper.g * pool.g, b: paper.b * pool.b }
-      : { r: 1 - (1 - paper.r) * (1 - pool.r), g: 1 - (1 - paper.g) * (1 - pool.g), b: 1 - (1 - paper.b) * (1 - pool.b) }
-  const a = opacity * coverage
-  const out: Rgb = {
-    r: paper.r + (blended.r - paper.r) * a,
-    g: paper.g + (blended.g - paper.g) * a,
-    b: paper.b + (blended.b - paper.b) * a,
+// Stands in for the bloom filter's grain composite as text reads it: averaged over 3px, not at its 1.24 peak.
+// Fitted per blend so the model reads at or below every rendering in RENDERED_INK_SOFT.
+const GRAIN_GAIN: Record<WashRender['blend'], number> = { multiply: 1.26, screen: 0.86 }
+const FIRST_INK_RIM_ALPHA = 0.26 + 0.25 * 0.34
+const SECOND_INK_CORE_ALPHA = 0.26
+
+type Premultiplied = { rgb: Rgb; alpha: number }
+type WashPair = [first: string, second: string]
+
+function sourceOver(top: Premultiplied, bottom: Premultiplied): Premultiplied {
+  const keep = 1 - top.alpha
+  return {
+    rgb: {
+      r: top.rgb.r + bottom.rgb.r * keep,
+      g: top.rgb.g + bottom.rgb.g * keep,
+      b: top.rgb.b + bottom.rgb.b * keep,
+    },
+    alpha: top.alpha + bottom.alpha * keep,
   }
-  return mapRgb(out, decode)
+}
+
+function inkLayer(tokens: Tokens, token: string, alpha: number): Premultiplied {
+  const { r, g, b } = mapRgb(toLinearRgb(resolve(tokens, token)), encode)
+  return { rgb: { r: r * alpha, g: g * alpha, b: b * alpha }, alpha }
+}
+
+// The Filter Effects saturate() matrix, applied to gamma-encoded sRGB as Chromium runs a CSS filter function.
+function saturate({ r, g, b }: Rgb, s: number): Rgb {
+  const clip = (v: number) => Math.min(1, Math.max(0, v))
+  return {
+    r: clip((0.213 + 0.787 * s) * r + (0.715 - 0.715 * s) * g + (0.072 - 0.072 * s) * b),
+    g: clip((0.213 - 0.213 * s) * r + (0.715 + 0.285 * s) * g + (0.072 - 0.072 * s) * b),
+    b: clip((0.213 - 0.213 * s) * r + (0.715 - 0.715 * s) * g + (0.072 + 0.928 * s) * b),
+  }
+}
+
+function washAtPeak(tokens: Tokens, [first, second]: WashPair, { blend, strength, sat }: WashRender): Premultiplied {
+  const { rgb, alpha } = sourceOver(
+    inkLayer(tokens, first, FIRST_INK_RIM_ALPHA),
+    inkLayer(tokens, second, SECOND_INK_CORE_ALPHA),
+  )
+  const colour = saturate({ r: rgb.r / alpha, g: rgb.g / alpha, b: rgb.b / alpha }, sat)
+  const peak = Math.min(1, alpha * strength * GRAIN_GAIN[blend])
+  return { rgb: { r: colour.r * peak, g: colour.g * peak, b: colour.b * peak }, alpha: peak }
+}
+
+function stackedPaper(tokens: Tokens, [top, bottom]: [WashPair, WashPair], render: WashRender): Rgb {
+  const { blend } = render
+  const field = sourceOver(washAtPeak(tokens, top, render), washAtPeak(tokens, bottom, render))
+  const paper = mapRgb(toLinearRgb(resolve(tokens, 'paper')), encode)
+  const colour = (channel: 'r' | 'g' | 'b') => (field.alpha === 0 ? 0 : field.rgb[channel] / field.alpha)
+  const mixed = (channel: 'r' | 'g' | 'b') => {
+    const backdrop = paper[channel]
+    const source = colour(channel)
+    const blended = blend === 'multiply' ? backdrop * source : 1 - (1 - backdrop) * (1 - source)
+    return backdrop + (blended - backdrop) * field.alpha
+  }
+  return mapRgb({ r: mixed('r'), g: mixed('g'), b: mixed('b') }, decode)
 }
 
 const WASHES = ['peach', 'yellow', 'green', 'teal', 'sky', 'lavender', 'pink', 'red']
+const WASH_PAIRS = WASHES.flatMap((first) => WASHES.map((second): WashPair => [first, second]))
+const WASH_STACKS = WASH_PAIRS.flatMap((top) => WASH_PAIRS.map((bottom): [WashPair, WashPair] => [top, bottom]))
+// ink-soft over the worst two-wash stack at its peak, averaged over 3px, rendered through the real bloom filter
+// in headless Chromium: [ramp, strength, sat, reading].
+const RENDERED_INK_SOFT: ['light' | 'dark', number, number, number][] = [
+  ['light', 0.704, 1, 4.483],
+  ['light', 0.55, 2.5, 4.647],
+  ['light', 0.6, 2.5, 4.491],
+  ['dark', 0.116, 1.45, 5.126],
+  ['dark', 0.16, 3, 4.642],
+  ['dark', 0.175, 3, 4.475],
+]
+
 // The status wells: kcc-well--danger / --success / --warning.
 const STATUS_WASHES = ['red', 'green', 'yellow']
 
@@ -224,30 +278,36 @@ describe.each<[string, Tokens, WashRender]>([
 
   describe('ink over a washed sheet', () => {
     const ink = toLinearRgb(resolve(tokens, 'ink'))
-    // Copy may sit on the pool's outer ring; the identity keeps it off the core, so the core only has to
-    // read as UI on the dark ramp.
-    const coreFloor = name === 'light' ? 4.5 : 3
-
     it('reads ink as opaque, so compositing can be skipped', () => {
       expect(resolve(tokens, 'ink').alpha).toBe(1)
     })
 
-    it.each(WASHES)('ink over paper + %s at the 38% ring reads at AA for text (≥ 4.5:1)', (w) => {
-      expect(contrastOf(ink, washedPaper(tokens, w, wash, 0.38))).toBeGreaterThanOrEqual(4.5)
-    })
-
-    it.each(WASHES)(`ink over paper + %s at the core reads at ≥ ${coreFloor}:1`, (w) => {
-      expect(contrastOf(ink, washedPaper(tokens, w, wash, 1))).toBeGreaterThanOrEqual(coreFloor)
-    })
-
     const inkSoft = toLinearRgb(resolve(tokens, 'ink-soft'))
+    const stacks = WASH_STACKS.map((stack) => stackedPaper(tokens, stack, wash))
+    const worst = (reading: (ground: Rgb) => number) => Math.min(...stacks.map(reading))
 
-    it.each(WASHES)('ink-soft over paper + %s at the 38% ring reads at AA for text (≥ 4.5:1)', (w) => {
-      expect(contrastOf(inkSoft, washedPaper(tokens, w, wash, 0.38))).toBeGreaterThanOrEqual(4.5)
+    it('reads ink over every two-wash stack at its peak at AA for text (≥ 4.5:1)', () => {
+      expect(worst((ground) => contrastOf(ink, ground))).toBeGreaterThanOrEqual(4.5)
     })
 
-    it.each(WASHES)(`ink-soft over paper + %s at the core reads at ≥ ${coreFloor}:1`, (w) => {
-      expect(contrastOf(inkSoft, washedPaper(tokens, w, wash, 1))).toBeGreaterThanOrEqual(coreFloor)
+    it('reads ink-soft over every two-wash stack at its peak at AA for text (≥ 4.5:1)', () => {
+      expect(worst((ground) => contrastOf(inkSoft, ground))).toBeGreaterThanOrEqual(4.5)
+    })
+
+    it('reads below AA a tenth stronger', () => {
+      const stronger = { ...wash, strength: wash.strength * 1.1 }
+      const hair = resolve(tokens, 'hair-strong')
+      const reads = (render: WashRender) =>
+        WASH_STACKS.every((stack) => {
+          const ground = stackedPaper(tokens, stack, render)
+          return (
+            contrastOf(ink, ground) >= 4.5 &&
+            contrastOf(inkSoft, ground) >= 4.5 &&
+            contrastOf(over(toLinearRgb(hair), ground, hair.alpha), ground) >= 3
+          )
+        })
+      expect(reads(wash)).toBe(true)
+      expect(reads(stronger)).toBe(false)
     })
 
     it.each(STATUS_WASHES)('ink in a %s status well reads at AA for text (≥ 4.5:1)', (w) => {
@@ -266,23 +326,30 @@ describe.each<[string, Tokens, WashRender]>([
     )
 
     // Ghost buttons, badges, fields and checklist boxes draw their hairline on washed sheets too (the Library,
-    // the ingredients sheet, the empty states). On the ring it reads; over a dark-ramp core it measures
-    // 2.6–2.9:1, so controls stay off the core the way copy does.
+    // the ingredients sheet, the empty states).
     const hairStrong = resolve(tokens, 'hair-strong')
     const hairOver = (ground: Rgb) => contrastOf(over(toLinearRgb(hairStrong), ground, hairStrong.alpha), ground)
 
-    it.each(WASHES)('hair-strong over paper + %s at the 38% ring reads at AA for UI (≥ 3:1)', (w) => {
-      expect(hairOver(washedPaper(tokens, w, wash, 0.38))).toBeGreaterThanOrEqual(3)
+    it('reads hair-strong over every two-wash stack at its peak at AA for UI (≥ 3:1)', () => {
+      expect(worst(hairOver)).toBeGreaterThanOrEqual(3)
     })
-
-    const hairOnCore = name === 'dark' ? it.fails : it
-    hairOnCore(
-      `hair-strong over a wash core reads at AA for UI (≥ 3:1)${name === 'dark' ? ', measured 2.6–2.9:1' : ''}`,
-      () => {
-        for (const w of WASHES) expect(hairOver(washedPaper(tokens, w, wash, 1))).toBeGreaterThanOrEqual(3)
-      },
-    )
   })
+})
+
+describe('the wash model against the rendered filter', () => {
+  const ramps = { light: [light, lightWash], dark: [dark, darkWash] } as const
+
+  it.each(RENDERED_INK_SOFT)(
+    '%s at strength %s, sat %s reads no higher than the rendered %s',
+    (ramp, strength, sat, rendered) => {
+      const [tokens, wash] = ramps[ramp]
+      const inkSoft = toLinearRgb(resolve(tokens, 'ink-soft'))
+      const render = { ...wash, strength, sat }
+      const modelled = Math.min(...WASH_STACKS.map((stack) => contrastOf(inkSoft, stackedPaper(tokens, stack, render))))
+      expect(modelled).toBeLessThanOrEqual(rendered)
+      if (rendered < 4.5) expect(modelled).toBeLessThan(4.5)
+    },
+  )
 })
 
 // Every colour the table asserts must be inside sRGB: a channel outside [0, 1] before clipping would be

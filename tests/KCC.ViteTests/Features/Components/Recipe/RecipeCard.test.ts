@@ -5,6 +5,7 @@ import RecipeCard from '~/Components/Recipe/RecipeCard.vue'
 import { hitToCard } from '~/Components/Recipe/recipeCardModel'
 import { sheetTearFor, tileTearFor, washFor } from '~/Utilities/BrandColor'
 import type { RecipeSearchHit } from '~/Types/Recipe'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 const NAME = 'Weeknight Chicken Piccata'
 
@@ -70,6 +71,26 @@ describe('RecipeCard slip', () => {
   it('leaves row alignment to the grid', async () => {
     const html = await render(hit())
     expect(html).not.toMatch(/subgrid|row-span/)
+  })
+})
+
+describe('RecipeCard washes', () => {
+  it("blooms a card of washes as the sheet's first child, the first in the recipe's colour", async () => {
+    const html = await render(hit())
+    const fields = washFields(html)
+
+    expect(html).toMatch(/<div class="kcc-sheet"><span class="kcc-washes"/)
+    expect(fields).toHaveLength(1)
+    expect(fields[0]!.length).toBeGreaterThanOrEqual(1)
+    expect(fields[0]!.length).toBeLessThanOrEqual(2)
+    expect(inkOf(fields[0]![0])).toBe(chosenInk(washFor(NAME)))
+    expect(html).not.toMatch(/<span class="kcc-wash"[^>]*--c:/)
+  })
+
+  it('keys its washes by the recipe, so two cards bloom apart', async () => {
+    const ids = async (recipe: RecipeSearchHit) => washFields(await render(recipe))[0]!.map((wash) => wash.id)
+
+    expect(await ids(hit())).not.toEqual(await ids(hit({ slug: '/recipes/lemon-piccata' })))
   })
 })
 

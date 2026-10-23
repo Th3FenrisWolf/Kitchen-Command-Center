@@ -3,6 +3,7 @@ import { defineComponent, h } from 'vue'
 import SubmittedSheet from '~/Components/RecipeWizard/SubmittedSheet.vue'
 import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
 import { renderSsr, tagWith } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 const STRINGS = {
   'RecipeWizard.RecipeSubmitted': 'Recipe Submitted!',
@@ -50,10 +51,11 @@ describe('SubmittedSheet', () => {
     expect(await render({ mode: 'recipe', recipesUrl: '/our-recipes/' })).toContain('data-testid="wizard-submitted"')
   })
 
-  it('pools its green wash in the bottom-right corner, clear of the centred copy', async () => {
-    const wash = tagWith(await render({ mode: 'recipe', recipesUrl: '/our-recipes/' }), 'class="kcc-wash"')
+  it('blooms three washes as a reading sheet, the first in green', async () => {
+    const [field] = washFields(await render({ mode: 'recipe', recipesUrl: '/our-recipes/' }))
 
-    expect(wash).toContain('--c:var(--color-green);--x:100%;--y:100%;--w:30%;--h:40%;')
+    expect(field).toHaveLength(3)
+    expect(inkOf(field[0])).toBe(chosenInk('green'))
   })
 
   it('tells the member a recipe went in for review', async () => {

@@ -2,6 +2,7 @@
   import type { VariantSummary } from '~/Types/Recipe'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import RecipeCardView from '~/Components/Recipe/RecipeCard.vue'
+  import KccWashes from '~/Components/Sheet/KccWashes.Component.vue'
   import { variantToCard } from '~/Components/Recipe/recipeCardModel'
   import { listTearFor } from '~/Utilities/BrandColor'
 
@@ -31,6 +32,7 @@
     >
       <a :href="addVariantUrl" class="kcc-torn block">
         <div class="kcc-sheet" style="--pad: 48px">
+          <KccWashes wash-key="variant-grid-add" size="card" />
           <div class="kcc-row justify-center">
             <span class="kcc-btn kcc-btn--icon" aria-hidden="true"
               ><i class="fa-duotone fa-plus" aria-hidden="true"></i

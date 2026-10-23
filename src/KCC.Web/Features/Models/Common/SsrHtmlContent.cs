@@ -9,6 +9,8 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
     internal const string ServerContentScriptOpen =
         "<script id=\"server-content\" type=\"application/json\">";
 
+    public string Schedule => result.Schedule;
+
     public void WriteTo(TextWriter writer, HtmlEncoder encoder)
     {
         // Razor has already flushed <head> by the time this runs in the body, and browsers apply
@@ -40,6 +42,7 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
             bodyContent = result.BodyContent,
             footerContent = result.FooterContent,
             isPreview = result.IsPreview,
+            bloom = result.Bloom is null ? null : new { seed = result.Bloom.Seed, page = result.Bloom.Page },
         }));
 
         writer.Write("</script>");

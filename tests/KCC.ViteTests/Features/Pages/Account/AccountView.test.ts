@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import AccountView from '~/Pages/Account/AccountView.Component.vue'
 import { listTearFor } from '~/Utilities/BrandColor'
+import { planSheet } from '~/Bloom/washes'
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 const STRINGS = {
   'Account.AccountSettings': 'Account settings',
@@ -97,15 +99,27 @@ describe('AccountView', () => {
     expect(comingSoon).not.toContain('kcc-slip--wide')
   })
 
-  it('pools one lavender wash in the profile sheet corner and names the member in display size', async () => {
+  it('blooms the profile sheet as a reading sheet, lavender first, and names the member in display size', async () => {
     const html = await render()
     const profile = html.slice(0, html.indexOf('kcc-secname'))
+    const fields = washFields(profile)
 
     expect(profile).toContain('kcc-slip kcc-tear-1')
-    expect(profile).toContain('--c:var(--color-lavender)')
-    expect(profile).toContain('--x:88%')
+    expect(fields.map((field) => field.length)).toEqual([3])
+    expect(inkOf(fields[0][0])).toBe(chosenInk('lavender'))
     expect(profile).toContain('<h1 class="kcc-display">Ada Lovelace</h1>')
-    expect(profile.match(/kcc-wash/g)).toHaveLength(1)
+  })
+
+  it('blooms each recipe group as a card, one or two washes keyed by the group', async () => {
+    const fields = washFields(creationsOf(await render()))
+
+    expect(fields).toHaveLength(RECIPE_GROUPS.length)
+    fields.forEach((field, i) => {
+      expect([1, 2]).toContain(field.length)
+      expect(field.map((wash) => wash.id)).toEqual(
+        planSheet({ seed: 0, key: `|account-group:${RECIPE_GROUPS[i].key}`, size: 'card' }).map((wash) => wash.id),
+      )
+    })
   })
 
   it('kicks the join date in Sono', async () => {
@@ -195,7 +209,12 @@ describe('AccountView', () => {
     expect(comingSoon).toContain('Recent activity')
     expect(comingSoon).toContain('kcc-tear-3')
     expect(comingSoon).toContain('kcc-tear-5')
-    expect(comingSoon.match(/kcc-wash/g)).toHaveLength(2)
+    const fields = washFields(comingSoon)
+    expect(fields).toHaveLength(2)
+    for (const field of fields) {
+      expect([1, 2]).toContain(field.length)
+      expect(inkOf(field[0])).toBe(chosenInk('lavender'))
+    }
   })
 
   it('tears the recipe groups along the cycle from the second tear, one on from the profile sheet', async () => {

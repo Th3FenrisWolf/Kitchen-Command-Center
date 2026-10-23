@@ -69,7 +69,7 @@ public class HomeSectionsPageTests
         var page = await HomeAsync();
 
         var sheetTears = Regex.Matches(page.Body, "<div class=\"kcc-slip kcc-tear-(\\d) ").Select(match => match.Groups[1].Value);
-        var gridTears = Regex.Matches(page.Body, "<Card card-color=\"bg-[a-z]+\" :tear=\"(\\d)\">").Select(match => match.Groups[1].Value);
+        var gridTears = Regex.Matches(page.Body, "<Card wash-key=\"home-card:[0-9a-f-]{36}\" card-color=\"bg-[a-z]+\" :tear=\"(\\d)\">").Select(match => match.Groups[1].Value);
         var stackerTears = page.Prop("cards").EnumerateArray().Select(card => card.GetProperty("tear").GetInt32());
 
         _ = await Assert.That(string.Join(",", sheetTears)).IsEqualTo("1,4,1,2");
@@ -96,7 +96,7 @@ public class HomeSectionsPageTests
         var page = await HomeAsync();
 
         var stackerCards = Regex.Match(page.Body, "<Stacker :cards=\"");
-        var tears = Regex.Matches(page.Body, "<div class=\"kcc-slip kcc-tear-(\\d) |<Card card-color=\"bg-[a-z]+\" :tear=\"(\\d)\">")
+        var tears = Regex.Matches(page.Body, "<div class=\"kcc-slip kcc-tear-(\\d) |<Card wash-key=\"home-card:[0-9a-f-]{36}\" card-color=\"bg-[a-z]+\" :tear=\"(\\d)\">")
             .Select(match => (match.Index, Tears: new[] { int.Parse(match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value) }.AsEnumerable()))
             .Append((stackerCards.Index, Tears: page.Prop("cards").EnumerateArray().Select(card => card.GetProperty("tear").GetInt32())))
             .OrderBy(found => found.Index)

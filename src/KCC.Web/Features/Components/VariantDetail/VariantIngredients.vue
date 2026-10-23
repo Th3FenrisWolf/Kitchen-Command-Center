@@ -42,14 +42,7 @@
 </script>
 
 <template>
-  <KccSheet
-    margin
-    as="section"
-    icon="fa-duotone fa-basket-shopping"
-    wash="teal"
-    :at="{ x: '15%', y: '95%', w: '60%', h: '45%' }"
-    :tear="1"
-  >
+  <KccSheet margin as="section" icon="fa-duotone fa-basket-shopping" wash-key="variant-ingredients" wash="teal" :tear="1">
     <template #label><ResourceString for="Ingredients" /></template>
 
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>

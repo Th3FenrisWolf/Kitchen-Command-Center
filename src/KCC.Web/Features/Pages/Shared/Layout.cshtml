@@ -1,3 +1,5 @@
+@using System.Globalization
+@using KCC.Web.Features.Bloom
 @using KCC.Web.Features.Components.Footer
 @using KCC.Web.Features.Components.Header
 @using KCC.Web.Features.Dictionary
@@ -11,6 +13,7 @@
 @inject IResourceStringProvider ResourceStrings
 @inject Vite.AspNetCore.IViteManifest ViteManifest
 @inject Vite.AspNetCore.IViteDevServerStatus ViteDevServer
+@inject TimeProvider Clock
 
 @model BasePageViewModel
 
@@ -32,10 +35,23 @@
         });
     var isPreview = UmbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) && umbracoContext.InPreviewMode;
     var savedRamp = RampCookie.Read(Context);
+    var visit = VisitClock.Resolve(Context, Clock);
+    var washElapsed = visit.Elapsed.TotalSeconds.ToString("0.0", CultureInfo.InvariantCulture);
+
+    var header = await Component.InvokeAsync(typeof(HeaderViewComponent));
+    var body = RenderBody();
+    var footer = await Component.InvokeAsync(typeof(FooterViewComponent));
+    var app = await VueSsrService.RenderVueSsrAsync(
+        header,
+        body,
+        footer,
+        BloomInputs.For(Context, visit),
+        isPreview,
+        Context.RequestAborted);
 }
 
 <!DOCTYPE html>
-<html lang="en" data-theme="@(savedRamp ?? "light")">
+<html lang="en" data-theme="@(savedRamp ?? "light")" style="--wash-elapsed: @(washElapsed)s">
 
 <head>
   <partial name="~/Features/Pages/Shared/Partials/Metadata.cshtml" />
@@ -85,16 +101,19 @@
     <link rel="stylesheet" vite-href="/Features/Main.ts" asp-append-version="true" />
   }
 
+  <style id="kcc-bloom-schedule">@Html.Raw(app.Schedule)</style>
+
 </head>
 
 <body>
   @* Filter defs for the kit's washes and tiles. Static so server-rendered washes are filtered before hydration. *@
   <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
     <defs>
-      <filter id="kcc-wax" x="-30%" y="-30%" width="160%" height="160%">
+      @* --wash-reach in Torn/Tokens.css is twice this bleed's stdDeviation; contrast.test.ts is calibrated against this filter's rendering. *@
+      <filter id="kcc-bloom" x="-30%" y="-30%" width="160%" height="160%">
         <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
-        <feGaussianBlur in="d" stdDeviation="1.8" result="b"></feGaussianBlur>
+        <feGaussianBlur in="d" stdDeviation="12" result="b"></feGaussianBlur>
         <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="9" result="w"></feTurbulence>
         <feComposite in="b" in2="w" operator="arithmetic" k1="0.62" k2="0.62" k3="0" k4="0"></feComposite>
       </filter>
@@ -105,13 +124,7 @@
     </defs>
   </svg>
 
-  @await VueSsrService.RenderVueSsrAsync(
-    await Component.InvokeAsync(typeof(HeaderViewComponent)),
-    RenderBody(),
-    await Component.InvokeAsync(typeof(FooterViewComponent)),
-    isPreview,
-    Context.RequestAborted
-  )
+  @app
 
   <script type="module" vite-src="/Features/Main.ts" asp-append-version="true"></script>
 </body>

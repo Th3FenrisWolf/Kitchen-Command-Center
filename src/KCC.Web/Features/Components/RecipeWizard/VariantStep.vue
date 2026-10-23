@@ -59,6 +59,7 @@
 
 <template>
   <KccSheet
+    wash-key="wizard-variant"
     margin
     crisp
     wide

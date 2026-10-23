@@ -22,7 +22,7 @@
 <div class="grid gap-x-7 gap-y-rule-1.5 @columns">
   @foreach (var card in Model.Cards)
   {
-    <Card card-color="@card.BackgroundColor" :tear="@card.Tear">
+    <Card wash-key="home-card:@card.Key" card-color="@card.BackgroundColor" :tear="@card.Tear">
       <div>
         @* Cards nest under their section's h2. A grid without a heading has none above it, so its cards take the h2. *@
         @if (hasHeading)

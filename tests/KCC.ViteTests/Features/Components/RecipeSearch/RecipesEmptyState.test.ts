@@ -1,4 +1,5 @@
 import { renderSsr, tagWith } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import RecipesEmptyState from '~/Components/RecipeSearch/RecipesEmptyState.vue'
 
@@ -10,10 +11,16 @@ describe('RecipesEmptyState', () => {
 
     const slip = tagWith(html, 'data-testid="recipes-empty"')
     expect(slip).toContain('kcc-slip kcc-slip--wide kcc-tear-2')
-    expect(html).toContain('--c:var(--color-yellow)')
-    expect(html).toContain('--x:18%')
+    expect(inkOf(washFields(html)[0]?.[0])).toBe(chosenInk('yellow'))
     expect(html).not.toContain('kcc-tape')
     expect(html).not.toMatch(/sk-[a-z]/)
+  })
+
+  it('blooms three washes as a reading sheet', async () => {
+    const fields = washFields(await render())
+
+    expect(fields).toHaveLength(1)
+    expect(fields[0]).toHaveLength(3)
   })
 
   it('rests on one blank, with the wide turn', async () => {

@@ -2,6 +2,8 @@
 import '~/DevTools/RuntimeErrorOverlay'
 import { createSSRApp, h } from 'vue'
 import App from '~/App.vue'
+import { BLOOM_KEY, createBloom } from '~/Bloom/bloomContext'
+import { startVisitHeartbeat } from '~/Bloom/visitHeartbeat'
 import { registerGlobalComponents } from '~/GlobalComponents'
 import type { SsrPayload } from '~/Types/ContentRegions'
 
@@ -11,7 +13,7 @@ import { configureApi, type ApiStrings } from '~/Utilities/Api'
 const serverContentEl = document.getElementById('server-content')
 if (!serverContentEl?.textContent) throw new Error('Server content not found')
 
-const { isPreview, ...contentRegions } = JSON.parse(serverContentEl.textContent) as SsrPayload
+const { isPreview, bloom: inputs, ...contentRegions } = JSON.parse(serverContentEl.textContent) as SsrPayload
 
 // Before mount, so a form handler firing right after hydration already has the token.
 const apiConfigEl = document.getElementById('api-config')
@@ -23,9 +25,14 @@ const app = createSSRApp({
   setup: () => () => h(App, { ...contentRegions }),
 })
 
+const bloom = createBloom(inputs.seed, inputs.page)
+
 registerGlobalComponents(app)
 app.provide('isPreview', isPreview ?? false)
+app.provide(BLOOM_KEY, bloom)
 app.mount('#app')
+bloom.markHydrated()
+startVisitHeartbeat()
 
 // Vite injected every component style into <head> during module evaluation. The server's copy sits
 // in <body>, later in document order, so leaving it would outrank HMR-updated head styles and make

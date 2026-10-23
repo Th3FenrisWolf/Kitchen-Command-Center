@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
 import { renderSsr, expectNoRetiredMarkup } from '../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../support/washes'
 
 const SLOTS = {
   eyebrow: () => 'Kitchen notes',
@@ -50,13 +51,12 @@ describe('SmallHero structure', () => {
 })
 
 describe('SmallHero wash', () => {
-  it('pools peach in the bottom-right corner, clear of the eyebrow', async () => {
-    const html = await render()
+  it('blooms four washes as a hero, the first in peach', async () => {
+    const fields = washFields(await render())
 
-    expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:100%;--y:100%;--w:34%;--h:min(60%, 68px);" aria-hidden="true">',
-    )
-    expect(html.match(/kcc-wash/g)).toHaveLength(1)
+    expect(fields).toHaveLength(1)
+    expect(fields[0]).toHaveLength(4)
+    expect(inkOf(fields[0]![0])).toBe(chosenInk('peach'))
   })
 })
 

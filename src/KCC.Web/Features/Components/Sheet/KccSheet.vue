@@ -1,6 +1,8 @@
 <script setup lang="ts">
+  import { sheetSize, type WashSize } from '~/Bloom/washes'
   import type { Wash } from '~/Types/DesignSystem'
   import { computed } from 'vue'
+  import KccWashes from './KccWashes.Component.vue'
 
   export type Tear = 1 | 2 | 3 | 4 | 5 | 6 | 'hero'
 
@@ -9,11 +11,9 @@
     icon?: string
     labelRight?: boolean
     wash?: Wash
-    /**
-     * Where the wash sits, as percentages of the sheet. Author-supplied literals written straight into
-     * custom properties; never bind CMS or user data here.
-     */
-    at?: { x?: string; y?: string; w?: string; h?: string }
+    washKey: string
+    bloom?: WashSize
+    washSlots?: readonly number[]
     /** Neighbours must differ: pass `(index % 6) + 1` in a list. */
     tear?: Tear
     piled?: boolean
@@ -32,7 +32,9 @@
     icon,
     labelRight = false,
     wash,
-    at = {},
+    washKey,
+    bloom,
+    washSlots,
     tear = 1,
     piled = true,
     wide = false,
@@ -45,9 +47,7 @@
     as = 'div',
   } = defineProps<KccSheetProps>()
 
-  const washStyle = computed(() =>
-    wash ? { '--c': `var(--color-${wash})`, '--x': at?.x, '--y': at?.y, '--w': at?.w, '--h': at?.h } : undefined,
-  )
+  const washSize = sheetSize({ bloom, tear, margin, wide })
 
   // Spread via v-bind rather than :style directly: SSR always prints a `style=""` attribute whenever the
   // template has a literal `:style` binding, even when the bound value is `undefined`. An object that omits
@@ -71,7 +71,7 @@
         :class="{ 'kcc-sheet--margin': margin, 'kcc-sheet--blank': blank, 'kcc-sheet--scroll': scroll }"
         v-bind="sheetAttrs"
       >
-        <span v-if="wash" class="kcc-wash" :style="washStyle" aria-hidden="true"></span>
+        <KccWashes :wash-key="washKey" :size="washSize" :chosen="wash" :wash-slots="washSlots" />
         <slot />
       </div>
     </div>

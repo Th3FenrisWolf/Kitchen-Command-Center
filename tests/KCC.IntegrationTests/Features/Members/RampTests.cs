@@ -23,7 +23,7 @@ public class RampTests
         _ = await visitor.SignInAsync(userName, TestMembers.Password);
         var page = await RenderedPage.GetAsync(visitor.Http, "/");
 
-        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"dark\">");
+        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"dark\" ");
         _ = await Assert.That(page.Html.Contains(PrePaintScript, StringComparison.Ordinal)).IsFalse();
     }
 
@@ -34,7 +34,7 @@ public class RampTests
 
         var page = await RenderedPage.GetAsync(member.Visitor.Http, "/");
 
-        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"light\">");
+        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"light\" ");
         _ = await Assert.That(page.Html).Contains(PrePaintScript);
     }
 
@@ -52,7 +52,7 @@ public class RampTests
         _ = await visitor.SignInAsync(nextUserName, TestMembers.Password);
         var page = await RenderedPage.GetAsync(visitor.Http, "/");
 
-        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"light\">");
+        _ = await Assert.That(page.Html).Contains("<html lang=\"en\" data-theme=\"light\" ");
         _ = await Assert.That(page.Html).Contains(PrePaintScript);
     }
 
@@ -82,7 +82,7 @@ public class RampTests
         using var response = await client.SendAsync(request);
         var html = await response.Content.ReadAsStringAsync();
 
-        _ = await Assert.That(html).Contains("<html lang=\"en\" data-theme=\"light\">");
+        _ = await Assert.That(html).Contains("<html lang=\"en\" data-theme=\"light\" ");
         _ = await Assert.That(html).Contains(PrePaintScript);
     }
 
@@ -97,8 +97,8 @@ public class RampTests
         var home = await RenderedPage.GetAsync(member.Visitor.Http, "/");
 
         _ = await Assert.That(RampCookieOf(settings).Value.ToString()).IsEqualTo("dark");
-        _ = await Assert.That(settingsHtml).Contains("<html lang=\"en\" data-theme=\"dark\">");
-        _ = await Assert.That(home.Html).Contains("<html lang=\"en\" data-theme=\"dark\">");
+        _ = await Assert.That(settingsHtml).Contains("<html lang=\"en\" data-theme=\"dark\" ");
+        _ = await Assert.That(home.Html).Contains("<html lang=\"en\" data-theme=\"dark\" ");
     }
 
     [Test]

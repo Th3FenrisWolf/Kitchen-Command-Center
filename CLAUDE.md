@@ -163,7 +163,7 @@ misleadingly:
 ## Loose Leaf design language
 
 The public site uses the Loose Leaf identity: torn-paper sheets on a lilac-grey desk, a 24px rule, eight
-wax washes, marker green as the one strong fill, Sono for every number and label. **The brand lives in
+ink washes that bloom onto bare sheets over a visit, marker green as the one strong fill, Sono for every number and label. **The brand lives in
 `docs/brand/loose-leaf.md`; the engineering contract in `docs/brand/kit.md`.** Read the contract before
 styling anything; use the `loose-leaf` skill for the quick reference, the `kit-builder` agent to convert
 a surface and the `brand-steward` agent to review one. The invariants below are the ones that break the
@@ -183,7 +183,7 @@ dark ramp read `--color-*` directly. A signed-in member's saved Light or Dark is
 `Layout.cshtml` writes `data-theme` from the HttpOnly `kcc-ramp` cookie and leaves the pre-paint inline script
 out. Otherwise that script sets `data-theme` from `prefers-color-scheme`, else **light**. **Check both ramps for
 any visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
-composites ink over paper plus each wash.
+composites ink over paper plus a two-wash stack at its peak, which pins `--wash-strength`.
 
 ### The kit, and where CSS lives
 
@@ -209,3 +209,9 @@ the CSS. No runtime JS draws anything; the SSR output is final. Three structural
   **last** child, outside the top sheet's clip and filter, with its own filter on `.kcc-blank` and its clip on the
   inner span. The header pad is the exception: its `.pad-page` slip is the top sheet's blank, and a pad card holds
   none.
+- A wash is never placed by hand: `KccSheet` and `KccWashes` render up to four per sheet from the visit's seed
+  and the sheet's `wash-key`, two deep at most, and the kit CSS blooms them from the elapsed time `Layout.cshtml`
+  writes as `--wash-elapsed`. Every `KccSheet` and `KccWashes` needs a stable `wash-key` (a list item's own id, never
+  its index); `keys.test.ts` scans for it.
+- Grain and crayon lie on the desk, the washes and the tiles only. Paper, text, controls, labels, wells, blank sheets
+  and tape carry none; `grain.test.ts` fails on any other use. The tape's weave is its own material.

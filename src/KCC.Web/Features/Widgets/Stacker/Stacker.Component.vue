@@ -6,6 +6,7 @@
   import { markStuckCards } from '~/Widgets/Stacker/markStuckCards'
 
   export interface StackerCard {
+    key: string
     heading: string
     subHeading: string
     backgroundColor: BackgroundColor
@@ -36,7 +37,7 @@
   <div ref="containerRef" class="grid items-center gap-y-rule-1.5">
     <div
       v-for="(card, index) in props.cards"
-      :key="card.heading"
+      :key="card.key"
       data-card
       :class="['sticky transition-[top]', index === props.cards.length - 1 && 'last']"
       :style="`top: calc(${32 * (index + 1)}px + var(--pad-offset, 0px))`"
@@ -48,8 +49,9 @@
       ></div>
       <KccSheet
         :tear="card.tear ?? listTearFor(index)"
+        :wash-key="`stacker-card:${card.key}`"
         :wash="washOf(card.backgroundColor)"
-        :at="{ x: '85%', y: '90%', w: '55%', h: '50%' }"
+        :bloom="washOf(card.backgroundColor) ? undefined : 'none'"
         class="origin-top transition-all duration-100 [.last_div]:scale-100 [.stuck]:scale-95"
       >
         <h3 class="kcc-title">{{ card.heading }}</h3>

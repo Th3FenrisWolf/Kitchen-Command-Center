@@ -43,6 +43,7 @@
 
 <template>
   <KccSheet
+    wash-key="login"
     margin
     crisp
     :tear="4"

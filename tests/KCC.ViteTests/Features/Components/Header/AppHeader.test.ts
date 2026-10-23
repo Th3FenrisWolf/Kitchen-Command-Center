@@ -2,10 +2,15 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import postcss, { type AtRule, type Rule } from 'postcss'
 import { describe, expect, it } from 'vitest'
+import { createSSRApp, h } from 'vue'
+import { renderToString } from '@vue/server-renderer'
 import AppHeader from '~/Components/Header/AppHeader.Component.vue'
+import { BLOOM_KEY, createBloom } from '~/Bloom/bloomContext'
+import { planSheet } from '~/Bloom/washes'
 import type { NavModel } from '~/Types/Nav'
 import { member, visitor } from '../../../support/nav'
 import { expectNoRetiredMarkup, openTag, renderSsr, tagWith } from '../../../support/ssr'
+import { washFields } from '../../../support/washes'
 
 const render = (nav: NavModel) => renderSsr(AppHeader, { logoAlt: 'Kitchen Command Center', nav })
 
@@ -307,5 +312,94 @@ describe('AppHeader', () => {
 
   it('leaves no retired class behind', async () => {
     expectNoRetiredMarkup(await render(member()))
+  })
+})
+
+const PAD_CARDS = ['pad-card-recipes', 'pad-card-kitchen', 'pad-card-search', 'pad-card-find', 'pad-card-menu']
+
+const renderBloomed = async (nav: NavModel, seed: number, page: string) => {
+  const bloom = createBloom(seed, page)
+  const app = createSSRApp({ render: () => h(AppHeader, { logoAlt: 'Kitchen Command Center', nav }) })
+  app.provide(BLOOM_KEY, bloom)
+  return { html: await renderToString(app), washes: bloom.collected() }
+}
+
+const padTopOf = (html: string) => between(html, 'class="pad-top', 'id="pad-bar-desk"')
+
+const cardOf = (html: string, id: string) => {
+  const start = html.indexOf(`id="${id}"`)
+  if (start === -1) return undefined
+  const next = html.indexOf('id="pad-card-', start + id.length)
+  return html.slice(start, next === -1 ? undefined : next)
+}
+
+const padSheetFields = (html: string) =>
+  Object.fromEntries(
+    [['@pad', padTopOf(html)] as const, ...PAD_CARDS.map((id) => [`@${id}`, cardOf(html, id)] as const)].flatMap(
+      ([key, sheet]) => (sheet === undefined ? [] : [[key, washFields(sheet)[0]]]),
+    ),
+  )
+
+describe("the pad's washes", () => {
+  it('opens the top sheet with a page of washes keyed @pad, the same on every page', async () => {
+    const { html } = await renderBloomed(visitor(), 7, '/recipes')
+    const fields = washFields(padTopOf(html))
+
+    expect(padTopOf(html)).toMatch(/<div class="kcc-sheet" style="--pad:\s?12px;?"><span class="kcc-washes"/)
+    expect(fields).toHaveLength(1)
+    expect(fields[0]!.map((wash) => wash.id)).toEqual(
+      planSheet({ seed: 7, key: '@pad', size: 'page' }).map((wash) => wash.id),
+    )
+  })
+
+  it("lays no wash on the pad page, which is the top sheet's blank", async () => {
+    const { html } = await renderBloomed(member(), 7, '/recipes')
+
+    expect(between(html, 'class="pad-page', 'id="pad-cards"')).not.toContain('kcc-washes')
+  })
+
+  it('names fixed beats for the pad and each card, fourteen in all and none shared', async () => {
+    const slots = new Map<string, number | undefined>()
+    for (let seed = 1; seed <= 40; seed++) {
+      for (const [nav, page] of [
+        [member(), '/a'],
+        [visitor(), '/b'],
+      ] as const) {
+        const { washes } = await renderBloomed(nav, seed, page)
+        for (const wash of washes.filter((candidate) => candidate.key.startsWith('@'))) {
+          const at = `${wash.key}#${wash.index}`
+          if (slots.has(at)) expect(wash.slot, at).toBe(slots.get(at))
+          slots.set(at, wash.slot)
+        }
+      }
+    }
+
+    const byKey = new Map<string, number[]>()
+    for (const [at, slot] of slots) {
+      const key = at.slice(0, at.indexOf('#'))
+      byKey.set(key, [...(byKey.get(key) ?? []), slot!])
+    }
+    const all = [...slots.values()]
+
+    expect([...byKey.keys()].sort()).toEqual(['@pad', ...PAD_CARDS.map((id) => `@${id}`)].sort())
+    expect(byKey.get('@pad')).toHaveLength(4)
+    for (const id of PAD_CARDS) expect(byKey.get(`@${id}`), id).toHaveLength(2)
+    expect(all.every((slot) => Number.isInteger(slot) && slot! >= 0 && slot! < 16)).toBe(true)
+    expect(new Set(all).size).toBe(14)
+  })
+
+  it("renders every pad sheet's washes the same with and without a member, and on two pages", async () => {
+    const seen = await Promise.all([
+      renderBloomed(visitor(), 11, '/recipes'),
+      renderBloomed(member(), 11, '/recipes'),
+      renderBloomed(member(), 11, '/account'),
+    ])
+    const [asVisitor, asMember, elsewhere] = seen.map(({ html }) => padSheetFields(html))
+
+    expect(Object.keys(asMember!)).toHaveLength(6)
+    expect(elsewhere).toEqual(asMember)
+    const { ['@pad-card-kitchen']: kitchen, ...shared } = asMember!
+    expect(kitchen).toBeDefined()
+    expect(asVisitor).toEqual(shared)
   })
 })

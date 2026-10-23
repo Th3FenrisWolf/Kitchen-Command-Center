@@ -1,0 +1,232 @@
+/* =============================================================================
+   Ink wash — broad washes of brand colour that bloom onto a surface over
+   minutes, so a page gains colour the longer someone stays with it.
+
+   Colour is never interpolated. Each wash takes two brand tokens verbatim via
+   nth-child, because a hue drawn from a range between two brand colours is not
+   a brand colour. The fourteen slots are filled in a deliberately scattered
+   order, so any number of washes — three or thirty — is still a balanced spread
+   across the palette rather than a run of neighbours.
+
+   Everything else is hashed. Size, aspect, shape and timing come from a sine
+   hash of sibling-index(); position comes from the R2 quasirandom sequence,
+   which scatters a handful of large shapes far more evenly than a hash does,
+   without ever looking like a grid.
+
+   All of it is deterministic: a server and a client render the same page, and a
+   reload wears the same washes. --wash-seed reshuffles the field.
+
+   Nothing runs on a timer. The reveal is a very long animation with a per-wash
+   delay, so the page blooms on its own; --wash-elapsed offsets every delay at
+   once, which fast-forwards the whole field and could be fed from however long
+   a reader has spent on the site to carry colour across visits.
+   ============================================================================= */
+
+/* Registered, so it computes where it is declared. Left unregistered it would
+   inherit as raw tokens and any sibling-index() inside it would resolve against
+   the wash using it rather than the component setting it — every card would then
+   wear identical washes. */
+@property --wash-seed { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+@property --wash-r1 { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --wash-r2 { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --wash-r3 { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --wash-r4 { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --wash-t  { syntax: '<number>'; inherits: false; initial-value: 0; }
+
+.wash-field {
+  /* No --wash-seed default here: declaring one would shadow the value a card or
+     section set on itself, and every field on the page would match. The
+     registered initial-value already supplies 0. */
+
+  /* Sized against the surface, not in absolute units, so one set of numbers
+     gives a page-sized wash on a page and a card-sized wash on a card. */
+  --wash-size-min: 45%;
+  --wash-size-max: 125%;
+
+  --wash-strength: 0.5;   /* peak opacity of a finished wash */
+  --wash-bleed: 48px;     /* how far the pigment carries into the paper */
+  --wash-rim: 0.25;       /* 0 a flat colour field, 1 a dried edge */
+  --wash-blend: multiply; /* multiply on paper; screen on a dark ground */
+
+  /* The two together are the whole story: the last wash starts at --wash-window
+     and takes --wash-bloom to spread, so the surface is finished at their sum.
+     210 + 90 puts that at five minutes. */
+  --wash-window: 210s;    /* the last wash starts this late */
+  --wash-bloom: 90s;      /* how long one wash takes to spread */
+
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+
+  /* The field blends as one group. Blending each wash separately would isolate
+     them inside this layer and leave nothing but transparency to blend against,
+     so the colour would never reach the paper at all. */
+  mix-blend-mode: var(--wash-blend);
+}
+
+.wash {
+  --i: calc(sibling-index() + var(--wash-seed));
+
+  --wash-r1: mod(calc(sin(var(--i) * 12.9898) * 43758.5453), 1);
+  --wash-r2: mod(calc(sin(var(--i) * 78.2330) * 43758.5453), 1);
+  --wash-r3: mod(calc(sin(var(--i) * 39.4260) * 43758.5453), 1);
+  --wash-r4: mod(calc(sin(var(--i) * 93.9898) * 43758.5453), 1);
+
+  /* R2: successive multiples of the plastic number's reciprocals, wrapped.
+     Large shapes placed this way cover the surface evenly and still land at
+     irregular, unrepeating spots — a plain hash clumps them and leaves holes. */
+  --x: mod(calc(var(--i) * 0.7548776662), 1);
+  --y: mod(calc(var(--i) * 0.5698402910), 1);
+
+  /* Arrival time gets the same treatment, for the same reason: a hash leaves
+     long dead stretches and then delivers three washes at once. The golden
+     ratio spaces them evenly across the window while keeping the intervals
+     irregular, so something is always about to happen. */
+  --wash-t: mod(calc(var(--i) * 0.6180339887), 1);
+
+  --d: calc(var(--wash-size-min) + var(--wash-r1) * (var(--wash-size-max) - var(--wash-size-min)));
+
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  top: calc(var(--y) * 100%);
+  width: var(--d);
+  /* Height from the width, not a second percentage: a percentage height would
+     resolve against the surface's height and squash every wash on a wide box. */
+  aspect-ratio: 1 / calc(0.68 + var(--wash-r2) * 0.64);
+
+  translate: -50% -50%;
+  rotate: calc(var(--wash-r3) * 360deg);
+
+  /* Eight radii off four hashes: enough asymmetry to read as poured pigment
+     rather than a circle, before any bleed is applied. */
+  border-radius:
+    calc(32% + var(--wash-r1) * 36%) calc(32% + var(--wash-r2) * 36%)
+    calc(32% + var(--wash-r3) * 36%) calc(32% + var(--wash-r4) * 36%) /
+    calc(32% + var(--wash-r4) * 36%) calc(32% + var(--wash-r1) * 36%)
+    calc(32% + var(--wash-r2) * 36%) calc(32% + var(--wash-r3) * 36%);
+
+  /* Two brand inks per wash, offset from one another, so they bleed together the
+     way two pigments do in a wet wash. The third stop lifts the alpha again near
+     the rim — pigment carried to a drying edge — and --wash-rim decides how much
+     of that shows: none of it is a flat colour field, all of it is a stain. */
+  background:
+    radial-gradient(closest-side at calc(28% + var(--wash-r3) * 44%) calc(28% + var(--wash-r4) * 44%),
+      hsl(from var(--ink) h s l / 0.34) 0%,
+      hsl(from var(--ink) h s l / 0.30) 56%,
+      hsl(from var(--ink) h calc(s * 1.12) calc(l - 9) / calc(0.26 + var(--wash-rim) * 0.34)) 82%,
+      hsl(from var(--ink) h s l / 0) 97%),
+    radial-gradient(closest-side at calc(38% + var(--wash-r1) * 30%) calc(38% + var(--wash-r2) * 30%),
+      hsl(from var(--ink2) h s l / 0.26) 0%,
+      hsl(from var(--ink2) h s l / 0) 100%);
+
+  filter: blur(var(--wash-bleed));
+  opacity: 0;
+
+  animation: wash-bloom var(--wash-bloom) cubic-bezier(0.17, 0.72, 0.24, 1) both;
+  animation-delay: calc(var(--wash-t) * var(--wash-window) - var(--wash-elapsed, 0s));
+}
+
+/* Only opacity and scale move, both of which the compositor can carry on its
+   own; animating the bleed would re-filter a very large surface every frame. */
+@keyframes wash-bloom {
+  from { opacity: 0; scale: 0.72; }
+  to   { opacity: var(--wash-strength); scale: 1; }
+}
+
+/* A reader who has asked for less motion still gets the coloured page — it
+   simply arrives finished instead of blooming while they watch. */
+@media (prefers-reduced-motion: reduce) {
+  .wash {
+    animation: none;
+    opacity: var(--wash-strength);
+    scale: 1;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Ink assignment. Two tokens per wash, the second five slots along, so the
+   pairings cycle through the whole palette instead of repeating.
+   -------------------------------------------------------------------------- */
+
+.wash:nth-child(14n + 1)  { --ink: var(--wash-ink-1);  --ink2: var(--wash-ink-6); }
+.wash:nth-child(14n + 2)  { --ink: var(--wash-ink-2);  --ink2: var(--wash-ink-7); }
+.wash:nth-child(14n + 3)  { --ink: var(--wash-ink-3);  --ink2: var(--wash-ink-8); }
+.wash:nth-child(14n + 4)  { --ink: var(--wash-ink-4);  --ink2: var(--wash-ink-9); }
+.wash:nth-child(14n + 5)  { --ink: var(--wash-ink-5);  --ink2: var(--wash-ink-10); }
+.wash:nth-child(14n + 6)  { --ink: var(--wash-ink-6);  --ink2: var(--wash-ink-11); }
+.wash:nth-child(14n + 7)  { --ink: var(--wash-ink-7);  --ink2: var(--wash-ink-12); }
+.wash:nth-child(14n + 8)  { --ink: var(--wash-ink-8);  --ink2: var(--wash-ink-13); }
+.wash:nth-child(14n + 9)  { --ink: var(--wash-ink-9);  --ink2: var(--wash-ink-14); }
+.wash:nth-child(14n + 10) { --ink: var(--wash-ink-10); --ink2: var(--wash-ink-1); }
+.wash:nth-child(14n + 11) { --ink: var(--wash-ink-11); --ink2: var(--wash-ink-2); }
+.wash:nth-child(14n + 12) { --ink: var(--wash-ink-12); --ink2: var(--wash-ink-3); }
+.wash:nth-child(14n + 13) { --ink: var(--wash-ink-13); --ink2: var(--wash-ink-4); }
+.wash:nth-child(14n + 14) { --ink: var(--wash-ink-14); --ink2: var(--wash-ink-5); }
+
+/* -----------------------------------------------------------------------------
+   Palettes. Slot order is the design decision, not decoration: most surfaces
+   carry only a few washes, so the first slots have to read as a chosen set on
+   their own. These point at the KCC accent tokens — re-point this block and
+   nothing above it changes.
+   -------------------------------------------------------------------------- */
+
+.wash-field {
+  --color-rosewater: hsl(10, 57%, 88%);
+  --color-flamingo: hsl(0, 59%, 84%);
+  --color-pink: hsl(316, 73%, 84%);
+  --color-mauve: hsl(277, 59%, 76%);
+  --color-red: hsl(359, 68%, 71%);
+  --color-maroon: hsl(358, 66%, 76%);
+  --color-peach: hsl(20, 79%, 70%);
+  --color-yellow: hsl(40, 62%, 73%);
+  --color-green: hsl(96, 44%, 68%);
+  --color-teal: hsl(172, 39%, 65%);
+  --color-sky: hsl(189, 48%, 73%);
+  --color-sapphire: hsl(199, 55%, 69%);
+  --color-blue: hsl(222, 74%, 74%);
+  --color-lavender: hsl(239, 66%, 84%);
+}
+
+.wash-brand {
+  --wash-ink-1: var(--color-blue);       --wash-ink-2: var(--color-peach);
+  --wash-ink-3: var(--color-teal);       --wash-ink-4: var(--color-pink);
+  --wash-ink-5: var(--color-yellow);     --wash-ink-6: var(--color-green);
+  --wash-ink-7: var(--color-lavender);   --wash-ink-8: var(--color-red);
+  --wash-ink-9: var(--color-sky);        --wash-ink-10: var(--color-mauve);
+  --wash-ink-11: var(--color-rosewater); --wash-ink-12: var(--color-sapphire);
+  --wash-ink-13: var(--color-maroon);    --wash-ink-14: var(--color-flamingo);
+}
+
+.wash-warm {
+  --wash-ink-1: var(--color-peach);      --wash-ink-2: var(--color-maroon);
+  --wash-ink-3: var(--color-yellow);     --wash-ink-4: var(--color-flamingo);
+  --wash-ink-5: var(--color-rosewater);  --wash-ink-6: var(--color-red);
+  --wash-ink-7: var(--color-peach);      --wash-ink-8: var(--color-yellow);
+  --wash-ink-9: var(--color-maroon);     --wash-ink-10: var(--color-rosewater);
+  --wash-ink-11: var(--color-flamingo);  --wash-ink-12: var(--color-red);
+  --wash-ink-13: var(--color-peach);     --wash-ink-14: var(--color-yellow);
+}
+
+.wash-cool {
+  --wash-ink-1: var(--color-blue);       --wash-ink-2: var(--color-teal);
+  --wash-ink-3: var(--color-lavender);   --wash-ink-4: var(--color-sky);
+  --wash-ink-5: var(--color-mauve);      --wash-ink-6: var(--color-sapphire);
+  --wash-ink-7: var(--color-blue);       --wash-ink-8: var(--color-teal);
+  --wash-ink-9: var(--color-lavender);   --wash-ink-10: var(--color-sky);
+  --wash-ink-11: var(--color-mauve);     --wash-ink-12: var(--color-sapphire);
+  --wash-ink-13: var(--color-blue);      --wash-ink-14: var(--color-teal);
+}
+
+.wash-fresh {
+  --wash-ink-1: var(--color-green);      --wash-ink-2: var(--color-sky);
+  --wash-ink-3: var(--color-yellow);     --wash-ink-4: var(--color-teal);
+  --wash-ink-5: var(--color-sapphire);   --wash-ink-6: var(--color-green);
+  --wash-ink-7: var(--color-yellow);     --wash-ink-8: var(--color-teal);
+  --wash-ink-9: var(--color-green);      --wash-ink-10: var(--color-sky);
+  --wash-ink-11: var(--color-yellow);    --wash-ink-12: var(--color-teal);
+  --wash-ink-13: var(--color-sapphire);  --wash-ink-14: var(--color-green);
+}

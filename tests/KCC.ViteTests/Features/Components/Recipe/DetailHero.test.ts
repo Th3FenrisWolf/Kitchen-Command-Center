@@ -2,6 +2,7 @@ import { renderSsr, openTag } from '../../../support/ssr'
 import { describe, expect, it } from 'vitest'
 import DetailHero from '~/Components/Recipe/DetailHero.vue'
 import { washFor } from '~/Utilities/BrandColor'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 // Count star-family FontAwesome icons (fa-star, fa-star-half-stroke) in rendered markup.
 // `fa-star\b` matches the leading token of each variant exactly once, so this equals the
@@ -48,17 +49,15 @@ describe('DetailHero as a slip', () => {
     expect(html).not.toContain('sk-')
   })
 
-  // Bottom-right: the kick lines (soft ink) run along the left, and soft ink over a wash core fails AA in
-  // the dark ramp, so the pool must not sit under them.
-  it('pools the recipe wash in the bottom-right corner, clear of the kick lines', async () => {
+  it("blooms a page of washes as the sheet's first child, the first in the recipe's colour", async () => {
     const html = await render()
-    const wash = openTag(html, 'kcc-wash').replace(/\s/g, '')
-    expect(wash).toContain(`--c:var(--color-${washFor(TITLE)})`)
-    expect(wash).toContain('--x:100%')
-    expect(wash).toContain('--y:100%')
-    expect(wash).toContain('--w:34%')
-    // Capped so the ring ends inside the bottom padding whatever the sheet's height.
-    expect(wash).toContain('--h:min(60%,68px)')
+    const fields = washFields(html)
+
+    expect(html).toMatch(/<div class="kcc-sheet" style="--pad:\s?48px;?"><span class="kcc-washes"/)
+    expect(fields).toHaveLength(1)
+    expect(fields[0]).toHaveLength(4)
+    expect(inkOf(fields[0]![0])).toBe(chosenInk(washFor(TITLE)))
+    expect(html).not.toMatch(/<span class="kcc-wash"[^>]*--c:/)
   })
 
   it('pins the large tile and its tape outside the tear, with the one strip inside the tilewrap', async () => {
@@ -67,7 +66,7 @@ describe('DetailHero as a slip', () => {
     expect(tilewrap).toContain('top:-22px')
     expect(tilewrap).toContain('left:40px')
     expect(html).toContain('kcc-tile--lg')
-    expect(count(html.replace(/\s/g, ''), `--c:var(--color-${washFor(TITLE)})`)).toBe(2)
+    expect(count(html.replace(/\s/g, ''), `--c:var(--color-${washFor(TITLE)})`)).toBe(1)
     expect(count(html, 'kcc-tape')).toBe(1)
     expect(html).toMatch(TAPED_TILEWRAP)
     expect(html.indexOf('kcc-tilewrap')).toBeGreaterThan(html.indexOf(DESCRIPTION))
@@ -124,7 +123,7 @@ describe('DetailHero rating line', () => {
 
   it('keeps the readonly star rating’s accessible name on the average', async () => {
     const html = await render({ averageRating: 4.5, reviewCount: 5 })
-    const average = openTag(html, '4.5')
+    const average = openTag(html, 'aria-label="4.5')
     expect(average).toContain('role="img"')
     expect(average).toContain('aria-label="4.5 of 5 stars"')
   })

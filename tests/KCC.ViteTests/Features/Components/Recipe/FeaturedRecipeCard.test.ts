@@ -4,6 +4,8 @@ import '~/Utilities/StringExtensions'
 import FeaturedRecipeCard from '~/Components/Recipe/FeaturedRecipeCard.vue'
 import { hitToFeatured, variantToFeatured } from '~/Components/Recipe/recipeCardModel'
 import { washFor } from '~/Utilities/BrandColor'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
+import type { FeaturedRecipeModel } from '~/Components/Recipe/recipeCardModel'
 import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
 
 const recipe: RecipeSearchHit = {
@@ -85,14 +87,22 @@ describe('FeaturedRecipeCard from a search hit', () => {
     expect(count(html, 'data-recipe-name')).toBe(1)
   })
 
-  it('pools the recipe wash in the bottom-right corner, clear of the kick lines', async () => {
+  it("blooms a page of washes as the sheet's first child, the first in the recipe's colour", async () => {
     const html = await renderSsr(FeaturedRecipeCard, { card: hitToFeatured(recipe, echoKey) })
-    const wash = openTag(html, 'kcc-wash').replace(/\s/g, '')
-    expect(wash).toContain(`--c:var(--color-${washFor(recipe.name)})`)
-    expect(wash).toContain('--x:100%')
-    expect(wash).toContain('--y:100%')
-    expect(wash).toContain('--w:34%')
-    expect(wash).toContain('--h:min(60%,68px)')
+    const fields = washFields(html)
+
+    expect(html).toMatch(/<div class="kcc-sheet" style="--pad:\s?48px;?"><span class="kcc-washes"/)
+    expect(fields).toHaveLength(1)
+    expect(fields[0]).toHaveLength(4)
+    expect(inkOf(fields[0]![0])).toBe(chosenInk(washFor(recipe.name)))
+    expect(html).not.toMatch(/<span class="kcc-wash"[^>]*--c:/)
+  })
+
+  it('keys its washes by the recipe, so two featured recipes bloom apart', async () => {
+    const ids = async (card: FeaturedRecipeModel) =>
+      washFields(await renderSsr(FeaturedRecipeCard, { card }))[0]!.map((wash) => wash.id)
+
+    expect(await ids(hitToFeatured(recipe, echoKey))).not.toEqual(await ids(variantToFeatured(variant, echoKey)))
   })
 
   it('pins the large tile and its tape outside the tear, with the one strip inside the tilewrap', async () => {
@@ -101,7 +111,7 @@ describe('FeaturedRecipeCard from a search hit', () => {
     expect(tilewrap).toContain('top:-22px')
     expect(tilewrap).toContain('left:40px')
     expect(html).toContain('kcc-tile--lg')
-    expect(count(html.replace(/\s/g, ''), `--c:var(--color-${washFor(recipe.name)})`)).toBe(2)
+    expect(count(html.replace(/\s/g, ''), `--c:var(--color-${washFor(recipe.name)})`)).toBe(1)
     expect(count(html, 'kcc-tape')).toBe(1)
     expect(html).toMatch(TAPED_TILEWRAP)
     expect(html.indexOf('kcc-tilewrap')).toBeGreaterThan(html.indexOf('</a>'))

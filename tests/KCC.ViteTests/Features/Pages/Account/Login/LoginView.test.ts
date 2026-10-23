@@ -57,7 +57,9 @@ describe('LoginView', () => {
 
     expect(label).toContain('<i class="fa-duotone fa-key" aria-hidden="true">')
     expect(label).toContain('Sign in')
-    expect(html).toMatch(/<div class="kcc-sheet kcc-sheet--margin"[^>]*>(?:<!--[^>]*-->)*<h2 class="sr-only">Sign in<\/h2>/)
+    expect(html).toMatch(
+      /<div class="kcc-sheet kcc-sheet--margin"[^>]*><span class="kcc-washes" aria-hidden="true"><!--\[-->(?:<span class="kcc-wash"[^>]*><\/span>)+<!--\]--><\/span>(?:<!--[^>]*-->)*<h2 class="sr-only">Sign in<\/h2>/,
+    )
   })
 
   it('keeps the selectors the sign-in helper types into', async () => {

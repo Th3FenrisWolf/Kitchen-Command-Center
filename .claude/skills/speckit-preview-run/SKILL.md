@@ -44,8 +44,8 @@ Read `docs/brand/kit.md` before the first look round. Constitution principle II 
    link per option.
    - The options differ on a named axis: layout, density, hierarchy or interaction. Name each one for its
      direction, never Option A, B or C. Two options that differ only in colour or copy are one option.
-   - Build with the kit: `kcc-*` classes, role tokens through `var(--color-*)`, the tear presets and the
-     washes. The build emits only the Tailwind utilities that the site's source already uses, so a utility
+   - Build with the kit: `kcc-*` classes, role tokens through `var(--color-*)`, the tear presets and, for a wash, a hand-written `.kcc-washes` field of `.kcc-wash` spans with their
+     `--wash-*` properties (a static round has no `KccWashes`; see `docs/brand/kit.md` → Washes). The build emits only the Tailwind utilities that the site's source already uses, so a utility
      the site does not use has no rule. Put the round's own layout in its `<style>` block, with a `pv-` prefix.
    - Use real content that fits the spec: recipe names, categories, labels and counts.
 3. Check the round before the owner sees it. Navigate the pane to it, read the console for errors, and look at

@@ -6,6 +6,7 @@
 
 <template>
   <span class="kcc-grain" aria-hidden="true"></span>
+  <span class="kcc-crayon" aria-hidden="true"></span>
 
   <component :is="{ name: 'HeaderContent', template: headerContent }" />
 
@@ -14,6 +15,4 @@
   </main>
 
   <component :is="{ name: 'FooterContent', template: footerContent }" />
-
-  <span class="kcc-crayon" aria-hidden="true"></span>
 </template>

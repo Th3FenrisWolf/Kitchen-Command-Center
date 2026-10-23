@@ -10,6 +10,7 @@ public static class VueSsrExtensions
 {
     public static IServiceCollection AddVueSsr(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton(_ => new SsrRenderCache(64L * 1024 * 1024));
         services.AddScoped<VueSsrService>();
 
         services.AddViteServices(options =>

@@ -1,4 +1,5 @@
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
+import { washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
 
@@ -15,7 +16,7 @@ describe('VariantCookNotes sheet', () => {
     expect(tagWith(html, 'kcc-slip')).toMatch(/^<section class="kcc-slip kcc-slip--wide kcc-tear-4"/)
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-pen-nib" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?CookNotes/s)
-    expect(html).not.toContain('kcc-wash')
+    expect(washFields(html).map((field) => field.length)).toEqual([3])
     expect(html).not.toMatch(/sk-[a-z]/)
   })
 

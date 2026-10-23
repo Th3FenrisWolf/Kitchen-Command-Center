@@ -4,6 +4,12 @@ export interface ContentRegions {
   footerContent: string
 }
 
+export interface BloomInputs {
+  seed: number
+  page: string
+}
+
 export interface SsrPayload extends ContentRegions {
   isPreview: boolean
+  bloom: BloomInputs
 }

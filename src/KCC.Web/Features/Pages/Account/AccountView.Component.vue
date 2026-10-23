@@ -46,14 +46,7 @@
 
 <template>
   <div class="mt-rule-1 grid items-start gap-x-7 gap-y-rule-1.5 md:grid-cols-content-aside">
-    <KccSheet
-      margin
-      as="section"
-      wash="lavender"
-      :at="{ x: '88%', y: '18%', w: '38%', h: '60%' }"
-      :tear="1"
-      class="md:col-start-1 md:row-start-1"
-    >
+    <KccSheet margin as="section" wash-key="account-profile" wash="lavender" :tear="1" class="md:col-start-1 md:row-start-1">
       <h1 class="kcc-display">{{ displayName }}</h1>
       <p class="kcc-kick">
         <ResourceString for="MemberSince" /> <span class="kcc-num">{{ memberSince }}</span>
@@ -93,6 +86,8 @@
         <KccSheet
           v-for="(group, index) in recipeGroups"
           :key="group.key"
+          :wash-key="`account-group:${group.key}`"
+          bloom="card"
           as="li"
           :tear="listTearFor(index + 1)"
           pad="16px"

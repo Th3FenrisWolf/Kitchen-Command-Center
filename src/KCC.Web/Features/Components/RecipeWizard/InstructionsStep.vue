@@ -41,7 +41,7 @@
 </script>
 
 <template>
-  <KccSheet margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-ol">
+  <KccSheet wash-key="wizard-instructions" margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-ol">
     <template #label><ResourceString for="Instructions" /></template>
 
     <h2 class="sr-only">{{ rs('Instructions') }}</h2>

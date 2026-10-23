@@ -42,7 +42,7 @@
 </script>
 
 <template>
-  <KccSheet margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-check">
+  <KccSheet wash-key="wizard-ingredients" margin crisp wide :tear :pad="STEP_PAD" icon="fa-duotone fa-list-check">
     <template #label><ResourceString for="Ingredients" /></template>
 
     <h2 class="sr-only">{{ rs('Ingredients') }}</h2>

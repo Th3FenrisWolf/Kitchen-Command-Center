@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest'
 import '~/Utilities/StringExtensions'
 import VariantGrid from '~/Components/RecipeDetail/VariantGrid.vue'
 import type { VariantSummary } from '~/Types/Recipe'
+import { washFor } from '~/Utilities/BrandColor'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 
 const NAMES = ['Brown Butter', 'Crispy Edge', 'Garlic Confit', 'Herb Ricotta', 'Lemon Caper', 'Miso Butter', 'Nutmeg Cream']
 
@@ -100,5 +102,29 @@ describe('VariantGrid', () => {
     const unflipped = slipClasses(await render(3))
     expect(unflipped).toHaveLength(4)
     expect(unflipped.some((classes) => classes.includes('kcc-slip--flip'))).toBe(false)
+  })
+
+  it('blooms every card in its recipe colour and the add-variant sheet as a card of its own', async () => {
+    const html = await render(3)
+    const fields = washFields(html)
+    const addSheet = html.slice(html.indexOf('href="/recipes/add-variant'))
+
+    expect(fields).toHaveLength(4)
+    expect(fields.slice(0, 3).map((field) => inkOf(field[0]))).toEqual(
+      NAMES.slice(0, 3).map((name) => chosenInk(washFor(name))),
+    )
+    expect(addSheet).toMatch(/^[^>]*><div class="kcc-sheet" style="--pad:\s?48px;?"><span class="kcc-washes"/)
+    expect(fields[3]!.length).toBeGreaterThanOrEqual(1)
+    expect(fields[3]!.length).toBeLessThanOrEqual(2)
+    expect(html).not.toMatch(/<span class="kcc-wash"[^>]*--c:/)
+  })
+
+  it('keys every card by its variant, so the grid holds no repeated arrangement', async () => {
+    const ids = washFields(await render())
+      .flat()
+      .map((wash) => wash.id)
+
+    expect(ids.length).toBeGreaterThan(NAMES.length)
+    expect(new Set(ids).size).toBe(ids.length)
   })
 })

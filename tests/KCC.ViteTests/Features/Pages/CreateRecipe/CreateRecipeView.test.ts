@@ -83,7 +83,7 @@ describe('CreateRecipeView', () => {
     expect(label).toContain('fa-duotone fa-pen-to-square')
     expect(label).toContain('Recipe Basics')
     expect(wizard).toMatch(
-      /<div class="kcc-sheet kcc-sheet--margin"[^>]*>(?:<!--[^>]*-->)*<h2 class="sr-only">Recipe Basics<\/h2>/,
+      /<div class="kcc-sheet kcc-sheet--margin"[^>]*><span class="kcc-washes" aria-hidden="true"><!--\[-->(?:<span class="kcc-wash"[^>]*><\/span>)+<!--\]--><\/span>(?:<!--[^>]*-->)*<h2 class="sr-only">Recipe Basics<\/h2>/,
     )
   })
 
@@ -117,7 +117,7 @@ describe('CreateRecipeView', () => {
 
     expect(wizard).not.toContain('fa-clipboard-check')
     expect(wizard).not.toContain('kcc-tape')
-    expect(wizard).not.toContain('kcc-wash')
+    expect(wizard).not.toContain('wizard-submitted')
   })
 
   it('opens the wizard on the start step when the page turns the photo import on', async () => {

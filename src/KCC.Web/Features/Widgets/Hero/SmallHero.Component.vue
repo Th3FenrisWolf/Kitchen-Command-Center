@@ -26,14 +26,7 @@
 </script>
 
 <template>
-  <KccSheet
-    as="section"
-    :tear="'hero'"
-    pad="48px"
-    wash="peach"
-    :at="{ x: '100%', y: '100%', w: '34%', h: 'min(60%, 68px)' }"
-    v-bind="$attrs"
-  >
+  <KccSheet as="section" :tear="'hero'" pad="48px" wash-key="small-hero" wash="peach" v-bind="$attrs">
     <p v-if="eyebrow" class="kcc-kick">
       <slot name="eyebrow"></slot>
     </p>

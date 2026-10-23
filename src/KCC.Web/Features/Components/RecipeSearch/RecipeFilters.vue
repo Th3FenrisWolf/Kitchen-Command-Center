@@ -43,7 +43,7 @@
 </script>
 
 <template>
-  <KccSheet icon="fa-duotone fa-sliders" :tear="5" crisp>
+  <KccSheet wash-key="recipe-filters" icon="fa-duotone fa-sliders" :tear="5" crisp>
     <template #label><ResourceString for="Filters" /></template>
 
     <ResourceString for="Filters" as="h2" class="sr-only" />

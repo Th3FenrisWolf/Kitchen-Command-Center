@@ -48,7 +48,10 @@ For each file, check every rule below and record hits as `path:line — rule —
 - A hover or focus lift written with translate utilities on a slip instead of `kcc-slip--lift`.
 - A `--pad` of more than one length on a `kcc-sheet--margin` sheet: below 480px its start padding falls back to
   `var(--pad, 24px)`, which a shorthand makes invalid.
-- A sheet with more than one `.kcc-wash`, `.kcc-label` or `.kcc-hand`.
+- A sheet with more than one `.kcc-label` or `.kcc-hand`, or more than one wash field, or a field with more than four
+  washes.
+- A `KccSheet` or `KccWashes` with no `wash-key`, a key built from a list index, or a key that repeats on a page
+  (`keys.test.ts`); a `KccWashes` inside a blank, well, tile, label or tape.
 - Sibling sheets in one list or grid sharing a `kcc-tear-N` class (grep the loop; the index must cycle).
 
 **Torn vs printed**
@@ -71,8 +74,14 @@ For each file, check every rule below and record hits as `path:line — rule —
   `*-ink` status token). Links are `kcc-link` in ink; status is a `kcc-well--danger|success|warning` or
   `kcc-field--error` with ink text.
 - `text-marker-ink` anywhere except inside `.kcc-tile`, `.kcc-label` or a marker `.kcc-btn`.
-- Running text placed over a wash core: a `.kcc-wash` whose `--x/--y` put it under the sheet's copy rather
-  than under a margin or corner.
+- A hand-written `.kcc-wash`, `.kcc-washes` or schedule rule, a wash placed or coloured by hand, a `:at` prop or an
+  old `--c --x --y --w --h` wash. Washes are `KccWashes`'s; a sheet picks only its first colour with `wash`.
+- Grain or crayon on anything but the desk, a wash or a tile: a `::after` noise tile on a sheet, a `--grain`,
+  `--crayon` or texture image (or an alias) elsewhere, `url(#kcc-bloom)` off `.kcc-wash`, `url(#kcc-wax-flat)` off
+  `.kcc-tile`. The tape's woven stripe is the tape's own material and passes (`grain.test.ts`).
+- A sheet the owner left bare that blooms: a Home or stacker card with no wash must pass `bloom="none"`.
+- A wash written to move once bloomed, animated from script, or given its own `animation`: a changed animation
+  restarts the bloom.
 
 **Type**
 - `font-bold`, `font-semibold`, `font-medium`, `<b>`, `<strong>` styled as weight, `font-weight` ≥ 500.

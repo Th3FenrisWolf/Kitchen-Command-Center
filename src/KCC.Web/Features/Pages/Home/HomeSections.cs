@@ -13,7 +13,7 @@ public static class HomeSections
         var result = new List<HomeSection>();
         foreach (var block in sections ?? Enumerable.Empty<BlockListItem>())
         {
-            var section = Section(block.Content, SectionStyle.Classes(block.Settings as SectionSettings), tears);
+            var section = Section(block.ContentKey, block.Content, SectionStyle.Classes(block.Settings as SectionSettings), tears);
             if (section is not null)
             {
                 result.Add(section);
@@ -23,19 +23,19 @@ public static class HomeSections
         return result;
     }
 
-    private static HomeSection Section(IPublishedElement content, string classes, TearCycle tears) => content switch
+    private static HomeSection Section(Guid key, IPublishedElement content, string classes, TearCycle tears) => content switch
     {
-        RichTextBlock richText => new RichTextSection(classes, tears.Next(), richText.Text?.ToHtmlString() ?? string.Empty),
+        RichTextBlock richText => new RichTextSection(key, classes, tears.Next(), richText.Text?.ToHtmlString() ?? string.Empty),
         CardGridBlock grid => new CardGridSection(
             classes,
             grid.Heading,
             Columns(grid.Columns),
-            Elements<Card>(grid.Cards).Select(card => new HomeCard(card.Heading, card.SubHeading, card.Body, SectionStyle.Wash(card.Wash), Link(card.Link), tears.Next())).ToList()),
-        StackerBlock stacker => Stacker(stacker, classes, tears),
+            Elements<Card>(grid.Cards).Select(card => new HomeCard(card.Key, card.Content.Heading, card.Content.SubHeading, card.Content.Body, SectionStyle.Wash(card.Content.Wash), Link(card.Content.Link), tears.Next())).ToList()),
+        StackerBlock stacker => Stacker(key, stacker, classes, tears),
         _ => null,
     };
 
-    private static StackerSection Stacker(StackerBlock stacker, string classes, TearCycle tears)
+    private static StackerSection Stacker(Guid key, StackerBlock stacker, string classes, TearCycle tears)
     {
         var body = stacker.Body?.ToHtmlString();
         var image = Image(stacker.Image);
@@ -54,12 +54,13 @@ public static class HomeSections
         }
 
         return new StackerSection(
+            key,
             classes,
             sheetTear,
             stacker.Heading,
             body,
             image,
-            cards.Select(card => new StackerCard(card.Heading, card.SubHeading ?? string.Empty, SectionStyle.Wash(card.Wash), tears.Next())).ToList());
+            cards.Select(card => new StackerCard(card.Key, card.Content.Heading, card.Content.SubHeading ?? string.Empty, SectionStyle.Wash(card.Content.Wash), tears.Next())).ToList());
     }
 
     private static int Columns(string columns) => int.TryParse(columns, out var count) && count is >= 2 and <= 4 ? count : 2;
@@ -70,8 +71,8 @@ public static class HomeSections
     private static HomeImage Image(MediaWithCrops image) =>
         image is null ? null : new HomeImage(HomeImages.StackerUrl(image), image.Name);
 
-    private static IEnumerable<T> Elements<T>(BlockListModel blocks) =>
-        (blocks ?? Enumerable.Empty<BlockListItem>()).Select(block => block.Content).OfType<T>();
+    private static IEnumerable<(Guid Key, T Content)> Elements<T>(BlockListModel blocks) =>
+        (blocks ?? Enumerable.Empty<BlockListItem>()).Where(block => block.Content is T).Select(block => (block.ContentKey, (T)block.Content));
 
     // One tear cycle runs down the whole page, through sheets and cards alike, so a sheet never shares its tear with
     // the one beside it, even across two sections, and each draw tilts the other way from the draw before it.

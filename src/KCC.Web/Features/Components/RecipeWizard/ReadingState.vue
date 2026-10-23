@@ -36,7 +36,7 @@
 </script>
 
 <template>
-  <KccSheet margin crisp wide :tear :pad="STEP_PAD">
+  <KccSheet wash-key="wizard-reading" margin crisp wide :tear :pad="STEP_PAD">
     <div class="grid justify-items-center gap-y-rule-1 text-center" aria-busy="true" data-testid="reading-state">
       <h2 class="kcc-kick flex items-center gap-2.5">
         <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i><ResourceString for="Reading" />

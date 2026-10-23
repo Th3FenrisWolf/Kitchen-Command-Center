@@ -2,9 +2,12 @@ import { describe, expect, it } from 'vitest'
 import Card from '~/Widgets/Card/Card.Component.vue'
 import { sheetTearFor } from '~/Utilities/BrandColor'
 import { renderSsr, expectNoRetiredMarkup } from '../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../support/washes'
+
+const KEY = 'home-card:6f1c2d9e-3b4a-4c5d-8e7f-0a1b2c3d4e5f'
 
 const render = (props: Record<string, unknown> = {}) =>
-  renderSsr(Card, props, { default: () => 'Weeknight', drawer: () => 'Hover to open.' })
+  renderSsr(Card, { washKey: KEY, ...props }, { default: () => 'Weeknight', drawer: () => 'Hover to open.' })
 
 // Both elements are found by a hook — the drawer by `data-card-drawer`, the slip by its kit class. A
 // missing hook is reported here rather than as an empty class list failing some unrelated-looking colour
@@ -54,7 +57,7 @@ describe('Card structure', () => {
   // stays on a phone, where `group-hover` does not apply.
   it.each([
     ['with a drawer', () => render()],
-    ['without one', () => renderSsr(Card, {}, { default: () => 'Weeknight' })],
+    ['without one', () => renderSsr(Card, { washKey: KEY }, { default: () => 'Weeknight' })],
   ])('sets the content on the rule %s', async (_, renderCard) => {
     const html = withoutComments(await renderCard())
 
@@ -63,35 +66,40 @@ describe('Card structure', () => {
 })
 
 describe('Card wash', () => {
-  // Top-right, tucked into the corner: clear of the left-aligned heading and of the soft-ink subheading on
-  // the line below it (soft ink over a wash core fails AA in the dark ramp), and clear of the opaque drawer
-  // that fills everything below on hover, so the card keeps its colour while it is being read.
-  it('pools the editor colour into the top-right corner', async () => {
-    const html = await render({ cardColor: 'bg-peach' })
+  it('blooms as a card, its first wash in the editor colour', async () => {
+    const fields = washFields(await render({ cardColor: 'bg-peach' }))
 
-    expect(html).toContain(
-      '<span class="kcc-wash" style="--c:var(--color-peach);--x:100%;--y:0%;--w:38%;--h:min(40%, 68px);" aria-hidden="true">',
-    )
-    expect(html.match(/kcc-wash/g)).toHaveLength(1)
+    expect(fields).toHaveLength(1)
+    expect([1, 2]).toContain(fields[0]!.length)
+    expect(inkOf(fields[0]![0])).toBe(chosenInk('peach'))
   })
 
-  it('leaves a paper ground unwashed', async () => {
+  it('takes its arrangement from the key the page hands it', async () => {
+    const once = washFields(await render({ cardColor: 'bg-peach' }))
+    const again = washFields(await render({ cardColor: 'bg-peach' }))
+    const other = washFields(await render({ cardColor: 'bg-peach', washKey: 'home-card:another' }))
+
+    expect(again).toEqual(once)
+    expect(other[0]!.map((wash) => wash.id)).not.toEqual(once[0]!.map((wash) => wash.id))
+  })
+
+  it('leaves a paper ground bare, its wash unset', async () => {
     expect(await render({ cardColor: 'bg-paper' })).not.toContain('kcc-wash')
   })
 
-  it('leaves a card the editor gave no colour unwashed', async () => {
+  it('leaves a card the editor gave no colour bare', async () => {
     expect(await render()).not.toContain('kcc-wash')
   })
 
   // Razor writes `card-color=""` for a content item with no BackgroundColor, which never reaches the
   // prop default.
-  it('leaves an empty colour unwashed', async () => {
+  it('leaves an empty colour bare', async () => {
     expect(await render({ cardColor: '' })).not.toContain('kcc-wash')
   })
 
   // Until the migrated content is restored into the database, a stored card can still name a retired
   // hue. The sheet then renders bare paper rather than a `var(--color-rosewater)` that resolves to nothing.
-  it('leaves a retired hue unwashed', async () => {
+  it('leaves a retired hue bare', async () => {
     expect(await render({ cardColor: 'bg-rosewater' })).not.toContain('kcc-wash')
   })
 })
@@ -126,7 +134,7 @@ describe('Card drawer', () => {
   })
 
   it('omits the drawer when the slot is unfilled', async () => {
-    const html = await renderSsr(Card, {}, { default: () => 'Weeknight' })
+    const html = await renderSsr(Card, { washKey: KEY }, { default: () => 'Weeknight' })
 
     expect(html).not.toContain('data-card-drawer')
   })

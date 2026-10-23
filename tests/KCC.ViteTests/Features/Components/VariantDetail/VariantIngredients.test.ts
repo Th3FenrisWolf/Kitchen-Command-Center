@@ -1,4 +1,5 @@
 import { renderSsr, tagWith, expectNoRetiredMarkup } from '../../../support/ssr'
+import { chosenInk, inkOf, washFields } from '../../../support/washes'
 import { describe, expect, it } from 'vitest'
 import VariantIngredients from '~/Components/VariantDetail/VariantIngredients.vue'
 import type { Ingredient } from '~/Types/Recipe'
@@ -31,16 +32,11 @@ describe('VariantIngredients sheet', () => {
     expect(html).not.toContain('kcc-slip--wide')
   })
 
-  it('pools its one wash low and left, clear of the list', async () => {
-    const html = await render()
-    const wash = tagWith(html, 'kcc-wash')
+  it('blooms three washes as a reading sheet, the first in teal', async () => {
+    const fields = washFields(await render())
 
-    expect(wash).toContain('--c:var(--color-teal)')
-    expect(wash).toContain('--x:15%')
-    expect(wash).toContain('--y:95%')
-    expect(wash).toContain('--w:60%')
-    expect(wash).toContain('--h:45%')
-    expect((html.match(/kcc-wash/g) ?? []).length).toBe(1)
+    expect(fields.map((field) => field.length)).toEqual([3])
+    expect(inkOf(fields[0][0])).toBe(chosenInk('teal'))
   })
 
   it('keeps the section heading for assistive tech while the label carries the printed name', async () => {

@@ -132,7 +132,15 @@
       <div ref="panel" tabindex="-1" class="h-full outline-none">
         <!-- The sheet is the viewport: height flows down the slip and the torn wrapper into the paper, and
              the step column scrolls inside the padding rather than past the tear. -->
-        <KccSheet margin crisp wide :tear="3" pad="clamp(24px, 6vw, 48px)" class="kcc-slip--fill mx-auto max-w-3xl">
+        <KccSheet
+          wash-key="cook-mode"
+          margin
+          crisp
+          wide
+          :tear="3"
+          pad="clamp(24px, 6vw, 48px)"
+          class="kcc-slip--fill mx-auto max-w-3xl"
+        >
           <!-- Whole rules tall, so the footer pinned to its foot starts on a rule at any window height. -->
           <div class="flex h-[round(down,100%,var(--bl))] flex-col">
             <header class="flex flex-wrap items-start justify-between gap-x-6">

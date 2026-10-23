@@ -81,6 +81,8 @@
 
   const hasMore = () => reviews.value.length < total.value
 
+  const reviewKey = (review: Review) => `review:${review.authorName}|${review.created}`
+
   // Histogram rows, 5★ down to 1★. distribution[i] holds the count for (i + 1)★;
   // half-star bucketing (round-down) is decided server-side.
   const distRows = computed(() => {
@@ -124,7 +126,7 @@
     </div>
 
     <div class="space-y-rule-1.5">
-      <KccSheet margin v-if="count > 0" :tear="5" wide>
+      <KccSheet v-if="count > 0" wash-key="reviews-summary" margin :tear="5" wide>
         <div class="flex flex-wrap items-start gap-x-7 gap-y-rule-1">
           <RatingSummary :value="average" />
 
@@ -144,7 +146,17 @@
       </KccSheet>
 
       <ul v-if="reviews.length" data-testid="reviews-list" class="grid gap-y-rule-1.5">
-        <KccSheet v-for="(review, i) in reviews" :key="i" as="li" :tear="listTearFor(i)" wide flip pad="16px">
+        <KccSheet
+          v-for="(review, i) in reviews"
+          :key="reviewKey(review)"
+          :wash-key="reviewKey(review)"
+          bloom="card"
+          as="li"
+          :tear="listTearFor(i)"
+          wide
+          flip
+          pad="16px"
+        >
           <StarRating :model-value="review.rating" readonly />
           <p class="kcc-kick">
             {{ review.authorName }} · <span class="kcc-num">{{ formatDate(review.created) }}</span>
@@ -158,7 +170,16 @@
         <ResourceString for="LoadMore" />
       </Button>
 
-      <KccSheet margin v-if="isAuthenticated" icon="fa-duotone fa-comment-pen" :tear="formTear" wide :flip="formFlips" crisp>
+      <KccSheet
+        v-if="isAuthenticated"
+        wash-key="review-form"
+        margin
+        icon="fa-duotone fa-comment-pen"
+        :tear="formTear"
+        wide
+        :flip="formFlips"
+        crisp
+      >
         <template #label><ResourceString for="YourReview" /></template>
 
         <div class="space-y-rule-1">

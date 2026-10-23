@@ -45,7 +45,7 @@
 </script>
 
 <template>
-  <KccSheet margin crisp wide :tear :pad="STEP_PAD" data-testid="match-step">
+  <KccSheet wash-key="wizard-match" margin crisp wide :tear :pad="STEP_PAD" data-testid="match-step">
     <h2 class="kcc-heading">{{ fill(rs('MatchTitle'), match.recipeName) }}</h2>
 
     <div class="mt-rule-1 flex flex-col gap-y-rule-1">

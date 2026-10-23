@@ -3,6 +3,7 @@
   import logoOnDark from '~/Components/Header/Assets/logo-on-dark.webp'
   import logoOnLight from '~/Components/Header/Assets/logo-on-light.webp'
   import type { NavModel } from '~/Types/Nav'
+  import KccWashes from '~/Components/Sheet/KccWashes.Component.vue'
   import KitchenCard from './KitchenCard.vue'
   import MenuCard from './MenuCard.vue'
   import PadCard from './PadCard.vue'
@@ -168,6 +169,7 @@
       <div class="pad-top kcc-slip kcc-tear-hero" style="--r: -0.12">
         <div class="kcc-torn">
           <div class="kcc-sheet" style="--pad: 12px">
+            <KccWashes wash-key="@pad" size="page" :wash-slots="[0, 4, 8, 12]" />
             <div id="pad-bar-desk" class="pad-bar pad-bar--desk">
               <a class="pad-logo" :href="nav.urls.home">
                 <img data-ramp="light" :src="logoOnLight" :alt="logoAlt" width="68" height="48" loading="eager" />
@@ -287,6 +289,7 @@
       <div id="pad-cards" class="pad-cards">
         <PadCard
           id="pad-card-recipes"
+          :wash-slots="[2, 10]"
           class="pad-card--desk"
           :state="stateOf('recipes')"
           :tear="4"
@@ -294,7 +297,6 @@
           width="min(640px, calc(100% - 140px))"
           :left="left.recipes"
           wash="peach"
-          :at="{ x: '100%', y: '0%', w: '30%', h: '68px' }"
           labelled-by="pad-menu-recipes"
           @keydown="(event: KeyboardEvent) => pad.onCardKeydown('recipes', event)"
         >
@@ -310,6 +312,7 @@
         <PadCard
           v-if="nav.member"
           id="pad-card-kitchen"
+          :wash-slots="[6, 14]"
           class="pad-card--desk"
           :state="stateOf('kitchen')"
           :tear="3"
@@ -317,7 +320,6 @@
           width="min(580px, calc(100% - 140px))"
           :left="left.kitchen"
           wash="lavender"
-          :at="{ x: '100%', y: '0%', w: '34%', h: '68px' }"
           labelled-by="pad-menu-kitchen"
           @keydown="(event: KeyboardEvent) => pad.onCardKeydown('kitchen', event)"
         >
@@ -327,6 +329,7 @@
         <template v-if="nav.urls.library">
           <PadCard
             id="pad-card-search"
+            :wash-slots="[3, 11]"
             class="pad-card--desk pad-card--mirror"
             :state="stateOf('search')"
             :tear="1"
@@ -334,7 +337,6 @@
             width="440px"
             :left="left.search"
             wash="sky"
-            :at="{ x: '100%', y: '0%', w: '26%', h: '68px' }"
             :label="searchLabel"
             @keydown="(event: KeyboardEvent) => pad.onCardKeydown('search', event)"
           >
@@ -355,6 +357,7 @@
 
           <PadCard
             id="pad-card-find"
+            :wash-slots="[5, 13]"
             class="pad-card--phone"
             scroll
             :state="stateOf('find')"
@@ -386,6 +389,7 @@
 
         <PadCard
           id="pad-card-menu"
+          :wash-slots="[1, 9]"
           class="pad-card--phone"
           scroll
           :state="stateOf('menu')"
