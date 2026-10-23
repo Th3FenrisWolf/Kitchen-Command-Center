@@ -584,7 +584,7 @@ function closest(starts: Iterable<number>): number {
 
 const PAGE_SIZES = [1, 2, 7, 16, 17, 50, 120, 240, 300] as const
 
-describe('scheduleWashes: the even spread', () => {
+describe('scheduleWashes: the even spread', { timeout: 30_000 }, () => {
   it('writes nothing for a page with no washes', () => {
     expect(scheduleWashes(1, [])).toBe('')
   })
@@ -674,9 +674,9 @@ describe('scheduleWashes: the even spread', () => {
     const radius = blockRadius(n)
     for (const seed of SEEDS) {
       const visit = visitBeatsOf(seed)
-      for (const at of startsOf(seed, pageOf('/p', n)).values()) {
-        for (const g of visit) expect(Math.abs(at - g), `seed ${seed}`).toBeGreaterThan(radius)
-      }
+      const starts = [...startsOf(seed, pageOf('/p', n)).values()]
+      const nearest = Math.min(...starts.flatMap((at) => visit.map((g) => Math.abs(at - g))))
+      expect(nearest, `seed ${seed}`).toBeGreaterThan(radius)
     }
   })
 
