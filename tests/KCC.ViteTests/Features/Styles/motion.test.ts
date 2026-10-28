@@ -24,6 +24,51 @@ const withTokens = (value: string) => value.replace(/var\((--[\w-]+)\)/g, (whole
 
 const BLOOM = /^kcc-bloom\s+var\(--wash-bloom\)/
 
+const BLOOM_CURVE = { x1: 0.17, y1: 0.72, x2: 0.24, y2: 1 }
+const BLOOM_STEPS = 45
+
+const bezier = (a: number, b: number, s: number) => 3 * a * s * (1 - s) ** 2 + 3 * b * s ** 2 * (1 - s) + s ** 3
+
+const timeAt = (progress: number) => {
+  let low = 0
+  let high = 1
+  for (let i = 0; i < 60; i++) {
+    const mid = (low + high) / 2
+    if (bezier(BLOOM_CURVE.y1, BLOOM_CURVE.y2, mid) < progress) low = mid
+    else high = mid
+  }
+  return bezier(BLOOM_CURVE.x1, BLOOM_CURVE.x2, (low + high) / 2)
+}
+
+type Stop = { progress: number; at: number }
+
+// Each step rises the same height, so the steps crowd the start, where the curve climbs fastest, and the start reads
+// smooth. A step lands where the curve crosses its midpoint, so the stair never strays half a step from the curve,
+// except the first, which lands a hair after the start so a wash shows as it arrives: at 0% itself it would also
+// show while the wash waits to arrive.
+const staircase = (steps: number): Stop[] => {
+  const stops: Stop[] = [{ progress: 0, at: 0 }]
+  for (let step = 1; step <= steps; step++) {
+    const at = step === 1 ? 0.01 : Number((timeAt((step - 0.5) / steps) * 100).toFixed(2))
+    stops.push({ progress: Number(((step - 1) / steps).toFixed(4)), at })
+    stops.push({ progress: Number((step / steps).toFixed(4)), at })
+  }
+  stops.push({ progress: 1, at: 100 })
+  return stops
+}
+
+const stopsOf = (easing: string) =>
+  (easing.replace(/\s+/g, ' ').match(/^linear\((.*)\)$/)?.[1] ?? '').split(',').map((stop) => {
+    const [progress, at] = stop.trim().split(' ')
+    return { progress: Number(progress), at: Number(at?.replace('%', '')) }
+  })
+
+const jumps = (stops: Stop[]) =>
+  stops
+    .slice(1)
+    .filter((stop, i) => stop.at === stops[i]!.at)
+    .map(({ at }) => at)
+
 const durations: { at: string; ms: number; declared: string }[] = []
 for (const file of files(`${WEB}Features`, /\.(vue|cshtml|css|ts)$/)) {
   const source = readFileSync(file, 'utf8')
@@ -116,6 +161,31 @@ describe('motion', () => {
     const bloom = tokens.get('--wash-bloom')?.match(/^(\d*\.?\d+)s$/)?.[1]
     expect(bloom, 'Torn/Tokens.css declares --wash-bloom in seconds').toBeDefined()
     expect(Number(bloom) + WASH_WINDOW_S).toBe(300)
+  })
+
+  it('times the bloom with --wash-ease', () => {
+    expect(blockAfter(read('Features/Styles/Torn/Kit.css'), '.kcc-wash {')).toMatch(
+      /animation:\s*kcc-bloom\s+var\(--wash-bloom\)\s+var\(--wash-ease\)\s+backwards;/,
+    )
+  })
+
+  it('steps the bloom through 40 to 50 holds and never ramps between them', () => {
+    const stops = stopsOf(tokens.get('--wash-ease') ?? '')
+    expect(stops[0]).toEqual({ progress: 0, at: 0 })
+    expect(stops.at(-1)).toEqual({ progress: 1, at: 100 })
+
+    const steps = jumps(stops).length
+    expect(steps).toBeGreaterThanOrEqual(40)
+    expect(steps).toBeLessThanOrEqual(50)
+
+    const ramps = stops.slice(1).filter((stop, i) => stop.at !== stops[i]!.at && stop.progress !== stops[i]!.progress)
+    expect(ramps, 'between two jumps the bloom holds still').toEqual([])
+  })
+
+  it('stairs the bloom curve, front-loaded, so a fast-forwarded visit lands within one step of it', () => {
+    const stops = stopsOf(tokens.get('--wash-ease') ?? '')
+    expect(stops, 'regenerate --wash-ease in Torn/Tokens.css from this staircase').toEqual(staircase(BLOOM_STEPS))
+    expect(jumps(stops).filter((at) => at < 100 / 6).length).toBeGreaterThan(BLOOM_STEPS / 2)
   })
 
   it('blooms from a faint, smaller wash to its peak at full size', () => {

@@ -38,7 +38,7 @@ public class RecipeSearchApiTests
         var root = document.RootElement;
         var names = root.GetProperty("results").EnumerateArray().Select(hit => hit.GetProperty("name").GetString());
 
-        _ = await Assert.That(root.GetProperty("total").GetInt32()).IsEqualTo(9);
+        _ = await Assert.That(root.GetProperty("total").GetInt32()).IsEqualTo(12);
         _ = await Assert.That(string.Join(",", names)).IsEqualTo("Legendary Lasagna,Molten Chocolate Cake,Slow-Braised Short Ribs");
     }
 

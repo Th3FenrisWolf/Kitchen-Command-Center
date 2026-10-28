@@ -32,6 +32,7 @@
 
 <template>
   <div class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero">
+    <span class="kcc-fall" aria-hidden="true"><span></span></span>
     <div class="kcc-torn">
       <div class="kcc-sheet" style="--pad: 48px">
         <KccWashes wash-key="recipe-hero" size="page" :chosen="washFor(seed)" />

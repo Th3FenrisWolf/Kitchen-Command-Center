@@ -41,7 +41,18 @@ const inComponentsLayer = (rule: Rule | undefined) => {
   return false
 }
 
-const PILE = ['.kcc-slip', '.kcc-slip--fill', '.kcc-blank', '.kcc-blank > span', '.kcc-slip--flip', '.kcc-slip--wide']
+const PILE = [
+  '.kcc-slip',
+  '.kcc-slip--fill',
+  '.kcc-fall',
+  '.kcc-fall > span',
+  '.kcc-blank',
+  '.kcc-blank > span',
+  '.kcc-slip--flip',
+  '.kcc-slip--wide',
+]
+
+const FALL_FILTER = 'drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall))'
 
 describe('the pile in the kit', () => {
   it('gives every slip its sheet height and the blank defaults', () => {
@@ -65,17 +76,42 @@ describe('the pile in the kit', () => {
       inset: '0',
       'pointer-events': 'none',
       'z-index': '-1',
-      '--tear': 'var(--blank-tear)',
       transform:
         'rotate(calc(var(--blank-turn) * var(--blank-dir) * var(--blank-flip) * var(--blank-region, 1))) scale(var(--blank-scale))',
     })
   })
 
-  it('gives the blank the fibre and the fall in the same rule as the torn wrapper', () => {
-    const shared = kit.find((rule) => rule.selectors.includes('.kcc-torn') && rule.selectors.includes('.kcc-blank'))
-    expect(declarations(shared).filter).toBe(
-      'drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall))',
+  it('gives the fall and the blank the fibre and the fall in one rule', () => {
+    const shared = kit.find((rule) => rule.selectors.includes('.kcc-fall') && rule.selectors.includes('.kcc-blank'))
+    expect(declarations(shared).filter).toBe(FALL_FILTER)
+  })
+
+  it('never filters the torn wrapper of a slip, whose washes bloom under it', () => {
+    const tornFilters = kit.filter(
+      (rule) => rule.selectors.some((selector) => /\.kcc-torn\b/.test(selector)) && declarations(rule).filter,
     )
+    for (const rule of tornFilters) {
+      for (const selector of rule.selectors.filter((selector) => /\.kcc-torn\b/.test(selector))) {
+        expect(selector, "a filter on a torn wrapper must exclude a slip's own").toBe(':not(.kcc-slip) > .kcc-torn')
+      }
+    }
+  })
+
+  it('lays the fall under the top sheet, the same size, with no turn of its own', () => {
+    const fall = declarations(...everyRuleFor(kit, '.kcc-fall'))
+    expect(fall).toMatchObject({ position: 'absolute', inset: '0', 'pointer-events': 'none' })
+    expect(fall).not.toHaveProperty('transform')
+    expect(fall).not.toHaveProperty('z-index')
+  })
+
+  it('leaves the cut of the fall to Tears.css, opaque like paper', () => {
+    const paper = declarations(ruleFor(kit, '.kcc-fall > span').rule)
+    expect(paper).toMatchObject({
+      display: 'block',
+      height: '100%',
+      'background-color': 'var(--color-paper)',
+    })
+    expect(paper).not.toHaveProperty('clip-path')
   })
 
   it('draws the blank as torn paper with no ruling', () => {
@@ -84,8 +120,8 @@ describe('the pile in the kit', () => {
       display: 'block',
       height: '100%',
       'background-color': 'var(--color-paper)',
-      'clip-path': 'var(--tear)',
     })
+    expect(paper).not.toHaveProperty('clip-path')
     expect(paper).not.toHaveProperty('background-image')
   })
 
@@ -100,8 +136,11 @@ describe('the pile in the kit', () => {
     expect(wide.index).toBeGreaterThan(slip)
   })
 
-  it('lifts every child but the blank, keeping the focus ring fade', () => {
+  it('lifts every child but the blank, keeping the focus ring fade once something has focus', () => {
     expect(declarations(ruleFor(kit, '.kcc-slip--lift > :not(.kcc-blank)').rule).transition).toBe(
+      'translate var(--default-transition-duration) cubic-bezier(0.4, 0, 0.2, 1)',
+    )
+    expect(declarations(ruleFor(kit, ':root:focus-within .kcc-slip--lift > :not(.kcc-blank)').rule).transition).toBe(
       'translate var(--default-transition-duration) cubic-bezier(0.4, 0, 0.2, 1), outline-color 0.2s, outline-offset 0.2s',
     )
   })
@@ -264,5 +303,55 @@ describe('the tape', () => {
     const parents = tapeParents(markup)
     expect(parents.length, path).toBe((markup.match(/\bkcc-tape\b/g) ?? []).length)
     for (const classes of parents) expect(classes, path).toContain('kcc-tilewrap')
+  })
+})
+
+const FALL = '<span class="kcc-fall" aria-hidden="true"><span></span></span>'
+
+interface Slip {
+  classes: string[]
+  children: string[][]
+}
+
+const slipsOf = (markup: string) => {
+  const open: { name: string; children: string[][] }[] = []
+  const slips: Slip[] = []
+  for (const [, closing, name, attributes, selfClosing] of markup.matchAll(
+    /<(\/?)([A-Za-z][\w.-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)>/g,
+  )) {
+    if (closing) {
+      const at = open.findLastIndex((element) => element.name === name)
+      if (at >= 0) open.length = at
+      continue
+    }
+    const classes = classTokens(attributes!)
+    open.at(-1)?.children.push(classes)
+    const element = { name: name!, children: [] as string[][] }
+    if (classes.includes('kcc-slip')) slips.push({ classes, children: element.children })
+    if (!selfClosing && !VOID.has(name!.toLowerCase())) open.push(element)
+  }
+  return slips
+}
+
+const sheetSlipsOf = (path: string) =>
+  slipsOf(markupOf(path)).filter(({ children }) => children.some((classes) => classes.includes('kcc-torn')))
+
+describe('the fall', () => {
+  it('finds the slips that hold a sheet, in components and in Razor', () => {
+    const files = markupFiles.filter((path) => sheetSlipsOf(path).length > 0)
+    expect(files.filter((path) => path.endsWith('.vue')).length).toBeGreaterThanOrEqual(6)
+    expect(files.filter((path) => path.endsWith('.cshtml')).length).toBeGreaterThanOrEqual(4)
+  })
+
+  it.each(markupFiles)('lies once in every slip in %s, right before its torn sheet', (path) => {
+    const slips = sheetSlipsOf(path)
+    for (const { classes, children } of slips) {
+      const torn = children.findIndex((child) => child.includes('kcc-torn'))
+      const falls = children.flatMap((child, index) => (child.includes('kcc-fall') ? [index] : []))
+      expect(falls, `${path}: ${classes.join(' ')}`).toEqual([torn - 1])
+    }
+    const markup = markupOf(path)
+    expect((markup.match(/\bkcc-fall\b/g) ?? []).length, path).toBe(slips.length)
+    expect(markup.split(FALL).length - 1, path).toBe(slips.length)
   })
 })

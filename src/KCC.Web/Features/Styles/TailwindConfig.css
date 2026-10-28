@@ -152,6 +152,11 @@
   [tabindex]:not([tabindex='-1']) {
     outline: 2px solid transparent;
     outline-offset: 2px;
+  }
+
+  /* With scripts off, Chromium can style the body before the head's stylesheets apply, so an ungated fade
+     starts from the UA's outline and rings every control on the first paint. */
+  :root:focus-within :where(button, a, input, textarea, select, [tabindex]:not([tabindex='-1'])) {
     transition:
       outline-color 0.2s,
       outline-offset 0.2s;

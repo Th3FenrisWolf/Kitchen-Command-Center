@@ -27,6 +27,8 @@ public static partial class Washes
               const delay = seconds(style.animationDelay)
               const start = (animation && animation.startTime !== null ? animation.startTime / 1000 : now) + delay
               const scheduled = style.getPropertyValue('--wash-at').trim()
+              // A wash fills backwards only, so once its bloom has run it holds no animation at all.
+              const ended = now - start >= seconds(style.animationDuration)
               return {
                 id: wash.dataset.wash,
                 style: wash.getAttribute('style'),
@@ -37,7 +39,7 @@ public static partial class Washes
                 name: style.animationName,
                 opacity: parseFloat(style.opacity),
                 peak: strength * parseFloat(style.getPropertyValue('--wash-peak')),
-                playState: animation ? animation.playState : 'none',
+                playState: animation ? animation.playState : ended ? 'finished' : 'none',
                 scale: style.scale,
                 ink: style.getPropertyValue('--wash-ink').trim(),
                 ink2: style.getPropertyValue('--wash-ink-2').trim(),

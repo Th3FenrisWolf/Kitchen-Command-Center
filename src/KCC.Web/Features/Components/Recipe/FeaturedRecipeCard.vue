@@ -30,6 +30,7 @@
 
 <template>
   <article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero kcc-slip--lift" :class="{ 'kcc-slip--flip': flip }">
+    <span class="kcc-fall" aria-hidden="true"><span></span></span>
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet" style="--pad: 48px">
         <KccWashes :wash-key="`featured-recipe:${card.href}`" size="page" :chosen="washFor(card.seed)" />

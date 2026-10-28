@@ -43,7 +43,7 @@ lilac-grey. Marker green is the one accent and the only strong fill: primary act
 |---|---|---|
 | desk / desk-2 | `oklch(.884 .016 288)` / `oklch(.836 .018 288)` | `oklch(.132 .024 288)` / `oklch(.176 .028 288)` |
 | paper / paper-2 | `oklch(.958 .009 92)` / `oklch(.972 .008 92)` | `oklch(.258 .030 288)` / `oklch(.222 .028 288)` |
-| ink / ink-soft | `oklch(.232 .026 288)` / `oklch(.432 .024 288)`\* | `oklch(.945 .012 92)` / `oklch(.735 .018 288)` |
+| ink / ink-soft | `oklch(.232 .026 288)` / `oklch(.432 .024 288)`\* | `oklch(.945 .012 92)` / `oklch(.76 .018 288)` |
 | hair / hair-strong | ink at 16% / 56%\* | chalk at 18% / 45% |
 | rule (feint blue ruling) | `oklch(.698 .048 239.5 / .55)` | `oklch(.74 .05 240 / .24)` |
 | margin (red margin rule, field X) | `oklch(.631 .178 20 / .75)` | `oklch(.66 .15 22 / .58)` |
@@ -243,3 +243,8 @@ all of it but the washes, which fade in without growing.
   ink holds AA over them. "One wash per sheet", "never under running text" and author-placed washes are retired. Grain
   moves to the desk, the washes and the tiles only: the workbench grain each sheet carried is removed, and the crayon
   tooth lies under the paper with the desk's grain.
+- **2026-10-27**: The performance sweep changes the look a little, owner-approved. Dark `--color-ink-soft` goes from
+  L .735 to .76, which holds 4.5:1 over the stronger dark washes. `--wash-strength` goes from .55 to .42 in light and
+  from .16 to .18 in dark. Sheet tears take 40 points a side and hero tears 80, half as many. Washes carry no filter:
+  their bleed and grain are baked into PNG masks that `yarn washes` generates. The bloom runs in 45 steps and a wash
+  rests at its bloom's end.

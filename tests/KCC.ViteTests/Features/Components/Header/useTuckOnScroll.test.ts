@@ -3,11 +3,15 @@ import { SCROLL_SLOP_PX, TUCK_BELOW_PX, useTuckOnScroll } from '~/Components/Hea
 
 let scrollY: number
 let offset: string | undefined
+let scrollPadding: string | undefined
+let rootOffset: string | undefined
 let reducedMotion: boolean
 
 beforeEach(() => {
   scrollY = 0
   offset = undefined
+  scrollPadding = undefined
+  rootOffset = undefined
   reducedMotion = false
   vi.stubGlobal('window', {
     get scrollY() {
@@ -19,10 +23,23 @@ beforeEach(() => {
     documentElement: {
       style: {
         setProperty: (name: string, value: string) => {
-          if (name === '--pad-offset') offset = value
+          if (name === '--pad-offset') rootOffset = value
+        },
+        set scrollPaddingTop(value: string) {
+          scrollPadding = value
         },
       },
     },
+    querySelector: (selector: string) =>
+      selector === 'main'
+        ? {
+            style: {
+              setProperty: (name: string, value: string) => {
+                if (name === '--pad-offset') offset = value
+              },
+            },
+          }
+        : null,
   })
 })
 
@@ -47,6 +64,22 @@ describe('useTuckOnScroll', () => {
     tuckOn(102)
 
     expect(offset).toBe('102px')
+  })
+
+  it('keeps the offset off the root so a tuck restyles no more than the page content', () => {
+    const { scrollTo } = tuckOn(102)
+    scrollTo(600)
+
+    expect(rootOffset).toBeUndefined()
+  })
+
+  it('keeps the scroll padding on the root in step with the offset', () => {
+    const { scrollTo } = tuckOn(102)
+    expect(scrollPadding).toBe('102px')
+
+    scrollTo(600)
+
+    expect(scrollPadding).toBe('0px')
   })
 
   it('tucks away going down past the top of the page, closing any open card first', () => {

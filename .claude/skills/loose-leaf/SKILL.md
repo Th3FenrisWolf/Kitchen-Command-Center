@@ -25,13 +25,14 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 
 | Torn: `kcc-sheet`, `kcc-blank`, `kcc-tile` | Printed: `kcc-btn`, `kcc-seg`, `kcc-badge`, `kcc-box`, `kcc-label`, `kcc-tape` | Written: `kcc-field` |
 |---|---|---|
-| clipped, fibre + fall, may tilt, no radius | clean, unclipped, never shadowed, pill / 6px / 3px | a line on the rule with an X before it; no box, no radius |
+| clipped, fibre + fall (cast from its `.kcc-fall`), may tilt, no radius | clean, unclipped, never shadowed, pill / 6px / 3px | a line on the rule with an X before it; no box, no radius |
 
 ## The structure
 
 ```html
 <div class="kcc-slip kcc-tear-3">            <!-- tilt -->
-  <div class="kcc-torn">                     <!-- shadow filter: outside the clip -->
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>   <!-- the fibre + fall filter, clip on the span -->
+  <div class="kcc-torn">                     <!-- no filter: the washes bloom inside it -->
     <div class="kcc-sheet" style="--pad: 24px">
       <span class="kcc-washes" aria-hidden="true">…<span class="kcc-wash" data-wash="5c0e19a2" style="--wash-x:.281;…"></span></span>
       …content (auto-lifted above the washes)…
@@ -95,7 +96,8 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
 - [ ] Both ramps asserted in the unit test where markup differs; the visual check happens before merging.
 - [ ] No `sk-*`, `v-ink`, `data-ink`, `shadow-*`, `rounded-lg`+, `font-bold/semibold/medium`, `fa-primary-*`,
       literal colours, retired tokens (`ink-on-wash`, `ink-line`, `link`, status inks, the six dropped washes).
-- [ ] Filter on `.kcc-torn`, not on the clipped element; label and tape outside both, except a
+- [ ] Fibre and fall on the slip's `.kcc-fall`, the child right before `.kcc-torn`, outside the clip; a slip's
+      `.kcc-torn` carries no filter (a tile's keeps its own); label and tape outside both, except a
       `.kcc-tilewrap--flow` and its tape in a sheet's content flow.
 - [ ] Every sheet ends its slip with one `.kcc-blank`; no tape on a sheet, only over a tile; neighbouring blanks
       turn opposite ways down the page.
@@ -115,7 +117,9 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
 
 ## Common mistakes
 
-- Putting `filter: drop-shadow` on `.kcc-sheet` — the shadow is clipped away. Use `.kcc-torn`.
+- Putting `filter: drop-shadow` on `.kcc-sheet` — the shadow is clipped away. A sheet's shadow is the `filter` on its
+  `.kcc-fall`, the sibling before `.kcc-torn`; a slip's `.kcc-torn` carries none, or every wash step redraws it.
+- A `filter` on a `.kcc-wash`, or a wash hand-baked: washes are baked textures (`Washes/*.png`, named by `Washes.css`, both from `yarn washes`), never edited.
 - Rounding a sheet or an image — paper has no radius.
 - `text-ink` on a wash **fill** (a tile) — that is `text-marker-ink`. `text-ink` over a wash **pool**, on a sheet, is
   correct: washes are capped so ink holds AA.

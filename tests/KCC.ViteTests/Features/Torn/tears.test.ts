@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { SHEET_TEARS, TILE_TEARS, tearsCss } from '~/Torn/tears'
+import { tornPolygon } from '~/Torn/tornPolygon'
 
 const committed = readFileSync(
   fileURLToPath(new URL('../../../../src/KCC.Web/Features/Styles/Torn/Tears.css', import.meta.url)),
@@ -14,21 +15,44 @@ describe('Tears.css', () => {
   })
 
   it('stays within budget', () => {
-    expect(tearsCss().length).toBeLessThan(120_000)
+    expect(tearsCss().length).toBeLessThan(70_000)
   })
 
-  it('declares every preset on :root and a class that selects it', () => {
+  it('writes each sheet polygon once, as clip-path on the selectors of the sheet, its fall and the blanks it cuts', () => {
     const css = tearsCss()
-    for (const p of [...SHEET_TEARS, ...TILE_TEARS]) {
+    for (const p of SHEET_TEARS) {
+      const polygon = tornPolygon(p)
+      expect(css.split(polygon), p.name).toHaveLength(2)
+      const selectors = [
+        `.kcc-${p.name} > .kcc-torn > .kcc-sheet`,
+        `.kcc-${p.name} > .kcc-fall > span`,
+        ...SHEET_TEARS.filter((q) => q.blank!.tear === p.name).map((q) => `.kcc-${q.name} > .kcc-blank > span`),
+      ]
+      expect(css).toContain(`  ${selectors.join(',\n  ')} {\n    clip-path: ${polygon};\n  }`)
+    }
+  })
+
+  it('declares no custom property for a sheet polygon and substitutes none into an element', () => {
+    const css = tearsCss()
+    for (const p of SHEET_TEARS) {
+      expect(css).not.toContain(`--${p.name}:`)
+      expect(css).not.toContain(`var(--${p.name})`)
+    }
+    expect(css).not.toContain('--blank-tear')
+  })
+
+  it('declares every tile on :root for the photo strip, with a class that selects it', () => {
+    const css = tearsCss()
+    for (const p of TILE_TEARS) {
       expect(css).toContain(`  --${p.name}: polygon(`)
-      expect(css).toContain(`  .kcc-${p.name} {\n    --tear: var(--${p.name});`)
+      expect(css).toContain(`  .kcc-${p.name} {\n    --tear: var(--${p.name});\n  }`)
     }
   })
 
   it('writes each sheet tilt to --r and leaves tiles untilted', () => {
     const css = tearsCss()
-    for (const p of SHEET_TEARS) expect(css).toContain(`--tear: var(--${p.name});\n    --r: ${p.tilt};`)
-    for (const p of TILE_TEARS) expect(css).not.toContain(`--tear: var(--${p.name});\n    --r:`)
+    for (const p of SHEET_TEARS) expect(css).toContain(`  .kcc-${p.name} {\n    --r: ${p.tilt};`)
+    for (const p of TILE_TEARS) expect(css).not.toContain(`.kcc-${p.name} {\n    --tear: var(--${p.name});\n    --r:`)
   })
 })
 
@@ -66,13 +90,19 @@ describe('blank sheets', () => {
   const standard = SHEET_TEARS.filter((p) => /^tear-\d+$/.test(p.name))
   const preset = (name: string) => SHEET_TEARS.find((p) => p.name === name)!
 
-  it('writes every sheet preset its blank after --r', () => {
+  it('writes every sheet preset its blank direction after --r', () => {
     const css = tearsCss()
     for (const p of SHEET_TEARS) {
       expect(p.blank, p.name).toBeDefined()
-      expect(css).toContain(
-        `  .kcc-${p.name} {\n    --tear: var(--${p.name});\n    --r: ${p.tilt};\n    --blank-tear: var(--${p.blank!.tear});\n    --blank-dir: ${p.blank!.dir};\n  }`,
-      )
+      expect(css).toContain(`  .kcc-${p.name} {\n    --r: ${p.tilt};\n    --blank-dir: ${p.blank!.dir};\n  }`)
+    }
+  })
+
+  it('cuts every blank to the polygon of the preset its slip names', () => {
+    const css = tearsCss()
+    for (const p of SHEET_TEARS) {
+      const rule = css.split('\n  }\n').find((block) => block.includes(`.kcc-${p.name} > .kcc-blank > span`))
+      expect(rule, p.name).toContain(`clip-path: ${tornPolygon(SHEET_TEARS.find((q) => q.name === p.blank!.tear)!)}`)
     }
   })
 
@@ -110,7 +140,7 @@ describe('blank sheets', () => {
 
   it('cuts the second hero at a corner of its own and tilts it within a degree', () => {
     const hero2 = preset('tear-hero-2')
-    expect(hero2.pointsPerSide).toBe(160)
+    expect(hero2.pointsPerSide).toBe(80)
     expect(hero2.corner).not.toBe(preset('tear-hero').corner)
     expect(Math.abs(hero2.tilt ?? 0)).toBeLessThanOrEqual(1)
   })

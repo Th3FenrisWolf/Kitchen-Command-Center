@@ -28,10 +28,10 @@ describe('KccSheet', () => {
   // `<component :is>` root resolves to an element, so `normalizeChildren` calls the slot without `_push` and
   // the subtree renders via vnodes; a production compile writes that comment as `<!---->`. Both are
   // invisible; the assertions include them rather than fight them.
-  it('renders slip › torn › sheet with the default tear', async () => {
+  it('renders slip › fall, torn › sheet with the default tear', async () => {
     const html = await render()
     expect(html).toContain(
-      `<div class="kcc-slip kcc-tear-1"><div class="kcc-torn"><div class="kcc-sheet">${fieldOf('sheet', 'card')}<!--[-->Hello<!--]--></div></div><!--v-if--><span class="kcc-blank" aria-hidden="true"><span></span></span></div>`,
+      `<div class="kcc-slip kcc-tear-1"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet">${fieldOf('sheet', 'card')}<!--[-->Hello<!--]--></div></div><!--v-if--><span class="kcc-blank" aria-hidden="true"><span></span></span></div>`,
     )
   })
 

@@ -31,6 +31,7 @@ registerGlobalComponents(app)
 app.provide('isPreview', isPreview ?? false)
 app.provide(BLOOM_KEY, bloom)
 app.mount('#app')
+performance.mark('kcc:hydrated')
 bloom.markHydrated()
 startVisitHeartbeat()
 

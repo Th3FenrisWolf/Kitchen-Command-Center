@@ -13,13 +13,14 @@ const LAYOUT = 'Features/Pages/Shared/Layout.cshtml'
 type Source = { path: string; text: string }
 type Rule = { selectors: string[]; declarations: [property: string, value: string][] }
 
-const SOURCE_NAMES = new Set(['--grain', '--crayon'])
+const SOURCE_NAMES = new Set(['--grain', '--crayon', '--desk-stripe'])
 const WHOLE_NAME = /(?<![\w-])--(?:grain|crayon)(?![\w-])/
 const TEXTURE = {
   bloom: /url\(\s*#kcc-bloom\s*\)/i,
   waxFlat: /url\(\s*#kcc-wax-flat\s*\)/i,
   turbulence: /feTurbulence/i,
   dataSvg: /url\(\s*["']?data:image\/svg/i,
+  png: /url\(\s*["']?(?:data:image\/png|[^)"']*\.png)/i,
   repeatingLinear: /repeating-linear-gradient/i,
   repeatingRadial: /repeating-radial-gradient/i,
 }
@@ -30,11 +31,11 @@ const normalise = (selector: string) =>
     .replace(/\s*>\s*/g, ' > ')
     .trim()
 
-const DESK_CLASS = /\.kcc-(?:grain|crayon)(?![\w-])/
 const DARK = ":root[data-theme='dark'] "
 const withDark = (selector: string) => [selector, DARK + selector]
-const DESK = new Set([...withDark('.kcc-grain'), ...withDark('.kcc-crayon')])
+const DESK = new Set(withDark('#app'))
 const SURFACES = new Set([...DESK, '.kcc-wash', '.kcc-tile'])
+const RAMPS = new Set([':root', ":root[data-theme='dark']"])
 const TAPE = new Set(withDark('.kcc-tilewrap > .kcc-tape'))
 
 const splitTop = (text: string, separator: string) => {
@@ -144,17 +145,20 @@ export const scan = (sources: Source[]): string[] => {
       const onlyOn = (allowed: Set<string>) => rule.selectors.every((selector) => allowed.has(selector))
       for (const [property, value] of rule.declarations) {
         if (SOURCE_NAMES.has(property)) {
-          if (path !== TOKENS || where !== ':root') report(path, where, `declares ${property} outside Tokens.css :root`)
+          if (path !== TOKENS || !RAMPS.has(where)) report(path, where, `declares ${property} outside a Tokens.css ramp`)
           continue
         }
         const readsSource = referencesOf(value).some((name) => SOURCE_NAMES.has(name) || aliases.has(name))
         if (readsSource && !onlyOn(SURFACES)) report(path, where, `${property} reads a grain source`)
         if (aliases.has(property) && !onlyOn(SURFACES)) report(path, where, `${property} is a grain alias`)
-        if (TEXTURE.bloom.test(value) && !onlyOn(new Set(['.kcc-wash']))) report(path, where, `${property} reads #kcc-bloom`)
+        if (TEXTURE.bloom.test(value)) report(path, where, `${property} reads #kcc-bloom`)
         if (TEXTURE.waxFlat.test(value) && !onlyOn(new Set(['.kcc-tile'])))
           report(path, where, `${property} reads #kcc-wax-flat`)
         if (
-          (TEXTURE.turbulence.test(value) || TEXTURE.dataSvg.test(value) || TEXTURE.repeatingRadial.test(value)) &&
+          (TEXTURE.turbulence.test(value) ||
+            TEXTURE.dataSvg.test(value) ||
+            TEXTURE.png.test(value) ||
+            TEXTURE.repeatingRadial.test(value)) &&
           !onlyOn(SURFACES)
         )
           report(path, where, `${property} paints a texture image`)
@@ -163,10 +167,15 @@ export const scan = (sources: Source[]): string[] => {
       }
     }
     if (WHOLE_NAME.test(markup)) report(path, 'markup', 'names --grain or --crayon')
-    if (TEXTURE.bloom.test(markup)) report(path, 'markup', 'uses url(#kcc-bloom) outside .kcc-wash')
+    if (TEXTURE.bloom.test(markup)) report(path, 'markup', 'uses url(#kcc-bloom)')
     if (TEXTURE.waxFlat.test(markup)) report(path, 'markup', 'uses url(#kcc-wax-flat) outside .kcc-tile')
     if (TEXTURE.turbulence.test(markup) && path !== LAYOUT) report(path, 'markup', 'defines a filter outside Layout.cshtml')
-    if (TEXTURE.dataSvg.test(markup) || TEXTURE.repeatingLinear.test(markup) || TEXTURE.repeatingRadial.test(markup))
+    if (
+      TEXTURE.dataSvg.test(markup) ||
+      TEXTURE.png.test(markup) ||
+      TEXTURE.repeatingLinear.test(markup) ||
+      TEXTURE.repeatingRadial.test(markup)
+    )
       report(path, 'markup', 'paints a texture image')
   }
   return reported
@@ -186,29 +195,39 @@ describe('grain lies only on the desk, the washes and the tiles', () => {
     expect(paths).toContain(LAYOUT)
     const tokens = rulesOf(sources.find((source) => source.path === TOKENS)!.text)
     const root = tokens.filter((rule) => rule.selectors.includes(':root')).flatMap((rule) => rule.declarations)
-    expect(root.map(([property]) => property)).toEqual(expect.arrayContaining(['--grain', '--crayon']))
+    expect(root.map(([property]) => property)).toEqual(expect.arrayContaining(['--grain', '--crayon', '--desk-stripe']))
     expect(scan(sources)).toEqual([])
   })
 
-  it('App.vue opens with the grain and the crayon, both at z-index 0', () => {
+  it('the desk paints both textures as #app backgrounds, blended per layer, with no overlay and no isolation', () => {
     const app = readFileSync(join(FEATURES, 'App.vue'), 'utf8')
-    const template = app.match(/<template>([\s\S]*)<\/template>/)![1]!
-    const [first, second] = [...template.matchAll(/<(\w[\w-]*)([^>]*)>/g)]
-    expect(first![2]).toMatch(/class="kcc-grain"/)
-    expect(second![2]).toMatch(/class="kcc-crayon"/)
+    expect(app).not.toMatch(/kcc-grain|kcc-crayon/)
 
-    const desk = featureSources()
-      .flatMap((source) => split(source).rules)
-      .filter((rule) => rule.selectors.some((selector) => DESK_CLASS.test(selector)))
-    for (const rule of desk)
-      for (const [property, value] of rule.declarations)
-        if (property === 'z-index') expect(value, `${rule.selectors.join(', ')} z-index`).toBe('0')
-    for (const selector of ['.kcc-grain', '.kcc-crayon']) {
-      const zIndexes = desk
+    const rules = featureSources().flatMap((source) => split(source).rules)
+    const valuesOf = (selector: string, property: string) =>
+      rules
         .filter((rule) => rule.selectors.includes(selector))
-        .flatMap((rule) => rule.declarations.filter(([property]) => property === 'z-index'))
-      expect(zIndexes.at(-1)?.[1], `${selector} z-index`).toBe('0')
+        .flatMap((rule) => rule.declarations.filter(([name]) => name === property).map(([, value]) => value))
+    const images = valuesOf('#app', 'background-image')
+    expect(images.at(-1)).toMatch(/var\(--desk-stripe\).*var\(--crayon\).*var\(--grain\)/s)
+    expect(images.at(-1)!.split('var(--').length - 1).toBe(3)
+    for (const selector of withDark('#app')) {
+      const blends = valuesOf(selector, 'background-blend-mode')
+      expect(blends.at(-1), `${selector} background-blend-mode`).toBeTruthy()
+      expect(blends.at(-1)!.split(',')).toHaveLength(3)
     }
+    expect(valuesOf('#app', 'background-blend-mode').at(-1)).toMatch(/multiply/)
+    expect(
+      valuesOf('#app', 'background-blend-mode').at(-1)!.split(',')[0].trim(),
+      'a white stripe multiplied draws nothing',
+    ).toBe('normal')
+    expect(valuesOf(":root[data-theme='dark'] #app", 'background-blend-mode').at(-1)).toMatch(/soft-light/)
+    expect(valuesOf('#app', 'isolation')).toEqual([])
+    expect(rules.flatMap((rule) => rule.selectors).filter((selector) => /kcc-(?:grain|crayon)/.test(selector))).toEqual([])
+    const opacities = rules
+      .flatMap((rule) => rule.declarations.map(([name]) => name))
+      .filter((name) => /^--(?:grain|wax)-op$/.test(name))
+    expect(opacities).toEqual([])
   })
 })
 
@@ -248,15 +267,17 @@ describe('the scanner', () => {
   it('counts --grain and --crayon read by anything but the desk, a wash or a tile', () => {
     expect(scan(css('.kcc-field { background-image: var(--grain); }'))).not.toEqual([])
     expect(scan(css('.kcc-sheet::after { background-image: var(--crayon); }'))).not.toEqual([])
-    expect(scan(css('.kcc-grain { background-image: var(--grain); }'))).toEqual([])
-    expect(scan(css(".kcc-crayon, :root[data-theme='dark'] .kcc-crayon { background-image: var(--crayon); }"))).toEqual([])
+    expect(scan(css('#app { background-image: var(--grain); }'))).toEqual([])
+    expect(scan(css(":root[data-theme='dark'] #app { background-image: var(--crayon); }"))).toEqual([])
+    expect(scan(css('.kcc-grain { background-image: var(--grain); }'))).not.toEqual([])
   })
 
-  it('declares --grain and --crayon only in Tokens.css :root', () => {
+  it('declares --grain and --crayon only in the Tokens.css ramps', () => {
     const declared = ":root { --grain: url('x.png'); }"
     expect(scan(css(declared, TOKENS))).toEqual([])
     expect(scan(css(declared))).not.toEqual([])
-    expect(scan(css(`:root[data-theme='dark'] { --crayon: url('x.png'); }`, TOKENS))).not.toEqual([])
+    expect(scan(css(`:root[data-theme='dark'] { --crayon: url('x.png'); }`, TOKENS))).toEqual([])
+    expect(scan(css(`:root[data-theme='dark'] { --crayon: url('x.png'); }`))).not.toEqual([])
     expect(scan(css('.kcc-grain { --grain: url("x.png"); }', TOKENS))).not.toEqual([])
   })
 
@@ -278,7 +299,7 @@ describe('the scanner', () => {
   it('reads declarations before a nested rule as the enclosing rule’s own', () => {
     const nested = '.kcc-field { background-image: var(--grain); &:hover { opacity: 1; } }'
     expect(scan(css(nested))).not.toEqual([])
-    const onDesk = '.kcc-grain { background-image: var(--grain); &:hover { opacity: 1; } }'
+    const onDesk = '#app { background-image: var(--grain); &:hover { opacity: 1; } }'
     expect(scan(css(onDesk))).toEqual([])
   })
 
@@ -296,13 +317,22 @@ describe('the scanner', () => {
     expect(scan(css(bound, 'Features/Components/Thing.vue'))).not.toEqual([])
   })
 
-  it('allows the filters only on the wash and the tile', () => {
-    expect(
-      scan(css('.kcc-wash { filter: url(#kcc-bloom) saturate(1); } .kcc-tile { filter: url(#kcc-wax-flat); }')),
-    ).toEqual([])
+  it('allows #kcc-wax-flat on the tile only and #kcc-bloom nowhere, the washes being baked', () => {
+    expect(scan(css('.kcc-tile { filter: url(#kcc-wax-flat); }'))).toEqual([])
+    expect(scan(css('.kcc-wash { filter: url(#kcc-bloom) saturate(1); }'))).not.toEqual([])
     expect(scan(css('.kcc-tile { filter: url(#kcc-bloom); }'))).not.toEqual([])
     expect(scan(css('.kcc-wash { filter: url(#kcc-wax-flat); }'))).not.toEqual([])
     expect(scan(css('.kcc-sheet { filter: url(#kcc-bloom); }'))).not.toEqual([])
     expect(scan(css('<g filter="url(#kcc-wax-flat)"></g>', 'Features/Pages/Thing.cshtml'))).not.toEqual([])
+  })
+
+  it.each([
+    'url("./Washes/wash-grain.png")',
+    "url('/assets/wash-grain-CRUC7kRo.png')",
+    'url("data:image/png;base64,iVBORw0KGgo=")',
+  ])('counts a baked PNG as a texture, allowed on a wash: %s', (png) => {
+    expect(scan(css(`.kcc-wash { --wash-grain: ${png}; mask-image: var(--wash-grain); }`))).toEqual([])
+    expect(scan(css(`.kcc-field { mask-image: ${png}; }`))).not.toEqual([])
+    expect(scan(css(`.kcc-wash { --wash-grain: ${png}; } .kcc-field { mask-image: var(--wash-grain); }`))).not.toEqual([])
   })
 })

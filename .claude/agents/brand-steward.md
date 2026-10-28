@@ -32,7 +32,8 @@ For each file, check every rule below and record hits as `path:line — rule —
 
 **Structure (kit.md → Structure)**
 - `.kcc-sheet` or `.kcc-tile` whose `filter`/`drop-shadow` sits on the clipped element itself, or that is
-  not wrapped in `.kcc-torn`.
+  not wrapped in `.kcc-torn`. A slip's `.kcc-torn` with a `filter`, or a slip holding a sheet with no
+  `.kcc-fall` right before its `.kcc-torn` (the sheet's shadow is the fall's filter; a tile's `.kcc-torn` keeps its own).
 - `.kcc-label`, `.kcc-tape` or `.kcc-tilewrap` placed inside `.kcc-torn` or inside `.kcc-sheet`. Exception: a
   `.kcc-tilewrap--flow` with its tape may sit in a sheet's content flow.
 - A `.kcc-tape` anywhere but directly inside a `.kcc-tilewrap`. A taped sheet is a violation: paper is piled,
@@ -61,7 +62,7 @@ For each file, check every rule below and record hits as `path:line — rule —
   outside `kcc-field` and the field primitives. A field is a line.
 - Any border or outline on paper: `border`, `border-*`, `outline` on a sheet or tile.
 - Any shadow other than the kit's fall: `shadow-*` utilities, `box-shadow` outside the inset hairlines in
-  `Controls.css`, `drop-shadow` outside `.kcc-torn` and `.kcc-blank`.
+  `Controls.css`, `drop-shadow` outside `.kcc-fall`, `.kcc-blank` and a tile's `.kcc-torn`.
 
 **Tokens and colour**
 - Literal colours (`#…`, `rgb(`, `hsl(`, `oklch(`) anywhere outside `TailwindConfig.css`, `Styles/Torn/*.css`
@@ -77,7 +78,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 - A hand-written `.kcc-wash`, `.kcc-washes` or schedule rule, a wash placed or coloured by hand, a `:at` prop or an
   old `--c --x --y --w --h` wash. Washes are `KccWashes`'s; a sheet picks only its first colour with `wash`.
 - Grain or crayon on anything but the desk, a wash or a tile: a `::after` noise tile on a sheet, a `--grain`,
-  `--crayon` or texture image (or an alias) elsewhere, `url(#kcc-bloom)` off `.kcc-wash`, `url(#kcc-wax-flat)` off
+  `--crayon` or texture image (or an alias) elsewhere, a `filter` of any kind on `.kcc-wash` (the washes are baked into `Washes/*.png`, named by `Washes.css`), `url(#kcc-wax-flat)` off
   `.kcc-tile`. The tape's woven stripe is the tape's own material and passes (`grain.test.ts`).
 - A sheet the owner left bare that blooms: a Home or stacker card with no wash must pass `bloom="none"`.
 - A wash written to move once bloomed, animated from script, or given its own `animation`: a changed animation
@@ -149,7 +150,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 From `src/KCC.Web`:
 
 ```bash
-yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule
+yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule grain washField bakeWashes washTextures keys
 ```
 
 Report failures verbatim. A change that moves layout on a sheet also needs

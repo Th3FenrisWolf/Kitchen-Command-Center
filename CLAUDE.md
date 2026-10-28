@@ -183,7 +183,7 @@ dark ramp read `--color-*` directly. A signed-in member's saved Light or Dark is
 `Layout.cshtml` writes `data-theme` from the HttpOnly `kcc-ramp` cookie and leaves the pre-paint inline script
 out. Otherwise that script sets `data-theme` from `prefers-color-scheme`, else **light**. **Check both ramps for
 any visual change**; `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` is the living contrast table and also
-composites ink over paper plus a two-wash stack at its peak, which pins `--wash-strength`.
+composites ink over paper plus a two-wash stack at its peak, which pins the dark `--wash-strength` and caps the light one.
 
 ### The kit, and where CSS lives
 
@@ -195,23 +195,30 @@ scoped block. Anything Razor also renders belongs in `@layer components`. A rule
 
 ### The tear
 
-Sheets are clipped with `clip-path: var(--tear)`; the presets in `Features/Styles/Torn/Tears.css` are
+Sheets are clipped by the `clip-path` that `Tears.css` writes once per preset on grouped child selectors; the presets in `Features/Styles/Torn/Tears.css` are
 **generated** by `yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
-the CSS. No runtime JS draws anything; the SSR output is final. Three structural invariants:
+the CSS. No runtime JS draws anything; the SSR output is final. The structural invariants:
 
-- The `filter` (fibre + fall) sits on `.kcc-torn`, **outside** the clipped `.kcc-sheet`, or the shadow is
-  clipped away with the paper.
+- The `filter` (fibre + fall) sits on `.kcc-fall`, the slip's child right before `.kcc-torn`, **outside** the
+  clipped `.kcc-sheet`, or the shadow is clipped away with the paper. Its inner span carries the sheet's tear. A
+  slip's `.kcc-torn` carries no filter: a filter around the sheet redraws on every frame of every wash blooming in it.
 - `.kcc-label` and `.kcc-tilewrap` are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip and outside
-  the filter, so they are neither torn nor shadowed. The `.kcc-tape` sits inside the tilewrap: tape holds only a
+  the fall, so they are neither torn nor shadowed. The `.kcc-tape` sits inside the tilewrap: tape holds only a
   tile, and a sheet is never taped. The one exception is a `.kcc-tilewrap--flow`, which sits in the sheet's content
   flow with its tape.
 - Every sheet lies on a blank: `<span class="kcc-blank" aria-hidden="true"><span></span></span>`, the slip's
-  **last** child, outside the top sheet's clip and filter, with its own filter on `.kcc-blank` and its clip on the
+  **last** child, outside the top sheet's clip and fall, with its own filter on `.kcc-blank` and its clip on the
   inner span. The header pad is the exception: its `.pad-page` slip is the top sheet's blank, and a pad card holds
   none.
 - A wash is never placed by hand: `KccSheet` and `KccWashes` render up to four per sheet from the visit's seed
-  and the sheet's `wash-key`, two deep at most, and the kit CSS blooms them from the elapsed time `Layout.cshtml`
-  writes as `--wash-elapsed`. Every `KccSheet` and `KccWashes` needs a stable `wash-key` (a list item's own id, never
+  and the sheet's `wash-key`, two deep at most, and the kit CSS blooms them in 45 steps from the elapsed time
+  `Layout.cshtml` writes as `--wash-elapsed`. A wash rests at its bloom's end and fills backwards only, so hydration
+  keeps the first paint. It carries no filter, which made WebKit redraw it on every step: its bleed and grain are
+  baked PNG textures in `Features/Styles/Torn/Washes/`, named by `Features/Styles/Torn/Washes.css`, both **generated**
+  by `yarn washes` from `Features/Bloom/bakeWashes.ts`. Never hand-edit them. The client build keeps the textures out
+  of the stylesheet as cached files (`assetsInlineLimit` in `vite.config.ts`), and `Layout.cshtml` preloads them with
+  `crossorigin` in production so a bloomed first paint has them. Every `KccSheet` and `KccWashes` needs a stable `wash-key` (a list item's own id, never
   its index); `keys.test.ts` scans for it.
-- Grain and crayon lie on the desk, the washes and the tiles only. Paper, text, controls, labels, wells, blank sheets
+- Grain and crayon lie on the desk, the washes and the tiles only. The desk's are `#app`'s own background layers
+  (`background-blend-mode`, each ramp's strength baked into the SVG in `Tokens.css`), not overlay elements. Paper, text, controls, labels, wells, blank sheets
   and tape carry none; `grain.test.ts` fails on any other use. The tape's weave is its own material.

@@ -8,6 +8,7 @@
   @if (Model.HasSheet)
   {
     <div class="kcc-slip kcc-tear-@Model.Tear w-full lg:sticky lg:top-[calc(2rem_+_var(--pad-offset,0px))] lg:transition-[top]">
+      <span class="kcc-fall" aria-hidden="true"><span></span></span>
       <div class="kcc-torn">
         <div class="kcc-sheet">
           <KccWashes wash-key="home-stacker:@Model.Key" size="reading" />

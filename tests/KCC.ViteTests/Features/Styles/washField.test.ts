@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { GRAIN_TILE_PX } from '~/Bloom/bakeWashes'
 
-const kit = readFileSync(
-  fileURLToPath(new URL('../../../../src/KCC.Web/Features/Styles/Torn/Kit.css', import.meta.url)),
-  'utf8',
-).replace(/\/\*[\s\S]*?\*\//g, '')
+const read = (path: string) =>
+  readFileSync(fileURLToPath(new URL(`../../../../src/KCC.Web/Features/${path}`, import.meta.url)), 'utf8')
+const uncommented = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, '')
+const kit = uncommented(read('Styles/Torn/Kit.css'))
 
 type Rule = { selectors: string[]; inQuery: boolean; declarations: Record<string, string> }
 
@@ -27,11 +28,11 @@ const splitTop = (text: string, separator: string) => {
   return parts
 }
 
-const rules: Rule[] = []
-{
+function rulesOf(css: string): Rule[] {
+  const rules: Rule[] = []
   const open: string[] = []
   let text = ''
-  for (const char of kit) {
+  for (const char of css) {
     if (char === '{') {
       open.push(text.trim().replace(/\s+/g, ' '))
       text = ''
@@ -55,7 +56,10 @@ const rules: Rule[] = []
       text += char
     }
   }
+  return rules
 }
+
+const rules = rulesOf(kit)
 
 const squash = (value: string | undefined) => value?.replace(/\s+/g, '')
 
@@ -67,6 +71,8 @@ const declared = (selector: string) =>
 
 const field = declared('.kcc-washes')
 const wash = declared('.kcc-wash')
+const bloomStart = declared('from')
+const bloomEnd = declared('to')
 
 const DELAY = 'calc(var(--wash-at, var(--wash-fallback-at)) - var(--wash-elapsed, 0s) - var(--wash-lag, 0s))'
 const CAPPED_WIDTH =
@@ -110,13 +116,14 @@ describe('the wash field', () => {
 })
 
 describe('a wash', () => {
-  it('rests invisible until its bloom starts', () => {
-    expect(wash.opacity).toBe('0')
+  it('rests at the end of its bloom, so a finished bloom leaves no animation applied', () => {
+    expect(wash.opacity).toBe('calc(var(--wash-strength) * var(--wash-peak))')
+    expect(bloomEnd.opacity).toBe(wash.opacity)
   })
 
-  it('blooms with fill mode both, delayed by its arrival less the visit and the late mount', () => {
-    expect(wash.animation).toMatch(/^kcc-bloom\s/)
-    expect(wash.animation?.split(' ')).toContain('both')
+  it('blooms with fill mode backwards from invisible, delayed by its arrival less the visit and the late mount', () => {
+    expect(wash.animation).toBe('kcc-bloom var(--wash-bloom) var(--wash-ease) backwards')
+    expect(bloomStart.opacity).toBe('0')
     const delay = wash['animation-delay'] ?? wash.animation
     expect(squash(delay)).toContain(squash(DELAY))
   })
@@ -129,8 +136,37 @@ describe('a wash', () => {
     expect(asking).toEqual([])
   })
 
-  it('bleeds through #kcc-bloom and takes its saturation from the ramp', () => {
-    expect(wash.filter).toBe('url(#kcc-bloom) saturate(var(--wash-sat))')
+  it('carries no filter of any kind, so no wash is drawn offscreen and no SVG filter runs while it blooms', () => {
+    const washRules = [kit, uncommented(read('Styles/Torn/Washes.css'))]
+      .flatMap(rulesOf)
+      .filter((rule) => rule.selectors.some((selector) => /\.kcc-wash(?![\w-])/.test(selector)))
+    expect(washRules.length).toBeGreaterThan(0)
+    expect(washRules.filter((rule) => rule.declarations.filter !== undefined)).toEqual([])
+    expect(read('Pages/Shared/Layout.cshtml')).not.toMatch(/<filter id="kcc-bloom"/)
+  })
+
+  it('takes its bled shape and its grain from the baked masks, the grain tiled at its own pixel size', () => {
+    expect(squash(wash['mask-image'])).toBe('var(--wash-grain),var(--wash-blob)')
+    expect(squash(wash['mask-composite'])).toBe('intersect,add')
+    expect(squash(wash['mask-mode'])).toBe('alpha')
+    expect(squash(wash['mask-repeat'])).toBe('repeat,no-repeat')
+    expect(squash(wash['mask-position'])).toBe('00,center')
+    expect(squash(wash['mask-size'])).toBe(
+      `${GRAIN_TILE_PX}px${GRAIN_TILE_PX}px,calc(var(--wash-w)*var(--wash-blob-span))calc(var(--wash-h)*var(--wash-blob-span))`,
+    )
+    expect(wash['border-radius']).toBeUndefined()
+  })
+
+  it('saturates each ink by the ramp’s --wash-sat and tones it by the grain, with the saturate() matrix in linear light', () => {
+    const tint = (ink: string) =>
+      [
+        `color(from var(${ink}) srgb-linear `,
+        `clamp(0,var(--wash-tone)*((0.213+0.787*var(--wash-sat))*r+(0.715-0.715*var(--wash-sat))*g+(0.072-0.072*var(--wash-sat))*b),1)`,
+        `clamp(0,var(--wash-tone)*((0.213-0.213*var(--wash-sat))*r+(0.715+0.285*var(--wash-sat))*g+(0.072-0.072*var(--wash-sat))*b),1)`,
+        `clamp(0,var(--wash-tone)*((0.213-0.213*var(--wash-sat))*r+(0.715-0.715*var(--wash-sat))*g+(0.072+0.928*var(--wash-sat))*b),1))`,
+      ].join('')
+    expect(squash(wash['--wash-tint'])).toBe(squash(tint('--wash-ink')))
+    expect(squash(wash['--wash-tint-2'])).toBe(squash(tint('--wash-ink-2')))
   })
 
   it('declares no mix-blend-mode or isolation on a wash', () => {
@@ -143,14 +179,21 @@ describe('a wash', () => {
   })
 
   it('caps its width against its pair partner, bleed included, and takes its height from its aspect', () => {
-    expect(squash(wash.width)).toBe(squash(CAPPED_WIDTH))
+    expect(squash(wash['--wash-w'])).toBe(squash(CAPPED_WIDTH))
+    expect(squash(wash['--wash-h'])).toBe('calc(var(--wash-w)/var(--wash-aspect))')
+    expect(wash.width).toBe('var(--wash-w)')
     expect(wash['aspect-ratio']).toBe('var(--wash-aspect)')
+  })
+
+  it('holds its bleed in a padding of --wash-reach around the box its width and aspect size', () => {
+    expect(wash['box-sizing']).toBe('content-box')
+    expect(wash.padding).toBe('var(--wash-reach)')
   })
 
   it('draws its first ink at most .345 at the rim and its second at most .26, as contrast.test.ts models them', () => {
     const background = wash.background ?? wash['background-image'] ?? ''
-    const first = alphas(background, '--wash-ink')
-    const second = alphas(background, '--wash-ink-2')
+    const first = alphas(background, '--wash-tint')
+    const second = alphas(background, '--wash-tint-2')
     expect(first.length).toBeGreaterThan(1)
     expect(second.length).toBeGreaterThan(0)
     expect(Math.max(...first.map(({ alpha }) => alpha))).toBe(0.345)
@@ -159,7 +202,7 @@ describe('a wash', () => {
 
   it('lifts the rim by alpha alone, never by a darker colour', () => {
     const background = wash.background ?? wash['background-image'] ?? ''
-    const channels = [...alphas(background, '--wash-ink'), ...alphas(background, '--wash-ink-2')].map(
+    const channels = [...alphas(background, '--wash-tint'), ...alphas(background, '--wash-tint-2')].map(
       ({ channels }) => channels,
     )
     expect(new Set(channels)).toEqual(new Set(['l c h']))

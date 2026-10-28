@@ -13,7 +13,8 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write Features/ \"../../tests/KCC.ViteTests/**/*.{ts,vue}\"",
-    "tears": "node --experimental-strip-types Features/Torn/generateTears.ts"
+    "tears": "node --experimental-strip-types Features/Torn/generateTears.ts",
+    "washes": "node --experimental-strip-types Features/Bloom/generateWashes.ts"
   },
   "dependencies": {
     "compression": "^1.8.2",

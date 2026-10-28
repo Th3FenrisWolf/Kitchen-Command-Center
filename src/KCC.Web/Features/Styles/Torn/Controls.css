@@ -189,6 +189,10 @@
   }
 
   .kcc-seg--sliding button {
+    transition: color var(--default-transition-duration);
+  }
+
+  :root:focus-within .kcc-seg--sliding button {
     transition:
       color var(--default-transition-duration),
       outline-color 0.2s,

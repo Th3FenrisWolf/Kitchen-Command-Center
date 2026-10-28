@@ -14,6 +14,17 @@
     "build:admin": "yarn workspace @kcc/admin build",
     "build:contributions": "yarn workspace @kcc/contributions build",
     "build:web": "yarn workspace kitchen-command-center build:all",
-    "build:all": "yarn build:admin && yarn build:contributions && yarn build:web"
+    "build:all": "yarn build:admin && yarn build:contributions && yarn build:web",
+    "perf": "node tests/scripts/perf.mjs perf",
+    "perf:live": "node tests/scripts/perf.mjs perf:live",
+    "perf:capture": "node tests/scripts/perf.mjs perf:capture",
+    "perf:diff": "node tests/scripts/perf.mjs perf:diff",
+    "perf:report": "node tests/scripts/perf.mjs perf:report",
+    "perf:scripts-off": "node tests/scripts/perf.mjs perf:scripts-off",
+    "perf:baseline": "node tests/scripts/perf.mjs perf:baseline"
+  },
+  "devDependencies": {
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0"
   }
 }

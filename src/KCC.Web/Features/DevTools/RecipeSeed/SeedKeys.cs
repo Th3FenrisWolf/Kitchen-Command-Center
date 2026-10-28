@@ -6,13 +6,19 @@ namespace KCC.Web.Features.DevTools.RecipeSeed;
 // The same seed always yields the same key, so a second run finds what the first one created.
 public static class SeedKeys
 {
+    public static Guid PhotoFolder { get; } = Key("media-folder::recipe-photos");
+
     public static Guid Recipe(string recipeName) => Key($"recipe::{recipeName}");
 
     public static Guid Variant(string recipeName, string variantName) => Key($"variant::{recipeName}::{variantName}");
 
     public static Guid Author(string userName) => Key($"author::{userName}");
 
+    public static Guid Image(string recipeName) => Key($"image::{recipeName}");
+
     public static Guid Reviewer(string recipeName, int index) => Key($"review::{recipeName}::{index}");
+
+    public static DateTime ReviewDate(int index) => new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc).AddHours(index);
 
     private static Guid Key(string seed)
     {

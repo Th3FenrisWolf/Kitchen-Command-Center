@@ -25,14 +25,14 @@ public class NavModelTests
 
         _ = await Assert.That(nav.TryGetProperty("member", out _)).IsFalse();
         _ = await Assert.That(nav.GetProperty("recipeTotal").GetInt32()).IsEqualTo(total);
-        _ = await Assert.That(Rows(recipes.GetProperty("meals"))).IsEqualTo("Breakfast 4, Lunch 4, Dinner 5, Dessert 4, Snack 4, Beverage 4");
+        _ = await Assert.That(Rows(recipes.GetProperty("meals"))).IsEqualTo("Breakfast 8, Lunch 4, Dinner 5, Dessert 7, Snack 8, Beverage 4");
         _ = await Assert.That(recipes.GetProperty("meals")[0].GetProperty("icon").GetString()).IsEqualTo("fa-duotone fa-egg");
         _ = await Assert.That(Rows(recipes.GetProperty("diets")))
-            .IsEqualTo("Vegetarian 10, Vegan 12, Gluten-Free 7, Dairy-Free 2, Keto 1, High-Protein 8, Low-Carb 3");
+            .IsEqualTo("Vegetarian 19, Vegan 13, Gluten-Free 13, Dairy-Free 3, Keto 3, High-Protein 11, Low-Carb 5");
         _ = await Assert.That(Links(recipes.GetProperty("quickPicks"))).IsEqualTo(
             "Under 30 minutes /recipes/?timeMax=30, Top rated /recipes/?sort=rated, Most variants /recipes/?sort=variants, Newest /recipes/?sort=recent, Surprise me /surprise-me");
         _ = await Assert.That(recipes.TryGetProperty("note", out _)).IsFalse();
-        _ = await Assert.That(Strings(nav.GetProperty("suggestions"))).IsEqualTo("Dinner,Breakfast,Lunch");
+        _ = await Assert.That(Strings(nav.GetProperty("suggestions"))).IsEqualTo("Breakfast,Snack,Dessert");
         _ = await Assert.That(nav.GetProperty("labels").GetProperty("Nav.MyKitchen").GetString()).IsEqualTo("My kitchen");
     }
 
@@ -165,8 +165,8 @@ public class NavModelTests
             var nav = (await RenderedPage.GetAsync(client, "/")).HeaderProp("nav");
             var recipes = nav.GetProperty("recipes");
 
-            _ = await Assert.That(Rows(recipes.GetProperty("meals"))).IsEqualTo("Dinner 5, Breakfast 4");
-            _ = await Assert.That(Rows(recipes.GetProperty("diets"))).IsEqualTo("Vegan 12");
+            _ = await Assert.That(Rows(recipes.GetProperty("meals"))).IsEqualTo("Dinner 5, Breakfast 8");
+            _ = await Assert.That(Rows(recipes.GetProperty("diets"))).IsEqualTo("Vegan 13");
             _ = await Assert.That(Links(recipes.GetProperty("quickPicks"))).IsEqualTo("Best loved /recipes/?sort=rated, Soups /recipes/?query=soup");
             _ = await Assert.That(Strings(nav.GetProperty("suggestions"))).IsEqualTo("Soup,Tacos");
             _ = await Assert.That(recipes.GetProperty("note").GetString()).IsEqualTo("Stuck? Dinner is a safe bet.");
