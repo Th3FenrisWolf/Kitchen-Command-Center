@@ -251,8 +251,9 @@ public static class CasePages
         var response = await page.GotoAsync(path, new() { WaitUntil = WaitUntilState.Load });
         if (response is not null && MissingContent(name, response.Status))
         {
-            throw new InvalidOperationException(
-                $"{path} answered 404; a live run names a recipe and a variant the site has in KCC_PERF_LIVE_RECIPE and KCC_PERF_LIVE_VARIANT");
+            throw new InvalidOperationException(paths is { ExactSearchCount: false }
+                ? $"{path} answered 404; a live run names a recipe and a variant the site has in KCC_PERF_LIVE_RECIPE and KCC_PERF_LIVE_VARIANT"
+                : $"{path} answered 404; the site is missing the recipes RecipeTestDataSeeder seeds");
         }
     }
 

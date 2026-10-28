@@ -64,7 +64,7 @@ public static class Profiles
     public static BrowserNewContextOptions ContextOptions(Profile profile, Engine engine, Ramp ramp, Uri baseUrl) => new()
     {
         BaseURL = baseUrl.ToString(),
-        IgnoreHTTPSErrors = true,
+        IgnoreHTTPSErrors = baseUrl.IsLoopback,
         ViewportSize = new() { Width = profile.Width, Height = profile.Height },
         DeviceScaleFactor = profile.DeviceScaleFactor,
         HasTouch = profile.IsMobile,

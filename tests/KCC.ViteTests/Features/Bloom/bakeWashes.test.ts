@@ -42,7 +42,11 @@ describe('Washes.css and its textures', () => {
   })
 
   it('holds exactly the textures the generator bakes', () => {
-    expect(readdirSync(features(textureFolder)).sort()).toEqual(
+    expect(
+      readdirSync(features(textureFolder))
+        .filter((file) => file.endsWith('.png'))
+        .sort(),
+    ).toEqual(
       washTextures(baked)
         .map(({ file }) => file)
         .sort(),

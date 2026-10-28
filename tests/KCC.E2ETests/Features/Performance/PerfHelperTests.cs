@@ -65,6 +65,29 @@ public class PerfHelperTests
     }
 
     [Test]
+    public async Task MissingFromBaseline_ReportsOnlyEnforcedMetricsOfMeasuredKinds()
+    {
+        var report = new RunReport();
+        var record = report.Add(Search, [new Measurement { Values = { ["frame_p95_ms"] = 10 } }]);
+        var baseline = new BaselineFile
+        {
+            Cases = { [Search.Identity] = new() { ["frame_p95_ms"] = 10, ["long_frames"] = 0, ["css_gz_bytes"] = 70_000, ["frame_max_ms"] = 30 } },
+        };
+        var budgets = new BudgetFile(
+        [
+            new("long_frames", null, "baseline", Margin: new Margin(Add: 1)),
+            new("frame_max_ms", null, "report-only"),
+            new("css_gz_bytes", null, "baseline", Margin: new Margin(Pct: 2, FloorBytes: 1024)),
+        ]);
+
+        var missing = report.MissingFromBaseline(budgets, baseline, new HashSet<string> { MetricCatalog.Timing }).ToList();
+
+        _ = await Assert.That(record.Metrics.Count).IsEqualTo(1);
+        _ = await Assert.That(missing.Count).IsEqualTo(1);
+        _ = await Assert.That(missing[0]).StartsWith($"{Search.Identity}: long_frames missing from this run");
+    }
+
+    [Test]
     public async Task WeightBudget_AllowsTheLargerOfThePercentageAndTheByteFloor()
     {
         var budget = new Budget("css_gz_bytes", null, "baseline", Margin: new Margin(Pct: 2, FloorBytes: 1024));
@@ -589,9 +612,9 @@ public class PerfHelperTests
     }
 
     [Test]
-    public async Task LiveSite_RefusesAUrlThatIsNotAnHttpOrigin_WithoutEchoingIt()
+    public async Task LiveSite_RefusesAUrlThatIsNotAnHttpsOrigin_WithoutEchoingIt()
     {
-        foreach (var url in new[] { "kcc.example.test", "ftp://kcc.example.test", "/relative" })
+        foreach (var url in new[] { "kcc.example.test", "ftp://kcc.example.test", "/relative", "http://kcc.example.test" })
         {
             var error = await Assert.That(() => LiveSite.Parse(new Dictionary<string, string>(LiveVariables) { ["KCC_PERF_LIVE_URL"] = url })).Throws<InvalidOperationException>();
 
@@ -629,6 +652,22 @@ public class PerfHelperTests
     }
 
     [Test]
+    public async Task LiveSite_RefusesALiveRecipeOrVariantThatIsNotASitePath_WithoutEchoingIt()
+    {
+        foreach (var name in new[] { "KCC_PERF_LIVE_RECIPE", "KCC_PERF_LIVE_VARIANT" })
+        {
+            foreach (var path in new[] { "https://elsewhere.example.test/recipes/x", "//elsewhere.example.test/recipes/x", "/\\elsewhere.example.test/x", "recipes/x" })
+            {
+                var error = await Assert.That(() => LiveSite.Parse(new Dictionary<string, string>(LiveVariables) { [name] = path }))
+                    .Throws<InvalidOperationException>();
+
+                _ = await Assert.That(error!.Message).Contains(name);
+                _ = await Assert.That(error!.Message).DoesNotContain(path);
+            }
+        }
+    }
+
+    [Test]
     public async Task LiveSite_SendsTheBypassHeaderOnlyToItsOwnOrigin()
     {
         var live = LiveSite.Parse(LiveVariables);
@@ -642,7 +681,7 @@ public class PerfHelperTests
     }
 
     [Test]
-    public async Task LiveSite_AllowsOnlyReads_AndASameOriginPostWhileSigningIn()
+    public async Task LiveSite_AllowsOnlyReads_AndTheSignInPostWhileSigningIn()
     {
         var live = LiveSite.Parse(LiveVariables);
 
@@ -652,7 +691,9 @@ public class PerfHelperTests
             _ = await Assert.That(live.Decide(method, "https://kcc.example.test/api/x", signingIn: false).Allowed).IsFalse();
         }
 
-        _ = await Assert.That(live.Decide("POST", "https://kcc.example.test/api/member/login", signingIn: true).Allowed).IsTrue();
+        _ = await Assert.That(live.Decide("POST", "https://kcc.example.test/api/account/login", signingIn: true).Allowed).IsTrue();
+        _ = await Assert.That(live.Decide("POST", "https://kcc.example.test/api/account/register", signingIn: true).Allowed).IsFalse();
+        _ = await Assert.That(live.Decide("POST", "https://kcc.example.test/api/x", signingIn: true).Allowed).IsFalse();
         _ = await Assert.That(live.Decide("POST", "https://other.example.test/collect", signingIn: true).Allowed).IsFalse();
         _ = await Assert.That(live.Decide("DELETE", "https://kcc.example.test/api/x", signingIn: true).Allowed).IsFalse();
     }

@@ -79,7 +79,7 @@ public class PerfMatrixTests
         }
 
         report.Environment = Environment(versions);
-        report.Evaluate(BudgetFile.Load(MatrixRun.BudgetsPath), live is null ? BaselineFile.Load(MatrixRun.BaselinePath) : BaselineFile.Empty, ResultsWriter.Platform);
+        report.Evaluate(BudgetFile.Load(MatrixRun.BudgetsPath), live is null ? BaselineFile.Load(MatrixRun.BaselinePath) : BaselineFile.Empty, live is null ? ResultsWriter.Platform : null);
         var path = ResultsWriter.WriteResults(directory, report);
         if (settings.WritesBaseline)
         {
@@ -149,11 +149,14 @@ public class PerfMatrixTests
                 {
                     try
                     {
-                        samples.Add(await ServerResponse.SampleAsync(browser, live, page, state, gaps.Add));
+                        samples.Add(await ServerResponse.SampleAsync(browser, live, page, state, reason => { lock (gaps) { gaps.Add(reason); } }));
                     }
                     catch (Exception error) when (Measurable(error))
                     {
-                        gaps.Add(Describe(error, live));
+                        lock (gaps)
+                        {
+                            gaps.Add(Describe(error, live));
+                        }
                     }
                 }
 

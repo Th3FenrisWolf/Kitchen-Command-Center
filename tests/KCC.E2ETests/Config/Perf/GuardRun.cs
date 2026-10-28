@@ -8,6 +8,7 @@ public sealed class GuardRun : IAsyncDisposable
     private readonly Uri baseUrl;
     private readonly Engine engine;
     private IBrowser browser;
+    private readonly HashSet<string> measuredKinds = [];
     private string? memberState;
 
     private GuardRun(IPlaywright playwright, IBrowser browser, Uri baseUrl, Engine engine)
@@ -42,6 +43,7 @@ public sealed class GuardRun : IAsyncDisposable
                 MemberSession.DefaultUsernameVariable, MemberSession.DefaultPasswordVariable);
         }
 
+        measuredKinds.Add(kind);
         var measurement = await MeasureOnceRetriedAsync(subject, options with { StorageState = memberState });
         var kept = new Measurement();
         foreach (var (name, value) in measurement.Values.Where(pair => MetricCatalog.Describe(pair.Key).Kind == kind))
@@ -75,7 +77,8 @@ public sealed class GuardRun : IAsyncDisposable
             engine == Engine.Chromium ? browser.Version : null,
             engine == Engine.Webkit ? browser.Version : null,
             Profiles.Phone.Gpu.ToString().ToLowerInvariant());
-        Report.Evaluate(BudgetFile.Load(MatrixRun.BudgetsPath).OnCi(), baseline, ResultsWriter.Platform);
+        var budgets = BudgetFile.Load(MatrixRun.BudgetsPath).OnCi();
+        Report.Evaluate(budgets, baseline, ResultsWriter.Platform);
         var path = ResultsWriter.WriteResults(directory, Report);
         if (MatrixRun.Settings.FromEnvironment().WritesBaseline)
         {
@@ -94,6 +97,7 @@ public sealed class GuardRun : IAsyncDisposable
             .. Report.Cases
                 .Where(record => !baseline.Cases.ContainsKey(record.Subject.Identity))
                 .Select(record => $"{record.Subject.Identity}: no baseline in {Path.GetFileName(MatrixRun.CiBaselinePath)}"),
+            .. Report.MissingFromBaseline(budgets, baseline, measuredKinds),
             .. Report.Failures(),
         ];
     }

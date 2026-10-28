@@ -121,6 +121,43 @@ describe('perf report', () => {
     expect(renderMarkdown({ cases: { [identity]: { layers: skipped } } })).toContain('| skipped: platform |')
   })
 
+  it('tables the server response per path with its cache status and encoding, and nothing without it', () => {
+    const serverResponse = {
+      home: {
+        path: '/',
+        member: 'none',
+        minMs: 41.2,
+        medianMs: 55,
+        maxMs: 90.5,
+        runsMs: [41.2, 55, 90.5],
+        cfCacheStatus: ['HIT', 'HIT', 'MISS'],
+        contentEncoding: ['br', 'br', 'br'],
+      },
+      'my-recipes': {
+        path: '/my-recipes',
+        member: 'e2e',
+        minMs: 100,
+        medianMs: 120,
+        maxMs: 150,
+        runsMs: [100, 120, 150],
+        cfCacheStatus: ['none', 'none', 'none'],
+        contentEncoding: ['identity', 'gzip', 'gzip'],
+      },
+    }
+    const withServer = { ...results, serverResponse }
+    const markdown = renderMarkdown(withServer)
+    expect(markdown).toContain('## Server response')
+    expect(markdown).toContain('| Path | Member | Min | Median | Max | cf-cache-status | Encoding |')
+    expect(markdown).toContain('| / | anonymous | 41.2 ms | 55 ms | 90.5 ms | HIT, MISS | br |')
+    expect(markdown).toContain('| /my-recipes | member | 100 ms | 120 ms | 150 ms | none | identity, gzip |')
+    const html = renderHtml(withServer)
+    expect(html).toContain('<h2>Server response</h2>')
+    expect(html).toContain('<th>Path</th><th>Member</th><th>Min</th><th>Median</th><th>Max</th>')
+    expect(html).toContain('<td>/my-recipes</td><td>member</td><td class="n">100 ms</td>')
+    expect(renderMarkdown(results)).not.toContain('Server response')
+    expect(renderHtml(results)).not.toContain('Server response')
+  })
+
   it('escapes what it puts in the HTML', () => {
     const html = renderHtml({ cases: { '<b>': { x: { value: 1, unit: 'count', status: 'pass' } } } })
     expect(html).toContain('&lt;b&gt;')

@@ -92,10 +92,10 @@ stage, and the close-out.
   Chromium and WebKit, each probe of T011 and the byte totals, evaluated against `budgets.json` and
   `baseline.ci.json`; these run in the default E2E suite
 - [X] T018 [US3] Write `tests/KCC.E2ETests/Features/Performance/TimingGuardTests.cs` (marked per T002): the key
-  subset in Chromium on SwiftShader, one warm-up and five runs, median, evaluated per research R4
+  subset in Chromium on SwiftShader, one warm-up and three runs, median, evaluated per research R4
 - [X] T019 [US3] Add the `perf` job to `.github/workflows/build-and-test.yml`: own runner, build, Playwright
   install, `TimingGuardTests` by filter, results uploaded as an artifact, `report.md` appended to the job summary,
-  25-minute timeout
+  45-minute timeout
 - [X] T020 [US3] Push the branch, take the CI artifact's values into
   `tests/KCC.E2ETests/Features/Performance/baseline.ci.json`, and commit it
 - [X] T021 [US3] Run the `perf` job ten times on unchanged code; for each timing metric record in `research.md` R4
@@ -229,7 +229,7 @@ stage, and the close-out.
   background and the grouped tear rules (FR-020, D10)
 - [X] T054 [P] Document the budgets and the perf commands in `README.md`
 - [X] T055 Flip every budget Phase 1 meets to `target` in `budgets.json`, with its stability trial recorded
-- [ ] T056 Run the definition of done: D1 to D7 and D10 (`dotnet build KitchenCommandCenter.slnx -c Release`,
+- [X] T056 Run the definition of done: D1 to D7 and D10 (`dotnet build KitchenCommandCenter.slnx -c Release`,
   `yarn build:all`, `yarn type-check`, `yarn lint`, `yarn format` in `src/KCC.Web`, `node tests/scripts/run.mjs`,
   both ramps in the Browser pane, the `brand-steward` agent)
 

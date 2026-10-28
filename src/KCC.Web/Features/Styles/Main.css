@@ -26,7 +26,7 @@
   /* The desk's grain and crayon tooth are #app's own background layers, blended with the desk colour beneath them
      and with each other; each ramp's strength is baked into its texture in Tokens.css. */
   #app {
-    background-blend-mode: multiply, multiply, multiply;
+    background-blend-mode: normal, multiply, multiply;
     background-color: var(--color-desk);
     background-image: var(--desk-stripe), var(--crayon), var(--grain);
     background-size:

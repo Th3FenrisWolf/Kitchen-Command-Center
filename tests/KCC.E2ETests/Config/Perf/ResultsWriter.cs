@@ -272,6 +272,15 @@ public sealed class RunReport
             .Where(pair => pair.Value.Status == Verdict.Fail)
             .Select(pair => $"{record.Subject.Identity}: {pair.Key} {pair.Value.Detail}"));
 
+    public IEnumerable<string> MissingFromBaseline(BudgetFile budgets, BaselineFile baseline, IReadOnlySet<string> kinds) =>
+        Cases.SelectMany(record => baseline.Cases.GetValueOrDefault(record.Subject.Identity, [])
+            .Keys
+            .Where(name => kinds.Contains(MetricCatalog.Describe(name).Kind)
+                && !record.Metrics.ContainsKey(name)
+                && budgets.Find(name, record.Subject) is { } budget
+                && budget.Mode != Verdict.ReportOnly)
+            .Select(name => $"{record.Subject.Identity}: {name} missing from this run (in {Path.GetFileName(MatrixRun.CiBaselinePath)})"));
+
     public IEnumerable<string> Skips() =>
         Cases.SelectMany(record => record.Metrics
             .Where(pair => pair.Value.Status == Verdict.Skipped)
@@ -384,7 +393,7 @@ public static class ResultsWriter
         ["chromium"] = chromiumVersion ?? "n/a",
         ["webkit"] = webkitVersion ?? "n/a",
         ["gpu"] = gpu,
-        ["machine"] = $"{System.Environment.MachineName} ({System.Runtime.InteropServices.RuntimeInformation.OSDescription})",
+        ["machine"] = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
         ["ci"] = (System.Environment.GetEnvironmentVariable("CI") is { Length: > 0 }).ToString(),
     };
 

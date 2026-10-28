@@ -17,7 +17,7 @@
     {"metric": "trace_composite_ms", "scope": {}, "mode": "report-only", "owner": "phase-1"},
     {"metric": "trace_update_layer_tree_ms", "scope": {}, "mode": "report-only", "owner": "phase-1"},
     {"metric": "trace_layout_ms", "scope": {}, "mode": "report-only", "owner": "phase-1"},
-    {"metric": "lcp_ms", "scope": {"profile": "phone"}, "mode": "baseline", "limit": 2000, "margin": {"ratio": 1.25, "floor": 150}, "ciMode": "report-only", "owner": "phase-2"},
+    {"metric": "lcp_ms", "scope": {"profile": "phone"}, "mode": "baseline", "limit": 2000, "margin": {"ratio": 1.25, "floor": 150}, "ciMode": "report-only", "owner": "phase-3"},
     {"metric": "lcp_ms", "scope": {"profile": "desktop"}, "mode": "baseline", "limit": 1000, "margin": {"ratio": 1.25, "floor": 150}, "ciMode": "report-only", "owner": "phase-2"},
     {"metric": "hydrated_ms", "scope": {"profile": "phone"}, "mode": "baseline", "limit": 2000, "margin": {"ratio": 1.25, "floor": 150}, "owner": "phase-2"},
     {"metric": "hydrated_ms", "scope": {"profile": "desktop"}, "mode": "baseline", "limit": 1000, "margin": {"ratio": 1.25, "floor": 150}, "owner": "phase-2"},

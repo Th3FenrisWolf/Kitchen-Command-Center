@@ -11,7 +11,13 @@ public sealed class Measurement
 
     public List<string> Gaps { get; } = [];
 
-    public void Gap(string metric, string reason) => Gaps.Add($"{metric}: {reason}");
+    public void Gap(string metric, string reason)
+    {
+        lock (Gaps)
+        {
+            Gaps.Add($"{metric}: {reason}");
+        }
+    }
 
     public void Merge(Measurement other)
     {
@@ -335,10 +341,27 @@ public sealed class CaseSession : IAsyncDisposable
         var context = await browser.NewContextAsync(contextOptions);
         try
         {
-            var blocked = new List<string>();
+            var early = new List<string>();
+            Measurement? measurement = null;
             if (options.Live is { } live)
             {
-                await live.GuardAsync(context, signingIn: false, reason => { lock (blocked) { blocked.Add(reason); } });
+                await live.GuardAsync(context, signingIn: false, reason =>
+                {
+                    lock (early)
+                    {
+                        if (measurement is null)
+                        {
+                            early.Add(reason);
+                        }
+                        else
+                        {
+                            lock (measurement.Gaps)
+                            {
+                                measurement.Gaps.Add(reason);
+                            }
+                        }
+                    }
+                });
             }
 
             _ = await subject.BeginVisitAsync(context, baseUrl);
@@ -347,6 +370,12 @@ public sealed class CaseSession : IAsyncDisposable
             var page = await context.NewPageAsync();
             var devTools = subject.Engine == Engine.Chromium ? await context.NewCDPSessionAsync(page) : null;
             var session = new CaseSession(subject, context, page, devTools);
+            lock (early)
+            {
+                session.Measurement.Gaps.AddRange(early);
+                measurement = session.Measurement;
+            }
+
             page.Response += (_, response) => session.Track(response);
             if (!subject.ImagesOn)
             {
@@ -375,7 +404,11 @@ public sealed class CaseSession : IAsyncDisposable
                 session.ForgetBodies();
                 _ = await CasePages.ReachStateAsync(page, subject.Page, options.Paths);
                 session.Measurement.Values.Clear();
-                session.Measurement.Gaps.Clear();
+                lock (session.Measurement.Gaps)
+                {
+                    session.Measurement.Gaps.RemoveAll(gap => !gap.StartsWith(LiveSite.BlockedPrefix, StringComparison.Ordinal));
+                }
+
                 await session.SettleAsync();
             }
             else if (await CasePages.ReachStateAsync(page, subject.Page, options.Paths) is { } unreached)
@@ -386,11 +419,6 @@ public sealed class CaseSession : IAsyncDisposable
             await page.EvaluateAsync("() => window.scrollTo(0, 0)");
             await page.WaitForTimeoutAsync(1500);
             await session.RequireRampAsync();
-            lock (blocked)
-            {
-                session.Measurement.Gaps.AddRange(blocked);
-            }
-
             return session;
         }
         catch
@@ -914,7 +942,7 @@ public static class Collectors
     {
         if (options.Live is { } live)
         {
-            await live.GuardAsync(context, signingIn: false, reason => { lock (result) { result.Gaps.Add(reason); } });
+            await live.GuardAsync(context, signingIn: false, reason => { lock (result.Gaps) { result.Gaps.Add(reason); } });
         }
     }
 

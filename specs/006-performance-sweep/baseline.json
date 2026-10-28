@@ -5,7 +5,7 @@
     "chromium": "145.0.7632.6",
     "webkit": "26.0",
     "gpu": "phone: swiftshader; desktop: hardware",
-    "machine": "Tuckers-MacBook-Pro (macOS 27.0.1)",
+    "machine": "macOS 27.0.1",
     "ci": "False",
     "platform": "osx-arm64"
   },

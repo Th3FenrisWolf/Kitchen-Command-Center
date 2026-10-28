@@ -112,6 +112,45 @@ function runHeader(results) {
   return { captured: results.captured ?? "—", commit: results.commit ?? "—", environment };
 }
 
+function distinct(values) {
+  const unique = [...new Set(values ?? [])];
+  return unique.length === 0 ? "—" : unique.join(", ");
+}
+
+function serverRows(results) {
+  return Object.values(results.serverResponse ?? {}).map((record) => [
+    record.path,
+    record.member === "none" ? "anonymous" : "member",
+    `${formatNumber(record.minMs)} ms`,
+    `${formatNumber(record.medianMs)} ms`,
+    `${formatNumber(record.maxMs)} ms`,
+    distinct(record.cfCacheStatus),
+    distinct(record.contentEncoding),
+  ]);
+}
+
+const SERVER_HEADINGS = ["Path", "Member", "Min", "Median", "Max", "cf-cache-status", "Encoding"];
+
+function serverMarkdown(results) {
+  const rows = serverRows(results);
+  if (rows.length === 0) return [];
+  return [
+    "## Server response",
+    "",
+    `| ${SERVER_HEADINGS.join(" | ")} |`,
+    "| --- | --- | ---: | ---: | ---: | --- | --- |",
+    ...rows.map((row) => `| ${row.map(cell).join(" | ")} |`),
+    "",
+  ];
+}
+
+function serverHtml(results) {
+  const rows = serverRows(results);
+  if (rows.length === 0) return "";
+  const body = rows.map((row) => `<tr>${row.map((value, index) => `<td${index >= 2 && index <= 4 ? ' class="n"' : ""}>${escapeHtml(value)}</td>`).join("")}</tr>`).join("");
+  return `<h2>Server response</h2><table><thead><tr>${SERVER_HEADINGS.map((heading) => `<th>${heading}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
 export function renderMarkdown(results) {
   const { rows, failures, counts, cases } = summarize(results);
   const header = runHeader(results);
@@ -141,6 +180,7 @@ export function renderMarkdown(results) {
     }
     lines.push("");
   }
+  lines.push(...serverMarkdown(results));
   const reasons = gapsByReason(results);
   lines.push("## Not captured", "");
   if (reasons.size === 0) {
@@ -192,6 +232,7 @@ summary{cursor:pointer;font-weight:600;margin:.4rem 0}
 ${failureList}
 <h2>Cases</h2>
 ${sections.join("\n")}
+${serverHtml(results)}
 <h2>Not captured</h2>
 ${gaps}
 </body></html>

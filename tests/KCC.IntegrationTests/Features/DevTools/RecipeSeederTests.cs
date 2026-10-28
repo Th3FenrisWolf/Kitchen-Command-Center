@@ -126,6 +126,28 @@ public class RecipeSeederTests
     }
 
     [Test]
+    public async Task Seeder_Rerun_RestoresReviewsMissingFromExistingRecipes()
+    {
+        var recipe = RecipeSeedData.Recipes.First(candidate => candidate.Name != "Fluffy Buttermilk Pancakes" && candidate.Reviews.Length > 0 && candidate.Variants.Length > 0);
+        var variantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
+        var writes = Site.Services.GetRequiredService<IContributionWrites>();
+        var stats = Site.Services.GetRequiredService<IContributionStats>();
+        for (var index = 0; index < recipe.Reviews.Length; index++)
+        {
+            _ = await writes.DeleteReviewAsync(variantKey, SeedKeys.Reviewer(recipe.Name, index));
+        }
+
+        _ = await Assert.That((await stats.GetAsync()).For(variantKey).Rating.Count).IsEqualTo(0);
+
+        using var client = Site.CreateClient();
+        client.Timeout = TimeSpan.FromMinutes(5);
+        using var response = await client.PostAsync("/api/dev/seed-recipes", null);
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        _ = await Assert.That((await stats.GetAsync()).For(variantKey).Rating.Count).IsEqualTo(recipe.Reviews.Length);
+    }
+
+    [Test]
     public async Task Seeder_DatesItsReviewsTheSameEveryRun()
     {
         using var client = Site.CreateClient();

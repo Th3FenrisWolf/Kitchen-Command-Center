@@ -44,6 +44,9 @@ public class RecipeTestDataSeeder(
         await EnsureE2EMemberAsync(summary, log);
         var today = DateTime.UtcNow.Date;
         var reviews = new List<(Guid VariantKey, Guid ReviewerKey, decimal Rating, string Text, DateTime At)>();
+        var photos = RecipeSeedData.Recipes
+            .Where(recipe => contentService.GetById(SeedKeys.Recipe(recipe.Name)) is null)
+            .ToDictionary(recipe => recipe.Name, recipe => RecipeSeedImages.Jpeg(recipe.Name));
 
         using (var scope = scopeProvider.CreateCoreScope())
         {
@@ -55,6 +58,13 @@ public class RecipeTestDataSeeder(
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                if (recipe.Variants.Length > 0)
+                {
+                    var firstVariantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
+                    reviews.AddRange(recipe.Reviews.Select((review, index) =>
+                        (firstVariantKey, SeedKeys.Reviewer(recipe.Name, index), review.Rating, $"Seeded review #{index + 1}", SeedKeys.ReviewDate(index))));
+                }
+
                 var recipeKey = SeedKeys.Recipe(recipe.Name);
                 if (contentService.GetById(recipeKey) is not null)
                 {
@@ -64,7 +74,7 @@ public class RecipeTestDataSeeder(
                 }
 
                 photoFolderKey ??= await EnsurePhotoFolderAsync();
-                var photoKey = await CreatePhotoAsync(recipe.Name, photoFolderKey.Value);
+                var photoKey = await CreatePhotoAsync(recipe.Name, photoFolderKey.Value, photos.GetValueOrDefault(recipe.Name) ?? RecipeSeedImages.Jpeg(recipe.Name));
                 Guid? authorKey = recipe.AuthorKey is { } author ? authors[author] : null;
                 var published = DateTime.SpecifyKind(today.AddDays(-recipe.PublishedDaysAgo), DateTimeKind.Utc);
                 await CreatePublishedAsync(recipeKey, recipe.Name, recipeTypeKey, listingKey, published, RecipeValues(recipe, categories, authorKey, photoKey));
@@ -81,13 +91,6 @@ public class RecipeTestDataSeeder(
                         published.AddMinutes(index + 1),
                         VariantValues(variant, tags, authorKey));
                     summary.VariantsCreated++;
-                }
-
-                if (recipe.Variants.Length > 0)
-                {
-                    var firstVariantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
-                    reviews.AddRange(recipe.Reviews.Select((review, index) =>
-                        (firstVariantKey, SeedKeys.Reviewer(recipe.Name, index), review.Rating, $"Seeded review #{index + 1}", SeedKeys.ReviewDate(index))));
                 }
 
                 log.WriteLine($"  created: {recipe.Name}");
@@ -211,9 +214,8 @@ public class RecipeTestDataSeeder(
         return SeedKeys.PhotoFolder;
     }
 
-    private async Task<Guid> CreatePhotoAsync(string recipeName, Guid folderKey)
+    private async Task<Guid> CreatePhotoAsync(string recipeName, Guid folderKey, byte[] photo)
     {
-        var photo = RecipeSeedImages.Jpeg(recipeName);
         var uploadKey = Guid.NewGuid();
         var upload = await temporaryFileService.CreateAsync(new CreateTemporaryFileModel
         {

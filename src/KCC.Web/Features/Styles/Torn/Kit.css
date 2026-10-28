@@ -186,7 +186,7 @@
      lifts the first ink's alpha, never its colour. A wash rests at its bloom's end and fills backwards only: Chromium
      repaints a filled finished animation differently after any style recalc, so hydration moved it off the first
      paint. No filter: one on a wash made WebKit redraw it offscreen on every step of its bloom, so the bleed and the
-     grain are baked into masks (Washes.css) and the saturation into the inks. The padding holds the bleed, which the
+     grain are baked into the masks in Washes/ and the saturation into the inks. The padding holds the bleed, which the
      first ink's stops draw around the shape's own box, --wash-w by --wash-h, in steps that shrink on a small wash so
      they never pass its rim. The inks saturate in linear light, as Chromium ran saturate() after an SVG filter;
      WebKit ran it in sRGB and drew the washes paler. */

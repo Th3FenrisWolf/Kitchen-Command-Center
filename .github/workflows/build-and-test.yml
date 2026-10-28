@@ -143,9 +143,6 @@ jobs:
     env:
       DOTNET_NOLOGO: "true"
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
-      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
-      KCC_E2E_MEMBER_USERNAME: ${{ secrets.KCC_E2E_MEMBER_USERNAME }}
-      KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
 
     steps:
       - name: Checkout
@@ -174,6 +171,8 @@ jobs:
         run: dotnet build KitchenCommandCenter.slnx -c Release
 
       - name: Build frontend
+        env:
+          FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
         run: |
           yarn install --frozen-lockfile
           yarn build:all
@@ -195,13 +194,19 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
 
+      # The install has stalled for most of an hour on some runners; a stalled attempt is cut short and tried once more.
       - name: Install Playwright browsers and system deps
-        run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps
+        timeout-minutes: 16
+        run: |
+          timeout 7m pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps \
+            || timeout 7m pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
       # The runner has no GPU, so the guards run on SwiftShader. The timing tests are [Explicit]: only this filter selects them.
       # The report is rendered after the tests, and its verdict is the tests' verdict, as in tests/scripts/perf.mjs.
       - name: Run the timing guards
         env:
+          KCC_E2E_MEMBER_USERNAME: ${{ secrets.KCC_E2E_MEMBER_USERNAME }}
+          KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
           KCC_PERF_MODE: local
           KCC_PERF_CHECK: "1"
           KCC_TEST_SITE_LOGS: ${{ runner.temp }}/site-logs

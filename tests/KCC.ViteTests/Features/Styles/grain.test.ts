@@ -20,7 +20,7 @@ const TEXTURE = {
   waxFlat: /url\(\s*#kcc-wax-flat\s*\)/i,
   turbulence: /feTurbulence/i,
   dataSvg: /url\(\s*["']?data:image\/svg/i,
-  png: /url\(\s*["']?(?:data:image\/png|[^)"']*\/wash-[\w-]+\.png)/i,
+  png: /url\(\s*["']?(?:data:image\/png|[^)"']*\.png)/i,
   repeatingLinear: /repeating-linear-gradient/i,
   repeatingRadial: /repeating-radial-gradient/i,
 }
@@ -217,6 +217,10 @@ describe('grain lies only on the desk, the washes and the tiles', () => {
       expect(blends.at(-1)!.split(',')).toHaveLength(3)
     }
     expect(valuesOf('#app', 'background-blend-mode').at(-1)).toMatch(/multiply/)
+    expect(
+      valuesOf('#app', 'background-blend-mode').at(-1)!.split(',')[0].trim(),
+      'a white stripe multiplied draws nothing',
+    ).toBe('normal')
     expect(valuesOf(":root[data-theme='dark'] #app", 'background-blend-mode').at(-1)).toMatch(/soft-light/)
     expect(valuesOf('#app', 'isolation')).toEqual([])
     expect(rules.flatMap((rule) => rule.selectors).filter((selector) => /kcc-(?:grain|crayon)/.test(selector))).toEqual([])

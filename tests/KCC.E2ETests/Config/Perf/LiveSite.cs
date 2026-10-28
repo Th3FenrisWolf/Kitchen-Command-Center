@@ -20,6 +20,8 @@ public sealed class LiveSite
 
     public const string BypassHeader = "X-KCC-Perf";
 
+    private const string SignInPath = "/api/account/login";
+
     private static readonly string[] Required = [UrlVariable, UsernameVariable, PasswordVariable, BypassVariable];
 
     private static readonly string[] Optional = [RecipeVariable, VariantVariable];
@@ -51,16 +53,28 @@ public sealed class LiveSite
                 $"The live measurement needs {string.Join(", ", missing)} set in your environment (see the live command in specs/006-performance-sweep/contracts/perf-commands.md).");
         }
 
-        if (!Uri.TryCreate(Read(UrlVariable), UriKind.Absolute, out var url) || url.Scheme is not ("https" or "http"))
+        if (!Uri.TryCreate(Read(UrlVariable), UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps)
         {
-            throw new InvalidOperationException($"{UrlVariable} must be the live site's http or https origin.");
+            throw new InvalidOperationException($"{UrlVariable} must be the live site's https origin.");
         }
 
-        var recipe = Read(RecipeVariable) is { Length: > 0 } named ? named : SitePaths.Seeded.Recipe;
+        string SitePath(string name)
+        {
+            var value = Read(name);
+            if (value.Length > 0 && (!value.StartsWith('/') || value.StartsWith("//", StringComparison.Ordinal) || value.Contains('\\')))
+            {
+                throw new InvalidOperationException($"{name} must be a path on the live site, starting with a single '/'.");
+            }
+
+            return value;
+        }
+
+        var recipe = SitePath(RecipeVariable);
+        var variant = SitePath(VariantVariable);
         var paths = new SitePaths(
-            recipe,
-            Read(VariantVariable) is { Length: > 0 } variant ? variant : SitePaths.Seeded.Variant,
-            Read(RecipeVariable).Length > 0 ? recipe : SitePaths.Seeded.AddVariantRecipe,
+            recipe.Length > 0 ? recipe : SitePaths.Seeded.Recipe,
+            variant.Length > 0 ? variant : SitePaths.Seeded.Variant,
+            recipe.Length > 0 ? recipe : SitePaths.Seeded.AddVariantRecipe,
             ExactSearchCount: false);
         return new LiveSite(new Uri(url.GetLeftPart(UriPartial.Authority) + "/"), Read(BypassVariable), paths);
     }
@@ -70,12 +84,15 @@ public sealed class LiveSite
         var sameOrigin = Uri.TryCreate(url, UriKind.Absolute, out var target)
             && Uri.Compare(target, Origin, UriComponents.SchemeAndServer, UriFormat.Unescaped, StringComparison.OrdinalIgnoreCase) == 0;
         var read = method.ToUpperInvariant() is "GET" or "HEAD";
-        var signIn = signingIn && sameOrigin && method.Equals("POST", StringComparison.OrdinalIgnoreCase);
+        var signIn = signingIn && sameOrigin && method.Equals("POST", StringComparison.OrdinalIgnoreCase)
+            && target!.AbsolutePath.Equals(SignInPath, StringComparison.OrdinalIgnoreCase);
         return new(read || signIn, sameOrigin);
     }
 
     public Dictionary<string, string> WithBypass(IReadOnlyDictionary<string, string> headers) =>
         new(headers) { [BypassHeader] = token };
+
+    public const string BlockedPrefix = "reads only: blocked ";
 
     public string Redact(string text) =>
         text.Replace(token, "<bypass token>", StringComparison.Ordinal)
@@ -91,7 +108,7 @@ public sealed class LiveSite
             var decision = Decide(request.Method, request.Url, signingIn);
             if (!decision.Allowed)
             {
-                blocked($"reads only: blocked {request.Method} {Redact(request.Url)}");
+                blocked($"{BlockedPrefix}{request.Method} {Redact(request.Url)}");
                 await route.AbortAsync("blockedbyclient");
             }
             else if (decision.Bypass)

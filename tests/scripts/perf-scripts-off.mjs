@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import pixelmatch from "pixelmatch";
@@ -29,6 +29,7 @@ if (pairs.length === 0) {
 }
 
 const heatDir = path.join(dir, "heat", "scripts-off");
+rmSync(heatDir, { recursive: true, force: true });
 mkdirSync(heatDir, { recursive: true });
 const failed = [];
 for (const pair of pairs) {

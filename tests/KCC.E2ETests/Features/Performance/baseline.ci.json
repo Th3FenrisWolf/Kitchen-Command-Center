@@ -6,7 +6,7 @@
     "chromium": "145.0.7632.6",
     "webkit": "26.0",
     "gpu": "swiftshader",
-    "machine": "Mac (macOS 27.0.1)",
+    "machine": "macOS 27.0.1",
     "ci": "False"
   },
   "cases": {
