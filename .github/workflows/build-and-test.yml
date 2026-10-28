@@ -193,6 +193,24 @@ jobs:
           node-version: "24"
           cache: yarn
 
+      # Font Awesome's registry meters bandwidth, so the package comes from the cache entry build-and-test also uses.
+      - name: Resolve the Font Awesome package (cache key)
+        id: fontawesome_key
+        run: |
+          tarball=$(grep -oE 'fontawesome-pro-[0-9.]+\.tgz#[0-9a-f]+' yarn.lock | sort -u)
+          if [ -z "$tarball" ] || [ "$(echo "$tarball" | wc -l)" -ne 1 ]; then
+            echo "::error::Expected one locked fontawesome-pro tarball in yarn.lock, found: ${tarball:-none}"
+            exit 1
+          fi
+          echo "key=fontawesome-${tarball/.tgz#/-}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the Font Awesome package
+        id: fontawesome
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
+          key: ${{ steps.fontawesome_key.outputs.key }}
+
       - name: Cache NuGet packages
         uses: actions/cache@v6
         with:
@@ -204,12 +222,23 @@ jobs:
       - name: Build .NET solution (Release)
         run: dotnet build KitchenCommandCenter.slnx -c Release
 
-      - name: Build frontend
+      # Yarn reads only the unpacked package from its cache, so the cached Font Awesome copy drops its tarball.
+      - name: Install frontend packages
         env:
           FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
         run: |
           yarn install --frozen-lockfile
-          yarn build:all
+          rm -f ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*/node_modules/@fortawesome/fontawesome-pro/.yarn-tarball.tgz
+
+      - name: Save the Font Awesome package
+        if: ${{ steps.fontawesome.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
+          key: ${{ steps.fontawesome_key.outputs.key }}
+
+      - name: Build frontend
+        run: yarn build:all
 
       - name: Resolve Playwright version (cache key)
         id: playwright_version
