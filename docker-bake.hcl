@@ -6,6 +6,10 @@ variable "KCC_IMAGE_TAG" {
   default = "local"
 }
 
+variable "KCC_FONTAWESOME_CACHE" {
+  default = ""
+}
+
 group "default" {
   targets = ["app", "ssr", "backup"]
 }
@@ -22,6 +26,7 @@ target "_site" {
   inherits = ["_image"]
   context  = "."
   secret   = ["id=fontawesome,env=FONTAWESOME_NPM_AUTH_TOKEN"]
+  contexts = KCC_FONTAWESOME_CACHE == "" ? {} : { fontawesome-cache = KCC_FONTAWESOME_CACHE }
 }
 
 target "app" {
