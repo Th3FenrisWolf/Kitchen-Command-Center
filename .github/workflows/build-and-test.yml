@@ -136,6 +136,108 @@ jobs:
           fi
           cat tests/results/combined-report.md >> "$GITHUB_STEP_SUMMARY"
 
+  perf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      DOTNET_NOLOGO: "true"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+      KCC_E2E_MEMBER_USERNAME: ${{ secrets.KCC_E2E_MEMBER_USERNAME }}
+      KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: yarn
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Build .NET solution (Release)
+        run: dotnet build KitchenCommandCenter.slnx -c Release
+
+      - name: Build frontend
+        run: |
+          yarn install --frozen-lockfile
+          yarn build:all
+
+      - name: Resolve Playwright version (cache key)
+        id: playwright_version
+        run: |
+          version=$(grep -oiP 'Include="Microsoft\.Playwright"\s+Version="\K[^"]+' Directory.Packages.props || true)
+          if [ -z "$version" ]; then
+            echo "::error::Could not resolve Microsoft.Playwright version from Directory.Packages.props"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Microsoft.Playwright version: $version"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
+
+      - name: Install Playwright browsers and system deps
+        run: pwsh tests/KCC.E2ETests/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+      # The runner has no GPU, so the guards run on SwiftShader. The timing tests are [Explicit]: only this filter selects them.
+      # The report is rendered after the tests, and its verdict is the tests' verdict, as in tests/scripts/perf.mjs.
+      - name: Run the timing guards
+        env:
+          KCC_PERF_MODE: local
+          KCC_PERF_CHECK: "1"
+          KCC_TEST_SITE_LOGS: ${{ runner.temp }}/site-logs
+        run: |
+          set +e  # the report has to be rendered even when the guards fail
+          rm -f tests/results/perf/results.json
+          dotnet run --project tests/KCC.E2ETests/KCC.E2ETests.csproj -c Release --disable-build-servers -- --treenode-filter "/*/*/TimingGuardTests/*"
+          test_status=$?
+          # TUnit appends its own per-project tables to the job summary; the perf report replaces them.
+          rm -f "$GITHUB_STEP_SUMMARY"
+          if [ ! -f tests/results/perf/results.json ]; then
+            echo "::error::TimingGuardTests wrote no tests/results/perf/results.json."
+            exit $((test_status || 1))
+          fi
+          node tests/scripts/perf-report.mjs
+          report_status=$?
+          if [ "$test_status" -ne 0 ]; then exit "$test_status"; fi
+          exit "$report_status"
+
+      - name: Upload the perf results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-results
+          path: tests/results/perf/
+          if-no-files-found: warn
+
+      - name: Publish the perf report to job summary
+        if: ${{ always() }}
+        run: |
+          if [ ! -f tests/results/perf/report.md ]; then
+            echo "::warning::No report.md was produced - skipping job summary."
+            exit 0
+          fi
+          cat tests/results/perf/report.md >> "$GITHUB_STEP_SUMMARY"
+
   images:
     needs: build-and-test
     runs-on: ubuntu-24.04-arm

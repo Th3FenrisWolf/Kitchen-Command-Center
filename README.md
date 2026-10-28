@@ -297,6 +297,75 @@ Run `dotnet build` and `yarn build:all` (at the repository root) first, and set 
 `KCC_E2E_MEMBER_PASSWORD` (a password of at least 8 characters; on macOS/zsh, in `~/.zshenv`). The site's seeder
 creates that member, approved, before any test runs.
 
+### Performance
+
+The perf matrix measures every public page in both profiles (phone and desktop), both ramps, both engines and bare and
+bloomed visits: frame times, long frames, interaction latency, LCP, hydration, layers and CSS weight. It needs a
+Release build and `yarn build:all` at the repository root first, and the `KCC_E2E_MEMBER_USERNAME` and
+`KCC_E2E_MEMBER_PASSWORD` variables described under E2E tests above. Each command boots a fresh seeded site unless it
+says otherwise; `perf:live` boots none.
+
+```bash
+yarn perf                                    # full local matrix; exits 0 even over budget
+yarn perf --check                            # the same; exits 1 when a budget fails
+yarn perf:live                               # matrix against the live site; exits 0 whatever the budgets
+yarn perf:capture <ref>                      # PNGs of every case, scripts on and off
+yarn perf:scripts-off <ref>                  # exits 1 when a pair differs in any pixel or has no partner
+yarn perf:diff <before> <after>              # perceptual diffs and the look round page
+yarn perf:report --before <file> [--after <file>]  # re-render a saved run beside an earlier one; no site boots
+yarn perf:baseline                           # run the matrix and rewrite the baseline
+```
+
+`yarn perf` and `yarn perf --check` write `results.json`, `report.html` and `report.md` to `tests/results/perf/`.
+`yarn perf:live` writes the same files to `tests/results/perf-live/`. Captures go to
+`tests/results/perf/captures/<ref>/`, with heat maps under `heat/`. `yarn perf:report` exits 1 when an after budget
+fails. `yarn perf:baseline` rewrites `specs/006-performance-sweep/baseline.json`.
+
+`yarn perf`, `perf:live`, `perf:baseline` and `perf:report` take `--before <results.json>`, and the report then shows
+the earlier run beside the new one with a signed change per metric. `yarn perf` and `perf:live` also take the filters
+`--page`, `--profile`, `--engine`, `--ramp` and `--visit`.
+
+#### Budgets
+
+The budgets are in `tests/KCC.E2ETests/Features/Performance/budgets.json`. A budget has one of three modes:
+
+- `target` fails when the value is worse than its `limit`. A timing metric enters `target` only with a recorded
+  ten-of-ten stability trial.
+- `baseline` compares with the recorded value for the case. A timing margin (`ratio` and `floor`) fails only when the
+  value exceeds both `baseline x ratio` and `baseline + floor`. A weight margin (`pct` and `floorBytes`) fails past
+  `baseline + max(floorBytes, baseline x pct / 100)`. An `add` margin allows that many above the baseline.
+- `report-only` is listed and never fails.
+
+A budget's `ciMode`, when present, replaces its `mode` in the CI guards; `yarn perf --check` ignores it.
+
+A deterministic count with no margin fails on any increase.
+
+Two baseline files hold the recorded values: `specs/006-performance-sweep/baseline.json` for the local matrix, and
+`tests/KCC.E2ETests/Features/Performance/baseline.ci.json` for the CI runner.
+
+#### Live run
+
+`yarn perf:live` reads these variables from the local environment (on macOS/zsh, `~/.zshenv`), never from a tracked
+file, and stops before any request when one of the first four is missing:
+
+- `KCC_PERF_LIVE_URL`: the public site's origin.
+- `KCC_PERF_MEMBER_USERNAME` and `KCC_PERF_MEMBER_PASSWORD`: the measurement member's sign-in on production.
+- `KCC_PERF_BYPASS_TOKEN`: the value of the `X-KCC-Perf` header that the Cloudflare skip rule matches.
+- `KCC_PERF_LIVE_RECIPE` and `KCC_PERF_LIVE_VARIANT`, optional: a recipe path and a variant path the live site has.
+  Without them the recipe pages load the seeded recipes, and a page that answers 404 is recorded as a gap.
+
+The live run only reads: it aborts every request other than `GET` or `HEAD`, except the sign-in's `POST`, and sends
+the bypass header to the live origin only. Leave the measurement member's ramp on Device, or the other ramp's cases
+fail their ramp check.
+
+#### CI
+
+The E2E suite runs the deterministic guards on the key subset in both engines. The `perf` job runs the timing guards in
+Chromium on SwiftShader, one warm-up and three runs per case, and appends `report.md` to the job summary. Timing on a
+shared runner swings too far for most budgets, so the job fails only on `hydrated_ms` and `server_response_ms` against
+`baseline.ci.json`; frames, interactions and LCP carry `ciMode: report-only` and are reported only. `yarn perf --check`
+still enforces every budget locally.
+
 ### Vue SSR
 
 The application uses Vue 3 server-side rendering. The SSR service:
