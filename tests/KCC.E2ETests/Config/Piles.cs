@@ -74,10 +74,6 @@ public static class Piles
 
     private const double WidthTolerance = 4;
 
-    private const string Hydrated = "() => !!document.querySelector('#app')?.__vue_app__";
-
-    public static Task WaitForHydrationAsync(IPage page) => page.WaitForFunctionAsync(Hydrated);
-
     public static Task<int> TurnAsync(ILocator slip) => slip.EvaluateAsync<int>(ReadTurn);
 
     public static async Task<IReadOnlyList<string>> FaultsAsync(IPage page)
