@@ -187,8 +187,11 @@ jobs:
         with:
           global-json-file: global.json
 
+      # Its yarn cache lookup reads .npmrc, which names the token.
       - name: Set up Node
         uses: actions/setup-node@v7
+        env:
+          FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
         with:
           node-version: "24"
           cache: yarn
