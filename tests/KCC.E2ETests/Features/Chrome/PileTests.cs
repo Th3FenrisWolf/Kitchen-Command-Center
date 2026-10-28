@@ -598,7 +598,7 @@ public class PileTests : BasePageTests
             await Page.WaitForURLAsync(url => new Uri(url).Query.StartsWith("?recipe=", StringComparison.Ordinal));
         }
 
-        await Piles.WaitForHydrationAsync(Page);
+        await Hydration.WaitAsync(Page);
     }
 
     private async Task FillWizardStepAsync(string flow, int counted)
@@ -623,7 +623,7 @@ public class PileTests : BasePageTests
     {
         await Page.SetViewportSizeAsync(width, 900);
         await Page.GotoAsync(path);
-        await Piles.WaitForHydrationAsync(Page);
+        await Hydration.WaitAsync(Page);
     }
 
     private async Task ShowListAsync()

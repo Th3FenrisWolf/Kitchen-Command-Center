@@ -18,6 +18,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    outputs:
+      fontawesome-key: ${{ steps.fontawesome_key.outputs.key }}
 
     env:
       DOTNET_NOLOGO: "true"
@@ -45,6 +47,25 @@ jobs:
           node-version: "24"
           cache: yarn
 
+      # Font Awesome's registry meters bandwidth, so its package has a cache of its own: keyed on its locked tarball,
+      # not the whole lockfile, and saved once the install succeeds, whatever the tests do. The images job reuses it.
+      - name: Resolve the Font Awesome package (cache key)
+        id: fontawesome_key
+        run: |
+          tarball=$(grep -oE 'fontawesome-pro-[0-9.]+\.tgz#[0-9a-f]+' yarn.lock | sort -u)
+          if [ -z "$tarball" ] || [ "$(echo "$tarball" | wc -l)" -ne 1 ]; then
+            echo "::error::Expected one locked fontawesome-pro tarball in yarn.lock, found: ${tarball:-none}"
+            exit 1
+          fi
+          echo "key=fontawesome-${tarball/.tgz#/-}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the Font Awesome package
+        id: fontawesome
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
+          key: ${{ steps.fontawesome_key.outputs.key }}
+
       - name: Cache NuGet packages
         uses: actions/cache@v6
         with:
@@ -58,12 +79,25 @@ jobs:
         run: dotnet build KitchenCommandCenter.slnx -c Release
 
       # Attempted even when the .NET build failed, so one run reports both builds.
-      - name: Build frontend
-        id: build_frontend
+      # Yarn reads only the unpacked package from its cache, so the cached Font Awesome copy drops its tarball.
+      - name: Install frontend packages
+        id: install_frontend
         if: ${{ !cancelled() }}
         run: |
           yarn install --frozen-lockfile
-          yarn build:all
+          rm -f ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*/node_modules/@fortawesome/fontawesome-pro/.yarn-tarball.tgz
+
+      - name: Save the Font Awesome package
+        if: ${{ !cancelled() && steps.install_frontend.outcome == 'success' && steps.fontawesome.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
+          key: ${{ steps.fontawesome_key.outputs.key }}
+
+      - name: Build frontend
+        id: build_frontend
+        if: ${{ !cancelled() && steps.install_frontend.outcome == 'success' }}
+        run: yarn build:all
 
       - name: Verify builds succeeded
         if: ${{ !cancelled() }}
@@ -263,6 +297,22 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v4
 
+      - name: Restore the Font Awesome package
+        id: fontawesome
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
+          key: ${{ needs.build-and-test.outputs.fontawesome-key }}
+
+      # On a miss the build's own install fetches the package from the registry.
+      - name: Hand the Font Awesome package to the build
+        run: |
+          mkdir -p ~/.cache/yarn/v6
+          echo "KCC_FONTAWESOME_CACHE=$HOME/.cache/yarn/v6" >> "$GITHUB_ENV"
+          if [ "${{ steps.fontawesome.outputs.cache-hit }}" != "true" ]; then
+            echo "::warning::No cached Font Awesome package, so the image build downloads it from the registry."
+          fi
+
       # One bake builds the shared frontend stage once for both site images. Each target keeps its own cache
       # scope, because targets sharing one would overwrite each other's.
       - name: Build the images
@@ -270,6 +320,7 @@ jobs:
         with:
           source: .
           load: true
+          allow: fs.read=${{ env.KCC_FONTAWESOME_CACHE }}
           set: |
             app.cache-from=type=gha,scope=app
             app.cache-to=type=gha,scope=app,mode=max
