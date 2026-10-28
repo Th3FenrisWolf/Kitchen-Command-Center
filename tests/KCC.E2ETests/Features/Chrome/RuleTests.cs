@@ -664,7 +664,7 @@ public class RuleTests : BasePageTests
     {
         await Page.SetViewportSizeAsync(width, 900);
         _ = await Page.GotoAsync(NotFound);
-        await Piles.WaitForHydrationAsync(Page);
+        await Hydration.WaitAsync(Page);
 
         await ExpectOnTheRuleAsync(Main, null, everyLine: true);
     }
@@ -902,7 +902,7 @@ public class RuleTests : BasePageTests
             // The overlay opens only from the wide toolbar, and stays open as the window narrows.
             await Page.SetViewportSizeAsync(1280, 900);
             _ = await Page.GotoAsync(CookVariant);
-            await Piles.WaitForHydrationAsync(Page);
+            await Hydration.WaitAsync(Page);
             await Page.Locator("[data-test='cook-mode-open-desktop']").ClickAsync();
             await Expect(Page.Locator("[role='dialog']")).ToBeVisibleAsync();
             await Page.SetViewportSizeAsync(width, 900);
@@ -910,7 +910,7 @@ public class RuleTests : BasePageTests
         }
 
         _ = await Page.GotoAsync(page == SearchList ? Search : page);
-        await Piles.WaitForHydrationAsync(Page);
+        await Hydration.WaitAsync(Page);
         if (page == SearchList)
         {
             await Page.Locator("[data-testid='view-list']").ClickAsync();
@@ -929,7 +929,7 @@ public class RuleTests : BasePageTests
             _ = await Page.GotoAsync(PhotoImport.RecipePath);
             await Page.GetByRole(AriaRole.Link, new() { Name = "Add Variant", Exact = true }).First.ClickAsync();
             await Page.WaitForURLAsync(url => new Uri(url).Query.StartsWith("?recipe=", StringComparison.Ordinal));
-            await Piles.WaitForHydrationAsync(Page);
+            await Hydration.WaitAsync(Page);
             await Expect(Page.GetByTestId("wizard-start-typing")).ToBeVisibleAsync();
             return Main;
         }
@@ -974,7 +974,7 @@ public class RuleTests : BasePageTests
 
         await MemberSession.SignInAsync(Page);
         _ = await Page.GotoAsync(CreateRecipe);
-        await Piles.WaitForHydrationAsync(Page);
+        await Hydration.WaitAsync(Page);
         await Expect(Page.GetByTestId("wizard-start-typing")).ToBeVisibleAsync();
 
         if (step == "photos")

@@ -3,6 +3,10 @@
 # The client and SSR bundles come out of one `yarn build:all` in the frontend stage, and both site images copy from
 # it: scope IDs hash each component's path and content, so bundles built apart would strip every scoped style.
 
+# CI replaces this empty stage with the Font Awesome package from its Actions cache, laid out as Yarn's cache, so the
+# install never meets the registry's bandwidth quota. Elsewhere the install fetches the package.
+FROM scratch AS fontawesome-cache
+
 FROM --platform=$BUILDPLATFORM node:24.21.0-bookworm-slim AS frontend
 WORKDIR /repo
 COPY package.json yarn.lock ./
@@ -14,7 +18,10 @@ COPY src/KCC.Contributions/Client/package.json src/KCC.Contributions/Client/
 RUN --mount=type=bind,source=.npmrc,target=.npmrc \
     --mount=type=secret,id=fontawesome,env=FONTAWESOME_NPM_AUTH_TOKEN \
     --mount=type=cache,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile --network-timeout 600000
+    --mount=type=bind,from=fontawesome-cache,target=/fontawesome-cache \
+    mkdir -p /usr/local/share/.cache/yarn/v6 \
+    && cp -R /fontawesome-cache/. /usr/local/share/.cache/yarn/v6/ \
+    && yarn install --frozen-lockfile --network-timeout 600000
 COPY src/ src/
 RUN yarn build:all \
     && for wwwroot in src/*/wwwroot; do mkdir -p "/out/$wwwroot" && cp -R "$wwwroot/." "/out/$wwwroot/" || exit 1; done

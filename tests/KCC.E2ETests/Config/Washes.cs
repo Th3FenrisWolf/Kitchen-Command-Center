@@ -72,7 +72,7 @@ public static partial class Washes
 
     public static async Task SettleAsync(IPage page)
     {
-        await page.WaitForFunctionAsync("() => !!document.querySelector('#app')?.__vue_app__");
+        await Hydration.WaitAsync(page);
         await page.EvaluateAsync(SettleResults);
     }
 

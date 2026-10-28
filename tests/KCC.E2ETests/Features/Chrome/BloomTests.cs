@@ -122,7 +122,7 @@ public partial class BloomTests : BasePageTests
         var before = (await Washes.ReadAsync(Page)).SelectMany(field => field.Washes).ToArray();
         await Page.EvaluateAsync(RecordBeforeMount);
         release.SetResult();
-        await Page.WaitForFunctionAsync("() => !!document.querySelector('#app')?.__vue_app__");
+        await Hydration.WaitAsync(Page);
 
         var mount = await Page.EvaluateAsync<MountCheck>(CompareAfterMount);
         searched.SetResult();
