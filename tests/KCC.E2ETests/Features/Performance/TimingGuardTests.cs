@@ -18,6 +18,7 @@ public class TimingGuardTests
     {
         await using var run = await GuardRun.StartAsync(Site.BaseUrl, Engine.Chromium);
         var options = new CollectOptions(Diagnostics: false);
+        await run.CalibrateAsync();
         foreach (var subject in Matrix.KeySubset().Where(subject => subject.Engine == Engine.Chromium))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -32,6 +33,7 @@ public class TimingGuardTests
             Console.WriteLine($"[perf guard] {subject.Identity}: {Runs} runs after a warm-up");
         }
 
+        await run.CalibrateAsync();
         var failures = run.Conclude(ResultsWriter.OutputDirectory("local"));
 
         if (failures.Count > 0)

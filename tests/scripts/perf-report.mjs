@@ -27,6 +27,10 @@ export function higherIsBetter(metric) {
   return metric.startsWith("frames_within_") || metric.includes("_frames_within_");
 }
 
+function runnerLabel(record) {
+  return record.runner ? `; runner x${formatNumber(record.runner)}` : "";
+}
+
 function marginLabel(margin, unit) {
   const suffix = suffixFor(unit);
   if (!margin) return "no increase";
@@ -43,7 +47,7 @@ export function budgetText(metric, record) {
   if (budget.mode === "target") {
     return `${higherIsBetter(metric) ? "≥" : "≤"} ${formatNumber(budget.limit)}`;
   }
-  return marginLabel(budget.margin, record.unit);
+  return marginLabel(budget.margin, record.unit) + runnerLabel(record);
 }
 
 export function failureLine(identity, metric, record) {
@@ -52,7 +56,7 @@ export function failureLine(identity, metric, record) {
   if (budget?.mode === "target") {
     return `${identity}: ${metric} ${formatNumber(record.value)} ${worse} target ${formatNumber(budget.limit)}`;
   }
-  return `${identity}: ${metric} ${formatNumber(record.value)} ${worse} baseline ${formatNumber(record.baseline)} (${marginLabel(budget?.margin, record.unit)})`;
+  return `${identity}: ${metric} ${formatNumber(record.value)} ${worse} baseline ${formatNumber(record.baseline)} (${marginLabel(budget?.margin, record.unit)}${runnerLabel(record)})`;
 }
 
 export function deltaText(record) {
@@ -109,7 +113,10 @@ function cell(value) {
 
 function runHeader(results) {
   const environment = Object.entries(results.environment ?? {}).map(([key, value]) => `${key}: ${value}`).join("; ");
-  return { captured: results.captured ?? "—", commit: results.commit ?? "—", environment };
+  const runner = results.calibrationMs == null
+    ? ""
+    : `Runner: calibration ${formatNumber(results.calibrationMs)} ms against ${results.baselineCalibrationMs == null ? "none" : `${formatNumber(results.baselineCalibrationMs)} ms`} in the baseline, so millisecond budgets scale x${formatNumber(results.runner ?? 1)}.`;
+  return { captured: results.captured ?? "—", commit: results.commit ?? "—", environment, runner };
 }
 
 function distinct(values) {
@@ -159,6 +166,7 @@ export function renderMarkdown(results) {
     "",
     `Captured ${header.captured} at commit ${header.commit}.`,
     header.environment ? `Environment: ${header.environment}.` : "",
+    header.runner,
     "",
     `${cases} cases, ${counts.pass} pass, ${counts.fail} fail, ${counts["report-only"]} report only, ${counts.skipped} skipped.`,
     "",
@@ -228,7 +236,7 @@ summary{cursor:pointer;font-weight:600;margin:.4rem 0}
 </style></head><body>
 <h1>Performance report</h1>
 <p>Captured ${escapeHtml(header.captured)} at commit ${escapeHtml(header.commit)}.${header.environment ? ` Environment: ${escapeHtml(header.environment)}.` : ""}</p>
-<p>${cases} cases, ${counts.pass} pass, ${counts.fail} fail, ${counts["report-only"]} report only, ${counts.skipped} skipped.</p>
+${header.runner ? `<p>${escapeHtml(header.runner)}</p>\n` : ""}<p>${cases} cases, ${counts.pass} pass, ${counts.fail} fail, ${counts["report-only"]} report only, ${counts.skipped} skipped.</p>
 ${failureList}
 <h2>Cases</h2>
 ${sections.join("\n")}

@@ -9,6 +9,7 @@ public sealed class GuardRun : IAsyncDisposable
     private readonly Engine engine;
     private IBrowser browser;
     private readonly HashSet<string> measuredKinds = [];
+    private readonly List<double> calibration = [];
     private string? memberState;
 
     private GuardRun(IPlaywright playwright, IBrowser browser, Uri baseUrl, Engine engine)
@@ -28,14 +29,24 @@ public sealed class GuardRun : IAsyncDisposable
         return new(playwright, browser, baseUrl, engine);
     }
 
-    public async Task<Measurement> MeasureAsync(Case subject, CollectOptions options, string kind)
+    private async Task EnsureBrowserAsync()
     {
         if (!browser.IsConnected)
         {
             browser = await Profiles.LaunchAsync(playwright, engine, Profiles.Phone.Gpu);
             memberState = null;
         }
+    }
 
+    public async Task CalibrateAsync()
+    {
+        await EnsureBrowserAsync();
+        calibration.AddRange(await RunnerCalibration.SampleAsync(browser));
+    }
+
+    public async Task<Measurement> MeasureAsync(Case subject, CollectOptions options, string kind)
+    {
+        await EnsureBrowserAsync();
         if (subject.Member != MemberKind.None)
         {
             memberState ??= await Collectors.SignInStateAsync(
@@ -78,6 +89,7 @@ public sealed class GuardRun : IAsyncDisposable
             engine == Engine.Webkit ? browser.Version : null,
             Profiles.Phone.Gpu.ToString().ToLowerInvariant());
         var budgets = BudgetFile.Load(MatrixRun.BudgetsPath).OnCi();
+        Report.CalibrationMs = calibration.Count > 0 ? ResultsWriter.Median(calibration) : null;
         Report.Evaluate(budgets, baseline, ResultsWriter.Platform);
         var path = ResultsWriter.WriteResults(directory, Report);
         if (MatrixRun.Settings.FromEnvironment().WritesBaseline)
@@ -89,6 +101,11 @@ public sealed class GuardRun : IAsyncDisposable
         foreach (var skip in Report.Skips())
         {
             Console.WriteLine($"[perf guard] {skip} ({baseline.Platform ?? "unknown"} baseline, {ResultsWriter.Platform} runner)");
+        }
+
+        if (Report.CalibrationMs is { } calibrated)
+        {
+            Console.WriteLine($"[perf guard] runner calibration {calibrated} ms against {baseline.CalibrationMs?.ToString() ?? "none"} ms in the baseline: budgets x{Report.Runner}");
         }
 
         Console.WriteLine($"[perf guard] {Report.Cases.Count} cases; results at {path}");

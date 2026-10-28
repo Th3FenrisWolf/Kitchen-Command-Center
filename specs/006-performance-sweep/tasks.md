@@ -232,6 +232,10 @@ stage, and the close-out.
 - [X] T056 Run the definition of done: D1 to D7 and D10 (`dotnet build KitchenCommandCenter.slnx -c Release`,
   `yarn build:all`, `yarn type-check`, `yarn lint`, `yarn format` in `src/KCC.Web`, `node tests/scripts/run.mjs`,
   both ramps in the Browser pane, the `brand-steward` agent)
+- [X] T057 Scale the CI timing guard's millisecond baselines by the runner's measured speed: the calibration
+  workload in `tests/KCC.E2ETests/Config/Perf/RunnerCalibration.cs`, the factor in `ResultsWriter.cs`, the runner
+  line in `tests/scripts/perf-report.mjs`, and `calibrationMs` in `baseline.ci.json` from an eight-job trial
+  (research R4)
 
 ---
 

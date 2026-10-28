@@ -65,6 +65,84 @@ public class PerfHelperTests
     }
 
     [Test]
+    public async Task RatioBudget_ScalesAMillisecondBaselineByTheRunnerFactor_AndNamesIt()
+    {
+        var budget = new Budget("hydrated_ms", null, "baseline", Margin: new Margin(Ratio: 1.25, Floor: 150));
+
+        var slowRunner = BudgetEvaluator.Evaluate("hydrated_ms", 1970.2, 1528.4, budget, runner: 1.23);
+        var tooSlowStill = BudgetEvaluator.Evaluate("hydrated_ms", 1970.2, 1528.4, budget, runner: 1.02);
+        var usualRunner = BudgetEvaluator.Evaluate("hydrated_ms", 1970.2, 1528.4, budget);
+
+        _ = await Assert.That(slowRunner.Status).IsEqualTo(Verdict.Pass);
+        _ = await Assert.That(tooSlowStill.Detail).IsEqualTo("1970.2 > baseline 1528.4 (x1.25, +150 ms; runner x1.02)");
+        _ = await Assert.That(usualRunner.Detail).IsEqualTo("1970.2 > baseline 1528.4 (x1.25, +150 ms)");
+    }
+
+    [Test]
+    public async Task RunnerFactor_LeavesCountsBytesAndPercentagesAlone()
+    {
+        var count = new Budget("filtered_elements", null, "baseline");
+        var weight = new Budget("css_gz_bytes", null, "baseline", Margin: new Margin(Pct: 2, FloorBytes: 1024));
+        var frames = new Budget("frames_within_16_7_pct", null, "baseline", Margin: new Margin(Add: 5));
+
+        _ = await Assert.That(BudgetEvaluator.Evaluate("filtered_elements", 41, 40, count, runner: 1.5).Status).IsEqualTo(Verdict.Fail);
+        _ = await Assert.That(BudgetEvaluator.Evaluate("css_gz_bytes", 70_500, 69_000, weight, runner: 1.5).Status).IsEqualTo(Verdict.Fail);
+        _ = await Assert.That(BudgetEvaluator.Evaluate("frames_within_16_7_pct", 60, 70, frames, runner: 1.5).Status).IsEqualTo(Verdict.Fail);
+    }
+
+    [Test]
+    public async Task RunnerFactor_OnlyEverRelaxes_AndNeedsBothCalibrations()
+    {
+        _ = await Assert.That(RunReport.RunnerFactor(baselineMs: 200, runMs: 246)).IsEqualTo(1.23);
+        _ = await Assert.That(RunReport.RunnerFactor(baselineMs: 200, runMs: 160)).IsEqualTo(1);
+        _ = await Assert.That(RunReport.RunnerFactor(baselineMs: null, runMs: 246)).IsEqualTo(1);
+        _ = await Assert.That(RunReport.RunnerFactor(baselineMs: 200, runMs: null)).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Report_JudgesTimingAgainstTheRunnerFactor_AndRecordsIt()
+    {
+        var report = new RunReport { CalibrationMs = 246 };
+        var record = report.Add(Search, [new Measurement { Values = { ["hydrated_ms"] = 1970.2, ["layers"] = 71 } }]);
+        var baseline = new BaselineFile { CalibrationMs = 200, Cases = { [Search.Identity] = new() { ["hydrated_ms"] = 1528.4, ["layers"] = 70 } } };
+        var budgets = new BudgetFile(
+        [
+            new Budget("hydrated_ms", null, "baseline", Margin: new Margin(Ratio: 1.25, Floor: 150)),
+            new Budget("layers", null, "baseline"),
+        ]);
+
+        report.Evaluate(budgets, baseline);
+
+        _ = await Assert.That(report.Runner).IsEqualTo(1.23);
+        _ = await Assert.That(record.Metrics["hydrated_ms"].Status).IsEqualTo(Verdict.Pass);
+        _ = await Assert.That(record.Metrics["hydrated_ms"].Runner).IsEqualTo(1.23);
+        _ = await Assert.That(record.Metrics["hydrated_ms"].Baseline).IsEqualTo(1528.4);
+        _ = await Assert.That(record.Metrics["layers"].Status).IsEqualTo(Verdict.Fail);
+        _ = await Assert.That(record.Metrics["layers"].Runner).IsNull();
+    }
+
+    [Test]
+    public async Task Baseline_KeepsTheRunnerCalibration_WhenARunWithoutOneMergesIn()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"kcc-perf-{Guid.NewGuid():N}.json");
+        try
+        {
+            var calibrated = new RunReport { CalibrationMs = 210.5 };
+            _ = calibrated.Add(Search, [new Measurement { Values = { ["hydrated_ms"] = 1500 } }]);
+            ResultsWriter.WriteBaseline(path, calibrated);
+            var uncalibrated = new RunReport();
+            _ = uncalibrated.Add(Search, [new Measurement { Values = { ["layers"] = 70 } }]);
+            ResultsWriter.WriteBaseline(path, uncalibrated, merge: true, mergeMetrics: true);
+
+            _ = await Assert.That(BaselineFile.Load(path).CalibrationMs).IsEqualTo(210.5);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Test]
     public async Task MissingFromBaseline_ReportsOnlyEnforcedMetricsOfMeasuredKinds()
     {
         var report = new RunReport();

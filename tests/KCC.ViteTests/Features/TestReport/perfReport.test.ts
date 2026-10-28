@@ -58,6 +58,22 @@ describe('perf report', () => {
     )
   })
 
+  it('names the runner factor a baseline was scaled by', () => {
+    const record = { ...results.cases[identity].frame_p95_ms, runner: 1.02 }
+    expect(failureLine(identity, 'frame_p95_ms', record)).toBe(
+      `${identity}: frame_p95_ms 22.4 > baseline 15.1 (x1.25, +4 ms; runner x1.02)`,
+    )
+    expect(budgetText('frame_p95_ms', record)).toBe('x1.25, +4 ms; runner x1.02')
+  })
+
+  it('states the runner calibration under the header, and nothing without one', () => {
+    const calibrated = { ...results, calibrationMs: 369.2, baselineCalibrationMs: 300.1, runner: 1.23 }
+    const line = 'Runner: calibration 369.2 ms against 300.1 ms in the baseline, so millisecond budgets scale x1.23.'
+    expect(renderMarkdown(calibrated)).toContain(line)
+    expect(renderHtml(calibrated)).toContain(line)
+    expect(renderMarkdown(results)).not.toContain('Runner:')
+  })
+
   it('reads frames within budget as higher is better', () => {
     const record = results.cases[identity].frames_within_16_7_pct
     expect(failureLine(identity, 'frames_within_16_7_pct', record)).toBe(

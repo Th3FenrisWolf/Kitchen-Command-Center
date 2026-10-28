@@ -90,5 +90,9 @@ None is stored in a tracked file.
 - The `perf` job runs the timing guards in Chromium on SwiftShader, alone on its runner, one warm-up and three runs
   per case, and appends `report.md` to the job summary. It fails only on `hydrated_ms` and `server_response_ms`
   against `baseline.ci.json`; the other timing metrics carry `ciMode: report-only` and are reported, never enforced.
-  The job's timeout is 45 minutes. A failure reads:
-  `search-3 · phone · chromium · dark · bloomed: hydrated_ms 2000 > baseline 1528.4 (x1.25, +150 ms)`.
+  The job's timeout is 45 minutes. Before and after the cases it times a fixed script, DOM and layout workload in its
+  own browser, and a runner slower than the baseline's scales the millisecond baselines (`budgets.md`). A failure
+  reads:
+  `search-3 · phone · chromium · dark · bloomed: hydrated_ms 2000 > baseline 1528.4 (x1.25, +150 ms)`, or on a
+  slow runner `search-3 · phone · chromium · dark · bloomed: hydrated_ms 2400 > baseline 1528.4 (x1.25, +150 ms;
+  runner x1.23)`.

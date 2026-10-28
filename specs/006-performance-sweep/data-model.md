@@ -52,7 +52,8 @@ change and records the stability trial (spec FR-016, SC-006).
 
 A map from case identity to metric values, captured once before any fix. Two files: `baseline.json` in the spec
 folder for the local matrix, `baseline.ci.json` beside the guards for CI values. Rewritten only by
-`yarn perf:baseline`.
+`yarn perf:baseline`. `baseline.ci.json` also carries `calibrationMs`, the median time of the runner calibration
+workload on the runners its timing values came from.
 
 ## Report
 

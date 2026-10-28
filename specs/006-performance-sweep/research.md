@@ -156,6 +156,20 @@ needs the hero tears, because the header uses them, so splitting the tears per p
   `yarn perf --check` still enforces every budget against `baseline.json`. The guard measures one warm-up and three
   runs per case, not five, and the job's timeout is 45 minutes; no case was dropped. A median of three is still the
   middle run, so it reads as the trial's medians of five did, with one outlier absorbed instead of two.
+- **Runner calibration (owner, 2026-10-28).** Run 40729163964 failed on `search-3 · phone · chromium · dark ·
+  bloomed`, `hydrated_ms` 1970.2 against 1528.4. Every metric on that runner ran a median x1.23 slower than run
+  40700034631 on nearly the same code, server response included, so the runner moved, not the site.
+  `TimingGuardTests` now times a fixed script, DOM and layout workload in its own browser before and after the cases,
+  five samples each after a warm-up, and takes the median of the ten as the run's `calibrationMs`. A run slower than
+  the baseline's `calibrationMs` scales each millisecond baseline by the ratio before its margin applies; a faster
+  one never tightens it (contracts/budgets.md).
+  - Trial: eight `perf` jobs at once (run 40739675154). Runners came in two speeds: three took 161-168 ms on the
+    workload with `hydrated_ms` at x0.97 of baseline, five took 216-261 ms at x1.05 to x1.26. Unscaled, two of the
+    eight failed. The baseline's own timing values match the fast runners.
+  - `baseline.ci.json` takes `calibrationMs` 206.3: per job, the calibration over the job's median `hydrated_ms`
+    ratio to baseline is the calibration a job at baseline speed would read (166-218), and 206.3 is their median.
+    Replayed against it, all eight jobs pass, the worst case at 85% of its limit, and a fast runner keeps the
+    unscaled margin.
 - **T055.** No timing metric flips to `target`: none passed ten of ten.
 
 ### R5. Baselines and budgets

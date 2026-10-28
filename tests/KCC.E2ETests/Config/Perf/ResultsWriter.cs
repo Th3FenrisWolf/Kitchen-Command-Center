@@ -110,7 +110,7 @@ public sealed record Verdict(string Status, string? Detail)
 
 public static class BudgetEvaluator
 {
-    public static Verdict Evaluate(string metric, double value, double? baseline, Budget? budget)
+    public static Verdict Evaluate(string metric, double value, double? baseline, Budget? budget, double runner = 1)
     {
         if (budget is null || budget.Mode == Verdict.ReportOnly)
         {
@@ -118,8 +118,10 @@ public static class BudgetEvaluator
         }
 
         var info = MetricCatalog.Describe(metric);
-        return budget.Mode == "target" ? Target(value, budget, info) : Baseline(value, baseline, budget, info);
+        return budget.Mode == "target" ? Target(value, budget, info) : Baseline(value, baseline, budget, info, ScalesWithRunner(metric) ? runner : 1);
     }
+
+    public static bool ScalesWithRunner(string metric) => MetricCatalog.Describe(metric).Unit == "ms";
 
     public static string Format(double value)
     {
@@ -140,7 +142,7 @@ public static class BudgetEvaluator
             : new(Verdict.Pass, null);
     }
 
-    private static Verdict Baseline(double value, double? baseline, Budget budget, MetricInfo info)
+    private static Verdict Baseline(double value, double? baseline, Budget budget, MetricInfo info, double runner)
     {
         if (baseline is not { } reference)
         {
@@ -148,8 +150,14 @@ public static class BudgetEvaluator
         }
 
         var margin = budget.Margin ?? new Margin();
-        var (allowance, label) = Allowance(reference, margin, info);
-        var worse = info.HigherIsBetter ? value < reference - allowance : value > reference + allowance;
+        var scaled = reference * runner;
+        var (allowance, label) = Allowance(scaled, margin, info);
+        if (runner > 1)
+        {
+            label += $"; runner x{Format(runner)}";
+        }
+
+        var worse = info.HigherIsBetter ? value < scaled - allowance : value > scaled + allowance;
         return worse
             ? new(Verdict.Fail, $"{Format(value)} {(info.HigherIsBetter ? "<" : ">")} baseline {Format(reference)} ({label})")
             : new(Verdict.Pass, null);
@@ -195,6 +203,8 @@ public sealed class MetricRecord
 
     public double? Delta { get; set; }
 
+    public double? Runner { get; set; }
+
     public string Status { get; set; } = Verdict.ReportOnly;
 
     [JsonIgnore]
@@ -225,6 +235,15 @@ public sealed class RunReport
 
     public Dictionary<string, ServerResponseRecord>? ServerResponse { get; set; }
 
+    public double? CalibrationMs { get; set; }
+
+    public double? BaselineCalibrationMs { get; private set; }
+
+    public double Runner { get; private set; } = 1;
+
+    public static double RunnerFactor(double? baselineMs, double? runMs) =>
+        baselineMs is > 0 && runMs is { } run && run > baselineMs ? Math.Round(run / baselineMs.Value, 2) : 1;
+
     public CaseRecord Add(Case subject, IReadOnlyList<Measurement> runs)
     {
         var record = new CaseRecord(subject);
@@ -249,6 +268,8 @@ public sealed class RunReport
     public void Evaluate(BudgetFile budgets, BaselineFile baseline, string? platform = null)
     {
         var otherPlatform = platform is not null && baseline.Platform != platform;
+        BaselineCalibrationMs = baseline.CalibrationMs;
+        Runner = RunnerFactor(baseline.CalibrationMs, CalibrationMs);
         foreach (var record in Cases)
         {
             foreach (var (name, metric) in record.Metrics)
@@ -257,10 +278,11 @@ public sealed class RunReport
                 var budget = budgets.Find(name, record.Subject);
                 var verdict = otherPlatform && budget is { PlatformSensitive: true }
                     ? new Verdict(Verdict.Skipped, "platform")
-                    : BudgetEvaluator.Evaluate(name, metric.Value, reference, budget);
+                    : BudgetEvaluator.Evaluate(name, metric.Value, reference, budget, Runner);
                 metric.Budget = budget;
                 metric.Baseline = reference;
                 metric.Delta = reference is { } was ? Math.Round(metric.Value - was, 4) : null;
+                metric.Runner = Runner > 1 && BudgetEvaluator.ScalesWithRunner(name) ? Runner : null;
                 metric.Status = verdict.Status;
                 metric.Detail = verdict.Detail;
             }
@@ -296,6 +318,8 @@ public sealed class BaselineFile
     public string? Commit { get; set; }
 
     public Dictionary<string, string> Environment { get; set; } = [];
+
+    public double? CalibrationMs { get; set; }
 
     public Dictionary<string, Dictionary<string, double>> Cases { get; set; } = [];
 
@@ -343,6 +367,9 @@ public static class ResultsWriter
             cases = report.Cases.ToDictionary(record => record.Subject.Identity, record => record.Metrics),
             gaps = report.Cases.Where(record => record.Gaps.Count > 0).ToDictionary(record => record.Subject.Identity, record => record.Gaps),
             serverResponse = report.ServerResponse,
+            calibrationMs = report.CalibrationMs,
+            baselineCalibrationMs = report.BaselineCalibrationMs,
+            runner = report.Runner,
         };
         File.WriteAllText(path, JsonSerializer.Serialize(document, Json));
         return path;
@@ -368,6 +395,7 @@ public static class ResultsWriter
             Captured = report.Captured,
             Commit = report.Commit,
             Environment = MergeEnvironment(previous.Environment, report.Environment),
+            CalibrationMs = report.CalibrationMs ?? previous.CalibrationMs,
             Cases = cases,
         };
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);

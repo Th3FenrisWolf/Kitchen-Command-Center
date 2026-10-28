@@ -19,6 +19,10 @@ The entries above show the shape, not the final list. Rules:
 - `mode: target` fails when the value is worse than `limit`.
 - `mode: baseline` with `ratio` and `floor` fails when the value exceeds both `baseline x ratio` and
   `baseline + floor` (timing).
+- A millisecond metric in `baseline` mode is judged against `baseline x runner` when the run and its baseline file
+  both carry `calibrationMs`: `runner` is the run's calibration over the file's, to two places, and never below 1, so
+  a slow runner relaxes the budget and a fast one never tightens it. Counts, bytes, scores and percentages are not
+  scaled. A scaled failure ends `; runner x<factor>` inside its parentheses.
 - `mode: baseline` with `pct` and `floorBytes` fails when the value exceeds `baseline + max(floorBytes, baseline x
   pct / 100)` (weight).
 - Deterministic counts with no margin fail on any increase.
@@ -37,6 +41,7 @@ The entries above show the shape, not the final list. Rules:
   "captured": "2026-10-27T00:00:00Z",
   "commit": "<sha>",
   "environment": { "chromium": "145.0.7632.6", "webkit": "26.0", "gpu": "swiftshader" },
+  "calibrationMs": 0,
   "cases": {
     "search-3 · phone · chromium · light · bloomed": { "frame_p95_ms": 0, "layers": 0, "css_gz_bytes": 0 }
   }
@@ -46,4 +51,5 @@ The entries above show the shape, not the final list. Rules:
 ## `results.json`
 
 The baseline shape plus, per metric, `budget`, `baseline`, `delta` and `status` (`pass`, `fail`, `report-only`),
-and `runs` for timing metrics.
+`runs` for timing metrics, and `runner` for a metric judged against a scaled baseline. At the top, beside the run's
+`calibrationMs`, `baselineCalibrationMs` and the `runner` factor.

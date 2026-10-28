@@ -9,6 +9,7 @@
     "machine": "macOS 27.0.1",
     "ci": "False"
   },
+  "calibrationMs": 206.3,
   "cases": {
     "home \u00B7 phone \u00B7 chromium \u00B7 light \u00B7 bloomed": {
       "filtered_elements": 84,
