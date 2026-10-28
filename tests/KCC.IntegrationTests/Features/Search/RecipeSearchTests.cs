@@ -43,9 +43,9 @@ public class RecipeSearchTests
         var results = Search(new RecipeSearchCriteria());
 
         _ = await Assert.That(Counts(results.Facets.Category, "Beverage", "Breakfast", "Dessert", "Dinner", "Lunch", "Snack"))
-            .IsEqualTo("Beverage 4, Breakfast 4, Dessert 4, Dinner 5, Lunch 4, Snack 4");
+            .IsEqualTo("Beverage 4, Breakfast 8, Dessert 7, Dinner 5, Lunch 4, Snack 8");
         _ = await Assert.That(Counts(results.Facets.Diet, "Dairy-Free", "Gluten-Free", "High-Protein", "Keto", "Low-Carb", "Vegan", "Vegetarian"))
-            .IsEqualTo("Dairy-Free 2, Gluten-Free 7, High-Protein 8, Keto 1, Low-Carb 3, Vegan 12, Vegetarian 10");
+            .IsEqualTo("Dairy-Free 3, Gluten-Free 13, High-Protein 11, Keto 3, Low-Carb 5, Vegan 13, Vegetarian 19");
         _ = await Assert.That(results.Facets.Diet.ContainsKey("Spicy")).IsFalse();
         _ = await Assert.That(Counts(results.Facets.Style, "Spicy")).IsEqualTo("Spicy 4");
         _ = await Assert.That(results.Facets.Style.ContainsKey("Cheesy")).IsFalse();
@@ -106,8 +106,8 @@ public class RecipeSearchTests
             .Select(page => Search(new RecipeSearchCriteria { Diets = ["Vegan"], PageSize = 5, Page = page }))
             .ToList();
 
-        _ = await Assert.That(string.Join(",", pages.Select(page => page.Results.Count))).IsEqualTo("5,5,2,0");
-        _ = await Assert.That(pages.SelectMany(page => page.Results).Select(hit => hit.Slug).Distinct().Count()).IsEqualTo(12);
+        _ = await Assert.That(string.Join(",", pages.Select(page => page.Results.Count))).IsEqualTo("5,5,3,0");
+        _ = await Assert.That(pages.SelectMany(page => page.Results).Select(hit => hit.Slug).Distinct().Count()).IsEqualTo(13);
         _ = await Assert.That(pages.Skip(1).All(page => page.Spotlight is null)).IsTrue();
     }
 

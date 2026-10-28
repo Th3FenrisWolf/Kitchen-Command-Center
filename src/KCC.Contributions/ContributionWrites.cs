@@ -7,7 +7,7 @@ namespace KCC.Contributions;
 
 public interface IContributionWrites
 {
-    Task UpsertReviewAsync(Guid variantKey, Guid memberKey, decimal rating, string text);
+    Task UpsertReviewAsync(Guid variantKey, Guid memberKey, decimal rating, string text, DateTime? at = null);
 
     Task<bool> DeleteReviewAsync(Guid variantKey, Guid memberKey);
 
@@ -37,7 +37,7 @@ public sealed class ContributionWrites(
     IContributionStats stats,
     IEventAggregator eventAggregator) : IContributionWrites
 {
-    public async Task UpsertReviewAsync(Guid variantKey, Guid memberKey, decimal rating, string text)
+    public async Task UpsertReviewAsync(Guid variantKey, Guid memberKey, decimal rating, string text, DateTime? at = null)
     {
         if (!RatingMath.IsValidRating(rating))
         {
@@ -46,7 +46,7 @@ public sealed class ContributionWrites(
 
         await WriteAsync(async db =>
         {
-            var now = DateTime.UtcNow;
+            var now = at ?? DateTime.UtcNow;
             var review = await db.Reviews.FirstOrDefaultAsync(r => r.VariantKey == variantKey && r.MemberKey == memberKey);
             if (review is null)
             {

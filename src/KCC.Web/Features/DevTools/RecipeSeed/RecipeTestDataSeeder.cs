@@ -5,6 +5,8 @@ using KCC.Contributions;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
 using Umbraco.Cms.Core.Models.ContentPublishing;
+using Umbraco.Cms.Core.Models.TemporaryFile;
+using Umbraco.Cms.Core.Scoping;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Cms.Core.Services.OperationStatus;
@@ -16,6 +18,10 @@ public class RecipeTestDataSeeder(
     IContentTypeService contentTypeService,
     IContentEditingService contentEditingService,
     IContentPublishingService contentPublishingService,
+    IMediaService mediaService,
+    IMediaEditingService mediaEditingService,
+    ITemporaryFileService temporaryFileService,
+    ICoreScopeProvider scopeProvider,
     IDocumentNavigationQueryService navigation,
     IMemberService memberService,
     IMemberTypeService memberTypeService,
@@ -37,52 +43,65 @@ public class RecipeTestDataSeeder(
         var authors = await EnsureAuthorsAsync(summary, log);
         await EnsureE2EMemberAsync(summary, log);
         var today = DateTime.UtcNow.Date;
+        var reviews = new List<(Guid VariantKey, Guid ReviewerKey, decimal Rating, string Text, DateTime At)>();
 
-        foreach (var recipe in RecipeSeedData.Recipes)
+        using (var scope = scopeProvider.CreateCoreScope())
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            scope.WriteLock(Constants.Locks.ContentTree);
+            scope.WriteLock(Constants.Locks.MediaTree);
+            Guid? photoFolderKey = null;
 
-            var recipeKey = SeedKeys.Recipe(recipe.Name);
-            if (contentService.GetById(recipeKey) is not null)
+            foreach (var recipe in RecipeSeedData.Recipes)
             {
-                summary.RecipesSkipped++;
-                log.WriteLine($"  skip (exists): {recipe.Name}");
-                continue;
-            }
+                cancellationToken.ThrowIfCancellationRequested();
 
-            Guid? authorKey = recipe.AuthorKey is { } author ? authors[author] : null;
-            var published = DateTime.SpecifyKind(today.AddDays(-recipe.PublishedDaysAgo), DateTimeKind.Utc);
-            await CreatePublishedAsync(recipeKey, recipe.Name, recipeTypeKey, listingKey, published, RecipeValues(recipe, categories, authorKey));
-            summary.RecipesCreated++;
-
-            for (var index = 0; index < recipe.Variants.Length; index++)
-            {
-                var variant = recipe.Variants[index];
-                await CreatePublishedAsync(
-                    SeedKeys.Variant(recipe.Name, variant.Name),
-                    variant.Name,
-                    variantTypeKey,
-                    recipeKey,
-                    published.AddMinutes(index + 1),
-                    VariantValues(variant, tags, authorKey));
-                summary.VariantsCreated++;
-            }
-
-            if (recipe.Variants.Length > 0)
-            {
-                var firstVariantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
-                for (var index = 0; index < recipe.Reviews.Length; index++)
+                var recipeKey = SeedKeys.Recipe(recipe.Name);
+                if (contentService.GetById(recipeKey) is not null)
                 {
-                    await contributionWrites.UpsertReviewAsync(
-                        firstVariantKey,
-                        SeedKeys.Reviewer(recipe.Name, index),
-                        recipe.Reviews[index].Rating,
-                        $"Seeded review #{index + 1}");
-                    summary.ReviewsWritten++;
+                    summary.RecipesSkipped++;
+                    log.WriteLine($"  skip (exists): {recipe.Name}");
+                    continue;
                 }
+
+                photoFolderKey ??= await EnsurePhotoFolderAsync();
+                var photoKey = await CreatePhotoAsync(recipe.Name, photoFolderKey.Value);
+                Guid? authorKey = recipe.AuthorKey is { } author ? authors[author] : null;
+                var published = DateTime.SpecifyKind(today.AddDays(-recipe.PublishedDaysAgo), DateTimeKind.Utc);
+                await CreatePublishedAsync(recipeKey, recipe.Name, recipeTypeKey, listingKey, published, RecipeValues(recipe, categories, authorKey, photoKey));
+                summary.RecipesCreated++;
+
+                for (var index = 0; index < recipe.Variants.Length; index++)
+                {
+                    var variant = recipe.Variants[index];
+                    await CreatePublishedAsync(
+                        SeedKeys.Variant(recipe.Name, variant.Name),
+                        variant.Name,
+                        variantTypeKey,
+                        recipeKey,
+                        published.AddMinutes(index + 1),
+                        VariantValues(variant, tags, authorKey));
+                    summary.VariantsCreated++;
+                }
+
+                if (recipe.Variants.Length > 0)
+                {
+                    var firstVariantKey = SeedKeys.Variant(recipe.Name, recipe.Variants[0].Name);
+                    reviews.AddRange(recipe.Reviews.Select((review, index) =>
+                        (firstVariantKey, SeedKeys.Reviewer(recipe.Name, index), review.Rating, $"Seeded review #{index + 1}", SeedKeys.ReviewDate(index))));
+                }
+
+                log.WriteLine($"  created: {recipe.Name}");
             }
 
-            log.WriteLine($"  created: {recipe.Name}");
+            scope.Complete();
+        }
+
+        // The contributions store writes on its own connection, which would wait on the scope's open write
+        // transaction, so the reviews follow the scope.
+        foreach (var (variantKey, reviewerKey, rating, text, at) in reviews)
+        {
+            await contributionWrites.UpsertReviewAsync(variantKey, reviewerKey, rating, text, at);
+            summary.ReviewsWritten++;
         }
 
         log.WriteLine(summary.ToString());
@@ -105,12 +124,13 @@ public class RecipeTestDataSeeder(
         throw new InvalidOperationException("The baseline has no recipe listing page under Home.");
     }
 
-    private static List<PropertyValueModel> RecipeValues(SeedRecipe recipe, IReadOnlyDictionary<string, Guid> categories, Guid? authorKey)
+    private static List<PropertyValueModel> RecipeValues(SeedRecipe recipe, IReadOnlyDictionary<string, Guid> categories, Guid? authorKey, Guid photoKey)
     {
         var values = new List<PropertyValueModel>
         {
             new() { Alias = "description", Value = recipe.Description },
             new() { Alias = "icon", Value = recipe.Icon },
+            new() { Alias = "image", Value = JsonSerializer.Serialize(new[] { new { key = Guid.NewGuid(), mediaKey = photoKey } }) },
         };
 
         if (categories.TryGetValue(recipe.Category, out var categoryKey))
@@ -167,6 +187,62 @@ public class RecipeTestDataSeeder(
     // The multi-node tree picker's editor accepts only a JsonArray of { type, unique } references.
     private static JsonArray DocumentReferences(params Guid[] keys) =>
         new(keys.Select(key => (JsonNode)new JsonObject { ["type"] = "document", ["unique"] = key.ToString() }).ToArray());
+
+    private async Task<Guid> EnsurePhotoFolderAsync()
+    {
+        if (mediaService.GetById(SeedKeys.PhotoFolder) is not null)
+        {
+            return SeedKeys.PhotoFolder;
+        }
+
+        var created = await mediaEditingService.CreateAsync(
+            new MediaCreateModel
+            {
+                Key = SeedKeys.PhotoFolder,
+                ContentTypeKey = Constants.MediaTypes.Guids.FolderGuid,
+                Variants = [new VariantModel { Name = "Seeded Recipe Photos" }],
+            },
+            Constants.Security.SuperUserKey);
+        if (created.Status != ContentEditingOperationStatus.Success)
+        {
+            throw new InvalidOperationException($"Creating the seeded photo folder failed: {created.Status}.");
+        }
+
+        return SeedKeys.PhotoFolder;
+    }
+
+    private async Task<Guid> CreatePhotoAsync(string recipeName, Guid folderKey)
+    {
+        var photo = RecipeSeedImages.Jpeg(recipeName);
+        var uploadKey = Guid.NewGuid();
+        var upload = await temporaryFileService.CreateAsync(new CreateTemporaryFileModel
+        {
+            Key = uploadKey,
+            FileName = $"{recipeName.ToLowerInvariant().Replace(' ', '-')}.jpg",
+            OpenReadStream = () => new MemoryStream(photo),
+        });
+        if (!upload.Success)
+        {
+            throw new InvalidOperationException($"Uploading the photo of {recipeName} failed: {upload.Status}.");
+        }
+
+        var created = await mediaEditingService.CreateAsync(
+            new MediaCreateModel
+            {
+                Key = SeedKeys.Image(recipeName),
+                ContentTypeKey = Constants.MediaTypes.Guids.ImageGuid,
+                ParentKey = folderKey,
+                Variants = [new VariantModel { Name = recipeName }],
+                Properties = [new PropertyValueModel { Alias = Constants.Conventions.Media.File, Value = $"{{\"temporaryFileId\":\"{uploadKey}\"}}" }],
+            },
+            Constants.Security.SuperUserKey);
+        if (created.Status != ContentEditingOperationStatus.Success)
+        {
+            throw new InvalidOperationException($"Creating the photo of {recipeName} failed: {created.Status}.");
+        }
+
+        return SeedKeys.Image(recipeName);
+    }
 
     private Guid RequireContentType(string alias) =>
         contentTypeService.Get(alias)?.Key ?? throw new InvalidOperationException($"Document type {alias} is missing; uSync imports it at startup.");

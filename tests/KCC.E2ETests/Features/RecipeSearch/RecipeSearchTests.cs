@@ -4,7 +4,7 @@ using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.RecipeSearch;
 
-// The seeded recipes (RecipeSeedData) are the only content: 25 recipes, with Legendary Lasagna the only 5.0.
+// The seeded recipes (RecipeSeedData) are the only content: 36 recipes, with Legendary Lasagna the only 5.0.
 public class RecipeSearchTests : BasePageTests
 {
     [Test]
