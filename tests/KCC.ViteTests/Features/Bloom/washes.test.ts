@@ -5,6 +5,7 @@ import {
   scheduleWashes,
   sheetSize,
   toFixed3,
+  WASH_BLOBS,
   WASH_REACH_PX,
   WASH_WINDOW_S,
   type CollectedWash,
@@ -23,10 +24,7 @@ const PROPERTY_ORDER: readonly WashProperty[] = [
   '--wash-aspect',
   '--wash-s',
   '--wash-turn',
-  '--wash-r1',
-  '--wash-r2',
-  '--wash-r3',
-  '--wash-r4',
+  '--wash-blob',
   '--wash-o1',
   '--wash-o2',
   '--wash-o3',
@@ -37,16 +35,17 @@ const PROPERTY_ORDER: readonly WashProperty[] = [
   '--wash-peak',
 ]
 
-const UNITLESS: readonly WashProperty[] = ['--wash-x', '--wash-y', '--wash-d', '--wash-aspect', '--wash-s', '--wash-peak']
-const PERCENT: readonly WashProperty[] = [
-  '--wash-r1',
-  '--wash-r2',
-  '--wash-r3',
-  '--wash-r4',
+const UNITLESS: readonly WashProperty[] = [
+  '--wash-x',
+  '--wash-y',
+  '--wash-d',
+  '--wash-aspect',
+  '--wash-s',
   '--wash-o1',
   '--wash-o2',
   '--wash-o3',
   '--wash-o4',
+  '--wash-peak',
 ]
 
 const FIXED = String.raw`-?(?:[1-9]\d*)?\.\d{3}`
@@ -184,7 +183,6 @@ describe('planSheet: determinism and format', () => {
         for (const wash of plan(seed, '/|hero', size)) {
           expect(Object.keys(wash.style)).toEqual(PROPERTY_ORDER)
           for (const p of UNITLESS) expect(wash.style[p], p).toMatch(new RegExp(`^${FIXED}$`))
-          for (const p of PERCENT) expect(wash.style[p], p).toMatch(new RegExp(`^${FIXED}%$`))
           expect(wash.style['--wash-turn']).toMatch(new RegExp(`^${FIXED}deg$`))
           expect(wash.style['--wash-fallback-at']).toMatch(new RegExp(`^${FIXED}s$`))
           expect(wash.style['--wash-ink']).toMatch(INK)
@@ -402,7 +400,8 @@ describe('planSheet: variety and cover', () => {
     expect(firsts.size).toBe(4)
   })
 
-  it('keeps every centre inside the field and every shape in its range', () => {
+  it('keeps every centre inside the field and every shape in its range, drawing every baked blob', () => {
+    const blobs = new Set<string>()
     for (const seed of SEEDS) {
       for (const size of ['card', 'reading', 'page'] as const) {
         for (const wash of plan(seed, '/recipes|results', size)) {
@@ -418,17 +417,16 @@ describe('planSheet: variety and cover', () => {
           expect(num(wash, '--wash-s')).toBeCloseTo(Math.sqrt(1 + 1 / aspect ** 2), 2)
           expect(num(wash, '--wash-turn')).toBeGreaterThanOrEqual(0)
           expect(num(wash, '--wash-turn')).toBeLessThan(360)
-          for (const p of ['--wash-r1', '--wash-r2', '--wash-r3', '--wash-r4'] as const) {
-            expect(num(wash, p)).toBeGreaterThanOrEqual(32)
-            expect(num(wash, p)).toBeLessThanOrEqual(68)
-          }
+          expect(wash.style['--wash-blob']).toMatch(new RegExp(`^var\\(--wash-blob-[0-${WASH_BLOBS - 1}]\\)$`))
+          blobs.add(wash.style['--wash-blob'])
           for (const p of ['--wash-o1', '--wash-o2', '--wash-o3', '--wash-o4'] as const) {
-            expect(num(wash, p)).toBeGreaterThanOrEqual(28)
-            expect(num(wash, p)).toBeLessThanOrEqual(72)
+            expect(num(wash, p)).toBeGreaterThanOrEqual(0.28)
+            expect(num(wash, p)).toBeLessThanOrEqual(0.72)
           }
         }
       }
     }
+    expect(blobs.size).toBe(WASH_BLOBS)
   })
 })
 

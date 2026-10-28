@@ -735,34 +735,17 @@ describe('R9: the paper carries no grain', () => {
   })
 })
 
-describe('the bloom filter in Layout.cshtml', () => {
+describe('the filter defs in Layout.cshtml', () => {
   const layout = readFileSync(fileURLToPath(new URL('../Pages/Shared/Layout.cshtml', stylesDir)), 'utf8')
   const filter = (id: string) => layout.match(new RegExp(`<filter id="${id}"[^>]*>([\\s\\S]*?)</filter>`))?.[1]
-  const attribute = (element: string, name: string) => element.match(new RegExp(`\\s${name}="([^"]*)"`))?.[1]
 
-  it('replaces #kcc-wax with #kcc-bloom and keeps #kcc-wax-flat for tiles', () => {
-    expect(filter('kcc-bloom'), '#kcc-bloom').toBeDefined()
-    expect(filter('kcc-wax'), '#kcc-wax').toBeUndefined()
+  it('keeps #kcc-wax-flat for tiles and defines no wash filter, the washes being baked', () => {
     expect(filter('kcc-wax-flat'), '#kcc-wax-flat').toBeDefined()
+    expect(filter('kcc-bloom'), '#kcc-bloom').toBeUndefined()
+    expect(filter('kcc-wax'), '#kcc-wax').toBeUndefined()
   })
 
-  it('sets --wash-reach to WASH_REACH_PX, twice the bleed’s stdDeviation', () => {
-    const blurs = filter('kcc-bloom')?.match(/<feGaussianBlur\b[^>]*>/g) ?? []
-    expect(blurs, 'one Gaussian bleed in #kcc-bloom').toHaveLength(1)
-    const deviation = Number(attribute(blurs[0]!, 'stdDeviation'))
+  it('sets --wash-reach to WASH_REACH_PX', () => {
     expect(rootToken('--wash-reach')).toBe(`${WASH_REACH_PX}px`)
-    expect(WASH_REACH_PX).toBe(2 * deviation)
-  })
-
-  it('keeps the grain composite contrast.test.ts is calibrated against', () => {
-    const composites = (filter('kcc-bloom')?.match(/<feComposite\b[^>]*>/g) ?? []).filter(
-      (element) => attribute(element, 'operator') === 'arithmetic',
-    )
-    expect(composites).toHaveLength(1)
-    const k = (name: string) => Number(attribute(composites[0]!, name) ?? 0)
-    expect(k('k1')).toBe(0.62)
-    expect(k('k2')).toBe(0.62)
-    expect(k('k3')).toBe(0)
-    expect(k('k4')).toBe(0)
   })
 })

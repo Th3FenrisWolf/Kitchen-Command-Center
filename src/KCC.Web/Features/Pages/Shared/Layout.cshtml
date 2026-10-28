@@ -77,6 +77,20 @@
     }
   }
 
+  @* The wash textures are cached files the stylesheet only names, so the browser would find them after the CSS
+     has parsed and a bloomed sheet would first paint bare. Masks fetch in CORS mode, so the preload needs
+     `crossorigin` to be reused, as the fonts do. *@
+  @if (!Env.IsDevelopment() && ViteManifest["Features/Styles/Main.css"] is { Assets: var washTextures } && washTextures is not null)
+  {
+    foreach (var asset in washTextures)
+    {
+      if (asset.StartsWith("assets/wash-") && asset.EndsWith(".png"))
+      {
+        <link rel="preload" as="image" type="image/png" crossorigin href="~/@asset" />
+      }
+    }
+  }
+
   @* The ramp must be known before the first paint or dark-ramp users flash the light default. A signed-in
      member's saved ramp is rendered above. Without one, the script follows the OS preference. The attribute is
      pre-set to light in the markup (the identity leads light), so a visitor without JavaScript gets a consistent
@@ -106,17 +120,9 @@
 </head>
 
 <body>
-  @* Filter defs for the kit's washes and tiles. Static so server-rendered washes are filtered before hydration. *@
+  @* Filter defs for the kit's tiles. Static so server-rendered tiles are filtered before hydration. *@
   <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
     <defs>
-      @* --wash-reach in Torn/Tokens.css is twice this bleed's stdDeviation; contrast.test.ts is calibrated against this filter's rendering. *@
-      <filter id="kcc-bloom" x="-30%" y="-30%" width="160%" height="160%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
-        <feGaussianBlur in="d" stdDeviation="12" result="b"></feGaussianBlur>
-        <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="9" result="w"></feTurbulence>
-        <feComposite in="b" in2="w" operator="arithmetic" k1="0.62" k2="0.62" k3="0" k4="0"></feComposite>
-      </filter>
       <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
         <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
         <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>

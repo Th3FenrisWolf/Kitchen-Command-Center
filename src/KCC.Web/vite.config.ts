@@ -3,11 +3,13 @@ import { fileURLToPath, URL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync } from 'node:fs'
 
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, normalizePath, type Plugin } from 'vite'
 import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
+import { subsetFontAwesome } from './Features/Styles/FontAwesome/subsetFontAwesome'
+import { inlineUnlessWashTexture } from './Features/Bloom/washTextures'
 
 // Clean only the Vite assets folder before build, preserving fonts and other static files
 function cleanAssetsPlugin(): Plugin {
@@ -19,6 +21,20 @@ function cleanAssetsPlugin(): Plugin {
       if (existsSync(assetsDir)) {
         rmSync(assetsDir, { recursive: true })
       }
+    },
+  }
+}
+
+const mainCss = normalizePath(resolve(__dirname, 'Features/Styles/Main.css'))
+
+// Tailwind inlines Main.css's Font Awesome imports, so the subset runs on its output and before Vite's CSS pipeline.
+function fontAwesomeSubsetPlugin(): Plugin {
+  return {
+    name: 'font-awesome-subset',
+    enforce: 'pre',
+    transform(code, id) {
+      if (id.split('?')[0] !== mainCss) return
+      return { code: subsetFontAwesome(code), map: null }
     },
   }
 }
@@ -84,10 +100,13 @@ export default defineConfig(({ command, mode }) => {
           emptyOutDir: false,
           manifest: true,
           sourcemap: 'hidden',
+          // Base64 PNG barely gzips, so inlined into the stylesheet the wash textures cost more than they do as
+          // cached files, which Layout.cshtml preloads.
+          assetsInlineLimit: inlineUnlessWashTexture,
           rollupOptions: {
             input: {
               main: resolve(__dirname, 'Features/Main.ts'),
-              mainCss: resolve(__dirname, 'Features/Styles/Main.css'),
+              mainCss,
             },
           },
         },
@@ -100,6 +119,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       vue(),
       tailwindcss(),
+      fontAwesomeSubsetPlugin(),
       ...(!isSSR
         ? [
             cleanAssetsPlugin(),

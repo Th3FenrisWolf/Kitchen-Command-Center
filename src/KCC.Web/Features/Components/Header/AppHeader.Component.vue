@@ -167,6 +167,7 @@
   >
     <div class="pad breakout" :class="{ 'is-swapping': swapping }">
       <div class="pad-top kcc-slip kcc-tear-hero" style="--r: -0.12">
+        <span class="kcc-fall" aria-hidden="true"><span></span></span>
         <div class="kcc-torn">
           <div class="kcc-sheet" style="--pad: 12px">
             <KccWashes wash-key="@pad" size="page" :wash-slots="[0, 4, 8, 12]" />
@@ -283,6 +284,7 @@
       </div>
 
       <div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true">
+        <span class="kcc-fall" aria-hidden="true"><span></span></span>
         <div class="kcc-torn"><div class="kcc-sheet"></div></div>
       </div>
 
@@ -406,11 +408,6 @@
 </template>
 
 <style>
-  /* So a focused element, or the target of a link, never comes to rest under the pad. */
-  :root {
-    scroll-padding-top: var(--pad-offset, 0px);
-  }
-
   .pad-header {
     overflow-x: clip;
     padding: 16px 0 14px;
@@ -523,10 +520,17 @@
     padding: 0 12px;
     transition:
       background-color 300ms,
+      color 300ms;
+    white-space: nowrap;
+  }
+
+  :root:focus-within .pad-menu,
+  :root:focus-within .pad-glyph {
+    transition:
+      background-color 300ms,
       color 300ms,
       outline-color 0.2s,
       outline-offset 0.2s;
-    white-space: nowrap;
   }
 
   .pad-menu:not(.kcc-pill) {
@@ -582,9 +586,7 @@
     place-items: center;
     transition:
       background-color 300ms,
-      color 300ms,
-      outline-color 0.2s,
-      outline-offset 0.2s;
+      color 300ms;
     width: var(--control-sm);
   }
 

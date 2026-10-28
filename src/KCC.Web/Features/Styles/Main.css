@@ -5,6 +5,7 @@
 @import './TailwindConfig.css';
 @import './Torn/Tokens.css';
 @import './Torn/Tears.css';
+@import './Torn/Washes.css';
 @import './Torn/Kit.css';
 @import './Torn/Controls.css';
 @import './Layout.css';
@@ -22,16 +23,18 @@
     color: var(--color-ink);
   }
 
-  /* The grain and the crayon tooth are #app's first two children, absolutely positioned at z-index 0; positioning
-     the siblings after them paints both under the page. :where() keeps specificity at zero so a sticky/fixed
-     utility on a child still wins. */
+  /* The desk's grain and crayon tooth are #app's own background layers, blended with the desk colour beneath them
+     and with each other; each ramp's strength is baked into its texture in Tokens.css. */
   #app {
-    /* The overlays blend with their backdrop and #app is an isolated group, so the desk must be painted
-       inside it; html keeps the same colour for overscroll. */
+    background-blend-mode: multiply, multiply, multiply;
     background-color: var(--color-desk);
+    background-image: var(--desk-stripe), var(--crayon), var(--grain);
+    background-size:
+      auto,
+      200px 200px,
+      180px 180px;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    isolation: isolate;
     min-height: 100dvh;
     /* clip, not hidden: hidden makes a scroll container, and the pad, the filters and the stacker would
        stick to it instead of the viewport. */
@@ -39,7 +42,12 @@
     position: relative;
   }
 
-  :where(#app > :not(.kcc-grain, .kcc-crayon)) {
+  :root[data-theme='dark'] #app {
+    background-blend-mode: soft-light, soft-light, normal;
+  }
+
+  /* :where() keeps specificity at zero so a sticky/fixed utility on a child still wins. */
+  :where(#app > *) {
     position: relative;
   }
 

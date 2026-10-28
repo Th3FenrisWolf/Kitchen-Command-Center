@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import postcss, { type Rule } from 'postcss'
 import { describe, expect, it } from 'vitest'
 
 // docs/brand/kit.md is the contract; the Torn CSS is the implementation. Drift either way is a real bug: an
@@ -60,9 +61,9 @@ describe('the kit classes and kit.md agree', () => {
   })
 })
 
-// Nothing is shadowed except the sheet's fall, which is a filter on .kcc-torn. box-shadow survives in the kit
-// only as a device that draws no shadow: the inset hairline and ring on controls, and the paper ring that
-// keeps a range thumb off the marker fill. Anything else here is a drawn shadow on a printed thing.
+// Nothing is shadowed except by the fall, a filter on .kcc-fall, .kcc-blank and a tile's torn wrapper. box-shadow
+// survives in the kit only as a device that draws no shadow: the inset hairline and ring on controls, and the paper
+// ring that keeps a range thumb off the marker fill. Anything else here is a drawn shadow on a printed thing.
 const SHADOW_DEVICES = [
   /^inset 0 0 0 [12]px var\(--color-(?:hair-strong|ink)\)$/,
   /^0 0 0 2px var\(--color-paper-2\)$/,
@@ -84,5 +85,13 @@ describe('the kit draws no shadow but the fall', () => {
     expect(declarations.length).toBeGreaterThan(5)
     const drawn = declarations.filter((value) => !SHADOW_DEVICES.some((device) => device.test(value)))
     expect(drawn, 'a box-shadow in the Torn CSS that is not a hairline or a ring').toEqual([])
+  })
+
+  it('casts the fall from one rule, on the fall, the blank and a tile, never on a sheet that blooms', () => {
+    const shadowed: string[][] = []
+    postcss.parse(css).walkDecls('filter', (decl) => {
+      if (decl.value.includes('drop-shadow') && decl.parent?.type === 'rule') shadowed.push((decl.parent as Rule).selectors)
+    })
+    expect(shadowed).toEqual([['.kcc-fall', '.kcc-blank', ':not(.kcc-slip) > .kcc-torn']])
   })
 })

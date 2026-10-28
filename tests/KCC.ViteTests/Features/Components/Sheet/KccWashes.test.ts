@@ -172,7 +172,12 @@ describe('KccWashes', () => {
 
     const html = await renderIn(bloom, { washKey: '@late', size: 'page', washSlots: [3, 7, 11, 15] })
 
-    const planned = planSheet({ seed: SEED, key: '@late', size: 'page', starts: twin.visitStarts('@late', 4, [3, 7, 11, 15]) })
+    const planned = planSheet({
+      seed: SEED,
+      key: '@late',
+      size: 'page',
+      starts: twin.visitStarts('@late', 4, [3, 7, 11, 15]),
+    })
     expect(html).toContain(planned.map(washMarkup).join(''))
     expect(bloom.lateStarts(1)).toEqual(twin.lateStarts(1))
   })

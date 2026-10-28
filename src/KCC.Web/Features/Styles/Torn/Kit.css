@@ -1,38 +1,6 @@
 /* Loose Leaf — the paper. Everything Razor also renders lives here, not in a component style block.
-   The tear presets (--tear-*, .kcc-tear-*) come from the generated Tears.css. */
+   The tear presets (.kcc-tear-*, --tear-tile-*) come from the generated Tears.css. */
 @layer components {
-  .kcc-grain {
-    background-image: var(--grain);
-    background-size: 180px 180px;
-    inset: 0;
-    mix-blend-mode: multiply;
-    opacity: var(--grain-op);
-    pointer-events: none;
-    position: absolute;
-    z-index: 0;
-  }
-
-  :root[data-theme='dark'] .kcc-grain {
-    mix-blend-mode: normal;
-  }
-
-  .kcc-crayon {
-    background-image: var(--crayon), repeating-linear-gradient(107deg, oklch(1 0 0 / 0.028) 0 2px, transparent 2px 7px);
-    background-size:
-      200px 200px,
-      auto;
-    inset: 0;
-    mix-blend-mode: multiply;
-    opacity: var(--wax-op);
-    pointer-events: none;
-    position: absolute;
-    z-index: 0;
-  }
-
-  :root[data-theme='dark'] .kcc-crayon {
-    mix-blend-mode: soft-light;
-  }
-
   .kcc-slip {
     --blank-flip: 1;
     --blank-scale: 1.015;
@@ -61,9 +29,13 @@
     --blank-turn: 0.5deg;
   }
 
-  /* The lifted child is often the card's link, and this rule replaces the focus-ring fade that @layer base
-     gives every link, so the fade is listed again. */
   .kcc-slip--lift > :not(.kcc-blank) {
+    transition: translate var(--default-transition-duration) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* The lifted child is often the card's link, and this rule replaces the focus-ring fade that @layer base
+     gives every link, so the fade is listed again, behind the same focus gate. */
+  :root:focus-within .kcc-slip--lift > :not(.kcc-blank) {
     transition:
       translate var(--default-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
       outline-color 0.2s,
@@ -82,9 +54,12 @@
     }
   }
 
-  /* The filter has to sit outside the clipped element, or the shadow is clipped away with the paper. */
-  .kcc-torn,
-  .kcc-blank {
+  /* The filter has to sit outside the clipped element, or the shadow is clipped away with the paper. A sheet casts
+     its fall from the empty .kcc-fall under it rather than from its own wrapper: a filter redraws whenever anything
+     under it changes, and the washes inside a sheet bloom for minutes. A tile's wrapper holds nothing that moves. */
+  .kcc-fall,
+  .kcc-blank,
+  :not(.kcc-slip) > .kcc-torn {
     filter: drop-shadow(0 0 1px var(--color-fiber)) drop-shadow(0 7px 9px var(--color-fall));
   }
 
@@ -92,10 +67,21 @@
     position: relative;
   }
 
+  .kcc-fall {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .kcc-fall > span {
+    background-color: var(--color-paper);
+    display: block;
+    height: 100%;
+  }
+
   /* The slip's transform makes it a stacking context, so -1 paints the blank under the sheet but never
      under the desk or a neighbouring slip. */
   .kcc-blank {
-    --tear: var(--blank-tear);
     inset: 0;
     pointer-events: none;
     position: absolute;
@@ -106,7 +92,6 @@
 
   .kcc-blank > span {
     background-color: var(--color-paper);
-    clip-path: var(--tear);
     display: block;
     height: 100%;
   }
@@ -122,7 +107,6 @@
     background-origin: content-box;
     background-position: 0 calc(var(--rule-drop) + var(--rule-offset));
     background-size: 100% var(--bl);
-    clip-path: var(--tear, var(--tear-1));
     color: var(--color-ink);
     isolation: isolate;
     min-width: 0;
@@ -199,40 +183,129 @@
 
   /* The width cap keeps the circle round a wash, bleed included, inside half the distance to its pair partner,
      so no point lies under more than two washes. The alphas are the ones contrast.test.ts models: the rim
-     lifts the first ink's alpha, never its colour. */
+     lifts the first ink's alpha, never its colour. A wash rests at its bloom's end and fills backwards only: Chromium
+     repaints a filled finished animation differently after any style recalc, so hydration moved it off the first
+     paint. No filter: one on a wash made WebKit redraw it offscreen on every step of its bloom, so the bleed and the
+     grain are baked into masks (Washes.css) and the saturation into the inks. The padding holds the bleed, which the
+     first ink's stops draw around the shape's own box, --wash-w by --wash-h, in steps that shrink on a small wash so
+     they never pass its rim. The inks saturate in linear light, as Chromium ran saturate() after an SVG filter;
+     WebKit ran it in sRGB and drew the washes paler. */
   .kcc-wash {
-    animation: kcc-bloom var(--wash-bloom) cubic-bezier(0.17, 0.72, 0.24, 1) both;
-    animation-delay: calc(var(--wash-at, var(--wash-fallback-at)) - var(--wash-elapsed, 0s) - var(--wash-lag, 0s));
-    aspect-ratio: var(--wash-aspect);
-    background:
-      radial-gradient(
-        closest-side at var(--wash-o1) var(--wash-o2),
-        oklch(from var(--wash-ink) l c h / 0.34) 0%,
-        oklch(from var(--wash-ink) l c h / 0.3) 56%,
-        oklch(from var(--wash-ink) l c h / 0.345) 82%,
-        oklch(from var(--wash-ink) l c h / 0) 97%
-      ),
-      radial-gradient(
-        closest-side at var(--wash-o3) var(--wash-o4),
-        oklch(from var(--wash-ink-2) l c h / 0.26) 0%,
-        oklch(from var(--wash-ink-2) l c h / 0) 100%
-      );
-    border-radius: var(--wash-r1) var(--wash-r2) var(--wash-r3) var(--wash-r4) / var(--wash-r4) var(--wash-r1) var(--wash-r2)
-      var(--wash-r3);
-    filter: url(#kcc-bloom) saturate(var(--wash-sat));
-    left: calc(var(--wash-x) * 100%);
-    opacity: 0;
-    position: absolute;
-    rotate: var(--wash-turn);
-    top: calc(var(--wash-y) * 100%);
-    translate: -50% -50%;
-    width: max(
+    --wash-bleed-step: min(1px, 0.9%);
+    --wash-h: calc(var(--wash-w) / var(--wash-aspect));
+    --wash-w: max(
       0px,
       min(
         calc(var(--wash-d) * 100cqw),
         calc((hypot(calc(var(--wash-dx) * 100cqw), calc(var(--wash-dy) * 100cqh)) - 2 * var(--wash-reach)) / var(--wash-s))
       )
     );
+    --wash-tint: color(
+      from var(--wash-ink) srgb-linear
+        clamp(
+          0,
+          var(--wash-tone) *
+            (
+              (0.213 + 0.787 * var(--wash-sat)) * r + (0.715 - 0.715 * var(--wash-sat)) * g +
+                (0.072 - 0.072 * var(--wash-sat)) * b
+            ),
+          1
+        )
+        clamp(
+          0,
+          var(--wash-tone) *
+            (
+              (0.213 - 0.213 * var(--wash-sat)) * r + (0.715 + 0.285 * var(--wash-sat)) * g +
+                (0.072 - 0.072 * var(--wash-sat)) * b
+            ),
+          1
+        )
+        clamp(
+          0,
+          var(--wash-tone) *
+            (
+              (0.213 - 0.213 * var(--wash-sat)) * r + (0.715 - 0.715 * var(--wash-sat)) * g +
+                (0.072 + 0.928 * var(--wash-sat)) * b
+            ),
+          1
+        )
+    );
+    --wash-tint-2: color(
+      from var(--wash-ink-2) srgb-linear
+        clamp(
+          0,
+          var(--wash-tone) *
+            (
+              (0.213 + 0.787 * var(--wash-sat)) * r + (0.715 - 0.715 * var(--wash-sat)) * g +
+                (0.072 - 0.072 * var(--wash-sat)) * b
+            ),
+          1
+        )
+        clamp(
+          0,
+          var(--wash-tone) *
+            (
+              (0.213 - 0.213 * var(--wash-sat)) * r + (0.715 + 0.285 * var(--wash-sat)) * g +
+                (0.072 - 0.072 * var(--wash-sat)) * b
+            ),
+          1
+        )
+        clamp(
+          0,
+          var(--wash-tone) *
+            (
+              (0.213 - 0.213 * var(--wash-sat)) * r + (0.715 - 0.715 * var(--wash-sat)) * g +
+                (0.072 + 0.928 * var(--wash-sat)) * b
+            ),
+          1
+        )
+    );
+    animation: kcc-bloom var(--wash-bloom) var(--wash-ease) backwards;
+    animation-delay: calc(var(--wash-at, var(--wash-fallback-at)) - var(--wash-elapsed, 0s) - var(--wash-lag, 0s));
+    aspect-ratio: var(--wash-aspect);
+    background:
+      radial-gradient(
+        calc(var(--wash-w) * min(var(--wash-o1), 1 - var(--wash-o1)))
+          calc(var(--wash-h) * min(var(--wash-o2), 1 - var(--wash-o2))) at
+          calc(var(--wash-reach) + var(--wash-w) * var(--wash-o1)) calc(var(--wash-reach) + var(--wash-h) * var(--wash-o2)),
+        oklch(from var(--wash-tint) l c h / 0.34) 0%,
+        oklch(from var(--wash-tint) l c h / 0.3) 56%,
+        oklch(from var(--wash-tint) l c h / 0.345) calc(89.5% - 36 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0.33) calc(89.5% - 24 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0.3) calc(89.5% - 15 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0.25) calc(89.5% - 8 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0.17) 89.5%,
+        oklch(from var(--wash-tint) l c h / 0.1) calc(89.5% + 8 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0.045) calc(89.5% + 15 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0.012) calc(89.5% + 24 * var(--wash-bleed-step)),
+        oklch(from var(--wash-tint) l c h / 0) calc(89.5% + 36 * var(--wash-bleed-step))
+      ),
+      radial-gradient(
+        calc(var(--wash-w) * min(var(--wash-o3), 1 - var(--wash-o3)))
+          calc(var(--wash-h) * min(var(--wash-o4), 1 - var(--wash-o4))) at
+          calc(var(--wash-reach) + var(--wash-w) * var(--wash-o3)) calc(var(--wash-reach) + var(--wash-h) * var(--wash-o4)),
+        oklch(from var(--wash-tint-2) l c h / 0.26) 0%,
+        oklch(from var(--wash-tint-2) l c h / 0) 100%
+      );
+    box-sizing: content-box;
+    left: calc(var(--wash-x) * 100%);
+    mask-composite: intersect, add;
+    mask-image: var(--wash-grain), var(--wash-blob);
+    mask-mode: alpha;
+    mask-position:
+      0 0,
+      center;
+    mask-repeat: repeat, no-repeat;
+    mask-size:
+      64px 64px,
+      calc(var(--wash-w) * var(--wash-blob-span)) calc(var(--wash-h) * var(--wash-blob-span));
+    opacity: calc(var(--wash-strength) * var(--wash-peak));
+    padding: var(--wash-reach);
+    position: absolute;
+    rotate: var(--wash-turn);
+    top: calc(var(--wash-y) * 100%);
+    translate: -50% -50%;
+    width: var(--wash-w);
   }
 
   @keyframes kcc-bloom {
@@ -291,9 +364,6 @@
   }
 
   .kcc-tilewrap {
-    /* --tear inherits from the slip's preset; without this reset an unclassed tile would take the sheet's
-       80-point tear on a 56px box. */
-    --tear: var(--tear-tile-1);
     left: 16px;
     /* The tile is pinned over a sheet that is often one big link; the pin must not swallow the click. */
     pointer-events: none;

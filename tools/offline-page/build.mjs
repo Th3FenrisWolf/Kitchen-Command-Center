@@ -20,9 +20,11 @@ export function render() {
   const tears = readFileSync(join(styles, 'Torn/Tears.css'), 'utf8')
 
   function tear(name) {
-    const match = tears.match(new RegExp(`--tear-${name}: (polygon\\([^;]*\\));`))
+    const match = tears.match(
+      new RegExp(`\\.kcc-tear-${name} > \\.kcc-torn > \\.kcc-sheet[^{]*\\{\\s*clip-path: (polygon\\([^;]*\\));`),
+    )
     if (!match) {
-      throw new Error(`Tears.css has no --tear-${name}`)
+      throw new Error(`Tears.css has no sheet clip-path for tear-${name}`)
     }
     return match[1]
   }

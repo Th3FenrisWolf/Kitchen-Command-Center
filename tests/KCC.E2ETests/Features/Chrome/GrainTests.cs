@@ -37,7 +37,7 @@ public class GrainTests : BasePageTests
     private const string FindDesk = """
         ({ width, height }) => {
           const desk = (element) =>
-            element.matches('.kcc-grain, .kcc-crayon') ||
+            element.matches('#app') ||
             (!element.closest('.kcc-slip, .pad, footer, a, button, input, label') &&
               getComputedStyle(element).backgroundImage === 'none' &&
               ![...element.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.data.trim()))

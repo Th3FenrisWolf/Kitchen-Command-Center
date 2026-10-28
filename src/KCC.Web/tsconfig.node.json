@@ -1,6 +1,6 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
-  "include": ["vite.config.*"],
+  "include": ["vite.config.*", "Features/Styles/FontAwesome/*.ts", "Features/Bloom/washTextures.ts"],
   "compilerOptions": {
     "composite": true,
     "module": "ESNext",

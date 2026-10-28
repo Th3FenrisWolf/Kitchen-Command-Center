@@ -65,6 +65,7 @@
     :class="[{ 'kcc-slip--wide': tear === 'hero' || wide, 'kcc-slip--flip': flip }, `kcc-tear-${tear}`]"
     v-bind="slipAttrs"
   >
+    <span class="kcc-fall" aria-hidden="true"><span></span></span>
     <div class="kcc-torn">
       <div
         class="kcc-sheet"

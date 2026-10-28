@@ -11,9 +11,9 @@ const SHEET_TAG = /^kcc-?(?:sheet|washes)$/i
 const WASHES_TAG = /^kcc-?washes$/i
 const VOID = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'])
 
-// The pad's `.pad-page` and every blank are paper under a top sheet; wells, tiles, labels and tape sit on one.
-// None of them blooms.
-const BARE = /(?<![\w-])(?:kcc-blank|pad-page|kcc-well|kcc-tile|kcc-tilewrap|kcc-label|kcc-tape)(?![\w])/
+// The pad's `.pad-page` and every blank are paper under a top sheet, and a fall is its shadow; wells, tiles, labels
+// and tape sit on one. None of them blooms.
+const BARE = /(?<![\w-])(?:kcc-blank|kcc-fall|pad-page|kcc-well|kcc-tile|kcc-tilewrap|kcc-label|kcc-tape)(?![\w])/
 
 const TOKEN =
   /<!--[\s\S]*?-->|<\/([A-Za-z][\w.:-]*)\s*>|<([A-Za-z][\w.:-]*)((?:\s+[^\s=/>"']+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>"']+))?)*)\s*(\/?)>/g

@@ -30,6 +30,7 @@
       class="kcc-slip kcc-slip--fill kcc-slip--lift"
       :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${listTearFor(variants.length)}`]"
     >
+      <span class="kcc-fall" aria-hidden="true"><span></span></span>
       <a :href="addVariantUrl" class="kcc-torn block">
         <div class="kcc-sheet" style="--pad: 48px">
           <KccWashes wash-key="variant-grid-add" size="card" />

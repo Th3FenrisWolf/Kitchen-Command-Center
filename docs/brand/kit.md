@@ -11,19 +11,24 @@ never in a component `<style>` block.
 | `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), the type, control, pill and icon tokens, radius ladder, fonts, safelist; the `*-rule-*` spacing utilities |
 | `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties, among them the rule `--bl`, its drop `--rule-drop` and offset `--rule-offset`, and the baseline constants `--k-*`; the dark ramp under `:root[data-theme='dark']` |
 | `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
-| `src/KCC.Web/Features/Styles/Torn/Kit.css` | desk (its grain and crayon), slip / torn / blank / sheet / wash field and wash / label / tape / tile, the ruling, the margin rule, the shim, `kcc-row`, type, chrome, ramp swap |
+| `src/KCC.Web/Features/Styles/Torn/Washes.css` | **generated** by `yarn washes`: the grain's tone and the wash textures, named by relative `url()` on `.kcc-wash`. Never hand-edited |
+| `src/KCC.Web/Features/Styles/Torn/Washes/` | **generated** wash textures (`yarn washes`): `wash-grain.png`, the grain tile, and `wash-blob-0.png` to `wash-blob-7.png`, the eight bled blob masks. The client build keeps them out of the stylesheet and `Layout.cshtml` preloads them in production. Never hand-edited |
+| `src/KCC.Web/Features/Styles/Torn/Kit.css` | slip / torn / blank / sheet / wash field and wash / label / tape / tile, the ruling, the margin rule, the shim, `kcc-row`, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 16 / 24 body, the type roles of bare `h1`–`h6` in APCasual, form controls at the body size, every `@font-face` including Sono, each with its pinned metrics (see Paper rule) |
 | `src/KCC.Web/Features/Styles/Layout.css` | the `.content-grid` breakout system: content, breakout and full-width columns for pages and sections |
-| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here; `#app` carries the desk colour so the overlays have a backdrop to blend with, and clips sideways overflow |
+| `src/KCC.Web/Features/Styles/Main.css` | the stylesheet import graph; every `Torn/*.css` file is imported here; `#app` carries the desk colour and, as its own background layers, the desk's stripe, crayon and grain, blended with `background-blend-mode`; it clips sideways overflow |
 | `src/KCC.Web/Features/Types/DesignSystem.ts` | `WASHES` and the `Wash` type; the colour axes the safelist test checks |
 | `src/KCC.Web/Features/Torn/tornPolygon.ts` | pure tear generator |
 | `src/KCC.Web/Features/Torn/tears.ts` | preset table and CSS emitter |
 | `src/KCC.Web/Features/Torn/generateTears.ts` | CLI that writes `Tears.css` |
+| `src/KCC.Web/Features/Bloom/bakeWashes.ts` | the wash filter's numbers, a port of `feTurbulence`, and the baker that draws the grain and blob masks as PNGs |
+| `src/KCC.Web/Features/Bloom/generateWashes.ts` | CLI that writes `Washes.css` and its textures |
+| `src/KCC.Web/Features/Bloom/washTextures.ts` | the texture file names, and the Vite inline limit that keeps them out of the stylesheet |
 | `src/KCC.Web/Features/Components/Sheet/KccSheet.vue` | the sheet primitive for Vue |
 | `src/KCC.Web/Features/Components/Sheet/KccWashes.Component.vue` | a sheet's wash field, global so Razor can use it; `KccSheet` renders one as its first child |
 | `src/KCC.Web/Features/Bloom/` | the bloom: `washes.ts` (pure: sheet size, each wash's numbers, the arrival schedule), `bloomContext.ts` (key claims, the page's washes, late arrivals), `visitHeartbeat.ts`, and the visit in C# (`Visit`, `VisitCookie`, `VisitClock`, `BloomInputs`) |
-| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | renders a signed-in member's saved ramp or runs the pre-paint ramp script; font preloads, `#kcc-bloom` / `#kcc-wax-flat` filter defs, `--wash-elapsed` on `<html>`, the schedule's `<style>` in `<head>`, `#kcc-bloom-schedule`, |
+| `src/KCC.Web/Features/Pages/Shared/Layout.cshtml` | renders a signed-in member's saved ramp or runs the pre-paint ramp script; font preloads, the `#kcc-wax-flat` filter def, `--wash-elapsed` on `<html>`, the schedule's `<style>` in `<head>`, `#kcc-bloom-schedule` |
 | `src/KCC.Web/Features/Utilities/Ramp.ts` | `applyRamp`, the one way to switch the ramp after the first paint; `deviceRamp` and `rampFor`, the ramp a device or a saved setting asks for |
 
 ## Tokens
@@ -35,12 +40,12 @@ a literal colour. Light is the `@theme` value; dark overrides live in `Torn/Toke
 |---|---|---|---|
 | `desk`, `desk-2` | `.884 .016 288`, `.836 .018 288` | `.132 .024 288`, `.176 .028 288` | page ground, raised desk |
 | `paper`, `paper-2` | `.958 .009 92`, `.972 .008 92` | `.258 .030 288`, `.222 .028 288` | sheets; paper-2 for inset panels inside a sheet and the neutral `kcc-well` |
-| `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` (test-pinned; mockup .452) | `.945 .012 92`, `.735 .018 288` | text; kicks, meta, placeholders |
+| `ink`, `ink-soft` | `.232 .026 288`, `.432 .024 288` (test-pinned; mockup .452) | `.945 .012 92`, `.76 .018 288` | text; kicks, meta, placeholders |
 | `hair`, `hair-strong` | ink / .16, ink / .56 (test-pinned; mockup .4) | chalk / .18, chalk / .45 | dividers; control hairlines, link and field underlines |
 | `rule` | `.698 .048 239.5 / .55` | `.74 .05 240 / .24` | the feint blue ruling |
 | `margin` | `.631 .178 20 / .75` | `.66 .15 22 / .58` | the margin rule and a field's X; never text |
 | `marker`, `marker-ink` | `.876 .112 126`, `.24 .03 288` | same | the accent fill and the ink that sits on it and on a tile |
-| `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-torn` |
+| `fiber`, `fall` | `1 .006 92`, `.25 .03 288 / .28` | `.435 .034 288`, `.04 .02 288 / .7` | the two drop-shadows on `.kcc-fall`, `.kcc-blank` and a tile's `.kcc-torn` |
 | `tape` | `.985 .012 92 / .6` | `.9 .012 92 / .28` | the strip over a pinned tile |
 | `focus` | `var(--color-ink)` | same | focus ring |
 | `peach yellow green teal sky lavender pink red` | see the identity | same | the eight washes; fills only |
@@ -71,11 +76,11 @@ Kit-only properties (`Torn/Tokens.css`, not Tailwind tokens): `--bl` 1.5rem (24p
 vertical space is counted in; `--k-hazelnut` .38208, `--k-casual` .25 and `--k-sono` .312, each face's baseline
 constant (see Paper rule); `--rule-drop` (`calc(var(--bl) / 2 + var(--k-hazelnut) * var(--text-body))`, how far
 below a line's top the body baseline sits); `--rule-offset` 2px, how far below that baseline each rule lies; `--rd`
-6px (labels, pills, wells), `--wash-blend` (multiply / screen), `--wash-strength` (.55 / .16, a cap at which ink, soft ink and
-control hairlines hold over two washes at their peak, read over text's 3px average; test-pinned), `--wash-bloom` 90s, `--wash-reach` 24px (twice the
-`#kcc-bloom` bleed's `stdDeviation`; test-pinned), `--wash-sat` (2.5 / 3), `--grain-op` (.08 / .16), `--wax-op`
-(.3 / .36), `--grain` and `--crayon`, the desk's two textures. Per element: `--pad` (sheet),
-`--tear`, `--r`, `--blank-tear` and `--blank-dir` (set by a preset class), `--blank-turn`, `--blank-scale` and
+6px (labels, pills, wells), `--wash-blend` (multiply / screen), `--wash-strength` (.42 / .18; dark's is the cap at which ink, soft ink and
+control hairlines hold over two washes at their peak, read over text's 3px average, test-pinned; light's sits under its cap, set by eye), `--wash-bloom` 90s, `--wash-ease` (the bloom curve as a `linear()` staircase of 45 holds, generated by and pinned in `motion.test.ts`), `--wash-reach` 24px (twice the
+baked bleed's `stdDeviation`, and each wash's padding; test-pinned), `--wash-sat` (2.5 / 3), `--grain` and `--crayon`, the desk's two textures, each ramp's
+strength baked into its SVG (grain .08 / .16, crayon .255 / .306). Per element: `--pad` (sheet),
+`--tear` (a tile or photo tile; set by its tile preset class), `--r` and `--blank-dir` (set by a sheet preset class), `--blank-turn`, `--blank-scale` and
 `--blank-flip` (set on the slip and its modifiers), `--blank-region` (set on a region that turns its sheets' blanks
 over), `--k`, `--lh` and `--own` (set by the kit on each text role for the shim), `--h` and `--centre-size` (a
 control's height and the Sono size it centres on), `--c` (a tile's wash), and the `--wash-*` properties `KccWashes` writes on each wash (centre, size, shape, rotation, inks, peak, arrival), with `--wash-elapsed` on `<html>`.
@@ -257,11 +262,13 @@ radius. `kcc-field--error` draws the underline 2px in `ink`, because red reads u
 `kcc-well--danger` message below carries the red.
 
 **The grain.** Grain and crayon texture lie on three things only: the desk, the washes and the tiles. The desk takes
-`.kcc-grain` and `.kcc-crayon`, `#app`'s first two children, painted at `z-index: 0` under every sheet; a wash takes
-the grain of the `#kcc-bloom` filter and a tile that of `#kcc-wax-flat`. Paper, text, inputs and every other control,
+them as `#app`'s own background layers, blended with the desk colour and each other by `background-blend-mode`
+(multiply in light; soft-light and normal in dark) and painted once under every sheet, with no overlay element and no
+`isolation`. A faint diagonal stripe layer lies first among them; in light it is white under multiply and draws nothing. A wash takes
+the baked grain mask `Washes/wash-grain.png` and a tile the grain of `#kcc-wax-flat`. Paper, text, inputs and every other control,
 labels, wells, blank sheets and tape carry none, so a wash lying under the paper is never muddied by a layer above it.
 The tape's woven stripe, a `repeating-linear-gradient` on `.kcc-tilewrap > .kcc-tape`, is the tape's own material, not
-grain, and `grain.test.ts` exempts it by name. `--grain` and `--crayon` are declared in `Torn/Tokens.css` and nowhere
+grain, and `grain.test.ts` exempts it by name. `--grain` and `--crayon` are declared in `Torn/Tokens.css`, once per ramp, and nowhere
 else, and the test fails on any other use, alias, texture image or `feTurbulence` layer.
 
 **Known limits.** A textarea scrolled by pixels shows its lines between the rules until it scrolls back to a whole
@@ -289,8 +296,9 @@ labelled sheet on its blank, with its wash field:
 
 ```html
 <div class="kcc-slip kcc-tear-3">                 <!-- tilt via --r; position: relative; height: fit-content -->
-  <div class="kcc-torn">                          <!-- filter: fibre + fall -->
-    <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clip-path: var(--tear), 24px feint ruling -->
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>    <!-- fibre + fall: filter here, clip on the inner span -->
+  <div class="kcc-torn">                          <!-- no filter: the washes bloom inside it -->
+    <div class="kcc-sheet" style="--pad: 48px">   <!-- paper, clipped by its slip's tear preset, 24px feint ruling -->
       <span class="kcc-washes" aria-hidden="true">  <!-- the wash field, first child, rendered by KccWashes -->
         <span class="kcc-wash" data-wash="5c0e19a2" style="--wash-x:.281;--wash-y:.214;--wash-ink:var(--color-peach);…"></span>
       </span>                                         <!-- up to four washes, two deep at most -->
@@ -307,6 +315,7 @@ A plain sheet (no label):
 
 ```html
 <div class="kcc-slip kcc-tear-2">
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>
   <div class="kcc-torn">
     <div class="kcc-sheet">…</div>
   </div>
@@ -318,6 +327,7 @@ A recipe slip:
 
 ```html
 <article class="kcc-slip kcc-recipe kcc-tear-5">
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>
   <div class="kcc-torn">
     <div class="kcc-sheet">
       <span class="kcc-stat"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.5</span><span class="text-ink-soft">· 28</span></span>
@@ -341,13 +351,16 @@ link's sheet in the content flow (a list row's tile).
 
 Rules of the structure:
 
-1. `clip-path` sits on `.kcc-sheet` / `.kcc-tile`. The `filter` sits on a wrapper **outside** the clipped
-   element (`.kcc-torn`), or the shadow is clipped away with it.
+1. `clip-path` sits on `.kcc-sheet` / `.kcc-tile`. The `filter` sits **outside** the clipped element, or the
+   shadow is clipped away with it. A sheet's fall is its own element, `.kcc-fall`, the sibling right before
+   `.kcc-torn`: the filter on its wrapper, the sheet's tear on its inner span. It holds nothing, so its shadow is drawn
+   once, while a filter around the sheet would draw again on every frame of every wash blooming inside. A slip's
+   `.kcc-torn` carries no filter; a tile's `.kcc-torn` holds nothing that moves and keeps its own.
 2. Label and tilewrap are siblings of `.kcc-torn` inside `.kcc-slip`: outside the clip **and** outside the
-   filter, so they are neither torn nor shadowed. The tape sits inside the tilewrap, never directly in the slip.
+   fall, so they are neither torn nor shadowed. The tape sits inside the tilewrap, never directly in the slip.
    The one exception is a `.kcc-tilewrap--flow`, which sits in the sheet's content flow with its tape (a list
    row's tile). The blank is a sibling too, and always the
-   slip's **last** child, once: outside the top sheet's clip and filter, with its own filter on `.kcc-blank` and
+   slip's **last** child, once: outside the top sheet's clip and fall, with its own filter on `.kcc-blank` and
    its own clip on the inner span. It is never a `kcc-slip`, `kcc-torn` or `kcc-sheet`, so a one-element slip
    (`kcc-slip kcc-torn` on one element) cannot hold one.
 3. Every direct child of `.kcc-sheet` except `.kcc-washes` is lifted above the wash field by the kit at class
@@ -361,14 +374,14 @@ Rules of the structure:
    sheet's first child, never written by hand (see Washes).
 6. `clip-path` clips descendants too. Keep interactive children at least 4px inside the sheet edge (the
    default 24px padding does this), or the focus ring is shaved by the tear.
-7. `transform` on `.kcc-slip` and `filter` on `.kcc-torn` each make the slip the containing block for
-   `position: fixed` descendants. Fixed UI (dialogs, cook mode, full-screen panels) is teleported to `body`
+7. `transform` on `.kcc-slip` makes the slip the containing block for `position: fixed` descendants. Fixed UI (dialogs, cook mode, full-screen panels) is teleported to `body`
    or kept outside sheets; never inside a slip.
 8. `clip-path` clips everything inside the sheet, including a dropdown or a sticky toolbar that moves past
    the edge. Menus and popovers that must overflow live outside the sheet.
-9. `--tear` inherits from the slip into the sheet (wanted) and into a pinned tile (not wanted, so
-   `.kcc-tilewrap` resets it to the first tile tear); `--r` is registered non-inheriting, so nested slips
-   never compound a tilt.
+9. A sheet's tear is a `clip-path` that `Tears.css` writes once per preset on grouped child selectors
+   (`.kcc-tear-N > .kcc-torn > .kcc-sheet`, `> .kcc-fall > span`, and the `> .kcc-blank > span` of each slip that names the
+   preset as its blank), so it never inherits into a nested slip or a pinned tile; `--r` is registered
+   non-inheriting, so nested slips never compound a tilt.
 10. A slip placed directly in `main.content-grid` (or any grid) with `mx-auto max-w-*` needs `w-full` too:
     auto margins suppress a grid item's stretch, so without it the sheet shrink-wraps its copy and the
     washes, placed in percentages of the sheet, drift with content length.
@@ -413,6 +426,16 @@ recipe surfaces, a Home card's backoffice colour) goes to its first wash. A wash
 past the sheet's margin, never past its tear. `--wash-strength` caps it so ink and soft ink meet AA, and hairlines 3:1, over two
 washes at their peak in both ramps, judged on text's 3px average. The dried edge is a lift in the first ink's alpha, never a darker colour.
 
+**Baked, not filtered.** A wash carries no filter: an SVG filter on a blooming wash made WebKit draw it offscreen on
+every step. `yarn washes` bakes the bleed and grain of the filter numbers in `bakeWashes.ts` into PNGs in `Washes/`, which `Washes.css` names: a 64px grain tile (its alpha
+term, `k1 = k2 = .62`, clipped to 1), eight blob masks (a border-radius blob displaced by the low turbulence and bled,
+picked per wash by `--wash-blob`) and `--wash-tone`, the grain's mean darkening of each colour. The first ink's stops
+draw the bleed into the wash's `--wash-reach` padding, and both inks are saturated by `--wash-sat` in linear light,
+toned, in the kit CSS. The grain's per-channel tint is not baked; its mean is. The textures are separate cached files, not
+data URIs: base64 PNG barely gzips, so inlined they weighed more in the stylesheet than they do as files. The client build
+never inlines them, and `Layout.cshtml` preloads them in production with `crossorigin`, because a mask fetches in CORS
+mode, so a bloomed first paint has its washes.
+
 **The schedule.** Washes arrive one at a time on golden-ratio slots across 210 seconds by hash rank, each spreading
 over 90 seconds, so every page is fully bloomed at five minutes and none starts after 3 minutes 30. The visit has sixteen beats; the pad and its cards
 name theirs in markup (`wash-slots`), so the pad blooms on the same clock on every page; page washes keep
@@ -437,19 +460,20 @@ The rules for authors ([the washes contract](../../specs/005-ink-wash-bloom/cont
 
 ## Tears
 
-`Tears.css` declares `--tear-1 … --tear-6`, `--tear-hero`, `--tear-hero-2` and `--tear-tile-1 … 3` on `:root` and the classes
-that select them:
+`Tears.css` writes each sheet polygon once, as `clip-path` on the grouped selectors of the sheet, the fall's inner span and the
+blank inner span of every slip that names the preset as its blank. It declares `--tear-tile-1 … 3` on `:root`, for the
+tiles and the photo strip, and the classes that select them:
 
-| Class | Points / side | Amp | Chamfer | Tilt `--r` | Blank `--blank-tear`, `--blank-dir` |
+| Class | Points / side | Amp | Chamfer | Tilt `--r` | Blank polygon, `--blank-dir` |
 |---|---|---|---|---|---|
-| `kcc-tear-1` | 80 | 2.4 | 19px top-right | +0.30 | `tear-4`, −1 |
-| `kcc-tear-2` | 80 | 2.4 | 17px bottom-right | −0.98 | `tear-5`, +1 |
-| `kcc-tear-3` | 80 | 2.4 | none | +0.05 | `tear-6`, −1 |
-| `kcc-tear-4` | 80 | 2.4 | 18px bottom-left | −0.52 | `tear-1`, +1 |
-| `kcc-tear-5` | 80 | 2.4 | 20px bottom-right | +0.63 | `tear-2`, −1 |
-| `kcc-tear-6` | 80 | 2.4 | 17px bottom-left | −0.70 | `tear-3`, +1 |
-| `kcc-tear-hero` | 160 | 2.4 | 28px top-right | −0.58 | `tear-hero-2`, −1 |
-| `kcc-tear-hero-2` | 160 | 2.4 | 24px bottom-left | −0.36 | `tear-hero`, +1 |
+| `kcc-tear-1` | 40 | 2.4 | 19px top-right | +0.30 | `tear-4`, −1 |
+| `kcc-tear-2` | 40 | 2.4 | 17px bottom-right | −0.98 | `tear-5`, +1 |
+| `kcc-tear-3` | 40 | 2.4 | none | +0.05 | `tear-6`, −1 |
+| `kcc-tear-4` | 40 | 2.4 | 18px bottom-left | −0.52 | `tear-1`, +1 |
+| `kcc-tear-5` | 40 | 2.4 | 20px bottom-right | +0.63 | `tear-2`, −1 |
+| `kcc-tear-6` | 40 | 2.4 | 17px bottom-left | −0.70 | `tear-3`, +1 |
+| `kcc-tear-hero` | 80 | 2.4 | 28px top-right | −0.58 | `tear-hero-2`, −1 |
+| `kcc-tear-hero-2` | 80 | 2.4 | 24px bottom-left | −0.36 | `tear-hero`, +1 |
 | `kcc-tear-tile-1..3` | 24 | 1.8 | none | (a pinned tilewrap −2°; a `--flow` one 0) | none |
 
 Each sheet preset names its blank: the tear three along the cycle, so a sheet never lies on its own tear, and the
@@ -458,7 +482,7 @@ cycle and a list that takes `(index % 6) + 1` alternates by itself. The blank tu
 wide) × `--blank-dir` × `--blank-flip` × `--blank-region` about its centre and scales `--blank-scale` (1.015, or
 1.005 wide).
 
-Depth is constant but the wavelength stretches with the box, so each family has a size band: tile tears for
+A polygon of 40 points a side (80 on a hero, 24 on a tile) is the most the edge needs: more only costs the clip's rasterising, drawn once per preset and shared by the sheet, the fall and the blanks that name it. Depth is constant but the wavelength stretches with the box, so each family has a size band: tile tears for
 48–128px tiles, the six sheet tears for sheets 170–700px wide, the two hero tears for 330–1300px. A tile tear on a
 full-width sheet reads as a scallop, not a tear.
 
@@ -475,9 +499,10 @@ hero of its own, so two hero sheets on one page (RecipeDetail's hero and its fea
 
 | Class | What | Notes |
 |---|---|---|
-| `kcc-grain`, `kcc-crayon` | the desk's grain and crayon tooth, painted under every sheet | first two children of `#app`, `z-index: 0`; `App.vue` owns them; no sheet, control or label lies under a texture of its own (see Paper rule); a surface teleported to body (cook mode) is outside `#app` and untextured |
+| `#app` background | the desk's grain and crayon tooth, painted under every sheet | `Main.css` `#app` and its dark rule: `--crayon` and `--grain` layers with `background-blend-mode`; no overlay element in `App.vue`; no sheet, control or label lies under a texture of its own (see Paper rule); a surface teleported to body (cook mode) is outside `#app` and untextured |
 | `kcc-slip` (+`--fill`) | tilt + positioning context; `--fill` stretches slip, torn and sheet to a definite-height parent | `--r` from the tear preset; without `--fill` a child sized in percentages computes to auto |
-| `kcc-torn` | fibre + fall filter | wraps exactly one clipped element |
+| `kcc-torn` | the wrapper outside a clip: a sheet's carries no filter, a tile's the fibre and fall | wraps exactly one clipped element |
+| `kcc-fall` › `span` | a sheet's fibre and fall: the filter on the wrapper, the sheet's tear on the span, nothing on it | in a slip, the sibling right before `.kcc-torn`, once; `aria-hidden`; the same box as the top sheet, unturned; lifts with it |
 | `kcc-blank` › `span` | the blank sheet under a sheet: torn paper with the fibre and fall, no ruling | last child of a slip; `aria-hidden`; tear and base direction from the slip's tear class; turns `--blank-turn` × direction × `--blank-flip` × `--blank-region` and scales `--blank-scale`; the span is `display: block`; stays still when the slip lifts |
 | `kcc-slip--wide` | the wide pair: the blank turns 0.5° and scales 1.005 | hero-torn sheets on a blank, the pad's page, any sheet on a blank wider than 700px |
 | `kcc-slip--flip` | turns the slip's blank the other way | set where a page's reading order needs it |
@@ -607,7 +632,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 | A row's name in a pad card underlines | `text-decoration-color` from transparent to ink over 300ms on hover | `PadLines.vue` |
 | A stacked sheet steps back | `transition-all duration-100`, scale from 1 to .95 once it sticks, all but the last | `Stacker.Component.vue` |
 | A segment's ink fill slides to the checked segment | `transform` and `width` over 300ms, and the labels' colour fades with it; no slide for the first placement, after a resize, when the fonts load or when the labels change | `SegmentedControl.vue`, `Controls.css` |
-| A wash blooms | the bloom keyframes: opacity 0 to its peak and scale .72 to 1 over 90s (`--wash-bloom`), delayed to its arrival on the visit clock; under reduced motion the fade keyframes, opacity alone | `Torn/Kit.css`, `KccWashes.Component.vue` |
+| A wash blooms | the bloom keyframes: opacity 0 to its peak and scale .72 to 1 over 90s (`--wash-bloom`), in 45 steps that crowd the start, where the curve climbs fastest (`--wash-ease`), delayed to its arrival on the visit clock, filling backwards only, so a finished bloom leaves the wash on its resting style; under reduced motion the fade keyframes, opacity alone | `Torn/Kit.css`, `KccWashes.Component.vue` |
 | The focus ring fades in | `transition: outline-color 0.2s, outline-offset 0.2s` on every focusable | `TailwindConfig.css` |
 | More recipes load | `fa-spin` on a `fa-circle-notch` | `RecipeSearchView.Component.vue` |
 
@@ -664,9 +689,8 @@ because grids stop at four columns. A skip passes the tear after it too, so the 
 tears turn their blanks opposite ways. When that next section is another stacker, its own sheet's window takes over
 after the sheet, so its first card may repeat the first sheet's tear, corner to corner. A Razor sheet that blooms writes
 `<KccWashes wash-key="error" size="reading" chosen="red" />` as its first child (the error page, registration
-complete, the Home rich-text and stacker sheets, whose keys carry their Block List item's key). The filter defs, `#kcc-bloom`
-(the washes' displacement, bleed and grain) and `#kcc-wax-flat` (the tiles' grain), are inline in `Layout.cshtml`, so
-server-rendered washes are filtered before hydration. The same layout resolves the visit, writes `--wash-elapsed` on
+complete, the Home rich-text and stacker sheets, whose keys carry their Block List item's key). The tiles' filter def, `#kcc-wax-flat`, is
+inline in `Layout.cshtml`, so server-rendered tiles are filtered before hydration; the washes carry no filter. The same layout resolves the visit, writes `--wash-elapsed` on
 `<html>` and the SSR sidecar's schedule as a `<style>` tag, `#kcc-bloom-schedule`, so the first paint carries the washes the
 visit has earned.
 
@@ -693,27 +717,30 @@ visit has earned.
 
 | Rule | Test |
 |---|---|
-| WCAG AA in both ramps, including ink over paper + wash and over a two-wash stack at its peak (text's 3px average, `--wash-sat` applied, a grain gain calibrated to a Chromium render), which pins `--wash-strength`; control hairlines 3:1 over it | `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` |
+| WCAG AA in both ramps, including ink over paper + wash and over a two-wash stack at its peak (text's 3px average, `--wash-sat` applied, a grain gain calibrated to a Chromium render), which pins the dark `--wash-strength` and caps the light one; control hairlines 3:1 over it | `tests/KCC.ViteTests/Features/Styles/contrast.test.ts` |
 | No retired token, class, utility or directive in `Features/**` or CMS content | `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` (`ALLOWLIST` is empty; a new entry needs a reason in the commit message) |
-| Committed `Tears.css` equals the generator; every preset declared on `:root` with a selecting class; sheet tilts written to `--r`; one or two standard sheets uncut; every sheet preset writes its blank (`--blank-tear`, never its own tear, and `--blank-dir`, against its tilt and alternating around the cycle; the hero pair named) and a tile none | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
+| Committed `Tears.css` equals the generator; every sheet polygon written once on grouped `clip-path` selectors, none as a custom property; every tile declared on `:root` with a selecting class; sheet tilts written to `--r`; one or two standard sheets uncut; every sheet preset writes its blank (the polygon of another preset, never its own, and `--blank-dir`, against its tilt and alternating around the cycle; the hero pair named) and a tile none | `tests/KCC.ViteTests/Features/Torn/tears.test.ts` |
 | Tear geometry: deterministic, every vertex inside the box for every shipped preset, seam closes within a step, chamfer never top-left, amp and point-count guards | `tests/KCC.ViteTests/Features/Torn/tornPolygon.test.ts` |
 | `DesignSystem.ts` axes match the safelist | `tests/KCC.ViteTests/Features/Types/DesignSystem.test.ts` |
 | Every Font Awesome style used is imported | `tests/KCC.ViteTests/Features/Styles/mainCssIconStyles.test.ts` |
 | The type, control, pill and icon token values and the cleared default sizes; `--bl` 24px and `--rule-drop`; `body` and the form controls at the body size; the bare headings' roles; the display's phone step and the section's one size; every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 | Every `font-size` reads a text or icon token; a `font` shorthand sizes with a text token; a `line-height` is the rule, a token or `1`; no Tailwind text size outside the scale and no `leading-*`; vertical spacing in rule units; at most eight text sizes besides the readout | `tests/KCC.ViteTests/Features/Styles/typeScale.test.ts` |
-| Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
-| The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
+| Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring; one rule casts the drop-shadows, on the fall, the blank and a tile's `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
+| The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the fall's box and tear, no filter on a slip's `.kcc-torn`, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
-| Every hand-written Razor `kcc-slip` ends with exactly one blank | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
-| The pinned metrics and `--k-*`; the ruling from the content box at `--rule-drop` + `--rule-offset` and the blank sheet; the shim's formula and role list; `--color-rule` and `--color-margin` in both ramps; the margin rule, its container and its 480px query; `kcc-row` and the checklist row; the controls' shift and paper fills; the field as a line, its X, its focus and error lines and the area; the 32px icon button; no `::after` grain on a sheet, the scroll sheet's one ruling layer, the `#kcc-bloom` filter's single bleed blur and its grain composite (k1 = k2 = .62) | `tests/KCC.ViteTests/Features/Styles/paperRule.test.ts` |
+| Every hand-written Razor `kcc-slip` ends with exactly one blank; every slip that holds a sheet, in a component or in Razor, holds one fall, right before its `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
+| The pinned metrics and `--k-*`; the ruling from the content box at `--rule-drop` + `--rule-offset` and the blank sheet; the shim's formula and role list; `--color-rule` and `--color-margin` in both ramps; the margin rule, its container and its 480px query; `kcc-row` and the checklist row; the controls' shift and paper fills; the field as a line, its X, its focus and error lines and the area; the 32px icon button; no `::after` grain on a sheet, the scroll sheet's one ruling layer, `#kcc-wax-flat` the only filter def and `--wash-reach` at `WASH_REACH_PX` | `tests/KCC.ViteTests/Features/Styles/paperRule.test.ts` |
 | Real baselines on the rule in a browser, at 375px and 1280px: every text block, field and control row label on the recipe, variant, search, login, account, settings, cook mode and wizard pages, the header pad, a Razor sheet and a list whose rows run on, to their last lines; the heading action; the margin rule's reach; no sideways scroll | `tests/KCC.E2ETests/Features/Chrome/RuleTests.cs` |
 | Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them, and the ramp switches only through `applyRamp`; the bloom is the one entry over 500ms, its keyframes, the fade under reduced motion and the washes left out of both stilling rules | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |
-| Grain and crayon only on the desk, a wash and a tile: `--grain` and `--crayon` declared in `Tokens.css` only, `var()` aliases resolved, any texture image counted, `#kcc-bloom` on `.kcc-wash` only and `#kcc-wax-flat` on `.kcc-tile` only, the tape's weave exempt by name, the desk's layers first in `#app` at `z-index: 0` | `tests/KCC.ViteTests/Features/Styles/grain.test.ts` |
-| The wash field's CSS: `.kcc-washes` clips, contains and blends as a group, content lifted above it, the wash's width cap, aspect, alphas and rim | `tests/KCC.ViteTests/Features/Styles/washField.test.ts` |
+| Grain and crayon only on the desk, a wash and a tile: `--grain` and `--crayon` declared in `Tokens.css` only, `var()` aliases resolved, any texture image (a baked PNG included) counted, `#kcc-bloom` nowhere and `#kcc-wax-flat` on `.kcc-tile` only, the tape's weave exempt by name, the desk's textures are `#app`'s own background layers, each with its blend mode (multiply in light, soft-light in dark), no overlay element and no `isolation` | `tests/KCC.ViteTests/Features/Styles/grain.test.ts` |
+| The wash field's CSS: `.kcc-washes` clips, contains and blends as a group, content lifted above it, the wash's width cap, aspect, padding, alphas and rim; no `.kcc-wash` rule carries a filter and `Layout.cshtml` defines no `#kcc-bloom`; the baked masks and the linear-light saturation of the inks | `tests/KCC.ViteTests/Features/Styles/washField.test.ts` |
+| Committed `Washes.css` equals the generator and names the textures, no data URIs; the committed textures match the bake by pixels, no file more or less, under 16 KB together; one blob per shape `washes.ts` draws; the grain tile's alpha term and tone; each blob solid inside and bled out; the bleed at half `--wash-reach` and the grain composite at k1 = k2 = .62 | `tests/KCC.ViteTests/Features/Bloom/bakeWashes.test.ts` |
 | Each wash's numbers from the seed and key: counts by size, strata, pairs, colours from the eight, the chosen colour first, the schedule's even spread | `tests/KCC.ViteTests/Features/Bloom/washes.test.ts`, `bloomContext.test.ts` |
 | Every `KccSheet` and `KccWashes` has a `wash-key` that never reads a list index, and no `KccWashes` sits inside a blank, well, tile, label or tape | `tests/KCC.ViteTests/Features/Bloom/keys.test.ts` |
+| The client build never inlines a wash texture and leaves every other asset to Vite's default; `Layout.cshtml` preloads the textures as CORS images outside Development | `tests/KCC.ViteTests/Features/Bloom/washTextures.test.ts` |
 | The server-rendered page paints with the washes the visit has earned and hydration changes none | `tests/KCC.ViteTests/Features/Bloom/firstPaint.test.ts` |
 | The visit: cookie format, clock, seed, the heartbeat | `tests/KCC.UnitTests/Features/Bloom/`, `tests/KCC.ViteTests/Features/Bloom/visitHeartbeat.test.ts`, `tests/KCC.IntegrationTests/Features/Pages/VisitTests.cs` |
+| Mid-bloom, in both engines, no element with a `filter` holds a running animation | `tests/KCC.E2ETests/Features/Performance/DeterministicGuardTests.cs` |
 | In a browser: bare at the start, fully bloomed at five minutes, earned washes in place before hydration and with scripts off, reduced motion fades without growth; every field's arrangement differs and every ink is one of the eight; washes add nothing to any scroll range; bare paper has no grain and the desk does | `tests/KCC.E2ETests/Features/Chrome/BloomTests.cs`, `BloomArrangementTests.cs`, `WashOverflowTests.cs`, `GrainTests.cs` |
 
 ## Building a surface

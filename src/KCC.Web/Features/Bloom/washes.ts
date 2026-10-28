@@ -11,10 +11,7 @@ export type WashProperty =
   | '--wash-aspect'
   | '--wash-s'
   | '--wash-turn'
-  | '--wash-r1'
-  | '--wash-r2'
-  | '--wash-r3'
-  | '--wash-r4'
+  | '--wash-blob'
   | '--wash-o1'
   | '--wash-o2'
   | '--wash-o3'
@@ -49,6 +46,8 @@ export interface SheetSizeProps {
 export const WASH_WINDOW_S = 210
 
 export const WASH_REACH_PX = 24
+
+export const WASH_BLOBS = 8
 
 export const LATEST_START_S = 209.999
 const FALLBACK_JITTER = 0.25
@@ -182,7 +181,6 @@ export function planSheet(sheet: SheetBloom): PlannedWash[] {
     const partner = partners.get(k)
     const dx = partner === undefined ? '9' : toFixed3(centres[partner][0] - x)
     const dy = partner === undefined ? '9' : toFixed3(centres[partner][1] - y)
-    const percent = (label: string, low: number, high: number) => `${toFixed3(between(low, high, draw(label)))}%`
 
     return {
       id: hash(sheet.key, k).toString(16).padStart(8, '0'),
@@ -197,14 +195,11 @@ export function planSheet(sheet: SheetBloom): PlannedWash[] {
         '--wash-aspect': toFixed3(aspect),
         '--wash-s': toFixed3(Math.sqrt(1 + 1 / aspect ** 2)),
         '--wash-turn': `${toFixed3(between(0, 359.99, draw('turn')))}deg`,
-        '--wash-r1': percent('r1', 32, 68),
-        '--wash-r2': percent('r2', 32, 68),
-        '--wash-r3': percent('r3', 32, 68),
-        '--wash-r4': percent('r4', 32, 68),
-        '--wash-o1': percent('o1', 28, 72),
-        '--wash-o2': percent('o2', 28, 72),
-        '--wash-o3': percent('o3', 28, 72),
-        '--wash-o4': percent('o4', 28, 72),
+        '--wash-blob': `var(--wash-blob-${Math.floor(draw('blob') * WASH_BLOBS)})`,
+        '--wash-o1': toFixed3(between(0.28, 0.72, draw('o1'))),
+        '--wash-o2': toFixed3(between(0.28, 0.72, draw('o2'))),
+        '--wash-o3': toFixed3(between(0.28, 0.72, draw('o3'))),
+        '--wash-o4': toFixed3(between(0.28, 0.72, draw('o4'))),
         '--wash-ink': `var(--color-${slots[k]})`,
         '--wash-ink-2': `var(--color-${slots[k + 4]})`,
         '--wash-fallback-at': `${toFixed3(starts[k])}s`,

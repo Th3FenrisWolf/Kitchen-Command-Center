@@ -5,9 +5,6 @@
 </script>
 
 <template>
-  <span class="kcc-grain" aria-hidden="true"></span>
-  <span class="kcc-crayon" aria-hidden="true"></span>
-
   <component :is="{ name: 'HeaderContent', template: headerContent }" />
 
   <main role="main" class="content-grid auto-rows-min">

@@ -10,8 +10,17 @@ export function useTuckOnScroll(beforeTuck: () => void) {
 
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  // Sticky neighbours add this to their own top, so they sit below the pad while it shows.
-  const publish = () => document.documentElement.style.setProperty('--pad-offset', `${tucked.value ? 0 : height}px`)
+  let content: HTMLElement | null | undefined
+
+  // Sticky neighbours add this to their own top, so they sit below the pad while it shows. A custom property written
+  // on the root restyles the whole document, so it goes on <main>, which holds every sticky neighbour; the root
+  // takes the plain scroll-padding-top, which restyles only itself.
+  const publish = () => {
+    content ??= document.querySelector<HTMLElement>('main')
+    const offset = `${tucked.value ? 0 : height}px`
+    content?.style.setProperty('--pad-offset', offset)
+    document.documentElement.style.scrollPaddingTop = offset
+  }
 
   function settle(next: boolean) {
     if (tucked.value !== next) {

@@ -22,19 +22,114 @@
     --rule-offset: 2px;
     --rd: 6px;
     --wash-blend: multiply;
-    --wash-strength: 0.55;
+    --wash-strength: 0.42;
     --wash-bloom: 90s;
+    /* cubic-bezier(0.17, 0.72, 0.24, 1) in 45 holds, so a wash repaints 45 times instead of every frame.
+       motion.test.ts derives it. */
+    --wash-ease: linear(
+      0 0%,
+      0 0.01%,
+      0.0222 0.01%,
+      0.0222 0.79%,
+      0.0444 0.79%,
+      0.0444 1.31%,
+      0.0667 1.31%,
+      0.0667 1.84%,
+      0.0889 1.84%,
+      0.0889 2.37%,
+      0.1111 2.37%,
+      0.1111 2.91%,
+      0.1333 2.91%,
+      0.1333 3.44%,
+      0.1556 3.44%,
+      0.1556 3.98%,
+      0.1778 3.98%,
+      0.1778 4.53%,
+      0.2 4.53%,
+      0.2 5.08%,
+      0.2222 5.08%,
+      0.2222 5.64%,
+      0.2444 5.64%,
+      0.2444 6.21%,
+      0.2667 6.21%,
+      0.2667 6.79%,
+      0.2889 6.79%,
+      0.2889 7.38%,
+      0.3111 7.38%,
+      0.3111 7.98%,
+      0.3333 7.98%,
+      0.3333 8.6%,
+      0.3556 8.6%,
+      0.3556 9.23%,
+      0.3778 9.23%,
+      0.3778 9.88%,
+      0.4 9.88%,
+      0.4 10.55%,
+      0.4222 10.55%,
+      0.4222 11.24%,
+      0.4444 11.24%,
+      0.4444 11.96%,
+      0.4667 11.96%,
+      0.4667 12.71%,
+      0.4889 12.71%,
+      0.4889 13.49%,
+      0.5111 13.49%,
+      0.5111 14.3%,
+      0.5333 14.3%,
+      0.5333 15.16%,
+      0.5556 15.16%,
+      0.5556 16.06%,
+      0.5778 16.06%,
+      0.5778 17.01%,
+      0.6 17.01%,
+      0.6 18.02%,
+      0.6222 18.02%,
+      0.6222 19.1%,
+      0.6444 19.1%,
+      0.6444 20.25%,
+      0.6667 20.25%,
+      0.6667 21.49%,
+      0.6889 21.49%,
+      0.6889 22.82%,
+      0.7111 22.82%,
+      0.7111 24.27%,
+      0.7333 24.27%,
+      0.7333 25.86%,
+      0.7556 25.86%,
+      0.7556 27.6%,
+      0.7778 27.6%,
+      0.7778 29.53%,
+      0.8 29.53%,
+      0.8 31.68%,
+      0.8222 31.68%,
+      0.8222 34.11%,
+      0.8444 34.11%,
+      0.8444 36.89%,
+      0.8667 36.89%,
+      0.8667 40.11%,
+      0.8889 40.11%,
+      0.8889 43.93%,
+      0.9111 43.93%,
+      0.9111 48.59%,
+      0.9333 48.59%,
+      0.9333 54.53%,
+      0.9556 54.53%,
+      0.9556 62.73%,
+      0.9778 62.73%,
+      0.9778 76.62%,
+      1 76.62%,
+      1 100%
+    );
     --wash-reach: 24px;
     --wash-sat: 2.5;
-    --grain-op: 0.08;
-    --wax-op: 0.3;
-    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)'/></svg>");
-    --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.85'/></svg>");
+    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)' opacity='.08'/></svg>");
+    --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.255'/></svg>");
+    --desk-stripe: repeating-linear-gradient(107deg, oklch(1 0 0 / 0.0084) 0 2px, transparent 2px 7px);
   }
 
   /* DARK: the same identity on a dark desk. Chalk for ink, washes screened instead of multiplied and pushed
      harder, the wax tooth soft-lit. Washes, marker and marker-ink do not move; they are the brand constant.
-     --wash-strength is pinned by contrast.test.ts in both ramps. */
+     The dark --wash-strength is the cap contrast.test.ts pins; the light one sits under its cap, set by eye. */
   :root[data-theme='dark'] {
     color-scheme: dark;
     --color-desk: oklch(0.132 0.024 288);
@@ -42,7 +137,7 @@
     --color-paper: oklch(0.258 0.03 288);
     --color-paper-2: oklch(0.222 0.028 288);
     --color-ink: oklch(0.945 0.012 92);
-    --color-ink-soft: oklch(0.735 0.018 288);
+    --color-ink-soft: oklch(0.76 0.018 288);
     --color-hair-strong: oklch(0.945 0.012 92 / 0.45);
     --color-rule: oklch(0.74 0.05 240 / 0.24);
     --color-margin: oklch(0.66 0.15 22 / 0.58);
@@ -50,9 +145,10 @@
     --color-fall: oklch(0.04 0.02 288 / 0.7);
     --color-tape: oklch(0.9 0.012 92 / 0.28);
     --wash-blend: screen;
-    --wash-strength: 0.16;
+    --wash-strength: 0.18;
     --wash-sat: 3;
-    --grain-op: 0.16;
-    --wax-op: 0.36;
+    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)' opacity='.16'/></svg>");
+    --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.306'/></svg>");
+    --desk-stripe: repeating-linear-gradient(107deg, oklch(1 0 0 / 0.01) 0 2px, transparent 2px 7px);
   }
 }

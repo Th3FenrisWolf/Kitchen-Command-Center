@@ -36,6 +36,7 @@
     :class="[{ 'kcc-slip--flip': flip }, `kcc-tear-${preset}`]"
     style="--r: 0"
   >
+    <span class="kcc-fall" aria-hidden="true"><span></span></span>
     <a :href="card.href" v-bind="card.dataAttrs" class="kcc-torn block">
       <div class="kcc-sheet flex items-start gap-4" style="--pad: 16px">
         <KccWashes :wash-key="`recipe-card-row:${card.href}`" size="card" :chosen="washFor(card.seed)" />
