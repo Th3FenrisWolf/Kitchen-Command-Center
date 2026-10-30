@@ -97,6 +97,7 @@
   }
 
   .kcc-sheet {
+    filter: blur(1px);
     --k: var(--k-hazelnut);
     --lh: var(--bl);
     background-clip: border-box;
