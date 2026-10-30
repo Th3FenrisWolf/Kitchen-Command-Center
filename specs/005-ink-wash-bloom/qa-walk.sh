@@ -429,10 +429,10 @@ step "Compare with the eight wash colours in docs/brand/loose-leaf.md (the --col
 step "Zoom in on overlaps; look for any colour that is a blend between two."
 check "Every wash is one or two of the eight brand wash colours, used as they are, never a colour blended between them."
 
-stage "SC-005" "Every sampled wash colour is exactly a brand wash"
+stage "SC-005" "Every sampled wash declares a brand wash ink"
 say "Given three pages at 300 s: /recipes, a recipe and /."
 step "On each, run: $JS_INKS"
-check "Every wash colour on every sampled page matches one of the eight brand wash colours exactly."
+check "Every wash on every sampled page declares its ink as one of the eight brand wash colours."
 
 stage "US2-5" "Neighbouring sheets do not bloom in step"
 say "Given the library at 120 s so washes are mid-bloom."

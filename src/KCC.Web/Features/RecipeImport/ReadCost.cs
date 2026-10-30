@@ -7,7 +7,7 @@ public static class ReadCost
     public const int MaxTokens = 12_000;
 
     private const int FixedPromptTokens = 3_000;
-    private const decimal CatalogCharactersPerToken = 3.5m;
+    private const decimal CatalogCharactersPerToken = 2m;
     private const decimal TokensPerMTok = 1_000_000m;
     private const decimal MicroUsdPerUsd = 1_000_000m;
 
