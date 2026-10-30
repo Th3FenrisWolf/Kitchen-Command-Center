@@ -431,6 +431,22 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   the same account. A read that the limit stops fails, the ledger gives its reservation back, and the wizard shows a
   failed read.
 
+- **Live performance measurement.** `yarn perf:live` measures the public site from the Mac, signed out and as a
+  measurement member, and reads only. It needs two things set up once:
+  - **The measurement member.** Register a member on the live site with an address of your own, such as
+    `you+perf@…`, then approve it in the backoffice under Members. It holds no recipes, reviews or favourites.
+  - **The skip rule**, so Cloudflare's checks never challenge the run. Pick a long random token
+    (`openssl rand -hex 32`). In the domain's zone, Security → WAF → Custom rules → **Create rule**: name `KCC perf`;
+    field **Request Header**, header name `x-kcc-perf`, operator **equals**, the token as the value; action **Skip**,
+    with **All remaining custom rules**, **All rate limiting rules**, **All managed rules** and, under More components
+    to skip, **Security Level** and **Browser Integrity Check**; place it first. It never touches the `/umbraco`
+    Access application. Bot Fight Mode (Security → Bots) cannot be skipped by any rule on the free plan: while it is
+    on, a challenged page shows in the live report as a gap.
+
+  The run takes `KCC_PERF_LIVE_URL` (the site's origin), `KCC_PERF_MEMBER_USERNAME`, `KCC_PERF_MEMBER_PASSWORD` and
+  `KCC_PERF_BYPASS_TOKEN` from the shell, never from a file in the repository, after `yarn build:all` and a Release
+  build. It writes `tests/results/perf-live/report.html`. To retire the token, delete the rule.
+
 - **Updates.** Dependabot opens no pull requests. Its alerts flag a vulnerable npm, NuGet or Actions package: bump it
   by hand, and merging the bump deploys it. Alerts follow security advisories only, so Umbraco's other 17.x patches
   come unannounced, and Docker images have no alerts at all. Now and then, check for new releases of Umbraco, of the
