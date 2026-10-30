@@ -226,12 +226,7 @@
                 @pointerleave="(event: PointerEvent) => press.leave('search', event)"
               />
 
-              <a
-                v-if="nav.urls.newRecipe"
-                class="kcc-btn max-[820px]:w-(--control-md) max-[820px]:px-0"
-                :href="nav.urls.newRecipe"
-                :title="t('NewRecipe')"
-              >
+              <a v-if="nav.urls.newRecipe" class="kcc-btn pad-new" :href="nav.urls.newRecipe" :title="t('NewRecipe')">
                 <i class="fa-duotone fa-plus" aria-hidden="true"></i
                 ><span class="max-[820px]:sr-only">{{ t('NewRecipe') }}</span>
               </a>
@@ -620,6 +615,16 @@
 
     .pad-bar--desk .pad-key {
       display: none;
+    }
+  }
+
+  @media (width < 820px) {
+    .pad-new {
+      --h: var(--control-sm);
+      height: var(--control-sm);
+      line-height: var(--control-sm);
+      padding: 0;
+      width: var(--control-sm);
     }
   }
 
