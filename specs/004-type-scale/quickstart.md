@@ -32,8 +32,8 @@ Body paragraphs are 16.
 ## 3. The phone step and sideways scroll (SC-005)
 
 At 375px: the display title is 36px, a section heading 32px, a sheet heading 24px, and `document.documentElement.scrollWidth` equals
-`innerWidth`. At 1024px: the header pad shows Recipes, My Kitchen, the search field and New Recipe on one bar. Wherever the search
-field shows its full placeholder, the New recipe button shows its label (FR-019).
+`innerWidth`. At 1024px: the header pad shows Recipes, My Kitchen, the search field and New Recipe on one bar. From 820px the New
+recipe button shows its label; from 768px to 819px it is a 32px icon button (FR-019).
 
 ## 4. Text on the rule
 
