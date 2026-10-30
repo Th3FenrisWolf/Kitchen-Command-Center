@@ -898,3 +898,57 @@ expected; both baselines now hold the measured counts, owner 2026-10-27); `inter
 add-variant phone, search-1, search-3 and variant-cook desktop); `long_frames` on 7 (search-3 desktop Chromium, home and
 recipe desktop WebKit dark); `lcp_ms` on 6 phone cases (carried to Phase 3); `frame_p95_ms` and
 `frames_within_16_7_pct` on one WebKit desktop case each.
+
+## Close-out
+
+**Guard proof (T022).** `filter: blur(1px)` on `.kcc-sheet`, pushed as a throwaway draft pull request on 2026-10-30
+(CI run 41087816090). The E2E suite failed in both engines on `MidBloom_NoRunningAnimationIsFilteredOrUnderAFilter`,
+naming page, profile, engine, ramp and visit with the count, for example
+`search-3 · phone · chromium · light · mid: 56 running animations sit under an element with a filter`; every other test
+passed. The `perf` job passed: 20 pass, 0 fail, 140 report only. It enforces only `hydrated_ms` and
+`server_response_ms`, and a paint filter moves neither, so a paint regression is caught by the deterministic guards
+alone. The branch is deleted.
+
+**iPhone pass (T052, FR-021).** Owner, 2026-10-30, Safari on an iPhone against the live site: recipe search scrolled
+to the bottom and back, then a recipe opened, at a fresh visit and again two minutes in. It kept up both times.
+
+**Live run (T051).** `yarn perf:live` against production on 2026-10-30, all 232 cases, signed out and as the
+measurement member, from the Mac (Chromium 145, WebKit 26), with two other sessions' E2E suites running on the same
+machine, so the browser-side timings read high. Live numbers are report-only (FR-018).
+
+Server response, ten loads per page, desktop Chromium, unthrottled. Every load was `cf-cache-status: DYNAMIC` and
+`content-encoding: zstd`.
+
+| Page | Member | Min | Median | Max |
+|---|---|---|---|---|
+| home | none | 143 ms | 219 ms | 296 ms |
+| search-1 | none | 150 ms | 170 ms | 344 ms |
+| create-recipe | measurement | 142 ms | 199 ms | 308 ms |
+| account | measurement | 120 ms | 135 ms | 212 ms |
+| sign-in | none | 126 ms | 192 ms | 267 ms |
+| settings | measurement | 119 ms | 137 ms | 284 ms |
+| error | none | 129 ms | 147 ms | 208 ms |
+| status-404 | none | 130 ms | 151 ms | 190 ms |
+
+Light, bloomed, Chromium:
+
+| Page | Phone LCP | Phone hydrated | Phone frames within 16.7 ms | Phone worst interaction | Desktop LCP | Desktop hydrated |
+|---|---|---|---|---|---|---|
+| home | 1,772 ms | 960 ms | 96.7% | 296 ms | 732 ms | 532 ms |
+| search-1 | 1,780 ms | 961 ms | 94.9% | 136 ms | 1,004 ms | 640 ms |
+| search-3 | 2,080 ms | 979 ms | 94.4% | 184 ms | 588 ms | 422 ms |
+| create-recipe | 976 ms | 906 ms | 100% | 0 ms | 368 ms | 362 ms |
+| account | 1,000 ms | 928 ms | 100% | 0 ms | 392 ms | 378 ms |
+| settings | 1,052 ms | 951 ms | 95% | 240 ms | 400 ms | 394 ms |
+| sign-in | 924 ms | 896 ms | 100% | 0 ms | 284 ms | 274 ms |
+
+Phone LCP on home and the search pages sits at 1.8 to 2.1 s, the Phase 3 carry. The page weight matches the local
+build: 28.5 KB of CSS and 144.6 KB of JS gzipped on home, 721 KB of fonts.
+
+Gaps:
+
+- `recipe`, `variant-cook` and `add-variant` were not measured: the run used the seeded paths, which answer 404 live,
+  because `KCC_PERF_LIVE_RECIPE` and `KCC_PERF_LIVE_VARIANT` were unset.
+- The live site lists one recipe, so `search-3` measured one page of results, not three.
+- Cloudflare injects its bot-detection and RUM scripts on every page. Their `POST`s to `/cdn-cgi/` were blocked by the
+  read-only rule and recorded as gaps. No page was challenged.
