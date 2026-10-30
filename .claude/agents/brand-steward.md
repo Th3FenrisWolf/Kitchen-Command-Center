@@ -137,7 +137,8 @@ For each file, check every rule below and record hits as `path:line — rule —
 **States (kit.md → States)**
 - A focusable element whose ring is removed (`outline-none`, `outline: none` or `0`) with nothing drawn in its
   place.
-- `disabled` or `aria-disabled` on a field, segment, checkbox or range, which the kit has no disabled look for.
+- `disabled` or `aria-disabled` on a field, segment, range or a checkbox outside a `kcc-check` row, which the kit has
+  no disabled look for, or a disabled look a component draws for itself.
 - A loading state that clears what is already shown, or a busy region without `aria-busy`.
 - An empty state that is an empty page or bare text rather than a sheet with a way out.
 
@@ -150,7 +151,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 From `src/KCC.Web`:
 
 ```bash
-yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule grain washField bakeWashes washTextures keys
+yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule grain washField bakeWashes washTextures keys kitStates
 ```
 
 Report failures verbatim. A change that moves layout on a sheet also needs
