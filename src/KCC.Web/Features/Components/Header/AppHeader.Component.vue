@@ -618,7 +618,7 @@
     }
   }
 
-  @media (max-width: 819.98px) {
+  @media (width < 820px) {
     .pad-new {
       --h: var(--control-sm);
       height: var(--control-sm);

@@ -266,7 +266,7 @@ describe('AppHeader', () => {
 
   it('makes New recipe a 32px icon button below 820px, where it loses its label', () => {
     const narrow = styleRules().filter(
-      (rule) => rule.parent?.type === 'atrule' && (rule.parent as AtRule).params === '(max-width: 819.98px)',
+      (rule) => rule.parent?.type === 'atrule' && (rule.parent as AtRule).params === '(width < 820px)',
     )
 
     expect(declarationsOf(narrow, '.pad-new')).toEqual({

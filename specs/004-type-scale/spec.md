@@ -164,8 +164,8 @@ Open each menu.
 4. **Given** the pad at a phone width, **When** it renders, **Then** the larger items fit, or the phone menu holds
    them, with no item cut off.
 5. **Given** the lines inside an open menu card, **When** they render, **Then** they use the body size.
-6. **Given** a member's bar at a desk width, **When** the search field still shows its full placeholder beside the
-   labelled New recipe button, **Then** the button shows its label.
+6. **Given** a member's bar at a desk width, **When** the bar is 820px wide or wider, **Then** the New recipe button
+   shows its label; below 820px it is a 32px icon button.
 
 ---
 
