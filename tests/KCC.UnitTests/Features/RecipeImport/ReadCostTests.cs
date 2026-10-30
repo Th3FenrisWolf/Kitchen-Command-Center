@@ -82,10 +82,10 @@ public class ReadCostTests
     }
 
     [Test]
-    [Arguments("claude-haiku-4-5", 3, 7_000, 69_800L)]
-    [Arguments("claude-haiku-5-5", 3, 7_000, 39_676L)]
-    [Arguments("claude-sonnet-5-5", 3, 7_000, 158_704L)]
-    [Arguments("claude-opus-5-5", 3, 7_000, 317_408L)]
+    [Arguments("claude-haiku-4-5", 3, 7_000, 71_300L)]
+    [Arguments("claude-haiku-5-5", 3, 7_000, 40_426L)]
+    [Arguments("claude-sonnet-5-5", 3, 7_000, 161_704L)]
+    [Arguments("claude-opus-5-5", 3, 7_000, 323_408L)]
     [Arguments("claude-opus-5-5", 1, 0, 271_136L)]
     [Arguments("claude-haiku-4-5", 1, 1, 64_601L)]
     public async Task ReservationMicroUsd_FollowsTheSpendReservationEstimate(
