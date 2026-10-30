@@ -106,7 +106,7 @@ Each entry gives the decision, why, and what else was considered. Facts come fro
     error that names the id, so the import is off until the id is corrected or the table gains the model.
   - Every read sends `MaxTokens = 12,000`.
   - Cost is computed from `Usage` (input, output, cache creation and cache read tokens) in micro-dollars.
-  - **Reservation estimate**: 3,000 prompt tokens, plus the catalog's characters divided by 3.5, plus each photo at the
+  - **Reservation estimate**: 3,000 prompt tokens, plus the catalog's characters divided by 2, plus each photo at the
     profile's image-token cap, all at the input price of the profile's highest price set; plus 12,000 output tokens at
     that set's output price.
 - **Rationale**:
@@ -123,12 +123,13 @@ Each entry gives the decision, why, and what else was considered. Facts come fro
     price. Reads send no `cache_control`, so the cache prices change no settled cost.
   - A 10-photo Create Recipe read with a 500-recipe catalog comes to about 87,000 to 101,000 prompt tokens, so a
     Haiku 5.5 profile with one price set could settle about a fifth of such a read's bill (FR-037).
-  - A reservation's prompt tokens are an estimate. The catalog's characters divided by 3.5 can land under the threshold
+  - A reservation's prompt tokens are an estimate. The catalog's characters divided by 2 can land under the threshold
     for a read that bills over it, so only the highest set keeps the reservation the worst case that R10 relies on.
   - The Claude API reference documents the 2576 px edge and the 4,784-token cap for the earlier high-resolution models
     (Opus 4.7, Opus 5, Sonnet 5), not by name for Opus 5.5, Sonnet 5.5 or Haiku 5.5. Haiku 4.5 sits in the lower tier,
-    so Haiku 5.5's figures are presumed. The evaluation measures the real image tokens with `count_tokens` and
-    corrects the table.
+    so Haiku 5.5's figures were presumed. At 2000 px the evaluation counted the same image tokens for Haiku 5.5 as for
+    Sonnet 5.5 and Opus 5.5, so Haiku 5.5 takes the high-resolution edge too. No photo above 2000 px was measured, so
+    the 2576 px edge and the 4,784-token cap stay as the reference documents them ("Measured results").
   - `RecipeImport:Model` is free text, and models outside the table can cost more than its highest prices. Borrowed
     prices would let the ledger count less than the account is billed, so a model without a profile reads nothing.
 - **Alternatives considered**: Prices in configuration (a model change could then leave stale prices behind); the
@@ -598,9 +599,48 @@ Each entry gives the decision, why, and what else was considered. Facts come fro
 
 ## Measured results
 
-The evaluation task fills this section: the chosen model, its effort and image edge, the measured accuracy, the warm
-90th-percentile time and the run's largest cold penalty, the measured image tokens with Haiku 5.5's image edge
-confirmed or corrected, and the cost of a typical read. Quickstart scenario 6 adds the time from Read recipe to the
-filled review on the dev site (A22), and its SC-001 time (A24).
+### Reader comparison, 2026-10-30
+
+`dotnet run --project tools/KCC.ReaderEval -- --models claude-haiku-5-5,claude-haiku-4-5,claude-sonnet-5-5,claude-opus-5-5`
+at the default edge of 2000 px (1568 px for Haiku 4.5, its own edge), 16:10 to 16:17 UTC, more than 24 hours after the
+draft run's last call on 2026-10-15T01:04:40Z with no schema call in between. 44 reads, about US$1.03 spent against an
+estimate of up to US$5.74. Each read carried the 20-recipe catalog.
+
+The set has 10 cases, not the 15 to 20 that SC-003 names: 6 printed, 4 handwritten, one of them (carbonara) on the
+site. The owner accepted the 10 on 2026-10-30.
+
+| Model | Printed lines | Handwritten lines | Steps in order | Unmarked invented | SC-005 on / off site | Warm p90 | Cold penalty | Mean cost a read |
+|---|---|---|---|---|---|---|---|---|
+| `claude-haiku-5-5` | 87.1% (54/62) | 83.3% (30/36) | 8 of 10 | 7 | 1/1, 0/9 | 11.3 s | 5.3 s | US$0.0019 |
+| `claude-haiku-4-5` | 77.4% (48/62) | 66.7% (24/36) | 8 of 10 | 3 | 1/1, 1/9 | 10.1 s | 10.2 s | US$0.0089 |
+| `claude-sonnet-5-5` | 85.5% (53/62) | 77.8% (28/36) | 9 of 10 | 4 | 1/1, 0/9 | 10.0 s | 0.1 s | US$0.0278 |
+| `claude-opus-5-5` | 91.9% (57/62) | 94.4% (34/36) | 10 of 10 | 3 | 1/1, 0/9 | 11.3 s | 0.2 s | US$0.0547 |
+
+- **SC-002**: every model meets it. The run's largest cold penalty is 10.2 s (Haiku 4.5), so the worst model judged
+  is 11.3 + 10.2 = 21.5 s against 50 s (A22).
+- **SC-003 and SC-004**: no model meets them. Opus 5.5 meets the handwritten line and step targets, and misses the
+  95% printed target and SC-004's zero unmarked invented values.
+- **SC-005**: every model but Haiku 4.5 meets it. With one case on the site, its 9-in-10 target is untested.
+- **The default stays `claude-opus-5-5` at `low` effort and 2000 px**, by the owner's ruling on 2026-10-30, with the
+  shortfall above recorded. Most of Opus 5.5's misses follow from the answer key's conventions rather than misreads,
+  which the tool cannot show because it keeps no read's output: a combined "salt and pepper" line with no quantity in
+  carbonara and creole shrimp, cans keyed as unit `(28-ounce) can` in the enchiladas, the brand kept in "Gold Medal all
+  purpose flour", and the banana bread card's High Altitude step, which the key leaves out and so scores as invented.
+  Its other unmarked values are an ingredient (cooking oil spray) in the spinach artichoke tarts and a reworded variant
+  description in the enchiladas.
+- **Image tokens**: the prompt and schema take 2,600 tokens for the 5.5 models and 2,155 for Haiku 4.5. At 2000 px a
+  photo takes 3,128 tokens on average and 3,891 at most for all three 5.5 models, under the 4,784 cap; at 1568 px
+  Haiku 4.5 takes 1,433 on average and 1,568 at most, under its 1,600 cap. The caps stay.
+- **Catalog**: 3,473 characters came to 1,639 tokens on the 5.5 models (2.12 characters a token) and 1,195 on Haiku
+  4.5 (2.91). Both are under the 3.5 that the reservation assumed, so `CatalogCharactersPerToken` is now 2 (A31).
+- **A typical read** with Opus 5.5 costs about US$0.055, so the US$2 monthly ceiling covers about 36 reads.
 
 - 2026-10-14, stand-in reader, scenario 3: SC-001 (opening Create Recipe to "Recipe Submitted!") took 0.4 s (398 ms) on a dev-database copy, headless Chromium, one photo; this times the screens only (A24).
+- 2026-10-30, real reader (`claude-opus-5-5`, low effort, 2000 px), scenario 6: one photo of the printed ham and eggs
+  bake read in 9.5 s from Read recipe to the filled review (A22), and every value matched the card. SC-001 (opening
+  Create Recipe to "Recipe Submitted!", no correction) took 19.2 s, driven by script in the Browser pane on a
+  dev-database copy (A24).
+- 2026-10-30, stand-in reader with `RecipeImport__StandInDelaySeconds=70`, scenario 12: in Safari on the Mac the review
+  opened after the 70-second read, with no failed-read message at about 60 seconds, so research R18's risk did not
+  show. The owner also ran scenario 7 in Safari: the camera took two photos, and after the camera was denied the camera
+  message showed and Add photos still worked.

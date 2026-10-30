@@ -600,8 +600,9 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
   an open menu button are `kcc-pill`. The section you are in is a marker underline on its menu, 5px of marker
   behind the label, hidden while that menu is open. A checked box is `kcc-box--on`, and a done checklist row
   (`li.kcc-done`) is struck through.
-- **Disabled.** Buttons only: 45% opacity, a `not-allowed` cursor and no hover. Nothing else in the kit has a
-  disabled look, so a field, segment, checkbox or range gets one here before anything disables it.
+- **Disabled.** A button, and a `kcc-check` row whose checkbox is disabled: 45% opacity and a `not-allowed` cursor,
+  and a button loses its hover. Nothing else in the kit has a disabled look, so a field, segment, range or a
+  checkbox outside a `kcc-check` row gets one here before anything disables it.
 - **Error.** `kcc-field--error` draws the field's underline 2px in ink, and a `kcc-well--danger` below it carries the
   red (see Status).
 - **Loading.** What is already shown stays. The region takes `aria-busy`, and the loader is a
@@ -727,6 +728,7 @@ visit has earned.
 | The type, control, pill and icon token values and the cleared default sizes; `--bl` 24px and `--rule-drop`; `body` and the form controls at the body size; the bare headings' roles; the display's phone step and the section's one size; every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 | Every `font-size` reads a text or icon token; a `font` shorthand sizes with a text token; a `line-height` is the rule, a token or `1`; no Tailwind text size outside the scale and no `leading-*`; vertical spacing in rule units; at most eight text sizes besides the readout | `tests/KCC.ViteTests/Features/Styles/typeScale.test.ts` |
 | Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring; one rule casts the drop-shadows, on the fall, the blank and a tile's `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
+| A disabled `kcc-check` row takes the disabled button's opacity and cursor; no `transform` or `translate` in the kit CSS nudges by 1 to 3px | `tests/KCC.ViteTests/Features/Styles/kitStates.test.ts` |
 | The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the fall's box and tear, no filter on a slip's `.kcc-torn`, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Every hand-written Razor `kcc-slip` ends with exactly one blank; every slip that holds a sheet, in a component or in Razor, holds one fall, right before its `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
@@ -761,7 +763,7 @@ visit has earned.
 6. Icons: duotone by default, `currentColor`, no `fa-primary-*` / `fa-secondary-*`.
 7. Numbers and meta in Sono: `kcc-num`, `kcc-kick`, `kcc-meta`, `kcc-stat`.
 8. Motion takes the 300ms default, or up to 500ms for a bigger move (see Motion). Every focusable shows a ring,
-   and only buttons have a disabled look (see States).
+   and only buttons and `kcc-check` rows have a disabled look (see States).
 9. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
    message says why.
 10. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens typeScale contrast motion keys grain`, `yarn type-check`, `yarn format`;

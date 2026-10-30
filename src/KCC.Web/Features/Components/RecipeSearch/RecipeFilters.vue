@@ -58,7 +58,7 @@
       <!-- The box and the name are two labels for one checkbox rather than one wrapper around it, so both
            stay clickable; the sr-only input is out of flow, leaving the kit's three grid tracks to the rest. -->
       <ul class="kcc-check">
-        <li v-for="row in rows" :key="row.label" :class="row.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'">
+        <li v-for="row in rows" :key="row.label" :class="{ 'cursor-pointer': !row.disabled }">
           <input
             :id="row.id"
             type="checkbox"
