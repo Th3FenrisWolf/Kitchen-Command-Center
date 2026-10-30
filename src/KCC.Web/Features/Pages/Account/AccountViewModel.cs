@@ -13,6 +13,8 @@ public class AccountViewModel : BasePageViewModel
 
     public string SettingsUrl { get; set; }
 
+    public string CreateRecipeUrl { get; set; }
+
     public IEnumerable<RecipeGroupViewModel> RecipeGroups { get; set; } = [];
 
     public static string ComputeInitials(string firstName, string lastName, string fallback)

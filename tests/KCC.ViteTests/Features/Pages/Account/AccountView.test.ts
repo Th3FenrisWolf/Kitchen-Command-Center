@@ -12,6 +12,8 @@ const STRINGS = {
   'Account.Favorites': 'Favorites',
   'Account.MemberSince': 'Member since',
   'Account.MyRecipesAndVariants': 'My recipes and variants',
+  'Account.NewRecipe': 'New recipe',
+  'Account.NoCreationsHint': 'Start a recipe of your own.',
   'Account.NoCreationsYet': 'Nothing on the pad yet.',
   'Account.PendingReview': 'Pending review',
   'Account.RecentActivity': 'Recent activity',
@@ -62,15 +64,17 @@ const RECIPE_GROUPS = [
   },
 ]
 
-const render = (recipeGroups: unknown[] = RECIPE_GROUPS) =>
+const render = (recipeGroups: unknown[] = RECIPE_GROUPS, over: Record<string, unknown> = {}) =>
   renderSsr(AccountView, {
     displayName: 'Ada Lovelace',
     initials: 'AL',
     memberSince: 'March 2025',
     settingsUrl: '/account/settings',
     logoutUrl: '/account/logout',
+    createRecipeUrl: '/recipes/create-recipe/',
     recipeGroups,
     resourceStrings: STRINGS,
+    ...over,
   })
 
 // Three blocks in source order: the profile sheet, the creations column, then the coming-soon pair. The
@@ -192,12 +196,29 @@ describe('AccountView', () => {
     expect(creations).toContain('<span class="flex flex-wrap items-center gap-x-2 gap-y-0">')
   })
 
-  it('says so plainly when the pad is empty', async () => {
+  it('lays an empty pad on a wide sheet of its own, one on from the profile sheet, titled like every empty state', async () => {
     const creations = creationsOf(await render([]))
 
-    expect(creations).toContain('Nothing on the pad yet.')
-    expect(creations).toContain('kcc-body')
-    expect(creations).not.toContain('kcc-slip')
+    expect(creations.match(/class="kcc-slip [^"]*"/g)).toEqual(['class="kcc-slip kcc-slip--wide kcc-tear-2"'])
+    expect((creations.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(creations).toContain('<p class="kcc-title">Nothing on the pad yet.</p>')
+    expect(creations).toContain('fa-duotone fa-bowl-food')
+    expect(washFields(creations)).toHaveLength(1)
+  })
+
+  it('gives an empty pad a hint and a ghost pill to the create flow, the way out of it', async () => {
+    const creations = creationsOf(await render([]))
+
+    expect(creations).toMatch(/<p class="kcc-body[^"]*">Start a recipe of your own\.<\/p>/)
+    expect(tagWith(creations, 'href="/recipes/create-recipe/"')).toContain('class="kcc-btn kcc-btn--ghost"')
+    expect(creations).toContain('New recipe')
+  })
+
+  it('leaves the pill off an empty pad when the site has no create page', async () => {
+    const creations = creationsOf(await render([], { createRecipeUrl: undefined }))
+
+    expect(creations).toContain('Start a recipe of your own.')
+    expect(creations).not.toContain('kcc-btn')
   })
 
   it('stands the unbuilt sections in as labelled lavender sheets via ComingSoonSection, no skeleton blocks', async () => {
@@ -232,13 +253,28 @@ describe('AccountView', () => {
       tag.slice('class="'.length, -1),
     )
 
-  it.each([0, 2])('turns "Favorites" over after %i recipe groups, so it opposes the sheet before it', async (count) => {
+  it.each([4, 6])('turns "Favorites" over after %i recipe groups, so it opposes the sheet before it', async (count) => {
     expect(await comingSoonSlips(count)).toEqual(['kcc-slip kcc-slip--flip kcc-tear-3', 'kcc-slip kcc-tear-5'])
   })
 
-  it.each([1, 3])('turns "Recent activity" over after %i recipe groups instead', async (count) => {
+  it.each([0, 1, 3])('turns "Recent activity" over after %i recipe groups instead', async (count) => {
     expect(await comingSoonSlips(count)).toEqual(['kcc-slip kcc-tear-3', 'kcc-slip kcc-slip--flip kcc-tear-5'])
   })
+
+  it.each([2, 8])('swaps the coming-soon tears after %i recipe groups, whose last is a 3', async (count) => {
+    expect(await comingSoonSlips(count)).toEqual(['kcc-slip kcc-slip--flip kcc-tear-5', 'kcc-slip kcc-tear-3'])
+  })
+
+  it.each(Array.from({ length: 13 }, (_, count) => count))(
+    'never tears two neighbours alike, down the page with %i recipe groups',
+    async (count) => {
+      const tears = [...(await render(groupsOf(count))).matchAll(/class="kcc-slip [^"]*kcc-tear-(\d)"/g)].map(
+        (match) => match[1],
+      )
+
+      tears.slice(1).forEach((tear, i) => expect(tear).not.toBe(tears[i]))
+    },
+  )
 
   it('leaves no Softbound remnant on the profile', async () => {
     const html = await render()
