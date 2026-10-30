@@ -43,6 +43,7 @@ public class AccountPagesTests
         _ = await Assert.That(page.Attribute("display-name")).IsEqualTo("Grace Hopper");
         _ = await Assert.That(page.Attribute("settings-url")).IsEqualTo("/account/settings/");
         _ = await Assert.That(page.Attribute("logout-url")).IsEqualTo("/account/logout");
+        _ = await Assert.That(page.Attribute("create-recipe-url")).IsEqualTo("/recipes/create-recipe/");
         var groups = page.Prop("recipe-groups").EnumerateArray().ToList();
         _ = await Assert.That(string.Join(" | ", groups.Select(Describe))).IsEqualTo(
             "IT Okapi (published, not started): Grace's Draft (pending), Grace's Way (published) | IT Tapir (pending, started): First Try (pending)");

@@ -9,11 +9,12 @@
   export interface VariantSiblingsProps {
     variants: SiblingVariant[]
     flip?: boolean
+    tearOffset?: number
   }
 
-  const props = defineProps<VariantSiblingsProps>()
+  const { variants, flip = false, tearOffset = 0 } = defineProps<VariantSiblingsProps>()
 
-  const cards = computed(() => props.variants.map((sibling) => ({ key: sibling.slug, card: siblingToCard(sibling) })))
+  const cards = computed(() => variants.map((sibling) => ({ key: sibling.slug, card: siblingToCard(sibling) })))
 </script>
 
 <template>
@@ -25,7 +26,7 @@
         v-for="(entry, index) in cards"
         :key="entry.key"
         :card="entry.card"
-        :tear="listTearFor(index)"
+        :tear="listTearFor(index + tearOffset)"
         :flip="flip"
       />
     </div>
