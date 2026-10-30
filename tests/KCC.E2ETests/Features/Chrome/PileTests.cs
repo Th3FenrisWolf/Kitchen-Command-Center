@@ -234,6 +234,27 @@ public class PileTests : BasePageTests
     }
 
     [Test]
+    [Arguments(375)]
+    [Arguments(1280)]
+    public async Task VariantDetail_SignedOut_OneReview_TearsTheFirstSiblingApart(int width)
+    {
+        await Page.RouteAsync(
+            new Regex(@"/api/variant/[^/]+/reviews(\?|$)"),
+            route => route.FulfillAsync(new()
+            {
+                Status = 200,
+                ContentType = "application/json",
+                Body = StubbedReviewsPage(0, total: 1),
+            }));
+        await OpenAsync(width, ReviewedVariant);
+        await Expect(Page.Locator(Reviews)).ToHaveCountAsync(1);
+
+        await Expect(Page.Locator(Reviews)).ToHaveClassAsync(new Regex(@"\bkcc-tear-1\b"));
+        await Expect(Page.Locator("main article.kcc-recipe").First).ToHaveClassAsync(new Regex(@"\bkcc-tear-3\b"));
+        await ExpectAlternatingPilesAsync();
+    }
+
+    [Test]
     [NotInParallel(MemberSession.Serial)]
     [Arguments(375)]
     [Arguments(1280)]
@@ -539,10 +560,10 @@ public class PileTests : BasePageTests
         }
     }
 
-    private static string StubbedReviewsPage(int page)
+    private static string StubbedReviewsPage(int page, int total = StubbedTotal)
     {
         var first = page * StubbedFirstPage;
-        var reviews = Enumerable.Range(first, Math.Min(StubbedFirstPage, StubbedTotal - first)).Select(index => new
+        var reviews = Enumerable.Range(first, Math.Min(StubbedFirstPage, total - first)).Select(index => new
         {
             authorName = $"Stub reviewer {index + 1}",
             rating = 4,
@@ -554,9 +575,9 @@ public class PileTests : BasePageTests
         return JsonSerializer.Serialize(new
         {
             average = 4,
-            count = StubbedTotal,
-            distribution = new[] { 0, 0, 0, StubbedTotal, 0 },
-            total = StubbedTotal,
+            count = total,
+            distribution = new[] { 0, 0, 0, total, 0 },
+            total,
             page,
             pageSize = StubbedFirstPage,
             reviews,
