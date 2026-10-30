@@ -74,6 +74,12 @@ and every Sono caps role is 10.5px.
 - Q: Where does the rescale land? → A: In the same pull request, #101 on `004-type-scale`, after a look preview.
 - Q: Which rescale direction? → A: 16 / 24, with headings 20, 24, 32 and 40px; see mockups/README.md
 
+### Session 2026-10-30
+
+- Q: From 768px to 819px the search field still shows its full placeholder while New recipe is icon-only, against the
+  2026-10-19 answer. Which holds? → A: The shipped 820px breakpoint: the label shows from 820px, and FR-019 says so.
+- Q: How big is New recipe when it is icon-only? → A: 32px (`--control-sm`), as every icon button in the kit.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Body text is easy to read (Priority: P1)
@@ -238,8 +244,8 @@ any font size outside the scale.
 - **FR-018**: The paper rule MUST be 24px, and every vertical gap, margin, padding and section gap MUST be a whole or
   half number of rules, set in rule units, so text stays in step with the ruling. Buttons, fields and segmented
   controls keep their 36px and 48px heights, and standalone icons their 24, 36 and 48px sizes.
-- **FR-019**: The member's New recipe button MUST show its label at every desk width where the search field still shows
-  its full placeholder.
+- **FR-019**: The member's New recipe button MUST show its label from 820px wide. Below 820px it MUST be a 32px icon
+  button, named by its hidden label.
 
 ### Key Entities
 

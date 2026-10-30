@@ -276,8 +276,10 @@ timer, and body text sits on the 24px ruling.
 - [X] T050 [P] Correct the docs to 16 / 24: `docs/brand/kit.md` (Tokens, Type), `docs/brand/loose-leaf.md` (type table,
       rhythm, and a history line for the rescale), `.claude/skills/loose-leaf/SKILL.md`, `.claude/agents/brand-steward.md`,
       `.claude/agents/kit-builder.md`, and "28px rule" in `CLAUDE.md`
-- [ ] T051 Definition of done again: T039, T040, quickstart steps 2 to 5 against the running site in both ramps, the
+- [X] T051 Definition of done again: T039, T040, quickstart steps 2 to 5 against the running site in both ramps, the
       `brand-steward` agent over the branch diff, and `node tests/scripts/run.mjs` with a no-op `open` on `PATH`
+      (2026-10-30: D1's only warnings are NU1903 on SixLabors.ImageSharp 3.1.12, GHSA-v76p-62qx-wwq2, published after
+      this card and fixed in its own pull request)
 
 ---
 
