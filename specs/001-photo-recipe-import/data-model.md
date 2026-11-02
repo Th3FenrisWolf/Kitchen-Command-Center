@@ -198,7 +198,7 @@ then off: the ledger never prices a read with borrowed figures.
 | Field | Type | Rules |
 |---|---|---|
 | `month` | `yyyy-MM` (UTC) | The month in which the read started |
-| `reservedMicroUsd` | long | 3,000 prompt tokens, plus the catalog's characters divided by 3.5, plus each photo at `imageTokenCap`, at the input price of the profile's highest price set; plus 12,000 output tokens at that set's output price |
+| `reservedMicroUsd` | long | 3,000 prompt tokens, plus the catalog's characters divided by 2, plus each photo at `imageTokenCap`, at the input price of the profile's highest price set; plus 12,000 output tokens at that set's output price |
 
 ## Persisted state
 

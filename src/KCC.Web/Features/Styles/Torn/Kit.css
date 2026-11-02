@@ -769,7 +769,6 @@
 
   .kcc-secname .kcc-kick {
     border-bottom: 1px dashed var(--color-hair-strong);
-    transform: translateY(-1px);
   }
 
   .kcc-foot {

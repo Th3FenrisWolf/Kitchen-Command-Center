@@ -63,7 +63,7 @@ describe('AppHeader', () => {
 
     expect(kitchen).toContain('<span class="pad-count kcc-num">1<span class="sr-only"> Waiting for review</span></span>')
     expect(between(html, 'id="pad-bar-desk"', 'id="pad-bar-phone"')).toContain(
-      '<a class="kcc-btn max-[820px]:w-(--control-md) max-[820px]:px-0" href="/recipes/create-recipe/" title="New recipe"><i class="fa-duotone fa-plus" aria-hidden="true"></i><span class="max-[820px]:sr-only">New recipe</span></a>',
+      '<a class="kcc-btn pad-new" href="/recipes/create-recipe/" title="New recipe"><i class="fa-duotone fa-plus" aria-hidden="true"></i><span class="max-[820px]:sr-only">New recipe</span></a>',
     )
     expect(html).not.toContain('Sign in')
     expect(html).not.toContain('Ask for an account')
@@ -262,6 +262,20 @@ describe('AppHeader', () => {
     expect(declarationsOf(desk, '.pad-bar--desk .pad-search-field:focus-within').width).toBe('330px')
     expect(declarationsOf(tablet, '.pad-bar--desk .pad-search-field').width).toBe('200px')
     expect(declarationsOf(tablet, '.pad-bar--desk .pad-search-field:focus-within').width).toBe('240px')
+  })
+
+  it('makes New recipe a 32px icon button below 820px, where it loses its label', () => {
+    const narrow = styleRules().filter(
+      (rule) => rule.parent?.type === 'atrule' && (rule.parent as AtRule).params === '(width < 820px)',
+    )
+
+    expect(declarationsOf(narrow, '.pad-new')).toEqual({
+      '--h': 'var(--control-sm)',
+      height: 'var(--control-sm)',
+      'line-height': 'var(--control-sm)',
+      padding: '0',
+      width: 'var(--control-sm)',
+    })
   })
 
   it('searches the library from a form that works before the page has its script', async () => {

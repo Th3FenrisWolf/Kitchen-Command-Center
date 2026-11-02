@@ -155,8 +155,17 @@ describe('RecipeFilters zero-result options', () => {
     })
 
     expect(countDisabled(html)).toBe(2)
-    expect(html).toContain('cursor-not-allowed')
-    expect(rowFor(html, 'Dinner')).toContain('opacity-40')
+  })
+
+  it('leaves a disabled row to the kit, with no look of its own', async () => {
+    const html = await render({
+      options: { categories: ['Breakfast', 'Dinner'] },
+      facets: { category: { Breakfast: 4 } },
+    })
+
+    expect(rowFor(html, 'Dinner')).toContain('disabled')
+    expect(rowFor(html, 'Dinner')).not.toMatch(/opacity-|cursor-/)
+    expect(rowFor(html, 'Breakfast')).toContain('cursor-pointer')
   })
 
   it('does not disable options that still have matches', async () => {

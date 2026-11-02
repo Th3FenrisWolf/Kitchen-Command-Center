@@ -481,6 +481,11 @@
     outline-offset: 2px;
   }
 
+  .kcc-check li:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
   .kcc-check .kcc-q {
     color: var(--color-ink-soft);
     font-family: var(--font-sono);

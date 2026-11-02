@@ -247,7 +247,8 @@ size.
   visit, the same page renders the same arrangement 100% of the time.
 - **SC-004**: On a page with at least six sheets at full bloom, no two sheets share an arrangement, and no sheet
   carries more than four washes.
-- **SC-005**: Every wash colour on every sampled page matches one of the eight brand wash colours exactly.
+- **SC-005**: Every wash on every sampled page declares its ink as one of the eight brand wash colours. The painted
+  pixels differ from the declared ink, because the ramp's `saturate()` shifts them.
 - **SC-006**: Ink and soft ink over the densest wash overlap (two deep) meet WCAG AA (4.5:1 for body text), and
   control hairlines 3:1, in both ramps.
 - **SC-007**: In both ramps, zero grain or crayon layers lie over paper, text, controls, labels, tape, wells or blank

@@ -108,8 +108,8 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
       margin rule only on a reading sheet; `paperRule.test.ts` passes, and `RuleTests.cs` when the layout moved.
 - [ ] Motion at the 300ms default, or up to 500ms for a bigger move; motion started from script checks
       `prefers-reduced-motion`.
-- [ ] Every focusable shows a ring. Only buttons have a disabled look, so add one to the kit before disabling
-      anything else.
+- [ ] Every focusable shows a ring. Only buttons and `kcc-check` rows have a disabled look, so add one to the kit
+      before disabling anything else.
 - [ ] Structural hooks (`data-testid`, ids, roles) untouched.
 - [ ] `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` still empty.
 - [ ] Ran the last step of `docs/brand/kit.md` → Building a surface (tests, type-check, format; `yarn build:all`

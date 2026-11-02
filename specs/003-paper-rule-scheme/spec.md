@@ -69,6 +69,13 @@ Sono caps, numbers and labels centred on a control sit off it.
   blocks and empty states never carry it.
 - Q: Which icon circles drop to 32px? → A: Every icon button, all twelve, cook mode and the timer included.
 
+### Session 2026-10-30
+
+- Q: FR-002's formula, `var(--bl) / 2 + k · font-size`, holds only for a one-rule line. Where does a block on a 48px
+  or 72px line put its baseline? → A: Its own baseline lies at `line-height / 2 + k · font-size` below the top of its
+  first line, and the scheme moves the block by at most half a rule so that baseline lands on a rule. FR-002 now
+  says this, which is what the shim built in this spec does.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Text sits on the rule on every sheet (Priority: P1)
@@ -200,9 +207,12 @@ with labels. Every baseline sits on the rule with no extra rule written for that
 
 - **FR-001**: Every brand font family on a sheet, Hazelnut, APCasual and Sono, MUST have pinned ascent, descent and
   line gap, and one baseline constant `k`.
-- **FR-002**: The scheme MUST place each block's baseline at `var(--bl) / 2 + k · font-size` below the top of its
-  line, where `font-size` is the block's `--text-*` token, measured from the sheet's content box. Spec 004's
-  `--rule-drop` is this drop for body text.
+- **FR-002**: The scheme MUST place each block's first baseline on a rule: `--rule-drop` plus a whole number of rules
+  below the top of the sheet's content box. A block's own baseline lies at `line-height / 2 + k · font-size` below the
+  top of its first line, where `font-size` and `line-height` come from the block's `--text-*` token, and the scheme
+  moves the block by at most half a rule to bring that baseline onto the rule. Every line height in spec 004's
+  scale is a whole number of rules, so the block's later lines land on rules too. Spec 004's `--rule-drop` is
+  `var(--bl) / 2 + k · font-size` for body text, which needs no move.
 - **FR-003**: The rule offset MUST be 2px: the top of each 1px rule lies 2px below the baseline on it.
 - **FR-004**: The scheme MUST NOT define a size, a line height or a pitch of its own. It MUST read `--bl`,
   `--rule-drop` and the `--text-*` tokens from spec 004, and spec 004's guard, `typeScale.test.ts`, MUST stay green.

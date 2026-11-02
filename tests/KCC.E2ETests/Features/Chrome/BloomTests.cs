@@ -249,6 +249,8 @@ public partial class BloomTests : BasePageTests
                   const faults = []
                   washes.forEach((wash, i) => {
                     const animation = wash.getAnimations()[0]
+                    // A bloom fills backwards only, so one that ends during the switch leaves getAnimations().
+                    if (!animation && animations[i].playState === 'finished') return
                     if (animation !== animations[i]) faults.push(`wash ${i}: its animation restarted`)
                     else if (animation && animation.playState === 'running' && Math.abs(animation.currentTime - times[i] - passed) > 1) faults.push(`wash ${i}: ${times[i]}ms became ${animation.currentTime}ms over ${passed}ms`)
                   })
