@@ -80,7 +80,8 @@ public sealed record Budget(
     Margin? Margin = null,
     string? Owner = null,
     bool PlatformSensitive = false,
-    string? CiMode = null);
+    string? CiMode = null,
+    Margin? CiMargin = null);
 
 public sealed record BudgetFile(IReadOnlyList<Budget> Budgets)
 {
@@ -91,7 +92,7 @@ public sealed record BudgetFile(IReadOnlyList<Budget> Budgets)
             ? JsonSerializer.Deserialize<BudgetFile>(File.ReadAllText(path), ResultsWriter.Json) ?? Empty
             : Empty;
 
-    public BudgetFile OnCi() => new([.. Budgets.Select(budget => budget.CiMode is { } mode ? budget with { Mode = mode } : budget)]);
+    public BudgetFile OnCi() => new([.. Budgets.Select(budget => budget with { Mode = budget.CiMode ?? budget.Mode, Margin = budget.CiMargin ?? budget.Margin })]);
 
     public Budget? Find(string metric, Case value) =>
         Budgets.LastOrDefault(budget => budget.Metric == metric && (budget.Scope ?? new Scope()).Matches(value));

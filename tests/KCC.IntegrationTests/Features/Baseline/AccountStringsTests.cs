@@ -20,4 +20,15 @@ public class AccountStringsTests
 
         _ = await Assert.That(scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetOrDefault(key)).IsEqualTo(expected);
     }
+
+    [Test]
+    [Arguments("Account.NoCreationsYet", "You haven't created anything yet.")]
+    [Arguments("Account.NoCreationsHint", "Start a recipe of your own, or add your take to one already here.")]
+    [Arguments("Account.NewRecipe", "New recipe")]
+    public async Task EmptyPadStrings_ImportFromTheBaseline(string key, string expected)
+    {
+        using var scope = Site.Services.CreateScope();
+
+        _ = await Assert.That(scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetOrDefault(key)).IsEqualTo(expected);
+    }
 }

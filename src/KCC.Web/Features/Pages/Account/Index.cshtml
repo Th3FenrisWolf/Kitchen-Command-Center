@@ -8,6 +8,7 @@
   initials="@Model.Initials"
   member-since="@Model.MemberSince"
   settings-url="@Model.SettingsUrl"
+  create-recipe-url="@Model.CreateRecipeUrl"
   logout-url="@(Url.ActionFor<LogoutController>(c => c.Index(null)))"
   :recipe-groups="@Vue.Prop(Model.RecipeGroups)"
   :resource-strings="@Vue.Prop(Model.ResourceStrings)"

@@ -40,6 +40,14 @@ describe('VariantSiblings', () => {
     expect(tears).toEqual(['1', '2', '3', '4', '5', '6', '1'])
   })
 
+  it('starts the cycle two on when the sheet above ends on a 1, keeping each card’s turn', async () => {
+    const tears = [
+      ...(await render(7, { tearOffset: 2 })).matchAll(/kcc-slip kcc-slip--fill kcc-recipe[^"]*kcc-tear-(\d)/g),
+    ].map((match) => match[1])
+
+    expect(tears).toEqual(['3', '4', '5', '6', '1', '2', '3'])
+  })
+
   it('links each card to the sibling and prints its name and time', async () => {
     const html = await render(2)
 

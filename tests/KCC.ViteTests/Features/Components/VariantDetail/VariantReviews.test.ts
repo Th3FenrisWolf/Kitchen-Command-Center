@@ -191,11 +191,13 @@ describe('VariantReviews blanks, before any review loads', () => {
 
   it('emits no trailing sign while the server renders', async () => {
     const onTrailingSign = vi.fn()
+    const onTrailingTear = vi.fn()
 
-    await render({ isAuthenticated: true, reviewCount: 3, onTrailingSign })
-    await render({ reviewCount: 3, onTrailingSign })
+    await render({ isAuthenticated: true, reviewCount: 3, onTrailingSign, onTrailingTear })
+    await render({ reviewCount: 3, onTrailingSign, onTrailingTear })
 
     expect(onTrailingSign).not.toHaveBeenCalled()
+    expect(onTrailingTear).not.toHaveBeenCalled()
   })
 })
 
@@ -228,12 +230,12 @@ describe('VariantReviews review sheets, once the reviews load', () => {
     }
   }
 
-  const mount = async (first: Review[]) => {
+  const mount = async (first: Review[], over: Record<string, unknown> = { isAuthenticated: true }) => {
     vi.mocked(get).mockResolvedValueOnce(response(first))
     const bloom = createBloom(SEED, PAGE)
     bloom.markHydrated()
     const host = document.createElement('div')
-    const app = createApp(VariantReviews, { variantGuid: '11111111-2222-3333-4444-555555555555', isAuthenticated: true })
+    const app = createApp(VariantReviews, { variantGuid: '11111111-2222-3333-4444-555555555555', ...over })
     app.provide(BLOOM_KEY, bloom)
     app.mount(host)
     await settle()
@@ -287,6 +289,19 @@ describe('VariantReviews review sheets, once the reviews load', () => {
     expect(reviewSheets(host)[0].textContent).toContain('Cy')
     expect(washesOf(sheetBy(host, 'Ada'))).toEqual(before.ada)
     expect(washesOf(sheetBy(host, 'Bea'))).toEqual(before.bea)
+    unmount()
+  })
+
+  it.each([
+    ['signed out, the only review a 1', false, [ada], 1],
+    ['signed out, the last of two a 2', false, [ada, bea], 2],
+    ['signed in, the form a 2 under a 1', true, [ada], 2],
+    ['signed in, the form a 3 under a 2', true, [ada, bea], 3],
+  ])('emits the tear the section ends on once the reviews load: %s', async (_, isAuthenticated, first, tear) => {
+    const onTrailingTear = vi.fn()
+    const { unmount } = await mount(first, { isAuthenticated, onTrailingTear })
+
+    expect(onTrailingTear).toHaveBeenLastCalledWith(tear)
     unmount()
   })
 })

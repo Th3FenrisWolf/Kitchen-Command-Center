@@ -14,7 +14,11 @@
   import VariantCookNotes from '~/Components/VariantDetail/VariantCookNotes.vue'
   import VariantReviews from '~/Components/VariantDetail/VariantReviews.vue'
   import VariantSiblings from '~/Components/VariantDetail/VariantSiblings.vue'
-  import { reviewsTrailingSign } from '~/Components/VariantDetail/reviewsTrailingSign'
+  import {
+    reviewsTrailingSign,
+    reviewsTrailingTear,
+    siblingTearOffset,
+  } from '~/Components/VariantDetail/reviewsTrailingSign'
   import { recordRecentlyViewed } from '~/Components/Header/useRecentlyViewed'
   import CookMode from './CookMode.vue'
 
@@ -58,9 +62,9 @@
     if (hasInstructions.value) cookModeOpen.value = true
   }
 
-  const reviewsTrailing = ref(
-    reviewsTrailingSign({ isAuthenticated: props.isAuthenticated ?? false, count: props.reviewCount ?? 0, loaded: 0 }),
-  )
+  const serverReviews = { isAuthenticated: props.isAuthenticated ?? false, count: props.reviewCount ?? 0, loaded: 0 }
+  const reviewsTrailing = ref(reviewsTrailingSign(serverReviews))
+  const reviewsEndTear = ref(reviewsTrailingTear(serverReviews))
 
   const statTiles = computed<StatTileSpec[]>(() => {
     const tiles: StatTileSpec[] = []
@@ -153,9 +157,14 @@
       :review-count="reviewCount"
       :is-authenticated="isAuthenticated"
       @trailing-sign="reviewsTrailing = $event"
+      @trailing-tear="reviewsEndTear = $event"
     />
 
-    <VariantSiblings :variants="siblingVariants" :flip="reviewsTrailing === -1" />
+    <VariantSiblings
+      :variants="siblingVariants"
+      :flip="reviewsTrailing === -1"
+      :tear-offset="siblingTearOffset(reviewsEndTear)"
+    />
 
     <!-- Fixed UI never lives inside a slip: the tilt and the fibre filter would become its containing block. -->
     <CookMode

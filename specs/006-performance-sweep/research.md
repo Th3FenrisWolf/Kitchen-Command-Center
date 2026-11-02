@@ -170,6 +170,12 @@ needs the hero tears, because the header uses them, so splitting the tears per p
     ratio to baseline is the calibration a job at baseline speed would read (166-218), and 206.3 is their median.
     Replayed against it, all eight jobs pass, the worst case at 85% of its limit, and a fast runner keeps the
     unscaled margin.
+- **Ubuntu 26.04 retake (owner, 2026-11-02).** `ubuntu-latest` moved to 26.04 and Playwright 1.64.1 brought
+  Chromium 156. Eight reruns of the `perf` job on unchanged code (run 41462570777, attempts 1-3 and 5-9) read
+  calibration 153-259 ms. Per-case medians stayed within 5% of the old values and `calibrationMs` became 206.8, but
+  the two slowest runners spiked home and search-3 to 2,100-2,750 ms, x1.5 to x1.7 of baseline at a runner factor of
+  x1.2. Replayed at x1.25, two of the eight jobs failed, the worst at 114% of its limit. `hydrated_ms` takes
+  `ciMargin` x1.5, +150 ms on CI only; replayed, all eight pass, the worst at 95%.
 - **T055.** No timing metric flips to `target`: none passed ten of ten.
 
 ### R5. Baselines and budgets
@@ -178,8 +184,8 @@ needs the hero tears, because the header uses them, so splitting the tears per p
 - `tests/KCC.E2ETests/Features/Performance/budgets.json`: per metric, the limit, the mode (`target` or `baseline`)
   and the margin.
 - `tests/KCC.E2ETests/Features/Performance/baseline.ci.json`: per-case CI values taken from a CI artifact, because
-  layer count and area depend on the platform. Its timing values are the per-case medians of the eight finished
-  trial jobs of run 40559904251, each job's own value a median of five runs; its deterministic values and
+  layer count and area depend on the platform. Its timing values are the per-case medians of the eight reruns of
+  run 41462570777 on Ubuntu 26.04, each job's own value a median of three runs; its deterministic values and
   `environment` are still the Mac bootstrap below.
 - `yarn perf:baseline` rewrites a baseline; a Phase 2 or 3 change flips a metric's mode to `target` (FR-016).
 - `yarn perf:baseline` with a filter rewrites only the cases it ran and keeps the rest of `baseline.json`.

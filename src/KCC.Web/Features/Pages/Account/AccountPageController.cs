@@ -2,12 +2,14 @@ using KCC.Web.Features.Dictionary;
 using KCC.Web.Features.Models.Generated;
 using KCC.Web.Features.Pages.Shared;
 using KCC.Web.Features.Providers;
+using KCC.Web.Features.Recipes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.Controllers;
+using Umbraco.Extensions;
 
 namespace KCC.Web.Features.Pages.Account;
 
@@ -19,6 +21,7 @@ public class AccountPageController(
     IMemberService memberService,
     IAuthoredRecipeQueries authoredRecipes,
     AccountPageQueries accountPages,
+    IRecipeQueries recipes,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata)
     : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
@@ -40,12 +43,14 @@ public class AccountPageController(
         var firstName = member?.GetValue<string>("firstName");
         var lastName = member?.GetValue<string>("lastName");
         var authored = authoredRecipes.GetAuthoredBy(signedIn.Key);
+        var library = page.Root().Children<RecipeListingPage>().FirstOrDefault();
         var viewModel = new AccountViewModel
         {
             DisplayName = AuthorNameProvider.FormatDisplayName(firstName, lastName, signedIn.UserName),
             Initials = AccountViewModel.ComputeInitials(firstName, lastName, signedIn.UserName),
             MemberSince = AccountViewModel.FormatMemberSince(member?.CreateDate),
             SettingsUrl = urls.Settings,
+            CreateRecipeUrl = library is null ? null : recipes.GetCreateRecipeUrl(library),
             RecipeGroups = AccountViewModel.BuildRecipeGroups(
                 authored.Recipes,
                 authored.Variants,

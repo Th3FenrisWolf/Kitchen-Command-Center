@@ -286,7 +286,10 @@ public partial class BloomTests : BasePageTests
             var arriving = washes.Where(wash => wash.PlayState == "running" && wash.Progress > 0).ToArray();
             _ = await Assert.That(arriving).IsNotEmpty();
             _ = await Assert.That(arriving.Where(wash => wash.Name != "kcc-bloom-fade" || wash.Scale is not ("1" or "none")).Select(wash => wash.ToString())).IsEmpty();
-            _ = await Assert.That(arriving.Where(wash => wash.Opacity <= 0 || wash.Opacity >= wash.Peak).Select(wash => wash.ToString())).IsEmpty();
+            // The ease's last hold reaches the peak at about 69s, so a wash late in its bloom rests at it while still running.
+            var rising = arriving.Where(wash => wash.Progress < Washes.BloomSeconds / 2);
+            _ = await Assert.That(rising).IsNotEmpty();
+            _ = await Assert.That(rising.Where(wash => wash.Opacity <= 0 || wash.Opacity >= wash.Peak).Select(wash => wash.ToString())).IsEmpty();
             await Page.WaitForTimeoutAsync(500);
         }
     }

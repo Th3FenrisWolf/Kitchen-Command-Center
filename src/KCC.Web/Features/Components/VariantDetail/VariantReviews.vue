@@ -3,13 +3,20 @@
   import type { Review, ReviewsResponse } from '~/Types/Recipe'
   import { get, put, del } from '~/Utilities/Api'
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
-  import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
+  import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
   import TextAreaField from '~/Components/Forms/TextAreaField.vue'
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
-  import { reviewsTrailingSign, tearTurn, type Turn } from '~/Components/VariantDetail/reviewsTrailingSign'
+  import {
+    SUMMARY_TEAR,
+    formTearAfter,
+    reviewsTrailingSign,
+    reviewsTrailingTear,
+    tearTurn,
+    type Turn,
+  } from '~/Components/VariantDetail/reviewsTrailingSign'
 
   export interface VariantReviewsProps {
     variantGuid: string
@@ -20,7 +27,7 @@
 
   const { variantGuid, averageRating = 0, reviewCount = 0, isAuthenticated = false } = defineProps<VariantReviewsProps>()
 
-  const emit = defineEmits<{ trailingSign: [turn: Turn | null] }>()
+  const emit = defineEmits<{ trailingSign: [turn: Turn | null]; trailingTear: [tear: number | null] }>()
 
   const t = useResourceStrings()
   const reviews = ref<Review[]>([])
@@ -55,6 +62,7 @@
       myText.value = data.myReview.text ?? ''
     }
     emit('trailingSign', trailingSign.value)
+    emit('trailingTear', reviewsTrailingTear({ isAuthenticated, count: count.value, loaded: reviews.value.length }))
   }
 
   const submit = async () => {
@@ -94,11 +102,7 @@
     })
   })
 
-  // The form sits under the last review slip and above the first sibling card, which is always a 1: a 2
-  // clears both, and a 3 clears the one case where the slip above it is itself a 2.
-  const formTear = computed<Exclude<Tear, 'hero'>>(() =>
-    reviews.value.length && listTearFor(reviews.value.length - 1) === 2 ? 3 : 2,
-  )
+  const formTear = computed(() => formTearAfter(reviews.value.length))
 
   const trailingSign = computed(() =>
     reviewsTrailingSign({ isAuthenticated, count: count.value, loaded: reviews.value.length }),
@@ -126,7 +130,7 @@
     </div>
 
     <div class="space-y-rule-1.5">
-      <KccSheet v-if="count > 0" wash-key="reviews-summary" margin :tear="5" wide>
+      <KccSheet v-if="count > 0" wash-key="reviews-summary" margin :tear="SUMMARY_TEAR" wide>
         <div class="flex flex-wrap items-start gap-x-7 gap-y-rule-1">
           <RatingSummary :value="average" />
 
