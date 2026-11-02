@@ -445,6 +445,28 @@ public class PerfHelperTests
     }
 
     [Test]
+    public async Task CiBudgets_TakeEachBudgetsCiMargin_AndLocalChecksKeepItsMargin()
+    {
+        var budgets = new BudgetFile(
+        [
+            new Budget("hydrated_ms", null, "baseline", Margin: new Margin(Ratio: 1.25, Floor: 150), CiMargin: new Margin(Ratio: 1.5, Floor: 150)),
+        ]);
+        var run = new Measurement();
+        run.Values["hydrated_ms"] = 2000;
+        var baseline = new BaselineFile { Cases = { [Search.Identity] = new() { ["hydrated_ms"] = 1500 } } };
+
+        var local = new RunReport();
+        _ = local.Add(Search, [run]);
+        local.Evaluate(budgets, baseline);
+        var ci = new RunReport();
+        _ = ci.Add(Search, [run]);
+        ci.Evaluate(budgets.OnCi(), baseline);
+
+        _ = await Assert.That(local.Failures()).IsEquivalentTo(["search-3 · phone · chromium · dark · bloomed: hydrated_ms 2000 > baseline 1500 (x1.25, +150 ms)"]);
+        _ = await Assert.That(ci.Failures()).IsEmpty();
+    }
+
+    [Test]
     public async Task CiGuard_EnforcesOnlyHydratedAndServerResponse_AmongTimingMetrics_AndLocalChecksKeepEveryBudget()
     {
         var budgets = BudgetFile.Load(MatrixRun.BudgetsPath);

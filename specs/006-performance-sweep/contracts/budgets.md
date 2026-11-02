@@ -31,6 +31,8 @@ The entries above show the shape, not the final list. Rules:
   against `baseline.ci.json`). `yarn perf --check` ignores it and enforces `mode` against `baseline.json`. Every
   timing budget carries `ciMode: report-only` except `hydrated_ms` and `server_response_ms`, the only timing metrics
   steady across CI runners (research R4).
+- `ciMargin`, when present, replaces `margin` in the CI guards the same way. `hydrated_ms` carries
+  `{ "ratio": 1.5, "floor": 150 }` (research R4, Ubuntu 26.04 retake).
 
 ## Baseline files
 

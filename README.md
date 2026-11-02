@@ -336,7 +336,8 @@ The budgets are in `tests/KCC.E2ETests/Features/Performance/budgets.json`. A bud
   `baseline + max(floorBytes, baseline x pct / 100)`. An `add` margin allows that many above the baseline.
 - `report-only` is listed and never fails.
 
-A budget's `ciMode`, when present, replaces its `mode` in the CI guards; `yarn perf --check` ignores it.
+A budget's `ciMode` and `ciMargin`, when present, replace its `mode` and `margin` in the CI guards; `yarn perf --check`
+ignores them.
 
 A deterministic count with no margin fails on any increase.
 
@@ -363,8 +364,9 @@ fail their ramp check.
 The E2E suite runs the deterministic guards on the key subset in both engines. The `perf` job runs the timing guards in
 Chromium on SwiftShader, one warm-up and three runs per case, and appends `report.md` to the job summary. Timing on a
 shared runner swings too far for most budgets, so the job fails only on `hydrated_ms` and `server_response_ms` against
-`baseline.ci.json`; frames, interactions and LCP carry `ciMode: report-only` and are reported only. `yarn perf --check`
-still enforces every budget locally.
+`baseline.ci.json`; frames, interactions and LCP carry `ciMode: report-only` and are reported only. `hydrated_ms`
+carries `ciMargin` x1.5, because a slow runner spikes home and search-3 past x1.25. `yarn perf --check` still enforces
+every budget locally, at its own margin.
 
 ### Vue SSR
 
