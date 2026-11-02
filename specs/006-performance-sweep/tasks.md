@@ -100,7 +100,7 @@ stage, and the close-out.
   `tests/KCC.E2ETests/Features/Performance/baseline.ci.json`, and commit it
 - [X] T021 [US3] Run the `perf` job ten times on unchanged code; for each timing metric record in `research.md` R4
   whether it passed ten of ten at its target, and set its mode in `budgets.json` accordingly
-- [ ] T022 [US3] Prove a guard fails on a throwaway branch: `filter: blur(1px)` on `.kcc-sheet` fails both jobs
+- [X] T022 [US3] Prove a guard fails on a throwaway branch: `filter: blur(1px)` on `.kcc-sheet` fails both jobs
   with the message format of `contracts/perf-commands.md`; delete the branch
 
 **Checkpoint**: guards green on unchanged code, red on a planted regression.
@@ -221,10 +221,10 @@ stage, and the close-out.
 
 ## Phase 8: Close-out
 
-- [ ] T050 Owner action: create and approve the measurement member on production, and add the Cloudflare WAF skip
+- [X] T050 Owner action: create and approve the measurement member on production, and add the Cloudflare WAF skip
   rule for `X-KCC-Perf`; record the rule in `docs/hosting/runbook.md` (FR-019)
-- [ ] T051 Run `yarn perf:live` after deploy and commit its report summary to `research.md`
-- [ ] T052 Owner action: the iPhone pass of quickstart scenario 7; record the result in `research.md` (FR-021)
+- [X] T051 Run `yarn perf:live` after deploy and commit its report summary to `research.md`
+- [X] T052 Owner action: the iPhone pass of quickstart scenario 7; record the result in `research.md` (FR-021)
 - [X] T053 [P] Update `docs/brand/kit.md` and `CLAUDE.md` for the fall element, the stepped bloom, grain as a
   background and the grouped tear rules (FR-020, D10)
 - [X] T054 [P] Document the budgets and the perf commands in `README.md`
