@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { configureApi, post, postForm, type ApiFailure } from '~/Utilities/Api'
-import { readErrorKey, restingUntil, submitErrorKey } from '~/Components/RecipeWizard/wizardErrors'
+import { readErrorKey, refusedName, restingUntil, submitErrorKey } from '~/Components/RecipeWizard/wizardErrors'
 
 const answer = (status: number, body: unknown = undefined) =>
   ({
@@ -53,6 +53,34 @@ describe('submitErrorKey', () => {
     const failure = await failedSubmission(() => Promise.resolve(answer(200, { success: false, errors: ['No.'] })))
 
     expect(submitErrorKey(failure)).toBe('UnexpectedError')
+  })
+})
+
+describe('refusedName', () => {
+  beforeEach(() => {
+    configureApi({ antiforgeryToken: 'tok' })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it.each(['recipeName', 'variantName'])('names the %s a 400 refuses as too long', async (field) => {
+    const failure = await failedSubmission(() =>
+      Promise.resolve(answer(400, { error: 'Too long.', code: 'nameTooLong', field })),
+    )
+
+    expect(refusedName(failure)).toBe(field)
+  })
+
+  it.each([
+    ['a 400 with no code', 400, { error: 'Recipe name is required.' }],
+    ['a 400 naming no field it knows', 400, { error: 'Too long.', code: 'nameTooLong', field: 'unit' }],
+    ['any other status', 404, { error: 'Too long.', code: 'nameTooLong', field: 'recipeName' }],
+  ])('names no field for %s', async (_case, status, body) => {
+    const failure = await failedSubmission(() => Promise.resolve(answer(status, body)))
+
+    expect(refusedName(failure)).toBeNull()
   })
 })
 

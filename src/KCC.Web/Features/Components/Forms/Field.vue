@@ -22,9 +22,9 @@
         :error="!!error"
       />
     </div>
-    <slot name="after" />
     <p v-if="error" :id="`${controlId}-error`" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
-    <p v-else-if="hint || $slots.hint" :id="`${controlId}-hint`" class="kcc-kick text-ink">
+    <slot name="after" />
+    <p v-if="!error && (hint || $slots.hint)" :id="`${controlId}-hint`" class="kcc-kick text-ink">
       <slot name="hint">{{ hint }}</slot>
     </p>
   </div>

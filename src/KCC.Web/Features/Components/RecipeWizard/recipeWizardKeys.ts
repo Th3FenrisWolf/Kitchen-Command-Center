@@ -49,6 +49,7 @@ export const recipeWizardKeys = {
   VariantSubmittedMessage: 'VariantSubmittedMessage',
   BackToRecipes: 'BackToRecipes',
   SubmitFailed: 'SubmitFailed',
+  NameTooLong: 'NameTooLong',
   UnexpectedError: 'UnexpectedError',
   SignInAgain: 'SignInAgain',
   RecipeNotFound: 'RecipeNotFound',

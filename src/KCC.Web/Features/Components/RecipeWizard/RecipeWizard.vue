@@ -37,12 +37,14 @@
     finishRead,
     hasUnsavedWork,
     isImport,
+    isRefused,
     keepEdits,
     keepNewRecipe,
     next,
     offersMatch,
     pickRecipe,
     progress,
+    refuseName,
     removeIngredient,
     removeInstruction,
     removePhoto,
@@ -58,7 +60,7 @@
   import { focusHeading } from './stepSheet'
   import SubmittedSheet, { type ClosingLink } from './SubmittedSheet.vue'
   import VariantStep from './VariantStep.vue'
-  import { submitErrorKey, type SubmitErrorKey } from './wizardErrors'
+  import { refusedName, submitErrorKey, type SubmitErrorKey } from './wizardErrors'
 
   export interface ImportAvailability {
     enabled: boolean
@@ -200,7 +202,9 @@
     submitting.value = false
 
     if (!result.success) {
-      submitError.value = submitErrorKey(result)
+      const name = refusedName(result)
+      if (name) refuseName(wizard, name)
+      else submitError.value = submitErrorKey(result)
       return
     }
 
@@ -278,6 +282,7 @@
       :can-go-back="canGoBack(wizard)"
       :can-proceed="canProceed(wizard)"
       :returns-to-review
+      :name-refused="isRefused(wizard, 'recipeName')"
       @edit="(field, value) => editValue(wizard, field, value)"
       @next="next(wizard)"
       @back="back(wizard)"
@@ -293,6 +298,7 @@
       :can-go-back="canGoBack(wizard)"
       :can-proceed="canProceed(wizard)"
       :returns-to-review
+      :name-refused="isRefused(wizard, 'variantName')"
       @edit="(field, value) => editValue(wizard, field, value)"
       @next="next(wizard)"
       @back="back(wizard)"

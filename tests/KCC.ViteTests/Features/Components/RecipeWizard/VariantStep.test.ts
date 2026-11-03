@@ -30,6 +30,8 @@ const CONTROLS = [
   stepper('servings'),
 ]
 
+const PROPS = { mode: 'variant', values: READ }
+
 const render = (values: WizardValues) => renderInWizard(VariantStep, { mode: 'variant', values })
 
 describe('VariantStep', () => {
@@ -77,5 +79,23 @@ describe('VariantStep', () => {
     expect(markKinds(html)).toEqual([])
     expect(tagWith(html, stepper('prep-time'))).toMatch(/^<input /)
     expect(tagWith(html, stepper('prep-time'))).not.toContain('aria-describedby')
+  })
+  it('draws the error line on a refused name, its message in the well under it', async () => {
+    const html = await renderInWizard(VariantStep, { ...PROPS, nameRefused: true })
+    const name = tagWith(html, 'data-testid="wizard-variant-name"')
+    const errorId = name.match(/\saria-describedby="([^"]*-error)\b/)?.[1]
+
+    expect(name).toContain('aria-invalid="true"')
+    expect(classesOf(enclosingTag(html, 'data-testid="wizard-variant-name"'))).toContain('kcc-field--error')
+    expect(errorId).toBeTruthy()
+    expect(tagWith(html, `\\sid="${errorId}"`)).toContain('kcc-well kcc-well--danger')
+    expect(html).toContain('«NameTooLong»')
+  })
+
+  it('marks no field while no name is refused', async () => {
+    const html = await renderInWizard(VariantStep, PROPS)
+
+    expect(html).not.toContain('kcc-field--error')
+    expect(html).not.toContain('aria-invalid')
   })
 })

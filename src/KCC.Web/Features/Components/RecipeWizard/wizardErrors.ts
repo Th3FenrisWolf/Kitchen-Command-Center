@@ -3,6 +3,8 @@ import { recipeWizardKeys } from './recipeWizardKeys'
 
 export type SubmitErrorKey = 'SubmitFailed' | 'SignInAgain' | 'RecipeNotFound' | 'TooManyAttempts' | 'UnexpectedError'
 
+export type NameField = 'recipeName' | 'variantName'
+
 export type ReadErrorKey =
   | 'PhotosRejected'
   | 'ReadFailed'
@@ -38,6 +40,13 @@ const READ_ERRORS: ReadErrorRow[] = [
 
 export const submitErrorKey = ({ status }: ApiFailure): SubmitErrorKey =>
   SUBMIT_ERRORS[status] ?? recipeWizardKeys.UnexpectedError
+
+const isNameField = (value: unknown): value is NameField => value === 'recipeName' || value === 'variantName'
+
+export function refusedName({ status, code, body }: ApiFailure): NameField | null {
+  const field = body?.field
+  return status === 400 && code === 'nameTooLong' && isNameField(field) ? field : null
+}
 
 export const readErrorKey = (failure: ApiFailure): ReadErrorKey =>
   READ_ERRORS.find(({ status, code }) => status === failure.status && (code === undefined || code === failure.code))?.key ??

@@ -8,7 +8,7 @@
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { ValueEdit, WizardMode } from './recipeWizardFlow'
   import StepNav from './StepNav.vue'
-  import { markId, STEP_PAD } from './stepSheet'
+  import { describedBy, markId, STEP_PAD } from './stepSheet'
   import ValueMark from './ValueMark.vue'
   import { fill } from './wizardText'
   import type { WizardValues } from './wizardValues'
@@ -20,6 +20,7 @@
     canGoBack?: boolean
     canProceed?: boolean
     returnsToReview?: boolean
+    nameRefused?: boolean
   }
 
   const {
@@ -29,6 +30,7 @@
     canGoBack = false,
     canProceed = false,
     returnsToReview = false,
+    nameRefused = false,
   } = defineProps<VariantStepProps>()
 
   const emit = defineEmits<{
@@ -77,18 +79,21 @@
     <form class="flex flex-col gap-y-rule-1" @submit.prevent="emit('next')">
       <ResourceString v-if="mode === 'recipe'" for="FirstVariantHint" as="p" class="kcc-body text-ink-soft" />
 
-      <Field :control-id="ids.variantName" required>
+      <Field :control-id="ids.variantName" required :error="nameRefused ? rs('NameTooLong') : undefined">
         <template #label><ResourceString for="VariantName" /></template>
-        <InputField
-          :id="ids.variantName"
-          :model-value="values.variantName"
-          data-testid="wizard-variant-name"
-          required
-          type="text"
-          :placeholder="rs('VariantNamePlaceholder')"
-          :aria-describedby="values.marks['variant.name'] && markId(ids.variantName)"
-          @update:model-value="(name: string) => emit('edit', 'variantName', name)"
-        />
+        <template #default="{ describedby, error }">
+          <InputField
+            :id="ids.variantName"
+            :model-value="values.variantName"
+            data-testid="wizard-variant-name"
+            required
+            type="text"
+            :placeholder="rs('VariantNamePlaceholder')"
+            :error
+            :aria-describedby="describedBy(describedby, values.marks['variant.name'] && markId(ids.variantName))"
+            @update:model-value="(name: string) => emit('edit', 'variantName', name)"
+          />
+        </template>
         <template #after>
           <ValueMark
             v-if="values.marks['variant.name']"

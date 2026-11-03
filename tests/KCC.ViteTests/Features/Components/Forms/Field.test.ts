@@ -102,6 +102,17 @@ describe('Field', () => {
     expect([...classesOf(root), ...classesOf(box)].filter((name) => /^(gap|space)-/.test(name))).toEqual([])
   })
 
+  it('sets the error well directly under the control, above what follows it', async () => {
+    const html = await renderSsr(
+      Field,
+      { ...baseProps, error: 'Enter an email address' },
+      { default: control, after: () => h('span', { 'data-testid': 'value-mark' }, 'Read from the photo') },
+    )
+
+    expect(html.indexOf('kcc-well--danger')).toBeGreaterThan(html.indexOf('id="email"'))
+    expect(html.indexOf('kcc-well--danger')).toBeLessThan(html.indexOf('data-testid="value-mark"'))
+  })
+
   it('prefers the error over the hint when both are set', async () => {
     const html = await renderSsr(Field, { ...baseProps, hint: 'ignored', error: 'Required' }, { default: control })
     expect(html).toContain('kcc-well--danger')

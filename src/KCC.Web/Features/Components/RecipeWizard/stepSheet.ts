@@ -5,6 +5,9 @@ export const stepNumber = (index: number): string => String(index + 1).padStart(
 
 export const markId = (controlId: string): string => `${controlId}-mark`
 
+export const describedBy = (...ids: (string | false | undefined)[]): string | undefined =>
+  ids.filter(Boolean).join(' ') || undefined
+
 export function focusHeading(heading: HTMLElement | null | undefined): void {
   if (!heading) return
 

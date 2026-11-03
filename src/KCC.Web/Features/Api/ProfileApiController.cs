@@ -21,6 +21,16 @@ public class ProfileApiController(
     MemberRamps memberRamps,
     IResourceStringProvider resourceStrings) : ControllerBase
 {
+    private static readonly HashSet<string> PasswordPolicyCodes =
+    [
+        nameof(IdentityErrorDescriber.PasswordTooShort),
+        nameof(IdentityErrorDescriber.PasswordRequiresNonAlphanumeric),
+        nameof(IdentityErrorDescriber.PasswordRequiresDigit),
+        nameof(IdentityErrorDescriber.PasswordRequiresLower),
+        nameof(IdentityErrorDescriber.PasswordRequiresUpper),
+        nameof(IdentityErrorDescriber.PasswordRequiresUniqueChars),
+    ];
+
     [HttpPost]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
@@ -31,7 +41,7 @@ public class ProfileApiController(
 
         if (string.IsNullOrWhiteSpace(request?.FirstName) || string.IsNullOrWhiteSpace(request.LastName))
         {
-            return Ok(new ProfileResponse(false, [resourceStrings.GetOrDefault("Account.NameRequiredError")]));
+            return Ok(new ProfileResponse(false, [resourceStrings.GetOrDefault("Account.NameRequiredError")], ProfileResponse.NameRequired));
         }
 
         var saved = await memberWriteLock.RunAsync(() =>
@@ -62,7 +72,7 @@ public class ProfileApiController(
 
         if (string.IsNullOrWhiteSpace(request?.CurrentPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
         {
-            return Ok(new ProfileResponse(false, [resourceStrings.GetOrDefault("Account.PasswordRequiredError")]));
+            return Ok(new ProfileResponse(false, [resourceStrings.GetOrDefault("Account.PasswordRequiredError")], ProfileResponse.PasswordRequired));
         }
 
         var result = await memberWriteLock.RunAsync(async () =>
@@ -79,7 +89,10 @@ public class ProfileApiController(
 
         return result.Succeeded
             ? Ok(new ProfileResponse(true, null))
-            : Ok(new ProfileResponse(false, [.. result.Errors.Select(error => error.Description)]));
+            : Ok(new ProfileResponse(
+                false,
+                [.. result.Errors.Select(error => error.Description)],
+                PasswordRefusal(result.Errors)));
     }
 
     [HttpPost("ramp")]
@@ -103,6 +116,14 @@ public class ProfileApiController(
         RampCookie.Write(HttpContext, request.Ramp);
         return Ok(new ProfileResponse(true, null));
     }
+
+    private static string PasswordRefusal(IEnumerable<IdentityError> errors) =>
+        errors.Select(error => error.Code).ToList() switch
+        {
+            var codes when codes.Contains(nameof(IdentityErrorDescriber.PasswordMismatch)) => ProfileResponse.WrongPassword,
+            var codes when codes.Count > 0 && codes.All(PasswordPolicyCodes.Contains) => ProfileResponse.WeakPassword,
+            _ => null,
+        };
 }
 
 public sealed record UpdateProfileRequest(string FirstName, string LastName);
@@ -111,4 +132,10 @@ public sealed record ChangePasswordRequest(string CurrentPassword, string NewPas
 
 public sealed record UpdateRampRequest(string Ramp);
 
-public sealed record ProfileResponse(bool Success, string[] Errors);
+public sealed record ProfileResponse(bool Success, string[] Errors, string Code = null)
+{
+    public const string NameRequired = "name-required";
+    public const string PasswordRequired = "password-required";
+    public const string WrongPassword = "wrong-password";
+    public const string WeakPassword = "weak-password";
+}

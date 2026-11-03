@@ -567,11 +567,14 @@ Status is never coloured text. It is a **well**: paper tinted 28% with the statu
 
 `kcc-well--danger` (red), `kcc-well--success` (green), `kcc-well--warning` (yellow). A field in error takes
 `kcc-field--error`, which draws its underline 2px in ink, and puts the message in a `kcc-well--danger` directly below
-it: the well carries the red. `InputField`, `TextAreaField` and `SelectField` add the class, with `aria-invalid`, when
+it, above any mark on its value: the well carries the red. `InputField`, `TextAreaField` and `SelectField` add the class, with `aria-invalid`, when
 their `error` prop is set; inside `Field`, bind it from the slot's `error`. Only a field the message is about takes
 it, with an `aria-describedby` that names the well: `LoginView` marks the name and the password when the credentials
 are wrong and the two passwords when they do not match, and an error about the account, such as one waiting for
-approval or locked out, or one the sign-up server reports, stands in the well alone. Icons inside a
+approval or locked out, or one the sign-up server reports, stands in the well alone. Account settings marks a name or
+a password sent blank, the current password when it is wrong, the new password when the policy refuses it and the two new
+passwords when they do not match, each against its form's one well. The recipe wizard returns a name too long to save
+to its step and marks it there, with the message in `Field`'s own well, until the name changes. Icons inside a
 well are duotone in ink like everywhere else. `contrast.test.ts` asserts ink on every well in both ramps.
 
 ## Icons
