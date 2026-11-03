@@ -393,6 +393,32 @@
     cursor: grabbing;
   }
 
+  /* The global :focus-visible outline cannot reach a thumb pseudo-element. Each engine drops a whole selector list
+     that names the other's pseudo-element, so every thumb rule stands alone. */
+  .kcc-range:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--color-paper-2),
+      0 0 0 4px var(--color-focus);
+  }
+
+  .kcc-range:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--color-paper-2),
+      0 0 0 4px var(--color-focus);
+  }
+
+  /* Main.css's reduced-motion rule and Kit.css's ramp-switch freeze reach ::before and ::after but no thumb, so
+     the fade leaves both out here, and waits for focus like the outline fade. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root:focus-within:not([data-theme-switching]) .kcc-range::-webkit-slider-thumb {
+      transition: box-shadow 0.2s;
+    }
+
+    :root:focus-within:not([data-theme-switching]) .kcc-range::-moz-range-thumb {
+      transition: box-shadow 0.2s;
+    }
+  }
+
   /* ---- status: a well of paper tinted with the wash, ink text. Never coloured text. ---- */
   .kcc-well {
     background: var(--color-paper-2);
@@ -625,6 +651,16 @@
 
     .kcc-field--area {
       outline: 1px solid CanvasText;
+    }
+
+    .kcc-range:focus-visible::-webkit-slider-thumb {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
+    }
+
+    .kcc-range:focus-visible::-moz-range-thumb {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
     }
   }
 }

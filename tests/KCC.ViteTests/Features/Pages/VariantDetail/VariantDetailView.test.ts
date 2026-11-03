@@ -184,13 +184,13 @@ describe('VariantDetailView', () => {
 
     it.each([
       ['signed out with reviews, under the summary', false, 3, true],
-      ['signed out with none, under cook notes', false, 0, false],
+      ['signed out with none, under the empty sheet', false, 0, true],
       ['signed in with reviews, under the form', true, 3, false],
-      ['signed in with none, under the form', true, 0, true],
+      ['signed in with none, under the form', true, 0, false],
     ])('sets the siblings against the sheet above them: %s', async (_, isAuthenticated, reviewCount, flip) => {
       const html = await render({ isAuthenticated, reviewCount, averageRating: reviewCount ? 4.5 : 0 })
 
-      expect(html.includes('kcc-tear-5"')).toBe(reviewCount > 0)
+      expect(html).toContain('kcc-tear-5"')
       expect(html.includes('data-testid="review-input"')).toBe(isAuthenticated)
       expect(html).not.toContain('reviews-list')
       expectSiblingsFlip(html, flip)

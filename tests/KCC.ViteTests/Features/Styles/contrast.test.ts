@@ -246,7 +246,8 @@ const TEXT_PAIRS: [string, string][] = [
   ...WASHES.map((wash): [string, string] => ['marker-ink', wash]),
 ]
 
-// Control boundaries (inset hairlines) and the focus ring, which sits 2px outside its element on the ground.
+// Control boundaries (inset hairlines) and the focus ring, which sits 2px outside its element on the ground, or
+// on a range thumb's paper-2 ring.
 // desk-2 is the darkest ground a hairline is read on, so it is the binding pair.
 const UI_PAIRS: [string, string][] = [
   ['hair-strong', 'paper'],
@@ -254,6 +255,7 @@ const UI_PAIRS: [string, string][] = [
   ['hair-strong', 'desk'],
   ['hair-strong', 'desk-2'],
   ['focus', 'paper'],
+  ['focus', 'paper-2'],
   ['focus', 'desk'],
 ]
 

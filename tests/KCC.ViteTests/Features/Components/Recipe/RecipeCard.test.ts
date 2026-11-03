@@ -125,7 +125,7 @@ describe('RecipeCard pile', () => {
 })
 
 describe('RecipeCard stat', () => {
-  it('raises the rating to the top-right, with the review count in soft ink', async () => {
+  it('raises the rating to the top-right, with the review count a Sono number in soft ink', async () => {
     const html = await render(hit())
     const stat = tagWith(html, 'kcc-stat')
     expect(stat).toContain('data-testid="recipe-card-rating"')
@@ -133,7 +133,7 @@ describe('RecipeCard stat', () => {
     expect(countStars(html)).toBe(1)
     // The average is named for a screen reader as on the detail hero; the separator is decoration.
     expect(html).toMatch(
-      /<i class="fa-duotone fa-star"[^>]*><\/i>\s*<span class="kcc-num" role="img" aria-label="4\.8 of 5 stars">4\.8<\/span>\s*<span class="text-ink-soft"><span aria-hidden="true">· <\/span>12<\/span>/,
+      /<i class="fa-duotone fa-star"[^>]*><\/i>\s*<span class="kcc-num" role="img" aria-label="4\.8 of 5 stars">4\.8<\/span>\s*<span class="text-ink-soft"><span aria-hidden="true">· <\/span><span class="kcc-num">12<\/span><\/span>/,
     )
   })
 

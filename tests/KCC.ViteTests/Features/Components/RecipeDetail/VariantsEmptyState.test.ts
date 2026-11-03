@@ -29,12 +29,12 @@ describe('VariantsEmptyState', () => {
     expect(inkOf(fields[0][0])).toBe(chosenInk('sky'))
   })
 
-  it('says what happened at heading size and leaves the hint as the one hand note', async () => {
+  it('says what happened at heading size and gives the hint in body copy, with no hand note', async () => {
     const html = await render()
 
     expect(html).toMatch(/<p class="kcc-title">\s*NoVariantsMatch\s*<\/p>/)
-    expect(html).toMatch(/<p class="kcc-hand">\s*TryDifferentFilter\s*<\/p>/)
-    expect((html.match(/kcc-hand/g) ?? []).length).toBe(1)
+    expect(html).toMatch(/<p class="kcc-body max-w-\[60ch\]">\s*TryDifferentFilter\s*<\/p>/)
+    expect(html).not.toContain('kcc-hand')
     expect(html).toContain('fa-duotone fa-bowl-food kcc-icon-lg')
   })
 
