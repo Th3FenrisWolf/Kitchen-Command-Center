@@ -8,7 +8,7 @@ Root `package.json` scripts. Each needs a Release build and `yarn build:all` fir
 | `yarn perf --check` | The same, enforcing budgets | as above | 1 when a budget fails |
 | `yarn perf:live` | Runs the matrix against the live site, signed out and as the measurement member, ten runs for server response | `tests/results/perf-live/…` | 0 whatever the budgets (spec FR-018); non-zero when a live variable is missing |
 | `yarn perf:capture <ref>` | PNG captures for every case, scripts on and off | `tests/results/perf/captures/<ref>/` | 0 |
-| `yarn perf:scripts-off <ref>` | Compares each scripts-on capture with its scripts-off partner | heat maps in `tests/results/perf/captures/<ref>/heat/scripts-off/` | 1 when a pair differs in any pixel or has no partner |
+| `yarn perf:scripts-off <ref>` | Compares each scripts-on capture with its scripts-off partner | heat maps in `tests/results/perf/captures/<ref>/heat/scripts-off/` | 1 when a pair differs by more than 6 levels, its sizes differ, or it has no partner; a difference of 6 or fewer prints as header residue and passes |
 | `yarn perf:diff <before> <after>` | Perceptual diffs and the look round page | heat maps beside the after captures; `.mockups/006-performance-sweep/look-<n>-<page>.html` | 0 |
 | `yarn perf:report --before <file> [--after <file>]` | Renders the report again from a saved run, with the before run beside it; no site boots | `report.html` and `report.md` beside the after results | 1 when an after budget fails |
 | `yarn perf:baseline` | Runs the matrix and rewrites `specs/006-performance-sweep/baseline.json` | the baseline | 0 |

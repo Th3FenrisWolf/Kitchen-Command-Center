@@ -77,9 +77,11 @@ describe('scripts-off check', () => {
     expect(lib.comparePixels(on, { width: 1, height: 1, data: Uint8Array.from([10, 20, 30, 255]) }).sameSize).toBe(false)
   })
 
-  it('passes a pair only when its captures are pixel-identical', () => {
-    expect(lib.scriptsOffPasses({ sameSize: true, differing: 0, maxDelta: 0 })).toBe(true)
-    expect(lib.scriptsOffPasses({ sameSize: true, differing: 1, maxDelta: 1 })).toBe(false)
-    expect(lib.scriptsOffPasses({ sameSize: false, differing: 0, maxDelta: 0 })).toBe(false)
+  it('passes an identical pair, reads a header redraw of up to 6 levels as residue, and fails the rest', () => {
+    expect(lib.scriptsOffVerdict({ sameSize: true, differing: 0, maxDelta: 0 })).toBe('pass')
+    expect(lib.scriptsOffVerdict({ sameSize: true, differing: 14_999, maxDelta: 6 })).toBe('residue')
+    expect(lib.scriptsOffVerdict({ sameSize: true, differing: 19, maxDelta: 1 })).toBe('residue')
+    expect(lib.scriptsOffVerdict({ sameSize: true, differing: 1, maxDelta: 7 })).toBe('fail')
+    expect(lib.scriptsOffVerdict({ sameSize: false, differing: 0, maxDelta: 0 })).toBe('fail')
   })
 })

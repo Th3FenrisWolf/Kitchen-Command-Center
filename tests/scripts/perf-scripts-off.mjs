@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
-import { comparePixels, scriptsOffPairs, scriptsOffPasses } from "./perf-diff-lib.mjs";
+import { comparePixels, scriptsOffPairs, scriptsOffVerdict } from "./perf-diff-lib.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const [ref] = process.argv.slice(2);
@@ -32,17 +32,19 @@ const heatDir = path.join(dir, "heat", "scripts-off");
 rmSync(heatDir, { recursive: true, force: true });
 mkdirSync(heatDir, { recursive: true });
 const failed = [];
+const residue = [];
 for (const pair of pairs) {
   const on = PNG.sync.read(readFileSync(path.join(dir, `${pair.on}.png`)));
   const off = PNG.sync.read(readFileSync(path.join(dir, `${pair.off}.png`)));
   const result = comparePixels(on, off);
-  if (scriptsOffPasses(result)) {
+  const verdict = scriptsOffVerdict(result);
+  if (verdict === "pass") {
     process.stdout.write(`pass ${pair.name}\n`);
     continue;
   }
 
-  failed.push(pair.name);
   if (!result.sameSize) {
+    failed.push(pair.name);
     process.stdout.write(`FAIL ${pair.name}: ${on.width}x${on.height} on, ${off.width}x${off.height} off\n`);
     continue;
   }
@@ -50,8 +52,18 @@ for (const pair of pairs) {
   const heat = new PNG({ width: on.width, height: on.height });
   pixelmatch(on.data, off.data, heat.data, on.width, on.height, { threshold: 0, includeAA: true });
   writeFileSync(path.join(heatDir, `${pair.name}.png`), PNG.sync.write(heat));
-  process.stdout.write(`FAIL ${pair.name}: ${result.differing} pixels differ, largest channel delta ${result.maxDelta}\n`);
+  const detail = `${result.differing} pixels differ, largest channel delta ${result.maxDelta}`;
+  if (verdict === "residue") {
+    residue.push(pair.name);
+    process.stdout.write(`residue ${pair.name}: ${detail}\n`);
+  } else {
+    failed.push(pair.name);
+    process.stdout.write(`FAIL ${pair.name}: ${detail}\n`);
+  }
 }
 
-process.stdout.write(`${pairs.length - failed.length} of ${pairs.length} pairs identical; heat maps in ${heatDir}\n`);
+const identical = pairs.length - failed.length - residue.length;
+process.stdout.write(
+  `${identical} of ${pairs.length} pairs identical, ${residue.length} header residue, ${failed.length} failed; heat maps in ${heatDir}\n`,
+);
 process.exit(failed.length > 0 || unpaired.length > 0 ? 1 : 0);

@@ -27,7 +27,7 @@ if (!command) {
   process.exit(2);
 }
 
-const env = { ...process.env, KCC_PERF_MODE: command.mode };
+const env = { ...process.env, ...(command.mode && { KCC_PERF_MODE: command.mode }) };
 const positional = [];
 const reportFlags = {};
 for (let i = 0; i < args.length; i++) {
