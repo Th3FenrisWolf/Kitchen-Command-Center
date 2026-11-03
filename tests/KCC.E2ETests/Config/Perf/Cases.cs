@@ -294,8 +294,8 @@ public static class CasePages
         var stalled = 0;
         for (var attempt = 0; attempt < 40 && loaded < SeededRecipes && (exact || stalled < StalledAttempts); attempt++)
         {
-            // The search loads on the sentinel's intersection change, and a sentinel still in view when a page
-            // finishes loading never changes, so each attempt scrolls away from the bottom before returning to it.
+            // Each attempt scrolls away from the bottom before returning to it, so every attempt changes the
+            // sentinel's intersection rather than resting on the search re-observing it after a page loads.
             // Intersections are computed only in a rendering update, and headless WebKit on Linux renders the phone
             // about once a second, so a fixed pause can let both scrolls land in one update and cancel out.
             await page.EvaluateAsync("() => window.scrollTo(0, document.documentElement.scrollHeight - innerHeight * 4)");
