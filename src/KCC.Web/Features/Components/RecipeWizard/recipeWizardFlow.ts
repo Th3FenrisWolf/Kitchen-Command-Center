@@ -2,7 +2,7 @@ import type { Ingredient } from '~/Types/Recipe'
 import type { EncodedPhoto } from './photoEncoding'
 import type { ReadRequest, ReadResponse, ReadResult, RecipeChoice } from './recipeImportApi'
 import { recipeWizardKeys } from './recipeWizardKeys'
-import { readErrorKey, restingUntil, type ReadErrorKey } from './wizardErrors'
+import { readErrorKey, restingUntil, type NameField, type ReadErrorKey } from './wizardErrors'
 import {
   emptyIngredient,
   emptyInstruction,
@@ -75,6 +75,7 @@ export interface WizardFlow {
   noRecipeFound: boolean
   editedSinceRead: boolean
   confirmingRead: boolean
+  refusedName: { field: NameField; value: string } | null
 }
 
 export interface WizardFlowOptions {
@@ -152,6 +153,7 @@ export function createWizardFlow({ flow, recipe, importEnabled, availableAgainOn
     noRecipeFound: false,
     editedSinceRead: false,
     confirmingRead: false,
+    refusedName: null,
   }
 }
 
@@ -214,6 +216,14 @@ export function backToReview(wizard: WizardFlow): void {
   moveTo(wizard, 'review')
   wizard.returnTo = null
 }
+
+export function refuseName(wizard: WizardFlow, field: NameField): void {
+  edit(wizard, field === 'recipeName' ? 'basics' : 'variant')
+  wizard.refusedName = { field, value: wizard.values[field] }
+}
+
+export const isRefused = ({ refusedName, values }: WizardFlow, field: NameField): boolean =>
+  refusedName?.field === field && values[field] === refusedName.value
 
 export function changePhotos(wizard: WizardFlow): void {
   moveTo(wizard, 'photos')

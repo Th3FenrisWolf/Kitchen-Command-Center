@@ -47,7 +47,9 @@
             :aria-label="rated ? `${card.notch.text} of 5 stars` : undefined"
             >{{ card.notch.text }}</span
           >
-          <span v-if="reviewCount" class="text-ink-soft"><span aria-hidden="true">· </span>{{ reviewCount }}</span>
+          <span v-if="reviewCount" class="text-ink-soft"
+            ><span aria-hidden="true">· </span><span class="kcc-num">{{ reviewCount }}</span></span
+          >
         </span>
 
         <h3 class="kcc-title">{{ card.name }}</h3>

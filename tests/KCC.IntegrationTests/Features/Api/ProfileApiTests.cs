@@ -36,6 +36,7 @@ public class ProfileApiTests
 
         _ = await Assert.That(response.Success).IsFalse();
         _ = await Assert.That(response.Errors!.Single()).IsEqualTo(Site.ResourceString("Account.NameRequiredError"));
+        _ = await Assert.That(response.Code).IsEqualTo("name-required");
     }
 
     [Test]
@@ -82,6 +83,7 @@ public class ProfileApiTests
 
         _ = await Assert.That(response.Success).IsFalse();
         _ = await Assert.That(response.Errors!.Length).IsGreaterThan(0);
+        _ = await Assert.That(response.Code).IsEqualTo("wrong-password");
     }
 
     [Test]
@@ -92,6 +94,18 @@ public class ProfileApiTests
         var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile/password", new { currentPassword = TestMembers.Password, newPassword = "Short7!" }));
 
         _ = await Assert.That(response.Success).IsFalse();
+        _ = await Assert.That(response.Code).IsEqualTo("weak-password");
+    }
+
+    [Test]
+    public async Task ChangePassword_WithoutANewPassword_IsRefused()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "blank");
+
+        var response = await ReadAsync(await member.Visitor.PostAsync("/api/profile/password", new { currentPassword = TestMembers.Password, newPassword = " " }));
+
+        _ = await Assert.That(response.Success).IsFalse();
+        _ = await Assert.That(response.Code).IsEqualTo("password-required");
     }
 
     [Test]
@@ -168,5 +182,5 @@ public class ProfileApiTests
     private string? StoredRamp(Guid memberKey) =>
         Site.Services.GetRequiredService<IMemberService>().GetById(memberKey)!.GetValue<string>("ramp");
 
-    private sealed record ProfileResult(bool Success, string[]? Errors);
+    private sealed record ProfileResult(bool Success, string[]? Errors, string? Code);
 }

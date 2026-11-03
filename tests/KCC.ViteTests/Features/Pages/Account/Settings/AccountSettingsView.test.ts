@@ -124,6 +124,13 @@ describe('AccountSettingsView', () => {
     expect(html).toContain('kcc-field')
   })
 
+  it('marks no field until a save is refused', async () => {
+    const sheets = sheetsOf(await render())
+
+    expect(sheets).not.toContain('kcc-field--error')
+    expect(sheets).not.toContain('aria-invalid')
+  })
+
   it('keeps the resource string itself in each label, editor hooks and all', async () => {
     const html = await render()
 

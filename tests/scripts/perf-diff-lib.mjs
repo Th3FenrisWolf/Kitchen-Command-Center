@@ -119,6 +119,12 @@ export function comparePixels(on, off) {
   return { sameSize: true, differing, maxDelta };
 }
 
-export function scriptsOffPasses(result) {
-  return result.sameSize && result.differing === 0;
+// The owner ruled on 2026-10-27 (research.md, "Scripts-off residue") that a repaint of the header bar, which redraws
+// its washes up to 6 levels off the first raster in SwiftShader, is engine noise and passes.
+const RESIDUE_MAX_DELTA = 6;
+
+export function scriptsOffVerdict(result) {
+  if (!result.sameSize) return "fail";
+  if (result.differing === 0) return "pass";
+  return result.maxDelta <= RESIDUE_MAX_DELTA ? "residue" : "fail";
 }

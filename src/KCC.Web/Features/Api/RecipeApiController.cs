@@ -19,9 +19,10 @@ public class RecipeApiController(RecipeSubmissions submissions, IMemberManager m
     [HttpPost]
     public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeRequest request, CancellationToken cancellationToken)
     {
-        if ((NameError(request?.RecipeName, "Recipe name") ?? NameError(request?.FirstVariant?.VariantName, "First variant name")) is { } error)
+        if ((RefuseName(request?.RecipeName, "Recipe name", "recipeName")
+            ?? RefuseName(request?.FirstVariant?.VariantName, "First variant name", "variantName")) is { } refusal)
         {
-            return BadRequest(new { error });
+            return BadRequest(refusal);
         }
 
         if (await memberManager.GetCurrentMemberAsync() is not { } member)
@@ -35,9 +36,9 @@ public class RecipeApiController(RecipeSubmissions submissions, IMemberManager m
     [HttpPost("{recipeKey:guid}/variants")]
     public async Task<IActionResult> AddVariant(Guid recipeKey, [FromBody] CreateVariantRequest request, CancellationToken cancellationToken)
     {
-        if (NameError(request?.VariantName, "Variant name") is { } error)
+        if (RefuseName(request?.VariantName, "Variant name", "variantName") is { } refusal)
         {
-            return BadRequest(new { error });
+            return BadRequest(refusal);
         }
 
         if (await memberManager.GetCurrentMemberAsync() is not { } member)
@@ -50,8 +51,13 @@ public class RecipeApiController(RecipeSubmissions submissions, IMemberManager m
             : NotFound(new { error = "Recipe not found." });
     }
 
-    private static string NameError(string name, string label) =>
-        string.IsNullOrWhiteSpace(name) ? $"{label} is required."
-        : name.Trim().Length > MaxNameLength ? $"{label} cannot be more than {MaxNameLength} characters."
+    private static NameRefusal RefuseName(string name, string label, string field) =>
+        string.IsNullOrWhiteSpace(name) ? new NameRefusal($"{label} is required.", null, null)
+        : name.Trim().Length > MaxNameLength ? new NameRefusal($"{label} cannot be more than {MaxNameLength} characters.", NameRefusal.TooLong, field)
         : null;
+}
+
+public sealed record NameRefusal(string Error, string Code, string Field)
+{
+    public const string TooLong = "nameTooLong";
 }

@@ -25,7 +25,7 @@ the brand docs win: kickers, Sono caps labels, the stats row, the tilt and the t
 
 | Torn: `kcc-sheet`, `kcc-blank`, `kcc-tile` | Printed: `kcc-btn`, `kcc-seg`, `kcc-badge`, `kcc-box`, `kcc-label`, `kcc-tape` | Written: `kcc-field` |
 |---|---|---|
-| clipped, fibre + fall (cast from its `.kcc-fall`), may tilt, no radius | clean, unclipped, never shadowed, pill / 6px / 3px | a line on the rule with an X before it; no box, no radius |
+| clipped, fibre + fall (a sheet's from its `.kcc-fall`; a blank and a tile carry their own), may tilt, no radius | clean, unclipped, never shadowed, pill / 6px / 3px | a line on the rule with an X before it; no box, no radius |
 
 ## The structure
 

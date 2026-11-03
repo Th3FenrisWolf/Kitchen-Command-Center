@@ -75,19 +75,39 @@ describe('VariantReviews summary', () => {
   it('keeps the summary off the page until there is something to summarize', async () => {
     const html = await render()
 
-    expect(html).not.toContain('kcc-tear-5')
+    expect(html).not.toContain('of 5 stars')
+    expect(html).not.toContain('bg-peach')
     expect(html).not.toContain('★')
   })
 })
 
-describe('VariantReviews list', () => {
-  it('says the sheet is empty in body copy, with no dashed box and no great grey star', async () => {
+describe('VariantReviews empty sheet', () => {
+  it('lays a wide sheet on the summary’s tear in its place, with no margin rule', async () => {
     const html = await render()
 
-    expect(html).toMatch(/class="kcc-body[^"]*">\s*NoReviewsYet\s*</)
+    expect(html.match(/class="kcc-slip [^"]*"/g)).toEqual(['class="kcc-slip kcc-slip--wide kcc-tear-5"'])
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect(html).not.toContain('kcc-sheet--margin')
+    expect(washFields(html)).toHaveLength(1)
+  })
+
+  it('titles the sheet like every empty state, with a glyph and a body hint and no button', async () => {
+    const html = await render()
+
+    expect(html).toContain('<i class="fa-duotone fa-comments kcc-icon-lg text-ink-soft" aria-hidden="true"></i>')
+    expect(html).toMatch(/<p class="kcc-title">\s*NoReviewsYet\s*<\/p>/)
+    expect(html).toMatch(/<p class="kcc-body max-w-\[60ch\]">\s*NoReviewsHint\s*<\/p>/)
+    expect(html).not.toMatch(/class="kcc-body[^"]*">\s*NoReviewsYet\s*</)
+    expect(html).not.toContain('kcc-btn')
     expect(html).not.toContain('reviews-list')
-    expect(html).not.toContain('border-dashed')
-    expect(html).not.toContain('fa-regular fa-star text-4xl')
+  })
+
+  it('gives way to the summary when there are reviews, even before any loads', async () => {
+    const html = await render({ reviewCount: 12, averageRating: 4.5 })
+
+    expect(html).not.toContain('NoReviewsYet')
+    expect(html).not.toContain('NoReviewsHint')
+    expect(html).not.toContain('fa-comments')
   })
 })
 
@@ -97,16 +117,17 @@ describe('VariantReviews form', () => {
     const html = await render({ isAuthenticated: true })
     const form = tagWith(html, 'kcc-tear-2')
 
-    expect(form).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-2"')
+    expect(form).toContain('class="kcc-slip kcc-slip--wide kcc-tear-2"')
     expect(form).toContain('--r:0')
     expect(html).toContain('<span class="kcc-label"><i class="fa-duotone fa-comment-pen" aria-hidden="true"></i>')
     expect(html).toMatch(/kcc-label[^>]*>.*?YourReview/s)
   })
 
-  it('rests on one blank, with the wide turn', async () => {
+  it('gives the empty sheet and the form a blank each, with the wide turn', async () => {
     const html = await render({ isAuthenticated: true })
 
-    expect((html.match(/kcc-blank/g) ?? []).length).toBe(1)
+    expect((html.match(/kcc-blank/g) ?? []).length).toBe(2)
+    expect(tagWith(html, 'kcc-tear-5')).toContain('kcc-slip--wide')
     expect(tagWith(html, 'kcc-tear-2')).toContain('kcc-slip--wide')
   })
 
@@ -183,10 +204,16 @@ describe('VariantReviews blanks, before any review loads', () => {
     expect(slipTag(html, 2)).toContain('class="kcc-slip kcc-slip--wide kcc-tear-2"')
   })
 
-  it('turns the form over, to -, against cook notes when there are none', async () => {
+  it('leaves the empty sheet the summary’s - turn when there are none', async () => {
+    const html = await render()
+
+    expect(slipTag(html, 5)).toContain('class="kcc-slip kcc-slip--wide kcc-tear-5"')
+  })
+
+  it('turns the form + under the empty sheet when there are none', async () => {
     const html = await render({ isAuthenticated: true })
 
-    expect(slipTag(html, 2)).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-2"')
+    expect(slipTag(html, 2)).toContain('class="kcc-slip kcc-slip--wide kcc-tear-2"')
   })
 
   it('emits no trailing sign while the server renders', async () => {
@@ -198,6 +225,36 @@ describe('VariantReviews blanks, before any review loads', () => {
 
     expect(onTrailingSign).not.toHaveBeenCalled()
     expect(onTrailingTear).not.toHaveBeenCalled()
+  })
+})
+
+describe('VariantReviews region while a page loads', () => {
+  afterEach(() => vi.mocked(get).mockReset())
+
+  it('is busy while the request is pending, and drops the attribute once it settles', async () => {
+    let settleRequest: (value: Awaited<ReturnType<typeof get>>) => void = () => {}
+    vi.mocked(get).mockReturnValueOnce(new Promise((resolve) => (settleRequest = resolve)))
+    const bloom = createBloom(2671381617, '/recipes/brown-butter-gnocchi/classic')
+    bloom.markHydrated()
+    const host = document.createElement('div')
+    const app = createApp(VariantReviews, { variantGuid: '11111111-2222-3333-4444-555555555555', reviewCount: 3 })
+    app.provide(BLOOM_KEY, bloom)
+    app.mount(host)
+    await nextTick()
+    const region = () => host.querySelector('section > .space-y-rule-1\\.5') as HTMLElement
+
+    expect(region().getAttribute('aria-busy')).toBe('true')
+
+    settleRequest({
+      success: true,
+      data: { average: 4, count: 3, distribution: [], total: 0, page: 0, pageSize: 10, reviews: [], myReview: null },
+      errorMessage: null,
+    })
+    await new Promise((resolve) => setTimeout(resolve))
+    await nextTick()
+
+    expect(region().hasAttribute('aria-busy')).toBe(false)
+    app.unmount()
   })
 })
 

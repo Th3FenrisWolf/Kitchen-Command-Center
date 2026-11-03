@@ -67,6 +67,7 @@ describe('the kit classes and kit.md agree', () => {
 const SHADOW_DEVICES = [
   /^inset 0 0 0 [12]px var\(--color-(?:hair-strong|ink)\)$/,
   /^0 0 0 2px var\(--color-paper-2\)$/,
+  /^0 0 0 2px var\(--color-paper-2\),\s+0 0 0 4px var\(--color-focus\)$/,
   /^none$/,
 ]
 

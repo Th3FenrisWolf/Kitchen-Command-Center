@@ -100,7 +100,7 @@
     spotlight.value ? results.value.filter((r) => r.slug !== spotlight.value!.slug) : results.value,
   )
 
-  const { sentinel } = useInfiniteScroll(loadMore)
+  const { sentinel } = useInfiniteScroll(loadMore, results)
 </script>
 
 <template>

@@ -7,7 +7,7 @@
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { ValueEdit } from './recipeWizardFlow'
   import StepNav from './StepNav.vue'
-  import { markId, STEP_PAD } from './stepSheet'
+  import { describedBy, markId, STEP_PAD } from './stepSheet'
   import ValueMark from './ValueMark.vue'
   import type { WizardValues } from './wizardValues'
 
@@ -17,9 +17,17 @@
     canGoBack?: boolean
     canProceed?: boolean
     returnsToReview?: boolean
+    nameRefused?: boolean
   }
 
-  const { values, tear, canGoBack = false, canProceed = false, returnsToReview = false } = defineProps<BasicsStepProps>()
+  const {
+    values,
+    tear,
+    canGoBack = false,
+    canProceed = false,
+    returnsToReview = false,
+    nameRefused = false,
+  } = defineProps<BasicsStepProps>()
 
   const emit = defineEmits<{ edit: ValueEdit<'recipeName' | 'recipeDescription'>; next: []; back: []; review: [] }>()
 
@@ -39,18 +47,21 @@
     <h2 class="sr-only">{{ rs('RecipeBasics') }}</h2>
 
     <form class="flex flex-col gap-y-rule-1" @submit.prevent="emit('next')">
-      <Field :control-id="ids.recipeName" required>
+      <Field :control-id="ids.recipeName" required :error="nameRefused ? rs('NameTooLong') : undefined">
         <template #label><ResourceString for="RecipeName" /></template>
-        <InputField
-          :id="ids.recipeName"
-          :model-value="values.recipeName"
-          data-testid="wizard-recipe-name"
-          required
-          type="text"
-          :placeholder="rs('RecipeNamePlaceholder')"
-          :aria-describedby="values.marks['recipe.name'] && markId(ids.recipeName)"
-          @update:model-value="(name: string) => emit('edit', 'recipeName', name)"
-        />
+        <template #default="{ describedby, error }">
+          <InputField
+            :id="ids.recipeName"
+            :model-value="values.recipeName"
+            data-testid="wizard-recipe-name"
+            required
+            type="text"
+            :placeholder="rs('RecipeNamePlaceholder')"
+            :error
+            :aria-describedby="describedBy(describedby, values.marks['recipe.name'] && markId(ids.recipeName))"
+            @update:model-value="(name: string) => emit('edit', 'recipeName', name)"
+          />
+        </template>
         <template #after>
           <ValueMark v-if="values.marks['recipe.name']" :id="markId(ids.recipeName)" :mark="values.marks['recipe.name']" />
         </template>

@@ -62,7 +62,7 @@
     if (hasInstructions.value) cookModeOpen.value = true
   }
 
-  const serverReviews = { isAuthenticated: props.isAuthenticated ?? false, count: props.reviewCount ?? 0, loaded: 0 }
+  const serverReviews = { isAuthenticated: props.isAuthenticated ?? false, loaded: 0 }
   const reviewsTrailing = ref(reviewsTrailingSign(serverReviews))
   const reviewsEndTear = ref(reviewsTrailingTear(serverReviews))
 

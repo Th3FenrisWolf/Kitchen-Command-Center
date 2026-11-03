@@ -1,7 +1,12 @@
-import { computed, onBeforeUnmount, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch, type ComputedRef, type Ref, type WatchSource } from 'vue'
 
 // Re-observes when the sentinel changes: it sits behind a v-if, so it comes and goes with the results.
-export function useInfiniteScroll(onHit: () => void): { sentinel: ComputedRef<Ref<HTMLElement | null>> } {
+// An observer reports only changes, so a sentinel still in view after a page loads would never report again.
+// Re-observing after each page has the browser report it afresh once the new cards have laid out.
+export function useInfiniteScroll(
+  onHit: () => void,
+  pageLoaded: WatchSource,
+): { sentinel: ComputedRef<Ref<HTMLElement | null>> } {
   const sentinel = ref<HTMLElement | null>(null)
   let observer: IntersectionObserver | null = null
 
@@ -31,6 +36,18 @@ export function useInfiniteScroll(onHit: () => void): { sentinel: ComputedRef<Re
         }
       },
       { immediate: true },
+    )
+
+    watch(
+      pageLoaded,
+      () => {
+        const el = sentinel.value
+        if (el) {
+          observer?.unobserve(el)
+          observer?.observe(el)
+        }
+      },
+      { flush: 'post' },
     )
   })
 

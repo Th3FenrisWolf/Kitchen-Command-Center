@@ -567,11 +567,14 @@ Status is never coloured text. It is a **well**: paper tinted 28% with the statu
 
 `kcc-well--danger` (red), `kcc-well--success` (green), `kcc-well--warning` (yellow). A field in error takes
 `kcc-field--error`, which draws its underline 2px in ink, and puts the message in a `kcc-well--danger` directly below
-it: the well carries the red. `InputField`, `TextAreaField` and `SelectField` add the class, with `aria-invalid`, when
+it, above any mark on its value: the well carries the red. `InputField`, `TextAreaField` and `SelectField` add the class, with `aria-invalid`, when
 their `error` prop is set; inside `Field`, bind it from the slot's `error`. Only a field the message is about takes
 it, with an `aria-describedby` that names the well: `LoginView` marks the name and the password when the credentials
 are wrong and the two passwords when they do not match, and an error about the account, such as one waiting for
-approval or locked out, or one the sign-up server reports, stands in the well alone. Icons inside a
+approval or locked out, or one the sign-up server reports, stands in the well alone. Account settings marks a name or
+a password sent blank, the current password when it is wrong, the new password when the policy refuses it and the two new
+passwords when they do not match, each against its form's one well. The recipe wizard returns a name too long to save
+to its step and marks it there, with the message in `Field`'s own well, until the name changes. Icons inside a
 well are duotone in ink like everywhere else. `contrast.test.ts` asserts ink on every well in both ramps.
 
 ## Icons
@@ -593,8 +596,8 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
   takes a 2px ink outline with no radius. A `kcc-check` rings its `kcc-box`, because the checkbox itself is
   `sr-only`. A slip that is a link rings its `kcc-torn`, outside the tear. Under `forced-colors: active`, which
   paints no box-shadow and no gradient, a focused field and segment take a 2px `CanvasText` outline, a field's
-  underline is a 1px `CanvasText` border and an area a 1px `CanvasText` outline. The
-  `kcc-range` thumbs have no focus ring yet.
+  underline is a 1px `CanvasText` border and an area a 1px `CanvasText` outline. A focused `kcc-range` thumb takes
+  a 2px ink ring outside its paper ring, and a 2px `CanvasText` outline, 2px out, under forced colours.
 - **Pressed, current, checked.** A pressed or checked `kcc-seg` segment fills with ink. In `SegmentedControl.vue` the
   fill is the `kcc-seg-thumb`, which slides from the old segment to the new one. The current wizard step and
   an open menu button are `kcc-pill`. The section you are in is a marker underline on its menu, 5px of marker
@@ -608,8 +611,10 @@ the Font Awesome custom properties and never use the `fa-primary-*` / `fa-second
 - **Loading.** What is already shown stays. The region takes `aria-busy`, and the loader is a
   `fa-solid fa-circle-notch fa-spin` beside a `kcc-kick` message (`RecipeSearchView.Component.vue`).
 - **Empty.** A sheet, never an empty page: a large duotone glyph in `ink-soft`, a `kcc-title` line, a `kcc-body` hint and a
-  ghost button that undoes whatever emptied it (`RecipesEmptyState.vue`). A recipe with no reviews says so in its
-  meta line, and empty rating stars are `fa-regular` in `ink-soft`.
+  ghost button that undoes whatever emptied it (`RecipesEmptyState.vue`). A sheet that nothing emptied and whose way
+  on sits right below it holds no button: a variant with no reviews lies an empty sheet in its summary's place, above
+  the review form (`VariantReviews.vue`). A recipe with no reviews says so in its meta line, and empty rating stars are
+  `fa-regular` in `ink-soft`.
 - **Browser surfaces.** `accent-color` is ink, and underlines sit 3px below the text. `kcc-seg` hides its
   scrollbar. Text selection, the caret and the page scrollbars are the browser's own. Each ramp sets
   `color-scheme`, `light` on `:root` in `TailwindConfig.css` and `dark` in the dark ramp, so what the browser
@@ -635,7 +640,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 | A stacked sheet steps back | `transition-all duration-100`, scale from 1 to .95 once it sticks, all but the last | `Stacker.Component.vue` |
 | A segment's ink fill slides to the checked segment | `transform` and `width` over 300ms, and the labels' colour fades with it; no slide for the first placement, after a resize, when the fonts load or when the labels change | `SegmentedControl.vue`, `Controls.css` |
 | A wash blooms | the bloom keyframes: opacity 0 to its peak and scale .72 to 1 over 90s (`--wash-bloom`), in 45 steps that crowd the start, where the curve climbs fastest (`--wash-ease`), delayed to its arrival on the visit clock, filling backwards only, so a finished bloom leaves the wash on its resting style; under reduced motion the fade keyframes, opacity alone | `Torn/Kit.css`, `KccWashes.Component.vue` |
-| The focus ring fades in | `transition: outline-color 0.2s, outline-offset 0.2s` on every focusable | `TailwindConfig.css` |
+| The focus ring fades in | `transition: outline-color 0.2s, outline-offset 0.2s` on every focusable, and `box-shadow 0.2s` on a `kcc-range` thumb, never under reduced motion | `TailwindConfig.css`, `Controls.css` |
 | More recipes load | `fa-spin` on a `fa-circle-notch` | `RecipeSearchView.Component.vue` |
 
 1. **300ms is the standard.** `--default-transition-duration` in `Main.css` gives it to every `transition-*`
@@ -728,7 +733,7 @@ visit has earned.
 | The type, control, pill and icon token values and the cleared default sizes; `--bl` 24px and `--rule-drop`; `body` and the form controls at the body size; the bare headings' roles; the display's phone step and the section's one size; every referenced font file | `tests/KCC.ViteTests/Features/Styles/typography.test.ts` |
 | Every `font-size` reads a text or icon token; a `font` shorthand sizes with a text token; a `line-height` is the rule, a token or `1`; no Tailwind text size outside the scale and no `leading-*`; vertical spacing in rule units; at most eight text sizes besides the readout | `tests/KCC.ViteTests/Features/Styles/typeScale.test.ts` |
 | Every class in the Classes table is defined in `Torn/*.css` and every class the Torn CSS defines is in the table; `box-shadow` appears only as a hairline or a ring; one rule casts the drop-shadows, on the fall, the blank and a tile's `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/kitClasses.test.ts` |
-| A disabled `kcc-check` row takes the disabled button's opacity and cursor; no `transform` or `translate` in the kit CSS nudges by 1 to 3px | `tests/KCC.ViteTests/Features/Styles/kitStates.test.ts` |
+| A disabled `kcc-check` row takes the disabled button's opacity and cursor; no `transform` or `translate` in the kit CSS nudges by 1 to 3px; a focused `kcc-range` thumb takes the ink ring in both engines, a `CanvasText` outline under forced colours, and its 0.2s fade only under `prefers-reduced-motion: no-preference` | `tests/KCC.ViteTests/Features/Styles/kitStates.test.ts` |
 | The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the fall's box and tear, no filter on a slip's `.kcc-torn`, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Every hand-written Razor `kcc-slip` ends with exactly one blank; every slip that holds a sheet, in a component or in Razor, holds one fall, right before its `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |

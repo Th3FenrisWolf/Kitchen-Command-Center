@@ -48,6 +48,30 @@ public class SubmissionTests
 
         _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
         _ = await Assert.That(ChildCount(listing)).IsEqualTo(before);
+        await AssertNameRefusalAsync(response, "variantName");
+    }
+
+    [Test]
+    public async Task CreateRecipe_WithATooLongRecipeName_NamesTheRecipeName()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
+
+        using var response = await member.Visitor.PostAsync("/api/recipes", Recipe(new string('a', 256)));
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+        await AssertNameRefusalAsync(response, "recipeName");
+    }
+
+    [Test]
+    public async Task AddVariant_WithATooLongName_NamesTheVariantName()
+    {
+        var recipe = await TestContent.RecipeAsync(Site.Services, "IT Wolverine Gratin");
+        using var member = await TestMembers.SignedInAsync(Site, "chef");
+
+        using var response = await member.Visitor.PostAsync($"/api/recipes/{recipe}/variants", Variant(new string('a', 256)));
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+        await AssertNameRefusalAsync(response, "variantName");
     }
 
     [Test]
@@ -208,6 +232,13 @@ public class SubmissionTests
         using var response = await visitor.PostAsync("/api/recipes", Recipe(name));
         _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         return (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("recipeKey").GetGuid();
+    }
+
+    private static async Task AssertNameRefusalAsync(HttpResponseMessage response, string field)
+    {
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        _ = await Assert.That(body.GetProperty("code").GetString()).IsEqualTo("nameTooLong");
+        _ = await Assert.That(body.GetProperty("field").GetString()).IsEqualTo(field);
     }
 
     private int ChildCount(Guid parentKey)

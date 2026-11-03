@@ -25,12 +25,14 @@ import {
   finishRead,
   hasUnsavedWork,
   isImport,
+  isRefused,
   keepEdits,
   keepNewRecipe,
   next,
   offersMatch,
   pickRecipe,
   progress,
+  refuseName,
   removeIngredient,
   removeInstruction,
   removePhoto,
@@ -1089,6 +1091,64 @@ describe('recipeWizardFlow step links', () => {
     next(wizard)
 
     expect(wizard.step).toBe('instructions')
+  })
+})
+
+describe('recipeWizardFlow refused names', () => {
+  it.each([
+    ['recipeName', 'basics'],
+    ['variantName', 'variant'],
+  ] as const)('opens the step holding a refused %s, set to return to the review', (field, step) => {
+    const wizard = typedReview()
+
+    refuseName(wizard, field)
+
+    expect(wizard).toMatchObject({ step, returnTo: 'review' })
+    expect(isRefused(wizard, field)).toBe(true)
+  })
+
+  it('opens the variant step for a variant name refused in variant mode', () => {
+    const wizard = typedReview(variantWizard(true))
+
+    refuseName(wizard, 'variantName')
+
+    expect(wizard).toMatchObject({ step: 'variant', returnTo: 'review' })
+    expect(isRefused(wizard, 'variantName')).toBe(true)
+  })
+
+  it('refuses only the name the server named', () => {
+    const wizard = typedReview()
+
+    refuseName(wizard, 'recipeName')
+
+    expect(isRefused(wizard, 'variantName')).toBe(false)
+  })
+
+  it('keeps the refusal while the member edits another value', () => {
+    const wizard = typedReview()
+    refuseName(wizard, 'recipeName')
+
+    editValue(wizard, 'recipeDescription', 'Shorter now.')
+
+    expect(isRefused(wizard, 'recipeName')).toBe(true)
+  })
+
+  it('lifts the refusal once the refused name is edited', () => {
+    const wizard = typedReview()
+    refuseName(wizard, 'variantName')
+
+    editValue(wizard, 'variantName', 'Short Stack')
+
+    expect(isRefused(wizard, 'variantName')).toBe(false)
+  })
+
+  it('lifts the refusal once anything else replaces the refused name, such as a read', () => {
+    const wizard = typedReview()
+    refuseName(wizard, 'recipeName')
+
+    wizard.values.recipeName = 'Read from the photos'
+
+    expect(isRefused(wizard, 'recipeName')).toBe(false)
   })
 })
 

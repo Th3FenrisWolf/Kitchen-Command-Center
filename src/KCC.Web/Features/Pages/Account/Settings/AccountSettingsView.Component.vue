@@ -1,16 +1,16 @@
 <script setup lang="ts">
-  import { computed, ref, useId } from 'vue'
+  import { computed, useId } from 'vue'
   import Field from '~/Components/Forms/Field.vue'
   import InputField from '~/Components/Forms/InputField.vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
-  import { post } from '~/Utilities/Api'
   import type { RampSetting } from '~/Utilities/Ramp'
   import SignOutForm from '~/Components/Account/SignOutForm.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import SegmentedControl, { type SegmentOption } from '~/Components/Recipe/SegmentedControl.vue'
   import { useRampSetting } from './useRampSetting'
+  import { usePasswordForm, useProfileForm, type PasswordField, type ProfileField } from './useSettingsForms'
 
   export interface AccountSettingsViewProps {
     firstName: string
@@ -29,18 +29,24 @@
   // 7.5vw reaches the 48px a sheet read this closely wants at 640px, and floors at the sheet's own 24px.
   const SHEET_PAD = 'clamp(24px, 7.5vw, 48px)'
 
-  const firstName = ref(props.firstName ?? '')
-  const lastName = ref(props.lastName ?? '')
+  const {
+    firstName,
+    lastName,
+    submitting: profileSubmitting,
+    message: profileMessage,
+    fieldsInError: profileFieldsInError,
+    save: saveProfile,
+  } = useProfileForm({ firstName: props.firstName ?? '', lastName: props.lastName ?? '' }, rs)
 
-  const currentPassword = ref('')
-  const newPassword = ref('')
-  const confirmPassword = ref('')
-
-  const profileSubmitting = ref(false)
-  const profileMessage = ref<{ ok: boolean; text: string } | null>(null)
-
-  const passwordSubmitting = ref(false)
-  const passwordMessage = ref<{ ok: boolean; text: string } | null>(null)
+  const {
+    currentPassword,
+    newPassword,
+    confirmPassword,
+    submitting: passwordSubmitting,
+    message: passwordMessage,
+    fieldsInError: passwordFieldsInError,
+    change: changePassword,
+  } = usePasswordForm(rs)
 
   const { setting: rampSetting, error: rampError, choose: chooseRamp } = useRampSetting(props.ramp)
 
@@ -58,45 +64,15 @@
     currentPassword: `${uid}-current-password`,
     newPassword: `${uid}-new-password`,
     confirmPassword: `${uid}-confirm-password`,
+    profileMessage: `${uid}-profile-message`,
+    passwordMessage: `${uid}-password-message`,
     rampHint: `${uid}-ramp-hint`,
   }
 
+  const profileInError = (field: ProfileField) => profileFieldsInError.value.includes(field)
+  const passwordInError = (field: PasswordField) => passwordFieldsInError.value.includes(field)
+
   const backHref = computed(() => props.backUrl)
-
-  const saveProfile = async () => {
-    profileMessage.value = null
-    profileSubmitting.value = true
-
-    const result = await post('/api/profile', { firstName: firstName.value, lastName: lastName.value })
-    profileSubmitting.value = false
-
-    profileMessage.value = result.success ? { ok: true, text: rs('ProfileSaved') } : { ok: false, text: result.errorMessage }
-  }
-
-  const changePassword = async () => {
-    passwordMessage.value = null
-    if (newPassword.value !== confirmPassword.value) {
-      passwordMessage.value = { ok: false, text: rs('PasswordsDoNotMatch') }
-      return
-    }
-    passwordSubmitting.value = true
-
-    const result = await post('/api/profile/password', {
-      currentPassword: currentPassword.value,
-      newPassword: newPassword.value,
-    })
-    passwordSubmitting.value = false
-
-    if (!result.success) {
-      passwordMessage.value = { ok: false, text: result.errorMessage }
-      return
-    }
-
-    passwordMessage.value = { ok: true, text: rs('PasswordUpdated') }
-    currentPassword.value = ''
-    newPassword.value = ''
-    confirmPassword.value = ''
-  }
 </script>
 
 <template>
@@ -121,12 +97,28 @@
       <form class="flex flex-col gap-y-rule-1" @submit.prevent="saveProfile">
         <Field :control-id="ids.firstName">
           <template #label><ResourceString for="FirstName" /></template>
-          <InputField :id="ids.firstName" v-model="firstName" type="text" name="FirstName" autocomplete="given-name" />
+          <InputField
+            :id="ids.firstName"
+            v-model="firstName"
+            type="text"
+            name="FirstName"
+            autocomplete="given-name"
+            :error="profileInError('FirstName')"
+            :aria-describedby="profileInError('FirstName') ? ids.profileMessage : undefined"
+          />
         </Field>
 
         <Field :control-id="ids.lastName">
           <template #label><ResourceString for="LastName" /></template>
-          <InputField :id="ids.lastName" v-model="lastName" type="text" name="LastName" autocomplete="family-name" />
+          <InputField
+            :id="ids.lastName"
+            v-model="lastName"
+            type="text"
+            name="LastName"
+            autocomplete="family-name"
+            :error="profileInError('LastName')"
+            :aria-describedby="profileInError('LastName') ? ids.profileMessage : undefined"
+          />
         </Field>
 
         <Field :control-id="ids.email">
@@ -146,6 +138,7 @@
 
         <p
           v-if="profileMessage"
+          :id="ids.profileMessage"
           class="kcc-well kcc-kick"
           :class="profileMessage.ok ? 'kcc-well--success' : 'kcc-well--danger'"
           :role="profileMessage.ok ? 'status' : 'alert'"
@@ -175,12 +168,22 @@
             required
             type="password"
             autocomplete="current-password"
+            :error="passwordInError('CurrentPassword')"
+            :aria-describedby="passwordInError('CurrentPassword') ? ids.passwordMessage : undefined"
           />
         </Field>
 
         <Field :control-id="ids.newPassword" required>
           <template #label><ResourceString for="NewPassword" /></template>
-          <InputField :id="ids.newPassword" v-model="newPassword" required type="password" autocomplete="new-password" />
+          <InputField
+            :id="ids.newPassword"
+            v-model="newPassword"
+            required
+            type="password"
+            autocomplete="new-password"
+            :error="passwordInError('NewPassword')"
+            :aria-describedby="passwordInError('NewPassword') ? ids.passwordMessage : undefined"
+          />
         </Field>
 
         <Field :control-id="ids.confirmPassword" required>
@@ -191,11 +194,14 @@
             required
             type="password"
             autocomplete="new-password"
+            :error="passwordInError('ConfirmPassword')"
+            :aria-describedby="passwordInError('ConfirmPassword') ? ids.passwordMessage : undefined"
           />
         </Field>
 
         <p
           v-if="passwordMessage"
+          :id="ids.passwordMessage"
           class="kcc-well kcc-kick"
           :class="passwordMessage.ok ? 'kcc-well--success' : 'kcc-well--danger'"
           :role="passwordMessage.ok ? 'status' : 'alert'"

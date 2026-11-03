@@ -35,6 +35,31 @@ public class RecipeWizardReviewTests : BasePageTests
     }
 
     [Test]
+    public async Task ARecipeNameTooLongToSave_ReturnsToItsStep_WithTheErrorLineUntilItIsEdited()
+    {
+        await TypesARecipeToTheReviewAsync();
+        await Page.GetByTestId("review-edit-basics").ClickAsync();
+        var name = Page.GetByTestId("wizard-recipe-name");
+        await name.FillAsync(new string('a', 256));
+        await BackToReview.ClickAsync();
+
+        await Page.GetByTestId("wizard-submit").ClickAsync();
+
+        await Expect(Heading("Recipe Basics")).ToBeFocusedAsync();
+        await Expect(BackToReview).ToBeVisibleAsync();
+        await Expect(name.Locator("xpath=..")).ToHaveClassAsync(new System.Text.RegularExpressions.Regex(@"\bkcc-field--error\b"));
+        await Expect(name).ToHaveAttributeAsync("aria-invalid", "true");
+        var alert = Page.GetByRole(AriaRole.Alert);
+        await Expect(alert).ToContainTextAsync("255 characters");
+        await Expect(name).ToHaveAttributeAsync("aria-describedby", (await alert.GetAttributeAsync("id"))!);
+
+        await name.FillAsync("Review Links");
+
+        await Expect(name).Not.ToHaveAttributeAsync("aria-invalid", "true");
+        await Expect(alert).ToHaveCountAsync(0);
+    }
+
+    [Test]
     public async Task AnImportedVariant_KeepsItsEdits_AndAsksBeforeEveryReadThatWouldReplaceThem()
     {
         await PhotoImport.OpenOnAddVariantAsync(Page);

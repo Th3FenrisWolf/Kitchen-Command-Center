@@ -11,7 +11,7 @@
     <div class="grid justify-items-center gap-y-rule-1 text-center">
       <i class="fa-duotone fa-bowl-food kcc-icon-lg text-ink-soft" aria-hidden="true"></i>
       <ResourceString for="NoVariantsMatch" as="p" class="kcc-title" />
-      <ResourceString for="TryDifferentFilter" as="p" class="kcc-hand" />
+      <ResourceString for="TryDifferentFilter" as="p" class="kcc-body max-w-[60ch]" />
       <Button variant="ghost" @click="emit('clear')">
         <ResourceString for="ClearFilters" />
       </Button>

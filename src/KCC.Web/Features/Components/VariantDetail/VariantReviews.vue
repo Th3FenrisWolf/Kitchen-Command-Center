@@ -27,7 +27,7 @@
 
   const { variantGuid, averageRating = 0, reviewCount = 0, isAuthenticated = false } = defineProps<VariantReviewsProps>()
 
-  const emit = defineEmits<{ trailingSign: [turn: Turn | null]; trailingTear: [tear: number | null] }>()
+  const emit = defineEmits<{ trailingSign: [turn: Turn]; trailingTear: [tear: number] }>()
 
   const t = useResourceStrings()
   const reviews = ref<Review[]>([])
@@ -62,7 +62,7 @@
       myText.value = data.myReview.text ?? ''
     }
     emit('trailingSign', trailingSign.value)
-    emit('trailingTear', reviewsTrailingTear({ isAuthenticated, count: count.value, loaded: reviews.value.length }))
+    emit('trailingTear', reviewsTrailingTear({ isAuthenticated, loaded: reviews.value.length }))
   }
 
   const submit = async () => {
@@ -104,9 +104,7 @@
 
   const formTear = computed(() => formTearAfter(reviews.value.length))
 
-  const trailingSign = computed(() =>
-    reviewsTrailingSign({ isAuthenticated, count: count.value, loaded: reviews.value.length }),
-  )
+  const trailingSign = computed(() => reviewsTrailingSign({ isAuthenticated, loaded: reviews.value.length }))
 
   const formFlips = computed(() => tearTurn(formTear.value) !== trailingSign.value)
 
@@ -129,7 +127,7 @@
       </p>
     </div>
 
-    <div class="space-y-rule-1.5">
+    <div class="space-y-rule-1.5" :aria-busy="loading || undefined">
       <KccSheet v-if="count > 0" wash-key="reviews-summary" margin :tear="SUMMARY_TEAR" wide>
         <div class="flex flex-wrap items-start gap-x-7 gap-y-rule-1">
           <RatingSummary :value="average" />
@@ -146,6 +144,13 @@
               </div>
             </div>
           </div>
+        </div>
+      </KccSheet>
+      <KccSheet v-else wash-key="reviews-empty" bloom="reading" :tear="SUMMARY_TEAR" wide>
+        <div class="grid justify-items-center gap-y-rule-1 text-center">
+          <i class="fa-duotone fa-comments kcc-icon-lg text-ink-soft" aria-hidden="true"></i>
+          <ResourceString for="NoReviewsYet" as="p" class="kcc-title" />
+          <ResourceString for="NoReviewsHint" as="p" class="kcc-body max-w-[60ch]" />
         </div>
       </KccSheet>
 
@@ -168,7 +173,6 @@
           <p v-if="review.text" class="kcc-body">{{ review.text }}</p>
         </KccSheet>
       </ul>
-      <ResourceString v-else for="NoReviewsYet" as="p" class="kcc-body" />
 
       <Button v-if="hasMore()" variant="ghost" @click="load(page + 1)">
         <ResourceString for="LoadMore" />

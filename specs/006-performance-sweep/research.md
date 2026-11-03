@@ -345,6 +345,8 @@ against the baseline only; the live report shows the compressed numbers. Phase 3
   50 ms (worst 600 ms). Phase 2 takes the remaining long frames in both engines.
 - Desktop Chromium search-3 (owner, 2026-10-27): worst interaction 56-64 ms at baseline, 88-104 ms at f24896f4 (three
   cases over 100 ms), long frames 0 to 2-4. Phase 2 takes it with the interaction work.
+- Wash texture preloads (owner, 2026-11-03): every page preloads all nine baked wash textures, the cost of keeping
+  them out of the stylesheet as cached files. They compete with the phone LCP element, so Phase 3 takes them with it.
 
 
 ## Re-measure after Phase 1 fixes
@@ -958,3 +960,16 @@ Gaps:
 - The live site lists one recipe, so `search-3` measured one page of results, not three.
 - Cloudflare injects its bot-detection and RUM scripts on every page. Their `POST`s to `/cdn-cgi/` were blocked by the
   read-only rule and recorded as gaps. No page was challenged.
+
+**Review items left on the pull request.** Settled on 2026-11-03:
+
+- P-9: `yarn perf:scripts-off` reads a pair whose captures differ by at most 6 levels as `residue`, the header redraw
+  the owner ruled engine noise on 2026-10-27 (T040). It prints the pair and its counts on their own line and passes;
+  any larger difference still fails.
+- P-19: carried to Phase 3, under "For Phases 2 and 3".
+- P-24: accepted by the owner. With scripts off, some transitions other than the washes may start from the browser's
+  values, and no scripts-off pair fails on them.
+- P-28: the search sentinel gap went to the bug flow, in `.specify/bugs/`.
+- CR-1: the loose-leaf skill's quick reference says a blank and a tile carry their own fall.
+- CR-2: `perf.mjs` sets `KCC_PERF_MODE` only for a command that has a mode, so `KCC_PERF_MODE=live yarn perf:report`
+  reads the live results.
