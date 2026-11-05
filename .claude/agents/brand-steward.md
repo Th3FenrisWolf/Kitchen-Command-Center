@@ -78,7 +78,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 - A hand-written `.kcc-wash`, `.kcc-washes` or schedule rule, a wash placed or coloured by hand, a `:at` prop or an
   old `--c --x --y --w --h` wash. Washes are `KccWashes`'s; a sheet picks only its first colour with `wash`.
 - Grain or crayon on anything but the desk, a wash or a tile: a `::after` noise tile on a sheet, a `--grain`,
-  `--crayon` or texture image (or an alias) elsewhere, a `filter` of any kind on `.kcc-wash` (the washes are baked into `Washes/*.png`, named by `Washes.css`), `url(#kcc-wax-flat)` off
+  `--crayon` or texture image (or an alias) elsewhere, a `filter` of any kind on `.kcc-wash` (a wash's chalk tile and silhouettes are baked into `Washes/*.png`, named by `Washes.css`), `url(#kcc-wax-flat)` off
   `.kcc-tile`. The tape's woven stripe is the tape's own material and passes (`grain.test.ts`).
 - A sheet the owner left bare that blooms: a Home or stacker card with no wash must pass `bloom="none"`.
 - A wash written to move once bloomed, animated from script, or given its own `animation`: a changed animation
