@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Approved: chalk wash</title>
+<link rel="stylesheet" href="/kit.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+</style>
+<style>
+  :root { --wash-elapsed: 900s; }
+  :root[data-pv-mid] .kcc-wash { animation-delay: -38s !important; animation-play-state: paused !important; }
+  .pv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 40px; }
+  .pv-cell.pv-wide { grid-column: 1 / -1; max-width: 860px; }
+  .pv-grid .pv-cell .kcc-sheet { min-height: 260px; }
+  .pv-phone-label { display: block; margin: 56px 0 16px; }
+  .pv-phone { display: grid; gap: 32px; width: 360px; max-width: 100%; }
+  .pv-phone .kcc-sheet { min-height: 200px; }
+  @media (width < 760px) { .pv-grid { grid-template-columns: 1fr; } }
+  .pv-live .kcc-wash {
+    background:
+      radial-gradient(closest-side at calc(var(--wash-o1) * 100%) calc(var(--wash-o2) * 100%),
+        oklch(from var(--wash-ink) l c h / 0.34) 0%, oklch(from var(--wash-ink) l c h / 0.32) 62%,
+        oklch(from var(--wash-ink) l c h / 0.2) 80%, oklch(from var(--wash-ink) l c h / 0.07) 92%, oklch(from var(--wash-ink) l c h / 0) 100%),
+      radial-gradient(closest-side at calc(var(--wash-o3) * 100%) calc(var(--wash-o4) * 100%),
+        oklch(from var(--wash-ink-2) l c h / 0.26) 0%, oklch(from var(--wash-ink-2) l c h / 0) 100%);
+    border-radius: var(--wash-r1) var(--wash-r2) var(--wash-r3) var(--wash-r4) / var(--wash-r4) var(--wash-r1) var(--wash-r2) var(--wash-r3);
+    box-sizing: border-box;
+    mask: none;
+    padding: 0;
+  }
+  .pv-crisp .kcc-wash { filter: url(#pv-crisp) saturate(var(--wash-sat)); }
+  .pv-hint .kcc-wash { filter: url(#pv-hint) saturate(var(--wash-sat)); }
+  .pv-soft .kcc-wash { filter: url(#pv-soft) saturate(var(--wash-sat)); }
+  .pv-smudge .kcc-wash { filter: url(#pv-smudge) saturate(var(--wash-sat)); }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+      <filter id="pv-soft" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="5" result="n"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="60" xChannelSelector="R" yChannelSelector="G" result="d1"></feDisplacementMap>
+        <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="3" result="n2"></feTurbulence>
+        <feDisplacementMap in="d1" in2="n2" scale="12" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>
+        <feTurbulence type="fractalNoise" baseFrequency="0.44 0.004" numOctaves="1" seed="11" result="e"></feTurbulence>
+        <feColorMatrix in="e" type="matrix" values="0 0 0 0 0.5  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1" result="ey"></feColorMatrix>
+        <feDisplacementMap in="d" in2="ey" scale="10" xChannelSelector="R" yChannelSelector="G" result="de"></feDisplacementMap>
+        <feGaussianBlur in="de" stdDeviation="4" result="b"></feGaussianBlur>
+        <feTurbulence type="fractalNoise" baseFrequency="0.44 0.1" numOctaves="2" seed="11" result="s"></feTurbulence>
+        <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5 0 0 0 -1.6" result="sm"></feColorMatrix>
+        <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" seed="21" result="t"></feTurbulence>
+        <feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3 0 0 0 -0.5" result="tm"></feColorMatrix>
+        <feComposite in="sm" in2="tm" operator="in" result="m"></feComposite>
+        <feComposite in="b" in2="m" operator="in" result="strokes"></feComposite>
+        <feComposite in="strokes" in2="b" operator="arithmetic" k1="0" k2="1" k3="0.5" k4="0" result="out"></feComposite>
+        <feGaussianBlur in="out" stdDeviation="1"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+
+  <div class="pv-bar">
+    <h1>Approved: chalk wash</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-mid>Mid-bloom</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#soft">Soft blur</a>
+    </nav>
+  </div>
+
+  
+  <section class="pv-option" id="soft">
+    <header>
+      <p class="kcc-kick">Option 2 · axis: blur on top</p>
+      <h2 class="kcc-title">Soft blur</h2>
+      <p class="kcc-body">One pixel of blur: the dashes melt a little into each other and the texture reads as smudged chalk from arm’s length, still as marks up close.</p>
+    </header>
+    <div class="pv-grid pv-live pv-soft">
+      <div class="pv-cell">
+        <div class="kcc-slip kcc-tear-3"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.956;--wash-y:0.257;--wash-dx:9;--wash-dy:9;--wash-d:1.285;--wash-aspect:1.052;--wash-s:1.38;--wash-turn:61.25deg;--wash-o1:0.393;--wash-o2:0.715;--wash-o3:0.47;--wash-o4:0.625;--wash-r1:44%;--wash-r2:40%;--wash-r3:43%;--wash-r4:41%;--wash-ink:var(--color-sky);--wash-ink-2:var(--color-pink);--wash-fallback-at:0s;--wash-peak:0.964"></span><span class="kcc-wash" style="--wash-x:0.348;--wash-y:0.886;--wash-dx:9;--wash-dy:9;--wash-d:1.107;--wash-aspect:0.926;--wash-s:1.472;--wash-turn:224.018deg;--wash-o1:0.556;--wash-o2:0.395;--wash-o3:0.619;--wash-o4:0.69;--wash-r1:62%;--wash-r2:49%;--wash-r3:41%;--wash-r4:42%;--wash-ink:var(--color-yellow);--wash-ink-2:var(--color-peach);--wash-fallback-at:20s;--wash-peak:0.795"></span></span>
+          <p class="kcc-kick">Dinner</p><h3 class="kcc-title">Legendary Lasagna</h3><p class="kcc-body">Six layers, slow ragu, a crust that shatters at the corners.</p><p class="kcc-meta">45 min prep · 2 h bake · serves 8</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+      <div class="pv-cell">
+        <div class="kcc-slip kcc-tear-5"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.723;--wash-y:0.017;--wash-dx:9;--wash-dy:9;--wash-d:1.352;--wash-aspect:1.186;--wash-s:1.308;--wash-turn:278.462deg;--wash-o1:0.63;--wash-o2:0.403;--wash-o3:0.341;--wash-o4:0.658;--wash-r1:43%;--wash-r2:45%;--wash-r3:45%;--wash-r4:38%;--wash-ink:var(--color-teal);--wash-ink-2:var(--color-peach);--wash-fallback-at:0s;--wash-peak:0.968"></span></span>
+          <p class="kcc-kick">Baking</p><h3 class="kcc-title">Brown Butter Cookies</h3><p class="kcc-body">Nutty, chewy, flaky salt on top. Rest the dough a night if you can.</p><p class="kcc-meta">20 min prep · 12 min bake · makes 24</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+      <div class="pv-cell">
+        <div class="kcc-slip kcc-tear-1"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.341;--wash-y:0.155;--wash-dx:9;--wash-dy:9;--wash-d:1.334;--wash-aspect:0.726;--wash-s:1.702;--wash-turn:194.901deg;--wash-o1:0.647;--wash-o2:0.415;--wash-o3:0.409;--wash-o4:0.539;--wash-r1:47%;--wash-r2:56%;--wash-r3:47%;--wash-r4:64%;--wash-ink:var(--color-lavender);--wash-ink-2:var(--color-pink);--wash-fallback-at:0s;--wash-peak:0.803"></span><span class="kcc-wash" style="--wash-x:0.742;--wash-y:0.941;--wash-dx:9;--wash-dy:9;--wash-d:1.016;--wash-aspect:1.315;--wash-s:1.256;--wash-turn:341.888deg;--wash-o1:0.498;--wash-o2:0.307;--wash-o3:0.609;--wash-o4:0.391;--wash-r1:49%;--wash-r2:50%;--wash-r3:45%;--wash-r4:38%;--wash-ink:var(--color-red);--wash-ink-2:var(--color-yellow);--wash-fallback-at:20s;--wash-peak:0.839"></span></span>
+          <p class="kcc-kick">Breakfast</p><h3 class="kcc-title">Green Shakshuka</h3><p class="kcc-body">Eggs poached in chard, leeks and herbs, with feta crumbled over at the end.</p><p class="kcc-meta">10 min prep · 25 min cook · serves 4</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+      <div class="pv-cell">
+        <div class="kcc-slip kcc-tear-4"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.622;--wash-y:0.943;--wash-dx:9;--wash-dy:9;--wash-d:1.062;--wash-aspect:1.033;--wash-s:1.392;--wash-turn:356.3deg;--wash-o1:0.456;--wash-o2:0.701;--wash-o3:0.632;--wash-o4:0.711;--wash-r1:48%;--wash-r2:47%;--wash-r3:50%;--wash-r4:51%;--wash-ink:var(--color-green);--wash-ink-2:var(--color-red);--wash-fallback-at:0s;--wash-peak:0.803"></span></span>
+          <p class="kcc-kick">Dinner</p><h3 class="kcc-title">Miso Glazed Salmon</h3><p class="kcc-body">Sweet, salty, caramelised under the grill in eight minutes flat.</p><p class="kcc-meta">5 min prep · 8 min grill · serves 2</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+      <div class="pv-cell pv-wide">
+        <div class="kcc-slip kcc-tear-2"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.39;--wash-y:0.027;--wash-dx:0.242;--wash-dy:0.864;--wash-d:1.37;--wash-aspect:1.316;--wash-s:1.256;--wash-turn:289.696deg;--wash-o1:0.581;--wash-o2:0.388;--wash-o3:0.417;--wash-o4:0.626;--wash-r1:62%;--wash-r2:54%;--wash-r3:58%;--wash-r4:59%;--wash-ink:var(--color-red);--wash-ink-2:var(--color-pink);--wash-fallback-at:0s;--wash-peak:0.841"></span><span class="kcc-wash" style="--wash-x:0.963;--wash-y:0.402;--wash-dx:-0.834;--wash-dy:0.178;--wash-d:1.257;--wash-aspect:0.894;--wash-s:1.5;--wash-turn:89.708deg;--wash-o1:0.544;--wash-o2:0.654;--wash-o3:0.513;--wash-o4:0.619;--wash-r1:48%;--wash-r2:50%;--wash-r3:42%;--wash-r4:61%;--wash-ink:var(--color-sky);--wash-ink-2:var(--color-peach);--wash-fallback-at:20s;--wash-peak:0.807"></span><span class="kcc-wash" style="--wash-x:0.632;--wash-y:0.891;--wash-dx:-0.242;--wash-dy:-0.864;--wash-d:1.201;--wash-aspect:1.123;--wash-s:1.339;--wash-turn:314.56deg;--wash-o1:0.339;--wash-o2:0.5;--wash-o3:0.571;--wash-o4:0.379;--wash-r1:54%;--wash-r2:41%;--wash-r3:54%;--wash-r4:56%;--wash-ink:var(--color-green);--wash-ink-2:var(--color-teal);--wash-fallback-at:40s;--wash-peak:0.85"></span><span class="kcc-wash" style="--wash-x:0.129;--wash-y:0.58;--wash-dx:0.834;--wash-dy:-0.178;--wash-d:0.909;--wash-aspect:0.929;--wash-s:1.469;--wash-turn:247.086deg;--wash-o1:0.654;--wash-o2:0.524;--wash-o3:0.299;--wash-o4:0.293;--wash-r1:52%;--wash-r2:46%;--wash-r3:54%;--wash-r4:49%;--wash-ink:var(--color-yellow);--wash-ink-2:var(--color-lavender);--wash-fallback-at:60s;--wash-peak:0.956"></span></span>
+          <p class="kcc-kick">Method</p><h3 class="kcc-title">Make the ragu</h3><p class="kcc-body">Brown the beef and pork hard, in batches, so it fries rather than steams. Soften the onion, carrot and celery in the fat, add the tomato paste and cook it until it darkens. Pour in the wine, scrape the pan, then the tomatoes and stock. Simmer it low, lid ajar, for two hours, stirring now and then, until it is thick enough to hold a line drawn through it with a spoon.</p><p class="kcc-meta">Step 2 of 6 · 2 h 20 min</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+    </div>
+    <p class="kcc-lbl pv-phone-label">Phone width, 360px</p>
+    <div class="pv-phone pv-live pv-soft">
+      <div class="pv-cell">
+        <div class="kcc-slip kcc-tear-1"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.65;--wash-y:0.105;--wash-dx:9;--wash-dy:9;--wash-d:1.109;--wash-aspect:1.072;--wash-s:1.368;--wash-turn:238.807deg;--wash-o1:0.347;--wash-o2:0.67;--wash-o3:0.702;--wash-o4:0.613;--wash-r1:62%;--wash-r2:58%;--wash-r3:48%;--wash-r4:42%;--wash-ink:var(--color-teal);--wash-ink-2:var(--color-sky);--wash-fallback-at:0s;--wash-peak:0.862"></span><span class="kcc-wash" style="--wash-x:0.062;--wash-y:0.587;--wash-dx:9;--wash-dy:9;--wash-d:1.096;--wash-aspect:1.031;--wash-s:1.393;--wash-turn:348.632deg;--wash-o1:0.65;--wash-o2:0.481;--wash-o3:0.496;--wash-o4:0.537;--wash-r1:60%;--wash-r2:51%;--wash-r3:49%;--wash-r4:60%;--wash-ink:var(--color-green);--wash-ink-2:var(--color-pink);--wash-fallback-at:20s;--wash-peak:0.783"></span></span>
+          <p class="kcc-kick">Dinner</p><h3 class="kcc-title">Fish Tacos</h3><p class="kcc-body">Crisp battered cod, lime slaw, chipotle crema.</p><p class="kcc-meta">20 min · serves 4</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+      <div class="pv-cell">
+        <div class="kcc-slip kcc-tear-3"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:24px">
+          <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" style="--wash-x:0.717;--wash-y:1.01;--wash-dx:9;--wash-dy:9;--wash-d:1.044;--wash-aspect:0.686;--wash-s:1.768;--wash-turn:340.475deg;--wash-o1:0.557;--wash-o2:0.509;--wash-o3:0.589;--wash-o4:0.606;--wash-r1:39%;--wash-r2:50%;--wash-r3:56%;--wash-r4:46%;--wash-ink:var(--color-pink);--wash-ink-2:var(--color-sky);--wash-fallback-at:0s;--wash-peak:0.81"></span></span>
+          <p class="kcc-kick">Lunch</p><h3 class="kcc-title">Tomato Soup</h3><p class="kcc-body">Roasted tomatoes, a little cream, grilled cheese on the side.</p><p class="kcc-meta">40 min · serves 4</p>
+        </div></div><span class="kcc-blank" aria-hidden="true"><span></span></span></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script>
+  const root = document.documentElement;
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light');
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+
+  const mid = document.querySelector('[data-pv-mid]');
+  mid.addEventListener('click', () => mid.setAttribute('aria-pressed', String(root.toggleAttribute('data-pv-mid'))));
+</script>
+</body>
+</html>
