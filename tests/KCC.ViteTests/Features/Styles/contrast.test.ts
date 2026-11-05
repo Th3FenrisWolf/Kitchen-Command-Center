@@ -153,10 +153,15 @@ function tintedPaper(tokens: Tokens, wash: string, amount = 0.28): Rgb {
   return toLinearRgb({ l: L, c: Math.hypot(a, b), h: ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360, alpha: 1 })
 }
 
-// Stands in for the baked grain and bleed (Washes.css) as text reads them, averaged over 3px. Fitted per blend so
+const washesCss = read('Torn/Washes.css')
+const washGainText = washesCss.match(/--wash-gain:\s*([\d.]+)/)?.[1]
+if (washGainText === undefined) throw new Error('Torn/Washes.css declares no --wash-gain')
+const WASH_GAIN = Number(washGainText)
+
+// Stands in for the chalk and blob masks (Washes.css) as text reads them, averaged over 3px. Fitted per blend so
 // the model reads at or below every rendering in RENDERED_INK_SOFT.
-const GRAIN_GAIN: Record<WashRender['blend'], number> = { multiply: 1.26, screen: 0.905 }
-const FIRST_INK_RIM_ALPHA = 0.26 + 0.25 * 0.34
+const TEXTURE_GAIN: Record<WashRender['blend'], number> = { multiply: 1.11, screen: 0.95 }
+const FIRST_INK_CORE_ALPHA = 0.34
 const SECOND_INK_CORE_ALPHA = 0.26
 
 type Premultiplied = { rgb: Rgb; alpha: number }
@@ -179,7 +184,7 @@ function inkLayer(tokens: Tokens, token: string, alpha: number): Premultiplied {
   return { rgb: { r: r * alpha, g: g * alpha, b: b * alpha }, alpha }
 }
 
-// The Filter Effects saturate() matrix on gamma-encoded sRGB. The washes saturate in linear light; GRAIN_GAIN
+// The Filter Effects saturate() matrix on gamma-encoded sRGB. The washes saturate in linear light; TEXTURE_GAIN
 // absorbs the difference.
 function saturate({ r, g, b }: Rgb, s: number): Rgb {
   const clip = (v: number) => Math.min(1, Math.max(0, v))
@@ -192,11 +197,11 @@ function saturate({ r, g, b }: Rgb, s: number): Rgb {
 
 function washAtPeak(tokens: Tokens, [first, second]: WashPair, { blend, strength, sat }: WashRender): Premultiplied {
   const { rgb, alpha } = sourceOver(
-    inkLayer(tokens, first, FIRST_INK_RIM_ALPHA),
+    inkLayer(tokens, first, FIRST_INK_CORE_ALPHA),
     inkLayer(tokens, second, SECOND_INK_CORE_ALPHA),
   )
   const colour = saturate({ r: rgb.r / alpha, g: rgb.g / alpha, b: rgb.b / alpha }, sat)
-  const peak = Math.min(1, alpha * strength * GRAIN_GAIN[blend])
+  const peak = Math.min(1, alpha * strength * WASH_GAIN * TEXTURE_GAIN[blend])
   return { rgb: { r: colour.r * peak, g: colour.g * peak, b: colour.b * peak }, alpha: peak }
 }
 
@@ -217,18 +222,20 @@ function stackedPaper(tokens: Tokens, [top, bottom]: [WashPair, WashPair], rende
 const WASHES = ['peach', 'yellow', 'green', 'teal', 'sky', 'lavender', 'pink', 'red']
 const WASH_PAIRS = WASHES.flatMap((first) => WASHES.map((second): WashPair => [first, second]))
 const WASH_STACKS = WASH_PAIRS.flatMap((top) => WASH_PAIRS.map((bottom): [WashPair, WashPair] => [top, bottom]))
-// ink-soft over the worst two-wash stack at its peak, averaged over 3px, in headless Chromium: [ramp, strength,
-// sat, reading]. Read from the baked washes in one harness and multiplied by the recorded value over that harness's
-// reading of the same earlier settings (light .9656, dark .9585, the lowest of each ramp), so a row is derived from a
-// harness reading, not a direct measurement. The harness reads higher than the recorded values.
+// ink-soft over the worst two-wash stack at its peak, averaged over 3px, in headless Chromium, read from the built kit
+// CSS and textures by .mockups/007-crayon-wash-texture/contrast-harness.mjs: [ramp, strength, sat, reading]. The
+// stacks are the worst colour, blob and offset the harness found, so a row is the lowest reading over what it tried.
 const RENDERED_INK_SOFT: ['light' | 'dark', number, number, number][] = [
-  ['light', 0.704, 1, 4.495],
-  ['light', 0.42, 2.5, 5.047],
-  ['light', 0.6, 2.5, 4.543],
-  ['dark', 0.116, 1.45, 5.53],
-  ['dark', 0.18, 3, 4.766],
-  ['dark', 0.2, 3, 4.563],
-  ['dark', 0.22, 3, 4.354],
+  ['light', 0.42, 2.5, 4.591],
+  ['light', 0.46, 2.5, 4.459],
+  ['light', 0.5, 2.5, 4.297],
+  ['light', 0.6, 2.5, 3.985],
+  ['dark', 0.1, 3, 5.041],
+  ['dark', 0.12, 3, 4.635],
+  ['dark', 0.125, 3, 4.54],
+  ['dark', 0.13, 3, 4.429],
+  ['dark', 0.16, 3, 3.974],
+  ['dark', 0.18, 3, 3.663],
 ]
 
 // The status wells: kcc-well--danger / --success / --warning.
@@ -298,6 +305,10 @@ describe.each<[string, Tokens, WashRender]>([
 
     it('reads ink-soft over every two-wash stack at its peak at AA for text (≥ 4.5:1)', () => {
       expect(worst((ground) => contrastOf(inkSoft, ground))).toBeGreaterThanOrEqual(4.5)
+    })
+
+    it.runIf(name === 'light')('keeps the strength the owner approved as its ceiling (≤ .42)', () => {
+      expect(wash.strength).toBeLessThanOrEqual(0.42)
     })
 
     it.runIf(name === 'dark')('reads below AA a tenth stronger', () => {

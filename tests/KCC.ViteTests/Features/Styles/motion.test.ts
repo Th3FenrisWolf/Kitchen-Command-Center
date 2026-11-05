@@ -120,7 +120,7 @@ const keyframes = (name: string) => {
   return { from: declarations('from'), to: declarations('to') }
 }
 
-const PEAK = 'calc(var(--wash-strength) * var(--wash-peak))'
+const PEAK = 'calc(var(--wash-strength) * var(--wash-peak) * var(--wash-gain))'
 
 const reducedWash = () => {
   const kit = read('Features/Styles/Torn/Kit.css')

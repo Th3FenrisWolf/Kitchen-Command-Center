@@ -38,7 +38,7 @@ public static partial class Washes
                 progress: now - start,
                 name: style.animationName,
                 opacity: parseFloat(style.opacity),
-                peak: strength * parseFloat(style.getPropertyValue('--wash-peak')),
+                peak: strength * parseFloat(style.getPropertyValue('--wash-peak')) * parseFloat(style.getPropertyValue('--wash-gain')),
                 playState: animation ? animation.playState : ended ? 'finished' : 'none',
                 scale: style.scale,
                 ink: style.getPropertyValue('--wash-ink').trim(),

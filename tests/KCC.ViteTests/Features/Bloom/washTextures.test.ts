@@ -2,8 +2,10 @@ import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import type { UserConfig } from 'vite'
 import { describe, expect, it } from 'vitest'
-import { BLOB_COUNT, bakeWashes, washTextures } from '~/Bloom/bakeWashes'
-import { WASH_TEXTURE_FOLDER, inlineUnlessWashTexture } from '~/Bloom/washTextures'
+import { bakeWashes, washTextures } from '~/Bloom/bakeWashes'
+import * as textureNames from '~/Bloom/washTextures'
+import { WASH_TEXTURE_FOLDER, inlineUnlessWashTexture, isWashTexture } from '~/Bloom/washTextures'
+import { WASH_BLOBS } from '~/Bloom/washes'
 import viteConfig from '../../../../src/KCC.Web/vite.config'
 
 const web = (path: string) => fileURLToPath(new URL(`../../../../src/KCC.Web/${path}`, import.meta.url))
@@ -12,8 +14,23 @@ const textures = baked.map((file) => web(`Features/Styles/Torn/${WASH_TEXTURE_FO
 const manifestPath = web('wwwroot/.vite/manifest.json')
 
 describe('the wash textures in the Vite build', () => {
-  it('names a grain and one file per blob', () => {
-    expect(textures).toHaveLength(1 + BLOB_COUNT)
+  it('names a chalk tile and one file per blob', () => {
+    expect(textures).toHaveLength(1 + WASH_BLOBS)
+  })
+
+  it('names the chalk tile wash-chalk.png, and no grain', () => {
+    expect(textureNames).toHaveProperty('WASH_CHALK_FILE', 'wash-chalk.png')
+    expect(textureNames).not.toHaveProperty('WASH_GRAIN_FILE')
+  })
+
+  it('takes the chalk tile and the blobs for wash textures, and the retired grain for none', () => {
+    const folder = (file: string) => web(`Features/Styles/Torn/${WASH_TEXTURE_FOLDER}/${file}`)
+    expect(isWashTexture(folder('wash-chalk.png'))).toBe(true)
+    expect(isWashTexture(folder('wash-blob-0.png'))).toBe(true)
+    expect(isWashTexture(folder('wash-blob-7.png'))).toBe(true)
+    expect(isWashTexture(folder('wash-grain.png'))).toBe(false)
+    expect(isWashTexture(folder('wash-chalk-2.png'))).toBe(false)
+    expect(isWashTexture(folder('wash-blob-x.png'))).toBe(false)
   })
 
   it.each(textures)('never inlines %s, so it is fetched and cached apart from the stylesheet', (file) => {

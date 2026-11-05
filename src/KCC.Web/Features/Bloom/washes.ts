@@ -1,4 +1,5 @@
 import { WASHES, type Wash } from '~/Types/DesignSystem'
+import { BLOB_SHAPES } from './blobShapes'
 
 export type WashSize = 'card' | 'reading' | 'page' | 'none'
 
@@ -12,8 +13,7 @@ export type WashProperty =
   | '--wash-s'
   | '--wash-turn'
   | '--wash-blob'
-  | '--wash-o1'
-  | '--wash-o2'
+  | '--wash-flip'
   | '--wash-o3'
   | '--wash-o4'
   | '--wash-ink'
@@ -44,8 +44,6 @@ export interface SheetSizeProps {
 }
 
 export const WASH_WINDOW_S = 210
-
-export const WASH_REACH_PX = 24
 
 export const WASH_BLOBS = 8
 
@@ -123,13 +121,21 @@ function quadrantsFor(sheet: SheetBloom, count: number): number[] {
   return [first, second, 3 - first, 3 - second].slice(0, count)
 }
 
+function band(far: number, u: number): number {
+  return far ? 0.84 + 0.18 * u : -0.02 + 0.18 * u
+}
+
+function inside(far: number, u: number): number {
+  return far ? 0.55 + 0.35 * u : 0.1 + 0.35 * u
+}
+
 function centre(sheet: SheetBloom, count: number, k: number, quadrants: readonly number[]): [number, number] {
   const u = unit(sheet.seed, sheet.key, k, 'x')
   const v = unit(sheet.seed, sheet.key, k, 'y')
-  if (count === 1) return [rounded(between(0.25, 0.75, u)), rounded(between(0.25, 0.75, v))]
-  const quadrant = quadrants[k]
-  const x = (quadrant & 1 ? 0.55 : 0.05) + 0.4 * u
-  const y = (quadrant & 2 ? 0.55 : 0.05) + 0.4 * v
+  const quadrant = count === 1 ? hash(sheet.seed, sheet.key, 'corner') & 3 : quadrants[k]
+  const pushX = hash(sheet.seed, sheet.key, k, 'axis') & 1
+  const x = pushX ? band(quadrant & 1, u) : inside(quadrant & 1, u)
+  const y = pushX ? inside(quadrant & 2, v) : band(quadrant & 2, v)
   return [rounded(x), rounded(y)]
 }
 
@@ -177,6 +183,8 @@ export function planSheet(sheet: SheetBloom): PlannedWash[] {
 
   return centres.map(([x, y], k) => {
     const draw = (label: string) => unit(sheet.seed, sheet.key, k, label)
+    const blob = Math.floor(draw('blob') * WASH_BLOBS)
+    const ellipse = BLOB_SHAPES[blob]
     const aspect = rounded(between(0.68, 1.32, draw('aspect')))
     const partner = partners.get(k)
     const dx = partner === undefined ? '9' : toFixed3(centres[partner][0] - x)
@@ -191,15 +199,14 @@ export function planSheet(sheet: SheetBloom): PlannedWash[] {
         '--wash-y': toFixed3(y),
         '--wash-dx': dx,
         '--wash-dy': dy,
-        '--wash-d': toFixed3(between(0.45, 1.25, draw('d'))),
+        '--wash-d': toFixed3(between(0.9, 1.25, draw('d'))),
         '--wash-aspect': toFixed3(aspect),
         '--wash-s': toFixed3(Math.sqrt(1 + 1 / aspect ** 2)),
         '--wash-turn': `${toFixed3(between(0, 359.99, draw('turn')))}deg`,
-        '--wash-blob': `var(--wash-blob-${Math.floor(draw('blob') * WASH_BLOBS)})`,
-        '--wash-o1': toFixed3(between(0.28, 0.72, draw('o1'))),
-        '--wash-o2': toFixed3(between(0.28, 0.72, draw('o2'))),
-        '--wash-o3': toFixed3(between(0.28, 0.72, draw('o3'))),
-        '--wash-o4': toFixed3(between(0.28, 0.72, draw('o4'))),
+        '--wash-blob': `var(--wash-blob-${blob})`,
+        '--wash-flip': draw('flip') < 0.5 ? '-1' : '1',
+        '--wash-o3': toFixed3(ellipse.cx + 0.25 * ellipse.rx * (2 * draw('o3') - 1)),
+        '--wash-o4': toFixed3(ellipse.cy + 0.25 * ellipse.ry * (2 * draw('o4') - 1)),
         '--wash-ink': `var(--color-${slots[k]})`,
         '--wash-ink-2': `var(--color-${slots[k + 4]})`,
         '--wash-fallback-at': `${toFixed3(starts[k])}s`,
