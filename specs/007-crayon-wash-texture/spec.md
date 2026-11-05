@@ -258,7 +258,7 @@ every budget and guard passes.
 - A16: The outline at large sizes: one 480 px reference, judged by the owner in the A15 round on an unpaired
   reading-sheet wash at `d` 1.25 of an 860 px sheet (about 1,075 px, lobes and blur about 2.2 times the approved
   round's) and a 340 px phone card's wash at `d` .9 (about 300 px). If the owner rejects the large outline, the choice
-  between a second reference set (about 6.6 KB more, over the 16,000 B texture cap and the 17,014 B `image_bytes`
+  between a second reference set (about 7.3 KB more, over the 16,000 B texture cap and the 17,014 B `image_bytes`
   ceiling) and a px cap on a wash's width: the owner chose the px cap, an amendment to FR-003b, should the large
   outline be rejected. Alternative: bake a second reference set now.
 - A17: How SC-003 is checked: `bloom_frame_max_ms` is report-only in `budgets.json`, so `--check` never fails on it;

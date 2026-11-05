@@ -186,7 +186,7 @@ const mean = (values: Float64Array, from: number, count: number, step: number) =
 }
 
 /**
- * The approved chalk composite reduced to a mask: the marks with colour in their gaps, blurred and scaled to peak at
+ * The chalk composite reduced to a mask: the marks with colour in their gaps, blurred and scaled to peak at
  * 1, which `--wash-gain` undoes on the wash's opacity.
  */
 export function bakeChalk(): Float64Array {
@@ -251,7 +251,7 @@ function insideRoundedBox([r1, r2, r3, r4]: BlobCorners, x: number, y: number): 
 }
 
 /**
- * One silhouette: the first ink's faded ellipse in its rounded box, displaced and blurred as the approved filter
+ * One silhouette: the first ink's faded ellipse in its rounded box, displaced and blurred as the filter
  * draws it on a BLOB_REFERENCE_PX wash, over the box `--wash-span` pads the wash to.
  */
 export function bakeBlob(index: number): Float64Array {

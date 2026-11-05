@@ -44,10 +44,9 @@ Playwright 1.64.1 driver (Chromium and WebKit). The scripts are not tracked; the
 - **Measured over the displaced bake** (T033): a median retention of .838 and a 10th percentile of .751, over the
   8,507 washes of a thousand seeds on the card, reading and hero fields, with `a₂` the closest-side gradient in the
   content box and `m` each blob's `bakeBlob(b)` alpha, bilinear on the padded box. Both clear their floors (.80, .70).
-  These figures are measured by a model of the contract's placement before the planner wrote it; `washes.test.ts`
-  re-measures them over the planner's own output once it does. The same model cuts 100% of the washes by an edge on a
-  280x120 card, 96.9% on a 700x2400 reading sheet and 98.8% on a 1300x400 hero (SC-007), and repeats a blob at the
-  same place on neighbouring sheets in .38% of the wash pairs compared (edge cases, at most 5%).
+  The planner's own output, over the same thousand seeds and `d` .90 to 1.25, gives the same figures: it cuts 100% of the washes by an edge on a 280x120 card, 96.9% on a 700x2400 reading sheet and 98.8% on a
+  1300x400 hero (SC-007), and repeats a blob at the same place on neighbouring sheets in .38% of the wash pairs
+  compared (edge cases, at most 5%).
 - **Lost against the mockup**: the second ink's faint skirt outside the first ink's ellipse, and the per-wash random
   ellipse offset (`--wash-o1`, `--wash-o2`), which moves into each baked blob. The owner sees the second ink placed this
   way in the step-2 look round (plan) and judges the built result in SC-001.
@@ -84,10 +83,11 @@ Playwright 1.64.1 driver (Chromium and WebKit). The scripts are not tracked; the
   | 6% | .0028 | 6,596 |
   | 7% | .0001 | 6,680 |
 
+  These are the margin trial's sizes. The eight shipped blobs, at 6%, weigh 7,312 B.
   At 6% the edge alpha quantises to 0 (one level is .067). The blur of 4 px attenuates anything finer than about
   12 px, so 6 px texels lose nothing a viewer sees; 4-bit steps (.067 of the mask, about .014 of final alpha at light
-  strength) sit under the chalk tile's own variation. The 480 px reference is a median site wash (d 1.175 of a
-  400 px sheet), so the lobes keep the mockup's absolute size there and scale with every other wash.
+  strength) sit under the chalk tile's own variation. The 480 px reference is close to a median site wash (d 1.075
+  of a 400 px sheet, 430 px), so the lobes keep the mockup's absolute size there and scale with every other wash.
 - **Size range**: the approved filter worked in absolute CSS px (lobe 60, ragged 12, blur 4), so its outline looked the
   same on every wash. Baked at one reference, the outline scales: an unpaired reading-sheet wash at `d` 1.25 of an
   860 px sheet is about 1,075 px, with lobes about 134 px and a blur of about 9 px (2.2 times); a reading-sheet wash
@@ -95,8 +95,8 @@ Playwright 1.64.1 driver (Chromium and WebKit). The scripts are not tracked; the
   are capped (page sheets always, reading sheets about 60%), so the largest washes are the unpaired ones. The approved
   round never showed a wash over about 1,000 px. The step-2 look round (plan) shows the largest and smallest, and the
   owner judges them (spec A16). Sheet widths are the breaker's simulation figures, not measured on the site.
-- **If the owner rejects the large outline**: a second reference set (eight more blobs, about 6.6 KB, taking the
-  textures to about 17.4 KB, over the 16,000 B test cap and the 17,014 B `image_bytes` ceiling of R6), or a px cap on a
+- **If the owner rejects the large outline**: a second reference set (eight more blobs, about 7.3 KB, taking the
+  textures to about 18.7 KB, over the 16,000 B test cap and the 17,014 B `image_bytes` ceiling of R6), or a px cap on a
   wash's width (against FR-003b). The owner chose the px cap, an amendment to FR-003b, should the large outline be
   rejected (spec A16); the owner names its value in the step-2 round.
 - **Alternatives**: a 600 px reference (the mockup's card washes, lobes 20% smaller on site cards); a set per sheet
@@ -185,9 +185,9 @@ Playwright 1.64.1 driver (Chromium and WebKit). The scripts are not tracked; the
   `yarn washes`). The pair cap becomes `hypot(...) / (var(--wash-s) * var(--wash-span))`. `--wash-reach` and
   `WASH_REACH_PX` retire.
 - **Rationale**: the baked silhouette scales with its wash, so its overhang does too: 29 px on a 480 px wash, about
-  75 px on a 1,250 px one. A fixed 24 px padding would clip the lobes of a large wash with a straight edge. The
+  65 px on a 1,075 px one. A fixed 24 px padding would clip the lobes of a large wash with a straight edge. The
   padded box's half diagonal is `w · s · span / 2`, so the new cap keeps every pair's circles disjoint as today.
-- **Alternatives**: a px reach of about 75 px (shrinks every paired wash and pads every small one).
+- **Alternatives**: a px reach of about 65 px (shrinks every paired wash and pads every small one).
 
 ## R8. Placement and size
 
@@ -277,8 +277,8 @@ Playwright 1.64.1 driver (Chromium and WebKit). The scripts are not tracked; the
   | E2E deterministic guard | `baseline.ci.json` (`osx-arm64`, taken during 006) | 29.3, limit 29.9 | 15.6, limit 15.9 | 4.8, limit 4.9 | the same values |
   | `yarn perf --check` | pre-006 `baseline.json` | 36.3, limit 37.0 | 21.5, limit 21.9 | 7.3, limit 7.4 | 29.3, 15.6, 4.8 |
 
-  The guard has 2% headroom, the matrix about 26% on search-3. Larger washes grow an uncapped wash's box about 1.9
-  times in area on average (mean `d` .85 to 1.175), so if the washes are among the measured layers the guard fails on
+  The guard has 2% headroom, the matrix about 26% on search-3. Larger washes grow an uncapped wash's box about 1.6
+  times in area on average (mean `d` .85 to 1.075), so if the washes are among the measured layers the guard fails on
   the Mac. Whether they are is not known: reduced motion halves search-3's layer area (15.3), so something animated is
   layered. The spike reads it. If it rises past either limit while every timing budget holds, the owner decides
   whether the layer-area baselines are re-taken for this change (spec A18); otherwise the size change goes back to the
@@ -301,8 +301,8 @@ Playwright 1.64.1 driver (Chromium and WebKit). The scripts are not tracked; the
 - **Order**: a spike runs the planner and CSS size change first, with the final padding (6% per side,
   `--wash-span` 1.12) and the final pair cap (`hypot / (s × 1.12)`), and today's textures stretched to the new padded
   box, on the key cases and the deterministic guards, so a size regression is seen before the bake. Today's 24 px
-  padding and `(hypot − 2 × 24) / s` cap would misread the final raster: an unpaired 1,250 px wash's padded box is about
-  1,400 px with the final padding against 1,298 px with today's (16% more area), and a capped pair's box is smaller
+  padding and `(hypot − 2 × 24) / s` cap would misread the final raster: an unpaired 1,075 px wash's padded box is about
+  1,204 px with the final padding against 1,123 px with today's (15% more area), and a capped pair's box is smaller
   with the final cap. If larger washes alone break a budget or guard that passes on `main`, FR-003b and FR-007
   conflict, and the owner decides.
 
@@ -339,13 +339,14 @@ tile and the silhouettes. `specs/007-crayon-wash-texture/mockups/README.md` "Sti
   | recipe | 4.1 | 4.9 | 7.4 | 13.1 | 20.4 |
 
   Bloomed: search-3 5.5 phone, 11.3 desktop; home 3.9, 8.4; recipe 1.2, 3.5.
-- **`image_bytes`**: 164,698 B on every page, 165,608 B on recipe, in every case; all pass.
+- **`image_bytes`**: 164,698 B on every page, 165,608 B on recipe, in every images-on case; every images-off case
+  reads 0 B; all pass.
 
 ### Spike (T014 to T017)
 
 - **Run**: `spike.json` (66 key cases) and `spike-deterministic-*`, in this checkout. Guards 4 of 4, verdicts match
   `main` in both engines. `image_bytes` and layer counts equal `main`'s.
-- **`bloom_frame_max_ms`**: 16.8 ms in all 16 Chromium mid-bloom cases, as on `main`; none is over 50 ms (SC-003).
+- **`bloom_frame_max_ms`**: 16.8 ms in all 12 Chromium mid-bloom cases, as on `main`; none is over 50 ms (SC-003).
 - **`layer_area_mpx`** (Chromium, bare), Mpx, `main` to spike:
 
   | Page | Phone | Phone limit, `baseline.ci.json` | Phone limit, pre-006 `baseline.json` | Desktop | Desktop limit, pre-006 `baseline.json` |
@@ -366,11 +367,11 @@ tile and the silhouettes. `specs/007-crayon-wash-texture/mockups/README.md` "Sti
   | Case | Metric | Spike | `main` | Limit | Verdict |
   |---|---|---|---|---|---|
   | search-3 · phone · chromium · light · bare | `lcp_ms` | 1740 | 1736 | 2000 | noise, both pass |
-  | home · phone · chromium · light · bloomed · images off | `frame_p95_ms` | 16.8 | 16.8 | 16.7 (margin 1.25, floor 4) | both pass |
+  | home · phone · chromium · light · bloomed · images off | `frame_p95_ms` | 16.8 | 16.8 | 31 (baseline 24.8; margin 1.25, floor 4) | both pass |
   | home · desktop · webkit · dark · bare | `long_frames` | 11 | 11 | baseline 10 + 1 | both pass |
   | search-3 · phone · webkit · light · bare | `long_frames` | 19 | 16 | baseline 16 + 1 | spike fails, `main` passes |
   | recipe · desktop · webkit · dark · bloomed | `long_frames` | 7 | 6 | baseline 4 + 1 | both fail, carried |
-  | search-3 · desktop · chromium · light · bare | `interaction_ms_max` | 96 | 80 | 100 (margin 1.25, floor 25) | spike fails, `main` passes; inside the 100 ms limit |
+  | search-3 · desktop · chromium · light · bare | `interaction_ms_max` | 96 | 80 | 81 (baseline 56; margin 1.25, floor 25) | spike fails, `main` passes; 96 is over the 81 ms limit |
 
 Route (T018): (c), a timing regression on search-3. The owner ruled on 2026-11-05: shrink wash sizes to `d` .90 to
 1.25, do not re-run the spike, and judge both search-3 cases again at the final gate with the real chalk masks.
@@ -409,11 +410,11 @@ contrast table; no px cap applies, so T036 and T037 do not run.
   | search-3 · phone · chromium · dark · bloomed | `lcp_ms` | 1804 | 1768 | 1775 | 007 fails, `main` passes |
   | search-1 · phone · chromium · light · bloomed · motion reduced | `lcp_ms` | 1804 | 1764 | 1795 | 007 fails, `main` passes |
   | variant-cook · phone · chromium · light · bloomed · motion reduced | `lcp_ms` | 1916 | 1912 | 1890 | both fail, carried |
-  | sign-in · phone · chromium · dark · bare | `frames_within_16_7_pct` | 52.9 | 0 | 67.1, less 5 | both fail, carried |
-  | home · phone · chromium · light · bloomed · images off | `frame_p95_ms` | 33.2 | 33.4 | 24.8 (margin 1.25, floor 4) | both fail, carried |
-  | settings · phone · chromium · light · bloomed · images off | `frame_p95_ms` | 33.3 | 33.4 | 34.3 (margin 1.25, floor 4) | both pass |
-  | account · phone · webkit · dark · bloomed | `frame_p95_ms` | 151 | 32 | 18 (margin 1.25, floor 4) | both fail, carried |
-  | account · desktop · webkit · dark · bloomed | `frames_within_16_7_pct` | 44.1 | 44.1 | 41.2, less 5 | both pass |
+  | sign-in · phone · chromium · dark · bare | `frames_within_16_7_pct` | 52.9 | 0 | 62.1 (baseline 67.1, less 5) | both fail, carried |
+  | home · phone · chromium · light · bloomed · images off | `frame_p95_ms` | 33.2 | 33.4 | 31 (baseline 24.8; margin 1.25, floor 4) | both fail, carried |
+  | settings · phone · chromium · light · bloomed · images off | `frame_p95_ms` | 33.3 | 33.4 | 42.9 (baseline 34.3; margin 1.25, floor 4) | both pass |
+  | account · phone · webkit · dark · bloomed | `frame_p95_ms` | 151 | 32 | 22.5 (baseline 18; margin 1.25, floor 4) | both fail, carried |
+  | account · desktop · webkit · dark · bloomed | `frames_within_16_7_pct` | 44.1 | 44.1 | 36.2 (baseline 41.2, less 5) | both pass |
   | home · desktop · webkit · dark · bare | `long_frames` | 11 | 11 | baseline 10 + 1 | both pass |
   | search-1 · phone · webkit, four cases | `long_frames` | 10 to 12 | 10 to 11 | baselines 9 to 12, + 1 | same verdicts on both, on mains power |
   | search-1 · desktop · webkit, four cases | `long_frames` | 8 to 9 | 9 to 12 | baselines 8 to 10, + 1 | 007 passes in all four; `main` fails dark bare and dark bloomed |
@@ -427,7 +428,7 @@ contrast table; no px cap applies, so T036 and T037 do not run.
   against `main`'s 11, baseline 16, both pass. `search-3 · desktop · chromium · light · bare` `interaction_ms_max` 56
   against 80, both pass.
 - **SC-003**: `bloom_frame_max_ms` is 16.8 ms in all 16 Chromium mid-bloom cases on both branches. None reaches 50 ms.
-- **`image_bytes`**: passes in every case: 162,376 B on every page, 163,286 B on recipe, against `main`'s 164,698 B and
+- **`image_bytes`**: passes in every case: 162,376 B on every page, 163,286 B on recipe in every images-on case (every images-off case reads 0 B), against `main`'s 164,698 B and
   165,608 B. The nine textures weigh 11,398 B, under the 16,000 B test cap and the 17,014 B ceiling (R6).
 - **`layers`**: unchanged from `main` in every case (search-3 261 phone and 307 desktop, home 126 and 135, recipe 52
   and 58, Chromium bare).

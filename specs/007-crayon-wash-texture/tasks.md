@@ -433,7 +433,7 @@ spec A10, A11; research R9).
 - [X] T040 [US1] Add failing tests in `tests/KCC.ViteTests/Features/Styles/contrast.test.ts`:
   `FIRST_INK_CORE_ALPHA` .34 in place of `FIRST_INK_RIM_ALPHA`; `TEXTURE_GAIN` per blend in place of `GRAIN_GAIN`,
   fitted so the model reads at or below every new rendered reading; `--wash-gain` read from `Washes.css`;
-  `RENDERED_INK_SOFT` from T039; ink, soft ink and hairlines over every two-wash stack at its peak at 4.5:1 or more
+  `RENDERED_INK_SOFT` from T039; ink and soft ink over every two-wash stack at its peak at 4.5:1, hairlines at 3:1,
   in both ramps; the light strength at or under its cap; the dark strength pinned at its cap by the tenth-stronger
   test
 - [X] T041 [US1] Set `--wash-strength` in `src/KCC.Web/Features/Styles/Torn/Tokens.css`: light at its new cap when

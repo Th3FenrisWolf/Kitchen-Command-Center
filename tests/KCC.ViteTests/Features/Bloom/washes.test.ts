@@ -679,9 +679,9 @@ describe('planSheet: the mirror, the second ink and the edge cut', { timeout: 60
   })
 })
 
-const TODAY_SEEDS = [3141592653, 271828182, 1618033988] as const
+const PINNED_SEEDS = [3141592653, 271828182, 1618033988] as const
 
-const TODAY_PLANS = [
+const PINNED_PLANS = [
   {
     seed: 3141592653,
     key: '/recipes|card:soup',
@@ -756,7 +756,7 @@ const TODAY_PLANS = [
   },
 ] as const
 
-const TODAY_VISITS = [
+const PINNED_VISITS = [
   { seed: 3141592653, key: '/recipes|card:soup', count: 2, starts: [97.807, 97.807] },
   { seed: 3141592653, key: '/recipes|card:stew', count: 2, starts: [5.114, 70.944] },
   { seed: 3141592653, key: '/recipes/soup|review:Ann', count: 3, starts: [19.983, 32.607, 165.434] },
@@ -774,7 +774,7 @@ const TODAY_VISITS = [
   { seed: 1618033988, key: '@pad', count: 4, slots: [1, 5, 9, 13], starts: [19.941, 73.829, 123.204, 176.041] },
 ] as const
 
-const TODAY_SCHEDULES = [
+const PINNED_SCHEDULES = [
   {
     seed: 3141592653,
     starts: [
@@ -836,7 +836,7 @@ const TODAY_SCHEDULES = [
 ] as const
 
 function collectedFrom(seed: number): CollectedWash[] {
-  const washes = TODAY_PLANS.filter((p) => p.seed === seed).flatMap((p) =>
+  const washes = PINNED_PLANS.filter((p) => p.seed === seed).flatMap((p) =>
     planSheet({ seed, key: p.key, size: p.size }).map((w) => ({ id: w.id, key: w.key, index: w.index })),
   )
   const pad = [1, 5, 9, 13].map((slot, k) => ({ id: washId('@pad', k), key: '@pad', index: k, slot }))
@@ -905,9 +905,9 @@ describe('planSheet: edge-placed washes', () => {
   })
 })
 
-describe('wash ids and starts: the values recorded before the bleed work', () => {
+describe('pins the planner ids, starts and schedules', () => {
   it('keeps the planner ids and fallback starts on card, reading and hero fields', () => {
-    for (const p of TODAY_PLANS) {
+    for (const p of PINNED_PLANS) {
       const washes = planSheet({ seed: p.seed, key: p.key, size: p.size })
       expect(
         washes.map((w) => w.id),
@@ -921,15 +921,15 @@ describe('wash ids and starts: the values recorded before the bleed work', () =>
   })
 
   it('keeps the visit starts', () => {
-    for (const v of TODAY_VISITS) {
+    for (const v of PINNED_VISITS) {
       const slots = 'slots' in v ? v.slots : undefined
       expect(visitStarts(v.seed, v.key, v.count, slots), `${v.seed} ${v.key}`).toEqual(v.starts)
     }
   })
 
   it('keeps the schedule', () => {
-    for (const schedule of TODAY_SCHEDULES) {
-      expect(TODAY_SEEDS).toContain(schedule.seed)
+    for (const schedule of PINNED_SCHEDULES) {
+      expect(PINNED_SEEDS).toContain(schedule.seed)
       expect(scheduleStarts(schedule.seed, collectedFrom(schedule.seed))).toEqual(schedule.starts)
     }
   })
