@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { GRAIN_TILE_PX } from '~/Bloom/bakeWashes'
 
 const read = (path: string) =>
   readFileSync(fileURLToPath(new URL(`../../../../src/KCC.Web/Features/${path}`, import.meta.url)), 'utf8')
@@ -76,12 +75,39 @@ const bloomEnd = declared('to')
 
 const DELAY = 'calc(var(--wash-at, var(--wash-fallback-at)) - var(--wash-elapsed, 0s) - var(--wash-lag, 0s))'
 const CAPPED_WIDTH =
-  'max(0px, min(calc(var(--wash-d) * 100cqw), calc((hypot(calc(var(--wash-dx) * 100cqw), calc(var(--wash-dy) * 100cqh)) - 2 * var(--wash-reach)) / var(--wash-s))))'
+  'max(0px, min(calc(var(--wash-d) * 100cqw), calc(hypot(calc(var(--wash-dx) * 100cqw), calc(var(--wash-dy) * 100cqh)) / (var(--wash-s) * var(--wash-span)))))'
+const SPAN_PADDING = 'calc(var(--wash-h) * (var(--wash-span) - 1) / 2) calc(var(--wash-w) * (var(--wash-span) - 1) / 2)'
+
+const BOX = /^(border|padding|content)-box$/
+const OPACITY = 'calc(var(--wash-strength) * var(--wash-peak) * var(--wash-gain))'
+
+const layersOf = (declarations: Record<string, string>) =>
+  splitTop(declarations.background ?? '', ',').map((layer) => layer.trim())
+
+function layerBoxes(declarations: Record<string, string>) {
+  const listed = (property: string) => splitTop(declarations[property] ?? '', ',').map((value) => value.trim())
+  const origins = listed('background-origin')
+  const clips = listed('background-clip')
+  return layersOf(declarations).map((layer, i) => {
+    const tokens = splitTop(layer, ' ')
+      .map((token) => token.trim())
+      .filter((token) => BOX.test(token))
+    return {
+      origin: origins[i % origins.length] || tokens[0] || 'padding-box',
+      clip: clips[i % clips.length] || tokens[1] || tokens[0] || 'border-box',
+    }
+  })
+}
 
 const alphas = (background: string, ink: string) =>
   [...background.matchAll(new RegExp(`oklch\\(from var\\(${ink}\\) ([^/]+)/ ([\\d.]+)\\)`, 'g'))].map(
     ([, channels, alpha]) => ({ channels: channels!.trim(), alpha: Number(alpha) }),
   )
+
+const keyframeEnd = (name: string) => new RegExp(`@keyframes ${name}\\s*\\{[\\s\\S]*?to\\s*\\{([^}]*)\\}`).exec(kit)?.[1]
+
+const SECOND_INK =
+  'radial-gradient(closest-side at calc(var(--wash-o3)*100%) calc(var(--wash-o4)*100%),oklch(from var(--wash-tint-2) l c h/.26),oklch(from var(--wash-tint-2) l c h/0))'
 
 describe('the wash field', () => {
   it('lies over the whole sheet, under its content, and takes no pointer', () => {
@@ -117,8 +143,13 @@ describe('the wash field', () => {
 
 describe('a wash', () => {
   it('rests at the end of its bloom, so a finished bloom leaves no animation applied', () => {
-    expect(wash.opacity).toBe('calc(var(--wash-strength) * var(--wash-peak))')
-    expect(bloomEnd.opacity).toBe(wash.opacity)
+    expect(wash.opacity).toBe(OPACITY)
+    expect(bloomEnd.opacity).toBe(OPACITY)
+  })
+
+  it('fades to the same opacity under reduced motion', () => {
+    expect(squash(keyframeEnd('kcc-bloom'))).toContain(squash(`opacity:${OPACITY}`))
+    expect(squash(keyframeEnd('kcc-bloom-fade'))).toContain(squash(`opacity:${OPACITY}`))
   })
 
   it('blooms with fill mode backwards from invisible, delayed by its arrival less the visit and the late mount', () => {
@@ -145,28 +176,31 @@ describe('a wash', () => {
     expect(read('Pages/Shared/Layout.cshtml')).not.toMatch(/<filter id="kcc-bloom"/)
   })
 
-  it('takes its bled shape and its grain from the baked masks, the grain tiled at its own pixel size', () => {
-    expect(squash(wash['mask-image'])).toBe('var(--wash-grain),var(--wash-blob)')
+  it('takes its bled shape from the baked blob over the whole padded box, and its chalk tiled at its own pixel size', () => {
+    expect(squash(wash['mask-image'])).toBe('var(--wash-chalk),var(--wash-blob)')
     expect(squash(wash['mask-composite'])).toBe('intersect,add')
     expect(squash(wash['mask-mode'])).toBe('alpha')
     expect(squash(wash['mask-repeat'])).toBe('repeat,no-repeat')
     expect(squash(wash['mask-position'])).toBe('00,center')
-    expect(squash(wash['mask-size'])).toBe(
-      `${GRAIN_TILE_PX}px${GRAIN_TILE_PX}px,calc(var(--wash-w)*var(--wash-blob-span))calc(var(--wash-h)*var(--wash-blob-span))`,
-    )
+    expect(squash(wash['mask-size'])).toBe('128px128px,100%100%')
     expect(wash['border-radius']).toBeUndefined()
   })
 
-  it('saturates each ink by the ramp’s --wash-sat and tones it by the grain, with the saturate() matrix in linear light', () => {
+  it('mirrors as a whole by --wash-flip', () => {
+    expect(squash(wash.transform)).toBe('scale(var(--wash-flip),1)')
+  })
+
+  it('saturates each ink by the ramp’s --wash-sat, with the saturate() matrix in linear light and no tone', () => {
     const tint = (ink: string) =>
       [
         `color(from var(${ink}) srgb-linear `,
-        `clamp(0,var(--wash-tone)*((0.213+0.787*var(--wash-sat))*r+(0.715-0.715*var(--wash-sat))*g+(0.072-0.072*var(--wash-sat))*b),1)`,
-        `clamp(0,var(--wash-tone)*((0.213-0.213*var(--wash-sat))*r+(0.715+0.285*var(--wash-sat))*g+(0.072-0.072*var(--wash-sat))*b),1)`,
-        `clamp(0,var(--wash-tone)*((0.213-0.213*var(--wash-sat))*r+(0.715-0.715*var(--wash-sat))*g+(0.072+0.928*var(--wash-sat))*b),1))`,
+        `clamp(0,((0.213+0.787*var(--wash-sat))*r+(0.715-0.715*var(--wash-sat))*g+(0.072-0.072*var(--wash-sat))*b),1)`,
+        `clamp(0,((0.213-0.213*var(--wash-sat))*r+(0.715+0.285*var(--wash-sat))*g+(0.072-0.072*var(--wash-sat))*b),1)`,
+        `clamp(0,((0.213-0.213*var(--wash-sat))*r+(0.715-0.715*var(--wash-sat))*g+(0.072+0.928*var(--wash-sat))*b),1))`,
       ].join('')
     expect(squash(wash['--wash-tint'])).toBe(squash(tint('--wash-ink')))
     expect(squash(wash['--wash-tint-2'])).toBe(squash(tint('--wash-ink-2')))
+    expect(`${wash['--wash-tint']}${wash['--wash-tint-2']}`).not.toContain('--wash-tone')
   })
 
   it('declares no mix-blend-mode or isolation on a wash', () => {
@@ -178,29 +212,52 @@ describe('a wash', () => {
     expect(blending).toEqual([])
   })
 
-  it('caps its width against its pair partner, bleed included, and takes its height from its aspect', () => {
+  it('carries no border-radius, will-change, filter, blend or isolation of its own', () => {
+    for (const property of ['filter', 'mix-blend-mode', 'isolation', 'will-change', 'border-radius'])
+      expect(wash[property], property).toBeUndefined()
+  })
+
+  it('names none of the retired planner or bleed properties', () => {
+    expect(kit).not.toMatch(/--wash-(?:o1|o2|bleed-step|grain)(?![\w-])/)
+  })
+
+  it('caps its width against its pair partner and takes its height from its aspect', () => {
     expect(squash(wash['--wash-w'])).toBe(squash(CAPPED_WIDTH))
     expect(squash(wash['--wash-h'])).toBe('calc(var(--wash-w)/var(--wash-aspect))')
     expect(wash.width).toBe('var(--wash-w)')
     expect(wash['aspect-ratio']).toBe('var(--wash-aspect)')
   })
 
-  it('holds its bleed in a padding of --wash-reach around the box its width and aspect size', () => {
+  it('pads the box its width and aspect size by --wash-span, so the padded box scales with the wash', () => {
     expect(wash['box-sizing']).toBe('content-box')
-    expect(wash.padding).toBe('var(--wash-reach)')
+    expect(squash(wash.padding)).toBe(squash(SPAN_PADDING))
   })
 
-  it('draws its first ink at most .345 at the rim and its second at most .26, as contrast.test.ts models them', () => {
+  it('lays the second ink on top in the content box and the first ink flat under it, as a gradient layer clipped to the border box', () => {
+    const layers = layersOf(wash)
+    const boxes = layerBoxes(wash)
+    const flat = 'oklch(from var(--wash-tint) l c h / .34)'
+    expect(layers).toHaveLength(2)
+    for (const layer of layers) expect(layer).toMatch(/^(?:radial|linear)-gradient\(/)
+    expect(squash(layers[0])?.replace(/(?<!\d)0\./g, '.')).toContain(squash(SECOND_INK))
+    expect(squash(layers[0])).toContain('no-repeat')
+    expect(boxes[0]).toEqual({ origin: 'content-box', clip: 'content-box' })
+    expect(squash(layers[1])?.replace(/(?<!\d)0\./g, '.')).toBe(squash(`linear-gradient(${flat},${flat})`))
+    expect(boxes[1]!.clip).toBe('border-box')
+    expect(wash['background-color']).toBeUndefined()
+  })
+
+  it.each(['Styles/Torn/Kit.css', 'Styles/Torn/Tokens.css'])('names no --wash-reach in %s', (path) => {
+    expect(read(path)).not.toContain('--wash-reach')
+  })
+
+  it('draws its first ink flat at .34, as one colour twice, and its second at .26 fading to nothing, as contrast.test.ts models them', () => {
     const background = wash.background ?? wash['background-image'] ?? ''
-    const first = alphas(background, '--wash-tint')
-    const second = alphas(background, '--wash-tint-2')
-    expect(first.length).toBeGreaterThan(1)
-    expect(second.length).toBeGreaterThan(0)
-    expect(Math.max(...first.map(({ alpha }) => alpha))).toBe(0.345)
-    expect(Math.max(...second.map(({ alpha }) => alpha))).toBe(0.26)
+    expect(alphas(background, '--wash-tint').map(({ alpha }) => alpha)).toEqual([0.34, 0.34])
+    expect(alphas(background, '--wash-tint-2').map(({ alpha }) => alpha)).toEqual([0.26, 0])
   })
 
-  it('lifts the rim by alpha alone, never by a darker colour', () => {
+  it('fades each ink by alpha alone, keeping its lightness, chroma and hue', () => {
     const background = wash.background ?? wash['background-image'] ?? ''
     const channels = [...alphas(background, '--wash-tint'), ...alphas(background, '--wash-tint-2')].map(
       ({ channels }) => channels,

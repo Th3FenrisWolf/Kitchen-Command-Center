@@ -213,12 +213,14 @@ the CSS. No runtime JS draws anything; the SSR output is final. The structural i
 - A wash is never placed by hand: `KccSheet` and `KccWashes` render up to four per sheet from the visit's seed
   and the sheet's `wash-key`, two deep at most, and the kit CSS blooms them in 45 steps from the elapsed time
   `Layout.cshtml` writes as `--wash-elapsed`. A wash rests at its bloom's end and fills backwards only, so hydration
-  keeps the first paint. It carries no filter, which made WebKit redraw it on every step: its bleed and grain are
-  baked PNG textures in `Features/Styles/Torn/Washes/`, named by `Features/Styles/Torn/Washes.css`, both **generated**
-  by `yarn washes` from `Features/Bloom/bakeWashes.ts`. Never hand-edit them. The client build keeps the textures out
-  of the stylesheet as cached files (`assetsInlineLimit` in `vite.config.ts`), and `Layout.cshtml` preloads them with
+  keeps the first paint. A wash is chalk: its mask is a 128px chalk tile cut with one of eight lobed silhouettes (`Washes/wash-chalk.png`,
+  `wash-blob-0.png` to `wash-blob-7.png`), baked by `yarn washes` from `Features/Bloom/bakeWashes.ts` and named by
+  `Features/Styles/Torn/Washes.css`, which is **generated** too. Never hand-edit them. The silhouette's padding is
+  `--wash-span`, `--wash-gain` lifts the opacity to make up for the chalk's gaps, and `--wash-flip` mirrors each wash.
+  A wash takes no filter, so neither does its chalk tile or silhouette: a filter on a blooming wash made WebKit redraw it on every step. The client build keeps the
+  textures out of the stylesheet as cached files (`assetsInlineLimit` in `vite.config.ts`), and `Layout.cshtml` preloads them with
   `crossorigin` in production so a bloomed first paint has them. Every `KccSheet` and `KccWashes` needs a stable `wash-key` (a list item's own id, never
   its index); `keys.test.ts` scans for it.
-- Grain and crayon lie on the desk, the washes and the tiles only. The desk's are `#app`'s own background layers
+- Grain and crayon lie on the desk, the washes and the tiles only; a wash's texture is its baked chalk tile, not a grain tile. The desk's are `#app`'s own background layers
   (`background-blend-mode`, each ramp's strength baked into the SVG in `Tokens.css`), not overlay elements. Paper, text, controls, labels, wells, blank sheets
   and tape carry none; `grain.test.ts` fails on any other use. The tape's weave is its own material.

@@ -37,6 +37,9 @@ const DESK = new Set(withDark('#app'))
 const SURFACES = new Set([...DESK, '.kcc-wash', '.kcc-tile'])
 const RAMPS = new Set([':root', ":root[data-theme='dark']"])
 const TAPE = new Set(withDark('.kcc-tilewrap > .kcc-tape'))
+const WASH = new Set(['.kcc-wash'])
+const WASH_MASK = /(?<![\w-])--wash-(?:chalk|blob(?:-\d+)?)(?![\w-])/
+const RETIRED_GRAIN = /(?<![\w-])--wash-grain(?![\w-])/
 
 const splitTop = (text: string, separator: string) => {
   const parts: string[] = []
@@ -164,6 +167,10 @@ export const scan = (sources: Source[]): string[] => {
           report(path, where, `${property} paints a texture image`)
         if (TEXTURE.repeatingLinear.test(value) && !onlyOn(SURFACES) && !onlyOn(TAPE))
           report(path, where, `${property} paints a texture image`)
+        if ((WASH_MASK.test(property) || WASH_MASK.test(value)) && !onlyOn(WASH))
+          report(path, where, `${property} names a wash mask outside .kcc-wash`)
+        if (RETIRED_GRAIN.test(property) || RETIRED_GRAIN.test(value))
+          report(path, where, `${property} names the retired --wash-grain`)
       }
     }
     if (WHOLE_NAME.test(markup)) report(path, 'markup', 'names --grain or --crayon')
@@ -177,6 +184,8 @@ export const scan = (sources: Source[]): string[] => {
       TEXTURE.repeatingRadial.test(markup)
     )
       report(path, 'markup', 'paints a texture image')
+    if (WASH_MASK.test(markup)) report(path, 'markup', 'names a wash mask outside .kcc-wash')
+    if (RETIRED_GRAIN.test(markup)) report(path, 'markup', 'names the retired --wash-grain')
   }
   return reported
 }
@@ -228,6 +237,31 @@ describe('grain lies only on the desk, the washes and the tiles', () => {
       .flatMap((rule) => rule.declarations.map(([name]) => name))
       .filter((name) => /^--(?:grain|wax)-op$/.test(name))
     expect(opacities).toEqual([])
+  })
+})
+
+describe('the washes take their texture from the chalk and the blob masks only', () => {
+  const rules = () => featureSources().flatMap((source) => split(source).rules)
+
+  it('declares --wash-chalk and the blob masks on .kcc-wash only, and masks the wash with them', () => {
+    const masks = rules().flatMap((rule) =>
+      rule.declarations.filter(([property]) => WASH_MASK.test(property)).map(([property]) => ({ property, rule })),
+    )
+    expect(masks.map(({ property }) => property)).toContain('--wash-chalk')
+    expect(masks.map(({ property }) => property)).toEqual(expect.arrayContaining(['--wash-blob-0']))
+    for (const { property, rule } of masks) expect(rule.selectors, property).toEqual(['.kcc-wash'])
+
+    const maskImages = rules()
+      .filter((rule) => rule.selectors.includes('.kcc-wash'))
+      .flatMap((rule) => rule.declarations.filter(([name]) => name === 'mask-image').map(([, value]) => value))
+    expect(maskImages.at(-1)?.replace(/\s+/g, ' ')).toBe('var(--wash-chalk), var(--wash-blob)')
+  })
+
+  it('names --wash-grain nowhere in Features', () => {
+    const naming = featureSources()
+      .filter((source) => RETIRED_GRAIN.test(source.text))
+      .map((source) => source.path)
+    expect(naming).toEqual([])
   })
 })
 
@@ -327,12 +361,29 @@ describe('the scanner', () => {
   })
 
   it.each([
-    'url("./Washes/wash-grain.png")',
-    "url('/assets/wash-grain-CRUC7kRo.png')",
+    'url("./Washes/wash-chalk.png")',
+    "url('/assets/wash-chalk-CRUC7kRo.png')",
     'url("data:image/png;base64,iVBORw0KGgo=")',
   ])('counts a baked PNG as a texture, allowed on a wash: %s', (png) => {
-    expect(scan(css(`.kcc-wash { --wash-grain: ${png}; mask-image: var(--wash-grain); }`))).toEqual([])
+    expect(scan(css(`.kcc-wash { --wash-chalk: ${png}; mask-image: var(--wash-chalk); }`))).toEqual([])
     expect(scan(css(`.kcc-field { mask-image: ${png}; }`))).not.toEqual([])
-    expect(scan(css(`.kcc-wash { --wash-grain: ${png}; } .kcc-field { mask-image: var(--wash-grain); }`))).not.toEqual([])
+    expect(scan(css(`.kcc-wash { --wash-chalk: ${png}; } .kcc-field { mask-image: var(--wash-chalk); }`))).not.toEqual([])
+  })
+
+  it('keeps the chalk and the blob masks to .kcc-wash, off the desk and the tiles too', () => {
+    const declared = '.kcc-wash { --wash-chalk: url("x.png"); --wash-blob-3: url("b.png"); }'
+    expect(scan(css(`${declared} .kcc-wash { mask-image: var(--wash-chalk), var(--wash-blob); }`))).toEqual([])
+    expect(scan(css(`${declared} .kcc-tile { mask-image: var(--wash-chalk); }`))).not.toEqual([])
+    expect(scan(css(`${declared} #app { mask-image: var(--wash-blob-3); }`))).not.toEqual([])
+    expect(scan(css(':root { --wash-chalk: none; }', TOKENS))).not.toEqual([])
+    const bound = `<template><div :style="{ '--wash-chalk': 'none' }"></div></template>`
+    expect(scan(css(bound, 'Features/Components/Thing.vue'))).not.toEqual([])
+  })
+
+  it('reports --wash-grain wherever it is named, a wash included', () => {
+    expect(scan(css('.kcc-wash { mask-image: var(--wash-grain), var(--wash-blob); }'))).not.toEqual([])
+    expect(scan(css('.kcc-wash { --wash-grain: url("x.png"); }'))).not.toEqual([])
+    expect(scan(css('<div style="--wash-grain: none"></div>', LAYOUT))).not.toEqual([])
+    expect(scan(css('.kcc-wash { --wash-grain-op: 0.5; }'))).toEqual([])
   })
 })

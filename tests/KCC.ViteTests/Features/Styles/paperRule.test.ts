@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { WASH_REACH_PX } from '~/Bloom/washes'
 
 const stylesDir = new URL('../../../../src/KCC.Web/Features/Styles/', import.meta.url)
 const read = (path: string) => readFileSync(fileURLToPath(new URL(path, stylesDir)), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
@@ -745,7 +744,8 @@ describe('the filter defs in Layout.cshtml', () => {
     expect(filter('kcc-wax'), '#kcc-wax').toBeUndefined()
   })
 
-  it('sets --wash-reach to WASH_REACH_PX', () => {
-    expect(rootToken('--wash-reach')).toBe(`${WASH_REACH_PX}px`)
+  it('declares no --wash-reach in either ramp, the wash padding scaling by --wash-span instead', () => {
+    expect(rootToken('--wash-reach')).toBeUndefined()
+    expect(darkToken('--wash-reach')).toBeUndefined()
   })
 })

@@ -30,6 +30,8 @@ async function serverRender() {
 }
 
 const fieldsIn = (root: ParentNode) => [...root.querySelectorAll('.kcc-washes')].map((field) => field.outerHTML)
+const washStylesIn = (root: ParentNode) =>
+  [...root.querySelectorAll('.kcc-wash')].map((wash) => wash.getAttribute('style') ?? '')
 
 function hydrate(html: string, seed: number) {
   const container = document.createElement('div')
@@ -78,6 +80,23 @@ describe('the first paint', () => {
     expect(mismatches).toEqual([])
     expect(before).toHaveLength(3)
     expect(after).toEqual(before)
+  })
+
+  it('server-renders each wash with its mirror and no ellipse offset, and hydration keeps every wash style', async () => {
+    const { html } = await serverRender()
+    const container = document.createElement('div')
+    container.innerHTML = html
+    const served = washStylesIn(container)
+
+    expect(served.length).toBeGreaterThanOrEqual(8)
+    for (const style of served) {
+      expect(style).toMatch(/(?:^|;)\s*--wash-flip:\s*-?1\s*(?:;|$)/)
+      expect(style).not.toMatch(/--wash-o[12]\b/)
+    }
+
+    const { mismatches } = hydrate(html, SEED)
+    expect(mismatches).toEqual([])
+    expect(washStylesIn(document.body)).toEqual(served)
   })
 
   it('reports a mismatch when hydrated with another seed', async () => {

@@ -1,37 +1,37 @@
 import { deflateSync } from 'node:zlib'
-import { WASH_GRAIN_FILE, WASH_TEXTURE_FOLDER, washBlobFile } from './washTextures.ts'
+import { BLOB_SHAPES, type BlobCorners, random, setupSeed } from './blobShapes.ts'
+import { WASH_CHALK_FILE, WASH_TEXTURE_FOLDER, washBlobFile } from './washTextures.ts'
 
 export const BLOOM_FILTER = {
-  bleed: { baseFrequency: [0.012, 0.016], numOctaves: 3, seed: 5, scale: 24, stdDeviation: 12 },
-  grain: { baseFrequency: 0.5, numOctaves: 4, seed: 9, k1: 0.62, k2: 0.62 },
+  lobe: { baseFrequency: [0.012, 0.016], numOctaves: 3, seed: 5, scale: 60 },
+  ragged: { baseFrequency: [0.08, 0.08], numOctaves: 2, seed: 3, scale: 12 },
+  ends: { baseFrequency: [0.44, 0.004], numOctaves: 1, seed: 11, scale: 10 },
+  outline: { stdDeviation: 4 },
+  strokes: { baseFrequency: [0.44, 0.1], numOctaves: 2, seed: 11, slope: 5, intercept: -1.6 },
+  tooth: { baseFrequency: [0.6, 0.6], numOctaves: 2, seed: 21, slope: 3, intercept: -0.5 },
+  gaps: { k2: 1, k3: 0.5 },
+  soft: { stdDeviation: 1 },
+  profile: [
+    [0, 1],
+    [0.62, 0.941],
+    [0.8, 0.588],
+    [0.92, 0.206],
+    [1, 0],
+  ],
 } as const
 
-export const BLOB_COUNT = 8
-export const BLOB_SHAPE_TEXELS = 32
-export const BLOB_MARGIN_TEXELS = 7
-export const BLOB_TEXELS = BLOB_SHAPE_TEXELS + 2 * BLOB_MARGIN_TEXELS
-export const BLOB_REFERENCE_PX = 320
-export const GRAIN_TILE_PX = 64
-const RADIUS_RANGE = [32, 68] as const
-const SUPERSAMPLE = 4
+const BLOB_MARGIN = 0.06
+export const WASH_SPAN = 1 + 2 * BLOB_MARGIN
+export const WASH_GAIN = BLOOM_FILTER.gaps.k2 + BLOOM_FILTER.gaps.k3
+export const BLOB_REFERENCE_PX = 480
+export const BLOB_TEXELS = 90
+export const CHALK_TILE_PX = 128
+const SAMPLES_PER_TEXEL = 6
+const ALPHA_LEVELS = 15
 
 const BSIZE = 0x100
 const BM = 0xff
 const PERLIN_N = 0x1000
-const RAND_M = 2147483647
-const RAND_A = 16807
-const RAND_Q = 127773
-const RAND_R = 2836
-
-function setupSeed(seed: number): number {
-  if (seed <= 0) seed = -(seed % (RAND_M - 1)) + 1
-  return Math.min(seed, RAND_M - 1)
-}
-
-function random(seed: number): number {
-  const result = RAND_A * (seed % RAND_Q) - RAND_R * Math.trunc(seed / RAND_Q)
-  return result <= 0 ? result + RAND_M : result
-}
 
 interface Stitch {
   width: number
@@ -152,58 +152,84 @@ export class Turbulence {
   }
 }
 
-/** The bloom filter's grain at one pixel, as its arithmetic composite applies it to premultiplied colour. */
-function grainAt(noise: Turbulence, x: number, y: number) {
-  const { baseFrequency, numOctaves, k1, k2 } = BLOOM_FILTER.grain
-  const w = [0, 1, 2, 3].map((channel) =>
-    noise.fractal(channel, x + 0.5, y + 0.5, [baseFrequency, baseFrequency], numOctaves, GRAIN_TILE_PX),
-  )
-  const alpha = w[3]!
-  return {
-    alpha: k1 * alpha + k2,
-    tone: (w[0]! + w[1]! + w[2]!) / 3,
-    wA: alpha,
+const clip01 = (value: number) => Math.min(1, Math.max(0, value))
+
+function blur(source: Float64Array, size: number, sigma: number, wrap: boolean): Float64Array {
+  const reach = Math.ceil(sigma * 3)
+  const kernel = Array.from({ length: 2 * reach + 1 }, (_, i) => Math.exp(-((i - reach) ** 2) / (2 * sigma * sigma)))
+  const total = kernel.reduce((a, b) => a + b, 0)
+  const pass = (input: Float64Array, horizontal: boolean) => {
+    const output = new Float64Array(input.length)
+    for (let y = 0; y < size; y++)
+      for (let x = 0; x < size; x++) {
+        let sum = 0
+        for (let k = -reach; k <= reach; k++) {
+          let sx = horizontal ? x + k : x
+          let sy = horizontal ? y : y + k
+          if (wrap) {
+            sx = (sx + size) % size
+            sy = (sy + size) % size
+          } else if (sx < 0 || sx >= size || sy < 0 || sy >= size) continue
+          sum += input[sy * size + sx]! * kernel[k + reach]!
+        }
+        output[y * size + x] = sum / total
+      }
+    return output
   }
+  return pass(pass(source, true), false)
 }
 
-export interface BakedGrain {
-  /** The grain's alpha term, clipped to 1 as a mask must be. */
-  alpha: Float64Array
-  /** The mean factor the grain's colour term puts on every channel, in linear light. */
-  tone: number
-  /** The mean of the alpha term before clipping. */
-  gain: number
+const mean = (values: Float64Array, from: number, count: number, step: number) => {
+  let sum = 0
+  for (let i = 0; i < count; i++) sum += values[from + i * step]!
+  return sum / count
 }
 
-export function bakeGrain(): BakedGrain {
-  const noise = new Turbulence(BLOOM_FILTER.grain.seed)
-  const alpha = new Float64Array(GRAIN_TILE_PX * GRAIN_TILE_PX)
-  let tone = 0
-  let gain = 0
-  for (let y = 0; y < GRAIN_TILE_PX; y++)
-    for (let x = 0; x < GRAIN_TILE_PX; x++) {
-      const g = grainAt(noise, x, y)
-      alpha[y * GRAIN_TILE_PX + x] = Math.min(1, g.alpha)
-      gain += g.alpha
-      tone += (1 + g.tone * g.wA) / (1 + g.wA)
+/**
+ * The chalk composite reduced to a mask: the marks with colour in their gaps, blurred and scaled to peak at
+ * 1, which `--wash-gain` undoes on the wash's opacity.
+ */
+export function bakeChalk(): Float64Array {
+  const { strokes, tooth, soft, gaps } = BLOOM_FILTER
+  const size = CHALK_TILE_PX
+  const strokeNoise = new Turbulence(strokes.seed)
+  const toothNoise = new Turbulence(tooth.seed)
+  const marks = new Float64Array(size * size)
+  for (let y = 0; y < size; y++)
+    for (let x = 0; x < size; x++) {
+      const s = strokeNoise.fractal(0, x + 0.5, y + 0.5, strokes.baseFrequency, strokes.numOctaves, size)
+      const t = toothNoise.fractal(0, x + 0.5, y + 0.5, tooth.baseFrequency, tooth.numOctaves, size)
+      marks[y * size + x] = clip01(strokes.slope * s + strokes.intercept) * clip01(tooth.slope * t + tooth.intercept)
     }
-  return { alpha, tone: tone / alpha.length, gain: gain / alpha.length }
+  const tile = blur(marks, size, soft.stdDeviation, true).map((m) => (gaps.k2 * m + gaps.k3) / WASH_GAIN)
+  // A row or column darker than the tile would repeat as a stripe every tile, where the live filter never repeats.
+  const tileMean = mean(tile, 0, tile.length, 1)
+  for (let y = 0; y < size; y++) {
+    const deviation = mean(tile, y * size, size, 1) - tileMean
+    for (let x = 0; x < size; x++) tile[y * size + x]! -= deviation
+  }
+  for (let x = 0; x < size; x++) {
+    const deviation = mean(tile, x, size, size) - tileMean
+    for (let y = 0; y < size; y++) tile[y * size + x]! -= deviation
+  }
+  return tile.map(clip01)
 }
 
-export type BlobRadii = [number, number, number, number]
-
-export function blobRadii(index: number): BlobRadii {
-  let s = setupSeed(1 + index * 7919)
-  const [low, high] = RADIUS_RANGE
-  return [0, 1, 2, 3].map(() => {
-    s = random(s)
-    return low + ((high - low) * (s % 10_000)) / 10_000
-  }) as BlobRadii
+function profileAt(rho: number): number {
+  const stops = BLOOM_FILTER.profile
+  for (let i = 1; i < stops.length; i++) {
+    const [to, alpha] = stops[i]!
+    if (rho <= to) {
+      const [from, start] = stops[i - 1]!
+      return start + ((alpha - start) * (rho - from)) / (to - from)
+    }
+  }
+  return 0
 }
 
 // The border-radius shape `r1 r2 r3 r4 / r4 r1 r2 r3` in a unit box, radii scaled down as CSS does when two
 // corners would overlap.
-function insideBlob([r1, r2, r3, r4]: BlobRadii, x: number, y: number): boolean {
+function insideRoundedBox([r1, r2, r3, r4]: BlobCorners, x: number, y: number): boolean {
   const h = [r1, r2, r3, r4].map((r) => r / 100)
   const v = [r4, r1, r2, r3].map((r) => r / 100)
   const f = Math.min(1, 1 / (h[0]! + h[1]!), 1 / (h[3]! + h[2]!), 1 / (v[0]! + v[3]!), 1 / (v[1]! + v[2]!))
@@ -224,70 +250,45 @@ function insideBlob([r1, r2, r3, r4]: BlobRadii, x: number, y: number): boolean 
   return true
 }
 
-function gaussianBlur(source: Float64Array, size: number, sigma: number): Float64Array {
-  const reach = Math.ceil(sigma * 3)
-  const kernel = Array.from({ length: 2 * reach + 1 }, (_, i) => Math.exp(-((i - reach) ** 2) / (2 * sigma * sigma)))
-  const total = kernel.reduce((a, b) => a + b, 0)
-  const pass = (input: Float64Array, horizontal: boolean) => {
-    const output = new Float64Array(input.length)
-    for (let y = 0; y < size; y++)
-      for (let x = 0; x < size; x++) {
-        let sum = 0
-        for (let k = -reach; k <= reach; k++) {
-          const sx = horizontal ? x + k : x
-          const sy = horizontal ? y : y + k
-          if (sx >= 0 && sx < size && sy >= 0 && sy < size) sum += input[sy * size + sx]! * kernel[k + reach]!
-        }
-        output[y * size + x] = sum / total
-      }
-    return output
-  }
-  return pass(pass(source, true), false)
-}
-
 /**
- * One wash shape: the blob displaced and bled through the filter at BLOB_REFERENCE_PX, with room for its bleed.
- * The inks bleed in their own gradient stops, so the mask reaches full strength at the blob's edge rather than half
- * and fades over twice the bleed beyond it, or the two bleeds would multiply.
+ * One silhouette: the first ink's faded ellipse in its rounded box, displaced and blurred as the filter
+ * draws it on a BLOB_REFERENCE_PX wash, over the box `--wash-span` pads the wash to.
  */
 export function bakeBlob(index: number): Float64Array {
-  const { baseFrequency, numOctaves, seed, scale, stdDeviation } = BLOOM_FILTER.bleed
-  const radii = blobRadii(index)
-  const pxPerTexel = BLOB_REFERENCE_PX / BLOB_SHAPE_TEXELS
-  const spread = 2 * stdDeviation
-  const pad = Math.ceil((3 * spread + scale / 2) / pxPerTexel)
-  const size = BLOB_SHAPE_TEXELS + 2 * pad
-  const noise = new Turbulence(seed)
-  const offset = index * BLOB_REFERENCE_PX
-  const coverage = (u: number, v: number) => {
-    let hits = 0
-    for (let sy = 0; sy < SUPERSAMPLE; sy++)
-      for (let sx = 0; sx < SUPERSAMPLE; sx++)
-        if (
-          insideBlob(
-            radii,
-            (u + (sx + 0.5) / SUPERSAMPLE) / BLOB_SHAPE_TEXELS,
-            (v + (sy + 0.5) / SUPERSAMPLE) / BLOB_SHAPE_TEXELS,
-          )
-        )
-          hits++
-    return hits / SUPERSAMPLE ** 2
-  }
-  const displaced = new Float64Array(size * size)
-  for (let y = 0; y < size; y++)
-    for (let x = 0; x < size; x++) {
-      const px = (x - pad + 0.5) * pxPerTexel + offset
-      const py = (y - pad + 0.5) * pxPerTexel
-      const dx = (scale * (noise.fractal(0, px, py, baseFrequency, numOctaves) - 0.5)) / pxPerTexel
-      const dy = (scale * (noise.fractal(1, px, py, baseFrequency, numOctaves) - 0.5)) / pxPerTexel
-      displaced[y * size + x] = coverage(x - pad + dx, y - pad + dy)
+  const { lobe, ragged, ends, outline } = BLOOM_FILTER
+  const shape = BLOB_SHAPES[index]!
+  const lobeNoise = new Turbulence(lobe.seed)
+  const raggedNoise = new Turbulence(ragged.seed)
+  const endsNoise = new Turbulence(ends.seed)
+  const size = BLOB_TEXELS * SAMPLES_PER_TEXEL
+  const step = (WASH_SPAN * BLOB_REFERENCE_PX) / size
+  const origin = -BLOB_MARGIN * BLOB_REFERENCE_PX
+  const samples = new Float64Array(size * size)
+  for (let j = 0; j < size; j++)
+    for (let i = 0; i < size; i++) {
+      let x = origin + (i + 0.5) * step
+      let y = origin + (j + 0.5) * step
+      // Each displacement reads the stage before it, so a lookup runs the filter's chain from its last stage back.
+      y += ends.scale * (endsNoise.fractal(1, x + shape.noiseOffset, y, ends.baseFrequency, ends.numOctaves) - 0.5)
+      const raggedX = raggedNoise.fractal(0, x + shape.noiseOffset, y, ragged.baseFrequency, ragged.numOctaves)
+      const raggedY = raggedNoise.fractal(1, x + shape.noiseOffset, y, ragged.baseFrequency, ragged.numOctaves)
+      x += ragged.scale * (raggedX - 0.5)
+      y += ragged.scale * (raggedY - 0.5)
+      const lobeX = lobeNoise.fractal(0, x + shape.noiseOffset, y, lobe.baseFrequency, lobe.numOctaves)
+      const lobeY = lobeNoise.fractal(1, x + shape.noiseOffset, y, lobe.baseFrequency, lobe.numOctaves)
+      x = (x + lobe.scale * (lobeX - 0.5)) / BLOB_REFERENCE_PX
+      y = (y + lobe.scale * (lobeY - 0.5)) / BLOB_REFERENCE_PX
+      samples[j * size + i] = insideRoundedBox(shape.corners, x, y)
+        ? profileAt(Math.hypot((x - shape.cx) / shape.rx, (y - shape.cy) / shape.ry))
+        : 0
     }
-  const bled = gaussianBlur(displaced, size, spread / pxPerTexel)
-  const cropped = new Float64Array(BLOB_TEXELS * BLOB_TEXELS)
-  const from = pad - BLOB_MARGIN_TEXELS
-  for (let y = 0; y < BLOB_TEXELS; y++)
-    for (let x = 0; x < BLOB_TEXELS; x++) cropped[y * BLOB_TEXELS + x] = Math.min(1, 2 * bled[(y + from) * size + x + from]!)
-  return cropped
+  const blurred = blur(samples, size, outline.stdDeviation / step, false)
+  const texels = new Float64Array(BLOB_TEXELS * BLOB_TEXELS)
+  for (let j = 0; j < size; j++)
+    for (let i = 0; i < size; i++)
+      texels[Math.floor(j / SAMPLES_PER_TEXEL) * BLOB_TEXELS + Math.floor(i / SAMPLES_PER_TEXEL)]! +=
+        blurred[j * size + i]! / SAMPLES_PER_TEXEL ** 2
+  return texels
 }
 
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
@@ -311,23 +312,66 @@ function chunk(type: string, data: Uint8Array): Buffer {
   return out
 }
 
-/** A black PNG whose alpha channel carries the mask, so `mask-mode: match-source` reads it as alpha. */
+function paeth(a: number, b: number, c: number): number {
+  const p = a + b - c
+  const pa = Math.abs(p - a)
+  const pb = Math.abs(p - b)
+  const pc = Math.abs(p - c)
+  return pa <= pb && pa <= pc ? a : pb <= pc ? b : c
+}
+
+function filterRow(filter: number, row: Uint8Array, above: Uint8Array): Uint8Array {
+  return row.map((byte, x) => {
+    const left = x > 0 ? row[x - 1]! : 0
+    const up = above[x]!
+    const upLeft = x > 0 ? above[x - 1]! : 0
+    return (byte - [0, left, up, (left + up) >> 1, paeth(left, up, upLeft)][filter]!) & 0xff
+  })
+}
+
+// The usual adaptive heuristic: the filter whose bytes, read as signed, sum smallest deflates best.
+function bestFilteredRow(row: Uint8Array, above: Uint8Array): Uint8Array {
+  let best: Uint8Array | undefined
+  let bestCost = Infinity
+  for (let filter = 0; filter < 5; filter++) {
+    const filtered = filterRow(filter, row, above)
+    const cost = filtered.reduce((sum, byte) => sum + (byte < 128 ? byte : 256 - byte), 0)
+    if (cost < bestCost) {
+      bestCost = cost
+      best = Uint8Array.of(filter, ...filtered)
+    }
+  }
+  return best!
+}
+
+/**
+ * A 4-bit indexed PNG whose black palette carries the mask's 16 levels in `tRNS`, so `mask-mode: alpha` reads it.
+ */
 export function alphaPng(alpha: Float64Array, size: number): Buffer {
   const header = Buffer.alloc(13)
   header.writeUInt32BE(size, 0)
   header.writeUInt32BE(size, 4)
-  header[8] = 8
-  header[9] = 4
-  const rows = Buffer.alloc(size * (1 + size * 2))
+  header[8] = 4
+  header[9] = 3
+  const stride = Math.ceil(size / 2)
+  const rows: Uint8Array[] = []
+  let above = new Uint8Array(stride)
   for (let y = 0; y < size; y++) {
-    const row = y * (1 + size * 2)
-    for (let x = 0; x < size; x++)
-      rows[row + 1 + x * 2 + 1] = Math.round(Math.min(1, Math.max(0, alpha[y * size + x]!)) * 255)
+    const row = new Uint8Array(stride)
+    for (let x = 0; x < size; x++) row[x >> 1]! |= Math.round(clip01(alpha[y * size + x]!) * ALPHA_LEVELS) << (x & 1 ? 0 : 4)
+    rows.push(bestFilteredRow(row, above))
+    above = row
   }
+  const levels = ALPHA_LEVELS + 1
   return Buffer.concat([
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     chunk('IHDR', header),
-    chunk('IDAT', deflateSync(rows, { level: 9 })),
+    chunk('PLTE', new Uint8Array(3 * levels)),
+    chunk(
+      'tRNS',
+      Uint8Array.from({ length: levels }, (_, k) => Math.round((255 * k) / ALPHA_LEVELS)),
+    ),
+    chunk('IDAT', deflateSync(Buffer.concat(rows), { level: 9 })),
     chunk('IEND', new Uint8Array()),
   ])
 }
@@ -335,25 +379,19 @@ export function alphaPng(alpha: Float64Array, size: number): Buffer {
 const textureUrl = (file: string) => `url("./${WASH_TEXTURE_FOLDER}/${file}")`
 
 export interface BakedWashes {
-  grain: Buffer
+  chalk: Buffer
   blobs: Buffer[]
-  /** The grain's mean colour factor in linear light, folded into each ink. */
-  tone: number
-  gain: number
 }
 
 export function bakeWashes(): BakedWashes {
-  const grain = bakeGrain()
   return {
-    grain: alphaPng(grain.alpha, GRAIN_TILE_PX),
-    blobs: Array.from({ length: BLOB_COUNT }, (_, i) => alphaPng(bakeBlob(i), BLOB_TEXELS)),
-    tone: grain.tone,
-    gain: grain.gain,
+    chalk: alphaPng(bakeChalk(), CHALK_TILE_PX),
+    blobs: BLOB_SHAPES.map((_, i) => alphaPng(bakeBlob(i), BLOB_TEXELS)),
   }
 }
 
 export function washTextures(baked: BakedWashes): { file: string; png: Buffer }[] {
-  return [{ file: WASH_GRAIN_FILE, png: baked.grain }, ...baked.blobs.map((png, i) => ({ file: washBlobFile(i), png }))]
+  return [{ file: WASH_CHALK_FILE, png: baked.chalk }, ...baked.blobs.map((png, i) => ({ file: washBlobFile(i), png }))]
 }
 
 export function washesCss(baked: BakedWashes = bakeWashes()): string {
@@ -363,9 +401,9 @@ export function washesCss(baked: BakedWashes = bakeWashes()): string {
     'edit: bakeWashes.test.ts diffs them against the generator. */\n' +
     '@layer components {\n' +
     '  .kcc-wash {\n' +
-    `    --wash-tone: ${baked.tone.toFixed(3)};\n` +
-    `    --wash-blob-span: ${(BLOB_TEXELS / BLOB_SHAPE_TEXELS).toFixed(4)};\n` +
-    `    --wash-grain: ${textureUrl(WASH_GRAIN_FILE)};\n` +
+    `    --wash-span: ${WASH_SPAN};\n` +
+    `    --wash-gain: ${WASH_GAIN};\n` +
+    `    --wash-chalk: ${textureUrl(WASH_CHALK_FILE)};\n` +
     blobs +
     '  }\n' +
     '}\n'

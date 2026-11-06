@@ -120,7 +120,6 @@
       1 76.62%,
       1 100%
     );
-    --wash-reach: 24px;
     --wash-sat: 2.5;
     --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)' opacity='.08'/></svg>");
     --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.255'/></svg>");
@@ -145,7 +144,7 @@
     --color-fall: oklch(0.04 0.02 288 / 0.7);
     --color-tape: oklch(0.9 0.012 92 / 0.28);
     --wash-blend: screen;
-    --wash-strength: 0.18;
+    --wash-strength: 0.125;
     --wash-sat: 3;
     --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23g)' opacity='.16'/></svg>");
     --crayon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23c)' opacity='.306'/></svg>");

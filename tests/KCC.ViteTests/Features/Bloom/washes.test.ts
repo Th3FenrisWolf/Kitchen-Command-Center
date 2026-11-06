@@ -1,12 +1,16 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
+import { bakeBlob, BLOB_TEXELS, WASH_SPAN } from '~/Bloom/bakeWashes'
+import { BLOB_COUNT, BLOB_SHAPES } from '~/Bloom/blobShapes'
+import * as washesModule from '~/Bloom/washes'
 import {
   hash,
   planSheet,
+  scheduleStarts,
   scheduleWashes,
   sheetSize,
   toFixed3,
+  visitStarts,
   WASH_BLOBS,
-  WASH_REACH_PX,
   WASH_WINDOW_S,
   type CollectedWash,
   type PlannedWash,
@@ -25,8 +29,7 @@ const PROPERTY_ORDER: readonly WashProperty[] = [
   '--wash-s',
   '--wash-turn',
   '--wash-blob',
-  '--wash-o1',
-  '--wash-o2',
+  '--wash-flip',
   '--wash-o3',
   '--wash-o4',
   '--wash-ink',
@@ -41,8 +44,6 @@ const UNITLESS: readonly WashProperty[] = [
   '--wash-d',
   '--wash-aspect',
   '--wash-s',
-  '--wash-o1',
-  '--wash-o2',
   '--wash-o3',
   '--wash-o4',
   '--wash-peak',
@@ -100,7 +101,7 @@ function arrangement(washes: PlannedWash[]): string {
 
 function capped(wash: PlannedWash, width: number, height: number): number {
   const gap = Math.hypot(num(wash, '--wash-dx') * width, num(wash, '--wash-dy') * height)
-  return Math.max(0, Math.min(num(wash, '--wash-d') * width, (gap - 2 * WASH_REACH_PX) / num(wash, '--wash-s')))
+  return Math.max(0, Math.min(num(wash, '--wash-d') * width, gap / (num(wash, '--wash-s') * WASH_SPAN)))
 }
 
 describe('hash', () => {
@@ -184,6 +185,7 @@ describe('planSheet: determinism and format', () => {
           expect(Object.keys(wash.style)).toEqual(PROPERTY_ORDER)
           for (const p of UNITLESS) expect(wash.style[p], p).toMatch(new RegExp(`^${FIXED}$`))
           expect(wash.style['--wash-turn']).toMatch(new RegExp(`^${FIXED}deg$`))
+          expect(wash.style['--wash-flip']).toMatch(/^-?1$/)
           expect(wash.style['--wash-fallback-at']).toMatch(new RegExp(`^${FIXED}s$`))
           expect(wash.style['--wash-ink']).toMatch(INK)
           expect(wash.style['--wash-ink-2']).toMatch(INK)
@@ -360,20 +362,6 @@ describe('planSheet: variety and cover', () => {
     }
   })
 
-  it('centres a lone wash in the middle half of the sheet', () => {
-    let lone = 0
-    for (const seed of SEEDS) {
-      const washes = plan(seed, '/recipes|card:soup', 'card')
-      if (washes.length !== 1) continue
-      lone++
-      for (const p of ['--wash-x', '--wash-y'] as const) {
-        expect(num(washes[0], p)).toBeGreaterThanOrEqual(0.25)
-        expect(num(washes[0], p)).toBeLessThanOrEqual(0.75)
-      }
-    }
-    expect(lone).toBeGreaterThan(0)
-  })
-
   it('puts two washes in opposite halves of a hashed diagonal', () => {
     const diagonals = new Set<number>()
     for (const seed of SEEDS) {
@@ -400,16 +388,16 @@ describe('planSheet: variety and cover', () => {
     expect(firsts.size).toBe(4)
   })
 
-  it('keeps every centre inside the field and every shape in its range, drawing every baked blob', () => {
+  it('keeps every centre within the field and its edge bands and every shape in its range, drawing every baked blob', () => {
     const blobs = new Set<string>()
     for (const seed of SEEDS) {
       for (const size of ['card', 'reading', 'page'] as const) {
         for (const wash of plan(seed, '/recipes|results', size)) {
           for (const p of ['--wash-x', '--wash-y'] as const) {
-            expect(num(wash, p)).toBeGreaterThan(0)
-            expect(num(wash, p)).toBeLessThan(1)
+            expect(num(wash, p)).toBeGreaterThanOrEqual(-0.02)
+            expect(num(wash, p)).toBeLessThanOrEqual(1.02)
           }
-          expect(num(wash, '--wash-d')).toBeGreaterThanOrEqual(0.45)
+          expect(num(wash, '--wash-d')).toBeGreaterThanOrEqual(0.9)
           expect(num(wash, '--wash-d')).toBeLessThanOrEqual(1.25)
           const aspect = num(wash, '--wash-aspect')
           expect(aspect).toBeGreaterThanOrEqual(0.68)
@@ -419,10 +407,6 @@ describe('planSheet: variety and cover', () => {
           expect(num(wash, '--wash-turn')).toBeLessThan(360)
           expect(wash.style['--wash-blob']).toMatch(new RegExp(`^var\\(--wash-blob-[0-${WASH_BLOBS - 1}]\\)$`))
           blobs.add(wash.style['--wash-blob'])
-          for (const p of ['--wash-o1', '--wash-o2', '--wash-o3', '--wash-o4'] as const) {
-            expect(num(wash, p)).toBeGreaterThanOrEqual(0.28)
-            expect(num(wash, p)).toBeLessThanOrEqual(0.72)
-          }
         }
       }
     }
@@ -437,8 +421,12 @@ describe('planSheet: two deep at most', () => {
     ['a 1300x400 hero', 1300, 400],
   ] as const
 
-  it('exports a positive bleed reach in pixels', () => {
-    expect(WASH_REACH_PX).toBeGreaterThan(0)
+  it('exports no bleed reach in pixels', () => {
+    expect(washesModule).not.toHaveProperty('WASH_REACH_PX')
+  })
+
+  it('reads the padded span from the bake', () => {
+    expect(WASH_SPAN).toBe(1.12)
   })
 
   it('points each paired wash at its partner and parks an unpaired one at 9, 9', () => {
@@ -460,30 +448,490 @@ describe('planSheet: two deep at most', () => {
     }
   })
 
-  it.each(FIELDS)('keeps each pair’s circles disjoint under the kit’s cap on %s', (_, width, height) => {
-    let pairs = 0
-    for (const seed of THOUSAND_SEEDS) {
-      for (const size of ['card', 'reading', 'page'] as const) {
-        const washes = plan(seed, '/|hero', size)
-        for (const [a, b] of [
-          [0, 2],
-          [1, 3],
-        ]) {
-          if (b >= washes.length) continue
-          const [wa, wb] = [capped(washes[a], width, height), capped(washes[b], width, height)]
-          if (wa === 0 || wb === 0) continue
-          pairs++
-          const ra = (wa * num(washes[a], '--wash-s')) / 2 + WASH_REACH_PX
-          const rb = (wb * num(washes[b], '--wash-s')) / 2 + WASH_REACH_PX
-          const distance = Math.hypot(
-            (num(washes[b], '--wash-x') - num(washes[a], '--wash-x')) * width,
-            (num(washes[b], '--wash-y') - num(washes[a], '--wash-y')) * height,
-          )
-          expect(ra + rb, `seed ${seed} ${size} pair ${a}-${b}`).toBeLessThanOrEqual(distance + 1e-6)
+  it.each(FIELDS)(
+    'keeps each pair’s circles disjoint under the kit’s cap on %s, padded box included',
+    (_, width, height) => {
+      let pairs = 0
+      for (const seed of THOUSAND_SEEDS) {
+        for (const size of ['card', 'reading', 'page'] as const) {
+          const washes = plan(seed, '/|hero', size)
+          for (const [a, b] of [
+            [0, 2],
+            [1, 3],
+          ]) {
+            if (b >= washes.length) continue
+            const [wa, wb] = [capped(washes[a], width, height), capped(washes[b], width, height)]
+            if (wa === 0 || wb === 0) continue
+            pairs++
+            const ra = (wa * num(washes[a], '--wash-s') * WASH_SPAN) / 2
+            const rb = (wb * num(washes[b], '--wash-s') * WASH_SPAN) / 2
+            const distance = Math.hypot(
+              (num(washes[b], '--wash-x') - num(washes[a], '--wash-x')) * width,
+              (num(washes[b], '--wash-y') - num(washes[a], '--wash-y')) * height,
+            )
+            expect(ra + rb, `seed ${seed} ${size} pair ${a}-${b}`).toBeLessThanOrEqual(distance + 1e-6)
+          }
+        }
+      }
+      expect(pairs).toBeGreaterThan(100)
+    },
+  )
+})
+
+const BLOB = /^var\(--wash-blob-(\d+)\)$/
+const SHEET_FIELDS = [
+  ['card', 'a 280x120 card', 280, 120, '/recipes|card:soup', '/recipes|card:'],
+  ['reading', 'a 700x2400 reading sheet', 700, 2400, '/recipes/soup|review:Ann', '/recipes/soup|review:'],
+  ['page', 'a 1300x400 hero', 1300, 400, '/|hero', undefined],
+] as const
+const BLOB_MARGIN = (WASH_SPAN - 1) / 2
+const RETENTION_GRID = 80
+
+function blobOf(wash: PlannedWash): number {
+  const match = BLOB.exec(wash.style['--wash-blob'])
+  expect(match, wash.style['--wash-blob']).not.toBeNull()
+  return Number(match![1])
+}
+
+function flipOf(wash: PlannedWash): number {
+  expect(wash.style['--wash-flip'], `wash ${wash.id}`).toMatch(/^-?1$/)
+  return Number(wash.style['--wash-flip'])
+}
+
+function cutByEdge(wash: PlannedWash, width: number, height: number): boolean {
+  const w = capped(wash, width, height)
+  const h = w / num(wash, '--wash-aspect')
+  const { cx, cy, rx, ry } = BLOB_SHAPES[blobOf(wash)]
+  const localX = (flipOf(wash) * cx + (1 - flipOf(wash)) / 2 - 0.5) * w
+  const localY = (cy - 0.5) * h
+  const turn = (num(wash, '--wash-turn') * Math.PI) / 180
+  const [cos, sin] = [Math.cos(turn), Math.sin(turn)]
+  const centreX = num(wash, '--wash-x') * width + localX * cos - localY * sin
+  const centreY = num(wash, '--wash-y') * height + localX * sin + localY * cos
+  const reachX = Math.hypot(rx * w * cos, ry * h * sin)
+  const reachY = Math.hypot(rx * w * sin, ry * h * cos)
+  return centreX - reachX < 0 || centreX + reachX > width || centreY - reachY < 0 || centreY + reachY > height
+}
+
+function bilinear(texels: Float64Array, u: number, v: number): number {
+  const fx = u * BLOB_TEXELS - 0.5
+  const fy = v * BLOB_TEXELS - 0.5
+  const i = Math.max(0, Math.min(BLOB_TEXELS - 2, Math.floor(fx)))
+  const j = Math.max(0, Math.min(BLOB_TEXELS - 2, Math.floor(fy)))
+  const tx = Math.max(0, Math.min(1, fx - i))
+  const ty = Math.max(0, Math.min(1, fy - j))
+  const at = (a: number, b: number) => texels[b * BLOB_TEXELS + a]!
+  const top = at(i, j) * (1 - tx) + at(i + 1, j) * tx
+  const bottom = at(i, j + 1) * (1 - tx) + at(i + 1, j + 1) * tx
+  return top * (1 - ty) + bottom * ty
+}
+
+// Aspect, size, turn and the mirror move the gradient and the mask together, so the content box's unit square holds
+// the whole measure.
+function retention(texels: Float64Array, o3: number, o4: number): number {
+  const [reachX, reachY] = [Math.min(o3, 1 - o3), Math.min(o4, 1 - o4)]
+  let kept = 0
+  let total = 0
+  for (let j = 0; j < RETENTION_GRID; j++) {
+    for (let i = 0; i < RETENTION_GRID; i++) {
+      const u = (i + 0.5) / RETENTION_GRID
+      const v = (j + 0.5) / RETENTION_GRID
+      const ink = Math.max(0, 1 - Math.hypot((u - o3) / reachX, (v - o4) / reachY))
+      if (ink === 0) continue
+      kept += ink * bilinear(texels, (u + BLOB_MARGIN) / WASH_SPAN, (v + BLOB_MARGIN) / WASH_SPAN)
+      total += ink
+    }
+  }
+  return kept / total
+}
+
+function quantile(values: readonly number[], p: number): number {
+  const ordered = [...values].sort((a, b) => a - b)
+  return ordered[Math.floor(p * (ordered.length - 1))]!
+}
+
+describe('planSheet: the mirror, the second ink and the edge cut', { timeout: 60_000 }, () => {
+  it('drops the ellipse offset from WashProperty and adds the mirror', () => {
+    expectTypeOf<'--wash-o1' | '--wash-o2'>().not.toExtend<WashProperty>()
+    expectTypeOf<'--wash-flip'>().toExtend<WashProperty>()
+  })
+
+  it('writes --wash-flip as draw(flip) < .5 ? -1 : 1, and draws both', () => {
+    const flips = new Set<string>()
+    for (const seed of SEEDS) {
+      for (const key of KEYS) {
+        for (const size of ['card', 'reading', 'page'] as const) {
+          for (const wash of plan(seed, key, size)) {
+            const draw = hash(seed, key, wash.index, 'flip') / 2 ** 32
+            expect(wash.style['--wash-flip'], `seed ${seed} ${key} wash ${wash.index}`).toBe(draw < 0.5 ? '-1' : '1')
+            flips.add(wash.style['--wash-flip'])
+          }
         }
       }
     }
-    expect(pairs).toBeGreaterThan(100)
+    expect([...flips].sort()).toEqual(['-1', '1'])
+  })
+
+  it('writes no --wash-o1 or --wash-o2', () => {
+    for (const seed of SEEDS) {
+      for (const size of ['card', 'reading', 'page'] as const) {
+        for (const wash of plan(seed, '/|hero', size)) {
+          expect(wash.style).not.toHaveProperty('--wash-o1')
+          expect(wash.style).not.toHaveProperty('--wash-o2')
+        }
+      }
+    }
+  })
+
+  it('draws every one of the baked blobs', () => {
+    expect(WASH_BLOBS).toBe(BLOB_COUNT)
+    const drawn = new Set<number>()
+    for (const seed of SEEDS) {
+      for (const size of ['card', 'reading', 'page'] as const) {
+        for (const wash of plan(seed, '/recipes|results', size)) drawn.add(blobOf(wash))
+      }
+    }
+    expect([...drawn].sort()).toEqual(Array.from({ length: BLOB_COUNT }, (_, b) => b))
+  })
+
+  it('centres the second ink within a quarter of its blob’s radii of the blob’s ellipse centre', () => {
+    for (const seed of THOUSAND_SEEDS) {
+      for (const [size, , , , key] of SHEET_FIELDS) {
+        for (const wash of plan(seed, key, size)) {
+          const { cx, cy, rx, ry } = BLOB_SHAPES[blobOf(wash)]
+          const where = `seed ${seed} ${key} wash ${wash.index}`
+          expect(Math.abs(num(wash, '--wash-o3') - cx), where).toBeLessThanOrEqual(0.25 * rx + 0.0005)
+          expect(Math.abs(num(wash, '--wash-o4') - cy), where).toBeLessThanOrEqual(0.25 * ry + 0.0005)
+        }
+      }
+    }
+  })
+
+  it('places the second ink by the existing o3 and o4 draws', () => {
+    for (const seed of SEEDS) {
+      for (const [size, , , , key] of SHEET_FIELDS) {
+        for (const wash of plan(seed, key, size)) {
+          const { cx, cy, rx, ry } = BLOB_SHAPES[blobOf(wash)]
+          const u = hash(seed, key, wash.index, 'o3') / 2 ** 32
+          const v = hash(seed, key, wash.index, 'o4') / 2 ** 32
+          expect(wash.style['--wash-o3']).toBe(toFixed3(cx + 0.25 * rx * (2 * u - 1)))
+          expect(wash.style['--wash-o4']).toBe(toFixed3(cy + 0.25 * ry * (2 * v - 1)))
+        }
+      }
+    }
+  })
+
+  it.each(SHEET_FIELDS)(
+    'cuts at least three quarters of the %s washes by an edge of %s, over 1,000 seeds',
+    (size, _, width, height, key) => {
+      let drawn = 0
+      let cut = 0
+      for (const seed of THOUSAND_SEEDS) {
+        for (const wash of plan(seed, key, size)) {
+          if (capped(wash, width, height) === 0) continue
+          drawn++
+          if (cutByEdge(wash, width, height)) cut++
+        }
+      }
+      expect(drawn).toBeGreaterThan(900)
+      expect(cut / drawn).toBeGreaterThanOrEqual(0.75)
+    },
+  )
+
+  it('seldom repeats a blob at the same place on neighbouring sheets, over 1,000 seeds', () => {
+    let compared = 0
+    let repeats = 0
+    for (const seed of THOUSAND_SEEDS) {
+      for (const [size, , , , , prefix] of SHEET_FIELDS) {
+        if (prefix === undefined) continue
+        const sheets = Array.from({ length: 6 }, (_, i) => plan(seed, `${prefix}${i}`, size))
+        for (let i = 1; i < sheets.length; i++) {
+          for (const a of sheets[i - 1]) {
+            for (const b of sheets[i]) {
+              compared++
+              const same =
+                blobOf(a) === blobOf(b) &&
+                flipOf(a) === flipOf(b) &&
+                Math.abs(num(a, '--wash-x') - num(b, '--wash-x')) <= 0.1 &&
+                Math.abs(num(a, '--wash-y') - num(b, '--wash-y')) <= 0.1
+              if (same) repeats++
+            }
+          }
+        }
+      }
+    }
+    expect(compared).toBeGreaterThan(10_000)
+    expect(repeats / compared).toBeLessThanOrEqual(0.05)
+  })
+
+  it('keeps the second ink under its blob over the displaced bake: median at least .80, 10th percentile at least .70', () => {
+    const bakes = Array.from({ length: BLOB_COUNT }, (_, b) => bakeBlob(b))
+    const kept: number[] = []
+    for (const seed of THOUSAND_SEEDS) {
+      for (const [size, , , , key] of SHEET_FIELDS) {
+        for (const wash of plan(seed, key, size)) {
+          kept.push(retention(bakes[blobOf(wash)], num(wash, '--wash-o3'), num(wash, '--wash-o4')))
+        }
+      }
+    }
+    expect(quantile(kept, 0.5)).toBeGreaterThanOrEqual(0.8)
+    expect(quantile(kept, 0.1)).toBeGreaterThanOrEqual(0.7)
+  })
+})
+
+const PINNED_SEEDS = [3141592653, 271828182, 1618033988] as const
+
+const PINNED_PLANS = [
+  {
+    seed: 3141592653,
+    key: '/recipes|card:soup',
+    size: 'card',
+    ids: ['886671c7', '172d7917'],
+    starts: ['38.544s', '159.078s'],
+  },
+  {
+    seed: 3141592653,
+    key: '/recipes|card:stew',
+    size: 'card',
+    ids: ['c11565d5', '122471a0'],
+    starts: ['62.587s', '163.415s'],
+  },
+  {
+    seed: 3141592653,
+    key: '/recipes/soup|review:Ann',
+    size: 'reading',
+    ids: ['101489a2', '1438513c', 'a6de7681'],
+    starts: ['24.497s', '76.572s', '154.867s'],
+  },
+  {
+    seed: 3141592653,
+    key: '/|hero',
+    size: 'page',
+    ids: ['1302f2ea', '2ef615c9', '593762d0', '85e731d0'],
+    starts: ['41.433s', '113.132s', '162.499s', '203.075s'],
+  },
+  { seed: 271828182, key: '/recipes|card:soup', size: 'card', ids: ['886671c7'], starts: ['114.658s'] },
+  { seed: 271828182, key: '/recipes|card:stew', size: 'card', ids: ['c11565d5'], starts: ['155.938s'] },
+  {
+    seed: 271828182,
+    key: '/recipes/soup|review:Ann',
+    size: 'reading',
+    ids: ['101489a2', '1438513c', 'a6de7681'],
+    starts: ['16.733s', '87.376s', '153.774s'],
+  },
+  {
+    seed: 271828182,
+    key: '/|hero',
+    size: 'page',
+    ids: ['1302f2ea', '2ef615c9', '593762d0', '85e731d0'],
+    starts: ['58.884s', '100.828s', '142.088s', '201.273s'],
+  },
+  {
+    seed: 1618033988,
+    key: '/recipes|card:soup',
+    size: 'card',
+    ids: ['886671c7', '172d7917'],
+    starts: ['73.058s', '170.081s'],
+  },
+  {
+    seed: 1618033988,
+    key: '/recipes|card:stew',
+    size: 'card',
+    ids: ['c11565d5', '122471a0'],
+    starts: ['99.387s', '188.003s'],
+  },
+  {
+    seed: 1618033988,
+    key: '/recipes/soup|review:Ann',
+    size: 'reading',
+    ids: ['101489a2', '1438513c', 'a6de7681'],
+    starts: ['28.217s', '86.927s', '168.520s'],
+  },
+  {
+    seed: 1618033988,
+    key: '/|hero',
+    size: 'page',
+    ids: ['1302f2ea', '2ef615c9', '593762d0', '85e731d0'],
+    starts: ['49.595s', '104.704s', '142.614s', '204.233s'],
+  },
+] as const
+
+const PINNED_VISITS = [
+  { seed: 3141592653, key: '/recipes|card:soup', count: 2, starts: [97.807, 97.807] },
+  { seed: 3141592653, key: '/recipes|card:stew', count: 2, starts: [5.114, 70.944] },
+  { seed: 3141592653, key: '/recipes/soup|review:Ann', count: 3, starts: [19.983, 32.607, 165.434] },
+  { seed: 3141592653, key: '/|hero', count: 4, starts: [5.114, 5.114, 123.615, 138.387] },
+  { seed: 3141592653, key: '@pad', count: 4, slots: [1, 5, 9, 13], starts: [19.983, 70.944, 123.615, 177.474] },
+  { seed: 271828182, key: '/recipes|card:soup', count: 1, starts: [96.679] },
+  { seed: 271828182, key: '/recipes|card:stew', count: 1, starts: [71.292] },
+  { seed: 271828182, key: '/recipes/soup|review:Ann', count: 3, starts: [21.303, 34.668, 163.881] },
+  { seed: 271828182, key: '/|hero', count: 4, starts: [6.109, 6.109, 123.368, 137.453] },
+  { seed: 271828182, key: '@pad', count: 4, slots: [1, 5, 9, 13], starts: [21.303, 71.292, 123.368, 175.833] },
+  { seed: 1618033988, key: '/recipes|card:soup', count: 2, starts: [97.568, 97.568] },
+  { seed: 1618033988, key: '/recipes|card:stew', count: 2, starts: [7.255, 73.829] },
+  { seed: 1618033988, key: '/recipes/soup|review:Ann', count: 3, starts: [19.941, 34.775, 163.927] },
+  { seed: 1618033988, key: '/|hero', count: 4, starts: [7.255, 7.255, 123.204, 136.206] },
+  { seed: 1618033988, key: '@pad', count: 4, slots: [1, 5, 9, 13], starts: [19.941, 73.829, 123.204, 176.041] },
+] as const
+
+const PINNED_SCHEDULES = [
+  {
+    seed: 3141592653,
+    starts: [
+      { id: '101489a2', at: 14.45 },
+      { id: 'ab2e2070', at: 19.983 },
+      { id: 'c11565d5', at: 26.153 },
+      { id: '1438513c', at: 37.856 },
+      { id: '647d796e', at: 70.944 },
+      { id: '1302f2ea', at: 75.728 },
+      { id: '122471a0', at: 94.663 },
+      { id: 'a6de7681', at: 106.366 },
+      { id: '2ef615c9', at: 118.069 },
+      { id: 'eccda58a', at: 123.615 },
+      { id: '593762d0', at: 144.238 },
+      { id: '886671c7', at: 155.94 },
+      { id: '172d7917', at: 174.876 },
+      { id: '8a6af31e', at: 177.474 },
+      { id: '85e731d0', at: 186.579 },
+    ],
+  },
+  {
+    seed: 271828182,
+    starts: [
+      { id: '101489a2', at: 3.089 },
+      { id: '1302f2ea', at: 14.791 },
+      { id: 'ab2e2070', at: 21.303 },
+      { id: '886671c7', at: 52.663 },
+      { id: '2ef615c9', at: 64.366 },
+      { id: '647d796e', at: 71.292 },
+      { id: '1438513c', at: 113.94 },
+      { id: 'eccda58a', at: 123.368 },
+      { id: '593762d0', at: 132.876 },
+      { id: '85e731d0', at: 144.579 },
+      { id: '8a6af31e', at: 175.833 },
+      { id: 'a6de7681', at: 182.45 },
+      { id: 'c11565d5', at: 194.153 },
+    ],
+  },
+  {
+    seed: 1618033988,
+    starts: [
+      { id: 'c11565d5', at: 0.433 },
+      { id: '101489a2', at: 12.135 },
+      { id: 'ab2e2070', at: 19.941 },
+      { id: '1302f2ea', at: 31.071 },
+      { id: '886671c7', at: 42.774 },
+      { id: '2ef615c9', at: 61.71 },
+      { id: '647d796e', at: 73.829 },
+      { id: '172d7917', at: 80.645 },
+      { id: '1438513c', at: 92.348 },
+      { id: 'eccda58a', at: 123.204 },
+      { id: '593762d0', at: 130.22 },
+      { id: '122471a0', at: 141.923 },
+      { id: 'a6de7681', at: 160.858 },
+      { id: '85e731d0', at: 172.561 },
+      { id: '8a6af31e', at: 176.041 },
+    ],
+  },
+] as const
+
+function collectedFrom(seed: number): CollectedWash[] {
+  const washes = PINNED_PLANS.filter((p) => p.seed === seed).flatMap((p) =>
+    planSheet({ seed, key: p.key, size: p.size }).map((w) => ({ id: w.id, key: w.key, index: w.index })),
+  )
+  const pad = [1, 5, 9, 13].map((slot, k) => ({ id: washId('@pad', k), key: '@pad', index: k, slot }))
+  return [...washes, ...pad]
+}
+
+describe('planSheet: edge-placed washes', () => {
+  const axisKeys = ['/recipes|card:soup', '/recipes/soup|review:Ann', '/|hero', '@pad']
+  const inBand = (far: boolean, v: number) => (far ? v >= 0.84 && v <= 1.02 : v >= -0.02 && v <= 0.16)
+  const inHalf = (far: boolean, v: number) => (far ? v >= 0.55 && v <= 0.9 : v >= 0.1 && v <= 0.45)
+
+  it('pushes exactly one axis into its band and keeps the other in its half', () => {
+    const pushed = new Set<number>()
+    for (const seed of SEEDS) {
+      for (const key of axisKeys) {
+        for (const size of ['card', 'reading', 'page'] as const) {
+          plan(seed, key, size).forEach((wash) => {
+            const x = num(wash, '--wash-x')
+            const y = num(wash, '--wash-y')
+            const pushX = hash(seed, key, wash.index, 'axis') & 1
+            pushed.add(pushX)
+            const farX = x > 0.5
+            const farY = y > 0.5
+            const where = `seed ${seed} ${key} ${size} wash ${wash.index} at ${x}, ${y}`
+            if (pushX) {
+              expect(inBand(farX, x), where).toBe(true)
+              expect(inHalf(farY, y), where).toBe(true)
+            } else {
+              expect(inHalf(farX, x), where).toBe(true)
+              expect(inBand(farY, y), where).toBe(true)
+            }
+          })
+        }
+      }
+    }
+    expect([...pushed].sort()).toEqual([0, 1])
+  })
+
+  it('puts a one-wash card in the quarter hash(seed, key, corner) & 3, never the middle', () => {
+    const corners = new Set<number>()
+    let lone = 0
+    for (const seed of THOUSAND_SEEDS) {
+      for (const key of ['/recipes|card:soup', '/recipes|card:stew', '@pad-card-recipes']) {
+        const washes = plan(seed, key, 'card')
+        if (washes.length !== 1) continue
+        lone++
+        const corner = hash(seed, key, 'corner') & 3
+        expect(quadrant(washes[0]), `seed ${seed} ${key}`).toBe(corner)
+        corners.add(corner)
+      }
+    }
+    expect(lone).toBeGreaterThan(100)
+    expect([...corners].sort()).toEqual([0, 1, 2, 3])
+  })
+
+  it('draws --wash-d from 0.90 to 1.25', () => {
+    const ds: number[] = []
+    for (const seed of SEEDS) {
+      for (const size of ['card', 'reading', 'page'] as const)
+        ds.push(...plan(seed, '/|hero', size).map((w) => num(w, '--wash-d')))
+    }
+    expect(Math.min(...ds)).toBeGreaterThanOrEqual(0.9)
+    expect(Math.max(...ds)).toBeLessThanOrEqual(1.25)
+    expect(Math.min(...ds)).toBeLessThan(1)
+    expect(Math.max(...ds)).toBeGreaterThan(1.15)
+  })
+})
+
+describe('pins the planner ids, starts and schedules', () => {
+  it('keeps the planner ids and fallback starts on card, reading and hero fields', () => {
+    for (const p of PINNED_PLANS) {
+      const washes = planSheet({ seed: p.seed, key: p.key, size: p.size })
+      expect(
+        washes.map((w) => w.id),
+        `${p.seed} ${p.key}`,
+      ).toEqual(p.ids)
+      expect(
+        washes.map((w) => w.style['--wash-fallback-at']),
+        `${p.seed} ${p.key}`,
+      ).toEqual(p.starts)
+    }
+  })
+
+  it('keeps the visit starts', () => {
+    for (const v of PINNED_VISITS) {
+      const slots = 'slots' in v ? v.slots : undefined
+      expect(visitStarts(v.seed, v.key, v.count, slots), `${v.seed} ${v.key}`).toEqual(v.starts)
+    }
+  })
+
+  it('keeps the schedule', () => {
+    for (const schedule of PINNED_SCHEDULES) {
+      expect(PINNED_SEEDS).toContain(schedule.seed)
+      expect(scheduleStarts(schedule.seed, collectedFrom(schedule.seed))).toEqual(schedule.starts)
+    }
   })
 })
 

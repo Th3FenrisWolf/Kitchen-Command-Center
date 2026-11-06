@@ -71,6 +71,10 @@ place, so no two sheets look stamped from one mould and neighbours do not bloom 
 its own (a recipe's, or the one the owner picked for a Home card) its first wash wears it. A Home card left unset
 stays bare paper.
 
+A wash is chalk: short strokes with paper tooth, in a lobed, ragged outline whose edge fades to nothing, with no rim.
+Each centres near an edge of its sheet, so most are cut by it, and measures 90% to 125% of the sheet's width, smaller where a wash is capped against its partner. Each is
+mirrored or not, so no two read alike.
+
 Washes lie where they fall: under margins and corners, and under running text. They bleed past the margin, never past
 the tear, and overlap two deep at most. Their strength is capped so ink and soft ink stay AA over the strongest overlap, and
 control hairlines 3:1, in both ramps. Identical in both ramps; the blend mode changes, the pigment does not. Under
@@ -165,8 +169,8 @@ exist in the mockup and are not built.
 - **Tape**: holds applied items only. A sheet is never taped. A tile pinned to a sheet takes one small
   translucent strip, slightly rotated.
 - **Grain**: on the desk, the washes and the tiles only. The desk keeps its grain and a light crayon tooth (multiply in
-  light, soft-light in dark), painted under the paper; washes and tiles carry a finer grain of their own, which is
-  what makes a wash read as pigment. Paper, text, inputs and every other control, labels, wells, blank sheets and
+  light, soft-light in dark), painted under the paper; tiles carry a finer grain of their own, and a wash
+  carries chalk strokes of its own, which is what makes it read as pigment. Paper, text, inputs and every other control, labels, wells, blank sheets and
   tape are clean. The tape's weave is the tape's own material, not grain.
 - **Ruling**: every sheet is ruled in feint blue at 24px, drawn from its content box so the text sits just above
   each line. A blank sheet carries none. Always on. The margin rule is its companion on reading sheets (see On the
@@ -248,3 +252,7 @@ all of it but the washes, which fade in without growing.
   from .16 to .18 in dark. Sheet tears take 40 points a side and hero tears 80, half as many. Washes carry no filter:
   their bleed and grain are baked into PNG masks that `yarn washes` generates. The bloom runs in 45 steps and a wash
   rests at its bloom's end.
+- **2026-11-05**: Washes turn to chalk, owner-approved. Each is short chalk strokes in a lobed, ragged outline that
+  fades with no rim, centred near a sheet's edge at 90% to 125% of its width, and mirrored by chance. The first ink is
+  .34 flat, the second .26 radial. The 128px chalk tile and eight silhouettes are baked by `yarn washes`, with no filter
+  and no grain tile. Dark `--wash-strength` goes from .18 to .125, which the contrast table sets; light stays .42.
