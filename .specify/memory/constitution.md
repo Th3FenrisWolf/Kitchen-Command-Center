@@ -1,32 +1,26 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.1.0 -> 1.2.0 (MINOR: adds the project board and the phases table; everything that
-complied with 1.1.0 still complies once each spec's Status line links to its card)
+Version change: 1.2.0 -> 1.3.0 (MINOR: board cards past Idea become GitHub issues; everything that
+complied with 1.2.0 still complies)
 
 Modified principles: none
 
 Modified sections:
-- Flow: pull requests are the record of changes and the specs the record of features. A new bullet adds
-  the GitHub project board, written by tools/project-board/sync.mjs, with the owner's ideas as draft cards,
-  and makes a spec's Status line a link to its card
-- Ordering rule: each phase's spec carries the feature's phases table, and the board makes a card for each
-  phase not yet specified
+- Flow: the project uses no Jira, and GitHub issues track the work on the project board without
+  replacing a spec. A card becomes an issue once it leaves Idea, its issue is closed while the card is
+  Done, a later phase's issue is a sub-issue of phase 1's, and the workflow runs the sync from main
 
 Added sections: none
 Removed sections: none
 
 Dependent templates and commands read this file at runtime and are not edited here:
-- .specify/templates/spec-template.md: its Status line links to the board card, changed with this amendment
-- .specify/templates/plan-template.md, .specify/templates/tasks-template.md: no change needed
+- .specify/templates/spec-template.md, plan-template.md, tasks-template.md: no change needed
 - speckit-card-implement: reads Gates, Ordering rule and Definition of done
 - speckit-grill-run and the grilling preset: read Settled decisions and Decision ownership
 - speckit-coderabbit-review: passes this file to CodeRabbit as context
 
 Deferred placeholders: none
-
-Resolved since 1.1.0: CLAUDE.md describes the Spec Kit flow, and .specify/extensions/card/card-config.yml
-sets review.command.
 -->
 
 # Kitchen Command Center Constitution
@@ -218,11 +212,14 @@ amendment.
   describe.
 - `.superpowers/` stays gitignored local scratch. Work that started there finishes there.
   `docs/replatform/` holds the tracked replatform spec and phase plans, as `CLAUDE.md` describes.
-- The project uses no issue tracker. A spec carries no Jira line, and the Jira commands and the
-  board step of card implement do not apply. Pull requests are the record of changes, and the specs
-  the record of features.
+- The project uses no Jira. A spec carries no Jira line, and the Jira commands and the board step
+  of card implement do not apply. Pull requests are the record of changes, and the specs the record
+  of features. GitHub issues track the work on the project board, and never replace a spec.
 - The GitHub project board (`tools/project-board/board.json` names it) shows every spec, every later
-  phase and every bug at its stage, and holds the owner's ideas as draft cards.
+  phase and every bug at its stage, and holds the owner's ideas as draft cards. A card becomes a
+  GitHub issue in this repository once it leaves Idea, and its issue is closed while the card is
+  Done. A later phase's issue is a sub-issue of phase 1's. The workflow always runs the sync from
+  `main`.
   `tools/project-board/sync.mjs` writes it from the specs, the bug folders and the pull requests on
   every push and pull request, and never touches a card without a Key. A spec's **Status** line
   links to its card instead of naming a stage.
@@ -302,4 +299,4 @@ change to any file outside `specs/`, `docs/` and Markdown files.
   context. A plan that breaks a principle MUST justify the break in its Complexity Tracking table,
   and an unjustified break fails the Constitution Check.
 
-**Version**: 1.2.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-09
+**Version**: 1.3.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-09

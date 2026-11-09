@@ -177,7 +177,12 @@ function readProject() {
             items(first: 100, after: $after) {
               nodes {
                 id
-                content { ... on DraftIssue { id title body } }
+                content {
+                  __typename
+                  ... on DraftIssue { id title body }
+                  ... on Issue { id title body state parent { id } }
+                  ... on PullRequest { id }
+                }
                 fieldValues(first: 20) {
                   nodes {
                     ... on ProjectV2ItemFieldTextValue { text field { ... on ProjectV2FieldCommon { name } } }
@@ -203,9 +208,12 @@ function readProject() {
       }
       items.push({
         id: node.id,
-        draftId: node.content?.id,
+        type: node.content?.__typename,
+        contentId: node.content?.id,
         title: node.content?.title,
         body: node.content?.body,
+        state: node.content?.state,
+        parentId: node.content?.parent?.id ?? null,
         fields,
       });
     }
@@ -345,63 +353,227 @@ function setField(project, itemId, name, value) {
   }
 }
 
-function apply(project, op) {
-  if (op.op === "create") {
-    const { addProjectV2DraftIssue } = graphql(
-      `
-        mutation ($project: ID!, $title: String!, $body: String!) {
-          addProjectV2DraftIssue(
-            input: { projectId: $project, title: $title, body: $body }
-          ) {
-            projectItem {
-              id
-            }
-          }
+function readRepositoryId() {
+  return graphql(
+    `
+      query ($owner: String!, $repo: String!) {
+        repository(owner: $owner, name: $repo) {
+          id
         }
-      `,
-      {
-        project: project.id,
-        title: op.card.title,
-        body: syncedBody(op.card.body),
-      },
-    );
-    for (const [name, value] of Object.entries({
-      ...op.card.fields,
-      ...CREATE_FIELDS,
-    })) {
-      setField(project, addProjectV2DraftIssue.projectItem.id, name, value);
-    }
-    return;
-  }
-  if (op.title !== undefined || op.body !== undefined) {
+      }
+    `,
+    { owner: config.owner, repo: config.repo },
+  ).repository.id;
+}
+
+function setIssueState(issueId, state) {
+  if (state === "CLOSED") {
     graphql(
       `
-        mutation ($draft: ID!, $title: String, $body: String) {
-          updateProjectV2DraftIssue(
-            input: { draftIssueId: $draft, title: $title, body: $body }
-          ) {
+        mutation ($issue: ID!) {
+          closeIssue(input: { issueId: $issue, stateReason: COMPLETED }) {
             clientMutationId
           }
         }
       `,
-      { draft: op.draftId, title: op.title, body: op.body },
+      { issue: issueId },
+    );
+  } else {
+    graphql(
+      `
+        mutation ($issue: ID!) {
+          reopenIssue(input: { issueId: $issue }) {
+            clientMutationId
+          }
+        }
+      `,
+      { issue: issueId },
     );
   }
-  for (const [name, value] of Object.entries(op.fields ?? {})) {
-    setField(project, op.itemId, name, value);
+}
+
+function createItem(project, repositoryId, op) {
+  const body = syncedBody(op.card.body);
+  if (op.as === "draft") {
+    return {
+      itemId: graphql(
+        `
+          mutation ($project: ID!, $title: String!, $body: String!) {
+            addProjectV2DraftIssue(
+              input: { projectId: $project, title: $title, body: $body }
+            ) {
+              projectItem {
+                id
+              }
+            }
+          }
+        `,
+        { project: project.id, title: op.card.title, body },
+      ).addProjectV2DraftIssue.projectItem.id,
+    };
   }
+  // Created inside the project in one call: an issue added in a second call would be left off the board, with no
+  // Key, whenever that call failed, and the next run would create it again.
+  const { issue } = graphql(
+    `
+      mutation (
+        $repository: ID!
+        $project: ID!
+        $title: String!
+        $body: String!
+      ) {
+        createIssue(
+          input: {
+            repositoryId: $repository
+            projectV2Ids: [$project]
+            title: $title
+            body: $body
+          }
+        ) {
+          issue {
+            id
+            projectItems(first: 20) {
+              nodes {
+                id
+                project {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      repository: repositoryId,
+      project: project.id,
+      title: op.card.title,
+      body,
+    },
+  ).createIssue;
+  const itemId = issue.projectItems.nodes.find(
+    (item) => item.project.id === project.id,
+  ).id;
+  return { itemId, issueId: issue.id };
+}
+
+function apply(project, repositoryId, op, issueIds) {
+  if (op.op === "create") {
+    const { itemId, issueId } = createItem(project, repositoryId, op);
+    for (const [name, value] of Object.entries({
+      ...op.card.fields,
+      ...CREATE_FIELDS,
+    })) {
+      setField(project, itemId, name, value);
+    }
+    if (issueId) {
+      issueIds.set(op.card.key, issueId);
+      if (op.state) {
+        setIssueState(issueId, op.state);
+      }
+    }
+    return;
+  }
+
+  let { itemId, type, contentId } = op;
+  if (op.convert) {
+    const { item } = graphql(
+      `
+        mutation ($item: ID!, $repository: ID!) {
+          convertProjectV2DraftIssueItemToIssue(
+            input: { itemId: $item, repositoryId: $repository }
+          ) {
+            item {
+              id
+              content {
+                ... on Issue {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `,
+      { item: itemId, repository: repositoryId },
+    ).convertProjectV2DraftIssueItemToIssue;
+    itemId = item.id;
+    contentId = item.content.id;
+    type = "Issue";
+  }
+  if (op.title !== undefined || op.body !== undefined) {
+    if (type === "Issue") {
+      graphql(
+        `
+          mutation ($issue: ID!, $title: String, $body: String) {
+            updateIssue(input: { id: $issue, title: $title, body: $body }) {
+              clientMutationId
+            }
+          }
+        `,
+        { issue: contentId, title: op.title, body: op.body },
+      );
+    } else {
+      graphql(
+        `
+          mutation ($draft: ID!, $title: String, $body: String) {
+            updateProjectV2DraftIssue(
+              input: { draftIssueId: $draft, title: $title, body: $body }
+            ) {
+              clientMutationId
+            }
+          }
+        `,
+        { draft: contentId, title: op.title, body: op.body },
+      );
+    }
+  }
+  for (const [name, value] of Object.entries(op.fields ?? {})) {
+    setField(project, itemId, name, value);
+  }
+  if (type === "Issue") {
+    issueIds.set(op.card.key, contentId);
+    if (op.state) {
+      setIssueState(contentId, op.state);
+    }
+  }
+}
+
+function linkParent(op, issueIds) {
+  const child = issueIds.get(op.card.key);
+  const parent = issueIds.get(op.parent);
+  if (!child || !parent) {
+    console.log(
+      `warning: ${op.card.key} stays without a parent: ${op.parent} has no issue`,
+    );
+    return;
+  }
+  graphql(
+    `
+      mutation ($parent: ID!, $child: ID!) {
+        addSubIssue(
+          input: { issueId: $parent, subIssueId: $child, replaceParent: true }
+        ) {
+          clientMutationId
+        }
+      }
+    `,
+    { parent, child },
+  );
 }
 
 function describe(op) {
   if (op.op === "create") {
-    return `create ${op.card.key}: ${op.card.fields.Status}`;
+    return `create ${op.card.key} as ${op.as}: ${op.card.fields.Status}${op.parent ? `, under ${op.parent}` : ""}`;
   }
   const parts = [
+    ...(op.convert ? ["to an issue"] : []),
     ...(op.title !== undefined ? ["title"] : []),
     ...(op.body !== undefined ? ["body"] : []),
     ...Object.entries(op.fields ?? {}).map(
       ([name, value]) => `${name}=${value || "(empty)"}`,
     ),
+    ...(op.state ? [op.state === "CLOSED" ? "close" : "reopen"] : []),
+    ...(op.parent ? [`under ${op.parent}`] : []),
   ];
   return `update ${op.card.key}: ${parts.join(", ")}`;
 }
@@ -437,10 +609,22 @@ for (const item of project.items.filter(
     `warning: ${item.fields.Key} is on the board but no longer in the repository`,
   );
 }
+const repositoryId = dryRun ? null : readRepositoryId();
+const issueIds = new Map(
+  project.items
+    .filter((item) => item.type === "Issue" && item.fields.Key)
+    .map((item) => [item.fields.Key, item.contentId]),
+);
 for (const op of ops) {
   console.log(`${dryRun ? "[dry run] " : ""}${describe(op)}`);
   if (!dryRun) {
-    apply(project, op);
+    apply(project, repositoryId, op, issueIds);
+  }
+}
+// A parent may become an issue in the same run as its sub-issue, so links wait until every card is written.
+if (!dryRun) {
+  for (const op of ops.filter((candidate) => candidate.parent)) {
+    linkParent(op, issueIds);
   }
 }
 console.log(`${cards.length} cards, ${ops.length} changes`);

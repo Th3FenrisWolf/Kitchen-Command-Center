@@ -232,6 +232,7 @@ function applyPhases(specs, cards) {
         Object.assign(card.fields, fields);
         if (row.phase > 1) {
           card.aliases = [placeholderKey];
+          card.parentKey = rootDir;
         }
       } else if (row.phase > 1) {
         placeholders.push({
@@ -295,6 +296,8 @@ export function schemaProblems(fields, cards) {
   return [...problems];
 }
 
+const EDITABLE = new Set(["DraftIssue", "Issue"]);
+
 export function planChanges(cards, items) {
   const byKey = new Map();
   for (const item of items) {
@@ -303,22 +306,38 @@ export function planChanges(cards, items) {
       byKey.set(key, item);
     }
   }
+  const keyByContent = new Map(
+    items
+      .filter((item) => item.fields.Key && item.contentId)
+      .map((item) => [item.contentId, item.fields.Key]),
+  );
 
   const ops = [];
   for (const card of cards) {
+    const issue = card.fields.Status !== "Idea";
+    const state = card.fields.Status === "Done" ? "CLOSED" : "OPEN";
+    const parent = issue ? card.parentKey : undefined;
     const item =
       byKey.get(card.key) ??
       card.aliases.map((alias) => byKey.get(alias)).find(Boolean);
     if (!item) {
-      ops.push({ op: "create", card });
+      ops.push({
+        op: "create",
+        card,
+        as: issue ? "issue" : "draft",
+        ...(issue && state === "CLOSED" ? { state } : {}),
+        ...(parent ? { parent } : {}),
+      });
       continue;
     }
+
     const change = {};
-    if (item.draftId && item.title !== card.title) {
+    const editable = EDITABLE.has(item.type);
+    if (editable && item.title !== card.title) {
       change.title = card.title;
     }
     const body = mergeBody(item.body, card.body);
-    if (item.draftId && body !== (item.body ?? "").replace(/\r\n/g, "\n")) {
+    if (editable && body !== (item.body ?? "").replace(/\r\n/g, "\n")) {
       change.body = body;
     }
     const fields = Object.fromEntries(
@@ -329,11 +348,24 @@ export function planChanges(cards, items) {
     if (Object.keys(fields).length > 0) {
       change.fields = fields;
     }
+    const convert = issue && item.type === "DraftIssue";
+    if (convert) {
+      change.convert = true;
+    }
+    if (issue && (convert || item.type === "Issue")) {
+      if ((convert ? "OPEN" : item.state) !== state) {
+        change.state = state;
+      }
+      if (parent && keyByContent.get(item.parentId) !== parent) {
+        change.parent = parent;
+      }
+    }
     if (Object.keys(change).length > 0) {
       ops.push({
         op: "update",
         itemId: item.id,
-        draftId: item.draftId,
+        type: item.type,
+        contentId: item.contentId,
         card,
         ...change,
       });
