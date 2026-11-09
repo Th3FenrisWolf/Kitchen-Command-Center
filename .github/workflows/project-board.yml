@@ -1,0 +1,41 @@
+name: Project board
+
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, closed]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+# Each run reads the whole repository, so a queued run replaces any older queued one and nothing is lost.
+concurrency:
+  group: project-board
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    # A branch deletion has no commit to check out; the merge that preceded it already ran the sync.
+    if: github.repository == 'Th3FenrisWolf/Kitchen-Command-Center' && !github.event.deleted
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout every branch
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      # A user-owned project cannot be written with the workflow's GITHUB_TOKEN, so the sync uses a classic token
+      # with the project scope.
+      - name: Sync the board
+        run: node tools/project-board/sync.mjs
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_BOARD_TOKEN }}

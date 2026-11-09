@@ -4,7 +4,7 @@
 
 **Created**: [DATE]
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A[###-feature-name])
 
 **Input**: User description: "$ARGUMENTS"
 

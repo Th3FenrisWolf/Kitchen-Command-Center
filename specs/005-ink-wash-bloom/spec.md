@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-21
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A005-ink-wash-bloom)
 
 **Input**: User description: "i want to update my ink wash bloom logic based on this artifact:
 https://claude.ai/artifact/NuavN8Bf5c2tq2x6EEX2x1 — the site should start with no ink washes and gradually gain them

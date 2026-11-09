@@ -1,36 +1,32 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.0.0 -> 1.1.0 (MINOR: relaxes the generated-file rule for uSync files; everything that
-complied with 1.0.0 still complies)
+Version change: 1.1.0 -> 1.2.0 (MINOR: adds the project board and the phases table; everything that
+complied with 1.1.0 still complies once each spec's Status line links to its card)
 
-Modified principles:
-- IV. Tests First, Builds Clean: the uSync files leave the list of generated files. A person or an agent MAY
-  write one by hand when the repository holds uSync files of the same kind that show its format, and a test
-  that boots a fresh site MUST prove that it imports.
+Modified principles: none
 
 Modified sections:
-- Definition of done, row D5: checks the boot test for each hand-written uSync file, and applies to a change
-  to the dictionary or the baseline content as well
+- Flow: pull requests are the record of changes and the specs the record of features. A new bullet adds
+  the GitHub project board, written by tools/project-board/sync.mjs, with the owner's ideas as draft cards,
+  and makes a spec's Status line a link to its card
+- Ordering rule: each phase's spec carries the feature's phases table, and the board makes a card for each
+  phase not yet specified
 
 Added sections: none
 Removed sections: none
 
 Dependent templates and commands read this file at runtime and are not edited here:
-- .specify/templates/plan-template.md: its Constitution Check takes its gates from the principles
-- .specify/templates/spec-template.md, .specify/templates/tasks-template.md: no change needed
+- .specify/templates/spec-template.md: its Status line links to the board card, changed with this amendment
+- .specify/templates/plan-template.md, .specify/templates/tasks-template.md: no change needed
 - speckit-card-implement: reads Gates, Ordering rule and Definition of done
 - speckit-grill-run and the grilling preset: read Settled decisions and Decision ownership
 - speckit-coderabbit-review: passes this file to CodeRabbit as context
 
 Deferred placeholders: none
 
-Follow-ups outside this file, carried from 1.0.0:
-- CLAUDE.md: describe the Spec Kit flow beside "Superpowers: plans & specs"
-- .specify/extensions/card/card-config.yml: create it with review.command, or card implement skips
-  the CodeRabbit loop that Review and merge requires
-
-Resolved since 1.0.0: shellcheck is installed, so row D8 can run on a deploy change.
+Resolved since 1.1.0: CLAUDE.md describes the Spec Kit flow, and .specify/extensions/card/card-config.yml
+sets review.command.
 -->
 
 # Kitchen Command Center Constitution
@@ -223,7 +219,13 @@ amendment.
 - `.superpowers/` stays gitignored local scratch. Work that started there finishes there.
   `docs/replatform/` holds the tracked replatform spec and phase plans, as `CLAUDE.md` describes.
 - The project uses no issue tracker. A spec carries no Jira line, and the Jira commands and the
-  board step of card implement do not apply. Pull requests are the record.
+  board step of card implement do not apply. Pull requests are the record of changes, and the specs
+  the record of features.
+- The GitHub project board (`tools/project-board/board.json` names it) shows every spec, every later
+  phase and every bug at its stage, and holds the owner's ideas as draft cards.
+  `tools/project-board/sync.mjs` writes it from the specs, the bug folders and the pull requests on
+  every push and pull request, and never touches a card without a Key. A spec's **Status** line
+  links to its card instead of naming a stage.
 
 ### Gates
 
@@ -250,6 +252,9 @@ A feature too big for one pull request splits into one numbered spec per phase.
   off, and the previous phase's pull request is open or merged.
 - Card implement opens each pull request against `main`. The owner retargets the stack with
   `gh stack` and merges it in order.
+- Each phase's spec carries the feature's phases table, `| Phase | Spec | Covers |`, with the spec
+  number of every specified phase and `later` for the rest. The board makes a card for each `later`
+  row, and that card becomes the phase's spec card once a row names it.
 
 ### Definition of done
 
@@ -297,4 +302,4 @@ change to any file outside `specs/`, `docs/` and Markdown files.
   context. A plan that breaks a principle MUST justify the break in its Complexity Tracking table,
   and an unjustified break fails the Constitution Check.
 
-**Version**: 1.1.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-10-05
+**Version**: 1.2.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-09

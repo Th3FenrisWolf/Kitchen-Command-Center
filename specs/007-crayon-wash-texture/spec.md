@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-04
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A007-crayon-wash-texture)
 
 **Input**: User description: "the first phase of my performance sweep (006) brought tons of improvements, however. my
 washes moved from looking like crayon/colored pencil washes to feeling more like water color paint drops. im wondering
