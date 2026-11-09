@@ -7,6 +7,7 @@ import * as board from '../../../tools/project-board/derive.mjs'
 type Card = {
   key: string
   aliases: string[]
+  parentKey?: string
   title: string
   body: string
   fields: Record<string, string>
@@ -135,8 +136,10 @@ describe('phased features', () => {
     const phase2 = specSnapshot('009-sweep-two', '009-sweep-two', { title: 'Performance Sweep, Phase 2', extra: named })
     const cards = derive({ specs: [phase1, phase2] })
     expect(cards.has('006-sweep/phase-2')).toBe(false)
+    expect(cards.get('006-sweep')?.parentKey).toBeUndefined()
     expect(cards.get('009-sweep-two')).toMatchObject({
       aliases: ['006-sweep/phase-2'],
+      parentKey: '006-sweep',
       fields: { Kind: 'Phase', Feature: '006 Performance Sweep', Phase: '2 of 3', Status: 'Specified' },
     })
   })
@@ -190,42 +193,86 @@ describe('planned changes', () => {
   }
   const item = (fields: Record<string, string>, extra = {}) => ({
     id: 'item',
-    draftId: 'draft',
+    type: 'Issue',
+    contentId: 'issue',
+    state: 'OPEN',
+    parentId: null,
     title: card.title,
     body: board.syncedBody(card.body),
     fields: { ...card.fields, ...fields },
     ...extra,
   })
+  const update = { op: 'update', itemId: 'item', type: 'Issue', contentId: 'issue', card }
+  const at = (status: string, extra: Partial<Card> = {}): Card => ({
+    ...card,
+    ...extra,
+    fields: { ...card.fields, Status: status },
+  })
 
-  it('creates a card that has no item', () => {
-    expect(board.planChanges([card], [])).toEqual([{ op: 'create', card }])
+  it('creates an Idea card as a draft and any later card as an issue, closed once Done', () => {
+    expect(board.planChanges([at('Idea')], [])).toEqual([{ op: 'create', card: at('Idea'), as: 'draft' }])
+    expect(board.planChanges([card], [])).toEqual([{ op: 'create', card, as: 'issue' }])
+    expect(board.planChanges([at('Done')], [])).toEqual([{ op: 'create', card: at('Done'), as: 'issue', state: 'CLOSED' }])
   })
 
   it('changes only what differs', () => {
     expect(board.planChanges([card], [item({ Status: 'Specified' })])).toEqual([
-      { op: 'update', itemId: 'item', draftId: 'draft', card, fields: { Status: 'Building' } },
+      { ...update, fields: { Status: 'Building' } },
     ])
     expect(board.planChanges([card], [item({})])).toEqual([])
   })
 
+  it('turns a draft into an issue once its card leaves Idea, and closes it when Done', () => {
+    const draft = (status: string) => item({ Status: status }, { type: 'DraftIssue', contentId: 'draft', state: undefined })
+    const fromDraft = { ...update, type: 'DraftIssue', contentId: 'draft' }
+    expect(board.planChanges([card], [draft('Building')])).toEqual([{ ...fromDraft, convert: true }])
+    expect(board.planChanges([at('Done')], [draft('Done')])).toEqual([
+      { ...fromDraft, card: at('Done'), convert: true, state: 'CLOSED' },
+    ])
+    expect(board.planChanges([at('Idea')], [draft('Idea')])).toEqual([])
+  })
+
+  it('closes an issue when Done and reopens it when it leaves Done', () => {
+    expect(board.planChanges([at('Done')], [item({ Status: 'Done' })])).toEqual([
+      { ...update, card: at('Done'), state: 'CLOSED' },
+    ])
+    expect(board.planChanges([card], [item({}, { state: 'CLOSED' })])).toEqual([{ ...update, state: 'OPEN' }])
+  })
+
+  it('leaves the state of an issue whose card is an Idea alone', () => {
+    expect(board.planChanges([at('Idea')], [item({ Status: 'Idea' }, { state: 'CLOSED' })])).toEqual([])
+  })
+
+  it("makes a later phase's issue a sub-issue of phase 1's", () => {
+    const phase = at('Building', { parentKey: '006-sweep' })
+    const root = item({ Key: '006-sweep' }, { id: 'root-item', contentId: 'root-issue' })
+    expect(board.planChanges([phase], [root, item({})])).toEqual([{ ...update, card: phase, parent: '006-sweep' }])
+    expect(board.planChanges([phase], [root, item({}, { parentId: 'root-issue' })])).toEqual([])
+    expect(board.planChanges([phase], [])).toEqual([{ op: 'create', card: phase, as: 'issue', parent: '006-sweep' }])
+    expect(board.planChanges([{ ...phase, fields: { ...phase.fields, Status: 'Idea' } }], [])).toEqual([
+      { op: 'create', card: { ...phase, fields: { ...phase.fields, Status: 'Idea' } }, as: 'draft' },
+    ])
+  })
+
   it('takes over the item of an alias and rekeys it', () => {
-    const placeholder = item({ Key: '006-sweep/phase-2', Status: 'Idea' })
+    const placeholder = item(
+      { Key: '006-sweep/phase-2', Status: 'Idea' },
+      { type: 'DraftIssue', contentId: 'draft', state: undefined },
+    )
     expect(board.planChanges([card], [placeholder])).toEqual([
       {
-        op: 'update',
-        itemId: 'item',
-        draftId: 'draft',
-        card,
+        ...update,
+        type: 'DraftIssue',
+        contentId: 'draft',
         fields: { Key: '010-a', Status: 'Building' },
+        convert: true,
       },
     ])
   })
 
   it('keeps the owner notes outside the synced block', () => {
     const noted = item({}, { body: `${board.syncedBody('old links')}\n\nMy notes` })
-    expect(board.planChanges([card], [noted])).toEqual([
-      { op: 'update', itemId: 'item', draftId: 'draft', card, body: `${board.syncedBody('links')}\n\nMy notes` },
-    ])
+    expect(board.planChanges([card], [noted])).toEqual([{ ...update, body: `${board.syncedBody('links')}\n\nMy notes` }])
   })
 
   it('puts the synced block above an idea that gains a key', () => {

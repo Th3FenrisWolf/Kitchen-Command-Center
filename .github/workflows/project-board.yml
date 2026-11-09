@@ -18,14 +18,16 @@ permissions:
 
 jobs:
   sync:
-    # A branch deletion has no commit to check out; the merge that preceded it already ran the sync.
-    if: github.repository == 'Th3FenrisWolf/Kitchen-Command-Center' && !github.event.deleted
+    if: github.repository == 'Th3FenrisWolf/Kitchen-Command-Center'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # The sync code always comes from main, so a branch that changes it cannot rewrite the live board before its
+      # pull request is reviewed. Every branch is still read, through the remote refs.
       - name: Checkout every branch
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
       - name: Set up Node
@@ -34,7 +36,7 @@ jobs:
           node-version: "24"
 
       # A user-owned project cannot be written with the workflow's GITHUB_TOKEN, so the sync uses a classic token
-      # with the project scope.
+      # with the project and public_repo scopes: it also creates, edits and closes the issues behind the cards.
       - name: Sync the board
         run: node tools/project-board/sync.mjs
         env:
