@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-05
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A001-photo-recipe-import)
 
 **Input**: User description: "lets create a method of creating a recipe. id like to be able to take a picture or screenshot of a recipe and have my app fill out the recipe and first variant itself. if it could determine if it should go into an existing recipe as a new variant, that would be great. i already have an anthropic api key we can use to be able to do the parsing. the website should request camera access so it wont require a photo upload, but a photo upload could be an option. id like to be able to support multiple picutres and then once the user submits they're brought to a review screen that they can review and/or jump to a step to edit or update. it may be worth storing the uploaded pictures for verification if we arent confident in the parsing, but ill let you decide that."
 
@@ -268,6 +268,12 @@ Reviewed: 2026-10-12 (A1 to A25); 2026-10-15 (A26 to A39)
 ### Decided for later phases
 
 The owner settled these during this specification. Each later phase is specified only after the previous phase passes its definition of done, and its spec starts from these answers.
+
+| Phase | Spec | Covers |
+|---|---|---|
+| 1 | 001 (this spec) | The import into today's wizard fields, with matching, step links on the review, marks and the spending ceiling |
+| 2 | later | The Details step: category, tags, difficulty and nutrition for typed and imported recipes |
+| 3 | later | The owner's review of imports: source photos and import notes until the draft is published or deleted |
 
 - **Phase 2, the Details step**: both flows gain a Details step for category, tags, difficulty and nutrition, for typed and imported recipes. A read suggests a category, tags and a difficulty from the site's existing lists, and copies nutrition only when the photos print it. Nutrition is never estimated.
 - **Phase 3, the owner's review of imports**: an imported draft keeps its source photos, and notes of the values that the reader marked, until the owner publishes or deletes it. The owner sees them where submissions are reviewed. The photos never appear on the public site, and they leave with their draft, so the nightly backup stays inside its size budget.

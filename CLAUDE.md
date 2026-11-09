@@ -24,6 +24,18 @@ every session needs.
   opens. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
   prefix>` holds the same tree under a different history.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
+- **The project board** is the status view. `.github/workflows/project-board.yml` runs `tools/project-board/sync.mjs`
+  on every push, pull request and morning. It reads `specs/` and `.specify/bugs/` on every branch, with the pull
+  requests, and sets each card's stage: Idea, Specified, Building (from the first ticked task, or a bug's fix on its
+  branch), In review, Done. It owns
+  every card with a **Key**, rewriting its title, its fields and the `<!-- sync -->` block of its body, and never
+  touches a card without one. A card it creates starts in the Current iteration, and it never changes the
+  iteration again, so a card moved to Future stays there. The owner's ideas are draft cards with no Key. When an idea becomes a spec, set its
+  Key to the spec's `NNN-slug` and the sync takes it over. Run it by hand with `node tools/project-board/sync.mjs
+  --dry-run` after `git fetch`; `--setup` creates missing fields and options.
+- A spec's `**Status**:` line links to its board card and never names a stage. A phased feature carries a
+  `| Phase | Spec | Covers |` table in each phase's spec, `later` for a phase not yet specified, and the board shows
+  an Idea card of Kind Phase for each `later` row.
 
 An extension update writes card implement, flow and bug fix back without the preset's steps, so run
 `.specify/presets/kcc-recompose/scripts/reapply.sh` after every `/bizstream-ai:update`.

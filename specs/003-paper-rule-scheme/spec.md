@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-14
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A003-paper-rule-scheme)
 
 **Input**: User description: "next we need to make a reusable scheme for paper rule based on this artifact: https://claude.ai/artifact/3vYgZQcR6pSg2CnkgDhw1X. i want to use the recipe preset updated to use a 2px rule offset"
 

@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-14
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A004-type-scale)
 
 **Input**: User description: "next, id like to take a look at the font-size across the app, the standard should be at least 16px for body text, and headings should scale up nicely from there, currently idk if theres a lot of consistency, and the nav items read a little small to me, so lets make consistent rules for all the fonts and concepts"
 

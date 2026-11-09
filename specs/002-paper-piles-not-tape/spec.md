@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-14
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A002-paper-piles-not-tape)
 
 **Input**: User description: "first one is that paper should never be taped to the desk. paper should be piled. each piece of paper should lay on top of another peice of paper, similar to the nav, but only two tall rather than 3. (nav should move to 2 as well) tape should be reserved for things getting applied on top of the paper, like these icon peices"
 

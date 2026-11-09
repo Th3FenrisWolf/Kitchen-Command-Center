@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-21
 
-**Status**: Draft
+**Status**: [On the project board](https://github.com/users/Th3FenrisWolf/projects/3?filterQuery=key%3A006-performance-sweep)
 
 **Input**: User description: "Site-wide performance sweep: make the public site lightning fast again. Recent work
 (paper piles 002, type scale 004, paper rule 003, ink wash bloom 005, plus fixes) added styling - torn clip-path
