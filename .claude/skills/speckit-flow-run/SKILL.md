@@ -329,8 +329,9 @@ auto-merge state, or the stop that came before it. Restore
 > this section wins.
 
 - Phase 7 runs `speckit.card.implement` as this project wraps it. Its close-out runs the `ship-branch` skill with
-  `--no-jira`: two review rounds, one CodeRabbit round, the acceptance check and the recomposition, all before the
-  push, then the pull request and its watch.
+  `--no-jira --triage`: the review rounds and the CodeRabbit round its review tier sets, the acceptance check and the
+  recomposition, all before the push, then the pull request and its watch. The tier follows the size and the risk of
+  the diff, and the close-out question offers a full review when it is below `full`.
 - ship-branch runs in this session. No builder runs a review round, recomposes the branch, pushes it or opens the
   pull request.
 - `publish` is always `ask` in this project: automation never merges. Phase 10, merge on green, never runs, and

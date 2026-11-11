@@ -25,6 +25,15 @@ every session needs.
   `kcc-ship` preset adds these steps, and they need `~/.claude/skills/ship-branch`. A branch outside Spec Kit
   ships the same way. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
   prefix>` holds the same tree under a different history.
+- **Review triage.** `/speckit-flow-run` and `/speckit-bug-fix` pass `--triage`, so ship-branch sizes the review to
+  the diff: `full`, `light` (one round) or `minimal` (one reviewer, no CodeRabbit). Card implement run by hand stays
+  `full`. A change to one of these risk paths for this triage keeps the review `full` at any size:
+  `src/KCC.Web/Features/Sqlite/`, `src/KCC.Web/Features/RecipeImport/`, `src/KCC.Web/Features/Security/`, any code
+  that takes `IMemberWriteLock` or `scope.WriteLock`, member sign-in and saves, `deploy/`, `Dockerfile`,
+  `docker-bake.hcl`, `.github/workflows/`, `.claude/hooks/`, `Directory.Packages.props`, `global.json`, `package.json`
+  and `pnpm-lock.yaml`. These paths are generated for this triage, and their lines are not counted:
+  `src/KCC.Web/Features/Styles/Torn/Tears.css`, `src/KCC.Web/Features/Styles/Torn/Washes.css` and the baked wash
+  PNGs.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 - **The project board** is the status view. `.github/workflows/project-board.yml` runs `tools/project-board/sync.mjs`
   from `main` on every push, pull request and morning, so a branch that changes the sync never writes the live board.

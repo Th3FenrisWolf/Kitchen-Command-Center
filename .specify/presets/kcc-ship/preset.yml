@@ -3,7 +3,7 @@ schema_version: "1.0"
 preset:
   id: "kcc-ship"
   name: "Ship Through ship-branch"
-  version: "1.0.0"
+  version: "1.1.0"
   description: "Wraps card implement, the autopilot flow and bug fix so that each branch reaches its pull request through the ship-branch skill, without its Jira steps: two review rounds, one CodeRabbit round, an acceptance check and a recomposition before anything is published, then the pull request and its watch."
   author: "Th3FenrisWolf"
   repository: "https://github.com/Th3FenrisWolf/Kitchen-Command-Center"

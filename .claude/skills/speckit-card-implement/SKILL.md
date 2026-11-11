@@ -191,8 +191,10 @@ to it.
 Phase 3 runs in this order:
 
 1. Run Phase 3 step 1, the commit, before ship-branch starts. A local commit publishes nothing.
-2. Invoke the `ship-branch` skill with `--no-jira`. When no skill of that name is registered, stop: report that the
-   close-out needs `~/.claude/skills/ship-branch`, and push nothing. Run every step of the skill, with these overrides:
+2. Invoke the `ship-branch` skill with `--no-jira`. When `speckit.flow.run` runs this command, add `--triage`, so the
+   review tier follows the size and the risk of the diff. Run by hand, the tier is `full`. When no skill of that name
+   is registered, stop: report that the close-out needs `~/.claude/skills/ship-branch`, and push nothing. Run every
+   step of the skill, with these overrides:
    - **Base.** Run `.specify/presets/kcc-ship/scripts/recompose-base.sh <trunk>`. It prints the base and the commits
      that will collapse. The base is the closest branch below this one that `origin/<trunk>` does not contain, such as
      the previous phase's branch or a tooling branch this one stacks on. Without one, it is

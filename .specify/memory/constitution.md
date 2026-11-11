@@ -20,8 +20,9 @@ Modified sections:
 - Definition of done rows D2, D3 and D5: the commands run through pnpm. No check changes.
 - Review and merge: the `ship-branch` skill, without its Jira steps, replaces the local CodeRabbit
   loop of up to three rounds. Before the pull request opens it runs two review rounds with a
-  verifier, one CodeRabbit round and an acceptance check, then recomposes the branch. A regression,
-  an unfixed finding or an unmet criterion blocks the publish. The BizStream bundle no longer
+  verifier, one CodeRabbit round and an acceptance check, then recomposes the branch. The
+  autopilot flow and bug fix size the review to the diff, and a risk path keeps it full. A
+  regression, an unfixed finding or an unmet criterion blocks the publish. The BizStream bundle no longer
   ships the CodeRabbit extension, and the `kcc-ship` preset replaces `kcc-recompose`.
 - Governance: the review, not the CodeRabbit loop, reads this file as context.
 
@@ -296,10 +297,13 @@ change to any file outside `specs/`, `docs/` and Markdown files.
 ### Review and merge
 
 - Every change reaches its pull request through the `ship-branch` skill without its Jira steps,
-  with this constitution and `CLAUDE.md` as context. Before the pull request opens, it runs two
-  review rounds with a verifier, one CodeRabbit round and an acceptance check over the whole diff,
-  then recomposes the branch. A regression, an unfixed finding or an unmet acceptance criterion
-  blocks the publish. A fix after the pull request opens is one commit on top.
+  with this constitution and `CLAUDE.md` as context. Before the pull request opens, it runs the
+  review its tier sets, with a verifier on every finding, an acceptance check over the whole diff,
+  and a recomposition. The tier is `full`, two review rounds and one CodeRabbit round, except
+  that the autopilot flow and bug fix size it to the diff: a small change in no risk path that
+  `CLAUDE.md` names gets one round, or one reviewer and no CodeRabbit round. A regression, an
+  unfixed finding or an unmet acceptance criterion blocks the publish at every tier. A fix after
+  the pull request opens is one commit on top.
 - Automation never merges. The owner reviews each pull request and squash-merges it into `main`
   once CI (`.github/workflows/build-and-test.yml`) passes. A merge to `main` deploys to the Pi.
 - Every commit is authored as `Th3FenrisWolf <34248224+Th3FenrisWolf@users.noreply.github.com>`.

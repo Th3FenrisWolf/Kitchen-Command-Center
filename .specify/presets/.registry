@@ -83,9 +83,9 @@
       "installed_at": "2026-11-11T19:37:08.292561+00:00"
     },
     "kcc-ship": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "local",
-      "manifest_hash": "sha256:b8fc463ff7e960b45ccb05b18bd40966bba72890a679d0aa95b261c45f5cdd61",
+      "manifest_hash": "sha256:dcd30d7c64406b48b0b6424952821ba15557b258899de085a6a4765209c07c92",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -102,7 +102,7 @@
           "speckit-bug-fix"
         ]
       },
-      "installed_at": "2026-11-11T19:52:33.875353+00:00"
+      "installed_at": "2026-11-11T20:05:11.847904+00:00"
     }
   }
 }

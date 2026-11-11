@@ -234,8 +234,9 @@ request.
 > This section replaces gates 2 and 3 of the Gates above. Where the two conflict, this section wins.
 
 - Gate 1, the definition of done, runs as written, first.
-- The fix reaches a pull request only through the `ship-branch` skill with `--no-jira`, run in this session. It
-  reviews before anything is published, so `speckit.review.run` does not run. When no skill of that name is
+- The fix reaches a pull request only through the `ship-branch` skill with `--no-jira --triage`, run in this session.
+  It reviews before anything is published, so `speckit.review.run` does not run. The review tier follows the size and
+  the risk of the fix, so a small fix in no risk path gets one review round and no CodeRabbit round. When no skill of that name is
   registered, report that publishing needs `~/.claude/skills/ship-branch`, and push nothing.
 - ship-branch's overrides for this project:
   - **Checks.** The rows of gate 1.
