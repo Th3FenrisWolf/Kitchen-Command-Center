@@ -1,7 +1,8 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.3.0 -> 2.0.0 (MAJOR: a settled decision and a rule of principle V are redefined)
+Version change: 1.3.0 -> 2.0.0 (MAJOR: a settled decision, a rule of principle V and the review
+rule are redefined)
 
 Modified principles:
 - IV. Test-First, Clean Build: the build and generator commands run through pnpm. No rule changes.
@@ -17,6 +18,10 @@ Modified sections:
 - Gates 1 and 2: pnpm replaces Yarn, and gate 2 names the `~/.npmrc` line pnpm reads the Font
   Awesome token from.
 - Definition of done rows D2, D3 and D5: the commands run through pnpm. No check changes.
+- Review and merge: one `speckit.review.run` pass over the whole diff of the open pull request,
+  with its fixes as one commit on it, replaces the local CodeRabbit loop of up to three rounds
+  before the pull request opens. The BizStream bundle no longer ships the CodeRabbit extension.
+- Governance: the review, not the CodeRabbit loop, reads this file as context.
 
 Added sections: none
 Removed sections: none
@@ -25,7 +30,8 @@ Dependent templates and commands read this file at runtime and are not edited he
 - .specify/templates/spec-template.md, plan-template.md, tasks-template.md: no change needed
 - speckit-card-implement: reads Gates, Ordering rule and Definition of done
 - speckit-grill-run and the grilling preset: read Settled decisions and Decision ownership
-- speckit-coderabbit-review: passes this file to CodeRabbit as context
+- speckit-review-run: reads this file as context through `review.context_path` in
+  `.specify/extensions/card/card-config.yml`
 
 Deferred placeholders: none
 -->
@@ -287,9 +293,9 @@ change to any file outside `specs/`, `docs/` and Markdown files.
 
 ### Review and merge
 
-- Every change gets the local CodeRabbit review loop (`/speckit-coderabbit-review`) over its whole
-  diff before its pull request opens, with this constitution and `CLAUDE.md` as context, for at
-  most three rounds.
+- Every change gets one `/speckit-review-run` pass over its whole diff once its pull request is
+  open, with this constitution and `CLAUDE.md` as context. Its fixes land as one commit on that
+  pull request.
 - Automation never merges. The owner reviews each pull request and squash-merges it into `main`
   once CI (`.github/workflows/build-and-test.yml`) passes. A merge to `main` deploys to the Pi.
 - Every commit is authored as `Th3FenrisWolf <34248224+Th3FenrisWolf@users.noreply.github.com>`.
@@ -309,8 +315,8 @@ change to any file outside `specs/`, `docs/` and Markdown files.
   settled decision or a definition-of-done row. MINOR adds a principle, a section, a gate or a row,
   or materially expands guidance. PATCH changes wording without changing a rule.
 - Compliance: every plan's Constitution Check reads these principles. Card implement enforces the
-  gates, the ordering rule and the definition of done. The CodeRabbit loop reads this file as
-  context. A plan that breaks a principle MUST justify the break in its Complexity Tracking table,
-  and an unjustified break fails the Constitution Check.
+  gates, the ordering rule and the definition of done. The review reads this file as context. A
+  plan that breaks a principle MUST justify the break in its Complexity Tracking table, and an
+  unjustified break fails the Constitution Check.
 
 **Version**: 2.0.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-11

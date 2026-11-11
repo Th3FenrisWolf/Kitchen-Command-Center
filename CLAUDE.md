@@ -14,12 +14,12 @@ every session needs.
 - **A preview** shows the owner a proposal before the plan or the tasks fix it. `/speckit-preview-run` serves look
   rounds, built from the site's own stylesheet, in the Browser pane after clarify, and architecture rounds as Mermaid
   after plan, for as many rounds as the owner wants. The approved round goes into the spec folder.
-- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`. Bug fix's review loop also
-  lands every fix from every round as one commit on its open pull request.
+- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`. Bug fix's review also lands
+  its fixes as one commit on its open pull request.
 - **A pull request** opens only from a recomposed branch. Development commits stay as they are until then. Card
   implement's close-out, and with it `/speckit-flow-run`, recomposes the branch once with the `recompose-branch` skill
-  after the commit and before the push, and the owner approves the publish in the close-out question. The review
-  loop then runs on the open pull request, and every fix from every round lands as one commit on top. The branch is
+  after the commit and before the push, and the owner approves the publish in the close-out question. One review
+  pass then runs on the open pull request, and its fixes land as one commit on top. The branch is
   never recomposed again after its pull request opens. The `kcc-recompose` preset adds these steps. A branch outside Spec Kit is recomposed the same way before its pull request
   opens. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
   prefix>` holds the same tree under a different history.
@@ -46,7 +46,7 @@ An extension update writes card implement, flow and bug fix back without the pre
 
 The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
 sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,
-the definition of done, the bug flow, the CodeRabbit loop and `/speckit-preview-run`.
+the definition of done, the bug flow, the review of `/speckit-review-run` and `/speckit-preview-run`.
 
 Several features can be in flight at once:
 
