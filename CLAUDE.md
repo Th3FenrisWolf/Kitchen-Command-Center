@@ -9,19 +9,21 @@ gates, ordering rule and definition of done. Only the Spec Kit commands read it,
 every session needs.
 
 - **A feature** runs `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, then
-  `/speckit-card-implement`, which recomposes the branch and ends at an open pull request, and never merges.
+  `/speckit-card-implement`, which ships the branch and ends at an open pull request, and never merges.
   `/speckit-checklist` and `/speckit-analyze` are optional checks.
 - **A preview** shows the owner a proposal before the plan or the tasks fix it. `/speckit-preview-run` serves look
   rounds, built from the site's own stylesheet, in the Browser pane after clarify, and architecture rounds as Mermaid
   after plan, for as many rounds as the owner wants. The approved round goes into the spec folder.
-- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`. Bug fix's review also lands
-  its fixes as one commit on its open pull request.
-- **A pull request** opens only from a recomposed branch. Development commits stay as they are until then. Card
-  implement's close-out, and with it `/speckit-flow-run`, recomposes the branch once with the `recompose-branch` skill
-  after the commit and before the push, and the owner approves the publish in the close-out question. One review
-  pass then runs on the open pull request, and its fixes land as one commit on top. The branch is
-  never recomposed again after its pull request opens. The `kcc-recompose` preset adds these steps. A branch outside Spec Kit is recomposed the same way before its pull request
-  opens. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
+- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`. Bug fix publishes
+  through `ship-branch` too.
+- **A pull request** opens only through the `ship-branch` skill with `--no-jira`. Development commits stay as they
+  are until then. Card implement's close-out, and with it `/speckit-flow-run`, runs it in this session after the
+  commit: two review rounds with a verifier, one CodeRabbit round and an acceptance check, then one recomposition
+  with the `recompose-branch` skill, all before the push. A regression, an unfixed finding or an unmet criterion
+  blocks the publish, and the owner approves the publish in the close-out question. The pull request then gets a
+  watch. The branch is never recomposed again after its pull request opens: a later fix is one commit on top. The
+  `kcc-ship` preset adds these steps, and they need `~/.claude/skills/ship-branch`. A branch outside Spec Kit
+  ships the same way. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
   prefix>` holds the same tree under a different history.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 - **The project board** is the status view. `.github/workflows/project-board.yml` runs `tools/project-board/sync.mjs`
@@ -42,11 +44,11 @@ every session needs.
   an Idea card of Kind Phase for each `later` row.
 
 An extension update writes card implement, flow and bug fix back without the preset's steps, so run
-`.specify/presets/kcc-recompose/scripts/reapply.sh` after every `/bizstream:update`.
+`.specify/presets/kcc-ship/scripts/reapply.sh` after every `/bizstream:update`.
 
 The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
 sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,
-the definition of done, the bug flow, the review of `/speckit-review-run` and `/speckit-preview-run`.
+the definition of done, the bug flow, `ship-branch` through the `kcc-ship` preset, and `/speckit-preview-run`.
 
 Several features can be in flight at once:
 

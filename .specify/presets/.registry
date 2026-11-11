@@ -82,10 +82,10 @@
       },
       "installed_at": "2026-11-11T19:37:08.292561+00:00"
     },
-    "kcc-recompose": {
-      "version": "0.3.1",
+    "kcc-ship": {
+      "version": "1.0.0",
       "source": "local",
-      "manifest_hash": "sha256:8bdc7b3cfa3ccdd55a1de196a9d81ce6d49287378962e6961265bc394ab425b5",
+      "manifest_hash": "sha256:b8fc463ff7e960b45ccb05b18bd40966bba72890a679d0aa95b261c45f5cdd61",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -102,7 +102,7 @@
           "speckit-bug-fix"
         ]
       },
-      "installed_at": "2026-11-11T19:38:22.912274+00:00"
+      "installed_at": "2026-11-11T19:52:33.875353+00:00"
     }
   }
 }

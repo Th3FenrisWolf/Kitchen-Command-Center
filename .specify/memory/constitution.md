@@ -18,9 +18,11 @@ Modified sections:
 - Gates 1 and 2: pnpm replaces Yarn, and gate 2 names the `~/.npmrc` line pnpm reads the Font
   Awesome token from.
 - Definition of done rows D2, D3 and D5: the commands run through pnpm. No check changes.
-- Review and merge: one `speckit.review.run` pass over the whole diff of the open pull request,
-  with its fixes as one commit on it, replaces the local CodeRabbit loop of up to three rounds
-  before the pull request opens. The BizStream bundle no longer ships the CodeRabbit extension.
+- Review and merge: the `ship-branch` skill, without its Jira steps, replaces the local CodeRabbit
+  loop of up to three rounds. Before the pull request opens it runs two review rounds with a
+  verifier, one CodeRabbit round and an acceptance check, then recomposes the branch. A regression,
+  an unfixed finding or an unmet criterion blocks the publish. The BizStream bundle no longer
+  ships the CodeRabbit extension, and the `kcc-ship` preset replaces `kcc-recompose`.
 - Governance: the review, not the CodeRabbit loop, reads this file as context.
 
 Added sections: none
@@ -30,8 +32,8 @@ Dependent templates and commands read this file at runtime and are not edited he
 - .specify/templates/spec-template.md, plan-template.md, tasks-template.md: no change needed
 - speckit-card-implement: reads Gates, Ordering rule and Definition of done
 - speckit-grill-run and the grilling preset: read Settled decisions and Decision ownership
-- speckit-review-run: reads this file as context through `review.context_path` in
-  `.specify/extensions/card/card-config.yml`
+- ship-branch, through the kcc-ship preset: reads this file as context and runs the definition of
+  done as its checks
 
 Deferred placeholders: none
 -->
@@ -293,9 +295,11 @@ change to any file outside `specs/`, `docs/` and Markdown files.
 
 ### Review and merge
 
-- Every change gets one `/speckit-review-run` pass over its whole diff once its pull request is
-  open, with this constitution and `CLAUDE.md` as context. Its fixes land as one commit on that
-  pull request.
+- Every change reaches its pull request through the `ship-branch` skill without its Jira steps,
+  with this constitution and `CLAUDE.md` as context. Before the pull request opens, it runs two
+  review rounds with a verifier, one CodeRabbit round and an acceptance check over the whole diff,
+  then recomposes the branch. A regression, an unfixed finding or an unmet acceptance criterion
+  blocks the publish. A fix after the pull request opens is one commit on top.
 - Automation never merges. The owner reviews each pull request and squash-merges it into `main`
   once CI (`.github/workflows/build-and-test.yml`) passes. A merge to `main` deploys to the Pi.
 - Every commit is authored as `Th3FenrisWolf <34248224+Th3FenrisWolf@users.noreply.github.com>`.
