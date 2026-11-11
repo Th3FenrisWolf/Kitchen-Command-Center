@@ -65,7 +65,7 @@ public sealed class AnthropicEvalService(
         {
             Model = model,
             System = ReaderPrompt.System,
-            Messages = [new MessageParam { Role = Role.User, Content = Content(request) }],
+            Messages = [new UserMessageParam { Content = Content(request) }],
             OutputConfig = profile.TakesEffort
                 ? new OutputConfig { Format = format, Effort = new RecipeImportOptions().Effort }
                 : new OutputConfig { Format = format },

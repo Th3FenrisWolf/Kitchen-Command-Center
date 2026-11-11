@@ -613,6 +613,7 @@ public class RecipeImportApiTests
         OutputTokensDetails = null,
         ServerToolUse = null,
         ServiceTier = null,
+        Speed = null,
     };
 
     private static async Task<JsonElement> AssertErrorAsync(HttpResponseMessage response, string code)
