@@ -1,4 +1,4 @@
-FROM alpine:3.24.2
+FROM alpine:3.24.4
 # The volumes mount under /srv/kcc. An empty volume takes the content and owner of the directory it is mounted on, so
 # these are empty and belong to the app's user (1654), who owns the files in them.
 RUN apk add --no-cache sqlite rclone curl tar gzip \
