@@ -1,11 +1,17 @@
 ---
 name: speckit-jira-cards
-description: Write client-facing Jira cards from the specs/jira-cards.md registry, link specs to cards that already exist, and move a card when its pull requests open. One Story per outcome, several specs per card, dry run by default.
+description: Write client-facing Jira cards from the specs/jira-cards.md registry,
+  link specs to cards that already exist, and move a card when its pull requests open.
+  One Story per outcome, several specs per card, dry run by default.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: jira:commands/speckit.jira.cards.md
+  source: extension:jira
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Jira Cards Skill
 
 # Jira cards
 

@@ -1,11 +1,16 @@
 ---
 name: speckit-review-run
-description: Review the feature's diff with one pass of the built-in code-review skill, then run the checks. Never a second pass.
+description: Review the feature's diff with one pass of the built-in code-review skill,
+  then run the checks. Never a second pass.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: review:commands/speckit.review.run.md
+  source: extension:review
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Review Run Skill
 
 # Review
 

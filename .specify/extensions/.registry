@@ -12,7 +12,9 @@
           "speckit.preview.run"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-preview-run"
+      ],
       "installed_at": "2026-10-07T14:50:52.834972+00:00"
     },
     "bug": {
@@ -28,7 +30,11 @@
           "speckit.bug.test"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-bug-assess",
+        "speckit-bug-fix",
+        "speckit-bug-test"
+      ],
       "installed_at": "2026-11-11T19:36:58.129257+00:00"
     },
     "assess": {
@@ -46,7 +52,13 @@
           "speckit.assess.decide"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-assess-intake",
+        "speckit-assess-research",
+        "speckit-assess-define",
+        "speckit-assess-shape",
+        "speckit-assess-decide"
+      ],
       "installed_at": "2026-11-11T19:36:58.175905+00:00"
     },
     "grill": {
@@ -63,7 +75,9 @@
           "speckit.grill.run"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-grill-run"
+      ],
       "installed_at": "2026-11-11T19:36:59.183628+00:00"
     },
     "qa": {
@@ -81,7 +95,10 @@
           "speckit.qa.audit"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-qa-walk",
+        "speckit-qa-audit"
+      ],
       "installed_at": "2026-11-11T19:36:59.967549+00:00"
     },
     "jira": {
@@ -100,7 +117,11 @@
           "speckit.jira.verify"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-jira-cards",
+        "speckit-jira-pull",
+        "speckit-jira-verify"
+      ],
       "installed_at": "2026-11-11T19:37:00.825116+00:00"
     },
     "batch": {
@@ -117,7 +138,9 @@
           "speckit.batch.run"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-batch-run"
+      ],
       "installed_at": "2026-11-11T19:37:01.656174+00:00"
     },
     "card": {
@@ -134,7 +157,9 @@
           "speckit.card.implement"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-card-implement"
+      ],
       "installed_at": "2026-11-11T19:37:02.663499+00:00"
     },
     "review": {
@@ -151,7 +176,9 @@
           "speckit.review.run"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-review-run"
+      ],
       "installed_at": "2026-11-11T19:37:03.437636+00:00"
     },
     "flow": {
@@ -168,7 +195,9 @@
           "speckit.flow.run"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        "speckit-flow-run"
+      ],
       "installed_at": "2026-11-11T19:37:04.224272+00:00"
     }
   }

@@ -1,11 +1,18 @@
 ---
 name: speckit-qa-audit
-description: Audit a feature in a real browser before the manual QA pass. Checks each card criterion and spec scenario it can, records pass, fail, low-confidence or not-checked with evidence, and writes the results file that speckit.qa.walk reads to skip what already passed.
+description: Audit a feature in a real browser before the manual QA pass. Checks each
+  card criterion and spec scenario it can, records pass, fail, low-confidence or not-checked
+  with evidence, and writes the results file that speckit.qa.walk reads to skip what
+  already passed.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: qa:commands/speckit.qa.audit.md
+  source: extension:qa
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Qa Audit Skill
 
 # QA audit
 

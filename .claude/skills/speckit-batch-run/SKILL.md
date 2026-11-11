@@ -1,11 +1,20 @@
 ---
 name: speckit-batch-run
-description: Run one Spec Kit phase — specify, clarify, plan, tasks, or jira — across every card or spec ready for it, fanned out in parallel subagents. Clarify resolves questions in one session through speckit.grill.run; jira drafts every card, then creates after one approval gate. Use when the user says "batch specify", "clarify batch", "plan batch", "tasks batch", "jira batch", or wants a phase run across many specs at once.
+description: Run one Spec Kit phase — specify, clarify, plan, tasks, or jira — across
+  every card or spec ready for it, fanned out in parallel subagents. Clarify resolves
+  questions in one session through speckit.grill.run; jira drafts every card, then
+  creates after one approval gate. Use when the user says "batch specify", "clarify
+  batch", "plan batch", "tasks batch", "jira batch", or wants a phase run across many
+  specs at once.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: batch:commands/speckit.batch.run.md
+  source: extension:batch
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Batch Run Skill
 
 # Phase batch
 

@@ -1,11 +1,16 @@
 ---
 name: speckit-grill-run
-description: Interview the user in dependency-ordered rounds until the named artifact has no open decision left. Works on an idea, a plan, one spec, or a batch of specs.
+description: Interview the user in dependency-ordered rounds until the named artifact
+  has no open decision left. Works on an idea, a plan, one spec, or a batch of specs.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: grill:commands/speckit.grill.run.md
+  source: extension:grill
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Grill Run Skill
 
 Read `.specify/extensions/grill/templates/grilling.md` and follow it exactly.
 It is the protocol; this file only supplies the target.

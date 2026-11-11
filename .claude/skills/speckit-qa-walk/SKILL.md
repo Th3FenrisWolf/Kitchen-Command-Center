@@ -1,11 +1,17 @@
 ---
 name: speckit-qa-walk
-description: Build the QA wizard for a feature. One stage per acceptance scenario the QA audit did not pass, each opening the page to check and recording pass, fail, skip or blocked. For the manual pass a developer does by hand before hand-off.
+description: Build the QA wizard for a feature. One stage per acceptance scenario
+  the QA audit did not pass, each opening the page to check and recording pass, fail,
+  skip or blocked. For the manual pass a developer does by hand before hand-off.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: qa:commands/speckit.qa.walk.md
+  source: extension:qa
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Qa Walk Skill
 
 # QA walk
 
