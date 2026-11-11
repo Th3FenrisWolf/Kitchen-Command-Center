@@ -99,7 +99,7 @@ separately:
   HTML. `SsrHtmlContent` inlines it as `<style data-ssr-styles>`, and `Main.ts` removes that tag once
   hydration has run so HMR-updated head styles win.
 
-**Always build both bundles together — `yarn build:all`, never one side alone.** Production scope IDs hash
+**Always build both bundles together — `pnpm build:all`, never one side alone.** Production scope IDs hash
 each component's path *and* its content, so a client bundle built against different component source than
 the SSR bundle emits `data-v-` attributes the CSS has no selectors for, and every scoped component
 silently loses its styles.
@@ -165,7 +165,7 @@ test that fails with SQLite error 5 prints the ring and the extended error code,
 
 The backoffice's recipe editors and the Contributions dashboard are Lit clients in `src/KCC.Admin/Client` and
 `src/KCC.Contributions/Client`, built by Vite from `packages/admin-client-config` into gitignored
-`wwwroot/App_Plugins/` folders. Build them with the root `yarn build:all`. Three things fail silently or
+`wwwroot/App_Plugins/` folders. Build them with the root `pnpm build:all`. Three things fail silently or
 misleadingly:
 
 - A Management API call through `umbHttpClient` sends no token unless it passes
@@ -212,7 +212,7 @@ scoped block. Anything Razor also renders belongs in `@layer components`. A rule
 ### The tear
 
 Sheets are clipped by the `clip-path` that `Tears.css` writes once per preset on grouped child selectors; the presets in `Features/Styles/Torn/Tears.css` are
-**generated** by `yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
+**generated** by `pnpm tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
 the CSS. No runtime JS draws anything; the SSR output is final. The structural invariants:
 
 - The `filter` (fibre + fall) sits on `.kcc-fall`, the slip's child right before `.kcc-torn`, **outside** the
@@ -230,7 +230,7 @@ the CSS. No runtime JS draws anything; the SSR output is final. The structural i
   and the sheet's `wash-key`, two deep at most, and the kit CSS blooms them in 45 steps from the elapsed time
   `Layout.cshtml` writes as `--wash-elapsed`. A wash rests at its bloom's end and fills backwards only, so hydration
   keeps the first paint. A wash is chalk: its mask is a 128px chalk tile cut with one of eight lobed silhouettes (`Washes/wash-chalk.png`,
-  `wash-blob-0.png` to `wash-blob-7.png`), baked by `yarn washes` from `Features/Bloom/bakeWashes.ts` and named by
+  `wash-blob-0.png` to `wash-blob-7.png`), baked by `pnpm washes` from `Features/Bloom/bakeWashes.ts` and named by
   `Features/Styles/Torn/Washes.css`, which is **generated** too. Never hand-edit them. The silhouette's padding is
   `--wash-span`, `--wash-gain` lifts the opacity to make up for the chalk's gaps, and `--wash-flip` mirrors each wash.
   A wash takes no filter, so neither does its chalk tile or silhouette: a filter on a blooming wash made WebKit redraw it on every step. The client build keeps the

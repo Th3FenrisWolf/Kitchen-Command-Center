@@ -431,7 +431,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
   the same account. A read that the limit stops fails, the ledger gives its reservation back, and the wizard shows a
   failed read.
 
-- **Live performance measurement.** `yarn perf:live` measures the public site from the Mac, signed out and as a
+- **Live performance measurement.** `pnpm perf:live` measures the public site from the Mac, signed out and as a
   measurement member, and reads only. It needs two things set up once:
   - **The measurement member.** Register a member on the live site with an address of your own, such as
     `you+perf@…`, then approve it in the backoffice under Members. It holds no recipes, reviews or favourites.
@@ -444,7 +444,7 @@ application key. Do not edit the Pi's clone: a local change to a tracked file ma
     on, a challenged page shows in the live report as a gap.
 
   The run takes `KCC_PERF_LIVE_URL` (the site's origin), `KCC_PERF_MEMBER_USERNAME`, `KCC_PERF_MEMBER_PASSWORD` and
-  `KCC_PERF_BYPASS_TOKEN` from the shell, never from a file in the repository, after `yarn build:all` and a Release
+  `KCC_PERF_BYPASS_TOKEN` from the shell, never from a file in the repository, after `pnpm build:all` and a Release
   build. It writes `tests/results/perf-live/report.html`. To retire the token, delete the rule.
 
 - **Updates.** Dependabot opens no pull requests. Its alerts flag a vulnerable npm, NuGet or Actions package: bump it

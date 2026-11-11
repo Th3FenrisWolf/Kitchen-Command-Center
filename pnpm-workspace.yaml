@@ -1,0 +1,54 @@
+packages:
+  - packages/*
+  - src/KCC.Admin/Client
+  - src/KCC.Contributions/Client
+  - src/KCC.Web
+  - tests/KCC.ViteTests
+
+catalog:
+  '@fortawesome/fontawesome-pro': ^7.3.1
+  '@types/node': ^26.6.6
+  '@umbraco-cms/backoffice': 17.7.2
+  '@vue/server-renderer': ^3.5.44
+  postcss: ^8.5.32
+  typescript: ~6.0.3
+  vite: ^8.3.7
+  vitest: ^5.1.0
+  vue: ^3.5.44
+
+# The types follow the Node line the images run, so no dependency brings in types for APIs that runtime lacks.
+overrides:
+  '@types/node': ^26.6.6
+
+# A compromised release is usually pulled within days, so nothing younger than a week is installed.
+minimumReleaseAge: 10080
+# These carry the fix for Vite's dev-server remote code execution and were published inside the week. A name pattern
+# takes no version, and rolldown pins its bindings to its own version, so rolldown's entry gates them too.
+minimumReleaseAgeExclude:
+  - vite@8.3.7
+  - rolldown@1.2.18
+  - '@rolldown/binding-*'
+
+trustPolicy: no-downgrade
+
+# The backoffice package's peers are what Umbraco bundles and serves itself. The clients mark it external, so
+# installing its editors and parsers would only add packages to audit.
+autoInstallPeers: false
+peerDependencyRules:
+  ignoreMissing:
+    - '@heximal/expressions'
+    - '@hey-api/openapi-ts'
+    - '@microsoft/signalr'
+    - '@tiptap/*'
+    - '@types/diff'
+    - diff
+    - dompurify
+    - element-internals-polyfill
+    - luxon
+    - marked
+    - monaco-editor
+    - uuid
+
+# esbuild's install script only checks that its binary runs, and the binary works without it.
+allowBuilds:
+  esbuild: false

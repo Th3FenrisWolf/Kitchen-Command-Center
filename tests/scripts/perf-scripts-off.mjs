@@ -16,7 +16,7 @@ if (!ref) {
 const capturesRoot = process.env.KCC_PERF_CAPTURES ?? path.join(repoRoot, "tests", "results", "perf", "captures");
 const dir = path.join(capturesRoot, ref);
 if (!existsSync(dir)) {
-  process.stderr.write(`No captures at ${dir}; run yarn perf:capture ${ref} first.\n`);
+  process.stderr.write(`No captures at ${dir}; run pnpm perf:capture ${ref} first.\n`);
   process.exit(1);
 }
 

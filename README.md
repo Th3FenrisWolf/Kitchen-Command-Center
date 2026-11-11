@@ -14,11 +14,12 @@ An Umbraco 17 application with Vue 3 server-side rendering (SSR), on SQLite.
 
 ### Quick Development Workflow
 
-1. **Install and build the frontend** from the repo root (needs the Font Awesome token, see below):
+1. **Install and build the frontend** from the repo root. It needs [pnpm](https://pnpm.io/installation), which
+   switches itself to the version `package.json` names, and the Font Awesome token, see below:
 
    ```bash
-   yarn install
-   yarn build:all
+   pnpm install
+   pnpm build:all
    ```
 
    The build includes the backoffice bundles; without them the backoffice has no editors for ingredients,
@@ -54,15 +55,20 @@ The site is at `https://localhost:58671`; the backoffice is at `/umbraco`.
 
 ### Font Awesome Pro
 
-This project renders icons with **Font Awesome Pro** (webfont / CSS), installed from Font Awesome's private npm registry. The registry is configured in the committed root `.npmrc`; the auth token is **not** committed — it is read from the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
+This project renders icons with **Font Awesome Pro** (webfont / CSS), installed from Font Awesome's private npm registry. The registry is configured in the committed root `.npmrc`; the auth token is **not** committed. pnpm reads no token from a project's `.npmrc`, so your own `~/.npmrc` names the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable instead.
 
-Before running `yarn install` at the repository root, which installs every workspace:
+Before running `pnpm install` at the repository root, which installs every workspace:
 
 1. Get a token from your Font Awesome account (Account → Tokens).
 2. Set `FONTAWESOME_NPM_AUTH_TOKEN` in your environment:
    - PowerShell (persists; reopen the terminal afterward): `setx FONTAWESOME_NPM_AUTH_TOKEN "<token>"`
    - PowerShell (current session only): `$env:FONTAWESOME_NPM_AUTH_TOKEN = "<token>"`
    - bash / zsh: `export FONTAWESOME_NPM_AUTH_TOKEN=<token>`
+3. Add this line to `~/.npmrc`, creating the file if it is missing. pnpm fills in the variable on each run:
+
+   ```
+   //npm.fontawesome.com/:_authToken=${FONTAWESOME_NPM_AUTH_TOKEN}
+   ```
 
 The same variable must be set wherever the production frontend is built. Never commit the token or any Font Awesome font files — `node_modules/`, `**/wwwroot/assets`, `**/wwwroot/webfonts`, and the backoffice bundles in `src/KCC.*/wwwroot/App_Plugins/` are all git-ignored.
 
@@ -214,10 +220,10 @@ ignores. It asks before each paid run. Its steps are in
 
 The recipe editors (ingredients, instructions and the icon, with **Suggest with AI**) and the Contributions dashboard
 are Lit + TypeScript clients in `src/KCC.Admin/Client` and `src/KCC.Contributions/Client`, on the shared Vite base in
-`packages/admin-client-config`. `yarn build:all` at the repository root builds them into their projects'
+`packages/admin-client-config`. `pnpm build:all` at the repository root builds them into their projects'
 `wwwroot/App_Plugins/`, which the site serves to the backoffice; without that build the backoffice has no editors
 for those fields and no dashboard. Rebuilding a client needs no .NET build: restart the site and reload the
-backoffice. Run a client's tests with `yarn workspace @kcc/admin test` or `yarn workspace @kcc/contributions test`.
+backoffice. Run a client's tests with `pnpm --filter @kcc/admin test` or `pnpm --filter @kcc/contributions test`.
 
 ---
 
@@ -227,8 +233,8 @@ The site runs on a Raspberry Pi behind a Cloudflare Tunnel, as the containers in
 to `main`, CI builds the images, smoke-tests them and pushes them to private GHCR packages, and within five minutes
 the Pi pulls and deploys them. A nightly job backs the site up to Cloudflare R2.
 
-- **Build the images:** `docker buildx bake --load` at the repository root. It needs the Font Awesome token, as `yarn`
-  does.
+- **Build the images:** `docker buildx bake --load` at the repository root. It needs `FONTAWESOME_NPM_AUTH_TOKEN` in the
+  environment, and reads no `~/.npmrc`.
 - **Run them the way the Pi does:** `deploy/smoke-test.sh`. It boots them with Caddy standing in for the tunnel on
   `https://localhost:8443`, checks the site and a restored backup, and removes everything afterwards.
 - **Everything else,** from Cloudflare and the Pi to deploys, rollbacks, restores and the restore drill, is in
@@ -248,19 +254,19 @@ Run from `src/KCC.Web`:
 
 ```bash
 # Install dependencies
-yarn
+pnpm install
 
 # Development (Vite + SSR + CSS watching)
-yarn dev:all
+pnpm dev:all
 
 # Type checking
-yarn type-check
+pnpm type-check
 
 # Linting
-yarn lint
+pnpm lint
 
 # Build for production (client + SSR bundles)
-yarn build:all
+pnpm build:all
 ```
 
 ### Light and dark ramps
@@ -293,7 +299,7 @@ CI-friendly. The individual per-suite reports are still produced alongside it.
 #### E2E tests
 
 The E2E suite starts its own copy of the site on a free port, with a fresh SQLite database and its own SSR process.
-Run `dotnet build` and `yarn build:all` (at the repository root) first, and set `KCC_E2E_MEMBER_USERNAME` and
+Run `dotnet build` and `pnpm build:all` (at the repository root) first, and set `KCC_E2E_MEMBER_USERNAME` and
 `KCC_E2E_MEMBER_PASSWORD` (a password of at least 8 characters; on macOS/zsh, in `~/.zshenv`). The site's seeder
 creates that member, approved, before any test runs.
 
@@ -301,28 +307,28 @@ creates that member, approved, before any test runs.
 
 The perf matrix measures every public page in both profiles (phone and desktop), both ramps, both engines and bare and
 bloomed visits: frame times, long frames, interaction latency, LCP, hydration, layers and CSS weight. It needs a
-Release build and `yarn build:all` at the repository root first, and the `KCC_E2E_MEMBER_USERNAME` and
+Release build and `pnpm build:all` at the repository root first, and the `KCC_E2E_MEMBER_USERNAME` and
 `KCC_E2E_MEMBER_PASSWORD` variables described under E2E tests above. Each command boots a fresh seeded site unless it
 says otherwise; `perf:live` boots none.
 
 ```bash
-yarn perf                                    # full local matrix; exits 0 even over budget
-yarn perf --check                            # the same; exits 1 when a budget fails
-yarn perf:live                               # matrix against the live site; exits 0 whatever the budgets
-yarn perf:capture <ref>                      # PNGs of every case, scripts on and off
-yarn perf:scripts-off <ref>                  # exits 1 when a pair differs in any pixel or has no partner
-yarn perf:diff <before> <after>              # perceptual diffs and the look round page
-yarn perf:report --before <file> [--after <file>]  # re-render a saved run beside an earlier one; no site boots
-yarn perf:baseline                           # run the matrix and rewrite the baseline
+pnpm perf                                    # full local matrix; exits 0 even over budget
+pnpm perf --check                            # the same; exits 1 when a budget fails
+pnpm perf:live                               # matrix against the live site; exits 0 whatever the budgets
+pnpm perf:capture <ref>                      # PNGs of every case, scripts on and off
+pnpm perf:scripts-off <ref>                  # exits 1 when a pair differs in any pixel or has no partner
+pnpm perf:diff <before> <after>              # perceptual diffs and the look round page
+pnpm perf:report --before <file> [--after <file>]  # re-render a saved run beside an earlier one; no site boots
+pnpm perf:baseline                           # run the matrix and rewrite the baseline
 ```
 
-`yarn perf` and `yarn perf --check` write `results.json`, `report.html` and `report.md` to `tests/results/perf/`.
-`yarn perf:live` writes the same files to `tests/results/perf-live/`. Captures go to
-`tests/results/perf/captures/<ref>/`, with heat maps under `heat/`. `yarn perf:report` exits 1 when an after budget
-fails. `yarn perf:baseline` rewrites `specs/006-performance-sweep/baseline.json`.
+`pnpm perf` and `pnpm perf --check` write `results.json`, `report.html` and `report.md` to `tests/results/perf/`.
+`pnpm perf:live` writes the same files to `tests/results/perf-live/`. Captures go to
+`tests/results/perf/captures/<ref>/`, with heat maps under `heat/`. `pnpm perf:report` exits 1 when an after budget
+fails. `pnpm perf:baseline` rewrites `specs/006-performance-sweep/baseline.json`.
 
-`yarn perf`, `perf:live`, `perf:baseline` and `perf:report` take `--before <results.json>`, and the report then shows
-the earlier run beside the new one with a signed change per metric. `yarn perf` and `perf:live` also take the filters
+`pnpm perf`, `perf:live`, `perf:baseline` and `perf:report` take `--before <results.json>`, and the report then shows
+the earlier run beside the new one with a signed change per metric. `pnpm perf` and `perf:live` also take the filters
 `--page`, `--profile`, `--engine`, `--ramp` and `--visit`.
 
 #### Budgets
@@ -336,7 +342,7 @@ The budgets are in `tests/KCC.E2ETests/Features/Performance/budgets.json`. A bud
   `baseline + max(floorBytes, baseline x pct / 100)`. An `add` margin allows that many above the baseline.
 - `report-only` is listed and never fails.
 
-A budget's `ciMode` and `ciMargin`, when present, replace its `mode` and `margin` in the CI guards; `yarn perf --check`
+A budget's `ciMode` and `ciMargin`, when present, replace its `mode` and `margin` in the CI guards; `pnpm perf --check`
 ignores them.
 
 A deterministic count with no margin fails on any increase.
@@ -346,7 +352,7 @@ Two baseline files hold the recorded values: `specs/006-performance-sweep/baseli
 
 #### Live run
 
-`yarn perf:live` reads these variables from the local environment (on macOS/zsh, `~/.zshenv`), never from a tracked
+`pnpm perf:live` reads these variables from the local environment (on macOS/zsh, `~/.zshenv`), never from a tracked
 file, and stops before any request when one of the first four is missing:
 
 - `KCC_PERF_LIVE_URL`: the public site's origin.
@@ -365,7 +371,7 @@ The E2E suite runs the deterministic guards on the key subset in both engines. T
 Chromium on SwiftShader, one warm-up and three runs per case, and appends `report.md` to the job summary. Timing on a
 shared runner swings too far for most budgets, so the job fails only on `hydrated_ms` and `server_response_ms` against
 `baseline.ci.json`; frames, interactions and LCP carry `ciMode: report-only` and are reported only. `hydrated_ms`
-carries `ciMargin` x1.5, because a slow runner spikes home and search-3 past x1.25. `yarn perf --check` still enforces
+carries `ciMargin` x1.5, because a slow runner spikes home and search-3 past x1.25. `pnpm perf --check` still enforces
 every budget locally, at its own margin.
 
 ### Vue SSR

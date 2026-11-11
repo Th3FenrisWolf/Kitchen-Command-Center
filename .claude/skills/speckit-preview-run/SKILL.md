@@ -29,7 +29,7 @@ ignores, and only the approved round reaches the spec.
 2. Run `.specify/extensions/preview/scripts/preview-setup.sh <folder>`, where the folder is the feature
    directory's name. It links the site's built stylesheet, fonts and logos into `.mockups/`, writes the round
    templates into `.mockups/<folder>/`, and prints that path. It stops when no build exists or a stylesheet
-   source is newer than the build. Then run `yarn build:all` in the checkout it names, and run it again.
+   source is newer than the build. Then run `pnpm build:all` in the checkout it names, and run it again.
 3. Open the Browser pane with `preview_start` and the `preview` configuration in `.claude/launch.json`. It
    serves `.mockups/` at `http://localhost:4310/`.
 

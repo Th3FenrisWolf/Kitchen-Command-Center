@@ -250,9 +250,9 @@ all of it but the washes, which fade in without growing.
 - **2026-10-27**: The performance sweep changes the look a little, owner-approved. Dark `--color-ink-soft` goes from
   L .735 to .76, which holds 4.5:1 over the stronger dark washes. `--wash-strength` goes from .55 to .42 in light and
   from .16 to .18 in dark. Sheet tears take 40 points a side and hero tears 80, half as many. Washes carry no filter:
-  their bleed and grain are baked into PNG masks that `yarn washes` generates. The bloom runs in 45 steps and a wash
+  their bleed and grain are baked into PNG masks that `pnpm washes` generates. The bloom runs in 45 steps and a wash
   rests at its bloom's end.
 - **2026-11-05**: Washes turn to chalk, owner-approved. Each is short chalk strokes in a lobed, ragged outline that
   fades with no rim, centred near a sheet's edge at 90% to 125% of its width, and mirrored by chance. The first ink is
-  .34 flat, the second .26 radial. The 128px chalk tile and eight silhouettes are baked by `yarn washes`, with no filter
+  .34 flat, the second .26 radial. The 128px chalk tile and eight silhouettes are baked by `pnpm washes`, with no filter
   and no grain tile. Dark `--wash-strength` goes from .18 to .125, which the contrast table sets; light stays .42.

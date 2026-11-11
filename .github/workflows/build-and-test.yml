@@ -18,13 +18,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    outputs:
-      fontawesome-key: ${{ steps.fontawesome_key.outputs.key }}
 
     env:
       DOTNET_NOLOGO: "true"
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
-      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
       KCC_E2E_MEMBER_USERNAME: ${{ secrets.KCC_E2E_MEMBER_USERNAME }}
       KCC_E2E_MEMBER_PASSWORD: ${{ secrets.KCC_E2E_MEMBER_PASSWORD }}
 
@@ -44,27 +41,23 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "24"
-          cache: yarn
+          node-version: "26"
 
-      # Font Awesome's registry meters bandwidth, so its package has a cache of its own: keyed on its locked tarball,
-      # not the whole lockfile, and saved once the install succeeds, whatever the tests do. The images job reuses it.
-      - name: Resolve the Font Awesome package (cache key)
-        id: fontawesome_key
-        run: |
-          tarball=$(grep -oE 'fontawesome-pro-[0-9.]+\.tgz#[0-9a-f]+' yarn.lock | sort -u)
-          if [ -z "$tarball" ] || [ "$(echo "$tarball" | wc -l)" -ne 1 ]; then
-            echo "::error::Expected one locked fontawesome-pro tarball in yarn.lock, found: ${tarball:-none}"
-            exit 1
-          fi
-          echo "key=fontawesome-${tarball/.tgz#/-}" >> "$GITHUB_OUTPUT"
+      - name: Set up pnpm
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+        with:
+          install: false
 
-      - name: Restore the Font Awesome package
-        id: fontawesome
+      # Font Awesome's registry meters bandwidth and its package is 115 MB, so a changed lockfile starts from the
+      # newest earlier store, and the store is saved once the install succeeds, whatever the tests do. The images job
+      # reuses it.
+      - name: Restore the pnpm store
+        id: pnpm_store
         uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
-          key: ${{ steps.fontawesome_key.outputs.key }}
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-
 
       - name: Cache NuGet packages
         uses: actions/cache@v6
@@ -79,25 +72,29 @@ jobs:
         run: dotnet build KitchenCommandCenter.slnx -c Release
 
       # Attempted even when the .NET build failed, so one run reports both builds.
-      # Yarn reads only the unpacked package from its cache, so the cached Font Awesome copy drops its tarball.
+      # pnpm reads no token from a project's .npmrc, so the secret reaches it as the setting's own environment variable.
+      # The fallback store still holds what earlier lockfiles needed, so it is pruned before it is saved.
       - name: Install frontend packages
         id: install_frontend
         if: ${{ !cancelled() }}
+        env:
+          FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
         run: |
-          yarn install --frozen-lockfile
-          rm -f ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*/node_modules/@fortawesome/fontawesome-pro/.yarn-tarball.tgz
+          env "pnpm_config_//npm.fontawesome.com/:_authToken=$FONTAWESOME_NPM_AUTH_TOKEN" \
+            pnpm install --frozen-lockfile --store-dir ~/.pnpm-store
+          pnpm store prune --store-dir ~/.pnpm-store
 
-      - name: Save the Font Awesome package
-        if: ${{ !cancelled() && steps.install_frontend.outcome == 'success' && steps.fontawesome.outputs.cache-hit != 'true' }}
+      - name: Save the pnpm store
+        if: ${{ !cancelled() && steps.install_frontend.outcome == 'success' && steps.pnpm_store.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
-          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
-          key: ${{ steps.fontawesome_key.outputs.key }}
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Build frontend
         id: build_frontend
         if: ${{ !cancelled() && steps.install_frontend.outcome == 'success' }}
-        run: yarn build:all
+        run: pnpm build:all
 
       - name: Verify builds succeeded
         if: ${{ !cancelled() }}
@@ -177,7 +174,6 @@ jobs:
     env:
       DOTNET_NOLOGO: "true"
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
-      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
 
     steps:
       - name: Checkout
@@ -191,26 +187,21 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "24"
-          cache: yarn
+          node-version: "26"
 
-      # Font Awesome's registry meters bandwidth, so the package comes from the cache entry build-and-test also uses.
-      - name: Resolve the Font Awesome package (cache key)
-        id: fontawesome_key
-        run: |
-          tarball=$(grep -oE 'fontawesome-pro-[0-9.]+\.tgz#[0-9a-f]+' yarn.lock | sort -u)
-          if [ -z "$tarball" ] || [ "$(echo "$tarball" | wc -l)" -ne 1 ]; then
-            echo "::error::Expected one locked fontawesome-pro tarball in yarn.lock, found: ${tarball:-none}"
-            exit 1
-          fi
-          echo "key=fontawesome-${tarball/.tgz#/-}" >> "$GITHUB_OUTPUT"
+      - name: Set up pnpm
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+        with:
+          install: false
 
-      - name: Restore the Font Awesome package
-        id: fontawesome
+      # Font Awesome's registry meters bandwidth, so the store comes from the cache entry build-and-test also uses.
+      - name: Restore the pnpm store
+        id: pnpm_store
         uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
-          key: ${{ steps.fontawesome_key.outputs.key }}
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-
 
       - name: Cache NuGet packages
         uses: actions/cache@v6
@@ -223,21 +214,25 @@ jobs:
       - name: Build .NET solution (Release)
         run: dotnet build KitchenCommandCenter.slnx -c Release
 
-      # Yarn reads only the unpacked package from its cache, so the cached Font Awesome copy drops its tarball.
+      # pnpm reads no token from a project's .npmrc, so the secret reaches it as the setting's own environment variable.
+      # The fallback store still holds what earlier lockfiles needed, so it is pruned before it is saved.
       - name: Install frontend packages
+        env:
+          FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
         run: |
-          yarn install --frozen-lockfile
-          rm -f ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*/node_modules/@fortawesome/fontawesome-pro/.yarn-tarball.tgz
+          env "pnpm_config_//npm.fontawesome.com/:_authToken=$FONTAWESOME_NPM_AUTH_TOKEN" \
+            pnpm install --frozen-lockfile --store-dir ~/.pnpm-store
+          pnpm store prune --store-dir ~/.pnpm-store
 
-      - name: Save the Font Awesome package
-        if: ${{ steps.fontawesome.outputs.cache-hit != 'true' }}
+      - name: Save the pnpm store
+        if: ${{ steps.pnpm_store.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
-          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
-          key: ${{ steps.fontawesome_key.outputs.key }}
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Build frontend
-        run: yarn build:all
+        run: pnpm build:all
 
       - name: Resolve Playwright version (cache key)
         id: playwright_version
@@ -314,7 +309,6 @@ jobs:
       packages: write
 
     env:
-      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
       KCC_IMAGE_TAG: ${{ github.sha }}
       PUBLISH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
@@ -325,30 +319,33 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Restore the Font Awesome package
-        id: fontawesome
+      - name: Restore the pnpm store
+        id: pnpm_store
         uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/yarn/v6/npm-@fortawesome-fontawesome-pro-*
-          key: ${{ needs.build-and-test.outputs.fontawesome-key }}
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-
 
-      # On a miss the build's own install fetches the package from the registry.
-      - name: Hand the Font Awesome package to the build
+      # On a miss the build's own install fetches every package from its registry.
+      - name: Hand the pnpm store to the build
         run: |
-          mkdir -p ~/.cache/yarn/v6
-          echo "KCC_FONTAWESOME_CACHE=$HOME/.cache/yarn/v6" >> "$GITHUB_ENV"
-          if [ "${{ steps.fontawesome.outputs.cache-hit }}" != "true" ]; then
-            echo "::warning::No cached Font Awesome package, so the image build downloads it from the registry."
+          mkdir -p ~/.pnpm-store
+          echo "KCC_PNPM_STORE=$HOME/.pnpm-store" >> "$GITHUB_ENV"
+          if [ -z "${{ steps.pnpm_store.outputs.cache-matched-key }}" ]; then
+            echo "::warning::No cached pnpm store, so the image build downloads Font Awesome from its registry."
           fi
 
       # One bake builds the shared frontend stage once for both site images. Each target keeps its own cache
       # scope, because targets sharing one would overwrite each other's.
       - name: Build the images
         uses: docker/bake-action@v7
+        env:
+          FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
         with:
           source: .
           load: true
-          allow: fs.read=${{ env.KCC_FONTAWESOME_CACHE }}
+          allow: fs.read=${{ env.KCC_PNPM_STORE }}
           set: |
             app.cache-from=type=gha,scope=app
             app.cache-to=type=gha,scope=app,mode=max

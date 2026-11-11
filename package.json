@@ -1,20 +1,12 @@
 {
   "name": "kcc-monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "src/KCC.Admin/Client",
-    "src/KCC.Contributions/Client",
-    "src/KCC.Web"
-  ],
-  "resolutions": {
-    "@types/node": "^24.13.2"
-  },
+  "packageManager": "pnpm@12.17.0",
   "scripts": {
-    "build:admin": "yarn workspace @kcc/admin build",
-    "build:contributions": "yarn workspace @kcc/contributions build",
-    "build:web": "yarn workspace kitchen-command-center build:all",
-    "build:all": "yarn build:admin && yarn build:contributions && yarn build:web",
+    "build:admin": "pnpm --filter @kcc/admin build",
+    "build:contributions": "pnpm --filter @kcc/contributions build",
+    "build:web": "pnpm --filter kitchen-command-center build:all",
+    "build:all": "pnpm build:admin && pnpm build:contributions && pnpm build:web",
     "perf": "node tests/scripts/perf.mjs perf",
     "perf:live": "node tests/scripts/perf.mjs perf:live",
     "perf:capture": "node tests/scripts/perf.mjs perf:capture",

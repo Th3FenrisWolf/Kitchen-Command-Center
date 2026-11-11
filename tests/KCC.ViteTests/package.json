@@ -1,0 +1,13 @@
+{
+  "name": "@kcc/vite-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@vue/server-renderer": "catalog:",
+    "postcss": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:"
+  }
+}

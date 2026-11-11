@@ -9,6 +9,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@kcc/admin-client-config": "*"
+    "@kcc/admin-client-config": "workspace:*"
+  },
+  "devDependencies": {
+    "@umbraco-cms/backoffice": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }
