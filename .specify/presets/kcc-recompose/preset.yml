@@ -3,7 +3,7 @@ schema_version: "1.0"
 preset:
   id: "kcc-recompose"
   name: "Recompose Before the Pull Request"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Wraps card implement, the autopilot flow and bug fix so that each branch is recomposed into clean commits once, after the commit and before its pull request opens, with the review fixes as one commit after it."
   author: "Th3FenrisWolf"
   repository: "https://github.com/Th3FenrisWolf/Kitchen-Command-Center"

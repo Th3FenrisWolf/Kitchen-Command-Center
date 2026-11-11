@@ -2,12 +2,12 @@
   "schema_version": "1.0",
   "presets": {
     "bizstream-grilling": {
-      "version": "0.3.0",
+      "version": "0.7.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:0bf8b4f213f367b3694638cf0c8c9f44443cf901da9ab085dd8cf87f91b5cf15",
+      "manifest_hash": "sha256:a1b455a0b4396217c6c0f43b406dc22b534a8f1893ae985a9abf979d1a9c6803",
       "enabled": true,
       "priority": 50,
       "registered_commands": {
@@ -38,15 +38,15 @@
           "speckit-assess-decide"
         ]
       },
-      "installed_at": "2026-10-21T17:12:05.864376+00:00"
+      "installed_at": "2026-11-11T19:37:05.549850+00:00"
     },
     "bizstream-implement": {
-      "version": "0.5.0",
+      "version": "0.8.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:8ebe6ede9cb2702950dc5ab57077fcd6195957b2a9e173fc26785901bee9f345",
+      "manifest_hash": "sha256:0d0c38d125c02f2cdec3069fd9c2204d6274141a534ea3353b551480fb66f4ca",
       "enabled": true,
       "priority": 50,
       "registered_commands": {
@@ -59,15 +59,15 @@
           "speckit-implement"
         ]
       },
-      "installed_at": "2026-10-21T17:12:07.247707+00:00"
+      "installed_at": "2026-11-11T19:37:07.295058+00:00"
     },
     "bizstream-bugfix": {
-      "version": "0.3.0",
+      "version": "0.7.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:b16fac5a1542be7340c860de88dd53cb3d54400aa758abd7e8dc3ae1c5476b71",
+      "manifest_hash": "sha256:dfa271844b9b9c6534d7e3c8be820397c1568bdec87d95f0da32e86c0ec022ac",
       "enabled": true,
       "priority": 50,
       "registered_commands": {
@@ -80,12 +80,12 @@
           "speckit-bug-fix"
         ]
       },
-      "installed_at": "2026-10-21T17:12:08.064990+00:00"
+      "installed_at": "2026-11-11T19:37:08.292561+00:00"
     },
     "kcc-recompose": {
-      "version": "0.3.0",
+      "version": "0.3.1",
       "source": "local",
-      "manifest_hash": "sha256:44c7fdf94f64c1ec0d811676e4354a28032b2e6e0618e9d77fe170e9ac7810ec",
+      "manifest_hash": "sha256:8bdc7b3cfa3ccdd55a1de196a9d81ce6d49287378962e6961265bc394ab425b5",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -102,7 +102,7 @@
           "speckit-bug-fix"
         ]
       },
-      "installed_at": "2026-10-21T17:16:57.180621+00:00"
+      "installed_at": "2026-11-11T19:38:22.912274+00:00"
     }
   }
 }

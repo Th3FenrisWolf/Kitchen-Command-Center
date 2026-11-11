@@ -11,9 +11,10 @@ description: Take one card from a written tasks.md to an open pull request, with
 `speckit.implement` does the engineering: the gates, the tasks, the definition
 of done and acceptance. This command wraps it in the card's outward-facing
 work: the branch before it, and the commit, the push, the pull request, the
-review loop of `speckit.review.run` on the open pull request's branch, the Jira
-verdict and the board move after it. A card is done when its pull request is
-open and reviewed, not when the tasks are checked off.
+one review pass of `speckit.review.run` on the open pull request's branch, the Jira
+verdict, the board move and the watch on the pull request after it. A card is done
+when its pull request is open, reviewed and watched, not when the tasks are checked
+off.
 
 `$ARGUMENTS` resolves in this order:
 
@@ -112,12 +113,12 @@ on a predicted answer.
    and wait for its report. When no skill of that name is registered, read its
    file `.specify/extensions/review/commands/speckit.review.run.md` and follow
    it. Name its checks: re-run Phase 4 of `speckit.implement`, and Phase 5 when
-   a fix touched behavior an acceptance item names. Pass the phase findings of
-   the `speckit.implement` report as its earlier findings. The review command
+   a fix touched behavior an acceptance item names. Pass no earlier findings: the
+   review takes none, and the report keeps the phase findings. The review command
    commits nothing, so when it fixed anything, commit the fixes in the code
    repo on the same branch, as in step 1, and push them to the same pull
-   request. Open no second pull request. A review that did not run, a "needs a
-   rethink" line, or a finding the review leaves to the owner is not a stop:
+   request. Open no second pull request. A review that did not run, a "checks broken"
+   line, or a finding the review leaves to the owner is not a stop:
    name each one in the report and as a comment on the pull request.
 4. When the `jira` extension is installed and `spec.md` carries a Jira line,
    run `speckit.jira.verify FEATURE_DIR` to post the one verdict, then hand
@@ -135,19 +136,23 @@ on a predicted answer.
    names that directory. Until then, add
    a comment with this card's pull request link, or naming the spec for a
    docs-only card. When `board.registry_path` is empty, skip this step.
-6. Restore `.specify/feature.json` to the value read at the start, when this
+6. Watch the pull request: read `.specify/extensions/review/templates/pr-watch.md`
+   and follow it. When that file does not exist, report the pull request as
+   unwatched. A docs-only card skips this step.
+7. Restore `.specify/feature.json` to the value read at the start, when this
    command ran the `check-prerequisites` script.
 
 **Done when:** the pull request is open against trunk and unmerged, the review
-ran and its fixes are pushed to that pull request, or the card is docs-only,
-the board step ran or was skipped by config, and the state
-file is restored.
+ran and its fixes are pushed to that pull request, the watch is set or reported
+as skipped, or the card is docs-only, the board step ran or was skipped by
+config, and the state file is restored.
 
 ## Report
 
 Close with one table: the branch, the `speckit.implement` report rows (tasks,
 definition of done, acceptance), the pull request URL, the review table of `speckit.review.run`, the Jira
-verdict posted, and the board card moved or commented, if any.
+verdict posted, the board card moved or commented, if any, and the watch on the
+pull request.
 
 ## Guardrails
 
@@ -159,9 +164,10 @@ verdict posted, and the board card moved or commented, if any.
 - [ ] The branch exists, from the remote trunk, or the card is docs-only
 - [ ] `speckit.implement` ran to its end, or its hard stop is reported
 - [ ] No merge ran, even where `tasks.md` listed one
-- [ ] The pull request is open against trunk, unmerged, and the review loop
-      ran on its branch with its fixes pushed, or the card is
+- [ ] The pull request is open against trunk, unmerged, and the review
+      ran once on its branch with its fixes pushed, or the card is
       docs-only, and the board step ran or was skipped by config
+- [ ] The pull request is watched, the watch is reported as skipped, or the card is docs-only
 - [ ] `.specify/feature.json` is restored
 
 
@@ -210,8 +216,8 @@ Phase 3 runs in this order:
 6. Delete the backup branch with `git branch -D <backup>` right after `gh pr create` succeeds. Keep it until then:
    `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` unless `backup/<branch>` exists with the same
    tree. The report says the backup was deleted.
-7. Run Phase 3 step 3, the review, with one change: commit nothing until `speckit.review.run` has finished every
-   round. Then commit every fix from every round as one commit, `fix(<NNN>): address review feedback`, and push it
+7. Run Phase 3 step 3, the review, with one change: commit nothing until `speckit.review.run` has finished.
+   Then commit all of its fixes as one commit, `fix(<NNN>): address review feedback`, and push it
    to the same pull request. A review that fixed nothing adds no commit. Never recompose the branch again after the
    pull request opens.
 

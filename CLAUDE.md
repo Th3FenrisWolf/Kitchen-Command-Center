@@ -42,7 +42,7 @@ every session needs.
   an Idea card of Kind Phase for each `later` row.
 
 An extension update writes card implement, flow and bug fix back without the preset's steps, so run
-`.specify/presets/kcc-recompose/scripts/reapply.sh` after every `/bizstream-ai:update`.
+`.specify/presets/kcc-recompose/scripts/reapply.sh` after every `/bizstream:update`.
 
 The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
 sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,

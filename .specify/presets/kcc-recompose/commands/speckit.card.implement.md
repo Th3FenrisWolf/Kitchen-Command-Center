@@ -50,8 +50,8 @@ Phase 3 runs in this order:
 6. Delete the backup branch with `git branch -D <backup>` right after `gh pr create` succeeds. Keep it until then:
    `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` unless `backup/<branch>` exists with the same
    tree. The report says the backup was deleted.
-7. Run Phase 3 step 3, the review, with one change: commit nothing until `speckit.review.run` has finished every
-   round. Then commit every fix from every round as one commit, `fix(<NNN>): address review feedback`, and push it
+7. Run Phase 3 step 3, the review, with one change: commit nothing until `speckit.review.run` has finished.
+   Then commit all of its fixes as one commit, `fix(<NNN>): address review feedback`, and push it
    to the same pull request. A review that fixed nothing adds no commit. Never recompose the branch again after the
    pull request opens.
 

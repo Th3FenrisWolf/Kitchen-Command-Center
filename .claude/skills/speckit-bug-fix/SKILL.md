@@ -1,8 +1,8 @@
 ---
 name: speckit-bug-fix
 description: Apply the remediation from a bug assessment, then run the definition
-  of done before the fix is reported, and the review loop of speckit.review.run on
-  the open pull request. The review fixes land as one commit.
+  of done before the fix is reported, and the review of speckit.review.run on the
+  open pull request. The review fixes land as one commit.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: github-spec-kit
@@ -211,26 +211,30 @@ Check if `.specify/extensions.yml` exists in the project root.
 ## Gates
 
 Run these after the fix is applied and before the report the command above writes. A fix is not
-done until both pass.
+done until gates 1 and 2 pass.
 
 1. **Definition of done.** Run every row of the definition-of-done table in
    `.specify/memory/constitution.md`, in the working directory each row names. A failed row is a
    stop: report it, and do not report the bug as fixed. A project without the table runs the
    tests the command above runs.
-2. **Review loop, on the open pull request.** The review runs after the pull request is open, never
+2. **Review, on the open pull request.** The review runs after the pull request is open, never
    before it. When this session opens the pull request for the fix, open it first, then run this
    gate on its branch. When no pull request is open, report the review as not run yet and name
    that it runs once the pull request opens; do not hold the pull request for it. When
    `.specify/extensions/review/` does not exist, report the review as not run, and name
    `specify extension add review`. Otherwise invoke `speckit.review.run` as a command in this
    session, and wait for its report. When no skill of that name is registered, read its file
-   `.specify/extensions/review/commands/speckit.review.run.md` and follow it. It reviews the diff
-   and fixes what is real, and it commits nothing: commit its fixes on the same branch and push
+   `.specify/extensions/review/commands/speckit.review.run.md` and follow it. It runs one code-review pass on the diff
+   and fixes what it finds, and it commits nothing: commit its fixes on the same branch and push
    them to the same pull request. Name its checks: the rows of gate 1. A review that did not run
    is reported as not run, never as clean.
+3. **Watch the pull request.** When this session opened the pull request, read
+   `.specify/extensions/review/templates/pr-watch.md` after the last push and follow it. When that
+   file does not exist, report the pull request as unwatched.
 
-Add both results to the report: each definition-of-done row with its result, and the review
-table of `speckit.review.run` with its final-round status, or why the review did not run.
+Add the results to the report: each definition-of-done row with its result, the review table of
+`speckit.review.run` with its status, or why the review did not run, and the watch on the pull
+request.
 
 
 ## Review fixes as one commit
@@ -239,7 +243,6 @@ table of `speckit.review.run` with its final-round status, or why the review did
 
 - A pull request this session opens for the fix opens from a branch recomposed with the `recompose-branch` skill.
   `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until it is.
-- Commit nothing until `speckit.review.run` has finished every round. Then commit every fix from every round as one
-  commit, `fix(<bug slug>): address review feedback`, on the same branch, and push it to the same pull request. A
+- Commit nothing until `speckit.review.run` has finished. Then commit all of its fixes as one commit, `fix(<bug slug>): address review feedback`, on the same branch, and push it to the same pull request. A
   review that fixed nothing adds no commit.
 - Never recompose the branch again after its pull request opens.

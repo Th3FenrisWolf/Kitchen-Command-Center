@@ -51,11 +51,11 @@ Every subagent this command dispatches, in any phase:
 - Pins its own feature: `SPECIFY_FEATURE_DIRECTORY=<spec dir>` before any
   `.specify/scripts/` call, bash or PowerShell.
 - Runs as an agent type, set as `subagent_type` on the dispatch call with
-  no `model`: `bizstream-ai:architect` for a phase that drafts or judges
-  (specify, clarify, plan, tasks) and `bizstream-ai:scout`
+  no `model`: `bizstream:architect` for a phase that drafts or judges
+  (specify, clarify, plan, tasks) and `bizstream:scout`
   for one that applies decisions already taken (a jira draft or create).
-  `.specify/extensions/jev/templates/jev.md` sets the types under Subagent
-  model. Without the bizstream-ai plugin, pass the type's model as
+  `.specify/extensions/card/templates/subagents.md` sets the types.
+  model. Without the bizstream plugin, pass the type's model as
   `model`, never the unset default, which inherits this session's model.
 - Never asks the user anything. An unresolved decision goes into its return
   value instead.

@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: jira
   name: "Jira Cards"
-  version: "0.2.2"
+  version: "0.3.0"
   description: "Client-facing Jira cards, in either direction: written from a spec set as outcomes (several specs feed one Story, under 800 characters, no acceptance criteria, no sub-tasks), or pulled from Jira so specs are written from them. One line in spec.md links a spec to its card. Verifies an implementation against the spec and any card criteria and posts the verdict on the card."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai

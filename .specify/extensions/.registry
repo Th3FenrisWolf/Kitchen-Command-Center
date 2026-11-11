@@ -29,7 +29,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:11:56.943718+00:00"
+      "installed_at": "2026-11-11T19:36:58.129257+00:00"
     },
     "assess": {
       "version": "1.0.1",
@@ -47,33 +47,15 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:11:56.984584+00:00"
-    },
-    "git": {
-      "version": "1.0.1",
-      "source": "local",
-      "manifest_hash": "sha256:698cc7089602db44622de39730555db4999cda94ab47195bcfe18f41d08b430a",
-      "enabled": true,
-      "priority": 10,
-      "registered_commands": {
-        "claude": [
-          "speckit.git.feature",
-          "speckit.git.validate",
-          "speckit.git.remote",
-          "speckit.git.initialize",
-          "speckit.git.commit"
-        ]
-      },
-      "registered_skills": [],
-      "installed_at": "2026-10-21T17:11:57.024266+00:00"
+      "installed_at": "2026-11-11T19:36:58.175905+00:00"
     },
     "grill": {
-      "version": "0.2.0",
+      "version": "0.4.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:3dcf4ebe6c8d288eb396fb47fa2cb0b3f8c4b9e8c0a7de8bbf0945965b4f1649",
+      "manifest_hash": "sha256:d52b4e6b7f09ee32058c57c6be5af321579ce84f64fe382cda7f19fbce8782a3",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -82,32 +64,33 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:11:58.007674+00:00"
+      "installed_at": "2026-11-11T19:36:59.183628+00:00"
     },
     "qa": {
+      "version": "0.7.0",
+      "source": {
+        "kind": "catalog",
+        "catalog": "bizstream"
+      },
+      "manifest_hash": "sha256:537af096f5be6c5e975ffb2964255953fc1244e0526a38743047f232fc821553",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "claude": [
+          "speckit.qa.walk",
+          "speckit.qa.audit"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-11-11T19:36:59.967549+00:00"
+    },
+    "jira": {
       "version": "0.3.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:93a3b9380aced0efc4855031d42f6daf10eb8f7d4e98af4e46cdce3e248dd6cc",
-      "enabled": true,
-      "priority": 10,
-      "registered_commands": {
-        "claude": [
-          "speckit.qa.walk"
-        ]
-      },
-      "registered_skills": [],
-      "installed_at": "2026-10-21T17:11:58.843276+00:00"
-    },
-    "jira": {
-      "version": "0.2.2",
-      "source": {
-        "kind": "catalog",
-        "catalog": "bizstream"
-      },
-      "manifest_hash": "sha256:2fe8b2efe0f54fc75ea928fb45df0e2ee3049cb6903da8afd050cd1ae63e274b",
+      "manifest_hash": "sha256:693bd11e27cb60c98b68ebf1afa693433486810a21cc2270057b9795d0484a70",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -118,33 +101,15 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:11:59.634914+00:00"
-    },
-    "jev": {
-      "version": "0.6.0",
-      "source": {
-        "kind": "catalog",
-        "catalog": "bizstream"
-      },
-      "manifest_hash": "sha256:fff7c255b4b236110866067e0b47e56d195f29bd7aa6f581e8b2cd25bd9ee857",
-      "enabled": true,
-      "priority": 10,
-      "registered_commands": {
-        "claude": [
-          "speckit.jev.decide",
-          "speckit.jev.history"
-        ]
-      },
-      "registered_skills": [],
-      "installed_at": "2026-10-21T17:12:00.475103+00:00"
+      "installed_at": "2026-11-11T19:37:00.825116+00:00"
     },
     "batch": {
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:3930053e9e39f77bd491526df1a4df79b22eca2814ec0954499247fdb7a7e3ae",
+      "manifest_hash": "sha256:f32e4f66fe096e9f8e7ae28cdfecd24b80083deabddc3597f990ac7380548106",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -153,15 +118,15 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:12:01.357684+00:00"
+      "installed_at": "2026-11-11T19:37:01.656174+00:00"
     },
     "card": {
-      "version": "0.8.0",
+      "version": "0.12.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:8ddf1c246aaf2dc3e53f5cc47f16b57d8ba37880552f4766e7f284824ef966fb",
+      "manifest_hash": "sha256:ffb1719fb9aee7ba1eeb181401ae8fa78a10ca228868712dfdce83a63a283f5f",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -170,32 +135,15 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:12:02.244277+00:00"
-    },
-    "coderabbit": {
-      "version": "0.4.0",
-      "source": {
-        "kind": "catalog",
-        "catalog": "bizstream"
-      },
-      "manifest_hash": "sha256:df1737937ab17591636030eaffc29115a6ee02a8f418acf9c4742c39bd927eef",
-      "enabled": true,
-      "priority": 10,
-      "registered_commands": {
-        "claude": [
-          "speckit.coderabbit.review"
-        ]
-      },
-      "registered_skills": [],
-      "installed_at": "2026-10-21T17:12:03.022667+00:00"
+      "installed_at": "2026-11-11T19:37:02.663499+00:00"
     },
     "review": {
-      "version": "0.3.0",
+      "version": "0.7.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:e27c3aeb6aeb5f403915414290fd93a1622537b781f1281251e1946709d00d61",
+      "manifest_hash": "sha256:daa5223da3121c26fd9c0b26a96374c2a292871b73981d2322d33ffd3743048d",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -204,15 +152,15 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:12:03.842495+00:00"
+      "installed_at": "2026-11-11T19:37:03.437636+00:00"
     },
     "flow": {
-      "version": "0.3.0",
+      "version": "0.7.0",
       "source": {
         "kind": "catalog",
         "catalog": "bizstream"
       },
-      "manifest_hash": "sha256:3b5153882cf820ffa091458b890655add757f5fca9348566f489408c5510a987",
+      "manifest_hash": "sha256:b8616ee2c5142b4af6235670ccf7122d1406f90a0bf3e7d4d674de4b54dc1376",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -221,7 +169,7 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-10-21T17:12:04.647849+00:00"
+      "installed_at": "2026-11-11T19:37:04.224272+00:00"
     }
   }
 }

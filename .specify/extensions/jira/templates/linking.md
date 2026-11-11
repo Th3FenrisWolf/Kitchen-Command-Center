@@ -31,7 +31,8 @@ development panel links it and `speckit.jira.cards pr` can find it.
 ## Card criteria
 
 A card made in Jira may carry acceptance criteria of its own. They are the
-card's **criteria**, numbered `C1` to `Cn` in the order the live card lists
+card's **criteria**, numbered by the rule in the bizstream plugin's
+`bizstream:qa-audit` skill: `C1` to `Cn` in the order the live card lists
 them. They come from the `acceptance_criteria_field_id` field when
 `.specify/extensions/jira/jira-config.yml` sets it, and otherwise from the
 list under a heading or label named Acceptance Criteria in the description.
