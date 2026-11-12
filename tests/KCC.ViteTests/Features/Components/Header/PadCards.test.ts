@@ -325,6 +325,16 @@ describe('A phone card', () => {
   })
 })
 
+describe('A shown card', () => {
+  // An iPhone drew an open card only while its slide ran on its own layer, and dropped it once the slide ended
+  // (bug phone-pad-card-vanishes).
+  it('keeps its own layer while it peeks or is open, and asks for none at rest', () => {
+    expect(declarationsOf('PadCard.vue', '.pad-card')['will-change']).toBeUndefined()
+    expect(declarationsOf('PadCard.vue', '.pad-card.is-peek')['will-change']).toBe('transform')
+    expect(declarationsOf('PadCard.vue', '.pad-card.is-open')['will-change']).toBe('transform')
+  })
+})
+
 describe('The card variant off the current breakpoint', () => {
   const states = ['', '.is-peek', '.is-open']
 

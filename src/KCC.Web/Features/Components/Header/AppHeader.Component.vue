@@ -403,8 +403,9 @@
 </template>
 
 <style>
+  /* No overflow clip: #app clips sideways at the same edges. While the header had one, an iPhone stopped drawing an
+     open card, which hangs below the header, as soon as its slide ended. */
   .pad-header {
-    overflow-x: clip;
     padding: 16px 0 14px;
     position: sticky;
     top: 0;

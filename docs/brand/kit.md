@@ -397,7 +397,9 @@ Rules of the structure:
 13. A sheet on a blank wider than 700px at a 1280px viewport is wide: `kcc-slip--wide` (`KccSheet wide`), and it
     keeps the modifier at every viewport. So are every hero-torn sheet that lies on a blank, and the pad's page.
 14. `#app` takes `overflow-x: clip`, so a blank's overhang past a tall sheet's side never scrolls the page. `clip`
-    makes no scroll container, so the sticky pad, filters and stacker keep working.
+    makes no scroll container, so the sticky pad, filters and stacker keep working. `.pad-header` takes no overflow
+    clip of its own: `#app` clips at the same edges, and a clip on the sticky header is the likely reason an iPhone
+    stopped drawing the open cards that hang below it (bug `phone-pad-card-vanishes`).
 15. The header pad is the one pile written apart: its top sheet (`.pad-top`) holds no `.kcc-blank`, because the
     `.pad-page` slip beside it, torn `kcc-tear-hero-2`, is that blank, and a pad card (`PadCard.vue`, `KccSheet
     :piled="false"`) slides out between the two and holds none.
@@ -741,6 +743,7 @@ visit has earned.
 | The pile's kit CSS: the slip's `fit-content` and blank defaults, the blank's turn, scale, fibre, fall and unruled paper, the fall's box and tear, no filter on a slip's `.kcc-torn`, the flip and wide pairs, the lift (every child but the blank, 4px, only when motion is welcome and, for hover, the pointer can hover), all in `@layer components`; `#app` clips sideways | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Tape only over a tile: no stylesheet or component style block styles `.kcc-tape` outside `.kcc-tilewrap > .kcc-tape` in either ramp, and every `kcc-tape` in `Features/**` markup is a child of a `kcc-tilewrap` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
 | Every hand-written Razor `kcc-slip` ends with exactly one blank; every slip that holds a sheet, in a component or in Razor, holds one fall, right before its `.kcc-torn` | `tests/KCC.ViteTests/Features/Styles/pile.test.ts` |
+| `.pad-header` declares no overflow of its own, leaving the sideways clip to `#app`; a peeking or open pad card asks for its own layer (`will-change: transform`), and a card at rest asks for none | `tests/KCC.ViteTests/Features/Components/Header/AppHeader.test.ts`, `tests/KCC.ViteTests/Features/Components/Header/PadCards.test.ts` |
 | The pinned metrics and `--k-*`; the ruling from the content box at `--rule-drop` + `--rule-offset` and the blank sheet; the shim's formula and role list; `--color-rule` and `--color-margin` in both ramps; the margin rule, its container and its 480px query; `kcc-row` and the checklist row; the controls' shift and paper fills; the field as a line, its X, its focus and error lines and the area; the 32px icon button; no `::after` grain on a sheet, the scroll sheet's one ruling layer, `#kcc-wax-flat` the only filter def and no `--wash-reach` in either ramp | `tests/KCC.ViteTests/Features/Styles/paperRule.test.ts` |
 | Real baselines on the rule in a browser, at 375px and 1280px: every text block, field and control row label on the recipe, variant, search, login, account, settings, cook mode and wizard pages, the header pad, a Razor sheet and a list whose rows run on, to their last lines; the heading action; the margin rule's reach; no sideways scroll | `tests/KCC.E2ETests/Features/Chrome/RuleTests.cs` |
 | Nothing runs longer than 500ms but a loop; 300ms is the default; reduced motion stills every transition and animation; a ramp switch freezes them, and the ramp switches only through `applyRamp`; the bloom is the one entry over 500ms, its keyframes, the fade under reduced motion and the washes left out of both stilling rules | `tests/KCC.ViteTests/Features/Styles/motion.test.ts` |

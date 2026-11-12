@@ -72,12 +72,15 @@
     width: var(--pad-card-w, 600px);
   }
 
+  /* A shown card keeps the layer its slide gave it: an iPhone drew an open card only while its slide ran on that
+     layer, and stopped drawing it when the slide ended. A card at rest is hidden and asks for none. */
   .pad-card.is-peek {
     transform: translateY(calc(-100% + var(--peek))) rotate(var(--peek-r));
     transition:
       transform 300ms cubic-bezier(0.2, 0.9, 0.3, 1.15),
       visibility 0s;
     visibility: visible;
+    will-change: transform;
   }
 
   .pad-card.is-open {
@@ -87,6 +90,7 @@
       transform 480ms cubic-bezier(0.3, 1.2, 0.4, 1),
       visibility 0s;
     visibility: visible;
+    will-change: transform;
   }
 
   .pad.is-swapping .pad-card.is-open {
