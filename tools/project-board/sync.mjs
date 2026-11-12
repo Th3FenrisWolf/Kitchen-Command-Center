@@ -4,6 +4,7 @@
 // in the workflow GH_TOKEN.
 import { execFileSync } from "node:child_process";
 import {
+  boardItemOf,
   config,
   CREATE_FIELDS,
   deriveCards,
@@ -451,9 +452,23 @@ function createItem(project, repositoryId, op) {
       body,
     },
   ).createIssue;
-  const itemId = issue.projectItems.nodes.find(
-    (item) => item.project.id === project.id,
-  ).id;
+  // Safe even when createIssue did place the issue: addProjectV2ItemById then returns the existing item.
+  const itemId =
+    boardItemOf(issue, project.id) ??
+    graphql(
+      `
+        mutation ($project: ID!, $content: ID!) {
+          addProjectV2ItemById(
+            input: { projectId: $project, contentId: $content }
+          ) {
+            item {
+              id
+            }
+          }
+        }
+      `,
+      { project: project.id, content: issue.id },
+    ).addProjectV2ItemById.item.id;
   return { itemId, issueId: issue.id };
 }
 
