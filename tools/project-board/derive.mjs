@@ -296,6 +296,14 @@ export function schemaProblems(fields, cards) {
   return [...problems];
 }
 
+// createIssue's reply can hold no item for the board, even with the board named in projectV2Ids.
+export function boardItemOf(issue, projectId) {
+  return (
+    issue.projectItems.nodes.find((item) => item.project.id === projectId)
+      ?.id ?? null
+  );
+}
+
 const EDITABLE = new Set(["DraftIssue", "Issue"]);
 
 export function planChanges(cards, items) {
