@@ -403,8 +403,8 @@
 </template>
 
 <style>
-  /* No overflow clip: #app clips sideways at the same edges. While the header had one, an iPhone stopped drawing an
-     open card, which hangs below the header, as soon as its slide ended. */
+  /* No overflow clip: #app clips at the same edges, and a clip on this sticky header can stop iOS WebKit drawing the
+     cards that hang below it. */
   .pad-header {
     padding: 16px 0 14px;
     position: sticky;

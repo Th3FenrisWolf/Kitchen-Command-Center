@@ -74,7 +74,22 @@ WebKit now keeps the card drawn.
 
 ### Review loop
 
-Not run yet. It runs on the open pull request, once the owner approves opening it.
+`speckit.review.run` ran on pull request #139. Code repo: this repository. Base: `45e904b`. Context:
+`.specify/memory/constitution.md` and `CLAUDE.md`. Checks: the definition-of-done rows above that this container can
+run, which are the header Vitest files, `yarn type-check`, `yarn lint` and `yarn format`. The verifier's real findings
+were one-line comment edits, so they were applied directly rather than through a worker. The header tests (146/146)
+ran after each edit, and type-check, lint and format passed after the last.
+
+| Round | Status | Finding | Verdict | Outcome |
+|---|---|---|---|---|
+| 1 | completed | R1-1 correctness, `PadCard.vue:93`: the off-breakpoint variants take `will-change` when open | not-real | Only after a resize across 768px while a card is open. The card is hidden and still open, so neither the comment nor the kit row is broken. |
+| 1 | | R1-2 rules, `AppHeader.Component.vue:406`: the comment narrates the edit (VII) | real | fixed: present-tense hazard |
+| 1 | | R1-3 rules, `PadCard.vue:75`: the comment narrates the fault and restates the code (VII) | real | fixed: one present-tense reason |
+| 1 | | R1-4 rules, `AppHeader.test.ts:182`: the comment narrates and cites the bug (VII) | real | fixed: comment removed, since the test name gives the reason |
+| 1 | | R1-5 rules, `PadCards.test.ts:329`: the comment narrates and cites the bug (VII) | real | fixed: comment removed |
+| 1 | | R1-6 rules, `kit.md:401`: the invariant states a hedged cause and names the bug | not-real | VII's comment rule covers code files. Under D10 the hedged line is true. `/speckit-bug-test` rewords it if the iPhone check disproves the cause. |
+| 2 | completed | none | | clean agent loop |
+| Final | absent | CodeRabbit | | `coderabbit` is not on `PATH` in this container. Install it with `brew install --cask coderabbit`; other platforms at <https://docs.coderabbit.ai/cli>. |
 
 ## Deviations from Assessment
 

@@ -72,8 +72,8 @@
     width: var(--pad-card-w, 600px);
   }
 
-  /* A shown card keeps the layer its slide gave it: an iPhone drew an open card only while its slide ran on that
-     layer, and stopped drawing it when the slide ended. A card at rest is hidden and asks for none. */
+  /* iOS WebKit can stop drawing a shown card once it loses the layer its slide gave it, so a peeking or open card
+     keeps one. */
   .pad-card.is-peek {
     transform: translateY(calc(-100% + var(--peek))) rotate(var(--peek-r));
     transition:

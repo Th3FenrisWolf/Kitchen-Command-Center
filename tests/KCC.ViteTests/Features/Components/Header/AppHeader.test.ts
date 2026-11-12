@@ -179,8 +179,6 @@ describe('AppHeader', () => {
     expect(rules.some((rule) => /\.pad-page--\d/.test(rule.selector))).toBe(false)
   })
 
-  // While the sticky header had a sideways clip of its own, an iPhone stopped drawing an open card, which hangs below
-  // the header, as soon as its slide ended (bug phone-pad-card-vanishes). #app clips at the same edges.
   it('leaves the sideways clip to #app, so the cards hanging below the sticky header are drawn', () => {
     const header = declarationsOf(styleRules(), '.pad-header')
 
