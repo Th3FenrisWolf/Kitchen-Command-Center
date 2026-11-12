@@ -403,8 +403,9 @@
 </template>
 
 <style>
+  /* No overflow clip: #app clips at the same edges, and a clip on this sticky header can stop iOS WebKit drawing the
+     cards that hang below it. */
   .pad-header {
-    overflow-x: clip;
     padding: 16px 0 14px;
     position: sticky;
     top: 0;
