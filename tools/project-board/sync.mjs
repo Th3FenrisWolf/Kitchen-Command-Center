@@ -452,7 +452,7 @@ function createItem(project, repositoryId, op) {
       body,
     },
   ).createIssue;
-  // addProjectV2ItemById adds the issue to the board, or returns its item when the board already holds it.
+  // Safe even when createIssue did place the issue: addProjectV2ItemById then returns the existing item.
   const itemId =
     boardItemOf(issue, project.id) ??
     graphql(
