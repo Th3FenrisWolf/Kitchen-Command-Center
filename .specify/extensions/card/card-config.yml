@@ -1,2 +1,2 @@
 review:
-  command: "coderabbit review --agent -c .specify/memory/constitution.md CLAUDE.md --base main"
+  context_path: ".specify/memory/constitution.md"

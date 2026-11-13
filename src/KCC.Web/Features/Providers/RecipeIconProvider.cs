@@ -70,14 +70,7 @@ public class RecipeIconProvider(
                 System = "You assign a food/drink icon to a recipe. Always pick the closest match from the allowed list.",
                 Tools = [tool],
                 ToolChoice = new ToolChoiceTool(ToolName),
-                Messages =
-                [
-                    new()
-                    {
-                        Role = Role.User,
-                        Content = userText,
-                    },
-                ],
+                Messages = [new UserMessageParam { Content = userText }],
             };
 
             // The SDK stops passing the token on once the headers arrive.

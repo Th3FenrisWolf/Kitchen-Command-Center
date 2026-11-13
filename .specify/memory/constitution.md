@@ -1,15 +1,30 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.2.0 -> 1.3.0 (MINOR: board cards past Idea become GitHub issues; everything that
-complied with 1.2.0 still complies)
+Version change: 1.3.0 -> 2.0.0 (MAJOR: a settled decision, a rule of principle V and the review
+rule are redefined)
 
-Modified principles: none
+Modified principles:
+- IV. Test-First, Clean Build: the build and generator commands run through pnpm. No rule changes.
+- V. Cheap to Run, Cheap to Upgrade: only a new major version of .NET, Umbraco or uSync needs its
+  own spec. Any other package or tool major may land in a dependency update when all six suites
+  pass. New rule: a package, tool or base image version is at least seven days old when it is
+  taken, unless the release fixes a security advisory.
 
 Modified sections:
-- Flow: the project uses no Jira, and GitHub issues track the work on the project board without
-  replacing a spec. A card becomes an issue once it leaves Idea, its issue is closed while the card is
-  Done, a later phase's issue is a sub-issue of phase 1's, and the workflow runs the sync from main
+- Platform: packages are pnpm workspaces, where they were Yarn 1 workspaces.
+- Settled decisions: Node follows the newest LTS line once that line is the active LTS, where it
+  stayed on major version 24 because later images drop Yarn 1.
+- Gates 1 and 2: pnpm replaces Yarn, and gate 2 names the `~/.npmrc` line pnpm reads the Font
+  Awesome token from.
+- Definition of done rows D2, D3 and D5: the commands run through pnpm. No check changes.
+- Review and merge: the `ship-branch` skill, without its Jira steps, replaces the local CodeRabbit
+  loop of up to three rounds. Before the pull request opens it runs two review rounds with a
+  verifier, one CodeRabbit round and an acceptance check, then recomposes the branch. The
+  autopilot flow and bug fix size the review to the diff, and a risk path keeps it full. A
+  regression, an unfixed finding or an unmet criterion blocks the publish. The BizStream bundle no longer
+  ships the CodeRabbit extension, and the `kcc-ship` preset replaces `kcc-recompose`.
+- Governance: the review, not the CodeRabbit loop, reads this file as context.
 
 Added sections: none
 Removed sections: none
@@ -18,7 +33,8 @@ Dependent templates and commands read this file at runtime and are not edited he
 - .specify/templates/spec-template.md, plan-template.md, tasks-template.md: no change needed
 - speckit-card-implement: reads Gates, Ordering rule and Definition of done
 - speckit-grill-run and the grilling preset: read Settled decisions and Decision ownership
-- speckit-coderabbit-review: passes this file to CodeRabbit as context
+- ship-branch, through the kcc-ship preset: reads this file as context and runs the definition of
+  done as its checks
 
 Deferred placeholders: none
 -->
@@ -89,12 +105,12 @@ runs. "SQLite writes" in `CLAUDE.md` holds the detail and the paths that the gua
 - A change MUST keep every structural hook that a test locates by: a `data-testid`, a role, an id
   or a `kcc-*` class. A new test SHOULD locate by `data-testid` or role, because markup and
   styling change with the brand.
-- The build MUST be clean. Warnings are errors (`Directory.Build.props`). `yarn build:all` at the
+- The build MUST be clean. Warnings are errors (`Directory.Build.props`). `pnpm build:all` at the
   repository root builds every bundle together, never one side alone: scoped-style IDs hash each
   component's path and content, so a client bundle built apart from its SSR bundle loses its
   styles.
 - A generated file MUST come from its generator and be committed with its source: `Tears.css` from
-  `yarn tears`, the ModelsBuilder models and the EF Core migrations. Nobody edits one by hand.
+  `pnpm tears`, the ModelsBuilder models and the EF Core migrations. Nobody edits one by hand.
 - A uSync file MAY be written by hand, by a person or an agent, when the repository already holds
   uSync files of the same kind that show its format. A test that boots a fresh site MUST prove that
   the file imports.
@@ -109,8 +125,12 @@ its export endpoint was retired, so a hand-written uSync file is allowed and a b
 - The running cost MUST stay under about $10 a month, all in. The site runs on a Raspberry Pi
   behind Cloudflare, and the same compose file runs on an x86 VPS, the documented exit.
 - A feature that adds a recurring cost or a paid product MUST name the cost in its spec.
-- A new major version of .NET, Umbraco, uSync, Node or any package is deliberate work with its own
-  spec. Dependabot proposes minor and patch updates only.
+- A new major version of .NET, Umbraco or uSync is deliberate work with its own spec. A new major
+  version of any other package or tool MAY land in a dependency update without a spec, when all six
+  suites pass. Dependabot proposes minor and patch updates only.
+- A package, tool or base image version MUST be at least seven days old when it is taken, unless
+  the release fixes a security advisory. pnpm enforces this for npm packages (`minimumReleaseAge`
+  in `pnpm-workspace.yaml`). A NuGet, tool or image update checks the publish date by hand.
 - A public API MUST derive from a plain `ControllerBase`, never from `UmbracoApiController`, which
   Umbraco 18 removes. A backoffice endpoint MUST derive from `ManagementApiControllerBase`. New
   code SHOULD use the async content, member and dictionary services, which survive Umbraco 18's
@@ -120,7 +140,8 @@ its export endpoint was retired, so a hand-written uSync file is allowed and a b
 
 Rationale: the project left Xperience by Kentico over a licence of about $11,880 a year. Section
 6.1 and section 13 of the replatform spec hold the upgrade and hosting detail, and
-`docs/hosting/runbook.md` holds the operations.
+`docs/hosting/runbook.md` holds the operations. A compromised release is usually withdrawn within
+days, so a week's wait keeps most of them out.
 
 ### VI. Members Earn Trust
 
@@ -171,7 +192,7 @@ restate it drift.
 | Search | First-party in-memory Lucene.NET index, rebuilt whole on change |
 | Front end | Vue 3 with server-side rendering, Vite, Tailwind CSS 4 |
 | Backoffice extensions | Lit, TypeScript and UUI, built by Vite into `wwwroot/App_Plugins/` |
-| Packages | Yarn 1 workspaces at the repository root. Font Awesome Pro from its private registry |
+| Packages | pnpm workspaces at the repository root. Font Awesome Pro from its private registry |
 | Tests | TUnit and Moq, Vitest, Playwright |
 | Hosting | Raspberry Pi 5 on SSD, Docker Compose, Cloudflare Tunnel, Cloudflare Access, Tailscale |
 | Delivery | GitHub Actions builds arm64 images, pushes them to private GHCR, and the Pi pulls them |
@@ -189,7 +210,8 @@ amendment.
 - Search stays faceted, with drill-sideways counts.
 - Loose Leaf is the identity, and light is the default ramp.
 - Umbraco Forms, Umbraco Workflow and uSync.Complete are not bought.
-- Node stays on major version 24, because its images from 26 on drop Yarn 1, which the build uses.
+- Node follows the newest LTS line once that line is the active LTS. The move is a dependency
+  update and needs no spec.
 - The tag `xperience-final` stays runnable. The `mssql2022` container, the KCC Xperience database
   in it and the Kentico user-secrets of `KCC.Web` are never removed.
 
@@ -229,9 +251,10 @@ amendment.
 Card implement confirms each gate before implementation runs. An unmet gate stops the run.
 
 1. `FONTAWESOME_NPM_AUTH_TOKEN`, `KCC_E2E_MEMBER_USERNAME` and `KCC_E2E_MEMBER_PASSWORD` are set.
-   Yarn, the image build and the E2E suite need them.
+   pnpm, the image build and the E2E suite need them.
 2. The tools that the applicable definition-of-done rows need are installed: the .NET SDK that
-   `global.json` names, Node 24 with Yarn 1 and the Playwright browsers. A deploy change also
+   `global.json` names, the Node line the `Dockerfile` names, pnpm with a `~/.npmrc` line that names
+   the Font Awesome token, and the Playwright browsers. A deploy change also
    needs `shellcheck` and a running Docker.
 3. The plan's Constitution Check passes, or its Complexity Tracking table justifies each
    violation.
@@ -261,10 +284,10 @@ change to any file outside `specs/`, `docs/` and Markdown files.
 | Row | Check | Command or method | Applies when |
 |---|---|---|---|
 | D1 | The solution builds with no warning | `dotnet build KitchenCommandCenter.slnx -c Release` | A code change |
-| D2 | Every bundle builds together | `yarn build:all` at the repository root | A code change |
-| D3 | The web front end type-checks, lints and formats | In `src/KCC.Web`: `yarn type-check`, `yarn lint`, `yarn format`. Commit what lint and format change | A change to a `.vue`, `.ts`, `.js` or `.css` file under `src/KCC.Web` or `tests/KCC.ViteTests` |
+| D2 | Every bundle builds together | `pnpm build:all` at the repository root | A code change |
+| D3 | The web front end type-checks, lints and formats | In `src/KCC.Web`: `pnpm type-check`, `pnpm lint`, `pnpm format`. Commit what lint and format change | A change to a `.vue`, `.ts`, `.js` or `.css` file under `src/KCC.Web` or `tests/KCC.ViteTests` |
 | D4 | All six suites pass | `node tests/scripts/run.mjs` at the repository root, after D1 and D2. It opens its HTML report, so an unattended run puts a no-op `open` first on `PATH` | A code change |
-| D5 | Generated files match their source | Each generated file came from its generator and is committed with its source: `Tears.css` from `yarn tears`, the ModelsBuilder models with the uSync files, an EF Core migration. A boot test proves each hand-written uSync file | A change to `tears.ts`, the schema, the dictionary, the baseline content or a contributions entity |
+| D5 | Generated files match their source | Each generated file came from its generator and is committed with its source: `Tears.css` from `pnpm tears`, the ModelsBuilder models with the uSync files, an EF Core migration. A boot test proves each hand-written uSync file | A change to `tears.ts`, the schema, the dictionary, the baseline content or a contributions entity |
 | D6 | Touched pages hold in both ramps | Open each touched page in the Browser pane, in the light and the dark ramp, against the running site | A public-site visual change |
 | D7 | The brand holds | The `brand-steward` agent reports no violation | A public-site visual change |
 | D8 | The deploy scripts pass lint | `shellcheck -s sh deploy/smoke-test.sh deploy/deploy.sh deploy/kcc deploy/kcc-backup/kcc-backup` | A change under `deploy/` |
@@ -273,9 +296,14 @@ change to any file outside `specs/`, `docs/` and Markdown files.
 
 ### Review and merge
 
-- Every change gets the local CodeRabbit review loop (`/speckit-coderabbit-review`) over its whole
-  diff before its pull request opens, with this constitution and `CLAUDE.md` as context, for at
-  most three rounds.
+- Every change reaches its pull request through the `ship-branch` skill without its Jira steps,
+  with this constitution and `CLAUDE.md` as context. Before the pull request opens, it runs the
+  review its tier sets, with a verifier on every finding, an acceptance check over the whole diff,
+  and a recomposition. The tier is `full`, two review rounds and one CodeRabbit round, except
+  that the autopilot flow and bug fix size it to the diff: a small change in no risk path that
+  `CLAUDE.md` names gets one round, or one reviewer and no CodeRabbit round. A regression, an
+  unfixed finding or an unmet acceptance criterion blocks the publish at every tier. A fix after
+  the pull request opens is one commit on top.
 - Automation never merges. The owner reviews each pull request and squash-merges it into `main`
   once CI (`.github/workflows/build-and-test.yml`) passes. A merge to `main` deploys to the Pi.
 - Every commit is authored as `Th3FenrisWolf <34248224+Th3FenrisWolf@users.noreply.github.com>`.
@@ -295,8 +323,8 @@ change to any file outside `specs/`, `docs/` and Markdown files.
   settled decision or a definition-of-done row. MINOR adds a principle, a section, a gate or a row,
   or materially expands guidance. PATCH changes wording without changing a rule.
 - Compliance: every plan's Constitution Check reads these principles. Card implement enforces the
-  gates, the ordering rule and the definition of done. The CodeRabbit loop reads this file as
-  context. A plan that breaks a principle MUST justify the break in its Complexity Tracking table,
-  and an unjustified break fails the Constitution Check.
+  gates, the ordering rule and the definition of done. The review reads this file as context. A
+  plan that breaks a principle MUST justify the break in its Complexity Tracking table, and an
+  unjustified break fails the Constitution Check.
 
-**Version**: 1.3.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-09
+**Version**: 2.0.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-11

@@ -1,0 +1,8 @@
+# speckit.flow.run configuration
+# Copied to .specify/extensions/flow/flow-config.yml on install. Only the
+# project owner edits it.
+
+# ask: the run stops on the close-out question before it pushes.
+# auto: the run pushes, opens the pull request without that question, and
+# enables auto-merge once every check on the pull request has passed.
+publish: ask

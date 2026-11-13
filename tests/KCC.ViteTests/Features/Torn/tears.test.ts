@@ -10,7 +10,7 @@ const committed = readFileSync(
 ).replaceAll('\r\n', '\n')
 
 describe('Tears.css', () => {
-  it('matches the generator (run `yarn tears` after changing tears.ts)', () => {
+  it('matches the generator (run `pnpm tears` after changing tears.ts)', () => {
     expect(committed).toBe(tearsCss())
   })
 

@@ -54,3 +54,7 @@ deploy/first-boot.env
 
 # Built by tools/offline-page/build.mjs
 tools/offline-page/dist/
+
+.specify/extensions/.cache/
+.specify/presets/.cache/
+.specify/extensions/.backup/

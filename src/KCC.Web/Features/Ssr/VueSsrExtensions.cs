@@ -16,7 +16,7 @@ public static class VueSsrExtensions
         services.AddViteServices(options =>
         {
             options.Server.AutoRun = true;
-            options.Server.PackageManager = "yarn";
+            options.Server.PackageManager = "pnpm";
             options.Server.ScriptName = "dev:all";
             options.Server.Https = true;
         });

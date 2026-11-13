@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BizStream/bizstream.ai/extensions/flow/templates/checkpoint-schema.json",
+  "title": "Checkpoint file",
+  "description": "specs/<feature>/.flow/checkpoints/<name>.json. Only flow.mjs add and flow.mjs answer write it. A row with no answer is open. An open row with no affects holds the phase in blocks; an open row with affects makes only the tasks that name those ids wait.",
+  "type": "object",
+  "required": ["checkpoint", "blocks", "decisions"],
+  "properties": {
+    "checkpoint": { "enum": ["product", "design"] },
+    "blocks": {
+      "description": "The phase id the checkpoint holds: plan for product, implement for design.",
+      "enum": ["plan", "implement"]
+    },
+    "decisions": { "type": "array", "items": { "$ref": "#/$defs/row" } }
+  },
+  "$defs": {
+    "row": {
+      "type": "object",
+      "required": ["id", "class", "audience", "question", "recommended", "alternative", "phase", "affects", "answer", "by", "at", "channel"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique across the feature's checkpoints." },
+        "class": { "const": "scope" },
+        "audience": {
+          "type": "string",
+          "description": "Who answers: po, client, plan-authors, or the owner a constitution names."
+        },
+        "question": { "type": "string" },
+        "recommended": { "type": "string", "description": "The answer the draft is written on until the row is answered." },
+        "alternative": { "type": "string" },
+        "phase": {
+          "enum": ["clarify", "plan", "tasks"],
+          "description": "The phase that applies the answer to its artifact. An answer that differs from the one the artifact was drafted on sends this phase back, then each later one."
+        },
+        "affects": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Criterion or other ids that wait for the answer. Empty means the whole checkpoint waits."
+        },
+        "answer": { "type": ["string", "null"] },
+        "by": { "type": ["string", "null"], "description": "Who decided: the person, or the client when relayed." },
+        "at": { "type": ["string", "null"], "format": "date-time" },
+        "channel": {
+          "type": ["string", "null"],
+          "description": "How the answer came: session, relayed, notes, jira, or another the host names."
+        },
+        "interim": { "const": true, "description": "The PO answered for now; the hold lifts and the row stays open for the client." },
+        "relayed_by": { "type": "string", "description": "The person who passed on an answer someone else gave." },
+        "reply": { "type": "string", "description": "The client's own words, verbatim." },
+        "source": { "type": "string", "description": "The notes file or message the answer came from." },
+        "replaced": { "type": "string", "description": "The reason a final answer was replaced." }
+      }
+    }
+  }
+}

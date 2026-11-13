@@ -18,7 +18,7 @@ disable-model-invocation: false
 This command replaces stock `speckit.implement`. It executes `tasks.md`, and it
 also runs the project's gates and verifies acceptance. The work is done when it
 passes the constitution's gates, not when the tasks are checked off. The review
-loop of `speckit.review.run` runs later, on the open pull request's branch:
+of `speckit.review.run` runs later, on the open pull request's branch:
 `speckit.card.implement` owns it. This command ends with the change on the
 checked-out branch, uncommitted unless a hook commits it. The branch, the push,
 the pull request and the card belong to `speckit.card.implement`, which runs
@@ -132,7 +132,7 @@ Route the rows first, as the bullet below sets. Then pick a mode for each
   no row of another lane touches, by the paths the rows and `plan.md` name.
   Rows that name no path share one lane. Only rows that may run together
   form separate lanes: `[P]` rows, or rows with no dependency on another
-  lane's rows. A row Jev routes to `none`, `owner` or `code` stays out of
+  lane's rows. A row routed to `none`, `owner` or `code` stays out of
   every lane.
 
 Anything else is **subagent mode**. In subagent mode never pass `name` to an
@@ -140,26 +140,24 @@ Agent call: with teams on, a name starts a teammate.
 
 Team mode changes how a worker starts and nothing else. Start one fresh
 teammate per lane with an Agent call that carries `name: lane-<phase>-<n>`
-and the model, write scope and turn bound that `jev.md` sets for a
-teammate under Subagent model. The worker rules below bind a teammate too,
+and the model, write scope and turn bound that `.specify/extensions/card/templates/subagents.md` sets for a
+teammate. The worker rules below bind a teammate too,
 and it returns its result to this session with SendMessage. When an Agent call
 for a teammate errors, let the running teammates finish, run the rows still
 open in subagent mode, and say so in the Report.
 
 - Respect dependencies: a sequential task runs in order, `[P]` tasks may run
   together.
-- Route every task before it runs:
-  `grep -E '^\s*- \[ \] T[0-9]+' FEATURE_DIR/tasks.md | node .specify/extensions/jev/scripts/decide.mjs subagent-tier - --lines`.
-  Act on each `outcome` as `.specify/extensions/jev/templates/jev.md` sets
-  it under Subagent model. Without `.specify/extensions/jev/`, give every
-  subagent `opus`.
+- Route every task before it runs, by the row rules under One task row in
+  `.specify/extensions/card/templates/subagents.md`, and act on each outcome as that file sets it.
+  Without that file, give every subagent `opus`.
 - A task row whose outcome names a model runs in a worker on that `model`,
   never as an agent type. `none`, `owner` and `code` follow their rows in
-  `jev.md`. Never hand the whole card to one subagent. A session that
-  hands off more than one row at once dispatches `bizstream-ai:builder` for
+  `subagents.md`. Never hand the whole card to one subagent. A session that
+  hands off more than one row at once dispatches `bizstream:builder` for
   one `tasks.md` phase at most, and starts each next builder fresh from the
   state note the last one wrote. A phase with an `opus` row splits as
-  `jev.md` sets it: the `opus` rows go to their own Opus builder, and the
+  `subagents.md` sets it: the `opus` rows go to their own Opus builder, and the
   rest of the phase stays on the builder with no `model`.
 - A file touched by more than one task in this run is touched by one task at
   a time.
@@ -172,14 +170,15 @@ open in subagent mode, and say so in the Report.
 
 This session is the orchestrator. It holds the task list and the results, and
 the code stays in the workers. An **architect** subagent below is a
-dispatch with `subagent_type: bizstream-ai:architect` and no `model`, which
-runs on Opus at high effort. Without the bizstream-ai plugin, pass
+dispatch with `subagent_type: bizstream:architect` and no `model`, which
+runs on Opus at high effort. Without the bizstream plugin, pass
 `model: opus` instead. Every **worker** subagent:
 
 - Gets a self-contained prompt: the task rows verbatim, the repo and working
   directory, the paths from `plan.md` and `data-model.md` the rows touch, the
   constitution's coding rules, the build or test command that checks its
-  change, and the path of each project skill the rows need. It has no memory
+  change, and the `SKILL.md` path of each skill the rows need, found as
+  `subagents.md` sets it. It has no memory
   of this session.
 - Never asks the user anything, never commits, and never runs a task Phase 1
   left. An unresolved decision goes into its return value.
@@ -200,8 +199,8 @@ returns defects only: file, line, defect, and why it breaks a task or a
 scenario. It edits nothing.
 
 The phase review only finds. Keep its defects as the **phase findings**, and
-go on to the next phase. Report them: `speckit.review.run` confirms and fixes
-them once, with the rest of the diff, so no defect is confirmed or fixed twice.
+go on to the next phase. Report them: they are not passed on, and `speckit.review.run` reviews the
+whole diff once, afresh.
 
 **Done when:** every runnable task is complete and marked `[X]`, and every
 phase has a reviewer result, or the run halted with the failure reported.
@@ -260,7 +259,7 @@ every optional hook named.
       reported every gated one with its tasks skipped
 - [ ] Every runnable task is complete and marked `[X]`, and no branch, push,
       pull-request or merge task ran
-- [ ] Every task ran in a worker on the tier Jev routed, and every phase's
+- [ ] Every task ran in a worker on the model its row routed to, and every phase's
       reviewer ran as an architect subagent with fresh context
 - [ ] Every definition-of-done row passed; a failed row stopped the run
 - [ ] Acceptance is verified against `spec.md`, via `speckit.jira.verify

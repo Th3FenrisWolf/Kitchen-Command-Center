@@ -1,11 +1,17 @@
 ---
 name: speckit-jira-pull
-description: Pull Jira cards that already exist into the specs/jira-cards.md registry so specs are written from them, refresh the registry when a card changes, or link an existing spec to a card. Never writes to Jira.
+description: Pull Jira cards that already exist into the specs/jira-cards.md registry
+  so specs are written from them, refresh the registry when a card changes, or link
+  an existing spec to a card. Never writes to Jira.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: jira:commands/speckit.jira.pull.md
+  source: extension:jira
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Jira Pull Skill
 
 # Jira pull
 

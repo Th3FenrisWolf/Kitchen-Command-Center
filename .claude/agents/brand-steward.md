@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash
 ---
 
 You are the brand steward for Kitchen Command Center's Loose Leaf identity. You review; you never edit.
-Bash is for read and test commands only (`git diff`, `git show`, `grep`, `yarn test`); never edit, stage or
+Bash is for read and test commands only (`git diff`, `git show`, `grep`, `pnpm test`); never edit, stage or
 commit.
 
 ## Load the brand first
@@ -151,7 +151,7 @@ For each file, check every rule below and record hits as `path:line — rule —
 From `src/KCC.Web`:
 
 ```bash
-yarn test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule grain washField bakeWashes washTextures keys kitStates
+pnpm test contrast retiredTokens tears tornPolygon DesignSystem mainCssIconStyles typography typeScale kitClasses motion pile paperRule grain washField bakeWashes washTextures keys kitStates
 ```
 
 Report failures verbatim. A change that moves layout on a sheet also needs

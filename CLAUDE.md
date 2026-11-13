@@ -9,20 +9,31 @@ gates, ordering rule and definition of done. Only the Spec Kit commands read it,
 every session needs.
 
 - **A feature** runs `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, then
-  `/speckit-card-implement`, which recomposes the branch and ends at an open pull request, and never merges.
+  `/speckit-card-implement`, which ships the branch and ends at an open pull request, and never merges.
   `/speckit-checklist` and `/speckit-analyze` are optional checks.
 - **A preview** shows the owner a proposal before the plan or the tasks fix it. `/speckit-preview-run` serves look
   rounds, built from the site's own stylesheet, in the Browser pane after clarify, and architecture rounds as Mermaid
   after plan, for as many rounds as the owner wants. The approved round goes into the spec folder.
-- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`. Bug fix's review loop also
-  lands every fix from every round as one commit on its open pull request.
-- **A pull request** opens only from a recomposed branch. Development commits stay as they are until then. Card
-  implement's close-out, and with it `/speckit-flow-run`, recomposes the branch once with the `recompose-branch` skill
-  after the commit and before the push, and the owner approves the publish in the close-out question. The review
-  loop then runs on the open pull request, and every fix from every round lands as one commit on top. The branch is
-  never recomposed again after its pull request opens. The `kcc-recompose` preset adds these steps. A branch outside Spec Kit is recomposed the same way before its pull request
-  opens. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
+- **A bug** runs `/speckit-bug-assess`, `/speckit-bug-fix`, then `/speckit-bug-test`. Bug fix publishes
+  through `ship-branch` too.
+- **A pull request** opens only through the `ship-branch` skill with `--no-jira`. Development commits stay as they
+  are until then. Card implement's close-out, and with it `/speckit-flow-run`, runs it in this session after the
+  commit: two review rounds with a verifier, one CodeRabbit round and an acceptance check, then one recomposition
+  with the `recompose-branch` skill, all before the push. A regression, an unfixed finding or an unmet criterion
+  blocks the publish, and the owner approves the publish in the close-out question. The pull request then gets a
+  watch. The branch is never recomposed again after its pull request opens: a later fix is one commit on top. The
+  `kcc-ship` preset adds these steps, and they need `~/.claude/skills/ship-branch`. A branch outside Spec Kit
+  ships the same way. `.claude/hooks/require-recomposed-branch.sh` refuses `gh pr create` until `backup/<branch without its
   prefix>` holds the same tree under a different history.
+- **Review triage.** `/speckit-flow-run` and `/speckit-bug-fix` pass `--triage`, so ship-branch sizes the review to
+  the diff: `full`, `light` (one round) or `minimal` (one reviewer, no CodeRabbit). Card implement run by hand stays
+  `full`. A change to one of these risk paths for this triage keeps the review `full` at any size:
+  `src/KCC.Web/Features/Sqlite/`, `src/KCC.Web/Features/RecipeImport/`, `src/KCC.Web/Features/Security/`, any code
+  that takes `IMemberWriteLock` or `scope.WriteLock`, member sign-in and saves, `deploy/`, `Dockerfile`,
+  `docker-bake.hcl`, `.github/workflows/`, `.claude/hooks/`, `Directory.Packages.props`, `global.json`, `package.json`
+  and `pnpm-lock.yaml`. These paths are generated for this triage, and their lines are not counted:
+  `src/KCC.Web/Features/Styles/Torn/Tears.css`, `src/KCC.Web/Features/Styles/Torn/Washes.css` and the baked wash
+  PNGs.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 - **The project board** is the status view. `.github/workflows/project-board.yml` runs `tools/project-board/sync.mjs`
   from `main` on every push, pull request and morning, so a branch that changes the sync never writes the live board.
@@ -42,11 +53,11 @@ every session needs.
   an Idea card of Kind Phase for each `later` row.
 
 An extension update writes card implement, flow and bug fix back without the preset's steps, so run
-`.specify/presets/kcc-recompose/scripts/reapply.sh` after every `/bizstream-ai:update`.
+`.specify/presets/kcc-ship/scripts/reapply.sh` after every `/bizstream:update`.
 
 The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
 sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,
-the definition of done, the bug flow, the CodeRabbit loop and `/speckit-preview-run`.
+the definition of done, the bug flow, `ship-branch` through the `kcc-ship` preset, and `/speckit-preview-run`.
 
 Several features can be in flight at once:
 
@@ -99,7 +110,7 @@ separately:
   HTML. `SsrHtmlContent` inlines it as `<style data-ssr-styles>`, and `Main.ts` removes that tag once
   hydration has run so HMR-updated head styles win.
 
-**Always build both bundles together — `yarn build:all`, never one side alone.** Production scope IDs hash
+**Always build both bundles together — `pnpm build:all`, never one side alone.** Production scope IDs hash
 each component's path *and* its content, so a client bundle built against different component source than
 the SSR bundle emits `data-v-` attributes the CSS has no selectors for, and every scoped component
 silently loses its styles.
@@ -165,7 +176,7 @@ test that fails with SQLite error 5 prints the ring and the extended error code,
 
 The backoffice's recipe editors and the Contributions dashboard are Lit clients in `src/KCC.Admin/Client` and
 `src/KCC.Contributions/Client`, built by Vite from `packages/admin-client-config` into gitignored
-`wwwroot/App_Plugins/` folders. Build them with the root `yarn build:all`. Three things fail silently or
+`wwwroot/App_Plugins/` folders. Build them with the root `pnpm build:all`. Three things fail silently or
 misleadingly:
 
 - A Management API call through `umbHttpClient` sends no token unless it passes
@@ -212,7 +223,7 @@ scoped block. Anything Razor also renders belongs in `@layer components`. A rule
 ### The tear
 
 Sheets are clipped by the `clip-path` that `Tears.css` writes once per preset on grouped child selectors; the presets in `Features/Styles/Torn/Tears.css` are
-**generated** by `yarn tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
+**generated** by `pnpm tears` from `Features/Torn/tears.ts` and diffed by `tears.test.ts`. Never hand-edit
 the CSS. No runtime JS draws anything; the SSR output is final. The structural invariants:
 
 - The `filter` (fibre + fall) sits on `.kcc-fall`, the slip's child right before `.kcc-torn`, **outside** the
@@ -230,7 +241,7 @@ the CSS. No runtime JS draws anything; the SSR output is final. The structural i
   and the sheet's `wash-key`, two deep at most, and the kit CSS blooms them in 45 steps from the elapsed time
   `Layout.cshtml` writes as `--wash-elapsed`. A wash rests at its bloom's end and fills backwards only, so hydration
   keeps the first paint. A wash is chalk: its mask is a 128px chalk tile cut with one of eight lobed silhouettes (`Washes/wash-chalk.png`,
-  `wash-blob-0.png` to `wash-blob-7.png`), baked by `yarn washes` from `Features/Bloom/bakeWashes.ts` and named by
+  `wash-blob-0.png` to `wash-blob-7.png`), baked by `pnpm washes` from `Features/Bloom/bakeWashes.ts` and named by
   `Features/Styles/Torn/Washes.css`, which is **generated** too. Never hand-edit them. The silhouette's padding is
   `--wash-span`, `--wash-gain` lifts the opacity to make up for the chalk's gaps, and `--wash-flip` mirrors each wash.
   A wash takes no filter, so neither does its chalk tile or silhouette: a filter on a blooming wash made WebKit redraw it on every step. The client build keeps the

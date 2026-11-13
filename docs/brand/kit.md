@@ -10,9 +10,9 @@ never in a component `<style>` block.
 |---|---|
 | `src/KCC.Web/Features/Styles/TailwindConfig.css` | `@theme static` role tokens (light values), the type, control, pill and icon tokens, radius ladder, fonts, safelist; the `*-rule-*` spacing utilities |
 | `src/KCC.Web/Features/Styles/Torn/Tokens.css` | kit-only properties, among them the rule `--bl`, its drop `--rule-drop` and offset `--rule-offset`, and the baseline constants `--k-*`; the dark ramp under `:root[data-theme='dark']` |
-| `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`yarn tears`). Never hand-edited |
-| `src/KCC.Web/Features/Styles/Torn/Washes.css` | **generated** by `yarn washes`: `--wash-span`, `--wash-gain` and the wash textures, named by relative `url()` on `.kcc-wash`. Never hand-edited |
-| `src/KCC.Web/Features/Styles/Torn/Washes/` | **generated** wash textures (`yarn washes`): `wash-chalk.png`, the 128px chalk tile, and `wash-blob-0.png` to `wash-blob-7.png`, the eight lobed silhouettes, about 11 KB together. The client build keeps them out of the stylesheet and `Layout.cshtml` preloads them in production. Never hand-edited |
+| `src/KCC.Web/Features/Styles/Torn/Tears.css` | **generated** tear presets (`pnpm tears`). Never hand-edited |
+| `src/KCC.Web/Features/Styles/Torn/Washes.css` | **generated** by `pnpm washes`: `--wash-span`, `--wash-gain` and the wash textures, named by relative `url()` on `.kcc-wash`. Never hand-edited |
+| `src/KCC.Web/Features/Styles/Torn/Washes/` | **generated** wash textures (`pnpm washes`): `wash-chalk.png`, the 128px chalk tile, and `wash-blob-0.png` to `wash-blob-7.png`, the eight lobed silhouettes, about 11 KB together. The client build keeps them out of the stylesheet and `Layout.cshtml` preloads them in production. Never hand-edited |
 | `src/KCC.Web/Features/Styles/Torn/Kit.css` | slip / torn / blank / sheet / wash field and wash / label / tape / tile, the ruling, the margin rule, the shim, `kcc-row`, type, chrome, ramp swap |
 | `src/KCC.Web/Features/Styles/Torn/Controls.css` | btn, seg, field, range slider, badge, check, stats, steps, recipe-slip parts |
 | `src/KCC.Web/Features/Styles/Typography.css` | the 16 / 24 body, the type roles of bare `h1`–`h6` in APCasual, form controls at the body size, every `@font-face` including Sono, each with its pinned metrics (see Paper rule) |
@@ -433,7 +433,7 @@ with no rim and no darker colour. Its first ink is flat over the wash's box; its
 quarter of the silhouette ellipse's radii of its centre, reaching to the content box's nearest side and cut by the silhouette.
 
 **Baked, not filtered.** A wash carries no filter: an SVG filter on a blooming wash made WebKit draw it offscreen on
-every step. `yarn washes` bakes the numbers in `bakeWashes.ts` into PNGs in `Washes/`, which `Washes.css` names: a 128px
+every step. `pnpm washes` bakes the numbers in `bakeWashes.ts` into PNGs in `Washes/`, which `Washes.css` names: a 128px
 chalk tile of short strokes cut by paper tooth, and eight 90px silhouettes, each a lobed, ragged outline blurred so its
 edge fades, picked per wash by `--wash-blob`. A wash's mask is the chalk tile intersected with its silhouette, so the
 chalk shows at every step of the bloom at the wash's current size. The silhouette sits in the wash's `--wash-span` padding.
@@ -499,7 +499,7 @@ stable hash of its id (see `Utilities/BrandColor.ts`) or the one the page design
 `kcc-tear-1`. Neighbours never share a tear. `kcc-tear-hero-2` is the hero's blank and the pad's page, never a
 hero of its own, so two hero sheets on one page (RecipeDetail's hero and its featured variant) both take
 `kcc-tear-hero`; keep at least one standard sheet between them.
-`yarn tears` regenerates the file; `tears.test.ts` fails if the committed file drifts from the generator. Need a crisp surface (a form, cook mode)? `KccSheet crisp` sets
+`pnpm tears` regenerates the file; `tears.test.ts` fails if the committed file drifts from the generator. Need a crisp surface (a form, cook mode)? `KccSheet crisp` sets
 `--r: 0` on the slip; Razor writes `style="--r: 0"` on the slip itself.
 
 ## Classes
@@ -709,11 +709,11 @@ visit has earned.
 
 ## Invariants
 
-1. **Build both bundles together**: `yarn build:all`. Scoped-style hashes must match across client and SSR.
+1. **Build both bundles together**: `pnpm build:all`. Scoped-style hashes must match across client and SSR.
 2. **`@theme static`**: the `static` keeps unreferenced tokens alive for the kit CSS and the dark ramp.
 3. **Razor-rendered → `@layer components`**, never a scoped `<style>`.
 4. **A rule that must beat a utility is unlayered** (the ramp-swap rule at the end of `Kit.css`).
-5. **`Tears.css` is generated.** Change `tears.ts`, run `yarn tears`, commit both.
+5. **`Tears.css` is generated.** Change `tears.ts`, run `pnpm tears`, commit both.
 6. **No runtime JS draws anything.** The tear, the wash, its bloom and the shadow are CSS; SSR output is final: the server writes each wash's numbers and arrival, and the bloom runs from the first paint with no script. The only script the bloom has is the visit's heartbeat, which renews a cookie.
 7. **Both ramps, every change.** The light ramp is the default; dark is where washes and hairlines fail first.
 8. **Filter outside clip; label and tape outside both**, except a `.kcc-tilewrap--flow` and its tape, which sit in
@@ -778,5 +778,5 @@ visit has earned.
    and only buttons and `kcc-check` rows have a disabled look (see States).
 9. `ALLOWLIST` in `retiredTokens.test.ts` stays empty. If a surface genuinely needs an entry, the commit
    message says why.
-10. Run, from `src/KCC.Web`: `yarn test <name> retiredTokens typeScale contrast motion keys grain`, `yarn type-check`, `yarn format`;
-   before merging also `yarn build:all` and the browser check in both ramps. Commit.
+10. Run, from `src/KCC.Web`: `pnpm test <name> retiredTokens typeScale contrast motion keys grain`, `pnpm type-check`, `pnpm format`;
+   before merging also `pnpm build:all` and the browser check in both ramps. Commit.

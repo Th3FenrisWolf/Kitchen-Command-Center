@@ -1,4 +1,4 @@
-// Writes Styles/Torn/Tears.css. Run from src/KCC.Web with `yarn tears`.
+// Writes Styles/Torn/Tears.css. Run from src/KCC.Web with `pnpm tears`.
 import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { tearsCss } from './tears.ts'

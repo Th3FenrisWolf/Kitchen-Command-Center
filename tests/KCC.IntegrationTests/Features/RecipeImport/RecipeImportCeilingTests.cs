@@ -114,5 +114,6 @@ public class RecipeImportCeilingTests
         OutputTokensDetails = null,
         ServerToolUse = null,
         ServiceTier = null,
+        Speed = null,
     };
 }

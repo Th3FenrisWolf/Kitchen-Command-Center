@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: grill
   name: "Grilling"
-  version: "0.2.0"
+  version: "0.4.0"
   description: "Dependency-ordered interview rounds that close every open decision before work starts. Ships the protocol every question-asking command reads, plus a standalone command for a plan or a batch of specs."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai

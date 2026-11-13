@@ -1,11 +1,19 @@
 ---
 name: speckit-preview-run
-description: Show the owner how a feature will look or how its parts fit together, in rounds, before the plan or the tasks fix it. Use when the owner wants to see a proposal, compare directions, or iterate on look and feel or architecture, for example "mock it up", "show me", "preview the look", "try a few layouts" or "diagram the architecture".
+description: Show the owner how a feature will look or how its parts fit together,
+  in rounds, before the plan or the tasks fix it. Use when the owner wants to see
+  a proposal, compare directions, or iterate on look and feel or architecture, for
+  example "mock it up", "show me", "preview the look", "try a few layouts" or "diagram
+  the architecture".
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
-  author: github-spec-kit
-  source: preview:commands/speckit.preview.run.md
+  author: Th3FenrisWolf
+  source: extension:preview
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Preview Run Skill
 
 # Preview
 
@@ -29,7 +37,7 @@ ignores, and only the approved round reaches the spec.
 2. Run `.specify/extensions/preview/scripts/preview-setup.sh <folder>`, where the folder is the feature
    directory's name. It links the site's built stylesheet, fonts and logos into `.mockups/`, writes the round
    templates into `.mockups/<folder>/`, and prints that path. It stops when no build exists or a stylesheet
-   source is newer than the build. Then run `yarn build:all` in the checkout it names, and run it again.
+   source is newer than the build. Then run `pnpm build:all` in the checkout it names, and run it again.
 3. Open the Browser pane with `preview_start` and the `preview` configuration in `.claude/launch.json`. It
    serves `.mockups/` at `http://localhost:4310/`.
 
@@ -44,8 +52,8 @@ Read `docs/brand/kit.md` before the first look round. Constitution principle II 
    link per option.
    - The options differ on a named axis: layout, density, hierarchy or interaction. Name each one for its
      direction, never Option A, B or C. Two options that differ only in colour or copy are one option.
-   - Build with the kit: `kcc-*` classes, role tokens through `var(--color-*)`, the tear presets and, for a wash, a hand-written `.kcc-washes` field of `.kcc-wash` spans with their
-     `--wash-*` properties (a static round has no `KccWashes`; see `docs/brand/kit.md` → Washes). The build emits only the Tailwind utilities that the site's source already uses, so a utility
+   - Build with the kit: `kcc-*` classes, role tokens through `var(--color-*)`, the tear presets and the
+     washes. The build emits only the Tailwind utilities that the site's source already uses, so a utility
      the site does not use has no rule. Put the round's own layout in its `<style>` block, with a `pv-` prefix.
    - Use real content that fits the spec: recipe names, categories, labels and counts.
 3. Check the round before the owner sees it. Navigate the pane to it, read the console for errors, and look at

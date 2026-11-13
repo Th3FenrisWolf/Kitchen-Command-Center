@@ -23,14 +23,9 @@ content_type_chain: []
 #   - step: "Regenerate generated code"
 #     command: "<command>"
 
-# Review loop (speckit.review.run): the agent review rounds always run.
-# command turns on one final CodeRabbit round when it starts with
-# "coderabbit"; empty or any other value turns that round off. Its flags are
-# ignored, because speckit.coderabbit.review resolves the base itself.
-# context_path is the context file that teaches the reviewers this project's
-# conventions and known false positives. Leave it empty to review without one.
+# Review (speckit.review.run): one code-review pass always runs.
+# context_path is a rules file the review reads before it runs. Leave it empty for none.
 review:
-  command: "coderabbit review --agent"
   context_path: ""
 
 # Board close-out: the registry file mapping this feature to its tracker

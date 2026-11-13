@@ -103,7 +103,7 @@ async function createServer() {
   } catch (err) {
     log.error('✗ Failed to load SSR module:', err.message)
     if (!isDev) {
-      log.error('Run "yarn build:ssr" first.')
+      log.error('Run "pnpm build:ssr" first.')
       process.exit(1)
     }
   }
