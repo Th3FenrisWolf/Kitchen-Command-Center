@@ -120,5 +120,6 @@ public class ReadCostTests
         OutputTokensDetails = null,
         ServerToolUse = null,
         ServiceTier = null,
+        Speed = null,
     };
 }

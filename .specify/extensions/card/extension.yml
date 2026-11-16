@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: card
   name: "Implement Card"
-  version: "0.8.0"
+  version: "0.12.0"
   description: "Takes one card from a written tasks.md to an open pull request: branch from trunk, run speckit.implement from the bizstream-implement preset, then commit, push, open the pull request, post the Jira verdict and move the card. Never merges."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai
@@ -22,6 +22,9 @@ provides:
     - name: code-repo
       file: templates/code-repo.md
       description: "The code repo, trunk, GitHub repo and docs-only rules speckit.implement and speckit.card.implement share"
+    - name: subagents
+      file: templates/subagents.md
+      description: "The agent type for a whole job and the model for one tasks.md row, read by every command that dispatches a subagent"
 
   commands:
     - name: speckit.card.implement
@@ -31,7 +34,7 @@ provides:
   config:
     - name: "card-config.yml"
       template: "config-template.yml"
-      description: "Repo split, content-type chain, final CodeRabbit review round, and board close-out values, read by speckit.card.implement, speckit.implement and speckit.review.run"
+      description: "Repo split, content-type chain, review context file, and board close-out values, read by speckit.card.implement, speckit.implement and speckit.review.run"
       required: false
 
 tags:

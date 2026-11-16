@@ -202,14 +202,14 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         var web = RepoPaths.WebProject;
         if (!File.Exists(Path.Combine(web, "wwwroot", ".vite", "manifest.json")) || !File.Exists(Path.Combine(web, "wwwroot", "ssr", "Server.Entry.js")))
         {
-            throw new InvalidOperationException("The front-end bundles are missing. Run `yarn build:all` at the repository root first.");
+            throw new InvalidOperationException("The front-end bundles are missing. Run `pnpm build:all` at the repository root first.");
         }
 
         foreach (var package in new[] { "KCC.Admin", "KCC.Contributions" })
         {
             if (!File.Exists(Path.Combine(RepoPaths.Root, "src", package, "wwwroot", "App_Plugins", package, "umbraco-package.json")))
             {
-                throw new InvalidOperationException($"The {package} backoffice bundle is missing. Run `yarn build:all` at the repository root first.");
+                throw new InvalidOperationException($"The {package} backoffice bundle is missing. Run `pnpm build:all` at the repository root first.");
             }
         }
     }

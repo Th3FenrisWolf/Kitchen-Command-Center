@@ -6,7 +6,7 @@ variable "KCC_IMAGE_TAG" {
   default = "local"
 }
 
-variable "KCC_FONTAWESOME_CACHE" {
+variable "KCC_PNPM_STORE" {
   default = ""
 }
 
@@ -26,7 +26,7 @@ target "_site" {
   inherits = ["_image"]
   context  = "."
   secret   = ["id=fontawesome,env=FONTAWESOME_NPM_AUTH_TOKEN"]
-  contexts = KCC_FONTAWESOME_CACHE == "" ? {} : { fontawesome-cache = KCC_FONTAWESOME_CACHE }
+  contexts = KCC_PNPM_STORE == "" ? {} : { pnpm-store = KCC_PNPM_STORE }
 }
 
 target "app" {

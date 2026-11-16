@@ -7,3 +7,6 @@ export const SUITES = [
   { id: "admin-frontend", label: "Admin Frontend", type: "vitest", cwd: "src/KCC.Admin/Client", outputFile: "tests/results/vitest-admin-frontend.json" },
   { id: "contributions-frontend", label: "Contributions Frontend", type: "vitest", cwd: "src/KCC.Contributions/Client", outputFile: "tests/results/vitest-contributions-frontend.json" },
 ];
+
+// TUnit writes its reports under the working directory unless dotnet test is told where.
+export const DOTNET_RESULTS_DIR = "tests/results/dotnet";

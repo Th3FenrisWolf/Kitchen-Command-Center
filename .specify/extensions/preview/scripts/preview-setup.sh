@@ -16,7 +16,7 @@ fi
 css="$(newest_css "$assets")"
 web="${assets%/wwwroot/assets}"
 if [[ -z "$css" ]]; then
-  echo "No built kit in $web. Run yarn build:all at the root of that checkout." >&2
+  echo "No built kit in $web. Run pnpm build:all at the root of that checkout." >&2
   exit 1
 fi
 checkout="${web%/src/KCC.Web}"
@@ -25,7 +25,7 @@ committed="$(git -C "$checkout" log -1 --format=%ct -- src/KCC.Web/Features/Styl
 edited="$(git -C "$checkout" status --porcelain -- src/KCC.Web/Features/Styles)"
 if (( ${committed:-0} > built )) ||
   [[ -n "$edited" && -n "$(find "$web/Features/Styles" -type f -newer "$css" -print -quit)" ]]; then
-  echo "The kit in $checkout is older than its styles. Run yarn build:all at the root of that checkout." >&2
+  echo "The kit in $checkout is older than its styles. Run pnpm build:all at the root of that checkout." >&2
   exit 1
 fi
 

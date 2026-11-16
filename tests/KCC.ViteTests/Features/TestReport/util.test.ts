@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { emptySummary, escapeHtml, fmtDuration, pickNewestByMtime, computeExitCode } from '../../../scripts/util.mjs'
+import {
+  emptySummary,
+  escapeHtml,
+  fmtDuration,
+  pickNewestByMtime,
+  computeExitCode,
+  isTunitReportFor,
+} from '../../../scripts/util.mjs'
 
 describe('util', () => {
   it('emptySummary is all-zero with the fixed keys', () => {
@@ -46,5 +53,13 @@ describe('util', () => {
     expect(computeExitCode(ok)).toBe(0)
     expect(computeExitCode(failed)).toBe(1)
     expect(computeExitCode(missing)).toBe(1)
+  })
+
+  it('isTunitReportFor matches a TUnit JSON report to its own project only', () => {
+    expect(isTunitReportFor('KCC.UnitTests-linux-net10.0.tunit-report.json', 'tests/KCC.UnitTests')).toBe(true)
+    expect(isTunitReportFor('KCC.UnitTests-macos-net10.0.tunit-report.json', 'tests/KCC.UnitTests')).toBe(true)
+    expect(isTunitReportFor('KCC.IntegrationTests-linux-net10.0.tunit-report.json', 'tests/KCC.UnitTests')).toBe(false)
+    expect(isTunitReportFor('KCC.UnitTests.Extra-linux-net10.0.tunit-report.json', 'tests/KCC.UnitTests')).toBe(false)
+    expect(isTunitReportFor('KCC.UnitTests-linux-net10.0-report.html', 'tests/KCC.UnitTests')).toBe(false)
   })
 })

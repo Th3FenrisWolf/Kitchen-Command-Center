@@ -67,7 +67,7 @@ public sealed class AnthropicRecipePhotoReader(
             Model = current.Model,
             MaxTokens = ReadCost.MaxTokens,
             System = ReaderPrompt.System,
-            Messages = [new MessageParam { Role = Role.User, Content = Content(request) }],
+            Messages = [new UserMessageParam { Content = Content(request) }],
             OutputConfig = profile.TakesEffort
                 ? new OutputConfig { Format = format, Effort = current.Effort }
                 : new OutputConfig { Format = format },

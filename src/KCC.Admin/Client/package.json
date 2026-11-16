@@ -9,7 +9,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-pro": "^7.3.0",
-    "@kcc/admin-client-config": "*"
+    "@fortawesome/fontawesome-pro": "catalog:",
+    "@kcc/admin-client-config": "workspace:*"
+  },
+  "devDependencies": {
+    "@umbraco-cms/backoffice": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

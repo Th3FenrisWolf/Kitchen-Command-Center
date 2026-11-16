@@ -70,9 +70,9 @@ Read, every time, before touching code:
   centred status sheets included; a dialog, a hero, a toolbar, a card, the header pad, a home block, the stacker and
   an empty state never do. `KccSheet blank` gives a sheet no ruling.
 - A change that moves layout on a sheet runs `tests/KCC.E2ETests/Features/Chrome/RuleTests.cs` (`dotnet run
-  --project tests/KCC.E2ETests/KCC.E2ETests.csproj -- --treenode-filter "/*/*/RuleTests/*"`, after `yarn build:all`)
+  --project tests/KCC.E2ETests/KCC.E2ETests.csproj -- --treenode-filter "/*/*/RuleTests/*"`, after `pnpm build:all`)
   as well as `paperRule.test.ts`.
-- Always `yarn build:all` before merging, never one bundle alone.
+- Always `pnpm build:all` before merging, never one bundle alone.
 
 ## Report
 

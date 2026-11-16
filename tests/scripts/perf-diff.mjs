@@ -21,7 +21,7 @@ const beforeDir = path.join(capturesRoot, beforeRef);
 const afterDir = path.join(capturesRoot, afterRef);
 for (const dir of [beforeDir, afterDir]) {
   if (!existsSync(dir)) {
-    process.stderr.write(`No captures at ${dir}; run yarn perf:capture first.\n`);
+    process.stderr.write(`No captures at ${dir}; run pnpm perf:capture first.\n`);
     process.exit(1);
   }
 }

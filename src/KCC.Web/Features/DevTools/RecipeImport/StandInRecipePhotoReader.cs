@@ -104,5 +104,6 @@ public sealed class StandInRecipePhotoReader(
         OutputTokensDetails = null,
         ServerToolUse = null,
         ServiceTier = null,
+        Speed = null,
     };
 }

@@ -112,14 +112,14 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
       before disabling anything else.
 - [ ] Structural hooks (`data-testid`, ids, roles) untouched.
 - [ ] `ALLOWLIST` in `tests/KCC.ViteTests/Features/Styles/retiredTokens.test.ts` still empty.
-- [ ] Ran the last step of `docs/brand/kit.md` → Building a surface (tests, type-check, format; `yarn build:all`
+- [ ] Ran the last step of `docs/brand/kit.md` → Building a surface (tests, type-check, format; `pnpm build:all`
       before merging).
 
 ## Common mistakes
 
 - Putting `filter: drop-shadow` on `.kcc-sheet` — the shadow is clipped away. A sheet's shadow is the `filter` on its
   `.kcc-fall`, the sibling before `.kcc-torn`; a slip's `.kcc-torn` carries none, or every wash step redraws it.
-- A `filter` on a `.kcc-wash`, or a wash hand-baked: a wash's mask is a baked chalk tile and one of eight silhouettes (`Washes/wash-chalk.png`, `wash-blob-0.png` to `wash-blob-7.png`, named by `Washes.css`, all from `yarn washes`), never edited.
+- A `filter` on a `.kcc-wash`, or a wash hand-baked: a wash's mask is a baked chalk tile and one of eight silhouettes (`Washes/wash-chalk.png`, `wash-blob-0.png` to `wash-blob-7.png`, named by `Washes.css`, all from `pnpm washes`), never edited.
 - Rounding a sheet or an image — paper has no radius.
 - `text-ink` on a wash **fill** (a tile) — that is `text-marker-ink`. `text-ink` over a wash **pool**, on a sheet, is
   correct: washes are capped so ink holds AA.
@@ -135,7 +135,7 @@ Every line on a sheet is written on its ruling, by CSS alone (`docs/brand/kit.md
 - An icon before a field's input — the X is the field's one leading mark.
 - Reaching for `font-bold` for emphasis — use a `kcc-kick`, a label, or marker.
 - Hand-editing `Features/Styles/Torn/Tears.css` — it is generated; edit `Features/Torn/tears.ts` and run
-  `yarn tears`.
+  `pnpm tears`.
 
 ## Agents
 

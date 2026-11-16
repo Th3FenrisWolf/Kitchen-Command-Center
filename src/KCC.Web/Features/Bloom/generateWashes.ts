@@ -1,4 +1,4 @@
-// Writes Styles/Torn/Washes.css and its textures. Run from src/KCC.Web with `yarn washes`.
+// Writes Styles/Torn/Washes.css and its textures. Run from src/KCC.Web with `pnpm washes`.
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { bakeWashes, washTextures, washesCss } from './bakeWashes.ts'

@@ -1,0 +1,37 @@
+schema_version: "1.0"
+
+preset:
+  id: "kcc-ship"
+  name: "Ship Through ship-branch"
+  version: "1.1.0"
+  description: "Wraps card implement, the autopilot flow and bug fix so that each branch reaches its pull request through the ship-branch skill, without its Jira steps: two review rounds, one CodeRabbit round, an acceptance check and a recomposition before anything is published, then the pull request and its watch."
+  author: "Th3FenrisWolf"
+  repository: "https://github.com/Th3FenrisWolf/Kitchen-Command-Center"
+
+requires:
+  speckit_version: ">=0.16.0"
+
+provides:
+  templates:
+    - type: "command"
+      name: "speckit.card.implement"
+      file: "commands/speckit.card.implement.md"
+      description: "Close out through ship-branch: review, CodeRabbit, acceptance and recomposition before the push, then the pull request and its watch"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.flow.run"
+      file: "commands/speckit.flow.run.md"
+      description: "Keep ship-branch inside the autopilot's close-out, and never merge"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.bug.fix"
+      file: "commands/speckit.bug.fix.md"
+      description: "Publish the bug fix through ship-branch"
+      strategy: "wrap"
+
+tags:
+  - "git"
+  - "pull-request"
+  - "review"

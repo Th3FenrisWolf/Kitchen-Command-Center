@@ -3,20 +3,39 @@ schema_version: "1.0"
 extension:
   id: flow
   name: "Autopilot Flow"
-  version: "0.3.0"
-  description: "Runs one feature from an idea to an open pull request: specify, clarify, plan, tasks, analyze, QA wizard, then card implement. Each phase runs in a fresh subagent on a chosen model. Routine decisions become recorded assumptions the owner reviews once, so the run stops only for an owner decision, the review, a gate or the push."
+  version: "0.7.0"
+  description: "Runs one feature from an idea to an open pull request: specify, clarify, plan, tasks, analyze, card implement, then the QA audit and the QA wizard. Each phase runs in a fresh subagent on a chosen model. Each decision that touches scope is a row in a checkpoint file with the person who should answer it, routine decisions go to the plan's Approach table unreviewed, and with SPECKIT_HEADLESS=1 the run asks nothing and stops at the hold, so it stops only for an open checkpoint, a gate or the push. A project can set publish: auto to push and enable auto-merge on green checks without the push stop."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai
   license: MIT
 
 requires:
   speckit_version: ">=0.14.4"
+  tools:
+    - name: node
+      required: true
 
 provides:
   commands:
     - name: speckit.flow.run
       file: commands/speckit.flow.run.md
       description: "Run one feature through every Spec Kit phase to an open pull request, stopping only for the owner"
+
+  scripts:
+    - name: flow
+      file: scripts/flow.mjs
+      description: "The run's state file, the checkpoint files and the tasks.md row tags: next, record, release, status, tasks-state, add, answer and checkpoints. Prints one JSON line."
+
+  templates:
+    - name: checkpoint-schema
+      file: templates/checkpoint-schema.json
+      description: "The JSON Schema of a checkpoint file, specs/<feature>/.flow/checkpoints/<name>.json"
+
+  config:
+    - name: "flow-config.yml"
+      template: "config-template.yml"
+      description: "The publish mode, ask or auto, read by speckit.flow.run"
+      required: false
 
 tags:
   - "flow"

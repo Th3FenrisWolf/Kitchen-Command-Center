@@ -1,11 +1,17 @@
 ---
 name: speckit-jira-verify
-description: Verify an implementation against the spec's own Success Criteria and acceptance scenarios, plus any criteria a card made in Jira carries, and post the verdict as a comment on the card.
+description: Verify an implementation against the spec's own Success Criteria and
+  acceptance scenarios, plus any criteria a card made in Jira carries, and post the
+  verdict as a comment on the card.
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
   author: BizStream
-  source: jira:commands/speckit.jira.verify.md
+  source: extension:jira
+user-invocable: true
+disable-model-invocation: false
 ---
+
+# Jira Verify Skill
 
 # Jira verify
 

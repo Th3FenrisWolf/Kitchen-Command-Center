@@ -597,6 +597,7 @@ public class ReaderEvalRunOrderTests
         OutputTokensDetails = null,
         ServerToolUse = null,
         ServiceTier = null,
+        Speed = null,
     };
 
     private static int LongEdge(ReadPhoto photo)

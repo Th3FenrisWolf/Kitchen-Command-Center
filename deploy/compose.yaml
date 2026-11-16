@@ -69,7 +69,7 @@ services:
     logging: *logging
 
   cloudflared:
-    image: cloudflare/cloudflared:2026.9.3
+    image: cloudflare/cloudflared:2026.10.7
     restart: unless-stopped
     read_only: true
     command: tunnel run

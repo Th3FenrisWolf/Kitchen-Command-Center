@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { SUITES } from '../../../scripts/suites.mjs'
+import { DOTNET_RESULTS_DIR, SUITES } from '../../../scripts/suites.mjs'
 
 describe('SUITES registry', () => {
   it('declares every suite with required fields', () => {
@@ -25,5 +25,9 @@ describe('SUITES registry', () => {
         expect(s.outputFile).toMatch(/^tests\/results\/vitest-.*\.json$/)
       }
     }
+  })
+
+  it('collects the TUnit reports under the gitignored tests/results folder', () => {
+    expect(DOTNET_RESULTS_DIR).toMatch(/^tests\/results\/[^/]+$/)
   })
 })

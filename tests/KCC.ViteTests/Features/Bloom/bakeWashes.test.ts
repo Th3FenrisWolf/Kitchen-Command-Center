@@ -75,7 +75,7 @@ function decode(png: Buffer): Decoded {
 const mean = (values: readonly number[]) => values.reduce((sum, value) => sum + value, 0) / values.length
 
 describe('Washes.css and its textures', () => {
-  it('matches the generator (run `yarn washes` after changing bakeWashes.ts)', () => {
+  it('matches the generator (run `pnpm washes` after changing bakeWashes.ts)', () => {
     expect(web('Styles/Torn/Washes.css')).toBe(css)
   })
 

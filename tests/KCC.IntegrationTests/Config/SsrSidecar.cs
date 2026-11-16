@@ -22,7 +22,7 @@ public sealed class SsrSidecar : IAsyncInitializer, IAsyncDisposable
         var bundle = Path.Combine(RepoPaths.WebProject, "wwwroot", "ssr", "Server.Entry.js");
         if (!File.Exists(bundle))
         {
-            throw new InvalidOperationException("The SSR bundle is missing. Run `yarn build:all` at the repository root first.");
+            throw new InvalidOperationException("The SSR bundle is missing. Run `pnpm build:all` at the repository root first.");
         }
 
         var port = FreePort();

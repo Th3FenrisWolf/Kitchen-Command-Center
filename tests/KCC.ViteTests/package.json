@@ -1,0 +1,14 @@
+{
+  "name": "@kcc/vite-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@fortawesome/fontawesome-pro": "catalog:",
+    "@vue/server-renderer": "catalog:",
+    "postcss": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:"
+  }
+}

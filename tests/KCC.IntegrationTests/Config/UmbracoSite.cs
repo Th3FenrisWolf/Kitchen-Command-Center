@@ -158,7 +158,7 @@ public sealed class UmbracoSite : WebApplicationFactory<Program>, IAsyncInitiali
         var manifest = Path.Combine(RepoPaths.WebProject, "wwwroot", ".vite", "manifest.json");
         if (!File.Exists(manifest))
         {
-            throw new InvalidOperationException("Integration tests render real pages, which need the Vite manifest. Run `yarn build:all` in src/KCC.Web first.");
+            throw new InvalidOperationException("Integration tests render real pages, which need the Vite manifest. Run `pnpm build:all` in src/KCC.Web first.");
         }
     }
 

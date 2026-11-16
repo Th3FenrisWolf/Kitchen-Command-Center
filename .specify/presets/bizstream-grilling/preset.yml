@@ -3,7 +3,7 @@ schema_version: "1.0"
 preset:
   id: "bizstream-grilling"
   name: "Grilling Everywhere"
-  version: "0.3.0"
+  version: "0.7.0"
   description: "Wraps every question-asking command so it interviews the user in dependency-ordered rounds instead of ad hoc. Requires the grill extension, which holds the protocol."
   author: "BizStream"
   repository: "https://github.com/BizStream/bizstream.ai"

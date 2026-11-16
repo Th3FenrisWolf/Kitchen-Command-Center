@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-10-21T17:12:08Z",
+  "updated_at": "2026-11-11T19:37:08Z",
   "bundles": [
     {
       "bundle_id": "bizstream",
-      "version": "0.20.0",
+      "version": "0.28.0",
       "installed_at": "2026-10-05T18:29:36Z",
       "contributed_components": [
         {
@@ -19,72 +19,57 @@
         },
         {
           "kind": "extensions",
-          "id": "git",
-          "version": "1.0.1"
-        },
-        {
-          "kind": "extensions",
           "id": "grill",
-          "version": "0.2.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "qa",
-          "version": "0.3.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "jira",
-          "version": "0.2.2"
-        },
-        {
-          "kind": "extensions",
-          "id": "jev",
-          "version": "0.6.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "batch",
-          "version": "0.3.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "card",
-          "version": "0.8.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "coderabbit",
           "version": "0.4.0"
         },
         {
           "kind": "extensions",
-          "id": "review",
+          "id": "qa",
+          "version": "0.7.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "jira",
           "version": "0.3.0"
         },
         {
           "kind": "extensions",
+          "id": "batch",
+          "version": "0.4.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "card",
+          "version": "0.12.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "review",
+          "version": "0.7.0"
+        },
+        {
+          "kind": "extensions",
           "id": "flow",
-          "version": "0.3.0"
+          "version": "0.7.0"
         },
         {
           "kind": "presets",
           "id": "bizstream-grilling",
-          "version": "0.3.0",
+          "version": "0.7.0",
           "priority": 50,
           "strategy": "wrap"
         },
         {
           "kind": "presets",
           "id": "bizstream-implement",
-          "version": "0.5.0",
+          "version": "0.8.0",
           "priority": 50,
           "strategy": "replace"
         },
         {
           "kind": "presets",
           "id": "bizstream-bugfix",
-          "version": "0.3.0",
+          "version": "0.7.0",
           "priority": 50,
           "strategy": "wrap"
         }
@@ -102,72 +87,57 @@
         },
         {
           "kind": "extensions",
-          "id": "git",
-          "version": "1.0.1"
-        },
-        {
-          "kind": "extensions",
           "id": "grill",
-          "version": "0.2.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "qa",
-          "version": "0.3.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "jira",
-          "version": "0.2.2"
-        },
-        {
-          "kind": "extensions",
-          "id": "jev",
-          "version": "0.6.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "batch",
-          "version": "0.3.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "card",
-          "version": "0.8.0"
-        },
-        {
-          "kind": "extensions",
-          "id": "coderabbit",
           "version": "0.4.0"
         },
         {
           "kind": "extensions",
-          "id": "review",
+          "id": "qa",
+          "version": "0.7.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "jira",
           "version": "0.3.0"
         },
         {
           "kind": "extensions",
+          "id": "batch",
+          "version": "0.4.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "card",
+          "version": "0.12.0"
+        },
+        {
+          "kind": "extensions",
+          "id": "review",
+          "version": "0.7.0"
+        },
+        {
+          "kind": "extensions",
           "id": "flow",
-          "version": "0.3.0"
+          "version": "0.7.0"
         },
         {
           "kind": "presets",
           "id": "bizstream-grilling",
-          "version": "0.3.0",
+          "version": "0.7.0",
           "priority": 50,
           "strategy": "wrap"
         },
         {
           "kind": "presets",
           "id": "bizstream-implement",
-          "version": "0.5.0",
+          "version": "0.8.0",
           "priority": 50,
           "strategy": "replace"
         },
         {
           "kind": "presets",
           "id": "bizstream-bugfix",
-          "version": "0.3.0",
+          "version": "0.7.0",
           "priority": 50,
           "strategy": "wrap"
         }
@@ -175,19 +145,16 @@
       "installed_versions": {
         "extensions:bug": "1.0.1",
         "extensions:assess": "1.0.1",
-        "extensions:git": "1.0.1",
-        "extensions:grill": "0.2.0",
-        "extensions:qa": "0.3.0",
-        "extensions:jira": "0.2.2",
-        "extensions:jev": "0.6.0",
-        "extensions:batch": "0.3.0",
-        "extensions:card": "0.8.0",
-        "extensions:coderabbit": "0.4.0",
-        "extensions:review": "0.3.0",
-        "extensions:flow": "0.3.0",
-        "presets:bizstream-grilling": "0.3.0",
-        "presets:bizstream-implement": "0.5.0",
-        "presets:bizstream-bugfix": "0.3.0"
+        "extensions:grill": "0.4.0",
+        "extensions:qa": "0.7.0",
+        "extensions:jira": "0.3.0",
+        "extensions:batch": "0.4.0",
+        "extensions:card": "0.12.0",
+        "extensions:review": "0.7.0",
+        "extensions:flow": "0.7.0",
+        "presets:bizstream-grilling": "0.7.0",
+        "presets:bizstream-implement": "0.8.0",
+        "presets:bizstream-bugfix": "0.7.0"
       }
     }
   ]

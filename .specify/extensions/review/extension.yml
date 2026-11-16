@@ -3,25 +3,25 @@ schema_version: "1.0"
 extension:
   id: review
   name: "Review Loop"
-  version: "0.3.0"
-  description: "Reviews the feature's diff on the branch of an open pull request: agent reviewers find, a verifier sorts the findings, workers fix them, and CodeRabbit runs one final round that never waits on a rate limit."
+  version: "0.7.0"
+  description: "Reviews the feature's diff on the branch of an open pull request: one pass of the built-in code-review skill fixes what it finds, then the checks run."
   author: BizStream
   repository: https://github.com/BizStream/bizstream.ai
   license: MIT
 
 requires:
   speckit_version: ">=0.14.4"
-  tools:
-    # The CodeRabbit round reports the install line and skips when the tool is
-    # absent, so a machine without it still finishes the card.
-    - name: coderabbit
-      required: false
 
 provides:
+  templates:
+    - name: pr-watch
+      file: templates/pr-watch.md
+      description: "How a session watches the pull request it opened, read by speckit.card.implement and speckit.bug.fix"
+
   commands:
     - name: speckit.review.run
       file: commands/speckit.review.run.md
-      description: "Review the feature's diff with agent reviewers, fix what a verifier confirms, then run one CodeRabbit round"
+      description: "Review the feature's diff with one pass of the built-in code-review skill, then run the checks"
 
 tags:
   - "review"

@@ -2,35 +2,27 @@
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { SUITES } from "./suites.mjs";
+import { DOTNET_RESULTS_DIR, SUITES } from "./suites.mjs";
 import { buildReport } from "./combine.mjs";
-import { pickNewestByMtime, computeExitCode } from "./util.mjs";
+import { pickNewestByMtime, computeExitCode, isTunitReportFor } from "./util.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const resultsDir = path.join(repoRoot, "tests", "results");
 const outFile = path.join(resultsDir, "combined-report.html");
 const summaryFile = path.join(resultsDir, "combined-report.md");
+const dotnetResultsDir = path.join(repoRoot, DOTNET_RESULTS_DIR);
 
 function log(msg) { process.stdout.write(`\n> ${msg}\n`); }
 
 function findTunitReports(projectDir) {
-  const binDir = path.join(repoRoot, projectDir, "bin");
-  const out = [];
-  const walk = (dir) => {
-    let entries;
-    try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return; }
-    for (const e of entries) {
-      const full = path.join(dir, e.name);
-      if (e.isDirectory()) walk(full);
-      else if (e.isFile() && /-report\.html$/i.test(e.name) && /[\\/]TestResults[\\/]/.test(full)) {
-        out.push({ path: full, mtimeMs: statSync(full).mtimeMs });
-      }
-    }
-  };
-  walk(binDir);
-  return out;
+  let names;
+  try { names = readdirSync(dotnetResultsDir); } catch { return []; }
+  return names
+    .filter((name) => isTunitReportFor(name, projectDir))
+    .map((name) => path.join(dotnetResultsDir, name))
+    .map((full) => ({ path: full, mtimeMs: statSync(full).mtimeMs }));
 }
 
 // Resolve a suite's local vitest bin via its own node_modules (cross-platform, no shell).
@@ -50,9 +42,11 @@ function openInBrowser(file) {
 }
 
 mkdirSync(resultsDir, { recursive: true });
+// A suite that writes no report this run must show as missing, not pass on an earlier run's report.
+rmSync(dotnetResultsDir, { recursive: true, force: true });
 
-log("Running .NET test suites (dotnet test -- --report-html)");
-spawnSync("dotnet", ["test", "--", "--report-html"], { cwd: repoRoot, stdio: "inherit", shell: false });
+log(`Running .NET test suites (dotnet test -- --report-html --results-directory ${DOTNET_RESULTS_DIR})`);
+spawnSync("dotnet", ["test", "--", "--report-html", "--results-directory", dotnetResultsDir], { cwd: repoRoot, stdio: "inherit", shell: false });
 
 for (const suite of SUITES.filter((s) => s.type === "vitest")) {
   const cwdAbs = path.join(repoRoot, suite.cwd);
@@ -72,8 +66,8 @@ const sources = SUITES.map((suite) => {
   const descriptor = { id: suite.id, label: suite.label, type: suite.type };
   if (suite.type === "dotnet") {
     const newest = pickNewestByMtime(findTunitReports(suite.projectDir));
-    if (!newest) return { descriptor, kind: "missing", error: `No *-report.html under ${suite.projectDir}/bin` };
-    return { descriptor, kind: "tunit-html", content: readFileSync(newest, "utf8") };
+    if (!newest) return { descriptor, kind: "missing", error: `No *.tunit-report.json for ${suite.projectDir} under ${DOTNET_RESULTS_DIR}` };
+    return { descriptor, kind: "tunit-json", content: readFileSync(newest, "utf8") };
   }
   const outAbs = path.join(repoRoot, suite.outputFile);
   if (!existsSync(outAbs)) return { descriptor, kind: "missing", error: `vitest did not produce ${suite.outputFile}` };

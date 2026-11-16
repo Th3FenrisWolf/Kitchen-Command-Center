@@ -24,7 +24,7 @@ public class BackofficePackageTests
         if (package.ValueKind == JsonValueKind.Undefined)
         {
             // The bundles are build output, so a missing package usually means the clients were never built.
-            throw new InvalidOperationException($"The backoffice has no {id} package. Run `yarn build:all` at the repository root first.");
+            throw new InvalidOperationException($"The backoffice has no {id} package. Run `pnpm build:all` at the repository root first.");
         }
 
         var bundle = package.GetProperty("extensions").EnumerateArray().Single();

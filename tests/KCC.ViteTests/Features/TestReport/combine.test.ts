@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { gzipSync } from 'node:zlib'
 import { buildReport, aggregateSummary } from '../../../scripts/combine.mjs'
-
-function tunitHtml(data: unknown): string {
-  return `<script id="test-data" data-compressed="gzip">${gzipSync(Buffer.from(JSON.stringify(data), 'utf8')).toString('base64')}</script>`
-}
 
 describe('aggregateSummary', () => {
   it('sums each summary field across suites', () => {
@@ -20,8 +15,8 @@ describe('buildReport', () => {
   const sources = [
     {
       descriptor: { id: 'unit', label: 'Unit', type: 'dotnet' },
-      kind: 'tunit-html',
-      content: tunitHtml({
+      kind: 'tunit-json',
+      content: JSON.stringify({
         summary: { total: 1, passed: 1 },
         groups: [
           {
@@ -67,7 +62,7 @@ describe('buildReport', () => {
 
   it('captures a bad source as an error suite instead of throwing', () => {
     const { report } = buildReport(
-      [{ descriptor: { id: 'unit', label: 'Unit', type: 'dotnet' }, kind: 'tunit-html', content: '<html>no data</html>' }],
+      [{ descriptor: { id: 'unit', label: 'Unit', type: 'dotnet' }, kind: 'tunit-json', content: '<html>not json</html>' }],
       {},
     )
     expect(report.suites[0].status).toBe('error')
