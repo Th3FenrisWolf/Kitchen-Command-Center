@@ -40,7 +40,9 @@ every session needs.
   It reads `specs/` and `.specify/bugs/` on every branch, with the pull requests, and sets each card's stage: Idea,
   Specified, Building (from the first ticked task, or a bug's fix on its branch), In review, Done. It owns every
   card with a **Key**, rewriting its title, its fields and the `<!-- sync -->` block of its body, and never touches
-  a card without one. A card it creates starts in the Current iteration, and it never changes the iteration again,
+  a card without one. When two spec folders on any branches share a number, the run fails: it names the folders and
+  their branches, and leaves each folder's card, and every card of a phased feature whose table on any branch names
+  the number, as they are until all but one is renumbered. A card it creates starts in the Current iteration, and it never changes the iteration again,
   so a card moved to Future stays there.
 - An Idea card is a draft. Once a card leaves Idea, the sync turns it into an issue in this repository, closes the
   issue while the card is Done and reopens it if the card leaves Done, and makes a later phase's issue a sub-issue
