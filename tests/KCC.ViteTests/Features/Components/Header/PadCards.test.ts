@@ -325,6 +325,14 @@ describe('A phone card', () => {
   })
 })
 
+describe('A shown card', () => {
+  it('keeps its own layer while it peeks or is open, and asks for none at rest', () => {
+    expect(declarationsOf('PadCard.vue', '.pad-card')['will-change']).toBeUndefined()
+    expect(declarationsOf('PadCard.vue', '.pad-card.is-peek')['will-change']).toBe('transform')
+    expect(declarationsOf('PadCard.vue', '.pad-card.is-open')['will-change']).toBe('transform')
+  })
+})
+
 describe('The card variant off the current breakpoint', () => {
   const states = ['', '.is-peek', '.is-open']
 

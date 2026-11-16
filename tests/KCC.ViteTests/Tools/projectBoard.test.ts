@@ -315,6 +315,22 @@ describe('board fields', () => {
   })
 })
 
+describe('a created issue', () => {
+  const issue = (...projects: string[]) => ({
+    id: 'I_1',
+    projectItems: { nodes: projects.map((project, at) => ({ id: `PVTI_${at}`, project: { id: project } })) },
+  })
+
+  it('finds its item on this board', () => {
+    expect(board.boardItemOf(issue('P_other', 'P_board'), 'P_board')).toBe('PVTI_1')
+  })
+
+  it('has no item when createIssue answers without one for this board, and that is no error', () => {
+    expect(board.boardItemOf(issue(), 'P_board')).toBeNull()
+    expect(board.boardItemOf(issue('P_other'), 'P_board')).toBeNull()
+  })
+})
+
 describe('the specs in this repository', () => {
   const dirs = readdirSync(`${root}specs`, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())

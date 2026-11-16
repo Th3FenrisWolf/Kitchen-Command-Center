@@ -179,6 +179,15 @@ describe('AppHeader', () => {
     expect(rules.some((rule) => /\.pad-page--\d/.test(rule.selector))).toBe(false)
   })
 
+  it('leaves the sideways clip to #app, so the cards hanging below the sticky header are drawn', () => {
+    const header = declarationsOf(styleRules(), '.pad-header')
+
+    expect(header.position).toBe('sticky')
+    expect(header['overflow-x']).toBeUndefined()
+    expect(header['overflow-y']).toBeUndefined()
+    expect(header.overflow).toBeUndefined()
+  })
+
   it('sets the menu items in Hazelnut at the body size, in mixed case', async () => {
     const html = await render(member())
     const menus = [...html.matchAll(/<button[^>]*class="pad-menu[" ][^>]*>/g)].map(([tag]) => tag)
