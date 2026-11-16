@@ -272,7 +272,7 @@ The owner settled these during this specification. Each later phase is specified
 | Phase | Spec | Covers |
 |---|---|---|
 | 1 | 001 (this spec) | The import into today's wizard fields, with matching, step links on the review, marks and the spending ceiling |
-| 2 | later | The Details step: category, tags, difficulty and nutrition for typed and imported recipes |
+| 2 | 010 | The Details step: category, tags, difficulty and nutrition for typed and imported recipes |
 | 3 | later | The owner's review of imports: source photos and import notes until the draft is published or deleted |
 
 - **Phase 2, the Details step**: both flows gain a Details step for category, tags, difficulty and nutrition, for typed and imported recipes. A read suggests a category, tags and a difficulty from the site's existing lists, and copies nutrition only when the photos print it. Nutrition is never estimated.
