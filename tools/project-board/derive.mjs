@@ -191,19 +191,64 @@ function bugCard(slug, snapshots, pulls) {
   };
 }
 
-function applyPhases(specs, cards) {
+function numberOf(dir) {
+  return dir.slice(0, 3);
+}
+
+export function numberClashes(specs) {
+  const foldersByNumber = new Map();
+  for (const { dir, ref } of specs) {
+    const folders = foldersByNumber.get(numberOf(dir)) ?? new Map();
+    folders.set(dir, new Set([...(folders.get(dir) ?? []), ref]));
+    foldersByNumber.set(numberOf(dir), folders);
+  }
+  return [...foldersByNumber]
+    .filter(([, folders]) => folders.size > 1)
+    .map(([number, folders]) => ({
+      number,
+      folders: [...folders]
+        .map(([dir, refs]) => ({ dir, refs: [...refs].sort() }))
+        .sort((a, b) => a.dir.localeCompare(b.dir)),
+    }))
+    .sort((a, b) => a.number.localeCompare(b.number));
+}
+
+export function clashReport(clashes, cards) {
+  const held = cards.filter((card) => card.held).map((card) => card.key);
+  return [
+    ...clashes.map(
+      ({ number, folders }) =>
+        `Spec number ${number} names more than one folder: ${folders
+          .map(({ dir, refs }) => `${dir} on ${refs.join(", ")}`)
+          .join("; ")}.`,
+    ),
+    `Renumber all but one of them. Until then the sync leaves these cards as they are: ${held.join(", ")}.`,
+  ].join("\n");
+}
+
+function applyPhases(specs, cards, clashing) {
   const dirByNumber = new Map(
-    [...cards.keys()].map((dir) => [dir.slice(0, 3), dir]),
+    [...cards.keys()]
+      .filter((dir) => !clashing.has(numberOf(dir)))
+      .map((dir) => [numberOf(dir), dir]),
   );
   const features = new Map();
+  const named = new Map();
   for (const snapshot of specs) {
     const rows = parsePhases(snapshot.spec);
     const rootNumber = rows.find((row) => row.phase === 1)?.spec;
-    if (!rootNumber || !dirByNumber.has(rootNumber)) {
+    if (
+      !rootNumber ||
+      !(dirByNumber.has(rootNumber) || clashing.has(rootNumber))
+    ) {
       continue;
     }
+    const numbers = named.get(rootNumber) ?? new Set();
     const merged = features.get(rootNumber) ?? new Map();
     for (const row of rows) {
+      if (row.spec) {
+        numbers.add(row.spec);
+      }
       const known = merged.get(row.phase);
       merged.set(row.phase, {
         ...row,
@@ -212,10 +257,23 @@ function applyPhases(specs, cards) {
       });
     }
     features.set(rootNumber, merged);
+    named.set(rootNumber, numbers);
   }
 
   const placeholders = [];
   for (const [rootNumber, rows] of features) {
+    // Every branch's table counts here, not just the merged rows, so a clash named only by a table the merge dropped
+    // still holds the feature.
+    const numbers = [...named.get(rootNumber)];
+    if (numbers.some((number) => clashing.has(number))) {
+      for (const number of numbers) {
+        const card = cards.get(dirByNumber.get(number));
+        if (card) {
+          card.held = true;
+        }
+      }
+      continue;
+    }
     const rootDir = dirByNumber.get(rootNumber);
     const root = cards.get(rootDir);
     const feature = `${rootNumber} ${featureName(root.specTitle)}`;
@@ -249,11 +307,16 @@ function applyPhases(specs, cards) {
 }
 
 export function deriveCards({ specs, bugs, pulls }) {
+  const clashing = new Set(numberClashes(specs).map(({ number }) => number));
   const cards = new Map();
   for (const [dir, snapshots] of groupBy(specs, "dir")) {
-    cards.set(dir, specCard(dir, snapshots, pulls));
+    const card = specCard(dir, snapshots, pulls);
+    if (clashing.has(numberOf(dir))) {
+      card.held = true;
+    }
+    cards.set(dir, card);
   }
-  const placeholders = applyPhases(specs, cards);
+  const placeholders = applyPhases(specs, cards, clashing);
   const bugCards = [...groupBy(bugs, "slug")].map(([slug, snapshots]) =>
     bugCard(slug, snapshots, pulls),
   );
@@ -296,12 +359,55 @@ export function schemaProblems(fields, cards) {
   return [...problems];
 }
 
-// createIssue's reply can hold no item for the board, even with the board named in projectV2Ids.
 export function boardItemOf(issue, projectId) {
   return (
-    issue.projectItems.nodes.find((item) => item.project.id === projectId)
+    issue?.projectItems.nodes.find((item) => item.project.id === projectId)
       ?.id ?? null
   );
+}
+
+const ITEM_PAUSES_MS = [1000, 2000, 4000, 8000];
+
+// createIssue can answer before GitHub has put the issue on the board named in projectV2Ids, so the item may show only
+// on a later read of the issue.
+export function waitForBoardItem(issue, projectId, reread, pause) {
+  let itemId = boardItemOf(issue, projectId);
+  for (const ms of ITEM_PAUSES_MS) {
+    if (itemId) {
+      return itemId;
+    }
+    pause(ms);
+    itemId = boardItemOf(tryRead(reread, issue.id), projectId);
+  }
+  return itemId;
+}
+
+// The issue already exists, so a failed read must not end the run here: the caller's add then says which Key to set
+// by hand, where a bare read error would leave a Key-less issue for the next run to duplicate.
+function tryRead(reread, issueId) {
+  try {
+    return reread(issueId);
+  } catch (error) {
+    console.log(
+      `warning: reading the board items of issue ${issueId} failed: ${error.message}`,
+    );
+    return null;
+  }
+}
+
+export function strayKeys(cards, items) {
+  const known = new Set(cards.flatMap((card) => [card.key, ...card.aliases]));
+  const heldPrefixes = cards
+    .filter((card) => card.held)
+    .map((card) => `${card.key}/`);
+  return items
+    .map((item) => item.fields.Key)
+    .filter(
+      (key) =>
+        key &&
+        !known.has(key) &&
+        !heldPrefixes.some((prefix) => key.startsWith(prefix)),
+    );
 }
 
 const EDITABLE = new Set(["DraftIssue", "Issue"]);
@@ -321,7 +427,7 @@ export function planChanges(cards, items) {
   );
 
   const ops = [];
-  for (const card of cards) {
+  for (const card of cards.filter((candidate) => !candidate.held)) {
     const issue = card.fields.Status !== "Idea";
     const state = card.fields.Status === "Done" ? "CLOSED" : "OPEN";
     const parent = issue ? card.parentKey : undefined;

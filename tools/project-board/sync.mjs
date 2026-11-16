@@ -4,17 +4,20 @@
 // in the workflow GH_TOKEN.
 import { execFileSync } from "node:child_process";
 import {
-  boardItemOf,
+  clashReport,
   config,
   CREATE_FIELDS,
   deriveCards,
   ITERATIONS,
   KINDS,
+  numberClashes,
   planChanges,
   schemaProblems,
   STAGES,
+  strayKeys,
   syncedBody,
   TEXT_FIELDS,
+  waitForBoardItem,
 } from "./derive.mjs";
 
 const dryRun = process.argv.includes("--dry-run");
@@ -393,6 +396,57 @@ function setIssueState(issueId, state) {
   }
 }
 
+function sleep(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+function readIssueItems(issueId) {
+  return graphql(
+    `
+      query ($issue: ID!) {
+        node(id: $issue) {
+          ... on Issue {
+            id
+            projectItems(first: 20) {
+              nodes {
+                id
+                project {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    { issue: issueId },
+  ).node;
+}
+
+function addToBoard(project, issue, key) {
+  try {
+    return graphql(
+      `
+        mutation ($project: ID!, $content: ID!) {
+          addProjectV2ItemById(
+            input: { projectId: $project, contentId: $content }
+          ) {
+            item {
+              id
+            }
+          }
+        }
+      `,
+      { project: project.id, content: issue.id },
+    ).addProjectV2ItemById.item.id;
+  } catch (error) {
+    throw new Error(
+      `Issue #${issue.number} was created for ${key}, but GitHub returns no item for it on the board. If it is on the board, set its Key to ${key} by hand so the next run does not create another.`,
+      { cause: error },
+    );
+  }
+}
+
 function createItem(project, repositoryId, op) {
   const body = syncedBody(op.card.body);
   if (op.as === "draft") {
@@ -433,6 +487,7 @@ function createItem(project, repositoryId, op) {
         ) {
           issue {
             id
+            number
             projectItems(first: 20) {
               nodes {
                 id
@@ -452,23 +507,11 @@ function createItem(project, repositoryId, op) {
       body,
     },
   ).createIssue;
-  // Safe even when createIssue did place the issue: addProjectV2ItemById then returns the existing item.
+  // addProjectV2ItemById fails with "Content already exists in this project" for an issue already on the board, so it
+  // runs only once no read has found the issue's item.
   const itemId =
-    boardItemOf(issue, project.id) ??
-    graphql(
-      `
-        mutation ($project: ID!, $content: ID!) {
-          addProjectV2ItemById(
-            input: { projectId: $project, contentId: $content }
-          ) {
-            item {
-              id
-            }
-          }
-        }
-      `,
-      { project: project.id, content: issue.id },
-    ).addProjectV2ItemById.item.id;
+    waitForBoardItem(issue, project.id, readIssueItems, sleep) ??
+    addToBoard(project, issue, op.card.key);
   return { itemId, issueId: issue.id };
 }
 
@@ -606,6 +649,7 @@ if (setup) {
   project = readProject();
 }
 const { specs, bugs } = readSnapshots();
+const clashes = numberClashes(specs);
 const cards = deriveCards({ specs, bugs, pulls: readPulls() });
 const ops = planChanges(cards, project.items);
 
@@ -616,12 +660,9 @@ if (problems.length > 0) {
   process.exit(1);
 }
 
-const known = new Set(cards.flatMap((card) => [card.key, ...card.aliases]));
-for (const item of project.items.filter(
-  (candidate) => candidate.fields.Key && !known.has(candidate.fields.Key),
-)) {
+for (const key of strayKeys(cards, project.items)) {
   console.log(
-    `warning: ${item.fields.Key} is on the board but no longer in the repository`,
+    `warning: ${key} is on the board but no longer in the repository`,
   );
 }
 const repositoryId = dryRun ? null : readRepositoryId();
@@ -643,3 +684,7 @@ if (!dryRun) {
   }
 }
 console.log(`${cards.length} cards, ${ops.length} changes`);
+if (clashes.length > 0) {
+  console.error(clashReport(clashes, cards));
+  process.exitCode = 1;
+}

@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 // @ts-expect-error plain JavaScript with no declarations
 import * as board from '../../../tools/project-board/derive.mjs'
 
@@ -8,6 +8,7 @@ type Card = {
   key: string
   aliases: string[]
   parentKey?: string
+  held?: boolean
   title: string
   body: string
   fields: Record<string, string>
@@ -148,6 +149,91 @@ describe('phased features', () => {
     const named = phases006.replace('| 2 | later |', '| 2 | 009 |')
     const cards = derive({ specs: [specSnapshot('006-sweep', 'main', { title: 'Sweep, Phase 1', extra: named })] })
     expect(cards.get('006-sweep/phase-2')?.fields.Status).toBe('Idea')
+  })
+})
+
+describe('a spec number two folders share', () => {
+  const naming008 = phases006.replace('| 2 | later |', '| 2 | 008 |')
+  const sweep = specSnapshot('006-sweep', 'main', { title: 'Performance Sweep, Phase 1 - Baseline', extra: naming008 })
+  const capture = specSnapshot('008-capture', 'claude/cloud', { title: 'Phone Idea Capture' })
+  const hydration = specSnapshot('008-hydration', '008-hydration', { title: 'Performance Sweep, Phase 2', extra: naming008 })
+  const other = specSnapshot('010-other', 'main', { title: 'Other' })
+  const clashing = [sweep, capture, hydration, other]
+  const held = (cards: Map<string, Card>) => [...cards.values()].filter((card) => card.held).map((card) => card.key)
+  const boardItem = (key: string) => ({
+    id: `item-${key}`,
+    type: 'Issue',
+    contentId: `issue-${key}`,
+    state: 'OPEN',
+    parentId: null,
+    title: 'stale',
+    body: '',
+    fields: { Key: key, Status: 'Specified', Kind: 'Feature', Feature: '', Phase: '' },
+  })
+
+  it('names the number with each folder and the branches that hold it', () => {
+    expect(board.numberClashes([...clashing, { ...hydration, ref: 'main' }])).toEqual([
+      {
+        number: '008',
+        folders: [
+          { dir: '008-capture', refs: ['claude/cloud'] },
+          { dir: '008-hydration', refs: ['008-hydration', 'main'] },
+        ],
+      },
+    ])
+  })
+
+  it('is no clash when one folder is on several branches', () => {
+    expect(board.numberClashes([sweep, { ...sweep, ref: '006-sweep' }, other])).toEqual([])
+  })
+
+  it('holds both folders and every card of the feature whose table names the number', () => {
+    const cards = derive({ specs: clashing })
+    expect(held(cards)).toEqual(['006-sweep', '008-capture', '008-hydration'])
+    expect(cards.get('008-capture')?.parentKey).toBeUndefined()
+    expect(cards.get('010-other')?.held).toBeUndefined()
+  })
+
+  it("holds the feature when only another branch's table names the shared number", () => {
+    const naming009 = phases006.replace('| 2 | later |', '| 2 | 009 |')
+    const onMain = specSnapshot('006-sweep', 'main', { title: 'Performance Sweep, Phase 1 - Baseline', extra: naming009 })
+    const nine = specSnapshot('009-hydration', 'main', { title: 'Performance Sweep, Phase 2', extra: naming009 })
+    const onStale = specSnapshot('006-sweep', 'stale', { title: 'Performance Sweep, Phase 1 - Baseline', extra: naming008 })
+    const old = specSnapshot('008-old', 'stale', { title: 'Old' })
+    const cards = derive({ specs: [onMain, nine, onStale, capture, old, other] })
+    expect(held(cards)).toEqual(['006-sweep', '008-capture', '008-old', '009-hydration'])
+    expect(cards.get('009-hydration')?.parentKey).toBeUndefined()
+  })
+
+  it("holds the whole feature when phase 1's number is the shared one", () => {
+    const plain = specSnapshot('006-sweep', 'main', { title: 'Performance Sweep, Phase 1 - Baseline', extra: phases006 })
+    const rival = specSnapshot('006-rival', 'stale', { title: 'Rival' })
+    const two = specSnapshot('009-two', '009-two', {
+      title: 'Performance Sweep, Phase 2',
+      extra: phases006.replace('| 2 | later |', '| 2 | 009 |'),
+    })
+    expect(held(derive({ specs: [plain, rival, two, other] }))).toEqual(['006-rival', '006-sweep', '009-two'])
+  })
+
+  it('holds nothing while every number names one folder', () => {
+    expect(held(derive({ specs: [sweep, hydration, other] }))).toEqual([])
+  })
+
+  it('plans no change for a held card and calls none of its items a stray', () => {
+    const cards: Card[] = board.deriveCards({ specs: clashing, bugs: [], pulls: [] })
+    const keys = ['006-sweep', '006-sweep/phase-2', '006-sweep/phase-3', '008-capture', '010-other', '011-gone']
+    const items = keys.map(boardItem)
+    expect(board.planChanges(cards, items).map((op: { card: Card }) => op.card.key)).toEqual(['010-other'])
+    expect(board.strayKeys(cards, items)).toEqual(['011-gone'])
+  })
+
+  it('reports the clash and the held cards plainly', () => {
+    const cards: Card[] = board.deriveCards({ specs: clashing, bugs: [], pulls: [] })
+    expect(board.clashReport(board.numberClashes([...clashing, { ...hydration, ref: 'main' }]), cards)).toBe(
+      'Spec number 008 names more than one folder: 008-capture on claude/cloud; 008-hydration on 008-hydration, main.\n' +
+        'Renumber all but one of them. Until then the sync leaves these cards as they are: ' +
+        '006-sweep, 008-capture, 008-hydration.',
+    )
   })
 })
 
@@ -328,6 +414,54 @@ describe('a created issue', () => {
   it('has no item when createIssue answers without one for this board, and that is no error', () => {
     expect(board.boardItemOf(issue(), 'P_board')).toBeNull()
     expect(board.boardItemOf(issue('P_other'), 'P_board')).toBeNull()
+  })
+
+  it('takes the item from the createIssue reply without reading the issue again', () => {
+    const reread = vi.fn()
+    const pause = vi.fn()
+    expect(board.waitForBoardItem(issue('P_board'), 'P_board', reread, pause)).toBe('PVTI_0')
+    expect(reread).not.toHaveBeenCalled()
+    expect(pause).not.toHaveBeenCalled()
+  })
+
+  it('reads the issue again, pausing longer each time, until its item appears', () => {
+    const replies = [issue(), issue('P_other', 'P_board')]
+    const reread = vi.fn(() => replies.shift())
+    const pause = vi.fn()
+    expect(board.waitForBoardItem(issue(), 'P_board', reread, pause)).toBe('PVTI_1')
+    expect(reread.mock.calls).toEqual([['I_1'], ['I_1']])
+    expect(pause.mock.calls).toEqual([[1000], [2000]])
+  })
+
+  it('keeps reading when a read fails or finds no issue', () => {
+    const replies = [
+      () => {
+        throw new Error('gh: Could not resolve to a node')
+      },
+      () => null,
+      () => issue('P_board'),
+    ]
+    const reread = vi.fn(() => replies.shift()!())
+    const pause = vi.fn()
+    expect(board.waitForBoardItem(issue(), 'P_board', reread, pause)).toBe('PVTI_0')
+    expect(pause.mock.calls.flat()).toEqual([1000, 2000, 4000])
+  })
+
+  it('gives up with no item, and no error, when every read fails', () => {
+    const reread = vi.fn(() => {
+      throw new Error('gh: rate limited')
+    })
+    const pause = vi.fn()
+    expect(board.waitForBoardItem(issue(), 'P_board', reread, pause)).toBeNull()
+    expect(reread).toHaveBeenCalledTimes(4)
+  })
+
+  it('gives up with no item after the last read', () => {
+    const reread = vi.fn(() => issue('P_other'))
+    const pause = vi.fn()
+    expect(board.waitForBoardItem(issue(), 'P_board', reread, pause)).toBeNull()
+    expect(pause.mock.calls.flat()).toEqual([1000, 2000, 4000, 8000])
+    expect(reread).toHaveBeenCalledTimes(4)
   })
 })
 

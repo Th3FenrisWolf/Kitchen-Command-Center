@@ -23,8 +23,8 @@ rule. This spec is Phase 1. Each later phase is specified only after the previou
 | Phase | Spec | Covers |
 |---|---|---|
 | 1 | 006 (this spec) | Measurement baseline for every cost area, the budgets and their CI guards, and the paint, composite and animation cost of the Loose Leaf effects and stylesheet |
-| 2 | later | Script weight, hydration and interactivity cost |
-| 3 | later | Server rendering on the Pi, caching (app and Cloudflare), fonts and images |
+| 2 | 009 | Script weight, hydration and interactivity cost |
+| 3 | later | Server rendering on the Pi, caching (app and Cloudflare), the scripts Cloudflare adds to each page, fonts and images |
 
 Phase 1 measures every area, including the ones Phases 2 and 3 fix, so each later phase starts from recorded
 numbers and is held by the same guards.
