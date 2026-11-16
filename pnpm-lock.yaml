@@ -367,6 +367,9 @@ importers:
 
   tests/KCC.ViteTests:
     devDependencies:
+      '@fortawesome/fontawesome-pro':
+        specifier: 'catalog:'
+        version: 7.3.1
       '@vue/server-renderer':
         specifier: 'catalog:'
         version: 3.5.44

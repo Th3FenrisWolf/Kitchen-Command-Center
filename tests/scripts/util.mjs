@@ -19,6 +19,12 @@ export function pickNewestByMtime(entries) {
   return entries.reduce((best, e) => (e.mtimeMs > best.mtimeMs ? e : best)).path;
 }
 
+// TUnit names each JSON report <project>-<os>-<tfm>.tunit-report.json, so the project folder's name picks out its own.
+export function isTunitReportFor(fileName, projectDir) {
+  const project = projectDir.split("/").pop();
+  return fileName.startsWith(`${project}-`) && fileName.endsWith(".tunit-report.json");
+}
+
 // report: { summary:{failed}, suites:[{status}] } -> 0 (clean) or 1 (problem)
 export function computeExitCode(report) {
   if ((report.summary?.failed ?? 0) > 0) return 1;

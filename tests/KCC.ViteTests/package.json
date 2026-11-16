@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "@fortawesome/fontawesome-pro": "catalog:",
     "@vue/server-renderer": "catalog:",
     "postcss": "catalog:",
     "vite": "catalog:",
