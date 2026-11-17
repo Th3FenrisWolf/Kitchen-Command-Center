@@ -3,8 +3,8 @@ schema_version: "1.0"
 preset:
   id: "kcc-ship"
   name: "Ship Through ship-branch"
-  version: "1.1.0"
-  description: "Wraps card implement, the autopilot flow and bug fix so that each branch reaches its pull request through the ship-branch skill, without its Jira steps: two review rounds, one CodeRabbit round, an acceptance check and a recomposition before anything is published, then the pull request and its watch."
+  version: "1.4.0"
+  description: "Wraps specify, card implement, the autopilot flow and bug fix: specify and bug assess take an idea issue as their input and link it, card implement and bug fix label their card Building at pickup, and the rest ensure each branch reaches its pull request through the ship-branch skill, without its Jira steps: two review rounds, one CodeRabbit round, an acceptance check and a recomposition before anything is published, then the pull request and its watch."
   author: "Th3FenrisWolf"
   repository: "https://github.com/Th3FenrisWolf/Kitchen-Command-Center"
 
@@ -14,9 +14,21 @@ requires:
 provides:
   templates:
     - type: "command"
+      name: "speckit.specify"
+      file: "commands/speckit.specify.md"
+      description: "Specify from an idea issue given as #N, and link the issue from the spec"
+      strategy: "wrap"
+
+    - type: "command"
+      name: "speckit.bug.assess"
+      file: "commands/speckit.bug.assess.md"
+      description: "Assess a bug from an idea issue given as #N, and link the issue from the assessment"
+      strategy: "wrap"
+
+    - type: "command"
       name: "speckit.card.implement"
       file: "commands/speckit.card.implement.md"
-      description: "Close out through ship-branch: review, CodeRabbit, acceptance and recomposition before the push, then the pull request and its watch"
+      description: "Label the card Building at pickup, then close out through ship-branch: review, CodeRabbit, acceptance and recomposition before the push, then the pull request and its watch"
       strategy: "wrap"
 
     - type: "command"
@@ -28,7 +40,7 @@ provides:
     - type: "command"
       name: "speckit.bug.fix"
       file: "commands/speckit.bug.fix.md"
-      description: "Publish the bug fix through ship-branch"
+      description: "Label the card Building at pickup, then publish the bug fix through ship-branch"
       strategy: "wrap"
 
 tags:

@@ -5,6 +5,21 @@ strategy: wrap
 
 {CORE_TEMPLATE}
 
+## Building at pickup
+
+> This section adds one step to the command above. Where the two conflict, this section wins.
+
+Run this step after Execution step 1 has confirmed the plan, the verdict not being `invalid`, and before step 2 applies the remediation. It runs on a resumed run and on a docs-only card too.
+
+1. Run `node tools/project-board/pickup.mjs bug/<BUG_SLUG>` and read its JSON.
+2. With `number`, run `gh issue edit <number> --repo <repository> --add-label building`. Put the number, the repository
+   and the label in the command, and nothing else from the JSON.
+3. With `refused`, a non-zero exit or a failed edit, report the reason in one line and carry on to step 2. When the label
+   is missing, name `gh label create building` in that line.
+
+The label shows the card as Building on the project board from this moment. The board sync takes the label off once a
+pushed branch or pull request carries the stage. This step never pushes the branch for the label and is never a stop.
+
 ## Publish through ship-branch
 
 > This section replaces gates 2 and 3 of the Gates above. Where the two conflict, this section wins.
