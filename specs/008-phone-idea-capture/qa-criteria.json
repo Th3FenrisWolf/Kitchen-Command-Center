@@ -1,0 +1,208 @@
+{
+  "title": "Phone Idea Capture",
+  "source": "specs/008-phone-idea-capture/spec.md",
+  "repo": "/Users/twinright/Repos/Personal/Kitchen-Command-Center",
+  "out": "/Users/twinright/Repos/Personal/Kitchen-Command-Center/specs/008-phone-idea-capture",
+  "ask": "once",
+  "formats": [
+    "md",
+    "json"
+  ],
+  "warnings": [
+    "No Jira line in spec.md: no card reads."
+  ],
+  "context": [
+    "specs/008-phone-idea-capture/tasks.md",
+    "specs/008-phone-idea-capture/plan.md"
+  ],
+  "criteria": [
+    {
+      "id": "US1-1",
+      "text": "**Given** the owner opens an issue with only a title, **When** two minutes have passed, **Then** the issue is on the board with Status Idea, Kind Idea, Iteration Current and no Key, and its title and text are as the owner wrote them."
+    },
+    {
+      "id": "US1-2",
+      "text": "**Given** an open issue of the owner's is already on the board with blank fields, as #148 is, **When** the sync runs, **Then** its blank Status, Kind and Iteration are filled with Idea, Idea and Current."
+    },
+    {
+      "id": "US1-3",
+      "text": "**Given** the owner has moved an idea to Future and changed its Kind to Bug, **When** the sync runs again, **Then** both values stay as the owner set them."
+    },
+    {
+      "id": "US1-4",
+      "text": "**Given** twinright-bzs or a visitor opens an issue, **When** the issue is opened, **Then** no board update runs for it and the issue does not appear on the board."
+    },
+    {
+      "id": "US1-5",
+      "text": "**Given** the sync itself opens an issue for a card that has left Idea, **When** that issue is opened, **Then** no board update runs for it and the issue is never treated as an idea."
+    },
+    {
+      "id": "US2-1",
+      "text": "**Given** an open idea on the board, **When** the owner closes its issue, **Then** within two minutes its card is archived, and the issue itself is unchanged."
+    },
+    {
+      "id": "US2-2",
+      "text": "**Given** an idea whose card was archived because its issue closed, **When** the owner reopens the issue, **Then** within two minutes the card is back on the board with the Status, Kind and Iteration it had."
+    },
+    {
+      "id": "US2-3",
+      "text": "**Given** an open idea whose card the owner archived by hand, **When** the sync runs, **Then** the card is back on the board."
+    },
+    {
+      "id": "US2-4",
+      "text": "**Given** a closed issue of the owner's that has never been on the board, **When** the sync runs, **Then** it stays off the board."
+    },
+    {
+      "id": "US3-1",
+      "text": "**Given** an open idea #148, **When** the owner runs `/speckit-specify #148`, **Then** the spec's input is the issue's title and text, and the spec carries a line naming and linking issue #148 as its idea."
+    },
+    {
+      "id": "US3-2",
+      "text": "**Given** a pushed spec that names #148 as its idea, **When** the sync runs, **Then** #148's card carries the spec's Key, the spec's card title and the spec's stage, the issue's text has the synced block above the owner's original words, and the board has exactly one card for the spec."
+    },
+    {
+      "id": "US3-3",
+      "text": "**Given** a spec that names an idea whose issue was closed and whose card was archived, **When** the sync runs, **Then** the card is back on the board and the issue's open or closed state follows the spec's stage."
+    },
+    {
+      "id": "US3-4",
+      "text": "**Given** the owner runs `/speckit-specify #200` and #200 was opened by another account or already carries a Key, **When** the command starts, **Then** it says why it cannot take #200 over, does not read #200's text, and carries on without a link, from any description the owner typed with it or by asking for one."
+    },
+    {
+      "id": "US4-1",
+      "text": "**Given** an open idea #150, **When** the owner runs `/speckit-bug-assess #150`, **Then** the assessment's input is the issue's title and text, and the assessment carries a line naming and linking issue #150 as its idea."
+    },
+    {
+      "id": "US4-2",
+      "text": "**Given** a pushed bug assessment that names #150, **When** the sync runs, **Then** #150's card carries the bug's Key, title, Kind Bug and stage, and the board has exactly one card for the bug."
+    },
+    {
+      "id": "US4-3",
+      "text": "**Given** the owner names another account's issue, or one that already carries a Key, **When** the command starts, **Then** it refuses the link as in User Story 3 and carries on without one."
+    },
+    {
+      "id": "US5-1",
+      "text": "**Given** a Specified card with an issue, **When** the owner starts `/speckit-card-implement` on it, **Then** the card's issue carries the `building` label before the implementation starts, no branch is pushed for it, and within two minutes the card shows Building."
+    },
+    {
+      "id": "US5-2",
+      "text": "**Given** a Specified card with an issue, **When** the owner adds the `building` label to that issue by hand, **Then** within two minutes the card shows Building."
+    },
+    {
+      "id": "US5-3",
+      "text": "**Given** a card at Building through the label, **When** its branch is pushed with a ticked task, or its pull request opens or merges, **Then** the sync takes the label off the issue and the card shows the stage the branch or pull request gives it."
+    },
+    {
+      "id": "US5-4",
+      "text": "**Given** a card at Building through the label alone, **When** the owner takes the label off by hand, **Then** within two minutes the card is back at Specified."
+    },
+    {
+      "id": "US5-5",
+      "text": "**Given** a card with no issue on the board, a card the board does not hold, or a command signed in to GitHub as another account, **When** `/speckit-card-implement` or `/speckit-bug-fix` starts, **Then** it says why it cannot label the card and runs the implementation or the fix as usual."
+    },
+    {
+      "id": "US5-6",
+      "text": "**Given** an owner idea, with no Key, that carries the `building` label, **When** the sync runs, **Then** it leaves the idea's label and fields as they are."
+    },
+    {
+      "id": "US5-7",
+      "text": "**Given** a bug at Specified with an issue, **When** the owner starts `/speckit-bug-fix` on it, **Then** the bug's issue carries the `building` label before the remediation is applied, no branch is pushed for it, and within two minutes the bug's card shows Building."
+    },
+    {
+      "id": "EC-1",
+      "text": "Two specs, two bugs, or a spec and a bug name the same idea: if the idea's card already carries one of their Keys, that one keeps it; otherwise the one whose Key sorts first takes it over. The other gets a card of its own as it would today, and the sync prints a warning naming both."
+    },
+    {
+      "id": "EC-2",
+      "text": "A spec or bug names an issue that does not exist, was transferred away, already carries another Key, or was not opened by the owner: it gets a card of its own as it would today, and the sync prints a warning naming the issue."
+    },
+    {
+      "id": "EC-3",
+      "text": "The sync and the owner use the same account, so every issue the sync opens has the owner as its author. Those issues carry the sync block in their text, and an issue with the sync block is never an idea. This also covers the duplicate issues an earlier sync failure left behind (#144 to #147)."
+    },
+    {
+      "id": "EC-4",
+      "text": "An issue on the board that carries a Key is the sync's, as today, whoever opened it."
+    },
+    {
+      "id": "EC-5",
+      "text": "The owner sets a Key on an idea card by hand: the sync takes it over as it does today. The Idea line is a second way to link an idea, not the only one."
+    },
+    {
+      "id": "EC-6",
+      "text": "The owner makes a draft card on the board in a browser: it stays untouched until it carries a Key, as today."
+    },
+    {
+      "id": "EC-7",
+      "text": "The owner opens several issues in a row: each reaches the board. Queued board updates collapse into one run that covers them all. Issue events that start no board update, including those for the issues the sync itself opens or closes, leave a waiting board update in place."
+    },
+    {
+      "id": "EC-8",
+      "text": "A board update fails or GitHub Actions is down: the next run of any kind catches up, because the sync works from the current state of the repository and the board, not from the event that started it."
+    },
+    {
+      "id": "EC-9",
+      "text": "The owner edits an idea's title or text after it reaches the board: the sync does not notice or touch it."
+    },
+    {
+      "id": "EC-10",
+      "text": "The owner clears one of an idea's fields: the next sync fills it again."
+    },
+    {
+      "id": "EC-11",
+      "text": "The owner opens an issue from an issue template or with labels: it still counts as an idea, and its labels are left alone."
+    },
+    {
+      "id": "EC-12",
+      "text": "`/speckit-card-implement` runs again on a card whose issue already carries the `building` label, as when a run resumes: the label stays, and the board is unchanged."
+    },
+    {
+      "id": "EC-13",
+      "text": "A build is abandoned before anything is pushed: the card stays at Building until the owner takes the label off."
+    },
+    {
+      "id": "EC-14",
+      "text": "The owner moves a card that is at Building through the label to another column by hand: the sync owns its Status, so the next run shows Building again while the label is on and nothing pushed has moved the card past Specified."
+    },
+    {
+      "id": "EC-15",
+      "text": "The `building` label sits on the issue of a card already at Done, or on one at In review: the sync takes it off on its next run, and the card keeps its stage."
+    },
+    {
+      "id": "EC-16",
+      "text": "Any other label added to or taken off an issue starts no board update."
+    },
+    {
+      "id": "SC-001",
+      "text": "An idea opened from the phone with nothing but a title reaches the Idea column within two minutes in at least 9 of 10 tries, with no step on the phone beyond creating the issue."
+    },
+    {
+      "id": "SC-002",
+      "text": "Issue #148 sits in the Idea column, with Kind Idea and Iteration Current, after the first board update that follows the merge."
+    },
+    {
+      "id": "SC-003",
+      "text": "Over the first two weeks of use, the sync changes none of the Status, Kind or Iteration values the owner set on an idea."
+    },
+    {
+      "id": "SC-004",
+      "text": "Every idea that becomes a spec or a bug through its command leaves exactly one card on the board, and the owner types no Key by hand."
+    },
+    {
+      "id": "SC-005",
+      "text": "Issues opened by other accounts start no board update and never appear on the board unless the owner adds them."
+    },
+    {
+      "id": "SC-006",
+      "text": "A closed idea leaves the board within two minutes, and a reopened one returns within two minutes with the fields it had."
+    },
+    {
+      "id": "SC-007",
+      "text": "A Specified card shows Building within two minutes of `/speckit-card-implement` or `/speckit-bug-fix` starting on it, or of the owner adding the `building` label by hand, with no branch pushed."
+    },
+    {
+      "id": "SC-008",
+      "text": "No card at In review or Done carries the `building` label after the board update that moved it there."
+    }
+  ]
+}
