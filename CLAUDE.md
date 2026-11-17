@@ -36,26 +36,39 @@ every session needs.
   PNGs.
 - The artifacts live in `specs/NNN-slug/`, tracked, and are committed with the work they describe.
 - **The project board** is the status view. `.github/workflows/project-board.yml` runs `tools/project-board/sync.mjs`
-  from `main` on every push, pull request and morning, so a branch that changes the sync never writes the live board.
-  It reads `specs/` and `.specify/bugs/` on every branch, with the pull requests, and sets each card's stage: Idea,
-  Specified, Building (from the first ticked task, or a bug's fix on its branch), In review, Done. It owns every
-  card with a **Key**, rewriting its title, its fields and the `<!-- sync -->` block of its body, and never touches
-  a card without one. When two spec folders on any branches share a number, the run fails: it names the folders and
-  their branches, and leaves each folder's card, and every card of a phased feature whose table on any branch names
-  the number, as they are until all but one is renumbered. A card it creates starts in the Current iteration, and it never changes the iteration again,
-  so a card moved to Future stays there.
-- An Idea card is a draft. Once a card leaves Idea, the sync turns it into an issue in this repository, closes the
+  from `main` on every push, pull request and morning, on the owner's issue events and on `building` label events, so a
+  branch that changes the sync never writes the live board. It reads `specs/` and `.specify/bugs/` on every branch,
+  with the pull requests, and sets each card's stage: Idea, Specified, Building (from the first ticked task, or a
+  bug's fix on its branch, or the `building` label), In review, Done. It owns every card with a **Key**, rewriting
+  its title, its fields and the `<!-- sync -->` block of its body, and never touches a draft card without one. It
+  refuses to write when its read finds no spec and no bug. When two spec folders on any branches share a number, the
+  run fails: it names the folders and their branches, and leaves each folder's card, and every card of a phased
+  feature whose table on any branch names the number, as they are until all but one is renumbered. A card it creates
+  starts in the Current iteration, and it fills a blank iteration on a card's issue with Current but never changes a
+  set one, so a card moved to Future stays there.
+- **Ideas.** Every issue the owner opens is an idea. The sync files it on the board with Status Idea, Kind Idea and
+  Iteration Current, fills only blank fields, archives the card when the issue closes, and restores it when the issue
+  reopens or when the card is archived by hand while the issue is open. It never touches anybody else's issue.
+  `/speckit-specify #NNN` and `/speckit-bug-assess #NNN` read the idea through `tools/project-board/idea.mjs` and
+  write its Idea line, and the sync then makes the idea's card the spec's or bug's. Setting a Key by hand on a card
+  still works.
+- A card the sync creates in Idea is a draft. Once a card leaves Idea, the sync turns it into an issue in this repository, closes the
   issue while the card is Done and reopens it if the card leaves Done, and makes a later phase's issue a sub-issue
-  of phase 1's. The owner's ideas are draft cards, or issues, with no Key. When an idea becomes a spec, set its Key
+  of phase 1's. A draft card with no Key stays the owner's: when an idea becomes a spec, set its Key
   to the spec's `NNN-slug` and the sync takes it over. Run it by hand with `node tools/project-board/sync.mjs
   --dry-run` after `git fetch`; `--setup` creates missing fields and options. `PROJECT_BOARD_TOKEN` is a classic
   token with the `project` and `public_repo` scopes.
+- **The `building` label.** `/speckit-card-implement` and `/speckit-bug-fix` add it to the card's issue when they
+  start, through `tools/project-board/pickup.mjs`, and push nothing. The sync shows a Specified card that carries it as
+  Building, and removes it once a pushed branch or pull request carries the stage. The owner can add or remove it by
+  hand.
 - A spec's `**Status**:` line links to its board card and never names a stage. A phased feature carries a
   `| Phase | Spec | Covers |` table in each phase's spec, `later` for a phase not yet specified, and the board shows
   an Idea card of Kind Phase for each `later` row.
 
-An extension update writes card implement, flow and bug fix back without the preset's steps, so run
-`.specify/presets/kcc-ship/scripts/reapply.sh` after every `/bizstream:update`.
+An extension update writes card implement, flow, bug fix, specify and bug assess back without the preset's steps, so run
+`.specify/presets/kcc-ship/scripts/reapply.sh` after every `/bizstream:update`. It restores the idea reads, the pickup
+step and the ship steps.
 
 The Superpowers plugin is off in this repository: `.claude/settings.json` sets it to false, because its start-up hook
 sends new work to its own brainstorming and plans. Spec Kit covers what it did: the constitution's test-first rule,
