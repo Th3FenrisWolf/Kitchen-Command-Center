@@ -1,40 +1,29 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.3.0 -> 2.0.0 (MAJOR: a settled decision, a rule of principle V and the review
-rule are redefined)
+Version change: 2.0.0 -> 2.1.0 (MINOR: the Flow section gains material guidance; no principle,
+gate, settled decision or definition-of-done row changes)
 
-Modified principles:
-- IV. Test-First, Clean Build: the build and generator commands run through pnpm. No rule changes.
-- V. Cheap to Run, Cheap to Upgrade: only a new major version of .NET, Umbraco or uSync needs its
-  own spec. Any other package or tool major may land in a dependency update when all six suites
-  pass. New rule: a package, tool or base image version is at least seven days old when it is
-  taken, unless the release fixes a security advisory.
+Modified principles: none
 
 Modified sections:
-- Platform: packages are pnpm workspaces, where they were Yarn 1 workspaces.
-- Settled decisions: Node follows the newest LTS line once that line is the active LTS, where it
-  stayed on major version 24 because later images drop Yarn 1.
-- Gates 1 and 2: pnpm replaces Yarn, and gate 2 names the `~/.npmrc` line pnpm reads the Font
-  Awesome token from.
-- Definition of done rows D2, D3 and D5: the commands run through pnpm. No check changes.
-- Review and merge: the `ship-branch` skill, without its Jira steps, replaces the local CodeRabbit
-  loop of up to three rounds. Before the pull request opens it runs two review rounds with a
-  verifier, one CodeRabbit round and an acceptance check, then recomposes the branch. The
-  autopilot flow and bug fix size the review to the diff, and a risk path keeps it full. A
-  regression, an unfixed finding or an unmet criterion blocks the publish. The BizStream bundle no longer
-  ships the CodeRabbit extension, and the `kcc-ship` preset replaces `kcc-recompose`.
-- Governance: the review, not the CodeRabbit loop, reads this file as context.
+- Flow: every issue the owner opens is an idea the board sync files as Idea, Kind Idea, Iteration
+  Current, filling only blank fields, and archives on close and restores on reopen. The sync
+  touches an idea card only to fill its blanks and archive or restore it, and never touches a draft
+  card without a Key or anybody else's issue. It also runs on the owner's issue events and on
+  `building` label events. `/speckit-specify #NNN` and `/speckit-bug-assess #NNN` read an idea
+  through `tools/project-board/idea.mjs`, and the spec or bug takes over the idea's card.
+  `/speckit-card-implement` and `/speckit-bug-fix` label the card's issue `building` at pickup
+  with no push; the sync shows a Specified card carrying it as Building and removes it once a
+  pushed branch or pull request carries the stage.
 
 Added sections: none
 Removed sections: none
 
 Dependent templates and commands read this file at runtime and are not edited here:
-- .specify/templates/spec-template.md, plan-template.md, tasks-template.md: no change needed
-- speckit-card-implement: reads Gates, Ordering rule and Definition of done
-- speckit-grill-run and the grilling preset: read Settled decisions and Decision ownership
-- ship-branch, through the kcc-ship preset: reads this file as context and runs the definition of
-  done as its checks
+- CLAUDE.md's Spec Kit board notes: already say the same on this branch
+- speckit-specify, speckit-bug-assess, speckit-card-implement and speckit-bug-fix: the kcc-ship
+  preset wraps carry the idea input and the pickup label, restored by reapply.sh
 
 Deferred placeholders: none
 -->
@@ -237,14 +226,24 @@ amendment.
 - The project uses no Jira. A spec carries no Jira line, and the Jira commands and the board step
   of card implement do not apply. Pull requests are the record of changes, and the specs the record
   of features. GitHub issues track the work on the project board, and never replace a spec.
-- The GitHub project board (`tools/project-board/board.json` names it) shows every spec, every later
-  phase and every bug at its stage, and holds the owner's ideas as draft cards. A card becomes a
-  GitHub issue in this repository once it leaves Idea, and its issue is closed while the card is
-  Done. A later phase's issue is a sub-issue of phase 1's. The workflow always runs the sync from
-  `main`.
-  `tools/project-board/sync.mjs` writes it from the specs, the bug folders and the pull requests on
-  every push and pull request, and never touches a card without a Key. A spec's **Status** line
+- The GitHub project board (`tools/project-board/board.json` names it) shows every spec, every
+  later phase and every bug at its stage, and holds the owner's ideas. Every issue the owner opens
+  in this repository is an idea: the sync files it as Idea, with Kind Idea and Iteration Current,
+  fills only blank fields, archives its card when the issue closes and restores the card when the
+  issue reopens. The sync touches an idea card only to fill its blanks and archive or restore it.
+  A card becomes a GitHub issue in this repository once it leaves Idea, and its issue is closed
+  while the card is Done. A later phase's issue is a sub-issue of phase 1's. The workflow always
+  runs the sync from `main`.
+  `tools/project-board/sync.mjs` writes it from the specs, the bug folders, the pull requests and
+  the owner's issues, on every push, pull request, owner issue event and `building` label event,
+  and never touches a draft card without a Key or anybody else's issue. A spec's **Status** line
   links to its card instead of naming a stage.
+- `/speckit-specify #NNN` and `/speckit-bug-assess #NNN` read an idea through
+  `tools/project-board/idea.mjs` and write its Idea line, and the spec or bug takes over the card
+  of the idea that line names.
+- `/speckit-card-implement` and `/speckit-bug-fix` label the card's issue `building` at pickup and
+  push nothing. The sync shows a Specified card that carries the label as Building, and removes
+  the label once a pushed branch or pull request carries the stage.
 
 ### Gates
 
@@ -327,4 +326,4 @@ change to any file outside `specs/`, `docs/` and Markdown files.
   plan that breaks a principle MUST justify the break in its Complexity Tracking table, and an
   unjustified break fails the Constitution Check.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-11
+**Version**: 2.1.0 | **Ratified**: 2026-10-05 | **Last Amended**: 2026-11-16

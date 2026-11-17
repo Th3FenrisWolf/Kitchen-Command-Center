@@ -83,13 +83,15 @@
       "installed_at": "2026-11-11T19:37:08.292561+00:00"
     },
     "kcc-ship": {
-      "version": "1.1.0",
+      "version": "1.4.0",
       "source": "local",
-      "manifest_hash": "sha256:dcd30d7c64406b48b0b6424952821ba15557b258899de085a6a4765209c07c92",
+      "manifest_hash": "sha256:f1e08eb36457d9518100dd690c6e972637dd00b03cf80a42dd1123ed1277bbf2",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
         "claude": [
+          "speckit.specify",
+          "speckit.bug.assess",
           "speckit.card.implement",
           "speckit.flow.run",
           "speckit.bug.fix"
@@ -97,12 +99,14 @@
       },
       "registered_skills": {
         "claude": [
+          "speckit-specify",
+          "speckit-bug-assess",
           "speckit-card-implement",
           "speckit-flow-run",
           "speckit-bug-fix"
         ]
       },
-      "installed_at": "2026-11-11T20:05:11.847904+00:00"
+      "installed_at": "2026-11-17T14:10:31.263351+00:00"
     }
   }
 }

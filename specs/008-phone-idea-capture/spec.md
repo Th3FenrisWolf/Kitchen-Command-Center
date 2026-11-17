@@ -40,6 +40,16 @@ from it take over the same card.
   `/speckit-specify #NNN` does.
 - Q: Which issues can those two commands take over? → A: Only issues the owner opened. Naming anyone else's issue is
   refused with a message, and the command runs as usual without a link.
+- Q: The board shows a card at Specified while it is being built, because the branch stays local until the close-out
+  pushes it. Should 008 also show a card as Building from the moment its build starts? → A: Yes.
+  `/speckit-card-implement` puts a `building` label on the card's issue when it starts, and pushes nothing. The board
+  shows a card whose issue carries that label at Building while nothing pushed has moved it past Specified, and the
+  label comes off once a pushed branch or a pull request carries the card's stage. The owner can also put the label on
+  or take it off by hand, from the phone. Setting the card's Status directly was rejected, because the sync owns every
+  card with a Key and would set it back; pushing the branch early was rejected, because the branch is recomposed once
+  before its first push.
+- Q: Should `/speckit-bug-fix` also add the `building` label when it starts, or only card implement? → A: Bug fix
+  too. It puts the label on the bug's card issue as it starts, the same way card implement does.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -146,6 +156,44 @@ the bug's card, with Kind Bug and the bug's Key, and no second card.
 
 ---
 
+### User Story 5 - Show a card as Building from the moment its build starts (Priority: P3)
+
+The owner starts `/speckit-card-implement` on a Specified card, or `/speckit-bug-fix` on a Specified bug. The branch
+stays on the owner's machine until the close-out pushes it, so today the board keeps showing the card at Specified for
+the whole build. With this story the command puts a `building` label on the card's issue as it starts, and the board shows the card at Building within two
+minutes. Once the pushed branch or the pull request carries the card's stage, the label comes off. The owner can put
+the label on, or take it off, by hand from the phone.
+
+**Why this priority**: The board is right again as soon as the branch is pushed. This only closes the gap while a
+build runs locally, which matters less than capturing and taking over ideas.
+
+**Independent Test**: Start `/speckit-card-implement` on a Specified card and see its issue gain the `building` label
+and its card move to Building with no branch pushed; then push the branch and see the label come off while the card
+stays at the stage the branch gives it.
+
+**Acceptance Scenarios**:
+
+1. **Given** a Specified card with an issue, **When** the owner starts `/speckit-card-implement` on it, **Then** the
+   card's issue carries the `building` label before the implementation starts, no branch is pushed for it, and within
+   two minutes the card shows Building.
+2. **Given** a Specified card with an issue, **When** the owner adds the `building` label to that issue by hand,
+   **Then** within two minutes the card shows Building.
+3. **Given** a card at Building through the label, **When** its branch is pushed with a ticked task, or its pull
+   request opens or merges, **Then** the sync takes the label off the issue and the card shows the stage the branch or
+   pull request gives it.
+4. **Given** a card at Building through the label alone, **When** the owner takes the label off by hand, **Then**
+   within two minutes the card is back at Specified.
+5. **Given** a card with no issue on the board, a card the board does not hold, or a command signed in to GitHub as
+   another account, **When** `/speckit-card-implement` or `/speckit-bug-fix` starts, **Then** it says why it cannot
+   label the card and runs the implementation or the fix as usual.
+6. **Given** an owner idea, with no Key, that carries the `building` label, **When** the sync runs, **Then** it leaves
+   the idea's label and fields as they are.
+7. **Given** a bug at Specified with an issue, **When** the owner starts `/speckit-bug-fix` on it, **Then** the bug's
+   issue carries the `building` label before the remediation is applied, no branch is pushed for it, and within two
+   minutes the bug's card shows Building.
+
+---
+
 ### Edge Cases
 
 - Two specs, two bugs, or a spec and a bug name the same idea: if the idea's card already carries one of their Keys,
@@ -169,6 +217,14 @@ the bug's card, with Kind Bug and the bug's Key, and no second card.
 - The owner clears one of an idea's fields: the next sync fills it again.
 - The owner opens an issue from an issue template or with labels: it still counts as an idea, and its labels are left
   alone.
+- `/speckit-card-implement` runs again on a card whose issue already carries the `building` label, as when a run
+  resumes: the label stays, and the board is unchanged.
+- A build is abandoned before anything is pushed: the card stays at Building until the owner takes the label off.
+- The owner moves a card that is at Building through the label to another column by hand: the sync owns its Status,
+  so the next run shows Building again while the label is on and nothing pushed has moved the card past Specified.
+- The `building` label sits on the issue of a card already at Done, or on one at In review: the sync takes it off on
+  its next run, and the card keeps its stage.
+- Any other label added to or taken off an issue starts no board update.
 
 ## Requirements *(mandatory)*
 
@@ -219,6 +275,23 @@ the bug's card, with Kind Bug and the bug's Key, and no second card.
   owner's issues are ideas the sync files and archives, and a spec or bug takes over the idea it names. The
   constitution changes through `/speckit-constitution`, run by the owner, as a MINOR amendment in the same pull
   request.
+- **FR-018**: The sync MUST show a card at Building when its issue carries the `building` label and the stage the
+  sync derives from the specs, the bug folders and the pull requests is Specified. The label MUST NOT change a card at
+  any other stage, and counts whoever added it.
+- **FR-019**: The sync MUST take the `building` label off a card's issue once the card's derived stage is past
+  Specified, and MUST NOT add the label anywhere. It MUST NOT add or remove the label on an issue whose card carries no
+  Key (FR-004) or on an archived card.
+- **FR-020**: `/speckit-card-implement` MUST put the `building` label on the card's issue after its branch exists and
+  before the implementation starts, and `/speckit-bug-fix` MUST put it on the bug's card issue once the fix plan is
+  confirmed and before the remediation is applied. Neither MUST push a branch to do it. Each command MUST name only the issue's
+  number, the repository and the label in the commands it runs for it (FR-008). When the card has no issue on the
+  board, or the lookup or the label fails, the command MUST say why and carry on: the label never stops a build.
+- **FR-021**: A board update MUST start when the `building` label is added to or taken off an issue the board owner
+  opened, the sync's own card issues included. Adding or taking off any other label MUST NOT start one, and FR-007's
+  rule that a skipped event never cancels, delays or replaces a waiting update holds for label events too.
+- **FR-022**: The notes of FR-017, in the constitution's Flow section and in `CLAUDE.md`, MUST also state that the
+  `building` label shows a card at Building while nothing pushed has moved it past Specified, that card implement and
+  bug fix add it, and that the sync takes it off.
 
 ### Key Entities
 
@@ -229,6 +302,8 @@ the bug's card, with Kind Bug and the bug's Key, and no second card.
   the blanks the sync fills and its archiving.
 - **Idea line**: the `**Idea**: #NNN` line in a spec or a bug assessment, naming the owner idea it grew from. It is the
   only link the sync reads between a spec or bug and an idea.
+- **Building label**: the `building` label on a card's issue. It marks a card whose build has started on the owner's
+  machine, before anything is pushed. Card implement, bug fix and the owner add it; the sync only reads it and takes it off.
 
 ## Success Criteria *(mandatory)*
 
@@ -246,6 +321,9 @@ the bug's card, with Kind Bug and the bug's Key, and no second card.
   adds them.
 - **SC-006**: A closed idea leaves the board within two minutes, and a reopened one returns within two minutes with
   the fields it had.
+- **SC-007**: A Specified card shows Building within two minutes of `/speckit-card-implement` or `/speckit-bug-fix`
+  starting on it, or of the owner adding the `building` label by hand, with no branch pushed.
+- **SC-008**: No card at In review or Done carries the `building` label after the board update that moved it there.
 
 ## Assumptions
 
@@ -255,12 +333,15 @@ the bug's card, with Kind Bug and the bug's Key, and no second card.
   next run of any kind.
 - A new idea starts in the Current iteration, as every card the sync creates does, and the owner moves it to Future
   when it is not for now.
-- The board's own built-in automations, such as setting Done when an item closes or reopens, are turned off or left
-  to the sync. If one is on, a reopened idea comes back with the Status it set, because the sync fills only blank
-  fields.
+- The board's built-in "Item closed" workflow is off, so a reopened idea comes back with the Status it had; the sync
+  sets Done and closes the issue for every card it owns. "Auto-close issue" stays on.
 - `/speckit-specify` and `/speckit-bug-assess` come from Spec Kit extensions, which an extension update rewrites. The
   `#NNN` handling survives an update the same way the recompose steps do, by a project preset that is reapplied after
-  every update.
+  every update. Card implement's and bug fix's `building` steps survive the same way.
+- The `building` label exists in the repository; the owner made it on 2026-11-16. The sync never makes or deletes a
+  label.
+- Only accounts with triage or write access can label an issue in this repository: today the owner and
+  twinright-bzs. The label counts whoever added it.
 - Out of scope: ideas from other accounts, labels or issue templates for ideas, adopting draft cards made on the
   board, notifications, moving ideas between iterations on their own, and any phone shortcut beyond the GitHub app's
   new-issue screen.

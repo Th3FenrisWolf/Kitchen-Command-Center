@@ -7,11 +7,17 @@ import {
   clashReport,
   config,
   CREATE_FIELDS,
+  claimIdeas,
   deriveCards,
+  describeOp,
+  emptyReadError,
   ITERATIONS,
   KINDS,
   numberClashes,
+  indexByKey,
+  ownerIdeas,
   planChanges,
+  planIdeas,
   schemaProblems,
   STAGES,
   strayKeys,
@@ -160,6 +166,53 @@ function readPulls() {
   return pulls;
 }
 
+function readOwnerIssues() {
+  const issues = [];
+  let after = null;
+  do {
+    const { repository } = graphql(
+      `
+        query (
+          $owner: String!
+          $repo: String!
+          $author: String!
+          $after: String
+        ) {
+          repository(owner: $owner, name: $repo) {
+            issues(
+              first: 100
+              after: $after
+              filterBy: { createdBy: $author }
+              states: [OPEN, CLOSED]
+            ) {
+              nodes {
+                id
+                number
+                state
+                body
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+      `,
+      { owner: config.owner, repo: config.repo, author: config.owner, after },
+    );
+    const page = repository.issues;
+    issues.push(
+      ...page.nodes.map((issue) => ({
+        ...issue,
+        synced: (issue.body ?? "").includes("<!-- sync -->"),
+      })),
+    );
+    after = page.pageInfo.hasNextPage ? page.pageInfo.endCursor : null;
+  } while (after);
+  return issues;
+}
+
 function readProject() {
   const fieldsQuery = `
     fields(first: 50) {
@@ -178,13 +231,14 @@ function readProject() {
           projectV2(number: $number) {
             id
             ${fieldsQuery}
-            items(first: 100, after: $after) {
+            items(first: 100, after: $after, archivedStates: [ARCHIVED, NOT_ARCHIVED]) {
               nodes {
                 id
+                isArchived
                 content {
                   __typename
                   ... on DraftIssue { id title body }
-                  ... on Issue { id title body state parent { id } }
+                  ... on Issue { id title body state parent { id } labels(first: 20) { nodes { id name } } }
                   ... on PullRequest { id }
                 }
                 fieldValues(first: 20) {
@@ -218,6 +272,8 @@ function readProject() {
         body: node.content?.body,
         state: node.content?.state,
         parentId: node.content?.parent?.id ?? null,
+        labels: node.content?.labels?.nodes ?? [],
+        archived: node.isArchived,
         fields,
       });
     }
@@ -515,6 +571,66 @@ function createItem(project, repositoryId, op) {
   return { itemId, issueId: issue.id };
 }
 
+function unarchiveItem(project, itemId) {
+  graphql(
+    `
+      mutation ($project: ID!, $item: ID!) {
+        unarchiveProjectV2Item(input: { projectId: $project, itemId: $item }) {
+          item {
+            id
+          }
+        }
+      }
+    `,
+    { project: project.id, item: itemId },
+  );
+}
+
+function adoptIssue(project, op) {
+  try {
+    return graphql(
+      `
+        mutation ($project: ID!, $content: ID!) {
+          addProjectV2ItemById(
+            input: { projectId: $project, contentId: $content }
+          ) {
+            item {
+              id
+            }
+          }
+        }
+      `,
+      { project: project.id, content: op.contentId },
+    ).addProjectV2ItemById.item.id;
+  } catch (error) {
+    throw new Error(
+      `Issue #${op.takes} could not be added to the board for ${op.card.key}.`,
+      { cause: error },
+    );
+  }
+}
+
+function removeLabel(key, issueId, labelId) {
+  try {
+    graphql(
+      `
+        mutation ($issue: ID!, $label: ID!) {
+          removeLabelsFromLabelable(
+            input: { labelableId: $issue, labelIds: [$label] }
+          ) {
+            clientMutationId
+          }
+        }
+      `,
+      { issue: issueId, label: labelId },
+    );
+  } catch (error) {
+    throw new Error(`could not remove the building label from ${key}`, {
+      cause: error,
+    });
+  }
+}
+
 function apply(project, repositoryId, op, issueIds) {
   if (op.op === "create") {
     const { itemId, issueId } = createItem(project, repositoryId, op);
@@ -534,6 +650,21 @@ function apply(project, repositoryId, op, issueIds) {
   }
 
   let { itemId, type, contentId } = op;
+  if (op.unarchive) {
+    unarchiveItem(project, itemId);
+  }
+  if (op.adopt) {
+    itemId = adoptIssue(project, op);
+  }
+  // The body write marks the owner's issue as synced, so it is no longer an idea to claim: with the Key written first, a
+  // run after a failed write still finds the item by its Key instead of creating the card again.
+  const { Key: claimedKey, Iteration: iteration, ...fields } = op.fields ?? {};
+  if (op.takes && claimedKey !== undefined) {
+    setField(project, itemId, "Key", claimedKey);
+  }
+  if (op.takes && iteration !== undefined) {
+    setField(project, itemId, "Iteration", iteration);
+  }
   if (op.convert) {
     const { item } = graphql(
       `
@@ -585,7 +716,9 @@ function apply(project, repositoryId, op, issueIds) {
       );
     }
   }
-  for (const [name, value] of Object.entries(op.fields ?? {})) {
+  for (const [name, value] of Object.entries(
+    op.takes ? fields : (op.fields ?? {}),
+  )) {
     setField(project, itemId, name, value);
   }
   if (type === "Issue") {
@@ -593,6 +726,55 @@ function apply(project, repositoryId, op, issueIds) {
     if (op.state) {
       setIssueState(contentId, op.state);
     }
+    if (op.unlabel) {
+      removeLabel(op.card.key, contentId, op.unlabel);
+    }
+  }
+}
+
+function applyIdea(project, op) {
+  let itemId = op.itemId;
+  if (op.add) {
+    try {
+      itemId = graphql(
+        `
+          mutation ($project: ID!, $content: ID!) {
+            addProjectV2ItemById(
+              input: { projectId: $project, contentId: $content }
+            ) {
+              item {
+                id
+              }
+            }
+          }
+        `,
+        { project: project.id, content: op.contentId },
+      ).addProjectV2ItemById.item.id;
+    } catch (error) {
+      throw new Error(`Issue #${op.issue} could not be added to the board.`, {
+        cause: error,
+      });
+    }
+  }
+  if (op.restore) {
+    unarchiveItem(project, itemId);
+  }
+  if (op.archive) {
+    graphql(
+      `
+        mutation ($project: ID!, $item: ID!) {
+          archiveProjectV2Item(input: { projectId: $project, itemId: $item }) {
+            item {
+              id
+            }
+          }
+        }
+      `,
+      { project: project.id, item: itemId },
+    );
+  }
+  for (const [name, value] of Object.entries(op.fields ?? {})) {
+    setField(project, itemId, name, value);
   }
 }
 
@@ -619,23 +801,6 @@ function linkParent(op, issueIds) {
   );
 }
 
-function describe(op) {
-  if (op.op === "create") {
-    return `create ${op.card.key} as ${op.as}: ${op.card.fields.Status}${op.parent ? `, under ${op.parent}` : ""}`;
-  }
-  const parts = [
-    ...(op.convert ? ["to an issue"] : []),
-    ...(op.title !== undefined ? ["title"] : []),
-    ...(op.body !== undefined ? ["body"] : []),
-    ...Object.entries(op.fields ?? {}).map(
-      ([name, value]) => `${name}=${value || "(empty)"}`,
-    ),
-    ...(op.state ? [op.state === "CLOSED" ? "close" : "reopen"] : []),
-    ...(op.parent ? [`under ${op.parent}`] : []),
-  ];
-  return `update ${op.card.key}: ${parts.join(", ")}`;
-}
-
 if (setup && dryRun) {
   console.error(
     "--setup changes the project's fields, so it cannot run with --dry-run",
@@ -643,15 +808,22 @@ if (setup && dryRun) {
   process.exit(1);
 }
 
+const { specs, bugs } = readSnapshots();
+const emptyRead = emptyReadError(specs, bugs);
+if (emptyRead) {
+  console.error(emptyRead);
+  process.exit(1);
+}
 let project = readProject();
 if (setup) {
   ensureFields(project);
   project = readProject();
 }
-const { specs, bugs } = readSnapshots();
 const clashes = numberClashes(specs);
 const cards = deriveCards({ specs, bugs, pulls: readPulls() });
-const ops = planChanges(cards, project.items);
+const ownerIssues = readOwnerIssues();
+const { claims, warnings } = claimIdeas(cards, ownerIssues, project.items);
+const ops = planChanges(cards, project.items, claims);
 
 // A field write that fails after its draft was created leaves a card with no Key, which every later run duplicates.
 const problems = schemaProblems(project.fields, cards);
@@ -665,14 +837,17 @@ for (const key of strayKeys(cards, project.items)) {
     `warning: ${key} is on the board but no longer in the repository`,
   );
 }
+for (const warning of warnings) {
+  console.log(`warning: ${warning}`);
+}
 const repositoryId = dryRun ? null : readRepositoryId();
 const issueIds = new Map(
-  project.items
-    .filter((item) => item.type === "Issue" && item.fields.Key)
-    .map((item) => [item.fields.Key, item.contentId]),
+  [...indexByKey(project.items)]
+    .filter(([, item]) => item.type === "Issue")
+    .map(([key, item]) => [key, item.contentId]),
 );
 for (const op of ops) {
-  console.log(`${dryRun ? "[dry run] " : ""}${describe(op)}`);
+  console.log(`${dryRun ? "[dry run] " : ""}${describeOp(op)}`);
   if (!dryRun) {
     apply(project, repositoryId, op, issueIds);
   }
@@ -683,7 +858,17 @@ if (!dryRun) {
     linkParent(op, issueIds);
   }
 }
-console.log(`${cards.length} cards, ${ops.length} changes`);
+const ideaOps = planIdeas(
+  ownerIdeas(ownerIssues, project.items),
+  new Set([...claims.values()].map(({ issue }) => issue.number)),
+);
+for (const op of ideaOps) {
+  console.log(`${dryRun ? "[dry run] " : ""}${describeOp(op)}`);
+  if (!dryRun) {
+    applyIdea(project, op);
+  }
+}
+console.log(`${cards.length} cards, ${ops.length + ideaOps.length} changes`);
 if (clashes.length > 0) {
   console.error(clashReport(clashes, cards));
   process.exitCode = 1;
