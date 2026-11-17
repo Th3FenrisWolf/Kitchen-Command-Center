@@ -4,13 +4,17 @@ on:
   push:
   pull_request:
     types: [opened, reopened, closed]
+  issues:
+    types: [opened, reopened, closed, labeled, unlabeled]
   schedule:
     - cron: "17 6 * * *"
   workflow_dispatch:
 
-# Each run reads the whole repository, so a queued run replaces any older queued one and nothing is lost.
+# Each run reads the whole repository, so a queued run replaces any older queued one and nothing is lost. An issue
+# event the job's filter skips, label events other than building included, takes a group of its own: skipped runs in
+# the shared group would still replace a queued real run.
 concurrency:
-  group: project-board
+  group: ${{ github.event_name == 'issues' && !(github.event.issue.user.login == github.repository_owner && ((github.event.action != 'labeled' && github.event.action != 'unlabeled' && !contains(github.event.issue.body, '<!-- sync -->')) || ((github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name == 'building'))) && format('project-board-skip-{0}', github.run_id) || 'project-board' }}
   cancel-in-progress: false
 
 permissions:
@@ -18,7 +22,7 @@ permissions:
 
 jobs:
   sync:
-    if: github.repository == 'Th3FenrisWolf/Kitchen-Command-Center'
+    if: github.repository == 'Th3FenrisWolf/Kitchen-Command-Center' && (github.event_name != 'issues' || (github.event.issue.user.login == github.repository_owner && ((github.event.action != 'labeled' && github.event.action != 'unlabeled' && !contains(github.event.issue.body, '<!-- sync -->')) || ((github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name == 'building'))))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

@@ -7,7 +7,8 @@ export const config = JSON.parse(
 export const STAGES = ["Idea", "Specified", "Building", "In review", "Done"];
 export const KINDS = ["Feature", "Phase", "Bug", "Idea"];
 export const TEXT_FIELDS = ["Key", "Feature", "Phase"];
-// Written once, when the sync creates a card, so the owner can move a card to another iteration and keep it there.
+// Written when the sync creates a card or finds an issue card's Iteration blank, never over a set one, so the owner
+// can move a card to another iteration and keep it there.
 export const CREATE_FIELDS = { Iteration: "Current" };
 export const ITERATIONS = ["Current", "Future"];
 
@@ -50,6 +51,17 @@ export function parsePhases(markdown) {
     });
   }
   return rows;
+}
+
+export function parseIdeaLine(markdown) {
+  const header = markdown.split(/^## /m)[0];
+  const number = header.match(/^(?:- )?\*\*Idea\*\*:\s*\[?#(\d+)/m)?.[1];
+  return number === undefined ? null : Number.parseInt(number, 10);
+}
+
+function withIdea(card, markdown) {
+  const idea = parseIdeaLine(markdown ?? "");
+  return idea === null ? card : { ...card, idea };
 }
 
 function heading(markdown, prefix) {
@@ -133,21 +145,24 @@ function specCard(dir, snapshots, pulls) {
     `Branch \`${branch}\``,
     ...(pull ? [`PR [#${pull.number}](${pull.url})`] : []),
   ];
-  return {
-    key: dir,
-    aliases: [],
-    title: `${dir.slice(0, 3)} · ${title}`,
-    body: links.join(" · "),
-    specTitle: title,
-    ref: snapshot.ref,
-    fields: {
-      Key: dir,
-      Status: stage,
-      Kind: "Feature",
-      Feature: `${dir.slice(0, 3)} ${title}`,
-      Phase: "",
+  return withIdea(
+    {
+      key: dir,
+      aliases: [],
+      title: `${dir.slice(0, 3)} · ${title}`,
+      body: links.join(" · "),
+      specTitle: title,
+      ref: snapshot.ref,
+      fields: {
+        Key: dir,
+        Status: stage,
+        Kind: "Feature",
+        Feature: `${dir.slice(0, 3)} ${title}`,
+        Phase: "",
+      },
     },
-  };
+    snapshot.spec,
+  );
 }
 
 function bugCard(slug, snapshots, pulls) {
@@ -176,19 +191,22 @@ function bugCard(slug, snapshots, pulls) {
     ...(fixed ? [`[Fix](${blob(snapshot.ref, `${folder}/fix.md`)})`] : []),
     ...(pull ? [`PR [#${pull.number}](${pull.url})`] : []),
   ];
-  return {
-    key: `bug/${slug}`,
-    aliases: [],
-    title: `Bug · ${heading(snapshot.assessment ?? "", "Bug Assessment:") || slug}`,
-    body: links.join(" · "),
-    fields: {
-      Key: `bug/${slug}`,
-      Status: stage,
-      Kind: "Bug",
-      Feature: "",
-      Phase: "",
+  return withIdea(
+    {
+      key: `bug/${slug}`,
+      aliases: [],
+      title: `Bug · ${heading(snapshot.assessment ?? "", "Bug Assessment:") || slug}`,
+      body: links.join(" · "),
+      fields: {
+        Key: `bug/${slug}`,
+        Status: stage,
+        Kind: "Bug",
+        Feature: "",
+        Phase: "",
+      },
     },
-  };
+    snapshot.assessment,
+  );
 }
 
 function numberOf(dir) {
@@ -395,12 +413,19 @@ function tryRead(reread, issueId) {
   }
 }
 
+export function emptyReadError(specs, bugs) {
+  return specs.length > 0 || bugs.length > 0
+    ? null
+    : "the read found no spec and no bug on any origin branch, so the sync writes nothing: run git fetch and try again";
+}
+
 export function strayKeys(cards, items) {
   const known = new Set(cards.flatMap((card) => [card.key, ...card.aliases]));
   const heldPrefixes = cards
     .filter((card) => card.held)
     .map((card) => `${card.key}/`);
   return items
+    .filter((item) => !item.archived)
     .map((item) => item.fields.Key)
     .filter(
       (key) =>
@@ -412,14 +437,42 @@ export function strayKeys(cards, items) {
 
 const EDITABLE = new Set(["DraftIssue", "Issue"]);
 
-export function planChanges(cards, items) {
+export function indexByKey(items) {
   const byKey = new Map();
   for (const item of items) {
     const key = item.fields.Key;
-    if (key && !byKey.has(key)) {
+    const kept = byKey.get(key);
+    if (key && (!kept || (kept.archived && !item.archived))) {
       byKey.set(key, item);
     }
   }
+  return byKey;
+}
+
+export function matchItem(byKey, card) {
+  return (
+    byKey.get(card.key) ??
+    card.aliases.map((alias) => byKey.get(alias)).find(Boolean)
+  );
+}
+
+export const BUILDING_LABEL = "building";
+
+export function pickupStage(stage, item) {
+  const label =
+    item.type === "Issue"
+      ? item.labels?.find((candidate) => candidate.name === BUILDING_LABEL)
+      : undefined;
+  if (!label || stage === "Idea") {
+    return { stage };
+  }
+  return stage === "Specified"
+    ? { stage: "Building" }
+    : { stage, unlabel: label.id };
+}
+
+export function planChanges(cards, items, claims = new Map()) {
+  const byKey = indexByKey(items);
   const keyByContent = new Map(
     items
       .filter((item) => item.fields.Key && item.contentId)
@@ -431,9 +484,8 @@ export function planChanges(cards, items) {
     const issue = card.fields.Status !== "Idea";
     const state = card.fields.Status === "Done" ? "CLOSED" : "OPEN";
     const parent = issue ? card.parentKey : undefined;
-    const item =
-      byKey.get(card.key) ??
-      card.aliases.map((alias) => byKey.get(alias)).find(Boolean);
+    const claim = claims.get(card.key);
+    const item = matchItem(byKey, card) ?? claim?.item;
     if (!item) {
       ops.push({
         op: "create",
@@ -444,8 +496,20 @@ export function planChanges(cards, items) {
       });
       continue;
     }
+    if (item.archived && !claim) {
+      continue;
+    }
 
     const change = {};
+    if (claim) {
+      change.takes = claim.issue.number;
+      if (item.archived) {
+        change.unarchive = true;
+      }
+      if (!item.id) {
+        change.adopt = true;
+      }
+    }
     const editable = EDITABLE.has(item.type);
     if (editable && item.title !== card.title) {
       change.title = card.title;
@@ -454,10 +518,18 @@ export function planChanges(cards, items) {
     if (editable && body !== (item.body ?? "").replace(/\r\n/g, "\n")) {
       change.body = body;
     }
+    const { stage, unlabel } = pickupStage(card.fields.Status, item);
+    if (unlabel) {
+      change.unlabel = unlabel;
+    }
     const fields = Object.fromEntries(
-      Object.entries(card.fields).filter(
-        ([name, value]) => (item.fields[name] ?? "") !== value,
-      ),
+      Object.entries({
+        ...card.fields,
+        Status: stage,
+        ...((claim || item.type === "Issue") && !item.fields.Iteration
+          ? CREATE_FIELDS
+          : {}),
+      }).filter(([name, value]) => (item.fields[name] ?? "") !== value),
     );
     if (Object.keys(fields).length > 0) {
       change.fields = fields;
@@ -487,3 +559,237 @@ export function planChanges(cards, items) {
   }
   return ops;
 }
+
+function adoptItem(issue) {
+  return {
+    type: "Issue",
+    contentId: issue.id,
+    state: issue.state,
+    body: issue.body,
+    fields: {},
+  };
+}
+
+export function claimIdeas(cards, issues, items) {
+  const byKey = indexByKey(items);
+  const ideas = new Map(
+    ownerIdeas(issues, items).map((idea) => [idea.issue.number, idea]),
+  );
+  const claims = new Map();
+  const warnings = [];
+  const seekers = new Map();
+  for (const card of cards.filter((candidate) => !candidate.held)) {
+    if (card.idea === undefined) {
+      continue;
+    }
+    const matched = matchItem(byKey, card);
+    if (matched) {
+      const named = issues.find((issue) => issue.number === card.idea);
+      if (!named || matched.contentId !== named.id) {
+        warnings.push(
+          `${card.key} is on the board as another item than #${card.idea}`,
+        );
+      }
+    } else if (ideas.has(card.idea)) {
+      seekers.set(card.idea, [...(seekers.get(card.idea) ?? []), card.key]);
+    } else {
+      const named = issues.find((issue) => issue.number === card.idea);
+      const holder = named
+        ? items.find((item) => item.contentId === named.id && item.fields.Key)
+        : undefined;
+      warnings.push(
+        holder
+          ? `${card.key} names #${card.idea}, which ${holder.fields.Key} already holds`
+          : `${card.key} names #${card.idea}, which is not an idea`,
+      );
+    }
+  }
+  for (const [number, keys] of seekers) {
+    const [winner, ...losers] = keys.sort((a, b) => a.localeCompare(b));
+    const { issue, item } = ideas.get(number);
+    claims.set(winner, { issue, item: item ?? adoptItem(issue) });
+    for (const key of losers) {
+      warnings.push(`${key} names #${number}, which ${winner} takes over`);
+    }
+  }
+  return { claims, warnings };
+}
+
+const IDEA_FIELDS = { Status: "Idea", Kind: "Idea", Iteration: "Current" };
+
+export function ownerIdeas(issues, items) {
+  const itemByContent = new Map();
+  for (const item of items) {
+    const kept = itemByContent.get(item.contentId);
+    if (item.contentId && (!kept || (kept.archived && !item.archived))) {
+      itemByContent.set(item.contentId, item);
+    }
+  }
+  return issues
+    .map((issue) => ({ issue, item: itemByContent.get(issue.id) ?? null }))
+    .filter(({ issue, item }) => !issue.synced && !item?.fields.Key);
+}
+
+function blankIdeaFields(item) {
+  return Object.fromEntries(
+    Object.entries(IDEA_FIELDS).filter(
+      ([name]) => (item?.fields[name] ?? "") === "",
+    ),
+  );
+}
+
+export function planIdeas(ideas, claimed = new Set()) {
+  const ops = [];
+  for (const { issue, item } of ideas) {
+    if (claimed.has(issue.number)) {
+      continue;
+    }
+    const base = { op: "idea", issue: issue.number, contentId: issue.id };
+    if (issue.state !== "OPEN") {
+      if (item && !item.archived) {
+        ops.push({ ...base, itemId: item.id, archive: true });
+      }
+      continue;
+    }
+    const fields = blankIdeaFields(item);
+    if (!item) {
+      ops.push({ ...base, add: true, fields });
+    } else if (item.archived) {
+      ops.push({
+        ...base,
+        itemId: item.id,
+        restore: true,
+        ...(Object.keys(fields).length > 0 ? { fields } : {}),
+      });
+    } else if (Object.keys(fields).length > 0) {
+      ops.push({ ...base, itemId: item.id, fields });
+    }
+  }
+  return ops;
+}
+
+export function describeOp(op) {
+  if (op.op === "create") {
+    return `create ${op.card.key} as ${op.as}: ${op.card.fields.Status}${op.parent ? `, under ${op.parent}` : ""}`;
+  }
+  const fields = Object.entries(op.fields ?? {}).map(
+    ([name, value]) => `${name}=${value || "(empty)"}`,
+  );
+  if (op.op === "idea") {
+    const verb = op.archive
+      ? "archive"
+      : op.restore
+        ? "restore"
+        : op.add
+          ? "add"
+          : "fill";
+    return `idea #${op.issue}: ${[verb, ...fields].join(", ")}`;
+  }
+  const parts = [
+    ...(op.convert ? ["to an issue"] : []),
+    ...(op.title !== undefined ? ["title"] : []),
+    ...(op.body !== undefined ? ["body"] : []),
+    ...fields,
+    ...(op.state ? [op.state === "CLOSED" ? "close" : "reopen"] : []),
+    ...(op.parent ? [`under ${op.parent}`] : []),
+    ...(op.takes ? [`takes over #${op.takes}`] : []),
+    ...(op.unlabel ? [`unlabel ${BUILDING_LABEL}`] : []),
+  ];
+  return `update ${op.card.key}: ${parts.join(", ")}`;
+}
+
+export function ideaArgumentError(arg) {
+  if (arg === undefined) {
+    return "no issue number given";
+  }
+  return /^\d+$/.test(arg) ? null : `${arg} is not an issue number`;
+}
+
+export function ideaViewerError(login) {
+  return login === config.owner
+    ? null
+    : `gh is signed in as ${login}, not ${config.owner}: run gh auth switch -u ${config.owner}`;
+}
+
+const CARD_KEY =
+  /^(?:\d{3}-[a-z0-9]+(?:-[a-z0-9]+)*|bug\/[a-z0-9]+(?:-[a-z0-9]+)*)$/;
+
+export function pickupArgumentError(arg) {
+  if (arg === undefined) {
+    return "no card key given";
+  }
+  return CARD_KEY.test(arg) ? null : `${arg} is not a card key`;
+}
+
+export function pickupTarget(key, items) {
+  const item = indexByKey(items).get(key);
+  if (!item) {
+    return { key, refused: `no card on the board carries the Key ${key}` };
+  }
+  if (item.type === "DraftIssue") {
+    return { key, refused: `${key}'s card is a draft, not an issue` };
+  }
+  if (item.type !== "Issue") {
+    return { key, refused: `${key}'s card is not an issue` };
+  }
+  if (item.archived) {
+    return { key, refused: `${key}'s card is archived` };
+  }
+  if (item.state !== "OPEN") {
+    return { key, refused: `${key}'s issue is closed` };
+  }
+  return {
+    key,
+    number: item.number,
+    repository: `${config.owner}/${config.repo}`,
+  };
+}
+
+export function ideaRefusal(number, issue) {
+  if (!issue) {
+    return `#${number} does not exist in this repository`;
+  }
+  if (issue.author !== config.owner) {
+    return `#${number} was opened by another account`;
+  }
+  if (issue.key) {
+    return `#${number} already carries the Key ${issue.key}`;
+  }
+  if (issue.synced) {
+    return `#${number} is a board card the sync made`;
+  }
+  return null;
+}
+
+export function ideaGateOverflow(number, projectItems) {
+  return projectItems.pageInfo.hasNextPage
+    ? `#${number} is on more boards than the gate reads, so its Key on this board cannot be checked`
+    : null;
+}
+
+export const IDEA_GATE_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    issue(number: $number) {
+      author { login }
+      projectItems(includeArchived: true, first: 20) {
+        pageInfo { hasNextPage }
+        nodes {
+          project { id }
+          fieldValueByName(name: "Key") {
+            ... on ProjectV2ItemFieldTextValue { text }
+          }
+        }
+      }
+    }
+  }
+}`;
+
+export const IDEA_TEXT_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    issue(number: $number) {
+      title
+      body
+      url
+    }
+  }
+}`;
