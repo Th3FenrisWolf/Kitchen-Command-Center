@@ -34,6 +34,8 @@
 - The feature is developer tooling, so the spec names the tools the owner works in: the project board, its fields,
   GitHub issues, the board update's run, and the two Spec Kit commands. It names no code, query or file in the sync
   itself.
-- Six decisions were settled with the owner on 2026-11-16 and are recorded under Clarifications. None was deferred.
+- Seven decisions were settled with the owner on 2026-11-16 and are recorded under Clarifications. The seventh,
+  Building at pickup, added User Story 5 and FR-018 to FR-022. Checkpoint rows Q3 (the label counts whoever added it) and Q4
+  (bug fix adds the label too) are answered and written into the spec.
 - The constitution amendment (FR-017) is the owner's to run through `/speckit-constitution`; card implement's gates
   will find it missing if it is not in the pull request.
