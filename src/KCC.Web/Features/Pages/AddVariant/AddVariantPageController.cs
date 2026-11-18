@@ -46,6 +46,7 @@ public class AddVariantPageController(
             RecipeId = recipe.Key,
             RecipeName = recipe.Name,
             RecipeSlug = recipe.Url,
+            DetailsChoices = recipes.GetTaxonomyChoices() with { Categories = [] },
             PhotoImport = await importAvailability.GetAsync(),
             ResourceStrings = resourceStrings.GetGroup("AddVariant")
                 .Concat(resourceStrings.GetGroup("RecipeWizard"))

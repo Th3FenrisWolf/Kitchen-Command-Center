@@ -15,6 +15,8 @@ public interface IRecipeQueries
 
     RecipeTaxonomy GetTaxonomy();
 
+    DetailsChoices GetTaxonomyChoices();
+
     IReadOnlyDictionary<string, string> GetCategoryIcons();
 
     string GetCreateRecipeUrl(RecipeListingPage listing);
@@ -64,6 +66,19 @@ public class RecipeQueries(IPublishedContentQuery contentQuery) : IRecipeQueries
             folders.SelectMany(folder => folder.Children<RecipeCategory>()).Select(category => category.Name).ToList(),
             tags.Except(styles).Select(tag => tag.Name).ToList(),
             styles.Select(tag => tag.Name).ToList());
+    }
+
+    public DetailsChoices GetTaxonomyChoices()
+    {
+        var folders = contentQuery.ContentAtRoot().OfType<ContentFolder>().ToList();
+
+        return new DetailsChoices(
+            folders.SelectMany(folder => folder.Children<RecipeCategory>())
+                .Select(category => new CategoryChoice(category.Key, category.Name))
+                .ToList(),
+            folders.SelectMany(folder => folder.Children<RecipeTag>())
+                .Select(tag => new TagChoice(tag.Key, tag.Name, tag.Kind == TagKinds.Style ? TagKinds.Style : TagKinds.Diet))
+                .ToList());
     }
 
     public IReadOnlyDictionary<string, string> GetCategoryIcons() =>

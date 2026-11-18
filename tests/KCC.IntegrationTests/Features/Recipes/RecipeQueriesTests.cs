@@ -112,6 +112,81 @@ public class RecipeQueriesTests
     }
 
     [Test]
+    public async Task GetTaxonomyChoices_ListsTheCategoriesInTreeOrderWithTheirKeys()
+    {
+        var choices = WithContent((_, queries) => queries.GetTaxonomyChoices());
+
+        _ = await Assert.That(string.Join(",", choices.Categories.Take(6).Select(category => category.Name))).IsEqualTo("Breakfast,Lunch,Dinner,Dessert,Snack,Beverage");
+        _ = await Assert.That(choices.Categories.All(category => category.Key != Guid.Empty)).IsTrue();
+    }
+
+    [Test]
+    public async Task GetTaxonomyChoices_ListsTheTagsWithTheirKind()
+    {
+        var spicy = WithContent((_, queries) => queries.GetTaxonomyChoices()).Tags.Single(tag => tag.Name == "Spicy");
+        var vegan = WithContent((_, queries) => queries.GetTaxonomyChoices()).Tags.Single(tag => tag.Name == "Vegan");
+
+        _ = await Assert.That(spicy.Kind).IsEqualTo(TagKinds.Style);
+        _ = await Assert.That(vegan.Kind).IsEqualTo(TagKinds.Diet);
+        _ = await Assert.That(spicy.Key).IsNotEqualTo(Guid.Empty);
+    }
+
+    [Test]
+    public async Task GetTaxonomyChoices_CountsATagWithNoStyleKindAsADiet()
+    {
+        var key = await TestContent.TagAsync(Site.Services, "IT Kindless Tag", kind: "");
+        try
+        {
+            var tag = WithContent((_, queries) => queries.GetTaxonomyChoices()).Tags.Single(choice => choice.Key == key);
+
+            _ = await Assert.That(tag.Kind).IsEqualTo(TagKinds.Diet);
+        }
+        finally
+        {
+            await TestContent.TrashQuietlyAsync(Site.Services, key);
+        }
+    }
+
+    [Test]
+    public async Task GetTaxonomyChoices_LeavesOutAnUnpublishedCategoryAndTag()
+    {
+        var category = await TestContent.CategoryAsync(Site.Services, "IT Withdrawn Category");
+        var tag = await TestContent.TagAsync(Site.Services, "IT Withdrawn Tag");
+        try
+        {
+            await TestContent.UnpublishAsync(Site.Services, category);
+            await TestContent.UnpublishAsync(Site.Services, tag);
+
+            var choices = WithContent((_, queries) => queries.GetTaxonomyChoices());
+
+            _ = await Assert.That(choices.Categories.Any(choice => choice.Key == category)).IsFalse();
+            _ = await Assert.That(choices.Tags.Any(choice => choice.Key == tag)).IsFalse();
+        }
+        finally
+        {
+            await TestContent.TrashQuietlyAsync(Site.Services, category, tag);
+        }
+    }
+
+    [Test]
+    public async Task GetTaxonomyChoices_ShowsACategoryAndATagAddedInTheBackoffice()
+    {
+        var category = await TestContent.CategoryAsync(Site.Services, "IT Fresh Category");
+        var tag = await TestContent.TagAsync(Site.Services, "IT Fresh Tag", TagKinds.Style);
+        try
+        {
+            var choices = WithContent((_, queries) => queries.GetTaxonomyChoices());
+
+            _ = await Assert.That(choices.Categories.Single(choice => choice.Key == category).Name).IsEqualTo("IT Fresh Category");
+            _ = await Assert.That(choices.Tags.Single(choice => choice.Key == tag).Kind).IsEqualTo(TagKinds.Style);
+        }
+        finally
+        {
+            await TestContent.TrashQuietlyAsync(Site.Services, category, tag);
+        }
+    }
+
+    [Test]
     public async Task GetCreateRecipeUrl_FindsTheWizardUnderTheListing()
     {
         var url = WithContent((content, queries) => queries.GetCreateRecipeUrl(

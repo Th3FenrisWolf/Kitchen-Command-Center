@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using KCC.Web.Features.Api;
 using KCC.Web.Features.Models.Common;
 using Umbraco.Cms.Core.Models.ContentEditing;
@@ -17,6 +18,12 @@ public static class SubmissionValues
             Value("author", authorKey.ToString()),
         };
         AddText(values, "description", request.RecipeDescription);
+        if (request.Category is { } category)
+        {
+            values.Add(Value("category", DocumentReferences([category])));
+        }
+
+        AddText(values, "proposedCategory", request.ProposedCategory);
         return values;
     }
 
@@ -33,6 +40,7 @@ public static class SubmissionValues
         AddNumber(values, "prepTime", request.PrepTime);
         AddNumber(values, "cookTime", request.CookTime);
         AddNumber(values, "servings", request.Servings);
+        AddDetails(values, request);
         return values;
     }
 
@@ -58,6 +66,35 @@ public static class SubmissionValues
     public static IEnumerable<string> IngredientNames(CreateVariantRequest request) =>
         (request?.Ingredients ?? []).Select(ingredient => ingredient?.Name).Where(name => !string.IsNullOrWhiteSpace(name));
 
+    private static void AddDetails(List<PropertyValueModel> values, CreateVariantRequest request)
+    {
+        var tags = (request.Tags ?? []).Distinct().ToList();
+        if (tags.Count > 0)
+        {
+            values.Add(Value("tags", DocumentReferences(tags)));
+        }
+
+        if (request.Difficulty is { } difficulty)
+        {
+            values.Add(Value("difficulty", new[] { difficulty }));
+        }
+
+        var nutrition = request.Nutrition ?? new NutritionDto();
+        AddMeasure(values, "calories", nutrition.Calories);
+        AddMeasure(values, "proteinG", nutrition.ProteinG);
+        AddMeasure(values, "carbsG", nutrition.CarbsG);
+        AddMeasure(values, "fatG", nutrition.FatG);
+        AddMeasure(values, "saturatedFatG", nutrition.SaturatedFatG);
+        AddMeasure(values, "fiberG", nutrition.FiberG);
+        AddMeasure(values, "sugarG", nutrition.SugarG);
+        AddMeasure(values, "sodiumMg", nutrition.SodiumMg);
+        AddText(values, "proposedTags", request.ProposedTags);
+    }
+
+    // The multi-node tree picker's editor accepts only a JsonArray of { type, unique } references.
+    private static JsonArray DocumentReferences(IEnumerable<Guid> keys) =>
+        new(keys.Select(key => (JsonNode)new JsonObject { ["type"] = "document", ["unique"] = key.ToString() }).ToArray());
+
     private static PropertyValueModel Value(string alias, object value) => new() { Alias = alias, Value = value };
 
     private static void AddText(List<PropertyValueModel> values, string alias, string text)
@@ -73,6 +110,15 @@ public static class SubmissionValues
         if (number is > 0)
         {
             values.Add(Value(alias, number.Value));
+        }
+    }
+
+    // Unlike a time, a nutrition value of 0 is a real value the recipe page shows.
+    private static void AddMeasure(List<PropertyValueModel> values, string alias, int? measure)
+    {
+        if (measure is { } given)
+        {
+            values.Add(Value(alias, given));
         }
     }
 }
