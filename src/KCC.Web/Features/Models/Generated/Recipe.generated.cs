@@ -90,6 +90,14 @@ namespace KCC.Web.Features.Models.Generated
 		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops Image => this.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(_publishedValueFallback, "image");
 
 		///<summary>
+		/// Proposed category: A new category the member suggested in their submission. It never shows on the site.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("proposedCategory")]
+		public virtual string ProposedCategory => this.Value<string>(_publishedValueFallback, "proposedCategory");
+
+		///<summary>
 		/// Breadcrumb label
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]

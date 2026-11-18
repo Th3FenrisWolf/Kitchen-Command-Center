@@ -209,6 +209,22 @@ public class SchemaTests
     }
 
     [Test]
+    [Arguments("recipe", "proposedCategory")]
+    [Arguments("recipeVariant", "proposedTags")]
+    public async Task ProposalProperty_IsAnOptionalTextstring_AfterTheExistingPropertiesInTheFirstGroup(string typeAlias, string alias)
+    {
+        var type = Site.Services.GetRequiredService<IContentTypeService>().Get(typeAlias)!;
+        var firstGroup = type.PropertyGroups.OrderBy(group => group.SortOrder).First();
+        var property = firstGroup.PropertyTypes!.Single(candidate => candidate.Alias == alias);
+        var others = type.PropertyTypes.Where(candidate => candidate.Alias != alias).ToList();
+
+        _ = await Assert.That(property.DataTypeKey).IsEqualTo(Guid.Parse("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
+        _ = await Assert.That(property.Mandatory).IsFalse();
+        _ = await Assert.That(property.Description).IsNotNullOrWhiteSpace();
+        _ = await Assert.That(property.SortOrder).IsGreaterThan(others.Max(other => other.SortOrder));
+    }
+
+    [Test]
     public async Task SchemaKeys_AreUuidsTheBackofficeAccepts()
     {
         var keys = await SchemaKeysAsync();
