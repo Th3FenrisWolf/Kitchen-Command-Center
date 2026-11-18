@@ -1,0 +1,119 @@
+{
+  "checkpoint": "product",
+  "blocks": "plan",
+  "decisions": [
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-020",
+        "SC-008"
+      ],
+      "id": "Q1",
+      "audience": "po",
+      "question": "Which controls on a sheet keep a paper fill once fields lose theirs: ghost buttons, segmented controls, badges or none?",
+      "recommended": "Every control drops its fill, except any the owner sees a rule run through badly in the look round.",
+      "alternative": "Fields, segmented controls and badges drop the fill, and ghost buttons keep it.",
+      "answer": "Nothing filled: every control on a sheet drops its paper fill, and every button's text sits on a rule.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T16:08:05.402Z",
+      "channel": "session"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-014"
+      ],
+      "id": "Q2",
+      "audience": "po",
+      "question": "Should each diet get an icon, picked in the backoffice like the meal categories, so the Diets list matches Meals?",
+      "recommended": "Yes: each diet tag gets an icon set in the backoffice, and the menu shows it like a meal icon.",
+      "alternative": "No: Diets show as a two-column list with counts and no icons.",
+      "answer": "Each diet tag gets an icon picked in the backoffice, like the meal categories.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T15:58:22.610Z",
+      "channel": "session"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-017"
+      ],
+      "id": "Q3",
+      "audience": "po",
+      "question": "Which three meals do the phone search panel Try pills show, and in what order?",
+      "recommended": "The three meals with the most recipes, shown in the order of the Meals list (Breakfast before Lunch before Dinner).",
+      "alternative": "Always Breakfast, Lunch and Dinner, whatever their recipe counts.",
+      "answer": "Always Breakfast, Lunch and Dinner, in that order, whatever their recipe counts.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T15:58:22.638Z",
+      "channel": "session"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-007",
+        "FR-008"
+      ],
+      "id": "Q4",
+      "audience": "po",
+      "question": "When sheets merge, how are the old sheets (At a glance, Ingredients, Instructions, Nutrition) labelled inside the merged sheet?",
+      "recommended": "Each part gets a caps kicker heading inside the sheet, and the merged sheet keeps at most one green tab label.",
+      "alternative": "Each part keeps its own green tab label, placed inside the merged sheet.",
+      "answer": "Each part gets a caps kicker heading inside the sheet; the merged sheet keeps at most one green tab label.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T15:58:22.663Z",
+      "channel": "session"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-008"
+      ],
+      "id": "Q5",
+      "audience": "po",
+      "question": "How is the variant page merged sheet of Ingredients, Instructions and Nutrition laid out at desktop width?",
+      "recommended": "Ingredients and Instructions side by side, Nutrition across the full width below; stacked in that order on a phone.",
+      "alternative": "All three stacked in one column at every width.",
+      "answer": "Ingredients and Instructions side by side, Nutrition full width below; stacked in that order on a phone.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T15:58:22.689Z",
+      "channel": "session"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [],
+      "id": "Q6",
+      "audience": "po",
+      "question": "The local Home page has no blocks, so its look was never reviewed; is Home in phase 1?",
+      "recommended": "Home gets only the site-wide changes (header, controls, spacing) in phase 1, and its blocks are reviewed in a later phase.",
+      "alternative": "Home blocks are seeded locally and reviewed now, in phase 1.",
+      "answer": "Home gets only the site-wide changes in phase 1; its blocks get their own review in a later phase.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T15:58:22.717Z",
+      "channel": "session"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-010",
+        "SC-002"
+      ],
+      "id": "Q7",
+      "audience": "po",
+      "question": "On the Recipes page, the applied-filter chips and the phone Filters button lie on the desk; which sheet do they move onto?",
+      "recommended": "The Recipes page top sheet, under Sort and View, the way the recipe page tools sheet holds its pills.",
+      "alternative": "A slim tools sheet of their own above the results.",
+      "answer": "A slim sheet of their own above the results grid.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-18T16:19:00.181Z",
+      "channel": "session"
+    }
+  ]
+}
