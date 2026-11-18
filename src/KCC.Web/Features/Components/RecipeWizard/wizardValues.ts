@@ -1,10 +1,18 @@
 import type { Ingredient, Instruction } from '~/Types/Recipe'
-import type { ReadIngredient, ReadResponse } from './recipeImportApi'
+import type { ReadDetails, ReadIngredient, ReadResponse } from './recipeImportApi'
 import { recipeWizardKeys } from './recipeWizardKeys'
+import {
+  NUTRITION_FIELDS,
+  nutritionRequest,
+  type Difficulty,
+  type NutritionAmounts,
+  type NutritionField,
+  type NutritionTexts,
+} from './wizardDetails'
 
-export type MarkKind = 'estimate' | 'unclear' | 'written' | 'translated'
+export type MarkKind = 'estimate' | 'unclear' | 'written' | 'translated' | 'suggested' | 'calculated'
 
-export type MarkCode = 'shortened' | 'outOfRange' | 'translated'
+export type MarkCode = 'shortened' | 'outOfRange' | 'translated' | 'printedAs'
 
 export interface Mark {
   kind: MarkKind
@@ -21,6 +29,10 @@ export type MarkedValue =
   | 'variant.prepTime'
   | 'variant.cookTime'
   | 'variant.servings'
+  | 'recipe.category'
+  | 'variant.difficulty'
+  | `variant.tag.${string}`
+  | `variant.nutrition.${NutritionField}`
 
 export interface WizardIngredient extends Ingredient {
   mark?: Mark
@@ -41,6 +53,12 @@ export interface WizardValues {
   servings: number | undefined
   ingredients: WizardIngredient[]
   instructions: WizardInstruction[]
+  category: string | null
+  tags: string[]
+  difficulty: Difficulty | null
+  nutrition: NutritionTexts
+  proposedCategory: string
+  proposedTags: string
   marks: Partial<Record<MarkedValue, Mark>>
 }
 
@@ -56,11 +74,17 @@ export interface VariantRequest {
   servings: number | null
   ingredients: RequestIngredient[]
   instructions: Required<Instruction>[]
+  tags: string[]
+  difficulty: Difficulty | null
+  nutrition: NutritionAmounts
+  proposedTags: string | null
 }
 
 export interface RecipeRequest {
   recipeName: string
   recipeDescription: string
+  category: string | null
+  proposedCategory: string | null
   firstVariant: VariantRequest
 }
 
@@ -79,12 +103,18 @@ export function emptyValues(): WizardValues {
     servings: 0,
     ingredients: [emptyIngredient()],
     instructions: [emptyInstruction()],
+    category: null,
+    tags: [],
+    difficulty: null,
+    nutrition: Object.fromEntries(NUTRITION_FIELDS.map(({ field }) => [field, ''])) as NutritionTexts,
+    proposedCategory: '',
+    proposedTags: '',
     marks: {},
   }
 }
 
 export function valuesFromRead(read: ReadResponse): WizardValues {
-  const { recipe, variant, ingredients, instructions } = read
+  const { recipe, variant, ingredients, instructions, details } = read
   return {
     recipeName: recipe.name.value,
     recipeDescription: recipe.description.value,
@@ -97,6 +127,12 @@ export function valuesFromRead(read: ReadResponse): WizardValues {
     instructions: instructions.length
       ? instructions.map(({ text, mark }) => withMark({ text }, mark))
       : [emptyInstruction()],
+    category: details.category.value,
+    tags: details.tags.map(({ key }) => key),
+    difficulty: details.difficulty.value,
+    nutrition: nutritionFromRead(details.nutrition),
+    proposedCategory: '',
+    proposedTags: '',
     marks: marksFromRead(read),
   }
 }
@@ -105,7 +141,10 @@ function ingredientFromRead({ name, quantity, unit, isEyeballed, mark }: ReadIng
   return withMark(quantity === null ? { name, unit, isEyeballed } : { name, quantity, unit, isEyeballed }, mark)
 }
 
-function marksFromRead({ recipe, variant }: ReadResponse): WizardValues['marks'] {
+const nutritionFromRead = (read: ReadDetails['nutrition']): NutritionTexts =>
+  Object.fromEntries(NUTRITION_FIELDS.map(({ field }) => [field, read[field].value?.toString() ?? ''])) as NutritionTexts
+
+function marksFromRead({ recipe, variant, details }: ReadResponse): WizardValues['marks'] {
   const marks: [MarkedValue, Mark | null][] = [
     ['recipe.name', recipe.name.mark],
     ['recipe.description', recipe.description.mark],
@@ -114,6 +153,13 @@ function marksFromRead({ recipe, variant }: ReadResponse): WizardValues['marks']
     ['variant.prepTime', variant.prepTime.mark],
     ['variant.cookTime', variant.cookTime.mark],
     ['variant.servings', variant.servings.mark],
+    ['recipe.category', details.category.mark],
+    ['variant.difficulty', details.difficulty.mark],
+    ...details.tags.map(({ key, mark }): [MarkedValue, Mark | null] => [`variant.tag.${key}`, mark]),
+    ...NUTRITION_FIELDS.map(({ field }): [MarkedValue, Mark | null] => [
+      `variant.nutrition.${field}`,
+      details.nutrition[field].mark,
+    ]),
   ]
   return Object.fromEntries(marks.filter((entry): entry is [MarkedValue, Mark] => Boolean(entry[1])))
 }
@@ -150,6 +196,10 @@ export function variantRequest(values: WizardValues): VariantRequest {
       isEyeballed,
     })),
     instructions: validInstructions(values.instructions).map(({ text }, index) => ({ step: index + 1, text: text.trim() })),
+    tags: values.tags,
+    difficulty: values.difficulty,
+    nutrition: nutritionRequest(values.nutrition),
+    proposedTags: values.proposedTags.trim() || null,
   }
 }
 
@@ -157,6 +207,8 @@ export function recipeRequest(values: WizardValues): RecipeRequest {
   return {
     recipeName: values.recipeName.trim(),
     recipeDescription: values.recipeDescription.trim(),
+    category: values.category,
+    proposedCategory: values.proposedCategory.trim() || null,
     firstVariant: variantRequest(values),
   }
 }

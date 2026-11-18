@@ -1,10 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { configureApi } from '~/Utilities/Api'
-import { readRecipe } from '~/Components/RecipeWizard/recipeImportApi'
+import { readRecipe, type ReadDetails } from '~/Components/RecipeWizard/recipeImportApi'
 
 const GNOCCHI_KEY = '11111111-2222-3333-4444-555555555555'
 
-const NO_RECIPE = { outcome: 'noRecipe', ingredients: [], instructions: [], otherRecipes: [] }
+const DETAILS: ReadDetails = {
+  category: { value: 'f08799ce', mark: { kind: 'suggested', reason: 'A main dish', code: null, arg: null } },
+  tags: [{ key: 'b8563daf', mark: null }],
+  difficulty: { value: 'Medium', mark: { kind: 'suggested', reason: null, code: 'printedAs', arg: 'intermediate' } },
+  nutrition: {
+    calories: { value: 287, mark: { kind: 'calculated', reason: null, code: 'printedAs', arg: '1200 kJ' } },
+    proteinG: { value: 12, mark: null },
+    carbsG: { value: null, mark: null },
+    fatG: { value: null, mark: null },
+    saturatedFatG: { value: null, mark: null },
+    fiberG: { value: null, mark: null },
+    sugarG: { value: null, mark: null },
+    sodiumMg: { value: null, mark: null },
+  },
+}
+
+const NO_RECIPE = { outcome: 'noRecipe', ingredients: [], instructions: [], otherRecipes: [], details: DETAILS }
 
 const answer = (body: unknown) =>
   ({ ok: true, status: 200, text: () => Promise.resolve(JSON.stringify(body)) }) as unknown as Response
@@ -65,5 +81,13 @@ describe('readRecipe', () => {
     const result = await readRecipe({ flow: 'recipe', photos: [page('card')] }, new AbortController().signal)
 
     expect(result).toEqual({ success: true, data: NO_RECIPE, errorMessage: null })
+  })
+
+  it('returns the Details of the read, with each mark and its code', async () => {
+    stubFetch()
+
+    const result = await readRecipe({ flow: 'recipe', photos: [page('card')] }, new AbortController().signal)
+
+    expect(result.success && result.data.details).toEqual(DETAILS)
   })
 })

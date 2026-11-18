@@ -1,9 +1,15 @@
-import { describe, expect, it } from 'vitest'
+// @vitest-environment happy-dom
+import { createApp, nextTick } from 'vue'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import RecipeWizard from '~/Components/RecipeWizard/RecipeWizard.vue'
 import { ResourceString } from '~/Components/ResourceStrings'
 import { stepFlips } from '~/Components/RecipeWizard/stepFlip'
+import type { DetailsChoices } from '~/Components/RecipeWizard/wizardDetails'
+import { post } from '~/Utilities/Api'
 import { wizardStrings } from '../../../support/recipeWizard'
 import { renderSsr, tagWith } from '../../../support/ssr'
+
+vi.mock('~/Utilities/Api', async (importOriginal) => ({ ...(await importOriginal<object>()), post: vi.fn() }))
 
 const KEYS = [
   'RecipeBasics',
@@ -99,13 +105,13 @@ describe('RecipeWizard in recipe mode, with the import off', () => {
     expect(html).not.toContain('wizard-variant-name')
   })
 
-  it('counts five steps under a label from its strings', async () => {
+  it('counts six steps under a label from its strings', async () => {
     const html = await renderRecipe()
 
     expect(tagWith(html, 'aria-current="step"')).toBeTruthy()
     expect(html).toContain('aria-label="«ProgressLabel»"')
-    expect(html).toContain('>05<')
-    expect(html).not.toContain('>06<')
+    expect(html).toContain('>06<')
+    expect(html).not.toContain('>07<')
   })
 
   it('advances from a Next button, held until the step is filled in', async () => {
@@ -138,13 +144,13 @@ describe('RecipeWizard in variant mode, with the import off', () => {
     expect(html).toMatch(/<input[^>]*\sid="[^"]+-servings"/)
   })
 
-  it('counts four steps under a label from its strings', async () => {
+  it('counts five steps under a label from its strings', async () => {
     const html = await renderVariant()
 
     expect(tagWith(html, 'aria-current="step"')).toBeTruthy()
     expect(html).toContain('aria-label="«ProgressLabel»"')
-    expect(html).toContain('>04<')
-    expect(html).not.toContain('>05<')
+    expect(html).toContain('>05<')
+    expect(html).not.toContain('>06<')
   })
 
   it('advances from a Next button, held until the step is filled in', async () => {
@@ -246,5 +252,135 @@ describe('RecipeWizard on the step the server renders', () => {
 
     expect(stepFlips(1)).toBe(true)
     expect(slip).toContain('class="kcc-slip kcc-slip--wide kcc-slip--flip kcc-tear-1"')
+  })
+})
+
+describe('RecipeWizard Details step', () => {
+  const CHOICES: DetailsChoices = {
+    categories: [{ key: 'cat-dinner', name: 'Dinner' }],
+    tags: [
+      { key: 'tag-spicy', name: 'Spicy', kind: 'Style' },
+      { key: 'tag-vegan', name: 'Vegan', kind: 'Diet' },
+    ],
+  }
+
+  const NEW_CHOICES: DetailsChoices = {
+    categories: [{ key: 'cat-breakfast', name: 'Breakfast' }],
+    tags: [{ key: 'tag-vegan', name: 'Vegan', kind: 'Diet' }],
+  }
+
+  const mounted: (() => void)[] = []
+
+  afterEach(() => {
+    mounted.splice(0).forEach((unmount) => unmount())
+    vi.mocked(post).mockReset()
+  })
+
+  const settle = async () => {
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve))
+  }
+
+  const mountVariant = (props: Record<string, unknown> = {}) => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const app = createApp(RecipeWizard, {
+      flow: 'variant',
+      recipe: GNOCCHI,
+      resourceStrings: wizardStrings(),
+      choices: CHOICES,
+      ...props,
+    })
+    app.component('ResourceString', ResourceString)
+    app.mount(host)
+    mounted.push(() => {
+      app.unmount()
+      host.remove()
+    })
+    return host
+  }
+
+  const type = async (host: HTMLElement, testid: string, text: string) => {
+    const field = host.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[data-testid="${testid}"]`)!
+    field.value = text
+    field.dispatchEvent(new Event('input'))
+    await settle()
+  }
+
+  const press = async (host: HTMLElement, selector: string) => {
+    host.querySelector<HTMLElement>(selector)!.click()
+    await settle()
+  }
+
+  const nextStep = (host: HTMLElement) => press(host, 'button[type="submit"]')
+
+  const openDetails = async (host: HTMLElement) => {
+    await type(host, 'wizard-variant-name', 'Buttermilk')
+    await nextStep(host)
+    await type(host, 'wizard-ingredient-name', 'flour')
+    await nextStep(host)
+    await type(host, 'wizard-instruction-text', 'Whisk.')
+    await nextStep(host)
+  }
+
+  it('renders the Details step after the instructions', async () => {
+    const host = mountVariant()
+
+    await openDetails(host)
+
+    expect(host.querySelector('[data-testid="details-step"]')).not.toBeNull()
+    expect(host.querySelector('[data-testid="wizard-instruction-text"]')).toBeNull()
+  })
+
+  it('hands the choices to the step', async () => {
+    const host = mountVariant()
+
+    await openDetails(host)
+
+    expect(host.querySelector('[data-testid="details-tag-tag-spicy"]')).not.toBeNull()
+    expect(host.querySelector('[data-testid="details-tag-tag-vegan"]')).not.toBeNull()
+  })
+
+  it('opens Details with the notice, the new lists and the other values kept, when the submission answers detailsChanged', async () => {
+    const host = mountVariant()
+    await openDetails(host)
+    await press(host, '[data-testid="details-tag-tag-spicy"]')
+    await press(host, '[data-testid="details-tag-tag-vegan"]')
+    await nextStep(host)
+    vi.mocked(post).mockResolvedValue({
+      success: false,
+      data: null,
+      errorMessage: 'changed',
+      status: 400,
+      code: 'detailsChanged',
+      body: { choices: NEW_CHOICES },
+    })
+
+    await press(host, '[data-testid="wizard-submit"]')
+
+    expect(host.querySelector('[data-testid="details-step"]')).not.toBeNull()
+    expect(host.querySelector('[data-testid="details-changed"]')).not.toBeNull()
+    expect(host.querySelector('[data-testid="details-tag-tag-spicy"]')).toBeNull()
+    expect(host.querySelector<HTMLInputElement>('[data-testid="details-tag-tag-vegan"]')?.checked).toBe(true)
+    expect(host.querySelector('[data-testid="back-to-review"]')).not.toBeNull()
+  })
+
+  it('clears the notice once the member edits Details', async () => {
+    const host = mountVariant()
+    await openDetails(host)
+    await nextStep(host)
+    vi.mocked(post).mockResolvedValue({
+      success: false,
+      data: null,
+      errorMessage: 'changed',
+      status: 400,
+      code: 'detailsChanged',
+      body: { choices: NEW_CHOICES },
+    })
+    await press(host, '[data-testid="wizard-submit"]')
+
+    await press(host, '[data-testid="details-tag-tag-vegan"]')
+
+    expect(host.querySelector('[data-testid="details-changed"]')).toBeNull()
   })
 })

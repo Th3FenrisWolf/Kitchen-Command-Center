@@ -5,6 +5,7 @@
   import { listTearFor } from '~/Utilities/BrandColor'
   import { post } from '~/Utilities/Api'
   import BasicsStep from './BasicsStep.vue'
+  import DetailsStep from './DetailsStep.vue'
   import IngredientsStep from './IngredientsStep.vue'
   import InstructionsStep from './InstructionsStep.vue'
   import LeaveConfirm from './LeaveConfirm.vue'
@@ -33,6 +34,8 @@
     edit,
     editIngredient,
     editInstruction,
+    editNutrition,
+    editProposal,
     editValue,
     finishRead,
     hasUnsavedWork,
@@ -44,6 +47,7 @@
     offersMatch,
     pickRecipe,
     progress,
+    refuseDetails,
     refuseName,
     removeIngredient,
     removeInstruction,
@@ -51,6 +55,7 @@
     showsPhotoStrip,
     startRead,
     submissionFor,
+    toggleTag,
     type WizardMode,
     type WizardRecipe,
   } from './recipeWizardFlow'
@@ -60,7 +65,8 @@
   import { focusHeading } from './stepSheet'
   import SubmittedSheet, { type ClosingLink } from './SubmittedSheet.vue'
   import VariantStep from './VariantStep.vue'
-  import { refusedName, submitErrorKey, type SubmitErrorKey } from './wizardErrors'
+  import { refusedDetails, refusedName, submitErrorKey, type SubmitErrorKey } from './wizardErrors'
+  import type { DetailsChoices } from './wizardDetails'
 
   export interface ImportAvailability {
     enabled: boolean
@@ -76,6 +82,7 @@
     recipesUrl?: string
     closingLink?: ClosingLink
     photoImport?: ImportAvailability
+    choices?: DetailsChoices
   }
 
   const IMPORT_OFF: ImportAvailability = { enabled: false, available: false, maxImageEdge: 0 }
@@ -91,6 +98,7 @@
       flow: props.flow,
       recipe: props.recipe,
       importEnabled: photoImport.value.enabled,
+      choices: props.choices,
       availableAgainOn: photoImport.value.available ? null : photoImport.value.availableAgainOn,
     }),
   )
@@ -106,6 +114,7 @@
 
   const submitting = ref(false)
   const submitError = ref<SubmitErrorKey | null>(null)
+  const detailsChanged = ref(false)
 
   const leaving = ref<HTMLAnchorElement | null>(null)
 
@@ -116,6 +125,7 @@
     () => wizard.step,
     async (step) => {
       submitError.value = null
+      if (step !== 'details') detailsChanged.value = false
       await nextTick()
       if (leaving.value !== null) return
 
@@ -203,8 +213,12 @@
 
     if (!result.success) {
       const name = refusedName(result)
+      const choices = refusedDetails(result)
       if (name) refuseName(wizard, name)
-      else submitError.value = submitErrorKey(result)
+      else if (choices) {
+        refuseDetails(wizard, choices)
+        detailsChanged.value = true
+      } else submitError.value = submitErrorKey(result)
       return
     }
 
@@ -337,10 +351,51 @@
       @review="backToReview(wizard)"
     />
 
+    <DetailsStep
+      v-else-if="wizard.step === 'details'"
+      :mode="wizard.mode"
+      :values="wizard.values"
+      :choices="wizard.choices"
+      :tear
+      :flip
+      :can-go-back="canGoBack(wizard)"
+      :can-proceed="canProceed(wizard)"
+      :returns-to-review
+      :details-changed
+      @edit="
+        (field, value) => {
+          detailsChanged = false
+          editValue(wizard, field, value)
+        }
+      "
+      @tag="
+        (key, chosen) => {
+          detailsChanged = false
+          toggleTag(wizard, key, chosen)
+        }
+      "
+      @nutrition="
+        (field, text) => {
+          detailsChanged = false
+          editNutrition(wizard, field, text)
+        }
+      "
+      @proposal="
+        (field, text) => {
+          detailsChanged = false
+          editProposal(wizard, field, text)
+        }
+      "
+      @next="next(wizard)"
+      @back="back(wizard)"
+      @review="backToReview(wizard)"
+    />
+
     <ReviewStep
       v-else-if="wizard.step === 'review'"
       :mode="wizard.mode"
       :values="wizard.values"
+      :choices="wizard.choices"
       :other-recipes="wizard.read?.otherRecipes"
       :possible-duplicate="wizard.read?.possibleDuplicate"
       :changes-match="offersMatch(wizard)"

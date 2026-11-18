@@ -7,7 +7,7 @@ const interfaceIcons = `
   file-circle-plus fire-burner gauge gear grip-lines hourglass hourglass-half house images key keyboard layer-group
   list list-check list-ol magnifying-glass minus pause pen pen-nib pen-to-square plate-utensils play plus
   right-from-bracket right-to-bracket rotate-left rotate-right sliders sparkles star star-half-stroke stopwatch
-  table-cells-large triangle-exclamation user users utensils xmark
+  table-cells-large tags triangle-exclamation user users utensils xmark
 `
 
 const recipeIconsSource = readFileSync(new URL('../../../../KCC.Admin/RecipeIcons.cs', import.meta.url), 'utf8')

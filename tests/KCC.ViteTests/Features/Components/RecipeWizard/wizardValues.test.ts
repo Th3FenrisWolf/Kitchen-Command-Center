@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
+import type { ReadDetails, ReadResponse } from '~/Components/RecipeWizard/recipeImportApi'
 import {
   emptyValues,
   recipeRequest,
   stepLabelKey,
   validIngredients,
   validInstructions,
+  valuesFromRead,
   variantRequest,
   type Mark,
   type WizardIngredient,
@@ -59,6 +61,19 @@ const PANCAKES_VARIANT = {
     { step: 1, text: 'Whisk the dry ingredients.' },
     { step: 2, text: 'Fry.' },
   ],
+  tags: [],
+  difficulty: null,
+  nutrition: {
+    calories: null,
+    proteinG: null,
+    carbsG: null,
+    fatG: null,
+    saturatedFatG: null,
+    fiberG: null,
+    sugarG: null,
+    sodiumMg: null,
+  },
+  proposedTags: null,
 }
 
 const onTheWire = (body: unknown) => JSON.parse(JSON.stringify(body))
@@ -75,6 +90,21 @@ describe('wizardValues', () => {
       servings: 0,
       ingredients: [{ name: '', unit: '', isEyeballed: false }],
       instructions: [{ text: '' }],
+      category: null,
+      tags: [],
+      difficulty: null,
+      nutrition: {
+        calories: '',
+        proteinG: '',
+        carbsG: '',
+        fatG: '',
+        saturatedFatG: '',
+        fiberG: '',
+        sugarG: '',
+        sodiumMg: '',
+      },
+      proposedCategory: '',
+      proposedTags: '',
       marks: {},
     })
   })
@@ -93,6 +123,8 @@ describe('wizardValues', () => {
     expect(onTheWire(recipeRequest(pancakes()))).toEqual({
       recipeName: 'Pancakes',
       recipeDescription: 'Fluffy weekend pancakes.',
+      category: null,
+      proposedCategory: null,
       firstVariant: PANCAKES_VARIANT,
     })
   })
@@ -183,5 +215,166 @@ describe('wizardValues', () => {
       expect(stepLabelKey(0)).toBe('Steps')
       expect(stepLabelKey(4)).toBe('Steps')
     })
+  })
+})
+
+describe('wizardValues Details', () => {
+  const detailed = () =>
+    values({
+      category: 'cat-dinner',
+      tags: ['tag-spicy', 'tag-vegan'],
+      difficulty: 'Medium',
+      nutrition: { ...emptyValues().nutrition, calories: '450', proteinG: ' 0 ', sodiumMg: '380' },
+      proposedCategory: '  Sides ',
+      proposedTags: ' Mexican, Tex-Mex ',
+    })
+
+  it('gives each wizard a nutrition record of its own', () => {
+    const first = emptyValues()
+
+    first.nutrition.calories = '1'
+
+    expect(emptyValues().nutrition.calories).toBe('')
+  })
+
+  it('carries the Details of the variant in the variant body', () => {
+    const body = onTheWire(variantRequest(detailed()))
+
+    expect(body).toMatchObject({
+      tags: ['tag-spicy', 'tag-vegan'],
+      difficulty: 'Medium',
+      nutrition: {
+        calories: 450,
+        proteinG: 0,
+        carbsG: null,
+        fatG: null,
+        saturatedFatG: null,
+        fiberG: null,
+        sugarG: null,
+        sodiumMg: 380,
+      },
+      proposedTags: 'Mexican, Tex-Mex',
+    })
+  })
+
+  it('carries no category in the variant body', () => {
+    const body = onTheWire(variantRequest(detailed()))
+
+    expect(body).not.toHaveProperty('category')
+    expect(body).not.toHaveProperty('proposedCategory')
+  })
+
+  it('carries the category and its proposal in the Create Recipe body, beside the first variant', () => {
+    const body = onTheWire(recipeRequest(detailed()))
+
+    expect(body).toMatchObject({ category: 'cat-dinner', proposedCategory: 'Sides' })
+    expect(body.firstVariant).toMatchObject({ difficulty: 'Medium', proposedTags: 'Mexican, Tex-Mex' })
+    expect(body.firstVariant).not.toHaveProperty('category')
+  })
+
+  it('sends a blank proposal as null', () => {
+    const blank = values({ proposedCategory: '   ', proposedTags: '' })
+
+    expect(recipeRequest(blank)).toMatchObject({ proposedCategory: null, firstVariant: { proposedTags: null } })
+  })
+
+  it('names the marks of the Details values', () => {
+    const marks: WizardValues['marks'] = {
+      'recipe.category': ESTIMATE,
+      'variant.difficulty': ESTIMATE,
+      'variant.tag.tag-spicy': ESTIMATE,
+      'variant.nutrition.calories': ESTIMATE,
+    }
+
+    expect(Object.keys(values({ marks }).marks)).toHaveLength(4)
+  })
+})
+
+describe('valuesFromRead Details', () => {
+  const printedAs = (arg: string, kind: Mark['kind'] = 'suggested'): Mark => ({ kind, reason: null, code: 'printedAs', arg })
+  const noValue = { value: null, mark: null }
+
+  const details = (over: Partial<ReadDetails> = {}): ReadDetails => ({
+    category: noValue,
+    tags: [],
+    difficulty: noValue,
+    nutrition: {
+      calories: noValue,
+      proteinG: noValue,
+      carbsG: noValue,
+      fatG: noValue,
+      saturatedFatG: noValue,
+      fiberG: noValue,
+      sugarG: noValue,
+      sodiumMg: noValue,
+    },
+    ...over,
+  })
+
+  const read = (over: Partial<ReadDetails>): ReadResponse => {
+    const empty = { value: '', mark: null }
+    return {
+      outcome: 'recipe',
+      recipe: { name: empty, description: empty },
+      variant: {
+        name: empty,
+        description: empty,
+        prepTime: noValue,
+        cookTime: noValue,
+        servings: noValue,
+      },
+      ingredients: [],
+      instructions: [],
+      match: null,
+      possibleDuplicate: null,
+      otherRecipes: [],
+      recipes: null,
+      details: details(over),
+    }
+  }
+
+  it('takes the category, tags and difficulty, each mark at its own path', () => {
+    const result = valuesFromRead(
+      read({
+        category: { value: 'cat-dinner', mark: printedAs('Supper') },
+        tags: [
+          { key: 'tag-vegan', mark: null },
+          { key: 'tag-spicy', mark: ESTIMATE },
+        ],
+        difficulty: { value: 'Medium', mark: printedAs('intermediate') },
+      }),
+    )
+
+    expect(result).toMatchObject({ category: 'cat-dinner', tags: ['tag-vegan', 'tag-spicy'], difficulty: 'Medium' })
+    expect(result.marks).toEqual({
+      'recipe.category': printedAs('Supper'),
+      'variant.tag.tag-spicy': ESTIMATE,
+      'variant.difficulty': printedAs('intermediate'),
+    })
+  })
+
+  it('writes each nutrition value as text, with its mark, and leaves a missing value empty', () => {
+    const calculated = printedAs('1200 kJ', 'calculated')
+    const nutrition = {
+      ...details().nutrition,
+      calories: { value: 287, mark: calculated },
+      proteinG: { value: 0, mark: null },
+    }
+
+    const result = valuesFromRead(read({ nutrition }))
+
+    expect(result.nutrition).toEqual({ ...emptyValues().nutrition, calories: '287', proteinG: '0' })
+    expect(result.marks).toEqual({ 'variant.nutrition.calories': calculated })
+  })
+
+  it('starts both proposals empty', () => {
+    expect(valuesFromRead(read({}))).toMatchObject({ proposedCategory: '', proposedTags: '' })
+  })
+
+  it('leaves the Details empty and unmarked when the read chose none', () => {
+    const result = valuesFromRead(read({}))
+
+    expect(result).toMatchObject({ category: null, tags: [], difficulty: null, nutrition: emptyValues().nutrition })
+    expect(result.marks).toEqual({})
   })
 })

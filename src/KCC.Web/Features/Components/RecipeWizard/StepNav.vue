@@ -6,9 +6,10 @@
     canGoBack: boolean
     canProceed: boolean
     returnsToReview?: boolean
+    canReview?: boolean
   }
 
-  const { canGoBack, canProceed, returnsToReview = false } = defineProps<StepNavProps>()
+  const { canGoBack, canProceed, returnsToReview = false, canReview = true } = defineProps<StepNavProps>()
 
   const emit = defineEmits<{ back: []; review: [] }>()
 </script>
@@ -20,7 +21,13 @@
     </Button>
 
     <div class="ml-auto flex flex-wrap justify-end gap-x-3 gap-y-rule-0.5">
-      <Button v-if="returnsToReview" variant="ghost" data-testid="back-to-review" @click="emit('review')">
+      <Button
+        v-if="returnsToReview"
+        variant="ghost"
+        data-testid="back-to-review"
+        :disabled="!canReview"
+        @click="emit('review')"
+      >
         <i class="fa-duotone fa-clipboard-check" aria-hidden="true"></i><ResourceString for="BackToReview" />
       </Button>
 

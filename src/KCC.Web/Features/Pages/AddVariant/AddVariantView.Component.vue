@@ -3,6 +3,7 @@
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import Button from '~/Components/Button/Button.vue'
   import RecipeWizard, { type ImportAvailability } from '~/Components/RecipeWizard/RecipeWizard.vue'
+  import type { DetailsChoices } from '~/Components/RecipeWizard/wizardDetails'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
 
   export interface AddVariantViewProps {
@@ -11,6 +12,7 @@
     recipeSlug: string
     resourceStrings?: Record<string, string>
     photoImport?: ImportAvailability
+    detailsChoices?: DetailsChoices
   }
 
   const props = defineProps<AddVariantViewProps>()
@@ -34,5 +36,5 @@
     </template>
   </SmallHero>
 
-  <RecipeWizard flow="variant" :recipe :resource-strings :closing-link :photo-import />
+  <RecipeWizard flow="variant" :recipe :resource-strings :closing-link :photo-import :choices="detailsChoices" />
 </template>

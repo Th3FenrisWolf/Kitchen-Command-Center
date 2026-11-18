@@ -4,6 +4,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet, { type Tear } from '~/Components/Sheet/KccSheet.vue'
   import type { Ingredient } from '~/Types/Recipe'
+  import DetailsSummary from './DetailsSummary.vue'
   import PossibleDuplicateNotice from './PossibleDuplicateNotice.vue'
   import ReadAgainWarning from './ReadAgainWarning.vue'
   import type { PossibleDuplicate } from './recipeImportApi'
@@ -11,6 +12,7 @@
   import { recipeWizardKeys } from './recipeWizardKeys'
   import { focusHeading, STEP_PAD, stepNumber } from './stepSheet'
   import ValueMark from './ValueMark.vue'
+  import { nutritionState, NUTRITION_FIELDS, type DetailsChoices } from './wizardDetails'
   import type { SubmitErrorKey } from './wizardErrors'
   import { fill } from './wizardText'
   import { isFilled, stepLabelKey, validIngredients, validInstructions, type WizardValues } from './wizardValues'
@@ -18,6 +20,7 @@
   export interface ReviewStepProps {
     mode: WizardMode
     values: WizardValues
+    choices?: DetailsChoices
     otherRecipes?: string[]
     possibleDuplicate?: PossibleDuplicate | null
     changesMatch?: boolean
@@ -33,6 +36,7 @@
   const {
     mode,
     values,
+    choices = { categories: [], tags: [] },
     otherRecipes = [],
     possibleDuplicate = null,
     changesMatch = false,
@@ -72,7 +76,11 @@
     instructions: !instructions.value.length,
   }))
 
-  const complete = computed(() => Object.values(missing.value).every((gap) => !gap))
+  const nutritionValid = computed(() =>
+    NUTRITION_FIELDS.every(({ field }) => nutritionState(field, values.nutrition[field]) === 'valid'),
+  )
+
+  const complete = computed(() => nutritionValid.value && Object.values(missing.value).every((gap) => !gap))
 
   const stats = computed(() =>
     [
@@ -275,6 +283,8 @@
           </li>
         </ol>
       </div>
+
+      <DetailsSummary :mode :values :choices :disabled="submitting" @edit="emit('edit', $event)" />
     </div>
 
     <div v-if="imported" class="mt-rule-2 flex flex-col gap-y-rule-1">

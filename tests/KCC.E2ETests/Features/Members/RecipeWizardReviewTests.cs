@@ -137,6 +137,8 @@ public class RecipeWizardReviewTests : BasePageTests
         await next.ClickAsync();
         await Page.GetByTestId("wizard-instruction-text").First.FillAsync("Scramble gently.");
         await next.ClickAsync();
+        await Expect(Page.GetByTestId("details-step")).ToBeVisibleAsync();
+        await next.ClickAsync();
 
         await Expect(Review).ToBeVisibleAsync();
         await Expect(Review).ToContainTextAsync("Eggs");

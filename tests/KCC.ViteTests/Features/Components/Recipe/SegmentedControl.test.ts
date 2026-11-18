@@ -1,3 +1,5 @@
+// @vitest-environment happy-dom
+import { createApp, h, nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
 import SegmentedControl from '~/Components/Recipe/SegmentedControl.vue'
 import { renderSsr, expectNoRetiredMarkup, openTag } from '../../../support/ssr'
@@ -48,5 +50,23 @@ describe('SegmentedControl', () => {
     const html = await renderSsr(SegmentedControl, { options: textOptions, modelValue: 'grid' })
     expect(openTag(html, 'role="radiogroup"')).toContain('class="kcc-seg"')
     expect(openTag(html, 'kcc-seg-thumb')).not.toContain('kcc-seg-thumb--glide')
+  })
+
+  it('emits pick on every choice, the checked segment included, by click or key', async () => {
+    const picked: string[] = []
+    const host = document.createElement('div')
+    const app = createApp(() =>
+      h(SegmentedControl, { options: textOptions, modelValue: 'grid', onPick: (value: string) => picked.push(value) }),
+    )
+    app.mount(host)
+    const segment = (testId: string) => host.querySelector<HTMLButtonElement>(`[data-testid="${testId}"]`)!
+
+    segment('view-grid').click()
+    segment('view-list').click()
+    segment('view-grid').dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+    await nextTick()
+
+    expect(picked).toEqual(['grid', 'list', 'list'])
+    app.unmount()
   })
 })

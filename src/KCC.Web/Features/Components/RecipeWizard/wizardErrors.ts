@@ -1,5 +1,6 @@
 import type { ApiFailure } from '~/Utilities/Api'
 import { recipeWizardKeys } from './recipeWizardKeys'
+import type { DetailsChoices } from './wizardDetails'
 
 export type SubmitErrorKey = 'SubmitFailed' | 'SignInAgain' | 'RecipeNotFound' | 'TooManyAttempts' | 'UnexpectedError'
 
@@ -55,4 +56,13 @@ export const readErrorKey = (failure: ApiFailure): ReadErrorKey =>
 export function restingUntil(failure: ApiFailure): string | null {
   const day = failure.body?.availableAgainOn
   return readErrorKey(failure) === recipeWizardKeys.ImportUnavailable && typeof day === 'string' && day ? day : null
+}
+
+const isList = (value: unknown): value is unknown[] => Array.isArray(value)
+
+export function refusedDetails({ status, code, body }: ApiFailure): DetailsChoices | null {
+  const choices = body?.choices as Partial<DetailsChoices> | undefined
+  return status === 400 && code === 'detailsChanged' && isList(choices?.categories) && isList(choices?.tags)
+    ? (choices as DetailsChoices)
+    : null
 }

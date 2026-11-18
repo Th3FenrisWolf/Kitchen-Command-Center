@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { configureApi, post, postForm, type ApiFailure } from '~/Utilities/Api'
-import { readErrorKey, refusedName, restingUntil, submitErrorKey } from '~/Components/RecipeWizard/wizardErrors'
+import {
+  readErrorKey,
+  refusedDetails,
+  refusedName,
+  restingUntil,
+  submitErrorKey,
+} from '~/Components/RecipeWizard/wizardErrors'
 
 const answer = (status: number, body: unknown = undefined) =>
   ({
@@ -81,6 +87,52 @@ describe('refusedName', () => {
     const failure = await failedSubmission(() => Promise.resolve(answer(status, body)))
 
     expect(refusedName(failure)).toBeNull()
+  })
+})
+
+describe('refusedDetails', () => {
+  beforeEach(() => {
+    configureApi({ antiforgeryToken: 'tok' })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  const choices = {
+    categories: [{ key: 'cat-dinner', name: 'Dinner' }],
+    tags: [{ key: 'tag-spicy', name: 'Spicy', kind: 'Style' }],
+  }
+
+  it('carries the choices of a 400 detailsChanged', async () => {
+    const failure = await failedSubmission(() =>
+      Promise.resolve(answer(400, { error: 'Changed.', code: 'detailsChanged', choices })),
+    )
+
+    expect(refusedDetails(failure)).toEqual(choices)
+  })
+
+  it.each([
+    ['a 400 invalidDetails', 400, { error: 'Bad.', code: 'invalidDetails', field: 'calories' }],
+    ['a 400 detailsChanged with no choices', 400, { error: 'Changed.', code: 'detailsChanged' }],
+    [
+      'a 400 detailsChanged with malformed choices',
+      400,
+      { error: 'Changed.', code: 'detailsChanged', choices: { tags: 1 } },
+    ],
+    ['any other status', 404, { error: 'Changed.', code: 'detailsChanged', choices }],
+  ])('carries no choices for %s', async (_case, status, body) => {
+    const failure = await failedSubmission(() => Promise.resolve(answer(status, body)))
+
+    expect(refusedDetails(failure)).toBeNull()
+  })
+
+  it('answers an invalidDetails with the generic SubmitFailed', async () => {
+    const failure = await failedSubmission(() =>
+      Promise.resolve(answer(400, { error: 'Bad.', code: 'invalidDetails', field: 'calories' })),
+    )
+
+    expect(submitErrorKey(failure)).toBe('SubmitFailed')
   })
 })
 
