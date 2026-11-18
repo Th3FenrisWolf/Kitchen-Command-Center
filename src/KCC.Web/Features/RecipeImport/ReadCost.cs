@@ -6,7 +6,7 @@ public static class ReadCost
 {
     public const int MaxTokens = 12_000;
 
-    private const int FixedPromptTokens = 3_000;
+    private const int FixedPromptTokens = 3_500;
     private const decimal CatalogCharactersPerToken = 2m;
     private const decimal TokensPerMTok = 1_000_000m;
     private const decimal MicroUsdPerUsd = 1_000_000m;
@@ -24,12 +24,16 @@ public static class ReadCost
             + Usd(cacheReadTokens, prices.CacheReadUsdPerMTok));
     }
 
-    public static long ReservationMicroUsd(ModelProfile profile, int photoCount, int catalogCharacters)
+    public static long ReservationMicroUsd(
+        ModelProfile profile,
+        int photoCount,
+        int catalogCharacters,
+        int taxonomyCharacters = 0)
     {
         var prices = profile.UpperPrices ?? profile.Prices;
         decimal promptTokens =
             FixedPromptTokens
-            + (catalogCharacters / CatalogCharactersPerToken)
+            + ((catalogCharacters + taxonomyCharacters) / CatalogCharactersPerToken)
             + (photoCount * profile.ImageTokenCap);
 
         return RoundedUpMicroUsd(Usd(promptTokens, prices.InputUsdPerMTok) + Usd(MaxTokens, prices.OutputUsdPerMTok));

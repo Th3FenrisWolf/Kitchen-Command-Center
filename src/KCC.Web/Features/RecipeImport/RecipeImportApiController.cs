@@ -65,13 +65,18 @@ public class RecipeImportApiController(
 
         var published = recipes.GetPublishedRecipes();
         var catalog = chosen is null ? RecipeCatalog.From(published) : null;
+        var taxonomy = ReaderTaxonomy.From(recipes.GetTaxonomyChoices(), flow);
         var duplicateCandidates = catalog?.Entries.Select(entry => entry.Page)
             ?? published.Where(page => page.Recipe.Key == chosen.Key);
         var model = options.CurrentValue.Model;
         var profile = ModelProfiles.Find(model)
             ?? throw new InvalidOperationException($"RecipeImport:Model {model} has no price profile.");
         var now = timeProvider.GetUtcNow();
-        var reservationMicroUsd = ReadCost.ReservationMicroUsd(profile, photosToRead.Count, catalog?.Characters ?? 0);
+        var reservationMicroUsd = ReadCost.ReservationMicroUsd(
+            profile,
+            photosToRead.Count,
+            catalog?.Characters ?? 0,
+            taxonomy.Characters);
         if (!ledger.TryReserve(ImportSpendLedger.MonthOf(now), reservationMicroUsd, out var reservation))
         {
             return StatusCode(StatusCodes.Status409Conflict, new
@@ -84,7 +89,7 @@ public class RecipeImportApiController(
 
         // The service bills a read whose member has gone, so the read and its settlement outlive the request.
         var attempt = await reader.ReadAsync(
-            new ReadRequest(flow, chosen?.Key, photosToRead, catalog),
+            new ReadRequest(flow, chosen?.Key, photosToRead, catalog, taxonomy),
             CancellationToken.None);
         if (attempt.ServiceAnswered)
         {
@@ -93,7 +98,7 @@ public class RecipeImportApiController(
 
         return attempt.Failure switch
         {
-            null => Ok(ReadResponseOf(attempt.Output, catalog, duplicateCandidates)),
+            null => Ok(ReadResponseOf(attempt.Output, catalog, taxonomy, flow, duplicateCandidates)),
             ReadFailure.TimedOut =>
                 Error(StatusCodes.Status504GatewayTimeout, "Reading the photos took too long.", "readTimedOut"),
             _ => Error(StatusCodes.Status502BadGateway, "The photos could not be read.", "readFailed"),
@@ -103,9 +108,11 @@ public class RecipeImportApiController(
     private static ReadResponse ReadResponseOf(
         ReaderOutput output,
         RecipeCatalog catalog,
+        ReaderTaxonomy taxonomy,
+        string flow,
         IEnumerable<RecipePageData> duplicateCandidates)
     {
-        var read = ReadResultNormalizer.Normalize(output);
+        var read = ReadResultNormalizer.Normalize(output, taxonomy, flow);
         if (read.Outcome == ReadOutcomes.NoRecipe)
         {
             return read;

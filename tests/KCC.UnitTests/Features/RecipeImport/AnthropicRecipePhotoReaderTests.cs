@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Anthropic;
 using Anthropic.Models.Messages;
 using KCC.UnitTests.Features.Providers;
@@ -171,7 +173,7 @@ public class AnthropicRecipePhotoReaderTests
     }
 
     [Test]
-    public async Task TheEmbeddedSchema_IsTheContractsReaderOutputSchema()
+    public async Task TheEmbeddedSchema_IsPhaseOnesReaderOutputSchema_WithDetailsAdded()
     {
         var contractPath = Path.Combine(
             RepoPaths.Root,
@@ -180,8 +182,148 @@ public class AnthropicRecipePhotoReaderTests
             "contracts",
             "reader-output.schema.json");
         using var contract = JsonDocument.Parse(await File.ReadAllTextAsync(contractPath));
+        var schema = JsonNode.Parse(EmbeddedSchema().GetRawText())!.AsObject();
+        var required = schema["required"]!.AsArray();
+        _ = required.Remove(required.Single(name => name!.GetValue<string>() == "details"));
+        _ = schema["properties"]!.AsObject().Remove("details");
 
-        _ = await Assert.That(JsonElement.DeepEquals(contract.RootElement, EmbeddedSchema())).IsTrue();
+        _ = await Assert.That(JsonElement.DeepEquals(contract.RootElement, JsonSerializer.SerializeToElement(schema))).IsTrue();
+    }
+
+    [Test]
+    public async Task TheEmbeddedSchema_RequiresDetails_InTheReadResponseContractsShape()
+    {
+        var schema = EmbeddedSchema();
+        using var contract = JsonDocument.Parse(ContractDetailsSchema);
+
+        _ = await Assert.That(schema.GetProperty("required").EnumerateArray().Select(name => name.GetString())).Contains("details");
+        _ = await Assert.That(JsonElement.DeepEquals(schema.GetProperty("properties").GetProperty("details"), contract.RootElement)).IsTrue();
+    }
+
+    [Test]
+    public async Task TheEmbeddedSchema_HasNoProposalField()
+    {
+        _ = await Assert.That(EmbeddedSchema().GetRawText().Contains("propos", StringComparison.OrdinalIgnoreCase)).IsFalse();
+    }
+
+    [Test]
+    public async Task ARecipeFlowRead_CarriesTheCategoryAndTagLines_AfterTheCatalog()
+    {
+        var handler = FakeAnthropic.Answering(RecipeAnswer);
+        var catalog = RecipeCatalog.From([Page("Weeknight Tacos", "Taco night.", "Slow Beef Barbacoa")]);
+        var taxonomy = ReaderTaxonomy.From(Choices, ImportFlows.Recipe);
+        var request = new ReadRequest(ImportFlows.Recipe, null, [new ReadPhoto("image/jpeg", JpegPhoto)], catalog, taxonomy);
+
+        _ = await Reader(handler).ReadAsync(request, CancellationToken.None);
+
+        var text = TextBlock(SentParameters(handler.Bodies.Single()));
+        _ = await Assert.That(text).IsEqualTo(ReaderPrompt.Instruction(request));
+        _ = await Assert.That(text.EndsWith($"{catalog.Text}\n{taxonomy.Text}", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text).Contains("{\"id\":\"C1\",\"name\":\"Breakfast\"}");
+        _ = await Assert.That(text).Contains("{\"id\":\"T1\",\"name\":\"Vegan\",\"group\":\"diet\"}");
+    }
+
+    [Test]
+    public async Task ARecipeFlowRead_WithoutACatalog_StillCarriesTheLists()
+    {
+        var handler = FakeAnthropic.Answering(RecipeAnswer);
+        var taxonomy = ReaderTaxonomy.From(Choices, ImportFlows.Recipe);
+        var request = new ReadRequest(ImportFlows.Recipe, null, [new ReadPhoto("image/jpeg", JpegPhoto)], null, taxonomy);
+
+        _ = await Reader(handler).ReadAsync(request, CancellationToken.None);
+
+        var text = TextBlock(SentParameters(handler.Bodies.Single()));
+        _ = await Assert.That(text.EndsWith($"\n{taxonomy.Text}", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text).Contains("Set matchId and matchReason to null.");
+    }
+
+    [Test]
+    public async Task AVariantFlowRead_LeavesTheCategoriesOut_AndSaysToSetTheCategoryToNull()
+    {
+        var handler = FakeAnthropic.Answering(RecipeAnswer);
+        var taxonomy = ReaderTaxonomy.From(Choices, ImportFlows.Variant);
+        var request = new ReadRequest(ImportFlows.Variant, Guid.NewGuid(), [new ReadPhoto("image/jpeg", JpegPhoto)], null, taxonomy);
+
+        _ = await Reader(handler).ReadAsync(request, CancellationToken.None);
+
+        var text = TextBlock(SentParameters(handler.Bodies.Single()));
+        _ = await Assert.That(text).IsEqualTo(ReaderPrompt.Instruction(request));
+        _ = await Assert.That(text).Contains("Set details.category to null.");
+        _ = await Assert.That(text.EndsWith($"\n{taxonomy.Text}", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text).DoesNotContain("Breakfast");
+        _ = await Assert.That(text).DoesNotContain("categories follow");
+    }
+
+    [Test]
+    public async Task TheSystemPrompt_CarriesRulesTenToThirteen_AfterRuleNine()
+    {
+        var system = ReaderPrompt.System;
+        var rules = new[] { "9. ", "10. ", "11. ", "12. ", "13. " }.Select(rule => system.IndexOf(rule, StringComparison.Ordinal)).ToList();
+
+        _ = await Assert.That(rules.All(index => index >= 0)).IsTrue();
+        _ = await Assert.That(rules).IsInOrder();
+        _ = await Assert.That(system).Contains("Choose a category and tags only from the lists by id.");
+        _ = await Assert.That(system).Contains("Choose a diet tag only when the photos state it.");
+        _ = await Assert.That(system).Contains("Difficulty and the Easy tag are separate decisions.");
+        _ = await Assert.That(system).Contains("Copy nutrition only as printed. Never estimate a value.");
+    }
+
+    [Test]
+    public async Task RuleTen_LetsAnEquivalentWordFillAValue_AndAsksForTheWordInPrinted()
+    {
+        var rule = RuleOf(ReaderPrompt.System, 10);
+
+        _ = await Assert.That(rule).Contains("an equivalent word (\"plant-based\" for Vegan)");
+        _ = await Assert.That(rule).Contains("copy the word the photos use into `printed`");
+    }
+
+    [Test]
+    public async Task TheRequest_CarriesNoMemberAccountData()
+    {
+        var handler = FakeAnthropic.Answering(RecipeAnswer);
+        var request = new ReadRequest(
+            ImportFlows.Recipe,
+            null,
+            [new ReadPhoto("image/jpeg", JpegPhoto)],
+            null,
+            ReaderTaxonomy.From(Choices, ImportFlows.Recipe));
+
+        _ = await Reader(handler).ReadAsync(request, CancellationToken.None);
+
+        using var body = JsonDocument.Parse(handler.Bodies.Single());
+        _ = await Assert.That(body.RootElement.EnumerateObject().Select(property => property.Name))
+            .IsEquivalentTo(["model", "max_tokens", "system", "messages", "output_config", "thinking"]);
+        _ = await Assert.That(typeof(ReadRequest).GetProperties().Select(property => property.Name))
+            .IsEquivalentTo(["Flow", "RecipeKey", "Photos", "Catalog", "Taxonomy"]);
+    }
+
+    [Test]
+    public async Task AnAnswerWithDetails_ParsesThem()
+    {
+        var answer = JsonNode.Parse(ReaderOutputJson)!.AsObject();
+        answer["details"] = JsonNode.Parse(
+            """
+            {
+              "category": { "id": "C1", "stated": false, "printed": null, "reason": "A morning dish" },
+              "tags": [ { "id": "T1", "stated": true, "printed": "plant-based", "mark": null } ],
+              "difficulty": { "level": "Medium", "printed": "intermediate", "reason": null },
+              "nutrition": {
+                "basis": "serving",
+                "values": [ { "nutrient": "calories", "amount": 1200, "unit": "kJ", "printed": "1200 kJ", "inexact": false } ]
+              }
+            }
+            """);
+
+        var attempt = await Reader(FakeAnthropic.Answering(() => Answer("end_turn", answer.ToJsonString())))
+            .ReadAsync(Request(), CancellationToken.None);
+
+        var details = attempt.Output.Details;
+        _ = await Assert.That(details.Category).IsEqualTo(new ReaderCategory("C1", false, null, "A morning dish"));
+        _ = await Assert.That(details.Tags).IsEquivalentTo([new ReaderTag("T1", true, "plant-based", null)]);
+        _ = await Assert.That(details.Difficulty).IsEqualTo(new ReaderDifficulty("Medium", "intermediate", null));
+        _ = await Assert.That(details.Nutrition.Basis).IsEqualTo("serving");
+        _ = await Assert.That(details.Nutrition.Values)
+            .IsEquivalentTo([new ReaderNutrient("calories", 1200m, "kJ", "1200 kJ", false)]);
     }
 
     [Test]
@@ -454,6 +596,76 @@ public class AnthropicRecipePhotoReaderTests
             _ = await Assert.That(entry.Values.All(value => LoggedValues.Contains(value.Key))).IsTrue();
             _ = await Assert.That(entry.Exception).IsNull();
         }
+    }
+
+    private static readonly DetailsChoices Choices = new(
+        [new CategoryChoice(Guid.NewGuid(), "Breakfast"), new CategoryChoice(Guid.NewGuid(), "Dinner")],
+        [new TagChoice(Guid.NewGuid(), "Vegan", TagKinds.Diet), new TagChoice(Guid.NewGuid(), "Spicy", TagKinds.Style)]);
+
+    private const string ContractDetailsSchema =
+        """
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["category", "tags", "difficulty", "nutrition"],
+          "properties": {
+            "category": {
+              "type": "object", "additionalProperties": false, "required": ["id", "stated", "printed", "reason"],
+              "properties": {
+                "id": { "type": ["string", "null"] },
+                "stated": { "type": "boolean" },
+                "printed": { "type": ["string", "null"] },
+                "reason": { "type": ["string", "null"] }
+              }
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "object", "additionalProperties": false, "required": ["id", "stated", "printed", "mark"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "stated": { "type": "boolean" },
+                  "printed": { "type": ["string", "null"] },
+                  "mark": { "$ref": "#/$defs/mark" }
+                }
+              }
+            },
+            "difficulty": {
+              "type": "object", "additionalProperties": false, "required": ["level", "printed", "reason"],
+              "properties": {
+                "level": { "type": ["string", "null"], "enum": ["Easy", "Medium", "Hard", null] },
+                "printed": { "type": ["string", "null"] },
+                "reason": { "type": ["string", "null"] }
+              }
+            },
+            "nutrition": {
+              "type": "object", "additionalProperties": false, "required": ["basis", "values"],
+              "properties": {
+                "basis": { "type": ["string", "null"], "enum": ["serving", "recipe", null] },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object", "additionalProperties": false,
+                    "required": ["nutrient", "amount", "unit", "printed", "inexact"],
+                    "properties": {
+                      "nutrient": { "type": "string", "enum": ["calories", "protein", "carbohydrates", "fat", "saturatedFat", "fiber", "sugar", "sodium", "salt"] },
+                      "amount": { "type": ["number", "null"] },
+                      "unit": { "type": "string", "enum": ["kcal", "kJ", "g", "mg"] },
+                      "printed": { "type": "string" },
+                      "inexact": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        """;
+
+    private static string RuleOf(string system, int number)
+    {
+        var start = system.IndexOf($"{number}. ", StringComparison.Ordinal);
+        var end = system.IndexOf($"{number + 1}. ", start, StringComparison.Ordinal);
+        return Regex.Replace(system[start..(end < 0 ? system.Length : end)], @"\s+", " ");
     }
 
     private static AnthropicRecipePhotoReader Reader(

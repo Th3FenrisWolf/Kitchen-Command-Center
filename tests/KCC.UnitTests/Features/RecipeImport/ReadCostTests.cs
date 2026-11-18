@@ -82,12 +82,12 @@ public class ReadCostTests
     }
 
     [Test]
-    [Arguments("claude-haiku-4-5", 3, 7_000, 71_300L)]
-    [Arguments("claude-haiku-5-5", 3, 7_000, 40_426L)]
-    [Arguments("claude-sonnet-5-5", 3, 7_000, 161_704L)]
-    [Arguments("claude-opus-5-5", 3, 7_000, 323_408L)]
-    [Arguments("claude-opus-5-5", 1, 0, 271_136L)]
-    [Arguments("claude-haiku-4-5", 1, 1, 64_601L)]
+    [Arguments("claude-haiku-4-5", 3, 7_000, 71_800L)]
+    [Arguments("claude-haiku-5-5", 3, 7_000, 40_676L)]
+    [Arguments("claude-sonnet-5-5", 3, 7_000, 162_704L)]
+    [Arguments("claude-opus-5-5", 3, 7_000, 325_408L)]
+    [Arguments("claude-opus-5-5", 1, 0, 273_136L)]
+    [Arguments("claude-haiku-4-5", 1, 1, 65_101L)]
     public async Task ReservationMicroUsd_FollowsTheSpendReservationEstimate(
         string model,
         int photoCount,
@@ -106,7 +106,45 @@ public class ReadCostTests
 
         var reservation = ReadCost.ReservationMicroUsd(profile, photoCount: 1, catalogCharacters: 0);
 
-        _ = await Assert.That(reservation).IsEqualTo(33_892L);
+        _ = await Assert.That(reservation).IsEqualTo(34_142L);
+    }
+
+    [Test]
+    [Arguments("claude-haiku-4-5", 1, 0, 600)]
+    [Arguments("claude-haiku-5-5", 3, 7_000, 601)]
+    [Arguments("claude-opus-5-5", 2, 7_000, 1_234)]
+    public async Task ReservationMicroUsd_CountsTheTaxonomysCharactersWithTheCatalogs(
+        string model,
+        int photoCount,
+        int catalogCharacters,
+        int taxonomyCharacters)
+    {
+        var profile = ModelProfiles.Find(model);
+
+        var reservation = ReadCost.ReservationMicroUsd(profile, photoCount, catalogCharacters, taxonomyCharacters);
+
+        _ = await Assert.That(reservation)
+            .IsEqualTo(ReadCost.ReservationMicroUsd(profile, photoCount, catalogCharacters + taxonomyCharacters));
+        _ = await Assert.That(reservation)
+            .IsGreaterThan(ReadCost.ReservationMicroUsd(profile, photoCount, catalogCharacters));
+    }
+
+    [Test]
+    public async Task ReservationMicroUsd_OpusFiveFive_PricesAFewHundredTaxonomyCharacters()
+    {
+        var reservation = ReadCost.ReservationMicroUsd(
+            ModelProfiles.Find("claude-opus-5-5"),
+            photoCount: 1,
+            catalogCharacters: 0,
+            taxonomyCharacters: 600);
+
+        _ = await Assert.That(reservation).IsEqualTo(274_336L);
+    }
+
+    [Test]
+    public async Task TheMonthlyCeilingsDefault_StaysTwoDollars()
+    {
+        _ = await Assert.That(new RecipeImportOptions().MonthlyCeilingUsd).IsEqualTo(2.00m);
     }
 
     private static Usage UsageOf(long input, long output, long? cacheWrite, long? cacheRead) => new()

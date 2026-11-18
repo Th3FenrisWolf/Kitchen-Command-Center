@@ -10,7 +10,8 @@
     "matchId",
     "matchReason",
     "otherRecipes",
-    "sourceLanguage"
+    "sourceLanguage",
+    "details"
   ],
   "properties": {
     "found": {
@@ -86,6 +87,84 @@
     "sourceLanguage": {
       "type": ["string", "null"],
       "description": "The language of the photos when it is not English, for example Italian. Null for English."
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category", "tags", "difficulty", "nutrition"],
+      "properties": {
+        "category": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "stated", "printed", "reason"],
+          "properties": {
+            "id": { "type": ["string", "null"] },
+            "stated": { "type": "boolean" },
+            "printed": { "type": ["string", "null"] },
+            "reason": { "type": ["string", "null"] }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "stated", "printed", "mark"],
+            "properties": {
+              "id": { "type": "string" },
+              "stated": { "type": "boolean" },
+              "printed": { "type": ["string", "null"] },
+              "mark": { "$ref": "#/$defs/mark" }
+            }
+          }
+        },
+        "difficulty": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["level", "printed", "reason"],
+          "properties": {
+            "level": { "type": ["string", "null"], "enum": ["Easy", "Medium", "Hard", null] },
+            "printed": { "type": ["string", "null"] },
+            "reason": { "type": ["string", "null"] }
+          }
+        },
+        "nutrition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["basis", "values"],
+          "properties": {
+            "basis": { "type": ["string", "null"], "enum": ["serving", "recipe", null] },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["nutrient", "amount", "unit", "printed", "inexact"],
+                "properties": {
+                  "nutrient": {
+                    "type": "string",
+                    "enum": [
+                      "calories",
+                      "protein",
+                      "carbohydrates",
+                      "fat",
+                      "saturatedFat",
+                      "fiber",
+                      "sugar",
+                      "sodium",
+                      "salt"
+                    ]
+                  },
+                  "amount": { "type": ["number", "null"] },
+                  "unit": { "type": "string", "enum": ["kcal", "kJ", "g", "mg"] },
+                  "printed": { "type": "string" },
+                  "inexact": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {

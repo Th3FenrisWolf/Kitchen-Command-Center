@@ -1,3 +1,4 @@
+using System.Text.Json;
 using KCC.Web.Features.DevTools.RecipeImport;
 using KCC.Web.Features.RecipeImport;
 using KCC.Web.Features.Recipes;
@@ -153,6 +154,109 @@ public class StandInRecipePhotoReaderTests
         var attempt = await Reader(recipes.Object).ReadAsync(request, CancellationToken.None);
 
         _ = await Assert.That(attempt.Output.Ingredients.Any(ingredient => ingredient.Name == "Cornmeal")).IsTrue();
+    }
+
+    [Test]
+    public async Task WithOnePhoto_TheDetailsAreTheCategorySuggestedAndTheTagsAndPrintedPanel()
+    {
+        var read = await DetailsReadAsync(photos: 1);
+
+        _ = await Assert.That(read.Details.Category.Value).IsEqualTo(Breakfast.Key);
+        _ = await Assert.That(read.Details.Category.Mark?.Kind).IsEqualTo(MarkKinds.Suggested);
+        _ = await Assert.That(read.Details.Category.Mark?.Reason).IsNotEmpty();
+        _ = await Assert.That(read.Details.Tags.Select(tag => tag.Key)).IsEquivalentTo([Vegan.Key, Easy.Key], CollectionOrdering.Any);
+        _ = await Assert.That(read.Details.Tags.Single(tag => tag.Key == Vegan.Key).Mark).IsNull();
+        _ = await Assert.That(read.Details.Tags.Single(tag => tag.Key == Easy.Key).Mark?.Kind).IsEqualTo(MarkKinds.Suggested);
+        _ = await Assert.That(read.Details.Difficulty.Value).IsEqualTo("Easy");
+        _ = await Assert.That(read.Details.Difficulty.Mark).IsNull();
+        _ = await Assert.That(read.Details.Nutrition.Calories.Value).IsEqualTo(320);
+        _ = await Assert.That(read.Details.Nutrition.Calories.Mark).IsNull();
+        _ = await Assert.That(read.Details.Nutrition.FiberG.Value).IsEqualTo(2);
+        _ = await Assert.That(read.Details.Nutrition.FiberG.Mark?.Kind).IsEqualTo(MarkKinds.Calculated);
+        _ = await Assert.That(read.Details.Nutrition.FiberG.Mark?.Arg).IsEqualTo("1.5 g");
+    }
+
+    [Test]
+    [Arguments(2)]
+    [Arguments(3)]
+    public async Task WithTwoOrThreePhotos_TheDetailsAreTheOnePhotoDetails(int photos)
+    {
+        var catalog = RecipeCatalog.From([Page("Weeknight Tacos", Shoyu()), Page("Avocado Toast", Toast())]);
+        var one = (await ReadOutputAsync(photos: 1, catalog)).Details;
+
+        var output = await ReadOutputAsync(photos, catalog);
+
+        _ = await Assert.That(JsonSerializer.Serialize(output.Details)).IsEqualTo(JsonSerializer.Serialize(one));
+        if (photos == 2)
+        {
+            _ = await Assert.That(output.MatchId).IsEqualTo("R1");
+        }
+        else
+        {
+            await AssertCopiesToastAsync(output);
+        }
+    }
+
+    [Test]
+    public async Task WithFourPhotos_TheWholeRecipePanelInKilojoulesAndSaltIsDividedByTheEightPrintedServings()
+    {
+        var read = await DetailsReadAsync(photos: 4);
+
+        var nutrition = read.Details.Nutrition;
+        _ = await Assert.That(read.Variant.Servings.Value).IsEqualTo(8);
+        _ = await Assert.That(read.Variant.Servings.Mark).IsNull();
+        _ = await Assert.That(nutrition.Calories.Value).IsEqualTo(250);
+        _ = await Assert.That(nutrition.ProteinG.Value).IsEqualTo(10);
+        _ = await Assert.That(nutrition.CarbsG.Value).IsEqualTo(20);
+        _ = await Assert.That(nutrition.FatG.Value).IsEqualTo(8);
+        _ = await Assert.That(nutrition.FiberG.Value).IsEqualTo(2);
+        _ = await Assert.That(nutrition.SodiumMg.Value).IsEqualTo(1000);
+        _ = await Assert.That(new[]
+            {
+                nutrition.Calories, nutrition.ProteinG, nutrition.CarbsG, nutrition.FatG, nutrition.FiberG, nutrition.SodiumMg,
+            }.All(value => value.Value is not null && value.Mark?.Kind == MarkKinds.Calculated)).IsTrue();
+    }
+
+    [Test]
+    public async Task WithFivePhotos_TheServingsAreAnEstimate_SoNutritionStaysEmpty()
+    {
+        var read = await DetailsReadAsync(photos: 5);
+
+        _ = await Assert.That(read.Variant.Servings.Mark?.Kind).IsEqualTo(MarkKinds.Estimate);
+        _ = await Assert.That(read.Details.Nutrition).IsEqualTo(NutritionConversion.Empty());
+    }
+
+    [Test]
+    public async Task ANameTheListsLack_IsDropped()
+    {
+        var taxonomy = ReaderTaxonomy.From(new DetailsChoices([Breakfast], [Easy]), ImportFlows.Recipe);
+
+        var read = await DetailsReadAsync(photos: 1, taxonomy);
+
+        _ = await Assert.That(read.Details.Tags.Select(tag => tag.Key)).IsEquivalentTo([Easy.Key], CollectionOrdering.Any);
+        var withoutCategory = ReaderTaxonomy.From(new DetailsChoices([], [Easy, Vegan]), ImportFlows.Recipe);
+        _ = await Assert.That((await DetailsReadAsync(photos: 1, withoutCategory)).Details.Category.Value).IsNull();
+    }
+
+    private static readonly CategoryChoice Breakfast = new(Guid.NewGuid(), "Breakfast");
+    private static readonly TagChoice Vegan = new(Guid.NewGuid(), "Vegan", TagKinds.Diet);
+    private static readonly TagChoice Easy = new(Guid.NewGuid(), "Easy", TagKinds.Style);
+
+    private static ReaderTaxonomy Taxonomy() =>
+        ReaderTaxonomy.From(new DetailsChoices([Breakfast], [Vegan, Easy]), ImportFlows.Recipe);
+
+    private static async Task<ReaderOutput> ReadOutputAsync(int photos, RecipeCatalog catalog)
+    {
+        var request = new ReadRequest(ImportFlows.Recipe, null, [.. Enumerable.Repeat(Photo, photos)], catalog, Taxonomy());
+        return (await Reader().ReadAsync(request, CancellationToken.None)).Output;
+    }
+
+    private static async Task<ReadResponse> DetailsReadAsync(int photos, ReaderTaxonomy taxonomy = null)
+    {
+        taxonomy ??= Taxonomy();
+        var request = new ReadRequest(ImportFlows.Recipe, null, [.. Enumerable.Repeat(Photo, photos)], null, taxonomy);
+        var attempt = await Reader().ReadAsync(request, CancellationToken.None);
+        return ReadResultNormalizer.Normalize(attempt.Output, taxonomy, ImportFlows.Recipe);
     }
 
     private static async Task<ReadResponse> NormalizedReadAsync(string flow)

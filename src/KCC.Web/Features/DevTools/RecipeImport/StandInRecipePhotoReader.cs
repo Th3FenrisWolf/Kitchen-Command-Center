@@ -15,7 +15,15 @@ public sealed class StandInRecipePhotoReader(
     private const int PhotosThatProposeR1 = 2;
     private const int PhotosThatCopyAVariant = 3;
     private const string FirstShortId = "R1";
+    private const int PhotosOfAWholeRecipePanel = 4;
+    private const int PhotosOfEstimatedServings = 5;
     private const string ProposalReason = "The stand-in reader proposes the first recipe in the catalog.";
+
+    private const string CategoryName = "Breakfast";
+    private const string CategoryReason = "Eggs and toast, the kind of dish served at breakfast.";
+    private const string StatedTagName = "Vegan";
+    private const string SuggestedTagName = "Easy";
+    private const string SuggestedTagReason = "Few ingredients and four short steps.";
 
     private static readonly ReaderMark NotInThePhotos = new(MarkKinds.Written, "Not in the photos");
 
@@ -50,22 +58,62 @@ public sealed class StandInRecipePhotoReader(
         OtherRecipes: [],
         SourceLanguage: null);
 
+    private static readonly ReaderNutrition PerServingPanel = new(
+        "serving",
+        [
+            new ReaderNutrient("calories", 320, "kcal", "320 kcal", false),
+            new ReaderNutrient("protein", 12, "g", "12 g", false),
+            new ReaderNutrient("carbohydrates", 30, "g", "30 g", false),
+            new ReaderNutrient("fat", 15, "g", "15 g", false),
+            new ReaderNutrient("fiber", 1.5m, "g", "1.5 g", false),
+        ]);
+
+    private static readonly ReaderNutrition WholeRecipePanel = new(
+        "recipe",
+        [
+            new ReaderNutrient("calories", 8368, "kJ", "8368 kJ", false),
+            new ReaderNutrient("protein", 80, "g", "80 g", false),
+            new ReaderNutrient("carbohydrates", 160, "g", "160 g", false),
+            new ReaderNutrient("fat", 64, "g", "64 g", false),
+            new ReaderNutrient("fiber", 16, "g", "16 g", false),
+            new ReaderNutrient("salt", 20, "g", "20 g", false),
+        ]);
+
     public bool IsConfigured => true;
 
     public async Task<ReadAttempt> ReadAsync(ReadRequest request, CancellationToken cancellationToken)
     {
         await Task.Delay(TimeSpan.FromSeconds(options.CurrentValue.StandInDelaySeconds), timeProvider, cancellationToken);
+        var read = SkilletCornbread with { Details = DetailsFor(request) };
         var output = request.Photos.Count switch
         {
             PhotosThatProposeR1 when request.Catalog?.Find(FirstShortId) is not null =>
-                SkilletCornbread with { MatchId = FirstShortId, MatchReason = ProposalReason },
-            PhotosThatCopyAVariant when FirstVariantToCopy(request) is { } variant => CopyOf(variant),
-            _ => SkilletCornbread,
+                read with { MatchId = FirstShortId, MatchReason = ProposalReason },
+            PhotosThatCopyAVariant when FirstVariantToCopy(request) is { } variant => CopyOf(read, variant),
+            PhotosOfEstimatedServings => read with
+            {
+                Variant = read.Variant with { Servings = new ReaderCount(8, new ReaderMark(MarkKinds.Estimate, "Not printed")) },
+            },
+            _ => read,
         };
         return ReadAttempt.Read(output, NoTokens());
     }
 
-    private static ReaderOutput CopyOf(VariantRecord variant) => SkilletCornbread with
+    private static ReaderDetails DetailsFor(ReadRequest request)
+    {
+        var taxonomy = request.Taxonomy;
+        var wholeRecipe = request.Photos.Count is PhotosOfAWholeRecipePanel or PhotosOfEstimatedServings;
+        return new ReaderDetails(
+            new ReaderCategory(taxonomy?.CategoryId(CategoryName), false, null, CategoryReason),
+            [
+                new ReaderTag(taxonomy?.TagId(StatedTagName), true, StatedTagName, null),
+                new ReaderTag(taxonomy?.TagId(SuggestedTagName), false, null, new ReaderMark(MarkKinds.Written, SuggestedTagReason)),
+            ],
+            new ReaderDifficulty("Easy", "easy", null),
+            wholeRecipe ? WholeRecipePanel : PerServingPanel);
+    }
+
+    private static ReaderOutput CopyOf(ReaderOutput read, VariantRecord variant) => read with
     {
         Ingredients =
         [
