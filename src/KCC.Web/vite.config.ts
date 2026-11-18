@@ -130,7 +130,9 @@ export default defineConfig(({ command, mode }) => {
         : []),
     ],
     resolve: {
-      dedupe: ['vue', '@vue/runtime-dom', '@vue/runtime-core', '@vue/compiler-dom', '@vue/shared'],
+      // Vite resolves a deduped package from this folder only, and pnpm links Vue's own @vue/* dependencies beside Vue
+      // in its store, out of reach from here. Deduped, the dev SSR runner inlined their CommonJS builds and failed.
+      dedupe: ['vue'],
       alias: [
         // Use runtime compiler build for dynamic template strings
         // Exact match to avoid catching vue/* subpaths
