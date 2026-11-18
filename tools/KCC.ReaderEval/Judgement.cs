@@ -58,6 +58,31 @@ public static class Judgement
             : Verdict.NotMet;
     }
 
+    public static Verdict DetailsCategory(IReadOnlyList<CaseScore> cases)
+    {
+        var expecting = cases.Select(score => score.Details).Where(details => details is { CategoryExpected: true }).ToList();
+        return expecting.Count == 0 ? Verdict.NotJudged
+            : (expecting.Count(details => details.CategoryRight) * 10) >= (expecting.Count * RightMatchesOf10) ? Verdict.Met
+            : Verdict.NotMet;
+    }
+
+    public static Verdict DetailsNutrition(IReadOnlyList<CaseScore> cases)
+    {
+        var scored = cases.Select(score => score.Details).Where(details => details is not null).ToList();
+        var expected = scored.Sum(details => details.NutritionExpected);
+        return expected == 0 ? Verdict.NotJudged
+            : (scored.Sum(details => details.NutritionRight) * 100) >= (expected * PrintedPercent) ? Verdict.Met
+            : Verdict.NotMet;
+    }
+
+    public static Verdict DetailsInvented(IReadOnlyList<CaseScore> cases)
+    {
+        var scored = cases.Select(score => score.Details).Where(details => details is not null).ToList();
+        return scored.Count == 0 ? Verdict.NotJudged
+            : scored.All(details => details.NutritionFilledUnprinted.Count == 0 && details.DietTagsUnstated.Count == 0) ? Verdict.Met
+            : Verdict.NotMet;
+    }
+
     public static (int Right, int Cases) Matches(IReadOnlyList<CaseScore> cases, bool onSite)
     {
         var scores = cases.Where(score => score.Match is { } match && match.OnSite == onSite).ToList();
@@ -128,9 +153,18 @@ public sealed record Comparison(int Edge, IReadOnlyList<ModelResult> Models)
 
     public Verdict Sc005(ModelResult model) => Judgement.Sc005(model.Cases);
 
+    public Verdict DetailsSc004(ModelResult model) => Judgement.DetailsCategory(model.Cases);
+
+    public Verdict DetailsSc005(ModelResult model) => Judgement.DetailsNutrition(model.Cases);
+
+    public Verdict DetailsSc006(ModelResult model) => Judgement.DetailsInvented(model.Cases);
+
     private bool MeetsAll(ModelResult model) =>
         Sc002(model) == Verdict.Met
         && Sc003(model) == Verdict.Met
         && Sc004(model) == Verdict.Met
-        && Sc005(model) == Verdict.Met;
+        && Sc005(model) == Verdict.Met
+        && DetailsSc004(model) != Verdict.NotMet
+        && DetailsSc005(model) != Verdict.NotMet
+        && DetailsSc006(model) != Verdict.NotMet;
 }

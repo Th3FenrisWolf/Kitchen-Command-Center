@@ -13,7 +13,8 @@ public sealed class AnthropicEvalService(
     AnthropicClient client,
     AnthropicOptions anthropic,
     ServiceErrorRecorder recorder,
-    TimeProvider timeProvider) : IEvalService
+    TimeProvider timeProvider,
+    ReaderTaxonomy taxonomy = null) : IEvalService
 {
     private static readonly IReadOnlyDictionary<string, JsonElement> Schema = LoadSchema();
 
@@ -55,7 +56,7 @@ public sealed class AnthropicEvalService(
         }
     }
 
-    private static ReadRequest Request(IReadOnlyList<ReadPhoto> photos) => new(ImportFlows.Recipe, null, photos, null);
+    private ReadRequest Request(IReadOnlyList<ReadPhoto> photos) => new(ImportFlows.Recipe, null, photos, null, taxonomy);
 
     private static MessageCountTokensParams CountParameters(string model, ReadRequest request)
     {

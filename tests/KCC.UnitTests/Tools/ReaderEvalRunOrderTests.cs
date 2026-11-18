@@ -65,6 +65,24 @@ public class ReaderEvalRunOrderTests
     }
 
     [Test]
+    public async Task TheEstimate_CountsTheTaxonomyCharacters()
+    {
+        using var set = new TempSet();
+        EvalCase[] cases = [set.Case("a", "Pancakes", 200), set.Case("handwritten-b", 210), .. Enumerable.Range(0, 300).Select(index => set.Case($"c{index}", 300 + index, true))];
+        string without = null;
+        string with = null;
+
+        _ = await Runner(new FakeEvalService(set), confirm: question => { without = question; return false; }, catalog: Catalog())
+            .CompareAsync(cases, [Opus], 2000, CancellationToken.None);
+        _ = await Runner(new FakeEvalService(set), confirm: question => { with = question; return false; }, catalog: Catalog(), taxonomy: EvalTaxonomy.Create())
+            .CompareAsync(cases, [Opus], 2000, CancellationToken.None);
+
+        _ = await Assert.That(without).IsNotNull();
+        _ = await Assert.That(with).IsNotNull();
+        _ = await Assert.That(with).IsNotEqualTo(without);
+    }
+
+    [Test]
     public async Task TheFirstCall_IsTheFirstCaseOfUpToThreePhotos()
     {
         using var set = new TempSet();
@@ -570,8 +588,9 @@ public class ReaderEvalRunOrderTests
         IEvalService service,
         TextWriter output = null,
         Func<string, bool> confirm = null,
-        RecipeCatalog catalog = null) =>
-        new(service, output ?? TextWriter.Null, confirm ?? (_ => true), catalog);
+        RecipeCatalog catalog = null,
+        ReaderTaxonomy taxonomy = null) =>
+        new(service, output ?? TextWriter.Null, confirm ?? (_ => true), catalog, taxonomy, requireDetails: false);
 
     private static RecipeCatalog Catalog() => RecipeCatalog.From([Page("Pancakes"), Page("Waffles")]);
 

@@ -1,5 +1,6 @@
 using KCC.ReaderEval;
 using KCC.Web.Features.RecipeImport;
+using KCC.Web.Features.Recipes;
 using Microsoft.Extensions.Configuration;
 
 namespace KCC.UnitTests.Tools;
@@ -396,6 +397,470 @@ public class ReaderEvalSetupTests
         finally
         {
             File.Delete(path);
+        }
+    }
+
+    [Test]
+    public async Task ExpectedJson_LoadsTheDetailsBlockOfTheQuickstart()
+    {
+        const string json = """
+            {
+              "handwritten": false,
+              "recipe": { "name": { "value": "Cake", "stated": true }, "description": { "value": "", "stated": false } },
+              "variant": {
+                "name": { "value": "", "stated": false }, "description": { "value": "", "stated": false },
+                "prepMinutes": { "value": null, "stated": false }, "cookMinutes": { "value": null, "stated": false },
+                "servings": { "value": null, "stated": false }
+              },
+              "ingredients": [], "steps": [], "match": null,
+              "details": {
+                "category": "Dinner",
+                "tags": [{ "name": "Vegan", "stated": true }, { "name": "Spicy", "stated": false }],
+                "difficulty": null,
+                "nutritionPrinted": "converted",
+                "nutrition": { "calories": 450, "proteinG": 12, "carbsG": 60, "fatG": 14,
+                               "saturatedFatG": 2, "fiberG": 8, "sugarG": 9, "sodiumMg": null },
+                "draft": true
+              }
+            }
+            """;
+        var path = Path.Combine(Path.GetTempPath(), $"kcc-readereval-{Guid.NewGuid():N}.json");
+        await File.WriteAllTextAsync(path, json);
+        try
+        {
+            var details = ExpectedAnswer.Load(path).Details;
+
+            _ = await Assert.That(details.Category).IsEqualTo("Dinner");
+            _ = await Assert.That(details.Tags.Select(tag => (tag.Name, tag.Stated)))
+                .IsEquivalentTo([("Vegan", true), ("Spicy", false)]);
+            _ = await Assert.That(details.Difficulty).IsNull();
+            _ = await Assert.That(details.NutritionPrinted).IsEqualTo("converted");
+            _ = await Assert.That(details.Nutrition.Calories).IsEqualTo(450);
+            _ = await Assert.That(details.Nutrition.SodiumMg).IsNull();
+            _ = await Assert.That(details.Draft).IsTrue();
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Test]
+    public async Task ExpectedJson_WithoutDetails_LoadsWithNoDetails()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"kcc-readereval-{Guid.NewGuid():N}.json");
+        try
+        {
+            Answer().Save(path);
+
+            _ = await Assert.That(ExpectedAnswer.Load(path).Details).IsNull();
+            _ = await Assert.That((await File.ReadAllTextAsync(path)).Contains("details", StringComparison.Ordinal)).IsFalse();
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_DraftsPerServing_WhenOnlyRoundingIsCalculated()
+    {
+        var read = ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(null, null),
+            [],
+            new MarkedValue<string>(null, null),
+            new NutritionValues(
+                new(450, null),
+                new(2, new Mark(MarkKinds.Calculated, null, null, "1.5 g")),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(500, new Mark(MarkKinds.Calculated, null, null, "0.5 g")))));
+
+        var details = ExpectedAnswer.FromRead(read, handwritten: false).Details;
+
+        _ = await Assert.That(details.NutritionPrinted).IsEqualTo(ExpectedDetails.PerServing);
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_DraftsConverted_WhenTheCaloriesWerePrintedInKilojoules_InAnyCase()
+    {
+        var read = ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(null, null),
+            [],
+            new MarkedValue<string>(null, null),
+            new NutritionValues(
+                new(450, new Mark(MarkKinds.Calculated, null, null, "1883 KJ")),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null))));
+
+        var details = ExpectedAnswer.FromRead(read, handwritten: false).Details;
+
+        _ = await Assert.That(details.NutritionPrinted).IsEqualTo(ExpectedDetails.Converted);
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_DraftsConverted_WhenThePanelIsPerWholeRecipe_EvenInKilocalories()
+    {
+        var read = ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(null, null),
+            [],
+            new MarkedValue<string>(null, null),
+            new NutritionValues(
+                new(500, new Mark(MarkKinds.Calculated, null, MarkCodes.PrintedAs, "2000 kcal")),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null))));
+        ReaderDetails raw = new(
+            null,
+            [],
+            null,
+            new ReaderNutrition("recipe", [new ReaderNutrient("calories", 2000m, "kcal", "2000 kcal", false)]));
+
+        var details = ExpectedAnswer.FromRead(read, handwritten: false, raw).Details;
+
+        _ = await Assert.That(details.NutritionPrinted).IsEqualTo(ExpectedDetails.Converted);
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_DraftsStatedFalse_ForAProposedTag_WhoseModelMarkIsAnEstimate()
+    {
+        var taxonomy = EvalTaxonomy.Create();
+        var spicy = TaxonomyDefaults.Values.Single(value => value.Name == "Spicy").Key;
+        var read = ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(null, null),
+            [new TagValue(spicy, new Mark(MarkKinds.Estimate, "Looks hot", null, null))],
+            new MarkedValue<string>(null, null),
+            null));
+        ReaderDetails raw = new(
+            null,
+            [new ReaderTag(taxonomy.TagId("Spicy"), false, null, new ReaderMark("estimate", "Looks hot"))],
+            null,
+            null);
+
+        var details = ExpectedAnswer.FromRead(read, handwritten: false, raw).Details;
+
+        _ = await Assert.That(details.Tags.Select(tag => (tag.Name, tag.Stated))).IsEquivalentTo([("Spicy", false)]);
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_DraftsStatedTrue_ForATagThePhotosName()
+    {
+        var taxonomy = EvalTaxonomy.Create();
+        var vegan = TaxonomyDefaults.Values.Single(value => value.Name == "Vegan").Key;
+        var read = ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(null, null),
+            [new TagValue(vegan, new Mark(MarkKinds.Estimate, null, null, null))],
+            new MarkedValue<string>(null, null),
+            null));
+        ReaderDetails raw = new(
+            null,
+            [new ReaderTag(taxonomy.TagId("Vegan"), true, "Vegan", new ReaderMark("estimate", null))],
+            null,
+            null);
+
+        var details = ExpectedAnswer.FromRead(read, handwritten: false, raw).Details;
+
+        _ = await Assert.That(details.Tags.Select(tag => (tag.Name, tag.Stated))).IsEquivalentTo([("Vegan", true)]);
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_DraftsNoNutritionPrinted_WhenNoNutrientHasAValue()
+    {
+        var details = ExpectedAnswer.FromRead(ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(null, null), [], new MarkedValue<string>(null, null), null)), handwritten: false).Details;
+
+        _ = await Assert.That(details.NutritionPrinted).IsNull();
+    }
+
+    [Test]
+    public async Task ADraftedAnswer_WritesADetailsBlock_CarryingDraftTrue()
+    {
+        var vegan = TaxonomyDefaults.Values.Single(value => value.Name == "Vegan").Key;
+        var spicy = TaxonomyDefaults.Values.Single(value => value.Name == "Spicy").Key;
+        var dinner = TaxonomyDefaults.Values.Single(value => value.Name == "Dinner").Key;
+        var read = ReadWith(new DetailsValues(
+            new MarkedValue<Guid?>(dinner, new Mark(MarkKinds.Suggested, "Hearty", null, null)),
+            [new TagValue(vegan, null), new TagValue(spicy, new Mark(MarkKinds.Suggested, null, null, null))],
+            new MarkedValue<string>("Easy", new Mark(MarkKinds.Suggested, null, null, null)),
+            new NutritionValues(
+                new(450, new Mark(MarkKinds.Calculated, null, MarkCodes.PrintedAs, "1883 kJ")),
+                new(12, new Mark(MarkKinds.Calculated, null, null, null)),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null),
+                new(null, null))));
+        var path = Path.Combine(Path.GetTempPath(), $"kcc-readereval-{Guid.NewGuid():N}.json");
+        try
+        {
+            var taxonomy = EvalTaxonomy.Create();
+            ReaderDetails raw = new(
+                null,
+                [
+                    new ReaderTag(taxonomy.TagId("Vegan"), true, "Vegan", null),
+                    new ReaderTag(taxonomy.TagId("Spicy"), false, null, new ReaderMark("suggested", "Hot")),
+                ],
+                null,
+                null);
+            ExpectedAnswer.FromRead(read, handwritten: false, raw).Save(path);
+            var details = ExpectedAnswer.Load(path).Details;
+
+            _ = await Assert.That(details.Draft).IsTrue();
+            _ = await Assert.That((await File.ReadAllTextAsync(path)).Contains("\"draft\": true", StringComparison.Ordinal)).IsTrue();
+            _ = await Assert.That(details.Category).IsEqualTo("Dinner");
+            _ = await Assert.That(details.Tags.Select(tag => (tag.Name, tag.Stated)))
+                .IsEquivalentTo([("Vegan", true), ("Spicy", false)]);
+            _ = await Assert.That(details.Difficulty).IsNull();
+            _ = await Assert.That(details.NutritionPrinted).IsEqualTo("converted");
+            _ = await Assert.That(details.Nutrition.Calories).IsEqualTo(450);
+            _ = await Assert.That(details.Nutrition.ProteinG).IsEqualTo(12);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Test]
+    public async Task TheTool_SendsTaxonomyDefaultsThroughReaderTaxonomy()
+    {
+        var taxonomy = EvalTaxonomy.Create();
+
+        _ = await Assert.That(taxonomy.Characters).IsGreaterThan(0);
+        foreach (var value in TaxonomyDefaults.Values)
+        {
+            _ = await Assert.That(taxonomy.Text.Contains($"\"name\":\"{value.Name}\"", StringComparison.Ordinal)).IsTrue();
+        }
+
+        _ = await Assert.That(taxonomy.Text.Contains("\"name\":\"Vegan\",\"group\":\"diet\"", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(taxonomy.Text.Contains("\"name\":\"Spicy\",\"group\":\"style\"", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(taxonomy.Category("C1")?.Name).IsEqualTo("Breakfast");
+    }
+
+    [Test]
+    public async Task Models_RefusesBeforeAnySpend_OnTheDetailsGateAlone()
+    {
+        using var set = new GateSet();
+        var service = new CountingService();
+        var asked = false;
+        var output = new StringWriter();
+        var runner = new EvalRunner(service, output, _ => asked = true, GateSet.CatalogWithCake(), EvalTaxonomy.Create());
+        var cases = set.Cases(total: 10, categories: 10, nutrition: 3, converted: 0, judgeable: true);
+
+        var comparison = await runner.CompareAsync(cases, ["claude-haiku-5-5"], 2000, CancellationToken.None);
+
+        var text = output.ToString();
+        _ = await Assert.That(comparison).IsNull();
+        _ = await Assert.That(service.Calls).IsEqualTo(0);
+        _ = await Assert.That(asked).IsFalse();
+        _ = await Assert.That(text.Contains("nutritionPrinted \"converted\"", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text.Contains("cannot be judged", StringComparison.Ordinal)).IsFalse();
+    }
+
+    [Test]
+    public async Task DetailsProblems_IsEmpty_ForASetThatMeetsEveryRule()
+    {
+        _ = await Assert.That(EvalSet.DetailsProblems(Passing())).IsEmpty();
+    }
+
+    [Test]
+    public async Task DetailsProblems_NamesACaseWithNoDetailsBlock()
+    {
+        var answers = Passing();
+        answers["case-0"] = Answer();
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Count(problem => problem.Contains("case-0 has no details block", StringComparison.Ordinal))).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task DetailsProblems_NamesACaseWhoseBlockIsStillADraft()
+    {
+        var answers = Passing();
+        answers["case-1"] = Answer(answers["case-1"].Details with { Draft = true });
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Count(problem => problem.Contains("case-1: its details block is still a draft", StringComparison.Ordinal))).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task DetailsProblems_RefusesFewerThanThreeCasesExpectingNutrition()
+    {
+        var answers = Passing(nutrition: 2);
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Single()).IsEqualTo("  2 cases expect a nutrition value, and the comparison needs at least 3.");
+    }
+
+    [Test]
+    public async Task DetailsProblems_RefusesASetWithNoConvertedCase()
+    {
+        var answers = Passing(converted: 0);
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Single().Contains("nutritionPrinted \"converted\"", StringComparison.Ordinal)).IsTrue();
+    }
+
+    [Test]
+    public async Task DetailsProblems_RefusesFewerThanTenCasesExpectingACategory()
+    {
+        var answers = Passing(categories: 9);
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Single()).IsEqualTo("  9 cases expect a category, and the comparison needs at least 10.");
+    }
+
+    [Test]
+    public async Task DetailsProblems_NamesACaseWhoseNutritionIsNull_WithoutThrowing()
+    {
+        var answers = Passing();
+        answers["case-5"] = Answer(answers["case-5"].Details with { Nutrition = null });
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Count(problem => problem.Contains("case-5", StringComparison.Ordinal) && problem.Contains("nutrition", StringComparison.Ordinal))).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task DetailsProblems_NamesAnUnknownCategoryOrTag()
+    {
+        var answers = Passing();
+        answers["case-2"] = Answer(answers["case-2"].Details with { Category = "Dinnr", Tags = [new ExpectedTag("Vegan", true), new ExpectedTag("Spcy", false)] });
+
+        var problems = EvalSet.DetailsProblems(answers);
+
+        _ = await Assert.That(problems.Count(problem => problem.Contains("case-2", StringComparison.Ordinal) && problem.Contains("Dinnr", StringComparison.Ordinal))).IsEqualTo(1);
+        _ = await Assert.That(problems.Count(problem => problem.Contains("case-2", StringComparison.Ordinal) && problem.Contains("Spcy", StringComparison.Ordinal))).IsEqualTo(1);
+        _ = await Assert.That(problems.Any(problem => problem.Contains("Vegan", StringComparison.Ordinal))).IsFalse();
+    }
+
+    private static Dictionary<string, ExpectedAnswer> Passing(int categories = 10, int nutrition = 3, int converted = 1) =>
+        Enumerable.Range(0, 10).ToDictionary(
+            index => $"case-{index}",
+            index => Answer(new ExpectedDetails(
+                index < categories ? "Dinner" : null,
+                [],
+                null,
+                index < nutrition ? (index < converted ? ExpectedDetails.Converted : ExpectedDetails.PerServing) : null,
+                index < nutrition
+                    ? new ExpectedNutrition(450, null, null, null, null, null, null, null)
+                    : new ExpectedNutrition(null, null, null, null, null, null, null, null))));
+
+    [Test]
+    public async Task Models_NamesWhatTheSetLacks()
+    {
+        using var set = new GateSet();
+        var output = new StringWriter();
+        var runner = new EvalRunner(new CountingService(), output, _ => true, GateSet.Catalog(), EvalTaxonomy.Create());
+
+        _ = await runner.CompareAsync(set.Cases(10, 9, 2, 0, draft: true), ["claude-haiku-5-5"], 2000, CancellationToken.None);
+
+        var text = output.ToString();
+        _ = await Assert.That(text.Contains("draft", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text.Contains("nutrition", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text.Contains("kilojoules", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(text.Contains("category", StringComparison.Ordinal)).IsTrue();
+    }
+
+    [Test]
+    public async Task TheModelsUsage_StatesTheDetailsGate()
+    {
+        _ = await Assert.That(EvalOptions.Usage.Contains("details", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(EvalOptions.Usage.Contains("draft", StringComparison.Ordinal)).IsTrue();
+    }
+
+    private static ExpectedAnswer Answer(ExpectedDetails details = null) => new ExpectedAnswer(
+        Handwritten: false,
+        new ExpectedRecipe(new("Cake", true), new("A cake.", true)),
+        new ExpectedVariant(new("Classic", true), new("The classic.", true), new(10, true), new(15, true), new(4, true)),
+        [new ExpectedIngredient("flour", 1m, "cup")],
+        ["Bake it."]) with { Details = details };
+
+    private static ReadResponse ReadWith(DetailsValues details) => new(
+        ReadOutcomes.Recipe,
+        new RecipeValues(new("Cake", null), new("A cake.", null)),
+        new VariantValues(new("Classic", null), new("The classic.", null), new(10, null), new(15, null), new(4, null)),
+        [new IngredientValue("flour", 1m, "cup", false, null)],
+        [new InstructionValue("Bake it.", null)],
+        Match: null,
+        PossibleDuplicate: null,
+        OtherRecipes: [],
+        Recipes: null,
+        Details: details);
+
+    private sealed class CountingService : IEvalService
+    {
+        public int Calls { get; private set; }
+
+        public Task<TimedAttempt> ReadAsync(string model, IReadOnlyList<ReadPhoto> photos, RecipeCatalog catalog, CancellationToken cancellationToken)
+        {
+            Calls++;
+            throw new InvalidOperationException("The gate must refuse before any read.");
+        }
+
+        public Task<TokenCount> CountTokensAsync(string model, IReadOnlyList<ReadPhoto> photos, RecipeCatalog catalog, CancellationToken cancellationToken)
+        {
+            Calls++;
+            throw new InvalidOperationException("The gate must refuse before any count.");
+        }
+    }
+
+    private sealed class GateSet : IDisposable
+    {
+        private readonly DirectoryInfo root = Directory.CreateTempSubdirectory("kcc-readereval-gate-");
+
+        public static RecipeCatalog Catalog() => RecipeCatalog.From([]);
+
+        public static RecipeCatalog CatalogWithCake() => RecipeCatalog.From([new CatalogRecipe("Cake", null, []).Page()]);
+
+        public void Dispose() => root.Delete(recursive: true);
+
+        public IReadOnlyList<EvalCase> Cases(int total, int categories, int nutrition, int converted, bool withDetails = true, bool draft = false, bool judgeable = false)
+        {
+            var folder = root.CreateSubdirectory(Guid.NewGuid().ToString("N"));
+            var cases = new List<EvalCase>();
+            for (var index = 0; index < total; index++)
+            {
+                var directory = folder.CreateSubdirectory($"case-{index}");
+                var photos = directory.CreateSubdirectory("photos");
+                var photo = Path.Combine(photos.FullName, "1.jpg");
+                File.WriteAllBytes(photo, [1]);
+                var evalCase = new EvalCase($"case-{index}", directory.FullName, [photo]);
+                var nutritionValues = index < nutrition
+                    ? new ExpectedNutrition(450, null, null, null, null, null, null, null)
+                    : new ExpectedNutrition(null, null, null, null, null, null, null, null);
+                var answer = Answer(withDetails
+                    ? new ExpectedDetails(
+                        index < categories ? "Dinner" : null,
+                        [],
+                        null,
+                        index < nutrition ? (index < converted ? "converted" : "perServing") : null,
+                        nutritionValues,
+                        Draft: draft && index == 0)
+                    : null);
+                (judgeable && index == 0 ? answer with { Handwritten = true, Match = "Cake" } : answer).Save(evalCase.ExpectedPath);
+                cases.Add(evalCase);
+            }
+
+            return cases;
         }
     }
 
