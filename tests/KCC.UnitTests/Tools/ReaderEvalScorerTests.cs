@@ -1,5 +1,6 @@
 using KCC.ReaderEval;
 using KCC.Web.Features.RecipeImport;
+using KCC.Web.Features.Recipes;
 
 namespace KCC.UnitTests.Tools;
 
@@ -509,8 +510,179 @@ public class ReaderEvalScorerTests
         var report = output.ToString();
         _ = await Assert.That(report.Contains("SC-005 not met", StringComparison.Ordinal)).IsTrue();
         _ = await Assert.That(report.Contains("0 of 1", StringComparison.Ordinal)).IsTrue();
-        _ = await Assert.That(report.Contains("No model meets SC-002 to SC-005.", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(report.Contains("No model meets SC-002 to SC-005 and the Details bars.", StringComparison.Ordinal)).IsTrue();
     }
+
+    [Test]
+    public async Task SC004_CountsTheReadsCategoryName_OverTheCasesThatExpectOne()
+    {
+        var expected = Expected() with { Details = Details(category: "Dinner") };
+
+        var right = CaseScorer.Score("a", expected, Response() with { Details = ReadDetails(category: "Dinner") });
+        var wrong = CaseScorer.Score("b", expected, Response() with { Details = ReadDetails(category: "Lunch") });
+        var none = CaseScorer.Score("c", expected, Response() with { Details = ReadDetails() });
+        var failed = CaseScorer.Score("d", expected, null);
+        var noneExpected = CaseScorer.Score("e", Expected() with { Details = Details() }, Response() with { Details = ReadDetails(category: "Lunch") });
+
+        _ = await Assert.That(right.Details.CategoryExpected).IsTrue();
+        _ = await Assert.That(right.Details.CategoryRight).IsTrue();
+        _ = await Assert.That(wrong.Details.CategoryRight).IsFalse();
+        _ = await Assert.That(none.Details.CategoryRight).IsFalse();
+        _ = await Assert.That(failed.Details.CategoryRight).IsFalse();
+        _ = await Assert.That(noneExpected.Details.CategoryExpected).IsFalse();
+        _ = await Assert.That(Judgement.DetailsCategory([right, wrong, noneExpected])).IsEqualTo(Verdict.NotMet);
+        _ = await Assert.That(Judgement.DetailsCategory([noneExpected])).IsEqualTo(Verdict.NotJudged);
+    }
+
+    [Test]
+    public async Task SC004_IsMet_AtNineOfTenCategories()
+    {
+        var expected = Expected() with { Details = Details(category: "Dinner") };
+        var right = CaseScorer.Score("a", expected, Response() with { Details = ReadDetails(category: "Dinner") });
+        var wrong = CaseScorer.Score("b", expected, Response() with { Details = ReadDetails(category: "Lunch") });
+
+        _ = await Assert.That(Judgement.DetailsCategory([.. Enumerable.Repeat(right, 9), wrong])).IsEqualTo(Verdict.Met);
+        _ = await Assert.That(Judgement.DetailsCategory([.. Enumerable.Repeat(right, 8), wrong, wrong])).IsEqualTo(Verdict.NotMet);
+    }
+
+    [Test]
+    public async Task SC005_CountsEachExpectedNonNullNutritionValueEqualToTheReads_OverAllCases()
+    {
+        var expected = Expected() with
+        {
+            Details = Details(nutrition: new ExpectedNutrition(450, 12, 60, null, null, 8, null, null)),
+        };
+        var read = Response() with
+        {
+            Details = ReadDetails(nutrition: new NutritionValues(
+                Value(450), Value(13), Value(60), Value(null), Value(null), Value(null), Value(null), Value(null))),
+        };
+
+        var score = CaseScorer.Score("a", expected, read);
+
+        _ = await Assert.That(score.Details.NutritionExpected).IsEqualTo(4);
+        _ = await Assert.That(score.Details.NutritionRight).IsEqualTo(2);
+        _ = await Assert.That(Judgement.DetailsNutrition([score])).IsEqualTo(Verdict.NotMet);
+    }
+
+    [Test]
+    public async Task SC005_IsMet_AtNinetyFivePercent()
+    {
+        var expected = Expected() with { Details = Details(nutrition: new ExpectedNutrition(450, null, null, null, null, null, null, null)) };
+        var right = CaseScorer.Score("a", expected, Response() with { Details = ReadDetails(nutrition: new NutritionValues(Value(450), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null))) });
+        var wrong = CaseScorer.Score("b", expected, Response() with { Details = ReadDetails(nutrition: new NutritionValues(Value(451), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null))) });
+
+        _ = await Assert.That(Judgement.DetailsNutrition([.. Enumerable.Repeat(right, 19), wrong])).IsEqualTo(Verdict.Met);
+        _ = await Assert.That(Judgement.DetailsNutrition([.. Enumerable.Repeat(right, 18), wrong, wrong])).IsEqualTo(Verdict.NotMet);
+        _ = await Assert.That(Judgement.DetailsNutrition([CaseScorer.Score("c", Expected() with { Details = Details() }, Response())]))
+            .IsEqualTo(Verdict.NotJudged);
+    }
+
+    [Test]
+    public async Task SC006_CountsNutritionFilledWhereTheExpectedValueIsNull_AndDietTagsTheAnswerDoesNotListAsStated()
+    {
+        var expected = Expected() with
+        {
+            Details = Details(
+                tags: [new ExpectedTag("Vegan", true), new ExpectedTag("Gluten-Free", false)],
+                nutrition: new ExpectedNutrition(450, null, null, null, null, null, null, null)),
+        };
+        var read = Response() with
+        {
+            Details = ReadDetails(
+                tags: ["Vegan", "Gluten-Free", "Dairy-Free", "Spicy"],
+                nutrition: new NutritionValues(Value(450), Value(12), Value(null), Value(null), Value(null), Value(null), Value(3), Value(null))),
+        };
+
+        var score = CaseScorer.Score("a", expected, read);
+
+        _ = await Assert.That(score.Details.NutritionFilledUnprinted.Count).IsEqualTo(2);
+        _ = await Assert.That(score.Details.DietTagsUnstated).IsEquivalentTo(["Gluten-Free", "Dairy-Free"]);
+        _ = await Assert.That(Judgement.DetailsInvented([score])).IsEqualTo(Verdict.NotMet);
+    }
+
+    [Test]
+    public async Task SC006_IsMet_WhenNothingIsFilledThatTheAnswerLacks()
+    {
+        var expected = Expected() with
+        {
+            Details = Details(tags: [new ExpectedTag("Vegan", true)], nutrition: new ExpectedNutrition(450, null, null, null, null, null, null, null)),
+        };
+        var read = Response() with
+        {
+            Details = ReadDetails(tags: ["Vegan", "Spicy"], nutrition: new NutritionValues(Value(450), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null))),
+        };
+
+        var score = CaseScorer.Score("a", expected, read);
+
+        _ = await Assert.That(Judgement.DetailsInvented([score])).IsEqualTo(Verdict.Met);
+    }
+
+    [Test]
+    public async Task ACaseWithoutDetails_ScoresNoDetails()
+    {
+        var score = CaseScorer.Score("a", Expected(), Response());
+
+        _ = await Assert.That(score.Details).IsNull();
+        _ = await Assert.That(Judgement.DetailsCategory([score])).IsEqualTo(Verdict.NotJudged);
+    }
+
+    [Test]
+    public async Task TheReport_GivesEachModelsThreeDetailsColumns()
+    {
+        var expected = Expected() with { Details = Details(category: "Dinner", nutrition: new ExpectedNutrition(450, null, null, null, null, null, null, null)) };
+        var score = CaseScorer.Score(
+            "a",
+            expected,
+            Response() with { Details = ReadDetails(category: "Dinner", nutrition: new NutritionValues(Value(450), Value(5), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null))) });
+        var result = Result("claude-haiku-5-5", meanCostMicroUsd: 800) with { Cases = [score] };
+        var output = new StringWriter();
+
+        Report.WriteComparison(new Comparison(2000, [result]), output);
+
+        var report = output.ToString();
+        _ = await Assert.That(report.Contains("Details SC-004 met", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(report.Contains("SC-005 met", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(report.Contains("SC-006 not met", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(report.Contains("category right in 1 of 1", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(report.Contains("nutrition values right 1 of 1", StringComparison.Ordinal)).IsTrue();
+        _ = await Assert.That(report.Contains("filled but not printed 1", StringComparison.Ordinal)).IsTrue();
+    }
+
+    [Test]
+    public async Task TheCheapestModel_MustNotFailADetailsBar()
+    {
+        var failing = Result("claude-haiku-5-5", meanCostMicroUsd: 100);
+        var failingScore = CaseScorer.Score(
+            "a",
+            Expected() with { Details = Details(category: "Dinner") },
+            Response() with { Details = ReadDetails(category: "Lunch") });
+        failing = failing with { Cases = [.. failing.Cases, failingScore] };
+
+        var comparison = new Comparison(2000, [failing, Result("claude-opus-5-5", meanCostMicroUsd: 61_000)]);
+
+        _ = await Assert.That(comparison.Cheapest?.Model).IsEqualTo("claude-opus-5-5");
+    }
+
+    private static Guid KeyOf(string name) => TaxonomyDefaults.Values.Single(value => value.Name == name).Key;
+
+    private static MarkedValue<int?> Value(int? amount) => new(amount, null);
+
+    private static ExpectedDetails Details(
+        string category = null,
+        ExpectedTag[] tags = null,
+        ExpectedNutrition nutrition = null) => new(
+        category,
+        tags ?? [],
+        null,
+        nutrition is null ? null : "perServing",
+        nutrition ?? new ExpectedNutrition(null, null, null, null, null, null, null, null));
+
+    private static DetailsValues ReadDetails(string category = null, string[] tags = null, NutritionValues nutrition = null) => new(
+        new MarkedValue<Guid?>(category is null ? null : KeyOf(category), null),
+        [.. (tags ?? []).Select(name => new TagValue(KeyOf(name), null))],
+        new MarkedValue<string>(null, null),
+        nutrition ?? new NutritionValues(Value(null), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null), Value(null)));
 
     private static TimedRead Read(double seconds, int photos = 1, bool filled = true) =>
         new("case", photos, TimeSpan.FromSeconds(seconds), filled);

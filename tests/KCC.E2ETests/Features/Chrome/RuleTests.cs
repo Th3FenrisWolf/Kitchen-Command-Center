@@ -564,6 +564,7 @@ public class RuleTests : BasePageTests
     [Arguments(375, "variant")]
     [Arguments(375, "ingredients")]
     [Arguments(375, "instructions")]
+    [Arguments(375, "details")]
     [Arguments(375, "review")]
     [Arguments(375, "photos")]
     [Arguments(375, "match")]
@@ -575,6 +576,7 @@ public class RuleTests : BasePageTests
     [Arguments(1280, "variant")]
     [Arguments(1280, "ingredients")]
     [Arguments(1280, "instructions")]
+    [Arguments(1280, "details")]
     [Arguments(1280, "review")]
     [Arguments(1280, "photos")]
     [Arguments(1280, "match")]
@@ -610,14 +612,21 @@ public class RuleTests : BasePageTests
     [Test]
     [NotInParallel(MemberSession.Serial)]
     [Arguments(375, "ingredients")]
+    [Arguments(375, "details")]
     [Arguments(375, "photos")]
     [Arguments(1280, "ingredients")]
+    [Arguments(1280, "details")]
     [Arguments(1280, "photos")]
     public async Task EveryWizardControlRowLabel_SitsOnTheRuleWithItsControlsText(int width, string step)
     {
         var scope = await OpenWizardAsync(width, step);
 
-        await ExpectOnTheRuleAsync(scope, step == "photos" ? [new(".kcc-kick[aria-live]", null)] : [new(".kcc-kick", "to taste")]);
+        await ExpectOnTheRuleAsync(scope, step switch
+        {
+            "photos" => [new(".kcc-kick[aria-live]", null)],
+            "details" => [new(".kcc-lbl", "difficulty")],
+            _ => [new(".kcc-kick", "to taste")],
+        });
     }
 
     [Test]
@@ -854,6 +863,7 @@ public class RuleTests : BasePageTests
     [Arguments("wizard:variant")]
     [Arguments("wizard:ingredients")]
     [Arguments("wizard:instructions")]
+    [Arguments("wizard:details")]
     [Arguments("wizard:review")]
     [Arguments("wizard:photos")]
     [Arguments("wizard:match")]
@@ -1018,6 +1028,13 @@ public class RuleTests : BasePageTests
         await NextAsync();
         await Page.GetByTestId("wizard-instruction-text").First.FillAsync("Stir for 2 minutes.");
         if (step == "instructions")
+        {
+            return Main;
+        }
+
+        await NextAsync();
+        await Expect(Page.GetByTestId("details-step")).ToBeVisibleAsync();
+        if (step == "details")
         {
             return Main;
         }

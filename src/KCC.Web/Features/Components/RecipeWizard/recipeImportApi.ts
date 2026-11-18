@@ -1,5 +1,6 @@
 import { postForm, type ApiAborted, type ApiResult } from '~/Utilities/Api'
 import type { WizardMode } from './recipeWizardFlow'
+import type { Difficulty, NutritionField } from './wizardDetails'
 import type { Mark } from './wizardValues'
 
 export const READ_URL = '/api/recipe-imports/read'
@@ -45,6 +46,18 @@ export interface RecipeChoice {
   name: string
 }
 
+export interface ReadTag {
+  key: string
+  mark: Mark | null
+}
+
+export interface ReadDetails {
+  category: ReadValue<string | null>
+  tags: ReadTag[]
+  difficulty: ReadValue<Difficulty | null>
+  nutrition: Record<NutritionField, ReadValue<number | null>>
+}
+
 export interface ReadResponse {
   outcome: 'recipe' | 'noRecipe'
   recipe: {
@@ -64,6 +77,7 @@ export interface ReadResponse {
   possibleDuplicate: PossibleDuplicate | null
   otherRecipes: string[]
   recipes: RecipeChoice[] | null
+  details: ReadDetails
 }
 
 export type ReadResult = ApiResult<ReadResponse> | ApiAborted

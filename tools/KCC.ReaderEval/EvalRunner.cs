@@ -8,7 +8,9 @@ public sealed class EvalRunner(
     IEvalService service,
     TextWriter output,
     Func<string, bool> confirm,
-    RecipeCatalog catalog = null)
+    RecipeCatalog catalog = null,
+    ReaderTaxonomy taxonomy = null,
+    bool requireDetails = true)
 {
     public async Task<int> CheckAsync(IReadOnlyList<string> models, CancellationToken cancellationToken)
     {
@@ -81,7 +83,7 @@ public sealed class EvalRunner(
             }
 
             var read = Normalized(timed.Attempt.Output);
-            ExpectedAnswer.FromRead(read, evalCase.IsHandwritten).Save(evalCase.DraftPath);
+            ExpectedAnswer.FromRead(read, evalCase.IsHandwritten, timed.Attempt.Output?.Details, taxonomy).Save(evalCase.DraftPath);
             output.WriteLine(read.Outcome == ReadOutcomes.NoRecipe
                 ? $"  {evalCase.Name}: the reader found no recipe; wrote an empty expected.draft.json to fill in by hand."
                 : $"  {evalCase.Name}: wrote expected.draft.json ({Report.Seconds(timed.Elapsed)}).");
@@ -268,14 +270,14 @@ public sealed class EvalRunner(
 
     private ReadResponse Normalized(ReaderOutput output)
     {
-        var read = ReadResultNormalizer.Normalize(output);
+        var read = ReadResultNormalizer.Normalize(output, taxonomy);
         return read.Outcome == ReadOutcomes.Recipe ? read with { Match = catalog?.Match(output.MatchId, output.MatchReason) } : read;
     }
 
     private bool Confirmed(IEnumerable<(ModelProfile Profile, int Photos)> reads)
     {
         var planned = reads.ToList();
-        var estimate = planned.Sum(read => ReadCost.ReservationMicroUsd(read.Profile, read.Photos, catalog?.Characters ?? 0));
+        var estimate = planned.Sum(read => ReadCost.ReservationMicroUsd(read.Profile, read.Photos, catalog?.Characters ?? 0, taxonomy?.Characters ?? 0));
         return confirm(
             $"This run makes {planned.Count} paid reads, estimated at up to {Report.Usd(estimate)}: each read is priced as "
             + $"the site reserves it, at the model's highest prices with all {Report.Tokens(ReadCost.MaxTokens)} output "
@@ -352,6 +354,10 @@ public sealed class EvalRunner(
         if (answers.Count == cases.Count)
         {
             problems.AddRange(UnjudgedCriteria(cases, answers));
+            if (requireDetails)
+            {
+                problems.AddRange(EvalSet.DetailsProblems(answers.ToDictionary(answer => answer.Key.Name, answer => answer.Value)));
+            }
         }
 
         if (problems.Count == 0)
@@ -361,7 +367,7 @@ public sealed class EvalRunner(
 
         output.WriteLine(
             "Nothing was read, because the comparison needs an expected answer for every case and a set that can "
-            + "judge SC-002 to SC-005:");
+            + "judge SC-002 to SC-005 and the Details bars:");
         problems.ForEach(output.WriteLine);
         return null;
     }

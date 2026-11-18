@@ -1,3 +1,4 @@
+using KCC.Web.Features.Recipes;
 using KCC.Web.Features.Security;
 using KCC.Web.Features.Submissions;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace KCC.Web.Features.Api;
 [Route("api/recipes")]
 [AutoValidateAntiforgeryToken]
 [EnableRateLimiting(RateLimits.Submissions)]
-public class RecipeApiController(RecipeSubmissions submissions, IMemberManager memberManager) : ControllerBase
+public class RecipeApiController(RecipeSubmissions submissions, IMemberManager memberManager, IRecipeQueries recipes) : ControllerBase
 {
     // Longer defeats Umbraco's ContentService.Save, which throws past 255 characters and would otherwise reach the
     // member as a 500.
@@ -25,9 +26,19 @@ public class RecipeApiController(RecipeSubmissions submissions, IMemberManager m
             return BadRequest(refusal);
         }
 
+        if (DetailsRules.RefusedField(request) is { } field)
+        {
+            return BadRequest(DetailsRefusal.Invalid(field));
+        }
+
         if (await memberManager.GetCurrentMemberAsync() is not { } member)
         {
             return Unauthorized();
+        }
+
+        if (RefuseChangedDetails(request.Category, request.FirstVariant.Tags) is { } changed)
+        {
+            return BadRequest(changed);
         }
 
         return Ok(new { recipeKey = await submissions.SubmitRecipeAsync(request, member.Key, cancellationToken) });
@@ -41,9 +52,19 @@ public class RecipeApiController(RecipeSubmissions submissions, IMemberManager m
             return BadRequest(refusal);
         }
 
+        if (DetailsRules.RefusedField(request) is { } field)
+        {
+            return BadRequest(DetailsRefusal.Invalid(field));
+        }
+
         if (await memberManager.GetCurrentMemberAsync() is not { } member)
         {
             return Unauthorized();
+        }
+
+        if (RefuseChangedDetails(null, request.Tags) is { } changed)
+        {
+            return BadRequest(changed);
         }
 
         return await submissions.SubmitVariantAsync(recipeKey, request, member.Key, cancellationToken) is { } variantKey
@@ -55,6 +76,27 @@ public class RecipeApiController(RecipeSubmissions submissions, IMemberManager m
         string.IsNullOrWhiteSpace(name) ? new NameRefusal($"{label} is required.", null, null)
         : name.Trim().Length > MaxNameLength ? new NameRefusal($"{label} cannot be more than {MaxNameLength} characters.", NameRefusal.TooLong, field)
         : null;
+
+    // Read from the published cache before RecipeSubmissions opens its scope, so the write gains no read before its lock.
+    private ChangedDetailsRefusal RefuseChangedDetails(Guid? category, IEnumerable<Guid> tags)
+    {
+        var choices = recipes.GetTaxonomyChoices();
+        var categoryPublished = category is not { } key || choices.Categories.Any(choice => choice.Key == key);
+        var tagsPublished = (tags ?? []).All(tag => choices.Tags.Any(choice => choice.Key == tag));
+        return categoryPublished && tagsPublished ? null : new ChangedDetailsRefusal("The categories or tags have changed. Choose again.", ChangedDetailsRefusal.Changed, choices);
+    }
+}
+
+public sealed record DetailsRefusal(string Error, string Code, string Field)
+{
+    public const string InvalidDetails = "invalidDetails";
+
+    public static DetailsRefusal Invalid(string field) => new($"The {field} value is outside its limits.", InvalidDetails, field);
+}
+
+public sealed record ChangedDetailsRefusal(string Error, string Code, DetailsChoices Choices)
+{
+    public const string Changed = "detailsChanged";
 }
 
 public sealed record NameRefusal(string Error, string Code, string Field)

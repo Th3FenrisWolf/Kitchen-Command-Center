@@ -3,6 +3,7 @@ using KCC.Web.Features.Models.Generated;
 using KCC.Web.Features.Pages.Account;
 using KCC.Web.Features.Pages.Shared;
 using KCC.Web.Features.RecipeImport;
+using KCC.Web.Features.Recipes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Umbraco.Cms.Core.Security;
@@ -20,6 +21,7 @@ public class CreateRecipePageController(
     AccountPageQueries accountPages,
     IResourceStringProvider resourceStrings,
     PageMetadata pageMetadata,
+    IRecipeQueries recipes,
     ImportAvailability importAvailability)
     : AsyncRenderController(logger, compositeViewEngine, umbracoContextAccessor)
 {
@@ -38,6 +40,7 @@ public class CreateRecipePageController(
         var viewModel = new CreateRecipeViewModel
         {
             RecipesUrl = page.Parent<RecipeListingPage>()?.Url(),
+            DetailsChoices = recipes.GetTaxonomyChoices(),
             PhotoImport = await importAvailability.GetAsync(),
             ResourceStrings = resourceStrings.GetGroup("CreateRecipe")
                 .Concat(resourceStrings.GetGroup("RecipeWizard"))

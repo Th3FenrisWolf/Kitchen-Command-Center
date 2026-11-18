@@ -117,6 +117,21 @@ public static class TestContent
         }
     }
 
+    // A cleanup that throws would replace the assertion failure the test is already reporting, and the first failed trash would skip the rest.
+    public static async Task TrashQuietlyAsync(IServiceProvider services, params Guid[] keys)
+    {
+        foreach (var key in keys)
+        {
+            try
+            {
+                await TrashAsync(services, key);
+            }
+            catch (Exception)
+            {
+            }
+        }
+    }
+
     public static async Task<Guid> AuthorAsync(IServiceProvider services, string userName, string firstName, string lastName)
     {
         using var scope = services.CreateScope();

@@ -46,4 +46,10 @@ public sealed record RecipePageData(RecipeRecord Recipe, IReadOnlyList<VariantRe
 
 public sealed record VariantPageData(VariantRecord Variant, RecipeRecord Recipe, IReadOnlyList<VariantRecord> Siblings);
 
+public sealed record CategoryChoice(Guid Key, string Name);
+
+public sealed record TagChoice(Guid Key, string Name, string Kind);
+
+public sealed record DetailsChoices(IReadOnlyList<CategoryChoice> Categories, IReadOnlyList<TagChoice> Tags);
+
 public sealed record RecipeTaxonomy(IReadOnlyList<string> Categories, IReadOnlyList<string> Diets, IReadOnlyList<string> Styles);

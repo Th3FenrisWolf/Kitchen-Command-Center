@@ -2,6 +2,14 @@ import type { Ingredient } from '~/Types/Recipe'
 import type { EncodedPhoto } from './photoEncoding'
 import type { ReadRequest, ReadResponse, ReadResult, RecipeChoice } from './recipeImportApi'
 import { recipeWizardKeys } from './recipeWizardKeys'
+import {
+  keepAvailable,
+  nutritionState,
+  NUTRITION_FIELDS,
+  orderTags,
+  type DetailsChoices,
+  type NutritionField,
+} from './wizardDetails'
 import { readErrorKey, restingUntil, type NameField, type ReadErrorKey } from './wizardErrors'
 import {
   emptyIngredient,
@@ -24,15 +32,30 @@ export type WizardMode = 'recipe' | 'variant'
 export type WizardStart = 'photos' | 'typing'
 
 export type StepId =
-  'start' | 'photos' | 'reading' | 'match' | 'basics' | 'variant' | 'ingredients' | 'instructions' | 'review' | 'submitted'
+  | 'start'
+  | 'photos'
+  | 'reading'
+  | 'match'
+  | 'basics'
+  | 'variant'
+  | 'ingredients'
+  | 'instructions'
+  | 'details'
+  | 'review'
+  | 'submitted'
 
 export type PhotoSource = 'camera' | 'device'
 
 export type PhotoErrorKey = 'TooManyPhotos' | 'UnsupportedFile'
 
-export type ReviewSection = 'basics' | 'variant' | 'ingredients' | 'instructions'
+export type ReviewSection = 'basics' | 'variant' | 'ingredients' | 'instructions' | 'details'
 
-export type SingleValue = Exclude<keyof WizardValues, 'ingredients' | 'instructions' | 'marks'>
+export type ProposalField = 'proposedCategory' | 'proposedTags'
+
+export type SingleValue = Exclude<
+  keyof WizardValues,
+  'ingredients' | 'instructions' | 'marks' | 'tags' | 'nutrition' | ProposalField
+>
 
 export type ValueEdit<K extends SingleValue> = { [F in K]: [field: F, value: WizardValues[F]] }[K]
 
@@ -41,7 +64,10 @@ export interface WizardRecipe {
   name: string
 }
 
-export type RecipeLevelValues = Pick<WizardValues, 'recipeName' | 'recipeDescription' | 'marks'>
+export type RecipeLevelValues = Pick<
+  WizardValues,
+  'recipeName' | 'recipeDescription' | 'category' | 'proposedCategory' | 'marks'
+>
 
 export interface Submission {
   url: string
@@ -59,6 +85,7 @@ export interface WizardFlow {
   flow: WizardMode
   mode: WizardMode
   recipe: WizardRecipe | null
+  choices: DetailsChoices
   setAside: RecipeLevelValues | null
   matchSettled: boolean
   importEnabled: boolean
@@ -83,6 +110,7 @@ export interface WizardFlowOptions {
   recipe?: WizardRecipe
   importEnabled: boolean
   availableAgainOn?: string | null
+  choices?: DetailsChoices
 }
 
 export interface StepProgress {
@@ -93,8 +121,8 @@ export interface StepProgress {
 export const MAX_PHOTOS = 10
 
 const TYPING_STEPS = {
-  recipe: ['basics', 'variant', 'ingredients', 'instructions', 'review'],
-  variant: ['variant', 'ingredients', 'instructions', 'review'],
+  recipe: ['basics', 'variant', 'ingredients', 'instructions', 'details', 'review'],
+  variant: ['variant', 'ingredients', 'instructions', 'details', 'review'],
 } as const satisfies Record<WizardMode, readonly StepId[]>
 
 const PHOTO_STEPS: readonly StepId[] = ['start', 'photos', 'reading', 'review']
@@ -108,10 +136,11 @@ const PHOTO_STRIP_STEPS: readonly StepId[] = [
   'variant',
   'ingredients',
   'instructions',
+  'details',
   'review',
 ]
 
-const RECIPE_MARKS: readonly MarkedValue[] = ['recipe.name', 'recipe.description']
+const RECIPE_MARKS: readonly MarkedValue[] = ['recipe.name', 'recipe.description', 'recipe.category']
 
 const MARKED_VALUES: Record<SingleValue, MarkedValue> = {
   recipeName: 'recipe.name',
@@ -121,6 +150,8 @@ const MARKED_VALUES: Record<SingleValue, MarkedValue> = {
   prepTime: 'variant.prepTime',
   cookTime: 'variant.cookTime',
   servings: 'variant.servings',
+  category: 'recipe.category',
+  difficulty: 'variant.difficulty',
 }
 
 const PROCEED_RULES: Partial<Record<StepId, (values: WizardValues) => boolean>> = {
@@ -128,15 +159,17 @@ const PROCEED_RULES: Partial<Record<StepId, (values: WizardValues) => boolean>> 
   variant: ({ variantName }) => isFilled(variantName),
   ingredients: ({ ingredients }) => ingredients.some(hasName),
   instructions: ({ instructions }) => instructions.some(hasText),
+  details: ({ nutrition }) => NUTRITION_FIELDS.every(({ field }) => nutritionState(field, nutrition[field]) === 'valid'),
 }
 
 let photosAdded = 0
 
-export function createWizardFlow({ flow, recipe, importEnabled, availableAgainOn }: WizardFlowOptions): WizardFlow {
+export function createWizardFlow({ flow, recipe, importEnabled, availableAgainOn, choices }: WizardFlowOptions): WizardFlow {
   return {
     flow,
     mode: flow,
     recipe: recipe ?? null,
+    choices: choices ?? { categories: [], tags: [] },
     setAside: null,
     matchSettled: false,
     importEnabled,
@@ -213,6 +246,12 @@ export function edit(wizard: WizardFlow, section: ReviewSection): void {
 }
 
 export function backToReview(wizard: WizardFlow): void {
+  if (!PROCEED_RULES.details!(wizard.values)) {
+    moveTo(wizard, 'details')
+    wizard.returnTo = 'review'
+    return
+  }
+
   moveTo(wizard, 'review')
   wizard.returnTo = null
 }
@@ -220,6 +259,31 @@ export function backToReview(wizard: WizardFlow): void {
 export function refuseName(wizard: WizardFlow, field: NameField): void {
   edit(wizard, field === 'recipeName' ? 'basics' : 'variant')
   wizard.refusedName = { field, value: wizard.values[field] }
+}
+
+export function refuseDetails(wizard: WizardFlow, choices: DetailsChoices): void {
+  wizard.choices = choices
+  dropUnavailableDetails(wizard.values, choices)
+  dropUnavailableSetAsideCategory(wizard, choices)
+  moveTo(wizard, 'details')
+  wizard.returnTo = 'review'
+}
+
+function dropUnavailableDetails(values: WizardValues, choices: DetailsChoices): void {
+  const kept = keepAvailable(values, choices)
+  const droppedMarks = [
+    ...(kept.category === values.category ? [] : [MARKED_VALUES.category]),
+    ...values.tags.filter((key) => !kept.tags.includes(key)).map((key): MarkedValue => `variant.tag.${key}`),
+  ]
+
+  Object.assign(values, kept)
+  clearMarks(values, droppedMarks)
+}
+
+function dropUnavailableSetAsideCategory({ setAside }: WizardFlow, choices: DetailsChoices): void {
+  if (!setAside?.category || choices.categories.some(({ key }) => key === setAside.category)) return
+  setAside.category = null
+  clearMarks(setAside, [MARKED_VALUES.category])
 }
 
 export const isRefused = ({ refusedName, values }: WizardFlow, field: NameField): boolean =>
@@ -324,7 +388,13 @@ export function applyRead(wizard: WizardFlow, read: ReadResponse): void {
     return
   }
 
-  wizard.values = valuesFromRead(read)
+  const { proposedCategory, proposedTags } = wizard.values
+  wizard.values = {
+    ...valuesFromRead(read),
+    proposedCategory: wizard.setAside?.proposedCategory ?? proposedCategory,
+    proposedTags,
+  }
+  dropUnavailableDetails(wizard.values, wizard.choices)
   wizard.read = read
   wizard.editedSinceRead = false
   wizard.matchSettled = false
@@ -355,8 +425,8 @@ export function keepNewRecipe(wizard: WizardFlow): void {
   if (wizard.step !== 'match') return
 
   if (wizard.setAside) {
-    const { recipeName, recipeDescription, marks } = wizard.setAside
-    Object.assign(wizard.values, { recipeName, recipeDescription, marks: { ...wizard.values.marks, ...marks } })
+    const { marks, ...recipeValues } = wizard.setAside
+    Object.assign(wizard.values, recipeValues, { marks: { ...wizard.values.marks, ...marks } })
   }
   wizard.mode = 'recipe'
   wizard.recipe = null
@@ -383,8 +453,26 @@ export const hasUnsavedWork = ({ photos, pendingPhotos, read, step }: WizardFlow
 export function editValue<K extends SingleValue>(wizard: WizardFlow, field: K, value: WizardValues[K]): void {
   const { values } = wizard
   values[field] = value
-  values.marks = Object.fromEntries(Object.entries(values.marks).filter(([path]) => path !== MARKED_VALUES[field]))
+  clearMarks(values, [MARKED_VALUES[field]])
   wizard.editedSinceRead = true
+}
+
+export function toggleTag(wizard: WizardFlow, key: string, chosen: boolean): void {
+  const { values } = wizard
+  const others = values.tags.filter((tag) => tag !== key)
+  values.tags = orderTags(chosen ? [...others, key] : others, wizard.choices)
+  clearMarks(values, [`variant.tag.${key}`])
+  wizard.editedSinceRead = true
+}
+
+export function editNutrition(wizard: WizardFlow, field: NutritionField, text: string): void {
+  wizard.values.nutrition[field] = text
+  clearMarks(wizard.values, [`variant.nutrition.${field}`])
+  wizard.editedSinceRead = true
+}
+
+export function editProposal(wizard: WizardFlow, field: ProposalField, text: string): void {
+  wizard.values[field] = text
 }
 
 export function editIngredient(wizard: WizardFlow, index: number, change: Partial<Ingredient>): void {
@@ -446,13 +534,21 @@ function setRecipeValuesAside(values: WizardValues): RecipeLevelValues {
   const aside: RecipeLevelValues = {
     recipeName: values.recipeName,
     recipeDescription: values.recipeDescription,
+    category: values.category,
+    proposedCategory: values.proposedCategory,
     marks: Object.fromEntries(marks.filter(isRecipeMark)),
   }
 
   values.recipeName = ''
   values.recipeDescription = ''
+  values.category = null
+  values.proposedCategory = ''
   values.marks = Object.fromEntries(marks.filter((mark) => !isRecipeMark(mark)))
   return aside
+}
+
+function clearMarks(values: Pick<WizardValues, 'marks'>, paths: MarkedValue[]): void {
+  values.marks = Object.fromEntries(Object.entries(values.marks).filter(([path]) => !paths.includes(path as MarkedValue)))
 }
 
 function moveTo(wizard: WizardFlow, step: StepId): void {
@@ -461,7 +557,7 @@ function moveTo(wizard: WizardFlow, step: StepId): void {
 }
 
 const previousStep = (wizard: WizardFlow): StepId | undefined =>
-  wizard.step === 'match' && !isImport(wizard) ? 'instructions' : neighbour(wizard, -1)
+  wizard.step === 'match' && !isImport(wizard) ? 'details' : neighbour(wizard, -1)
 
 function neighbour(wizard: WizardFlow, offset: 1 | -1): StepId | undefined {
   const order = walkableSteps(wizard)

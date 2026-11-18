@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using KCC.Web.Features.RecipeImport;
+using KCC.Web.Features.Recipes;
 
 namespace KCC.ReaderEval;
 
@@ -9,6 +10,9 @@ public static partial class CaseScorer
     private const double FoundShare = 0.8;
     private const double StatedShare = 0.5;
     private const int SignificantWordLength = 3;
+
+    private static readonly string[] NutrientNames =
+        ["calories", "protein", "carbs", "fat", "saturated fat", "fiber", "sugar", "sodium"];
 
     public static CaseScore Score(string caseName, ExpectedAnswer expected, ReadResponse read)
     {
@@ -26,8 +30,46 @@ public static partial class CaseScorer
             [.. expected.Ingredients.Where((_, line) => matches[line] < 0)],
             InOrder(stepTexts, readSteps),
             read is null ? [] : InventedValues(expected, read, matches, expectedSteps, [.. stepTexts.SelectMany(texts => texts.Skip(1))]),
-            new MatchScore(expected.Match, read?.Match?.RecipeName));
+            new MatchScore(expected.Match, read?.Match?.RecipeName),
+            expected.Details is null ? null : ScoreDetails(expected.Details, read?.Details));
     }
+
+    private static DetailsScore ScoreDetails(ExpectedDetails expected, DetailsValues read)
+    {
+        var proposed = read?.Category.Value is { } key ? NameOf(key) : null;
+        var expectedValues = expected.Nutrition.Values;
+        var readValues = Nutrients(read?.Nutrition);
+        var dietTagsStated = (expected.Tags ?? []).Where(tag => tag.Stated).Select(tag => tag.Name).ToList();
+        return new DetailsScore(
+            expected.ExpectsCategory,
+            expected.ExpectsCategory && string.Equals(expected.Category, proposed, StringComparison.OrdinalIgnoreCase),
+            proposed,
+            expectedValues.Count(value => value is not null),
+            expectedValues.Where((value, index) => value is not null && value == readValues[index]).Count(),
+            [.. NutrientNames.Where((_, index) => expectedValues[index] is null && readValues[index] is not null)],
+            [.. (read?.Tags ?? [])
+                .Select(tag => TaxonomyDefaults.Values.FirstOrDefault(value => value.Key == tag.Key))
+                .Where(value => value is not null && IsDiet(value) && !dietTagsStated.Contains(value.Name, StringComparer.OrdinalIgnoreCase))
+                .Select(value => value.Name)]);
+    }
+
+    private static int?[] Nutrients(NutritionValues nutrition) => nutrition is null
+        ? new int?[NutrientNames.Length]
+        :
+        [
+            nutrition.Calories.Value,
+            nutrition.ProteinG.Value,
+            nutrition.CarbsG.Value,
+            nutrition.FatG.Value,
+            nutrition.SaturatedFatG.Value,
+            nutrition.FiberG.Value,
+            nutrition.SugarG.Value,
+            nutrition.SodiumMg.Value,
+        ];
+
+    private static string NameOf(Guid key) => TaxonomyDefaults.Values.FirstOrDefault(value => value.Key == key)?.Name;
+
+    private static bool IsDiet(TaxonomyDefault value) => value.Alias == "kind" && value.Stored.Contains(TagKinds.Diet, StringComparison.Ordinal);
 
     [GeneratedRegex(@"[\p{L}\p{N}]+")]
     private static partial Regex Word();
@@ -215,10 +257,20 @@ public sealed record CaseScore(
     IReadOnlyList<ExpectedIngredient> MissedLines,
     bool StepsInOrder,
     IReadOnlyList<string> UnmarkedInventedValues,
-    MatchScore Match = null)
+    MatchScore Match = null,
+    DetailsScore Details = null)
 {
     public int RightLines => ExpectedLines - MissedLines.Count;
 }
+
+public sealed record DetailsScore(
+    bool CategoryExpected,
+    bool CategoryRight,
+    string ProposedCategory,
+    int NutritionExpected,
+    int NutritionRight,
+    IReadOnlyList<string> NutritionFilledUnprinted,
+    IReadOnlyList<string> DietTagsUnstated);
 
 public sealed record MatchScore(string ExpectedRecipe, string ProposedRecipe)
 {

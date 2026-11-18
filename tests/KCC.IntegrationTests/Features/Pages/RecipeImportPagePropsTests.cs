@@ -44,6 +44,34 @@ public class RecipeImportPagePropsTests
         }
     }
 
+    [Test]
+    public async Task CreateRecipe_RendersTheCategoriesAndTagsAsDetailsChoices()
+    {
+        using var member = await TestMembers.SignedInAsync(Site, "chooser");
+
+        var page = await RenderedPage.GetAsync(member.Visitor.Http, "/recipes/create-recipe/");
+        var choices = page.Prop("details-choices");
+
+        var names = choices.GetProperty("categories").EnumerateArray().Select(category => category.GetProperty("name").GetString()).Take(3);
+        _ = await Assert.That(string.Join(",", names)).IsEqualTo("Breakfast,Lunch,Dinner");
+        _ = await Assert.That(choices.GetProperty("categories")[0].TryGetProperty("key", out _)).IsTrue();
+        var spicy = choices.GetProperty("tags").EnumerateArray().Single(tag => tag.GetProperty("name").GetString() == "Spicy");
+        _ = await Assert.That(spicy.GetProperty("kind").GetString()).IsEqualTo("Style");
+    }
+
+    [Test]
+    public async Task AddVariant_RendersTheTagsAndNoCategoriesAsDetailsChoices()
+    {
+        var recipe = await TestContent.RecipeAsync(Site.Services, "IT Kinkajou Choices Crumble");
+        using var member = await TestMembers.SignedInAsync(Site, "chooser");
+
+        var page = await RenderedPage.GetAsync(member.Visitor.Http, $"/recipes/add-variant/?recipe={recipe}");
+        var choices = page.Prop("details-choices");
+
+        _ = await Assert.That(choices.GetProperty("categories").GetArrayLength()).IsEqualTo(0);
+        _ = await Assert.That(choices.GetProperty("tags").EnumerateArray().Any(tag => tag.GetProperty("name").GetString() == "Vegan")).IsTrue();
+    }
+
     private static async Task<JsonElement[]> PhotoImportPropsAsync(SignedInMember member, Guid recipe)
     {
         var create = await RenderedPage.GetAsync(member.Visitor.Http, "/recipes/create-recipe/");

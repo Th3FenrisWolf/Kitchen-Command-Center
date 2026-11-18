@@ -44,15 +44,17 @@ Console.CancelKeyPress += (_, keyPress) =>
     stop.Cancel();
 };
 
+var taxonomy = EvalTaxonomy.Create();
 var anthropic = new AnthropicOptions { ApiKey = key.Value };
 var recorder = new ServiceErrorRecorder { InnerHandler = new SocketsHttpHandler() };
 using var client = new AnthropicClient(
     AnthropicClientOptionsFactory.Create(anthropic) with { HttpClient = new HttpClient(recorder) });
 var runner = new EvalRunner(
-    new AnthropicEvalService(client, anthropic, recorder, TimeProvider.System),
+    new AnthropicEvalService(client, anthropic, recorder, TimeProvider.System, taxonomy),
     Console.Out,
     question => Confirmation.Ask(Console.In, Console.Out, question),
-    catalog);
+    catalog,
+    taxonomy);
 
 try
 {

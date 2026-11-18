@@ -53,12 +53,12 @@ describe('CreateRecipeView', () => {
     expect(html.match(/\b(?:RecipeWizard|CreateRecipe)\.\w+/g) ?? []).toEqual([])
   })
 
-  it('counts the five steps on the desk and marks the one being filled', async () => {
+  it('counts the six steps on the desk and marks the one being filled', async () => {
     const wizard = wizardOf(await render())
 
     expect(wizard).toContain('aria-label="Steps"')
-    expect(wizard).toContain('>05<')
-    expect(wizard).not.toContain('>06<')
+    expect(wizard).toContain('>06<')
+    expect(wizard).not.toContain('>07<')
     expect(tagWith(wizard, 'aria-current="step"')).toBeTruthy()
   })
 

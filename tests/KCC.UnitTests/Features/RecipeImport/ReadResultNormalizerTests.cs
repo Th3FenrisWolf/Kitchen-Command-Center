@@ -1,5 +1,6 @@
 using System.Globalization;
 using KCC.Web.Features.RecipeImport;
+using KCC.Web.Features.Recipes;
 using TUnit.Assertions.Enums;
 
 namespace KCC.UnitTests.Features.RecipeImport;
@@ -8,6 +9,15 @@ public class ReadResultNormalizerTests
 {
     private static readonly Mark Shortened = new(MarkKinds.Unclear, null, MarkCodes.Shortened, null);
     private static readonly Mark OutOfRange = new(MarkKinds.Unclear, null, MarkCodes.OutOfRange, null);
+
+    private static readonly CategoryChoice Breakfast = new(Guid.Parse("10000000-0000-0000-0000-000000000001"), "Breakfast");
+    private static readonly CategoryChoice Dinner = new(Guid.Parse("10000000-0000-0000-0000-000000000002"), "Dinner");
+    private static readonly TagChoice Vegan = new(Guid.Parse("20000000-0000-0000-0000-000000000001"), "Vegan", TagKinds.Diet);
+    private static readonly TagChoice Vegetarian = new(Guid.Parse("20000000-0000-0000-0000-000000000002"), "Vegetarian", TagKinds.Diet);
+    private static readonly TagChoice Easy = new(Guid.Parse("20000000-0000-0000-0000-000000000003"), "Easy", TagKinds.Style);
+    private static readonly TagChoice Spicy = new(Guid.Parse("20000000-0000-0000-0000-000000000004"), "Spicy", TagKinds.Style);
+    private static readonly DetailsChoices Choices = new([Breakfast, Dinner], [Vegan, Vegetarian, Easy, Spicy]);
+    private static readonly ReaderTaxonomy Lists = ReaderTaxonomy.From(Choices, ImportFlows.Recipe);
 
     [Test]
     public async Task AReadWithinEveryRule_KeepsItsValuesTrimmed_WithTheModelsMarks()
@@ -433,6 +443,270 @@ public class ReadResultNormalizerTests
         _ = await Assert.That(response.OtherRecipes).IsEmpty();
     }
 
+    [Test]
+    public async Task AnUnknownId_IsDropped()
+    {
+        var details = Details(category: Category("C9"), tags: [Tag("T9", stated: true), Tag("T1", stated: true)]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(null, null));
+        _ = await Assert.That(read.Tags).IsEquivalentTo([new TagValue(Vegan.Key, null)], CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task AStatedCategoryNamedAsListed_IsKeptUnmarked()
+    {
+        var read = ReadResultNormalizer.Normalize(Output(details: Details(category: Category("C2", printed: "DINNER"))), Lists).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(Dinner.Key, null));
+    }
+
+    [Test]
+    public async Task ACategory_OnTheVariantFlow_IsDropped()
+    {
+        var read = ReadResultNormalizer.Normalize(Output(details: Details(category: Category("C1"))), Lists, ImportFlows.Variant).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(null, null));
+    }
+
+    [Test]
+    public async Task ADietTagNotStated_IsDropped()
+    {
+        var details = Details(tags: [Tag("T1", stated: false, mark: new ReaderMark(MarkKinds.Unclear, "Tofu, rice and vegetables"))]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Tags).IsEmpty();
+    }
+
+    [Test]
+    public async Task AStatedDietTag_KeepsTheModelsUnclearMark()
+    {
+        var details = Details(tags: [Tag("T2", stated: true, printed: "Vegetarian", mark: new ReaderMark(MarkKinds.Unclear, "Uses chicken stock"))]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Tags).IsEquivalentTo(
+            [new TagValue(Vegetarian.Key, new Mark(MarkKinds.Unclear, "Uses chicken stock", null, null))],
+            CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task ACategoryStyleTagOrDifficultyNotStated_IsSuggestedWithTheModelsReason()
+    {
+        var details = Details(
+            category: new ReaderCategory("C1", Stated: false, Printed: null, Reason: " Eggs and toast; Dinner also fits "),
+            tags: [Tag("T4", stated: false, mark: new ReaderMark(MarkKinds.Written, "Two chillies"))],
+            difficulty: new ReaderDifficulty("Medium", Printed: null, Reason: "Several steps"));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(Breakfast.Key, Suggested("Eggs and toast; Dinner also fits")));
+        _ = await Assert.That(read.Tags).IsEquivalentTo([new TagValue(Spicy.Key, Suggested("Two chillies"))], CollectionOrdering.Matching);
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>("Medium", Suggested("Several steps")));
+    }
+
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    [Arguments("   ")]
+    public async Task ACategoryStyleTagOrDifficultyNotStated_WithNoReason_IsLeftEmpty(string reason)
+    {
+        var details = Details(
+            category: new ReaderCategory("C1", Stated: false, Printed: null, Reason: reason),
+            tags:
+            [
+                Tag("T4", stated: false, mark: reason is null ? null : new ReaderMark(MarkKinds.Estimate, reason)),
+                Tag("T3", stated: false, mark: new ReaderMark(MarkKinds.Estimate, "Twenty minutes")),
+            ],
+            difficulty: new ReaderDifficulty("Medium", Printed: reason, Reason: reason));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(null, null));
+        _ = await Assert.That(read.Tags).IsEquivalentTo([new TagValue(Easy.Key, new Mark(MarkKinds.Estimate, "Twenty minutes", null, null))], CollectionOrdering.Matching);
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>(null, null));
+    }
+
+    [Test]
+    [Arguments("Easy", "easy")]
+    [Arguments("Medium", "MEDIUM")]
+    [Arguments("Hard", " Hard ")]
+    public async Task APrintedDifficultyNamedAsALevel_CarriesNoMark(string level, string printed)
+    {
+        var details = Details(difficulty: new ReaderDifficulty(level, printed, null));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>(level, null));
+    }
+
+    [Test]
+    public async Task APrintedDifficultyInAnyOtherWord_IsSuggestedAsPrinted()
+    {
+        var details = Details(difficulty: new ReaderDifficulty("Medium", "intermediate", null));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>("Medium", PrintedAs("intermediate")));
+    }
+
+    [Test]
+    public async Task ADifficultyOutsideTheLevels_IsLeftEmpty()
+    {
+        var details = Details(difficulty: new ReaderDifficulty("Expert", "expert", null));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>(null, null));
+    }
+
+    [Test]
+    public async Task AValueNamedByAnEquivalentWord_FillsAndIsSuggestedAsPrinted()
+    {
+        var details = Details(
+            category: Category("C1", printed: "Brunch"),
+            tags: [Tag("T1", stated: true, printed: "plant-based"), Tag("T3", stated: true, printed: "Quick")]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(Breakfast.Key, PrintedAs("Brunch")));
+        _ = await Assert.That(read.Tags).IsEquivalentTo(
+            [new TagValue(Vegan.Key, PrintedAs("plant-based")), new TagValue(Easy.Key, PrintedAs("Quick"))],
+            CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task AStatedTagNamedAsListed_IgnoringCase_CarriesNoMark()
+    {
+        var details = Details(tags: [Tag("T1", stated: true, printed: "VEGAN"), Tag("T3", stated: true, printed: "easy")]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Tags).IsEquivalentTo(
+            [new TagValue(Vegan.Key, null), new TagValue(Easy.Key, null)],
+            CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task DifficultyAndTheEasyTag_AreIndependent()
+    {
+        var details = Details(tags: [Tag("T3", stated: true, printed: "Easy")], difficulty: new ReaderDifficulty("Hard", "Hard", null));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Tags).IsEquivalentTo([new TagValue(Easy.Key, null)], CollectionOrdering.Matching);
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>("Hard", null));
+    }
+
+    [Test]
+    public async Task TheStrongerMark_WinsWhenTwoMeetOneValue()
+    {
+        var details = Details(tags:
+        [
+            Tag("T2", stated: true, printed: "veggie", mark: new ReaderMark(MarkKinds.Unclear, "Uses chicken stock")),
+            Tag("T3", stated: false, mark: new ReaderMark(MarkKinds.Estimate, "Judged from the steps")),
+            Tag("T4", stated: true, printed: "Hot", mark: new ReaderMark(MarkKinds.Written, "Not in the photos")),
+        ]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Tags).IsEquivalentTo(
+            [
+                new TagValue(Vegetarian.Key, new Mark(MarkKinds.Unclear, "Uses chicken stock", null, null)),
+                new TagValue(Easy.Key, new Mark(MarkKinds.Estimate, "Judged from the steps", null, null)),
+                new TagValue(Spicy.Key, PrintedAs("Hot")),
+            ],
+            CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task ATagGivenTwice_IsKeptOnce()
+    {
+        var details = Details(tags: [Tag("T1", stated: true), Tag("T1", stated: true, printed: "plant-based")]);
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details;
+
+        _ = await Assert.That(read.Tags).IsEquivalentTo([new TagValue(Vegan.Key, null)], CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task ThePanel_FillsAllEightNutritionValues_DividedByTheReadsServings()
+    {
+        var details = Details(nutrition: new ReaderNutrition("recipe", [new ReaderNutrient("protein", 48m, "g", "48 g", false)]));
+
+        var nutrition = ReadResultNormalizer.Normalize(Output(details: details), Lists).Details.Nutrition;
+
+        _ = await Assert.That(nutrition).IsEqualTo(NutritionConversion.Empty() with
+        {
+            ProteinG = new MarkedValue<int?>(12, new Mark(MarkKinds.Calculated, null, MarkCodes.PrintedAs, "48 g")),
+        });
+    }
+
+    [Test]
+    public async Task WithoutLists_NoCategoryOrTagIsKept_ButDifficultyAndNutritionAre()
+    {
+        var details = Details(
+            category: Category("C1"),
+            tags: [Tag("T1", stated: true)],
+            difficulty: new ReaderDifficulty("Easy", "Easy", null));
+
+        var read = ReadResultNormalizer.Normalize(Output(details: details)).Details;
+
+        _ = await Assert.That(read.Category).IsEqualTo(new MarkedValue<Guid?>(null, null));
+        _ = await Assert.That(read.Tags).IsEmpty();
+        _ = await Assert.That(read.Difficulty).IsEqualTo(new MarkedValue<string>("Easy", null));
+        _ = await Assert.That(read.Nutrition).IsEqualTo(NutritionConversion.Empty());
+    }
+
+    [Test]
+    public async Task AReadWithNoDetails_CarriesEmptyDetails()
+    {
+        var read = ReadResultNormalizer.Normalize(Output(), Lists).Details;
+
+        await AssertEmptyDetails(read);
+    }
+
+    [Test]
+    public async Task ANoRecipeOutcome_CarriesEveryDetailsValueEmpty_AndNoTags()
+    {
+        var details = Details(category: Category("C1"), tags: [Tag("T1", stated: true)], difficulty: new ReaderDifficulty("Easy", "Easy", null));
+
+        var read = ReadResultNormalizer.Normalize(Output(found: false, details: details), Lists);
+
+        _ = await Assert.That(read.Outcome).IsEqualTo(ReadOutcomes.NoRecipe);
+        await AssertEmptyDetails(read.Details);
+    }
+
+    private static async Task AssertEmptyDetails(DetailsValues details)
+    {
+        _ = await Assert.That(details).IsNotNull();
+        _ = await Assert.That(details.Category).IsEqualTo(new MarkedValue<Guid?>(null, null));
+        _ = await Assert.That(details.Tags).IsEmpty();
+        _ = await Assert.That(details.Difficulty).IsEqualTo(new MarkedValue<string>(null, null));
+        _ = await Assert.That(details.Nutrition).IsEqualTo(NutritionConversion.Empty());
+    }
+
+    private static Mark Suggested(string reason) => new(MarkKinds.Suggested, reason, null, null);
+
+    private static Mark PrintedAs(string printed) => new(MarkKinds.Suggested, null, MarkCodes.PrintedAs, printed);
+
+    private static ReaderCategory Category(string id, string printed = null) => new(id, Stated: true, printed, Reason: null);
+
+    private static ReaderTag Tag(string id, bool stated, string printed = null, ReaderMark mark = null) => new(id, stated, printed, mark);
+
+    private static ReaderDetails Details(
+        ReaderCategory category = null,
+        IReadOnlyList<ReaderTag> tags = null,
+        ReaderDifficulty difficulty = null,
+        ReaderNutrition nutrition = null) =>
+        new(
+            category ?? new ReaderCategory(null, Stated: false, Printed: null, Reason: null),
+            tags ?? [],
+            difficulty ?? new ReaderDifficulty(null, null, null),
+            nutrition ?? new ReaderNutrition(null, []));
+
     private static async Task AssertNoRecipe(ReadResponse response)
     {
         _ = await Assert.That(response.Outcome).IsEqualTo(ReadOutcomes.NoRecipe);
@@ -476,7 +750,8 @@ public class ReadResultNormalizerTests
         IReadOnlyList<ReaderStep> steps = null,
         bool found = true,
         IReadOnlyList<string> otherRecipes = null,
-        string sourceLanguage = null) =>
+        string sourceLanguage = null,
+        ReaderDetails details = null) =>
         new(
             found,
             recipe ?? Recipe(),
@@ -486,7 +761,8 @@ public class ReadResultNormalizerTests
             null,
             null,
             otherRecipes ?? [],
-            sourceLanguage);
+            sourceLanguage,
+            details);
 
     private static ReaderRecipe Recipe(
         string name = "Pancakes",

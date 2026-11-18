@@ -339,6 +339,48 @@ describe('ReviewStep step links', () => {
   })
 })
 
+describe('ReviewStep Details section', () => {
+  const CHOICES = {
+    categories: [{ key: 'cat-dinner', name: 'Dinner' }],
+    tags: [{ key: 'tag-vegan', name: 'Vegan', kind: 'Diet' as const }],
+  }
+
+  it('shows the Details after the instructions, with its Edit hook', async () => {
+    const html = await render('recipe', { ...READ, category: 'cat-dinner', tags: ['tag-vegan'], difficulty: 'Easy' }, [], {
+      choices: CHOICES,
+    })
+
+    expect(html.indexOf('data-testid="review-details"')).toBeGreaterThan(html.indexOf('review-edit-instructions'))
+    expect(html).toContain('Dinner')
+    expect(html).toContain('Vegan')
+    expect(html).toContain('data-testid="review-edit-details"')
+    expect(unresolvedKeys(html)).toEqual([])
+  })
+
+  it('says no details were given and adds no missing-value warning for them', async () => {
+    const html = await render('recipe', READ)
+
+    expect(html).toContain('«NoDetailsGiven»')
+    expect(notices(html)).toBe(0)
+  })
+
+  it('keeps Submit enabled when no Details were given', async () => {
+    expect(submit(await render('recipe', READ))).not.toContain('disabled')
+  })
+
+  it.each(['1.5', 'abc', '10001'])('holds Submit while a nutrition text reads %j', async (text) => {
+    const values = { ...READ, nutrition: { ...emptyValues().nutrition, calories: text } }
+
+    expect(submit(await render('recipe', values))).toContain('disabled')
+  })
+
+  it('holds Edit while the submission is sending', async () => {
+    expect(tagWith(await render('recipe', READ, [], { submitting: true }), 'data-testid="review-edit-details"')).toContain(
+      'disabled',
+    )
+  })
+})
+
 describe('the steps opened from the review', () => {
   const STEPS: [string, Component, Record<string, unknown>][] = [
     ['basics', BasicsStep, {}],

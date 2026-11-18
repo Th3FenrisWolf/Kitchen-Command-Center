@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { EncodedPhoto } from '~/Components/RecipeWizard/photoEncoding'
-import type { ReadResponse, ReadResult } from '~/Components/RecipeWizard/recipeImportApi'
+import type { ReadDetails, ReadResponse, ReadResult } from '~/Components/RecipeWizard/recipeImportApi'
 import {
   acceptMatch,
   addIngredient,
@@ -21,6 +21,8 @@ import {
   edit,
   editIngredient,
   editInstruction,
+  editNutrition,
+  editProposal,
   editValue,
   finishRead,
   hasUnsavedWork,
@@ -32,6 +34,7 @@ import {
   offersMatch,
   pickRecipe,
   progress,
+  refuseDetails,
   refuseName,
   removeIngredient,
   removeInstruction,
@@ -40,10 +43,18 @@ import {
   startRead,
   stepOrder,
   submissionFor,
+  toggleTag,
   type StepId,
   type WizardFlow,
 } from '~/Components/RecipeWizard/recipeWizardFlow'
-import { validIngredients, validInstructions, type Mark, type WizardValues } from '~/Components/RecipeWizard/wizardValues'
+import { NUTRITION_FIELDS, type DetailsChoices } from '~/Components/RecipeWizard/wizardDetails'
+import {
+  emptyValues,
+  validIngredients,
+  validInstructions,
+  type Mark,
+  type WizardValues,
+} from '~/Components/RecipeWizard/wizardValues'
 
 const GNOCCHI = { key: '11111111-2222-3333-4444-555555555555', name: 'Brown Butter Gnocchi' }
 
@@ -81,28 +92,28 @@ describe('recipeWizardFlow step order', () => {
     const wizard = recipeWizard(true)
 
     expect(wizard).toMatchObject({ flow: 'recipe', mode: 'recipe', recipe: null, start: null, step: 'start' })
-    expect(stepOrder(wizard)).toEqual(['start', 'basics', 'variant', 'ingredients', 'instructions', 'review'])
+    expect(stepOrder(wizard)).toEqual(['start', 'basics', 'variant', 'ingredients', 'instructions', 'details', 'review'])
   })
 
   it('opens recipe mode on the basics step, typing, when the import is not enabled', () => {
     const wizard = recipeWizard(false)
 
     expect(wizard).toMatchObject({ mode: 'recipe', start: 'typing', step: 'basics' })
-    expect(stepOrder(wizard)).toEqual(['basics', 'variant', 'ingredients', 'instructions', 'review'])
+    expect(stepOrder(wizard)).toEqual(['basics', 'variant', 'ingredients', 'instructions', 'details', 'review'])
   })
 
   it('opens variant mode for its recipe on the start step while the import is enabled', () => {
     const wizard = variantWizard(true)
 
     expect(wizard).toMatchObject({ flow: 'variant', mode: 'variant', recipe: GNOCCHI, start: null, step: 'start' })
-    expect(stepOrder(wizard)).toEqual(['start', 'variant', 'ingredients', 'instructions', 'review'])
+    expect(stepOrder(wizard)).toEqual(['start', 'variant', 'ingredients', 'instructions', 'details', 'review'])
   })
 
   it('opens variant mode on the variant step, typing, when the import is not enabled', () => {
     const wizard = variantWizard(false)
 
     expect(wizard).toMatchObject({ mode: 'variant', recipe: GNOCCHI, start: 'typing', step: 'variant' })
-    expect(stepOrder(wizard)).toEqual(['variant', 'ingredients', 'instructions', 'review'])
+    expect(stepOrder(wizard)).toEqual(['variant', 'ingredients', 'instructions', 'details', 'review'])
   })
 
   it.each([
@@ -156,28 +167,43 @@ describe('recipeWizardFlow Next and Back', () => {
       'variant',
       'ingredients',
       'instructions',
+      'details',
       'review',
     ])
   })
 
   it('walks variant mode forward through each typing step to the review, and no further', () => {
-    expect(stepsVisited(filled(variantWizard(false)), next)).toEqual(['variant', 'ingredients', 'instructions', 'review'])
+    expect(stepsVisited(filled(variantWizard(false)), next)).toEqual([
+      'variant',
+      'ingredients',
+      'instructions',
+      'details',
+      'review',
+    ])
   })
 
   it('walks back from the review to the start step while the import is enabled', () => {
     const recipe = on(filled(recipeWizard(true)), 'review')
     const variant = on(filled(variantWizard(true)), 'review')
 
-    expect(stepsVisited(recipe, back)).toEqual(['review', 'instructions', 'ingredients', 'variant', 'basics', 'start'])
-    expect(stepsVisited(variant, back)).toEqual(['review', 'instructions', 'ingredients', 'variant', 'start'])
+    expect(stepsVisited(recipe, back)).toEqual([
+      'review',
+      'details',
+      'instructions',
+      'ingredients',
+      'variant',
+      'basics',
+      'start',
+    ])
+    expect(stepsVisited(variant, back)).toEqual(['review', 'details', 'instructions', 'ingredients', 'variant', 'start'])
   })
 
   it('stops at the first typing step when the import is not enabled', () => {
     const recipe = on(filled(recipeWizard(false)), 'review')
     const variant = on(filled(variantWizard(false)), 'review')
 
-    expect(stepsVisited(recipe, back)).toEqual(['review', 'instructions', 'ingredients', 'variant', 'basics'])
-    expect(stepsVisited(variant, back)).toEqual(['review', 'instructions', 'ingredients', 'variant'])
+    expect(stepsVisited(recipe, back)).toEqual(['review', 'details', 'instructions', 'ingredients', 'variant', 'basics'])
+    expect(stepsVisited(variant, back)).toEqual(['review', 'details', 'instructions', 'ingredients', 'variant'])
   })
 
   it('offers Back on every step but the first of the order', () => {
@@ -268,9 +294,23 @@ describe('recipeWizardFlow canProceed', () => {
 })
 
 describe('recipeWizardFlow progress', () => {
-  it('counts five steps in recipe mode, on the editing steps and the review', () => {
+  it('counts six steps in recipe mode, on the editing steps and the review', () => {
     const wizard = recipeWizard(true)
-    const steps: StepId[] = ['basics', 'variant', 'ingredients', 'instructions', 'review']
+    const steps: StepId[] = ['basics', 'variant', 'ingredients', 'instructions', 'details', 'review']
+
+    expect(steps.map((step) => progress(on(wizard, step)))).toEqual([
+      { current: 1, total: 6 },
+      { current: 2, total: 6 },
+      { current: 3, total: 6 },
+      { current: 4, total: 6 },
+      { current: 5, total: 6 },
+      { current: 6, total: 6 },
+    ])
+  })
+
+  it('counts five steps in variant mode, on the editing steps and the review', () => {
+    const wizard = variantWizard(true)
+    const steps: StepId[] = ['variant', 'ingredients', 'instructions', 'details', 'review']
 
     expect(steps.map((step) => progress(on(wizard, step)))).toEqual([
       { current: 1, total: 5 },
@@ -278,18 +318,6 @@ describe('recipeWizardFlow progress', () => {
       { current: 3, total: 5 },
       { current: 4, total: 5 },
       { current: 5, total: 5 },
-    ])
-  })
-
-  it('counts four steps in variant mode, on the editing steps and the review', () => {
-    const wizard = variantWizard(true)
-    const steps: StepId[] = ['variant', 'ingredients', 'instructions', 'review']
-
-    expect(steps.map((step) => progress(on(wizard, step)))).toEqual([
-      { current: 1, total: 4 },
-      { current: 2, total: 4 },
-      { current: 3, total: 4 },
-      { current: 4, total: 4 },
     ])
   })
 
@@ -304,6 +332,15 @@ const UNCLEAR: Mark = { kind: 'unclear', reason: 'Printed as 2 to 3', code: null
 const WRITTEN: Mark = { kind: 'written', reason: 'Not in the photos', code: null, arg: null }
 const TRANSLATED: Mark = { kind: 'translated', reason: null, code: 'translated', arg: 'Italian' }
 const SHORTENED: Mark = { kind: 'unclear', reason: null, code: 'shortened', arg: null }
+
+const NO_READ_DETAILS: ReadDetails = {
+  category: { value: null, mark: null },
+  tags: [],
+  difficulty: { value: null, mark: null },
+  nutrition: Object.fromEntries(
+    NUTRITION_FIELDS.map(({ field }) => [field, { value: null, mark: null }]),
+  ) as ReadDetails['nutrition'],
+}
 
 const PANCAKES: ReadResponse = {
   outcome: 'recipe',
@@ -331,9 +368,18 @@ const PANCAKES: ReadResponse = {
   possibleDuplicate: null,
   otherRecipes: ['Maple Syrup'],
   recipes: [],
+  details: NO_READ_DETAILS,
 }
 
+const NO_DETAILS = emptyValues()
+
 const PANCAKES_VALUES: WizardValues = {
+  category: NO_DETAILS.category,
+  tags: NO_DETAILS.tags,
+  difficulty: NO_DETAILS.difficulty,
+  nutrition: NO_DETAILS.nutrition,
+  proposedCategory: NO_DETAILS.proposedCategory,
+  proposedTags: NO_DETAILS.proposedTags,
   recipeName: 'Pancakes',
   recipeDescription: 'Fluffy weekend pancakes.',
   variantName: 'Buttermilk',
@@ -374,6 +420,7 @@ const NO_RECIPE: ReadResponse = {
   possibleDuplicate: null,
   otherRecipes: [],
   recipes: [],
+  details: NO_READ_DETAILS,
 }
 
 const answered = (data: ReadResponse): ReadResult => ({ success: true, data, errorMessage: null })
@@ -581,7 +628,7 @@ describe('recipeWizardFlow row marks', () => {
 })
 
 describe('recipeWizardFlow photo strip', () => {
-  it.each(['reading', 'match', 'basics', 'variant', 'ingredients', 'instructions', 'review'] as StepId[])(
+  it.each(['reading', 'match', 'basics', 'variant', 'ingredients', 'instructions', 'details', 'review'] as StepId[])(
     'shows the view-only photo strip on the %s step while the import holds photos',
     (step) => {
       expect(showsPhotoStrip(on(withPhotos(recipeWizard(true)), step))).toBe(true)
@@ -1090,7 +1137,7 @@ describe('recipeWizardFlow step links', () => {
 
     next(wizard)
 
-    expect(wizard.step).toBe('instructions')
+    expect(wizard.step).toBe('details')
   })
 })
 
@@ -1509,7 +1556,7 @@ describe('recipeWizardFlow match step', () => {
       expect(wizard).toMatchObject({ step: 'review', mode: 'variant', recipe, flow: 'recipe', returnTo: null })
       expect(wizard.values).toEqual({ ...PANCAKES_VALUES, recipeName: '', recipeDescription: '', marks: SET_ASIDE_MARKS })
       expect(wizard.photos).toEqual(photos)
-      expect(progress(wizard)).toEqual({ current: 4, total: 4 })
+      expect(progress(wizard)).toEqual({ current: 5, total: 5 })
     },
   )
 
@@ -1668,22 +1715,22 @@ describe('recipeWizardFlow unsettled match', () => {
 
     const visited = stepsVisited(wizard, next)
 
-    expect(visited).toEqual(['basics', 'variant', 'ingredients', 'instructions', 'match'])
+    expect(visited).toEqual(['basics', 'variant', 'ingredients', 'instructions', 'details', 'match'])
   })
 
-  it('steps back from the match step on a typing path to the instructions step, leaving it unanswered', () => {
+  it('steps back from the match step on a typing path to the details step, leaving it unanswered', () => {
     const wizard = typedOnToMatch()
 
     expect(canGoBack(wizard)).toBe(true)
     back(wizard)
 
-    expect(wizard).toMatchObject({ step: 'instructions', mode: 'recipe', matchSettled: false, returnTo: null })
+    expect(wizard).toMatchObject({ step: 'details', mode: 'recipe', matchSettled: false, returnTo: null })
     next(wizard)
     expect(wizard.step).toBe('match')
   })
 
   it.each(ANSWERS)(
-    'steps back from Change on a typed review after %s to the instructions step, and on to the review',
+    'steps back from Change on a typed review after %s to the details step, and on to the review',
     (_answer, answer, mode) => {
       const wizard = typedOnToMatch()
       answer(wizard)
@@ -1693,7 +1740,7 @@ describe('recipeWizardFlow unsettled match', () => {
       expect(canGoBack(wizard)).toBe(true)
       back(wizard)
 
-      expect(wizard).toMatchObject({ step: 'instructions', mode, matchSettled: true })
+      expect(wizard).toMatchObject({ step: 'details', mode, matchSettled: true })
       next(wizard)
       expect(wizard).toMatchObject({ step: 'review', mode })
     },
@@ -1829,5 +1876,468 @@ describe('recipeWizardFlow reading after a match choice', () => {
     readThrough(wizard, answered(PANCAKES))
 
     expect(wizard).toMatchObject({ mode: 'variant', recipe: GNOCCHI })
+  })
+})
+
+const DETAILS_CHOICES: DetailsChoices = {
+  categories: [
+    { key: 'cat-breakfast', name: 'Breakfast' },
+    { key: 'cat-dinner', name: 'Dinner' },
+  ],
+  tags: [
+    { key: 'tag-vegan', name: 'Vegan', kind: 'Diet' },
+    { key: 'tag-spicy', name: 'Spicy', kind: 'Style' },
+    { key: 'tag-keto', name: 'Keto', kind: 'Diet' },
+  ],
+}
+
+const SUGGESTED: Mark = { kind: 'estimate', reason: 'Suggested', code: null, arg: null }
+
+const detailed = (wizard: WizardFlow = recipeWizard(true)) => {
+  const created = createWizardFlow({
+    flow: wizard.flow,
+    recipe: wizard.recipe ?? undefined,
+    importEnabled: wizard.importEnabled,
+    choices: DETAILS_CHOICES,
+  })
+  Object.assign(created.values, {
+    category: 'cat-dinner',
+    tags: ['tag-vegan'],
+    difficulty: 'Easy',
+    marks: {
+      'recipe.category': SUGGESTED,
+      'variant.difficulty': SUGGESTED,
+      'variant.tag.tag-vegan': SUGGESTED,
+      'variant.nutrition.calories': SUGGESTED,
+    },
+  })
+  created.values.nutrition.calories = '450'
+  return created
+}
+
+describe('recipeWizardFlow Details step', () => {
+  it('holds the page choices', () => {
+    expect(detailed().choices).toEqual(DETAILS_CHOICES)
+    expect(recipeWizard(true).choices).toEqual({ categories: [], tags: [] })
+  })
+
+  it('opens the Details step from the review with its return to the review, in both modes', () => {
+    const recipe = on(filled(recipeWizard(true)), 'review')
+    const variant = on(filled(variantWizard(true)), 'review')
+
+    edit(recipe, 'details')
+    edit(variant, 'details')
+
+    expect(recipe).toMatchObject({ step: 'details', returnTo: 'review' })
+    expect(variant).toMatchObject({ step: 'details', returnTo: 'review' })
+    next(recipe)
+    expect(recipe).toMatchObject({ step: 'review', returnTo: null })
+  })
+
+  it('shows the photo strip on the Details step while the import holds photos', () => {
+    expect(showsPhotoStrip(on(withPhotos(recipeWizard(true)), 'details'))).toBe(true)
+  })
+
+  it('counts Details among the steps', () => {
+    expect(progress(on(recipeWizard(true), 'details'))).toEqual({ current: 5, total: 6 })
+    expect(progress(on(variantWizard(true), 'details'))).toEqual({ current: 4, total: 5 })
+  })
+
+  describe('canProceed', () => {
+    it('is true on an empty Details step', () => {
+      expect(canProceed(on(recipeWizard(true), 'details'))).toBe(true)
+    })
+
+    it('is true while every nutrition text is empty or valid', () => {
+      const wizard = on(recipeWizard(true), 'details')
+      wizard.values.nutrition.calories = '450'
+      wizard.values.nutrition.sodiumMg = '0'
+
+      expect(canProceed(wizard)).toBe(true)
+    })
+
+    it.each(['1.5', '-1', 'abc', '10001'])('is false while calories holds %j', (text) => {
+      const wizard = on(recipeWizard(true), 'details')
+      wizard.values.nutrition.calories = text
+
+      expect(canProceed(wizard)).toBe(false)
+    })
+
+    describe('leaving toward the review', () => {
+      const invalidFromReview = () => {
+        const wizard = on(filled(recipeWizard(true)), 'review')
+        edit(wizard, 'details')
+        wizard.values.nutrition.calories = '1.5'
+        return wizard
+      }
+
+      it('keeps Back to review on Details while a nutrition text is invalid', () => {
+        const wizard = invalidFromReview()
+
+        backToReview(wizard)
+
+        expect(wizard).toMatchObject({ step: 'details', returnTo: 'review' })
+      })
+
+      it('brings Back then Next from the instructions back to Details while a nutrition text is invalid', () => {
+        const wizard = invalidFromReview()
+
+        back(wizard)
+        expect(wizard.step).toBe('instructions')
+        next(wizard)
+
+        expect(wizard).toMatchObject({ step: 'details', returnTo: 'review' })
+      })
+
+      it('reaches the review once the nutrition text is fixed', () => {
+        const wizard = invalidFromReview()
+        editNutrition(wizard, 'calories', '450')
+
+        backToReview(wizard)
+
+        expect(wizard).toMatchObject({ step: 'review', returnTo: null })
+      })
+    })
+
+    it('holds Next on an invalid nutrition text', () => {
+      const wizard = on(recipeWizard(true), 'details')
+      wizard.values.nutrition.fatG = '1001'
+
+      next(wizard)
+
+      expect(wizard.step).toBe('details')
+    })
+  })
+
+  describe('edits', () => {
+    it('sets a category, clears its mark and counts as an edit', () => {
+      const wizard = detailed()
+
+      editValue(wizard, 'category', 'cat-breakfast')
+
+      expect(wizard.values.category).toBe('cat-breakfast')
+      expect(wizard.values.marks).not.toHaveProperty('recipe.category')
+      expect(wizard.values.marks).toHaveProperty('variant.difficulty')
+      expect(wizard.editedSinceRead).toBe(true)
+    })
+
+    it('clears the mark when the member picks the value the suggestion already holds', () => {
+      const wizard = detailed()
+
+      editValue(wizard, 'difficulty', 'Easy')
+
+      expect(wizard.values.difficulty).toBe('Easy')
+      expect(wizard.values.marks).not.toHaveProperty('variant.difficulty')
+    })
+
+    it('adds a tag in the lists order and clears its mark only', () => {
+      const wizard = detailed()
+      wizard.values.marks['variant.tag.tag-keto'] = SUGGESTED
+
+      toggleTag(wizard, 'tag-keto', true)
+      toggleTag(wizard, 'tag-spicy', true)
+
+      expect(wizard.values.tags).toEqual(['tag-vegan', 'tag-spicy', 'tag-keto'])
+      expect(wizard.values.marks).not.toHaveProperty('variant.tag.tag-keto')
+      expect(wizard.values.marks).toHaveProperty('variant.tag.tag-vegan')
+      expect(wizard.editedSinceRead).toBe(true)
+    })
+
+    it('removes a tag, clears its mark and counts as an edit', () => {
+      const wizard = detailed()
+
+      toggleTag(wizard, 'tag-vegan', false)
+
+      expect(wizard.values.tags).toEqual([])
+      expect(wizard.values.marks).not.toHaveProperty('variant.tag.tag-vegan')
+      expect(wizard.editedSinceRead).toBe(true)
+    })
+
+    it('clears the mark of a tag the member picks again', () => {
+      const wizard = detailed()
+
+      toggleTag(wizard, 'tag-vegan', true)
+
+      expect(wizard.values.tags).toEqual(['tag-vegan'])
+      expect(wizard.values.marks).not.toHaveProperty('variant.tag.tag-vegan')
+    })
+
+    it('sets a nutrition text, clears its mark and counts as an edit', () => {
+      const wizard = detailed()
+
+      editNutrition(wizard, 'calories', '450')
+
+      expect(wizard.values.nutrition.calories).toBe('450')
+      expect(wizard.values.marks).not.toHaveProperty('variant.nutrition.calories')
+      expect(wizard.values.marks).toHaveProperty('recipe.category')
+      expect(wizard.editedSinceRead).toBe(true)
+    })
+
+    it.each(['proposedCategory', 'proposedTags'] as const)(
+      'sets %s and touches no mark and not editedSinceRead',
+      (field) => {
+        const wizard = detailed()
+        const marks = structuredClone(wizard.values.marks)
+
+        editProposal(wizard, field, 'Sides')
+
+        expect(wizard.values[field]).toBe('Sides')
+        expect(wizard.values.marks).toEqual(marks)
+        expect(wizard.editedSinceRead).toBe(false)
+      },
+    )
+  })
+
+  describe('refuseDetails', () => {
+    const NEW_CHOICES: DetailsChoices = {
+      categories: [{ key: 'cat-breakfast', name: 'Breakfast' }],
+      tags: [
+        { key: 'tag-spicy', name: 'Spicy', kind: 'Style' },
+        { key: 'tag-vegan', name: 'Vegan', kind: 'Diet' },
+      ],
+    }
+
+    it('replaces the lists, drops a missing category and its mark, keeps the other values', () => {
+      const wizard = on(detailed(), 'review')
+      wizard.values.tags = ['tag-keto', 'tag-vegan']
+      wizard.values.marks['variant.tag.tag-keto'] = SUGGESTED
+      wizard.values.proposedTags = 'Mexican'
+
+      refuseDetails(wizard, NEW_CHOICES)
+
+      expect(wizard.choices).toEqual(NEW_CHOICES)
+      expect(wizard.values).toMatchObject({
+        category: null,
+        tags: ['tag-vegan'],
+        difficulty: 'Easy',
+        nutrition: { calories: '450' },
+        proposedTags: 'Mexican',
+      })
+      expect(wizard.values.marks).not.toHaveProperty('recipe.category')
+      expect(wizard.values.marks).not.toHaveProperty('variant.tag.tag-keto')
+      expect(wizard.values.marks).toHaveProperty('variant.tag.tag-vegan')
+      expect(wizard.values.marks).toHaveProperty('variant.difficulty')
+    })
+
+    it('keeps a category the new lists still hold', () => {
+      const wizard = on(detailed(), 'review')
+      wizard.values.category = 'cat-breakfast'
+
+      refuseDetails(wizard, NEW_CHOICES)
+
+      expect(wizard.values.category).toBe('cat-breakfast')
+    })
+
+    it('drops a set-aside category the new lists no longer hold, with its mark', () => {
+      const wizard = on(detailed(), 'review')
+      wizard.setAside = {
+        recipeName: 'Pancakes',
+        recipeDescription: '',
+        category: 'cat-dinner',
+        proposedCategory: 'Sides',
+        marks: { 'recipe.category': SUGGESTED },
+      }
+
+      refuseDetails(wizard, NEW_CHOICES)
+
+      expect(wizard.setAside).toMatchObject({ recipeName: 'Pancakes', category: null, proposedCategory: 'Sides' })
+      expect(wizard.setAside?.marks).not.toHaveProperty('recipe.category')
+    })
+
+    it('opens Details with its return to the review', () => {
+      const wizard = on(detailed(), 'review')
+
+      refuseDetails(wizard, NEW_CHOICES)
+
+      expect(wizard).toMatchObject({ step: 'details', returnTo: 'review' })
+    })
+  })
+
+  describe('submission', () => {
+    it('sends the category and its proposal only in recipe mode', () => {
+      const recipe = detailed()
+      recipe.values.proposedCategory = 'Sides'
+      const variant = detailed(variantWizard(true))
+      variant.values.proposedCategory = 'Sides'
+
+      expect(submissionFor(recipe).body).toMatchObject({ category: 'cat-dinner', proposedCategory: 'Sides' })
+      expect(submissionFor(variant).body).not.toHaveProperty('category')
+      expect(submissionFor(variant).body).not.toHaveProperty('proposedCategory')
+    })
+  })
+})
+
+describe('recipeWizardFlow reader Details', () => {
+  const printedAs = (arg: string): Mark => ({ kind: 'suggested', reason: null, code: 'printedAs', arg })
+
+  const DETAILED: ReadResponse = {
+    ...MATCHED,
+    details: {
+      category: { value: 'cat-dinner', mark: SUGGESTED },
+      tags: [
+        { key: 'tag-vegan', mark: null },
+        { key: 'tag-spicy', mark: printedAs('hot') },
+      ],
+      difficulty: { value: 'Medium', mark: printedAs('intermediate') },
+      nutrition: { ...NO_READ_DETAILS.nutrition, calories: { value: 287, mark: SUGGESTED } },
+    },
+  }
+
+  const importedDetailed = (wizard: WizardFlow = recipeWizard(true)) =>
+    createWizardFlow({
+      flow: wizard.flow,
+      recipe: wizard.recipe ?? undefined,
+      importEnabled: true,
+      choices: DETAILS_CHOICES,
+    })
+
+  const readDetailed = (flow: 'recipe' | 'variant' = 'recipe') => {
+    const wizard = importedDetailed(flow === 'recipe' ? recipeWizard(true) : variantWizard(true))
+    return readThrough(withPhotos(wizard, 2), answered(DETAILED))
+  }
+
+  it('fills the Details values and marks from the read', () => {
+    const wizard = readDetailed()
+
+    expect(wizard.values).toMatchObject({
+      category: 'cat-dinner',
+      tags: ['tag-vegan', 'tag-spicy'],
+      difficulty: 'Medium',
+    })
+    expect(wizard.values.nutrition.calories).toBe('287')
+    expect(wizard.values.marks).toMatchObject({
+      'recipe.category': SUGGESTED,
+      'variant.tag.tag-spicy': printedAs('hot'),
+      'variant.difficulty': printedAs('intermediate'),
+      'variant.nutrition.calories': SUGGESTED,
+    })
+  })
+
+  it('drops a category and tags the page lists do not hold, with their marks', () => {
+    const wizard = importedDetailed()
+
+    applyRead(wizard, {
+      ...DETAILED,
+      match: null,
+      details: {
+        ...DETAILED.details,
+        category: { value: 'cat-published-later', mark: SUGGESTED },
+        tags: [
+          { key: 'tag-published-later', mark: SUGGESTED },
+          { key: 'tag-spicy', mark: printedAs('hot') },
+        ],
+      },
+    })
+
+    expect(wizard.values).toMatchObject({ category: null, tags: ['tag-spicy'], difficulty: 'Medium' })
+    expect(wizard.values.marks).not.toHaveProperty('recipe.category')
+    expect(wizard.values.marks).not.toHaveProperty('variant.tag.tag-published-later')
+    expect(wizard.values.marks).toMatchObject({
+      'variant.tag.tag-spicy': printedAs('hot'),
+      'variant.difficulty': printedAs('intermediate'),
+    })
+  })
+
+  it('replaces the Details values and marks of an earlier read, and keeps both proposals', () => {
+    const wizard = readDetailed()
+    editProposal(wizard, 'proposedCategory', 'Sides')
+    editProposal(wizard, 'proposedTags', 'Mexican')
+    editNutrition(wizard, 'proteinG', '30')
+    keepNewRecipe(wizard)
+
+    applyRead(wizard, { ...DETAILED, match: null, details: NO_READ_DETAILS })
+
+    expect(wizard.values).toMatchObject({
+      category: null,
+      tags: [],
+      difficulty: null,
+      proposedCategory: 'Sides',
+      proposedTags: 'Mexican',
+    })
+    expect(wizard.values.nutrition).toEqual(emptyValues().nutrition)
+    expect(Object.keys(wizard.values.marks).filter((path) => /category|difficulty|tag|nutrition/.test(path))).toEqual([])
+  })
+
+  it('keeps the proposed category a match choice set aside when a later read replaces the values', () => {
+    const wizard = readDetailed()
+    editProposal(wizard, 'proposedCategory', 'Sides')
+    acceptMatch(wizard)
+
+    applyRead(wizard, { ...DETAILED, match: null })
+
+    expect(wizard.values.proposedCategory).toBe('Sides')
+  })
+
+  describe('a match choice', () => {
+    it.each(CHOICES)('sets the category, its mark and the proposed category aside on %s', (_choice, choose) => {
+      const wizard = readDetailed()
+      editProposal(wizard, 'proposedCategory', 'Sides')
+      editProposal(wizard, 'proposedTags', 'Mexican')
+
+      choose(wizard)
+
+      expect(wizard.values).toMatchObject({ category: null, proposedCategory: '', proposedTags: 'Mexican' })
+      expect(wizard.values.marks).not.toHaveProperty('recipe.category')
+      expect(wizard.values.marks).toHaveProperty('variant.difficulty')
+      expect(wizard.setAside).toMatchObject({
+        category: 'cat-dinner',
+        proposedCategory: 'Sides',
+        marks: { 'recipe.category': SUGGESTED },
+      })
+    })
+
+    it.each(CHOICES)('brings them back when the member keeps a new recipe after %s', (_choice, choose) => {
+      const wizard = readDetailed()
+      editProposal(wizard, 'proposedCategory', 'Sides')
+      choose(wizard)
+      changeMatch(wizard)
+
+      keepNewRecipe(wizard)
+
+      expect(wizard.values).toMatchObject({ category: 'cat-dinner', proposedCategory: 'Sides' })
+      expect(wizard.values.marks['recipe.category']).toEqual(SUGGESTED)
+    })
+
+    it('lets the member set a category after keeping a new recipe', () => {
+      const wizard = readDetailed()
+      acceptMatch(wizard)
+      changeMatch(wizard)
+      keepNewRecipe(wizard)
+
+      editValue(wizard, 'category', 'cat-breakfast')
+
+      expect(wizard.values.category).toBe('cat-breakfast')
+      expect(wizard.values.marks).not.toHaveProperty('recipe.category')
+    })
+
+    it('sends no category and no proposed category in a variant submission', () => {
+      const wizard = readDetailed()
+      editProposal(wizard, 'proposedCategory', 'Sides')
+      acceptMatch(wizard)
+
+      const { body } = submissionFor(wizard)
+
+      expect(body).not.toHaveProperty('category')
+      expect(body).not.toHaveProperty('proposedCategory')
+      expect(body).toMatchObject({ difficulty: 'Medium' })
+    })
+  })
+
+  describe('reading again', () => {
+    it.each([
+      ['a tag', (wizard: WizardFlow) => toggleTag(wizard, 'tag-keto', true)],
+      ['a nutrition text', (wizard: WizardFlow) => editNutrition(wizard, 'fatG', '9')],
+      ['the category', (wizard: WizardFlow) => editValue(wizard, 'category', 'cat-breakfast')],
+      ['the difficulty', (wizard: WizardFlow) => editValue(wizard, 'difficulty', 'Hard')],
+    ])('asks first once the member edited %s', (_value, change) => {
+      const wizard = on(readDetailed(), 'review')
+      keepNewRecipe(on(wizard, 'match'))
+      change(wizard)
+      changePhotos(wizard)
+      addPhotos(wizard, [photo('page 3')], 'device')
+
+      expect(startRead(wizard)).toBeNull()
+      expect(wizard.confirmingRead).toBe(true)
+    })
   })
 })

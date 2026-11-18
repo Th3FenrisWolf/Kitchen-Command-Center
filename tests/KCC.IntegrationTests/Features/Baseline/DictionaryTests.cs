@@ -17,6 +17,43 @@ public class DictionaryTests
         "DescriptionPlaceholder", "Remove", "FailedToAddVariant",
     ];
 
+    private static readonly Dictionary<string, string> DetailsStepStrings = new()
+    {
+        ["Details"] = "Details",
+        ["DetailsHint"] = "All optional. The owner can fill in anything you leave out.",
+        ["Category"] = "Category",
+        ["NoCategory"] = "No category",
+        ["DietTags"] = "Diet",
+        ["StyleTags"] = "Style",
+        ["Difficulty"] = "Difficulty",
+        ["DifficultyNone"] = "Not set",
+        ["DifficultyEasy"] = "Easy",
+        ["DifficultyMedium"] = "Medium",
+        ["DifficultyHard"] = "Hard",
+        ["NutritionPerServing"] = "Nutrition per serving",
+        ["Calories"] = "Calories",
+        ["Protein"] = "Protein",
+        ["Carbohydrates"] = "Carbohydrates",
+        ["Fat"] = "Fat",
+        ["SaturatedFat"] = "Saturated fat",
+        ["Fiber"] = "Fiber",
+        ["Sugar"] = "Sugar",
+        ["Sodium"] = "Sodium",
+        ["Kcal"] = "kcal",
+        ["Grams"] = "g",
+        ["Milligrams"] = "mg",
+        ["NutritionInvalid"] = "Enter a whole number from 0 to {0}.",
+        ["ProposedCategory"] = "Suggest a new category",
+        ["ProposedTags"] = "Suggest new tags",
+        ["ProposalHint"] = "The owner sees this when reviewing your recipe. It never shows on the site.",
+        ["ReviewDetails"] = "Details",
+        ["NoDetailsGiven"] = "No details given.",
+        ["DetailsChanged"] = "The site's categories or tags changed while you were working. Check your choices on the Details step and submit again.",
+        ["MarkSuggested"] = "Suggested by the reader",
+        ["MarkCalculated"] = "Calculated",
+        ["MarkReasonPrintedAs"] = "Printed as {0}",
+    };
+
     [ClassDataSource<UmbracoSite>(Shared = SharedType.PerTestSession)]
     public UmbracoSite Site { get; init; } = null!;
 
@@ -61,6 +98,17 @@ public class DictionaryTests
 
         _ = await Assert.That(group).IsNotEmpty();
         _ = await Assert.That(unmatched).IsEmpty();
+    }
+
+    [Test]
+    public async Task RecipeWizardGroup_HoldsTheDetailsStepStrings_WithTheirEnglish()
+    {
+        using var scope = Site.Services.CreateScope();
+        var group = scope.ServiceProvider.GetRequiredService<IResourceStringProvider>().GetGroup("RecipeWizard");
+        var missing = DetailsStepStrings.Where(item => group.GetValueOrDefault($"RecipeWizard.{item.Key}") != item.Value).Select(item => item.Key);
+
+        _ = await Assert.That(DetailsStepStrings).Count().IsEqualTo(33);
+        _ = await Assert.That(missing).IsEmpty();
     }
 
     [Test]

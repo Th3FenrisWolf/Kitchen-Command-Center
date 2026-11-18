@@ -7,7 +7,11 @@ namespace KCC.ReaderEval;
 
 public static class EvalSet
 {
+    private const int MinimumNutritionCases = 3;
+    private const int MinimumCategoryCases = 10;
     private const string CatalogFile = "catalog.json";
+    private const string CategoryAlias = "icon";
+    private const string TagAlias = "kind";
 
     private const string CatalogGuide =
         "It holds a list of the site's recipes, each with a name, a description and the names of its variants "
@@ -32,6 +36,47 @@ public static class EvalSet
         return directory is null
             ? Path.Combine(Directory.GetCurrentDirectory(), "tools", "KCC.ReaderEval", "set")
             : Path.Combine(directory.FullName, "set");
+    }
+
+    public static IReadOnlyList<string> DetailsProblems(IReadOnlyDictionary<string, ExpectedAnswer> answers)
+    {
+        var problems = new List<string>();
+        problems.AddRange(answers
+            .Where(answer => answer.Value.Details is null)
+            .Select(answer => $"  {answer.Key} has no details block in its expected.json."));
+        problems.AddRange(answers
+            .Where(answer => answer.Value.Details is { Draft: true })
+            .Select(answer => $"  {answer.Key}: its details block is still a draft. Confirm it, then delete its \"draft\": true."));
+        var nullNutrition = answers.Where(answer => answer.Value.Details is { Nutrition: null }).Select(answer => answer.Key).ToHashSet();
+        problems.AddRange(nullNutrition.Select(name =>
+            $"  {name}: its details block has \"nutrition\": null. Give every nutrient a number or null instead."));
+        problems.AddRange(answers
+            .Where(answer => answer.Value.Details is not null)
+            .SelectMany(answer => UnknownNames(answer.Value.Details).Select(unknown => $"  {answer.Key}: {unknown}")));
+        var details = answers
+            .Where(answer => !nullNutrition.Contains(answer.Key))
+            .Select(answer => answer.Value.Details)
+            .Where(block => block is not null)
+            .ToList();
+        var withNutrition = details.Where(block => block.ExpectsNutrition).ToList();
+        if (withNutrition.Count < MinimumNutritionCases)
+        {
+            problems.Add(
+                $"  {withNutrition.Count} cases expect a nutrition value, and the comparison needs at least {MinimumNutritionCases}.");
+        }
+
+        if (!withNutrition.Any(block => block.NutritionPrinted == ExpectedDetails.Converted))
+        {
+            problems.Add("  none of the cases expecting nutrition prints it per whole recipe or in kilojoules (nutritionPrinted \"converted\"), and the comparison needs at least one.");
+        }
+
+        var withCategory = details.Count(block => block.ExpectsCategory);
+        if (withCategory < MinimumCategoryCases)
+        {
+            problems.Add($"  {withCategory} cases expect a category, and the comparison needs at least {MinimumCategoryCases}.");
+        }
+
+        return problems;
     }
 
     public static RecipeCatalog LoadCatalog(string directory, out string problem)
@@ -90,6 +135,22 @@ public static class EvalSet
         problem = null;
         return cases;
     }
+
+    private static IEnumerable<string> UnknownNames(ExpectedDetails block)
+    {
+        if (block.ExpectsCategory && !Names(CategoryAlias).Contains(block.Category, StringComparer.OrdinalIgnoreCase))
+        {
+            yield return $"the category {block.Category} is not one of the site's categories.";
+        }
+
+        foreach (var tag in (block.Tags ?? []).Where(tag => !Names(TagAlias).Contains(tag.Name, StringComparer.OrdinalIgnoreCase)))
+        {
+            yield return $"the tag {tag.Name} is not one of the site's tags.";
+        }
+    }
+
+    private static IEnumerable<string> Names(string alias) =>
+        TaxonomyDefaults.Values.Where(value => value.Alias == alias).Select(value => value.Name);
 
     private static List<string> Photos(string directory) =>
         Directory.Exists(directory)

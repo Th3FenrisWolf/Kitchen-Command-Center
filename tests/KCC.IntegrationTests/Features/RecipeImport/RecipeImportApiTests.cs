@@ -49,7 +49,22 @@ public class RecipeImportApiTests
           "instructions": [
             { "text": "Whisk the dry ingredients.", "mark": null }
           ],
-          "otherRecipes": []
+          "otherRecipes": [],
+          "details": {
+            "category": { "value": null, "mark": null },
+            "tags": [],
+            "difficulty": { "value": null, "mark": null },
+            "nutrition": {
+              "calories": { "value": null, "mark": null },
+              "proteinG": { "value": null, "mark": null },
+              "carbsG": { "value": null, "mark": null },
+              "fatG": { "value": null, "mark": null },
+              "saturatedFatG": { "value": null, "mark": null },
+              "fiberG": { "value": null, "mark": null },
+              "sugarG": { "value": null, "mark": null },
+              "sodiumMg": { "value": null, "mark": null }
+            }
+          }
         }
         """;
 
@@ -358,6 +373,88 @@ public class RecipeImportApiTests
         _ = await Assert.That(body.GetProperty("ingredients").GetArrayLength()).IsEqualTo(0);
         _ = await Assert.That(body.GetProperty("instructions").GetArrayLength()).IsEqualTo(0);
         _ = await Assert.That(body.GetProperty("recipes").ValueKind).IsEqualTo(JsonValueKind.Null);
+        var details = body.GetProperty("details");
+        _ = await Assert.That(details.GetProperty("category").GetProperty("value").ValueKind).IsEqualTo(JsonValueKind.Null);
+        _ = await Assert.That(details.GetProperty("tags").GetArrayLength()).IsEqualTo(0);
+        _ = await Assert.That(details.GetProperty("difficulty").GetProperty("value").ValueKind).IsEqualTo(JsonValueKind.Null);
+        _ = await Assert.That(details.GetProperty("nutrition").EnumerateObject().Count()).IsEqualTo(8);
+    }
+
+    [Test]
+    public async Task ARecipeFlowRead_AnswersDetails_WithKeysMappedFromTheReadersIds()
+    {
+        var choices = WithRecipes(queries => queries.GetTaxonomyChoices());
+        var category = choices.Categories[0];
+        var dietIndex = IndexOfFirst(choices.Tags, TagKinds.Diet);
+        var styleIndex = IndexOfFirst(choices.Tags, TagKinds.Style);
+        var details = new ReaderDetails(
+            new ReaderCategory("C1", Stated: false, Printed: null, Reason: "Eggs and toast"),
+            [
+                new ReaderTag($"T{dietIndex + 1}", Stated: true, Printed: "plant-based", Mark: null),
+                new ReaderTag($"T{styleIndex + 1}", Stated: false, Printed: null, Mark: new ReaderMark("written", "Two chillies")),
+                new ReaderTag("T999", Stated: true, Printed: null, Mark: null),
+            ],
+            new ReaderDifficulty("Medium", "intermediate", null),
+            new ReaderNutrition(
+                "serving",
+                [
+                    new ReaderNutrient("calories", 1200, "kJ", "1200 kJ", Inexact: false),
+                    new ReaderNutrient("protein", 12, "g", "12 g", Inexact: false),
+                ]));
+        Reader.Answer(ReadAttempt.Read(Pancakes() with { Details = details }, UsageOf(10_000, 2_000)));
+        using var member = await TestMembers.SignedInAsync(Site, "importer");
+
+        using var response = await member.Visitor.PostMultipartAsync(ReadPath, RecipeForm());
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var expected = $$"""
+            {
+              "category": { "value": "{{category.Key}}",
+                "mark": { "kind": "suggested", "reason": "Eggs and toast", "code": null, "arg": null } },
+              "tags": [
+                { "key": "{{choices.Tags[dietIndex].Key}}",
+                  "mark": { "kind": "suggested", "reason": null, "code": "printedAs", "arg": "plant-based" } },
+                { "key": "{{choices.Tags[styleIndex].Key}}",
+                  "mark": { "kind": "suggested", "reason": "Two chillies", "code": null, "arg": null } }
+              ],
+              "difficulty": { "value": "Medium",
+                "mark": { "kind": "suggested", "reason": null, "code": "printedAs", "arg": "intermediate" } },
+              "nutrition": {
+                "calories": { "value": 287, "mark": { "kind": "calculated", "reason": null, "code": "printedAs", "arg": "1200 kJ" } },
+                "proteinG": { "value": 12, "mark": null },
+                "carbsG": { "value": null, "mark": null },
+                "fatG": { "value": null, "mark": null },
+                "saturatedFatG": { "value": null, "mark": null },
+                "fiberG": { "value": null, "mark": null },
+                "sugarG": { "value": null, "mark": null },
+                "sodiumMg": { "value": null, "mark": null }
+              }
+            }
+            """;
+        _ = await Assert.That(JsonNode.Parse(body.GetProperty("details").GetRawText())!.ToJsonString())
+            .IsEqualTo(JsonNode.Parse(expected)!.ToJsonString());
+    }
+
+    [Test]
+    public async Task AVariantFlowRead_AnswersNoCategory_EvenWhenTheReaderGivesOne()
+    {
+        var details = new ReaderDetails(
+            new ReaderCategory("C1", Stated: true, Printed: null, Reason: null),
+            [],
+            new ReaderDifficulty(null, null, null),
+            new ReaderNutrition(null, []));
+        Reader.Answer(ReadAttempt.Read(Pancakes() with { Details = details }, UsageOf(10_000, 2_000)));
+        var recipe = await TestContent.RecipeAsync(Site.Services, "IT Kinkajou Griddle Cakes");
+        using var member = await TestMembers.SignedInAsync(Site, "importer");
+        using var form = Form("variant", recipe.ToString(), Jpeg);
+
+        using var response = await member.Visitor.PostMultipartAsync(ReadPath, form);
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var category = body.GetProperty("details").GetProperty("category");
+        _ = await Assert.That(category.GetProperty("value").ValueKind).IsEqualTo(JsonValueKind.Null);
     }
 
     [Test]
@@ -384,7 +481,7 @@ public class RecipeImportApiTests
     }
 
     [Test]
-    public async Task AVariantFlowRead_ThatGetsNoAnswer_KeepsAReservationThatPricesNoCatalog()
+    public async Task AVariantFlowRead_ThatGetsNoAnswer_KeepsAReservationThatPricesTheTagsButNoCatalog()
     {
         Reader.Answer(ReadAttempt.NoAnswer());
         using var member = await TestMembers.SignedInAsync(Site, "importer");
@@ -394,8 +491,70 @@ public class RecipeImportApiTests
         using var response = await member.Visitor.PostMultipartAsync(ReadPath, Form("variant", ramen.ToString(), Jpeg));
 
         _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadGateway);
-        var reserved = ReadCost.ReservationMicroUsd(Profile, 1, 0);
+        var tags = PublishedTaxonomy(ImportFlows.Variant).Characters;
+        var reserved = ReadCost.ReservationMicroUsd(Profile, 1, 0, tags);
+        _ = await Assert.That(tags).IsGreaterThan(0);
         _ = await Assert.That(TestImportSpend.Read(Site.Services, ThisMonth)).IsEqualTo(StartingTotal + reserved);
+    }
+
+    [Test]
+    public async Task ARecipeFlowRead_ThatGetsNoAnswer_KeepsAReservationThatPricesTheCatalogAndTheLists()
+    {
+        Reader.Answer(ReadAttempt.NoAnswer());
+        using var member = await TestMembers.SignedInAsync(Site, "importer");
+        TestImportSpend.Set(Site.Services, ThisMonth, StartingTotal);
+
+        using var response = await member.Visitor.PostMultipartAsync(ReadPath, RecipeForm());
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadGateway);
+        var catalogOnly = ReadCost.ReservationMicroUsd(Profile, 1, PublishedCatalog().Characters);
+        _ = await Assert.That(ReservationFor(photos: 1)).IsGreaterThan(catalogOnly);
+        _ = await Assert.That(TestImportSpend.Read(Site.Services, ThisMonth)).IsEqualTo(StartingTotal + ReservationFor(photos: 1));
+    }
+
+    [Test]
+    public async Task ARecipeFlowRead_SendsTheReaderTheSitesPublishedCategoriesAndTags()
+    {
+        Reader.Answer(ReadAttempt.Read(Pancakes(), UsageOf(10_000, 2_000)));
+        using var member = await TestMembers.SignedInAsync(Site, "importer");
+
+        using var response = await member.Visitor.PostMultipartAsync(ReadPath, RecipeForm());
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var choices = WithRecipes(queries => queries.GetTaxonomyChoices());
+        var sent = Reader.Calls.Single().Taxonomy;
+        _ = await Assert.That(choices.Categories).IsNotEmpty();
+        _ = await Assert.That(choices.Tags).IsNotEmpty();
+        _ = await Assert.That(sent?.Text).IsEqualTo(PublishedTaxonomy(ImportFlows.Recipe).Text);
+        foreach (var category in choices.Categories)
+        {
+            _ = await Assert.That(sent!.Text).Contains($"\"name\":\"{category.Name}\"");
+        }
+
+        foreach (var tag in choices.Tags)
+        {
+            _ = await Assert.That(sent!.Text).Contains($"\"name\":\"{tag.Name}\"");
+        }
+    }
+
+    [Test]
+    public async Task AVariantFlowRead_SendsTheReaderTheSitesTags_ButNoCategories()
+    {
+        Reader.Answer(ReadAttempt.Read(Pancakes(), UsageOf(10_000, 2_000)));
+        using var member = await TestMembers.SignedInAsync(Site, "importer");
+        var ramen = SeedKeys.Recipe("Spicy Ramen Flight");
+
+        using var response = await member.Visitor.PostMultipartAsync(ReadPath, Form("variant", ramen.ToString(), Jpeg));
+
+        _ = await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var choices = WithRecipes(queries => queries.GetTaxonomyChoices());
+        var sent = Reader.Calls.Single().Taxonomy;
+        _ = await Assert.That(sent?.Text).IsEqualTo(PublishedTaxonomy(ImportFlows.Variant).Text);
+        _ = await Assert.That(sent!.Text).DoesNotContain("\"id\":\"C");
+        foreach (var tag in choices.Tags)
+        {
+            _ = await Assert.That(sent.Text).Contains($"\"name\":\"{tag.Name}\"");
+        }
     }
 
     [Test]
@@ -602,6 +761,9 @@ public class RecipeImportApiTests
         OtherRecipes: [],
         SourceLanguage: null);
 
+    private static int IndexOfFirst(IReadOnlyList<TagChoice> tags, string kind) =>
+        tags.Select((tag, index) => (tag, index)).First(entry => entry.tag.Kind == kind).index;
+
     private static Usage UsageOf(long input, long output) => new()
     {
         InputTokens = input,
@@ -639,7 +801,14 @@ public class RecipeImportApiTests
     private long CostOf(Usage usage) => ReadCost.MicroUsd(Profile, usage);
 
     private long ReservationFor(int photos) =>
-        ReadCost.ReservationMicroUsd(Profile, photos, catalogCharacters: PublishedCatalog().Characters);
+        ReadCost.ReservationMicroUsd(
+            Profile,
+            photos,
+            catalogCharacters: PublishedCatalog().Characters,
+            taxonomyCharacters: PublishedTaxonomy(ImportFlows.Recipe).Characters);
+
+    private ReaderTaxonomy PublishedTaxonomy(string flow) =>
+        WithRecipes(queries => ReaderTaxonomy.From(queries.GetTaxonomyChoices(), flow));
 
     private static List<(Guid Key, string? Name)> Choices(JsonElement body) =>
         [.. body.GetProperty("recipes").EnumerateArray().Select(choice => (choice.GetProperty("key").GetGuid(), choice.GetProperty("name").GetString()))];

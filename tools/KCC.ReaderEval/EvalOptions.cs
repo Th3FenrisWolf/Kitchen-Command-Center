@@ -11,10 +11,16 @@ public sealed record EvalOptions(EvalMode Mode, IReadOnlyList<string> Models, in
         """
         Usage: dotnet run --project tools/KCC.ReaderEval -- <run> [--edge <px>]
 
-          --check             Count the prompt and the output schema for each model, with no photo. Free.
+          --check             Count the prompt, the site's categories and tags, and the output schema for each model,
+                              with no photo. Free.
           --draft             Read each case that has no expected answer yet with claude-opus-5-5, and write its
-                              expected.draft.json. Paid: states its estimate and asks first.
-          --models <a,b,...>  Compare these models on the set. Paid: states its estimate and asks first.
+                              expected.draft.json, its details block marked "draft": true until you confirm it. Paid: states
+                              its estimate and asks first.
+          --models <a,b,...>  Compare these models on the set. Paid: states its estimate and asks first. Refuses
+                              before any spend unless every case's expected.json has a details block with no
+                              "draft": true, at least 3 cases expect a nutrition value, at least one of them printed per
+                              whole recipe or in kilojoules (nutritionPrinted "converted"), and at least 10 expect a
+                              category.
                               With --check, counts for these models only.
           --edge <px>         The longest photo edge that the page would send. Default: the MaxImageEdge default.
 

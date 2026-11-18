@@ -20,6 +20,14 @@
 
   const model = defineModel<T>({ required: true })
 
+  // The model's own update stays silent when the checked segment is chosen again, and some callers count that as a choice.
+  const emit = defineEmits<{ pick: [value: T] }>()
+
+  function choose(value: T) {
+    model.value = value
+    emit('pick', value)
+  }
+
   const track = ref<HTMLElement>()
   const thumbEl = ref<HTMLElement>()
   const thumb = ref<Record<string, string>>({})
@@ -69,7 +77,7 @@
     if (!target) {
       return
     }
-    model.value = target.value
+    choose(target.value)
     nextTick(() => buttons()[next]?.focus())
   }
 
@@ -113,7 +121,7 @@
       :data-testid="opt.testId"
       :tabindex="opt.value === model ? 0 : -1"
       :class="{ 'w-9 px-0': variant === 'icon' }"
-      @click="model = opt.value"
+      @click="choose(opt.value)"
       @keydown="onKeydown($event, i)"
     >
       <i v-if="opt.icon" :class="opt.icon" aria-hidden="true"></i>

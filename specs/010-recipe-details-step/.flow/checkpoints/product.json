@@ -1,0 +1,152 @@
+{
+  "checkpoint": "product",
+  "blocks": "plan",
+  "decisions": [
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "SC-004",
+        "SC-005",
+        "SC-006"
+      ],
+      "id": "Q1",
+      "audience": "po",
+      "question": "No reader passed every Phase 1 bar in the 2026-10-30 comparison, so spec A9's rule (the cheapest reader that passes every Phase 1 and Phase 2 bar) can pick none; which reader becomes the default after the Phase 2 comparison?",
+      "recommended": "Keep claude-opus-5-5 as the default, as ruled on 2026-10-30, unless it fails a Phase 2 bar (SC-004 to SC-006); then the cheapest reader that passes every Phase 2 bar and does no worse than it on Phase 1's measured bars becomes the default, and the shortfall is recorded.",
+      "alternative": "Apply A9 as written and, when no reader passes every bar, leave the default unchanged until the owner rules on the comparison table.",
+      "answer": "Keep claude-opus-5-5 as the default, as ruled on 2026-10-30, unless it fails a Phase 2 bar (SC-004 to SC-006); then the cheapest reader that passes every Phase 2 bar and does no worse than it on Phase 1's measured bars becomes the default, and the shortfall is recorded.",
+      "by": "orchestrator local_caed95f2 for the owner",
+      "at": "2026-11-17T15:23:57.056Z",
+      "channel": "session-message"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-001",
+        "FR-012"
+      ],
+      "id": "A1",
+      "audience": "po",
+      "question": "In the photo flow, does the member land on the review after a read and open the Details step from the review's Details section, like the other section steps?",
+      "recommended": "Yes: after a read the member lands on the review, and the Details step opens from its Details section, as Phase 1's other steps do.",
+      "alternative": "Insert the Details step into the photo flow so the member passes through it before the review.",
+      "answer": "Yes, as written in the spec.",
+      "by": "orchestrator local_caed95f2 for the owner",
+      "at": "2026-11-17T15:23:57.108Z",
+      "channel": "session-message"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-006"
+      ],
+      "id": "A2",
+      "audience": "po",
+      "question": "Are the nutrition limits 10,000 calories, 1,000 grams for each gram value and 50,000 milligrams of sodium?",
+      "recommended": "Yes, those limits.",
+      "alternative": "Other limits the owner names.",
+      "answer": "Yes, as written in the spec (owner confirmed the Phase 2 defaults in clarify Session 2026-11-16).",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:22:59.764Z",
+      "channel": "clarify-2026-11-16"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-008"
+      ],
+      "id": "A4",
+      "audience": "po",
+      "question": "Are the proposed tags one free-text field rather than a list?",
+      "recommended": "One free-text field of up to 100 characters, in which a member may write several names.",
+      "alternative": "A list of separate tag proposals.",
+      "answer": "Yes, as written in the spec (owner confirmed the Phase 2 defaults in clarify Session 2026-11-16).",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:22:59.790Z",
+      "channel": "clarify-2026-11-16"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [],
+      "id": "A6",
+      "audience": "po",
+      "question": "Does the public site's display of category, tags, difficulty and nutrition, and its search filters, stay unchanged?",
+      "recommended": "Yes, unchanged: they already show these values once the owner publishes.",
+      "alternative": "Change the display or filters in this phase.",
+      "answer": "Yes, as written in the spec (owner confirmed the Phase 2 defaults in clarify Session 2026-11-16).",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:22:59.815Z",
+      "channel": "clarify-2026-11-16"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [],
+      "id": "A7",
+      "audience": "po",
+      "question": "Are the reader's marks left off the stored draft, so the owner sees no mark?",
+      "recommended": "Yes: marks are not stored, as in Phase 1; Phase 3 brings import notes.",
+      "alternative": "Store the marks with the draft for the owner.",
+      "answer": "Yes, as written in the spec (owner confirmed the Phase 2 defaults in clarify Session 2026-11-16).",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:22:59.840Z",
+      "channel": "clarify-2026-11-16"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "SC-004",
+        "SC-005",
+        "SC-006"
+      ],
+      "id": "A9",
+      "audience": "po",
+      "question": "Which reader is the default after the Phase 2 comparison, given that no reader passed every Phase 1 bar?",
+      "recommended": "The same answer as Q1.",
+      "alternative": "Apply A9 as written.",
+      "answer": "Keep claude-opus-5-5 as the default, as ruled on 2026-10-30, unless it fails a Phase 2 bar (SC-004 to SC-006); then the cheapest reader that passes every Phase 2 bar and does no worse than it on Phase 1's measured bars becomes the default, and the shortfall is recorded.",
+      "by": "orchestrator local_caed95f2 for the owner",
+      "at": "2026-11-17T15:23:57.083Z",
+      "channel": "session-message"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-020",
+        "SC-007"
+      ],
+      "id": "A10",
+      "audience": "po",
+      "question": "Does a read send the reading service only the category and tag names with their diet or style group, counted in the spend reservation?",
+      "recommended": "Yes: names and groups only, a few hundred characters, counted in the spend reservation, and no member account data.",
+      "alternative": "Send more of the site's content, such as descriptions.",
+      "answer": "Yes, as written in the spec.",
+      "by": "orchestrator local_caed95f2 for the owner",
+      "at": "2026-11-17T15:23:57.133Z",
+      "channel": "session-message"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-021"
+      ],
+      "id": "A11",
+      "audience": "po",
+      "question": "Does picking the value a suggestion already holds count as an edit that clears its mark?",
+      "recommended": "Yes, it counts as an edit and clears the mark.",
+      "alternative": "Keep the mark when the member re-picks the suggested value.",
+      "answer": "Yes, as written in the spec (owner confirmed the Phase 2 defaults in clarify Session 2026-11-16).",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:22:59.864Z",
+      "channel": "clarify-2026-11-16"
+    }
+  ]
+}

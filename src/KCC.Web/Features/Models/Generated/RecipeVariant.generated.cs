@@ -148,6 +148,14 @@ namespace KCC.Web.Features.Models.Generated
 		public virtual int PrepTime => this.Value<int>(_publishedValueFallback, "prepTime");
 
 		///<summary>
+		/// Proposed tags: New tags the member suggested in their submission. They never show on the site.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("proposedTags")]
+		public virtual string ProposedTags => this.Value<string>(_publishedValueFallback, "proposedTags");
+
+		///<summary>
 		/// Protein (g, per serving)
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]

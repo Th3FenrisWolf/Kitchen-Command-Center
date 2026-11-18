@@ -148,6 +148,8 @@ public class BackofficeTests : BasePageTests
         await next.ClickAsync();
         await Page.GetByTestId("wizard-instruction-text").First.FillAsync("Scramble gently.");
         await next.ClickAsync();
+        await Expect(Page.GetByTestId("details-step")).ToBeVisibleAsync();
+        await next.ClickAsync();
         await Page.GetByTestId("wizard-submit").ClickAsync();
         await Expect(Page.GetByTestId("wizard-submitted")).ToBeVisibleAsync();
         await Expect(Page.GetByTestId("wizard-closing-link")).ToHaveAttributeAsync("href", "/recipes/");

@@ -62,9 +62,15 @@ What the site holds today:
   the site's lists.
 - Q: How is the reader's accuracy on the new values proven? → A: The reader comparison runs again on a test set whose
   expected answers gain the new values, with at least three recipes that print nutrition, against the bars in SC-004
-  to SC-006. The cheapest reader that passes every Phase 1 and Phase 2 bar stays the default.
+  to SC-006. The cheapest reader that passes every Phase 1 and Phase 2 bar stays the default. (The default-reader rule is superseded by the 2026-11-17 answer and A9.)
 - Q: Do the Phase 2 defaults for proposals, nutrition limits, contradicted diet tags, lists that change during a flow,
   re-reads, marks and the public site match the intent? → A: Yes, as written in this spec.
+
+### Session 2026-11-17
+
+- Q: No reader passed every Phase 1 bar on 2026-10-30, so which reader is the default after the Phase 2 comparison?
+  → A: `claude-opus-5-5` stays the default unless it fails a Phase 2 bar. Then the cheapest reader that passes every
+  Phase 2 bar and does no worse on Phase 1's measured bars becomes the default, and the shortfall is recorded.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -308,11 +314,14 @@ backoffice shows the proposal, and the published recipe page never shows it.
   notes.
 - A8: The reader comparison uses the Phase 1 evaluation tool and test set. The owner adds at least three recipes that
   print nutrition, at least one of them per whole recipe or in kilojoules, and confirms the expected Details values.
-- A9: The cheapest reader that passes every Phase 1 and Phase 2 bar stays the default. If the current default fails a
-  Phase 2 bar, the next cheapest reader that passes all of them becomes the default.
+- A9: `claude-opus-5-5` stays the default reader, as the owner ruled on 2026-10-30, unless it fails a Phase 2 bar
+  (SC-004 to SC-006). Then the cheapest reader that passes every Phase 2 bar and does no worse than it on Phase 1's
+  measured bars becomes the default, and the shortfall is recorded.
 - A10: The tag lists sent to the reader hold names and their diet or style group only, a few hundred characters, and
   the spend reservation counts them.
 - A11: Selecting the value a suggestion already holds counts as an edit and clears its mark.
+
+Reviewed: 2026-11-17. Shown to the owner: A1, A2, A4, A6, A7, A9, A10, A11. Accepted without review: A3, A5, A8.
 
 ### Recurring cost
 

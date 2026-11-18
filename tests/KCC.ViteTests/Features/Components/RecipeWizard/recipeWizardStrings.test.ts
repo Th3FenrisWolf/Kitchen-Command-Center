@@ -31,6 +31,47 @@ const isRecipeWizardItem = (key: string, xml: string) =>
   xml.includes('<Parent>RecipeWizard</Parent>') &&
   /<Translation Language="en-US">\s*\S[\s\S]*?<\/Translation>/.test(xml)
 
+const detailsStepStrings: [string, string][] = [
+  ['Details', 'Details'],
+  ['DetailsHint', 'All optional. The owner can fill in anything you leave out.'],
+  ['Category', 'Category'],
+  ['NoCategory', 'No category'],
+  ['DietTags', 'Diet'],
+  ['StyleTags', 'Style'],
+  ['Difficulty', 'Difficulty'],
+  ['DifficultyNone', 'Not set'],
+  ['DifficultyEasy', 'Easy'],
+  ['DifficultyMedium', 'Medium'],
+  ['DifficultyHard', 'Hard'],
+  ['NutritionPerServing', 'Nutrition per serving'],
+  ['Calories', 'Calories'],
+  ['Protein', 'Protein'],
+  ['Carbohydrates', 'Carbohydrates'],
+  ['Fat', 'Fat'],
+  ['SaturatedFat', 'Saturated fat'],
+  ['Fiber', 'Fiber'],
+  ['Sugar', 'Sugar'],
+  ['Sodium', 'Sodium'],
+  ['Kcal', 'kcal'],
+  ['Grams', 'g'],
+  ['Milligrams', 'mg'],
+  ['NutritionInvalid', 'Enter a whole number from 0 to {0}.'],
+  ['ProposedCategory', 'Suggest a new category'],
+  ['ProposedTags', 'Suggest new tags'],
+  ['ProposalHint', 'The owner sees this when reviewing your recipe. It never shows on the site.'],
+  ['ReviewDetails', 'Details'],
+  ['NoDetailsGiven', 'No details given.'],
+  [
+    'DetailsChanged',
+    "The site's categories or tags changed while you were working. Check your choices on the Details step and submit again.",
+  ],
+  ['MarkSuggested', 'Suggested by the reader'],
+  ['MarkCalculated', 'Calculated'],
+  ['MarkReasonPrintedAs', 'Printed as {0}'],
+]
+
+const englishOf = (xml: string) => /<Translation Language="en-US">([\s\S]*?)<\/Translation>/.exec(xml)?.[1]
+
 describe('RecipeWizard strings', () => {
   it('maps each key to itself, for a resolver that adds the group', () => {
     expect(keys.length).toBeGreaterThan(0)
@@ -47,5 +88,16 @@ describe('RecipeWizard strings', () => {
 
   it('uses every key it lists, by name or through the map', () => {
     expect(keys.filter((key) => !literalKeys.has(key) && !keysThroughTheMap.has(key))).toEqual([])
+  })
+
+  it('lists the 33 Details step strings with their English', () => {
+    const missing = detailsStepStrings.filter(([key]) => !keys.includes(key)).map(([key]) => key)
+    const reworded = detailsStepStrings
+      .filter(([key, english]) => englishOf(dictionaryItem(key)) !== english)
+      .map(([key]) => key)
+
+    expect(detailsStepStrings).toHaveLength(33)
+    expect(missing).toEqual([])
+    expect(reworded).toEqual([])
   })
 })

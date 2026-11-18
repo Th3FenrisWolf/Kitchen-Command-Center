@@ -11,7 +11,8 @@ public sealed record ReadResponse(
     RecipeMatch Match,
     PossibleDuplicate PossibleDuplicate,
     IReadOnlyList<string> OtherRecipes,
-    IReadOnlyList<RecipeChoice> Recipes);
+    IReadOnlyList<RecipeChoice> Recipes,
+    DetailsValues Details = null);
 
 public sealed record RecipeValues(MarkedValue<string> Name, MarkedValue<string> Description);
 
@@ -23,6 +24,24 @@ public sealed record VariantValues(
     MarkedValue<int?> Servings);
 
 public sealed record MarkedValue<T>(T Value, Mark Mark);
+
+public sealed record DetailsValues(
+    MarkedValue<Guid?> Category,
+    IReadOnlyList<TagValue> Tags,
+    MarkedValue<string> Difficulty,
+    NutritionValues Nutrition);
+
+public sealed record TagValue(Guid Key, Mark Mark);
+
+public sealed record NutritionValues(
+    MarkedValue<int?> Calories,
+    MarkedValue<int?> ProteinG,
+    MarkedValue<int?> CarbsG,
+    MarkedValue<int?> FatG,
+    MarkedValue<int?> SaturatedFatG,
+    MarkedValue<int?> FiberG,
+    MarkedValue<int?> SugarG,
+    MarkedValue<int?> SodiumMg);
 
 public sealed record IngredientValue(string Name, decimal? Quantity, string Unit, bool IsEyeballed, Mark Mark);
 
@@ -48,6 +67,8 @@ public static class MarkKinds
     public const string Unclear = "unclear";
     public const string Written = "written";
     public const string Translated = "translated";
+    public const string Suggested = "suggested";
+    public const string Calculated = "calculated";
 }
 
 public static class MarkCodes
@@ -55,6 +76,7 @@ public static class MarkCodes
     public const string Shortened = "shortened";
     public const string OutOfRange = "outOfRange";
     public const string Translated = "translated";
+    public const string PrintedAs = "printedAs";
 }
 
 public static class ImportFlows
@@ -63,7 +85,12 @@ public static class ImportFlows
     public const string Variant = "variant";
 }
 
-public sealed record ReadRequest(string Flow, Guid? RecipeKey, IReadOnlyList<ReadPhoto> Photos, RecipeCatalog Catalog);
+public sealed record ReadRequest(
+    string Flow,
+    Guid? RecipeKey,
+    IReadOnlyList<ReadPhoto> Photos,
+    RecipeCatalog Catalog,
+    ReaderTaxonomy Taxonomy = null);
 
 public sealed record ReadPhoto(string MediaType, byte[] Data);
 
@@ -118,7 +145,8 @@ public sealed record ReaderOutput(
     string MatchId,
     string MatchReason,
     IReadOnlyList<string> OtherRecipes,
-    string SourceLanguage);
+    string SourceLanguage,
+    ReaderDetails Details = null);
 
 public sealed record ReaderRecipe(ReaderText Name, ReaderText Description);
 
@@ -138,3 +166,19 @@ public sealed record ReaderIngredient(string Name, decimal? Quantity, string Uni
 public sealed record ReaderStep(string Text, ReaderMark Mark);
 
 public sealed record ReaderMark(string Kind, string Reason);
+
+public sealed record ReaderDetails(
+    ReaderCategory Category,
+    IReadOnlyList<ReaderTag> Tags,
+    ReaderDifficulty Difficulty,
+    ReaderNutrition Nutrition);
+
+public sealed record ReaderCategory(string Id, bool Stated, string Printed, string Reason);
+
+public sealed record ReaderTag(string Id, bool Stated, string Printed, ReaderMark Mark);
+
+public sealed record ReaderDifficulty(string Level, string Printed, string Reason);
+
+public sealed record ReaderNutrition(string Basis, IReadOnlyList<ReaderNutrient> Values);
+
+public sealed record ReaderNutrient(string Nutrient, decimal? Amount, string Unit, string Printed, bool Inexact);

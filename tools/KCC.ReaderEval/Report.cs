@@ -31,9 +31,9 @@ public static class Report
             ? $"The run's largest cold penalty, which SC-002 adds for every model (A18): {Seconds(largest)}"
             : "A cold penalty was not measured, so no model is judged on SC-002: run the comparison again after 24 hours.");
         output.WriteLine(comparison.Cheapest is { } cheapest
-            ? $"Cheapest model that meets SC-002 to SC-005: {cheapest.Model}, "
+            ? $"Cheapest model that meets SC-002 to SC-005 and the Details bars: {cheapest.Model}, "
                 + $"{UsdPerRead(cheapest.MeanCostMicroUsd ?? 0)} a read."
-            : "No model meets SC-002 to SC-005.");
+            : "No model meets SC-002 to SC-005 and the Details bars.");
     }
 
     private static void WriteModel(Comparison comparison, ModelResult model, TextWriter output)
@@ -65,10 +65,30 @@ public static class Report
             $"  SC-002 {Text(comparison.Sc002(model))} (warm 90th percentile plus the run's largest cold penalty, "
             + $"at most {Seconds(Judgement.TimeLimit)}), SC-003 {Text(comparison.Sc003(model))}, "
             + $"SC-004 {Text(comparison.Sc004(model))}, SC-005 {Text(comparison.Sc005(model))}");
+        WriteDetails(comparison, model, output);
         foreach (var score in model.Cases)
         {
             WriteMisses(score, output);
         }
+    }
+
+    private static void WriteDetails(Comparison comparison, ModelResult model, TextWriter output)
+    {
+        var scored = model.Cases.Select(score => score.Details).Where(details => details is not null).ToList();
+        if (scored.Count == 0)
+        {
+            return;
+        }
+
+        var categories = scored.Where(details => details.CategoryExpected).ToList();
+        output.WriteLine(
+            $"  Details SC-004 {Text(comparison.DetailsSc004(model))} (category right in "
+            + $"{categories.Count(details => details.CategoryRight)} of {categories.Count} cases that expect one), "
+            + $"SC-005 {Text(comparison.DetailsSc005(model))} (nutrition values right "
+            + $"{scored.Sum(details => details.NutritionRight)} of {scored.Sum(details => details.NutritionExpected)}), "
+            + $"SC-006 {Text(comparison.DetailsSc006(model))} (nutrition filled but not printed "
+            + $"{scored.Sum(details => details.NutritionFilledUnprinted.Count)}, diet tags filled but not stated "
+            + $"{scored.Sum(details => details.DietTagsUnstated.Count)})");
     }
 
     private static void WriteMisses(CaseScore score, TextWriter output)
@@ -94,6 +114,34 @@ public static class Report
         {
             output.WriteLine(
                 $"    {score.Case}: unmarked invented values: {string.Join("; ", score.UnmarkedInventedValues)}");
+        }
+
+        if (score.Details is { } details)
+        {
+            WriteDetailsMisses(score.Case, details, output);
+        }
+    }
+
+    private static void WriteDetailsMisses(string name, DetailsScore details, TextWriter output)
+    {
+        if (details is { CategoryExpected: true, CategoryRight: false })
+        {
+            output.WriteLine($"    {name}: category proposed {details.ProposedCategory ?? "none"}");
+        }
+
+        if (details.NutritionRight < details.NutritionExpected)
+        {
+            output.WriteLine($"    {name}: nutrition values right {details.NutritionRight} of {details.NutritionExpected}");
+        }
+
+        if (details.NutritionFilledUnprinted.Count > 0)
+        {
+            output.WriteLine($"    {name}: nutrition filled but not printed: {string.Join(", ", details.NutritionFilledUnprinted)}");
+        }
+
+        if (details.DietTagsUnstated.Count > 0)
+        {
+            output.WriteLine($"    {name}: diet tags filled but not stated: {string.Join(", ", details.DietTagsUnstated)}");
         }
     }
 
