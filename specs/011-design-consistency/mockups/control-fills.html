@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>011 approved: control fills</title>
+<link rel="stylesheet" href="/kit.css">
+<link rel="stylesheet" href="/assets/main-CRx4GakO.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+
+  #app { --wash-elapsed: 900s; }
+  .pv-page { max-width: 1232px; }
+  .pv-notebook {
+    background-image: linear-gradient(var(--color-paper), var(--color-paper)),
+      linear-gradient(to bottom, var(--color-rule) 1px, transparent 0);
+    background-origin: border-box, content-box;
+    background-position: 0 0, 0 calc(var(--rule-drop) + var(--rule-offset));
+    background-repeat: no-repeat, repeat;
+    background-size: 100% calc(var(--pad, 24px) + var(--rule-drop) + var(--rule-offset) + var(--bl) * var(--band-rows) - 1px),
+      100% var(--bl);
+  }
+  .pv-band { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; padding-bottom: calc(var(--bl) * 1); }
+  .pv-desc { grid-column: 2; grid-row: 1; padding-top: var(--bl); max-width: 60ch; }
+  .pv-corner { position: absolute; top: 0; right: 0; }
+  @media (max-width: 720px) {
+    .pv-band { grid-template-columns: 1fr; }
+    .pv-desc { grid-column: 1; grid-row: auto; padding-top: 0; }
+    .pv-corner { position: static; margin-top: var(--bl); justify-self: start; }
+  }
+  .pv-fill-none .kcc-sheet :where(.kcc-btn--ghost, .kcc-seg, .kcc-field, .kcc-badge),
+  .pv-fill-none .kcc-sheet .kcc-btn--ghost:hover { background-color: transparent; }
+  .pv-fill-ghost .kcc-sheet :where(.kcc-seg, .kcc-field, .kcc-badge) { background-color: transparent; }
+  .pv-fill-fields .kcc-sheet .kcc-field { background-color: transparent; }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+
+  <div class="pv-bar">
+    <h1>Approved: nothing filled</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#all-clear">Nothing filled</a>
+    </nav>
+  </div>
+
+
+  <section class="pv-option pv-fill-none" id="all-clear">
+    <header>
+      <p class="kcc-kick">Option 1 · fill: none</p>
+      <h2>Nothing filled</h2>
+      <p class="kcc-body">Every control on a sheet drops its paper: fields, ghost buttons, segmented controls and badges. The rules and washes run through all of them. Wins if the outlines alone carry each control; costs a rule crossing each pill and button, mid-label in places.</p>
+    </header>
+    
+<div class="pv-page space-y-rule-3">
+  
+<div class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero">
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>
+  <div class="kcc-torn">
+    <div class="kcc-sheet kcc-sheet--margin pv-notebook" style="--band-rows:5;--pad:48px">
+      <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" data-wash="bc9ac564" style="--wash-x:-.015;--wash-y:.175;--wash-dx:.607;--wash-dy:.785;--wash-d:1.141;--wash-aspect:.778;--wash-s:1.629;--wash-turn:209.823deg;--wash-blob:var(--wash-blob-7);--wash-flip:-1;--wash-o3:.682;--wash-o4:.409;--wash-ink:var(--color-red);--wash-ink-2:var(--color-green);--wash-fallback-at:1.165s;--wash-peak:.964"></span><span class="kcc-wash" data-wash="ffcfb158" style="--wash-x:.629;--wash-y:.158;--wash-dx:-.323;--wash-dy:.771;--wash-d:.908;--wash-aspect:.816;--wash-s:1.582;--wash-turn:313.595deg;--wash-blob:var(--wash-blob-3);--wash-flip:1;--wash-o3:.318;--wash-o4:.719;--wash-ink:var(--color-lavender);--wash-ink-2:var(--color-peach);--wash-fallback-at:55.068s;--wash-peak:.793"></span><span class="kcc-wash" data-wash="2d381265" style="--wash-x:.592;--wash-y:.960;--wash-dx:-.607;--wash-dy:-.785;--wash-d:1.163;--wash-aspect:.761;--wash-s:1.651;--wash-turn:286.757deg;--wash-blob:var(--wash-blob-5);--wash-flip:1;--wash-o3:.688;--wash-o4:.628;--wash-ink:var(--color-yellow);--wash-ink-2:var(--color-teal);--wash-fallback-at:114.972s;--wash-peak:.799"></span></span>
+      <div class="pv-band">
+        <div>
+          <p class="kcc-kick"><span>Lunch</span><span aria-hidden="true"> · </span><span>Started by Priya Balan</span></p>
+          <h1 class="kcc-display">Spicy Ramen Flight</h1>
+          <p class="kcc-kick flex flex-wrap items-center gap-x-4 text-ink">
+            <span class="inline-flex items-center gap-2"><i class="fa-duotone fa-star" aria-hidden="true"></i>
+            <span class="kcc-num">4.5</span><span class="text-ink-soft"><span aria-hidden="true">· </span><span class="kcc-num">3</span> Reviews</span></span>
+          </p>
+        </div>
+        <p class="kcc-body pv-desc">One broth, four wildly different bowls.</p>
+        <a class="kcc-btn pv-corner" href="#"><i class="fa-duotone fa-plus" aria-hidden="true"></i><span>Add Variant</span></a>
+      </div>
+      <p class="kcc-kick mt-rule-1">At a glance</p>
+      <div class="kcc-stats">
+        <div><p class="kcc-lbl">Variants</p><p class="kcc-v"><i class="fa-duotone fa-layer-group" aria-hidden="true"></i> 4</p></div>
+        <div><p class="kcc-lbl">Fastest</p><p class="kcc-v"><i class="fa-duotone fa-bolt" aria-hidden="true"></i> 20<small>min</small></p></div>
+        <div><p class="kcc-lbl">Avg Time</p><p class="kcc-v"><i class="fa-duotone fa-clock" aria-hidden="true"></i> 25<small>min</small></p></div>
+        <div><p class="kcc-lbl">Contributors</p><p class="kcc-v"><i class="fa-duotone fa-users" aria-hidden="true"></i> 1</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="kcc-tilewrap" style="top:-22px;left:40px;"><div class="kcc-torn size-24"><div class="kcc-tear-tile-2 kcc-tile--lg kcc-tile" style="--c:var(--color-red);" aria-hidden="true"><i class="fa-duotone fa-bowl-chopsticks"></i></div></div><span class="kcc-tape" aria-hidden="true"></span></div>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>
+</div>
+  <section class="space-y-rule-1.5">
+    <div class="kcc-secname"><h2 class="kcc-section">All Variants</h2><p class="kcc-kick"><span class="kcc-num">4</span> of <span class="kcc-num">4</span></p></div>
+    
+<article class="kcc-slip kcc-slip--wide kcc-recipe kcc-tear-hero">
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>
+  <a href="#" class="kcc-torn block">
+    <div class="kcc-sheet kcc-sheet--margin pv-notebook" style="--band-rows:4;--pad:48px">
+      <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" data-wash="22479511" style="--wash-x:.426;--wash-y:.070;--wash-dx:.418;--wash-dy:.721;--wash-d:1.076;--wash-aspect:1.280;--wash-s:1.269;--wash-turn:74.874deg;--wash-blob:var(--wash-blob-5);--wash-flip:-1;--wash-o3:.695;--wash-o4:.573;--wash-ink:var(--color-teal);--wash-ink-2:var(--color-green);--wash-fallback-at:52.969s;--wash-peak:.976"></span><span class="kcc-wash" data-wash="dd1651ca" style="--wash-x:.081;--wash-y:.882;--wash-dx:9;--wash-dy:9;--wash-d:1.175;--wash-aspect:.761;--wash-s:1.651;--wash-turn:51.343deg;--wash-blob:var(--wash-blob-4);--wash-flip:-1;--wash-o3:.597;--wash-o4:.633;--wash-ink:var(--color-pink);--wash-ink-2:var(--color-lavender);--wash-fallback-at:136.934s;--wash-peak:.966"></span></span>
+      <p class="kcc-kick">By Priya Balan</p>
+      <h3 class="kcc-display">Chili Oil Shoyu</h3>
+      <p class="kcc-kick flex flex-wrap items-center gap-x-4 text-ink">
+        <span class="inline-flex items-center gap-2"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="kcc-num">4.5</span>
+        <span class="text-ink-soft"><span aria-hidden="true">· </span><span class="kcc-num">3</span></span></span>
+        <span class="kcc-num"><i class="fa-solid fa-clock" aria-hidden="true"></i> 20 min</span>
+      </p>
+      <p class="kcc-body">Bright and fiery.</p>
+      <div class="kcc-badges mt-rule-1"><span class="kcc-badge">Spicy</span><span class="kcc-badge">Dairy-Free</span></div>
+    </div>
+  </a>
+  <span class="kcc-label kcc-label--right"><i class="fa-solid fa-star" aria-hidden="true"></i>Top Variant</span>
+  <div class="kcc-tilewrap" style="top:-22px;left:40px;"><div class="kcc-torn size-24"><div class="kcc-tear-tile-2 kcc-tile--lg kcc-tile" style="--c:var(--color-yellow);" aria-hidden="true"><i class="fa-duotone fa-bowl-chopsticks"></i></div></div><span class="kcc-tape" aria-hidden="true"></span></div>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>
+</article>
+    
+<div class="kcc-slip kcc-slip--wide kcc-tear-3">
+  <span class="kcc-fall" aria-hidden="true"><span></span></span>
+  <div class="kcc-torn">
+    <div class="kcc-sheet">
+      <span class="kcc-washes" aria-hidden="true"><span class="kcc-wash" data-wash="7162536d" style="--wash-x:.868;--wash-y:.973;--wash-dx:-.705;--wash-dy:-.861;--wash-d:1.000;--wash-aspect:.959;--wash-s:1.445;--wash-turn:232.305deg;--wash-blob:var(--wash-blob-1);--wash-flip:-1;--wash-o3:.317;--wash-o4:.551;--wash-ink:var(--color-yellow);--wash-ink-2:var(--color-teal);--wash-fallback-at:25.926s;--wash-peak:.799"></span><span class="kcc-wash" data-wash="9efcb337" style="--wash-x:1.004;--wash-y:.185;--wash-dx:-.849;--wash-dy:.594;--wash-d:1.059;--wash-aspect:.693;--wash-s:1.756;--wash-turn:171.379deg;--wash-blob:var(--wash-blob-5);--wash-flip:1;--wash-o3:.772;--wash-o4:.568;--wash-ink:var(--color-red);--wash-ink-2:var(--color-lavender);--wash-fallback-at:68.651s;--wash-peak:.803"></span><span class="kcc-wash" data-wash="a6674aee" style="--wash-x:.163;--wash-y:.112;--wash-dx:.705;--wash-dy:.861;--wash-d:1.102;--wash-aspect:1.174;--wash-s:1.314;--wash-turn:175.242deg;--wash-blob:var(--wash-blob-1);--wash-flip:1;--wash-o3:.281;--wash-o4:.461;--wash-ink:var(--color-green);--wash-ink-2:var(--color-peach);--wash-fallback-at:134.249s;--wash-peak:.787"></span></span>
+      <div class="flex flex-wrap items-center gap-x-7 gap-y-rule-0.5">
+        <label class="kcc-field min-w-50 flex-1"><input type="search" placeholder="Search variants"></label>
+        <div class="flex items-center gap-3">
+          <span class="kcc-kick">Sort</span>
+          <div role="radiogroup" aria-label="Sort" class="kcc-seg">
+            <span class="kcc-seg-thumb" aria-hidden="true"></span>
+            <button data-seg type="button" role="radio" aria-checked="true"><span>Newest</span></button>
+            <button data-seg type="button" role="radio" aria-checked="false"><span>Fastest</span></button>
+            <button data-seg type="button" role="radio" aria-checked="false"><span>Top Rated</span></button>
+          </div>
+        </div>
+        <div role="radiogroup" aria-label="View" class="kcc-seg">
+          <span class="kcc-seg-thumb" aria-hidden="true"></span>
+          <button data-seg type="button" role="radio" aria-checked="true" aria-label="Grid" class="w-9 px-0"><i class="fa-duotone fa-table-cells-large" aria-hidden="true"></i></button>
+          <button data-seg type="button" role="radio" aria-checked="false" aria-label="List" class="w-9 px-0"><i class="fa-duotone fa-list" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="mt-rule-1 flex flex-wrap gap-x-3 gap-y-rule-0.5">
+        <button class="kcc-btn kcc-btn--ink" type="button" aria-pressed="true">All</button>
+        <button class="kcc-btn kcc-btn--ghost" type="button" aria-pressed="false">Dairy-Free</button>
+        <button class="kcc-btn kcc-btn--ghost" type="button" aria-pressed="false">High-Protein</button>
+        <button class="kcc-btn kcc-btn--ghost" type="button" aria-pressed="false">Spicy</button>
+        <button class="kcc-btn kcc-btn--ghost" type="button" aria-pressed="false">Vegan</button>
+      </div>
+    </div>
+  </div>
+  <span class="kcc-blank" aria-hidden="true"><span></span></span>
+</div>
+  </section>
+</div>
+  </section>
+
+</div>
+<script>
+  const root = document.documentElement;
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light');
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+</script>
+</body>
+</html>
