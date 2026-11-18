@@ -2,7 +2,7 @@
   "format": 2,
   "phase": "implement",
   "attempt": 0,
-  "pr": null,
+  "pr": 161,
   "cause": null,
   "checkpoint": null,
   "phases": {
@@ -58,7 +58,12 @@
       "attempt": 0,
       "result": "done",
       "note": "0 CRITICAL; H1 M1-M7 L1-L8 applied; D26-D32"
+    },
+    "implement": {
+      "attempt": 0,
+      "result": "done",
+      "note": "PR open; T071, T075-T077 open; T080-T085 owner/waiting"
     }
   },
-  "updated": "2026-11-17T15:39:11.273Z"
+  "updated": "2026-11-18T13:58:09.424Z"
 }
