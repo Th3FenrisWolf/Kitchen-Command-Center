@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Header nav: menus over meal tabs</title>
+<link rel="stylesheet" href="/kit.css">
+<link rel="stylesheet" href="/assets/main-CRx4GakO.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+
+  .pv-padlabel { max-width: 1180px; margin: 36px auto 12px; }
+  .pv-pad { position: relative; max-width: 1180px; margin: 0 auto; padding: 16px 0 14px; }
+  .pv-pad--open-l { margin-bottom: 400px; }
+  .pv-pad--open-s { margin-bottom: 300px; }
+  .pv-pad--o3, .pv-pad:not(.pv-pad--open-l):not(.pv-pad--open-s) { margin-bottom: 76px; }
+  .pv-pad .pad-cards { height: 0; overflow: visible; }
+  .pv-pad--o1 .pad-cards { top: calc(100% + 28px); }
+  .pv-auth { display: inline-flex; gap: 8px; }
+  .pv-soon { font-size: 11px; line-height: 14px; letter-spacing: .12em; }
+  .pv-menu--soon { margin-top: -2px; color: var(--color-ink-soft); border: 1.5px dashed var(--color-hair-strong); cursor: default; }
+  .pv-tabs { position: absolute; top: calc(100% - 8px); z-index: 2; display: flex; gap: 6px; align-items: flex-start; }
+  .pv-tabs--l { left: 110px; }
+  .pv-tabs--r { right: 28px; }
+  .pv-tab { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 10px 14px 0; box-sizing: border-box;
+    background: var(--color-paper); color: var(--color-ink); text-decoration: none; white-space: nowrap;
+    font: 400 var(--text-caps)/1 var(--font-sono); letter-spacing: .1em; text-transform: uppercase;
+    border-radius: 0 0 9px 9px; filter: drop-shadow(0 2px 1px var(--color-fall)); transform-origin: 50% 0; }
+  .pv-tab:nth-child(odd) { transform: rotate(.35deg); }
+  .pv-tab:nth-child(even) { transform: rotate(-.3deg); }
+  .pv-tab .fa-duotone { --fa-secondary-opacity: .5; }
+  .pv-tab > span { translate: none; }
+  .pv-tab:hover > span:not(.pv-soon):not(.pv-tab-n) { text-decoration: underline; text-underline-offset: 4px; }
+  .pv-tab.is-open, .pv-tab.is-open:hover { background: var(--color-marker); color: var(--color-marker-ink); height: 42px; }
+  .pv-tab--soon { background: transparent; filter: none; color: var(--color-ink-soft); border: 1.5px dashed var(--color-hair-strong); border-top: 0; }
+  .pv-tab--soon .pv-soon { color: var(--color-ink-soft); }
+  .pv-tab--small { height: 32px; padding: 9px 11px 0; gap: 6px; font-size: 12px; }
+  .pv-tab-n { color: var(--color-ink-soft); font-size: 11px; }
+  .pv-tab:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  .pv-pad--o2 .pv-tab--small { height: 34px; }
+
+  .pv-pad--o3 .pv-folder { position: absolute; left: 110px; top: calc(100% - 8px); z-index: 2; }
+  .pv-tabrow { display: flex; gap: 0; align-items: flex-start; position: relative; z-index: 1; }
+  .pv-pad--o3 .pv-tab { transform: none; border-radius: 0 0 9px 9px; margin-right: 4px;
+    background: color-mix(in oklab, var(--color-paper) 60%, var(--color-desk)); height: 38px; filter: none; }
+  .pv-pad--o3 .pv-tab.is-current { background: var(--color-paper); height: 42px; margin-bottom: -4px; position: relative; z-index: 2; filter: none; border-radius: 0; }
+  .pv-pad--o3 .pv-tab--soon { background: transparent; }
+  .pv-pad--o3 .pv-tab--small { height: 30px; background: transparent; border-radius: 6px; padding: 0 10px; margin: 0; }
+  .pv-pad--o3 .pv-tab--small:hover { background: color-mix(in oklab, var(--color-paper), var(--color-ink) 8%); }
+  .pv-ledge { display: flex; gap: 2px; align-items: center; background: var(--color-paper); padding: 4px 8px 6px; border-radius: 0 0 10px 10px;
+    filter: drop-shadow(0 2px 1px var(--color-fall)); width: max-content; position: relative; z-index: 0; margin-top: -1px; }
+  .pv-pad--o3 .pv-folder { filter: none; }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+
+  <div class="pv-bar">
+    <h1>Header nav, round 1</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#menus-over-tabs">2 Menus over tabs</a>
+    </nav>
+  </div>
+
+  <section class="pv-option" id="menus-over-tabs">
+    <header>
+      <p class="kcc-kick">Option 2 · one-click depth</p>
+      <h2>Menus over meal tabs</h2>
+      <p class="kcc-body">Browse, Cook and Plan stay menu buttons in the bar where Recipes is today, and the meals hang below as divider tabs, one click to a filtered list. It wins when the meal is the most common way in; it costs a crowded bar and two navigation devices at once. An open card covers the page, not the tabs, because the tabs sit at the right edge. Plan (meal plan, shopping list, household) is a map only: members see it dashed and marked soon, guests do not.</p>
+    </header>
+    <p class="kcc-kick pv-padlabel">Guest · meal tabs</p>
+    <div class="pv-pad "><div class="pad">
+<div class="pad-top kcc-slip kcc-tear-hero" style="--r: -0.12"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad: 12px"><div class="pad-bar pad-bar--desk"><a class="pad-logo" href="#"><img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="68" height="48"><img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="68" height="48"></a><nav class="pad-menus"><button type="button" id="pad-menu-recipes" class="pad-menu kcc-control" aria-expanded="false" aria-controls="pad-card-recipes"><span class="pad-menu-label">Browse</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><button type="button" id="pad-menu-cook" class="pad-menu kcc-control" aria-expanded="false" aria-controls="pad-card-cook"><span class="pad-menu-label">Cook</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button></nav><span class="pad-grow"></span><form class="pad-search" role="search" action="#" method="get"><label class="kcc-field pad-search-field pad-search-field--hint"><input name="query" type="text" autocomplete="off" spellcheck="false" placeholder="Search 100 recipes" aria-label="Search 100 recipes"><kbd class="pad-key kcc-num" aria-hidden="true">/</kbd></label></form><button type="button" class="pad-glyph kcc-control" data-pv-toggle><i class="fa-duotone fa-circle-half-stroke" aria-hidden="true"></i><span class="sr-only">Switch to dark</span></button><span class="pv-auth"><a class="kcc-btn kcc-btn--ghost" href="#"><i class="fa-duotone fa-right-to-bracket" aria-hidden="true"></i>Sign in</a><a class="kcc-btn" href="#">Join</a></span></div></div></div></div>
+<div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+<nav class="pv-tabs pv-tabs--r" aria-label="Sections"><a class="pv-tab pv-tab--small" href="#"><span>Breakfast</span><span class="kcc-num pv-tab-n">14</span></a><a class="pv-tab pv-tab--small" href="#"><span>Lunch</span><span class="kcc-num pv-tab-n">19</span></a><a class="pv-tab pv-tab--small" href="#"><span>Dinner</span><span class="kcc-num pv-tab-n">42</span></a><a class="pv-tab pv-tab--small" href="#"><span>Dessert</span><span class="kcc-num pv-tab-n">16</span></a><a class="pv-tab pv-tab--small" href="#"><span>Snacks</span><span class="kcc-num pv-tab-n">9</span></a><a class="pv-tab pv-tab--small" href="#"><span>All</span><span class="kcc-num pv-tab-n">100</span></a></nav><div class="pad-cards"></div></div></div>
+    <p class="kcc-kick pv-padlabel">Member · Cook menu open</p>
+    <div class="pv-pad pv-pad--o2 pv-pad--open-s"><div class="pad">
+<div class="pad-top kcc-slip kcc-tear-hero" style="--r: -0.12"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad: 12px"><div class="pad-bar pad-bar--desk"><a class="pad-logo" href="#"><img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="68" height="48"><img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="68" height="48"></a><nav class="pad-menus"><button type="button" id="pad-menu-recipes" class="pad-menu kcc-control" aria-expanded="false" aria-controls="pad-card-recipes"><span class="pad-menu-label">Browse</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><button type="button" id="pad-menu-cook" class="pad-menu kcc-control kcc-pill" aria-expanded="true" aria-controls="pad-card-cook"><span class="pad-menu-label">Cook</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><span class="pad-menu pv-menu--soon" aria-disabled="true"><span class="pad-menu-label">Plan</span><span class="pv-soon kcc-kick">soon</span></span></nav><span class="pad-grow"></span><form class="pad-search" role="search" action="#" method="get"><label class="kcc-field pad-search-field pad-search-field--hint"><input name="query" type="text" autocomplete="off" spellcheck="false" placeholder="Search 100 recipes" aria-label="Search 100 recipes"><kbd class="pad-key kcc-num" aria-hidden="true">/</kbd></label></form><button type="button" class="pad-glyph kcc-control" data-pv-toggle><i class="fa-duotone fa-circle-half-stroke" aria-hidden="true"></i><span class="sr-only">Switch to dark</span></button><button type="button" id="pad-menu-kitchen" class="pad-menu kcc-control" aria-expanded="false" aria-controls="pad-card-kitchen"><span class="pad-menu-label">My kitchen</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><a class="kcc-btn pad-new" href="#" title="New recipe"><i class="fa-duotone fa-plus" aria-hidden="true"></i><span>New recipe</span></a></div></div></div></div>
+<div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet"></div></div></div>
+<nav class="pv-tabs pv-tabs--r" aria-label="Sections"><a class="pv-tab pv-tab--small" href="#"><span>Breakfast</span><span class="kcc-num pv-tab-n">14</span></a><a class="pv-tab pv-tab--small" href="#"><span>Lunch</span><span class="kcc-num pv-tab-n">19</span></a><a class="pv-tab pv-tab--small" href="#"><span>Dinner</span><span class="kcc-num pv-tab-n">42</span></a><a class="pv-tab pv-tab--small" href="#"><span>Dessert</span><span class="kcc-num pv-tab-n">16</span></a><a class="pv-tab pv-tab--small" href="#"><span>Snacks</span><span class="kcc-num pv-tab-n">9</span></a><a class="pv-tab pv-tab--small" href="#"><span>All</span><span class="kcc-num pv-tab-n">100</span></a></nav><div class="pad-cards"><section id="pad-card-cook" class="kcc-slip kcc-tear-3 pad-card pad-card--desk is-open" role="region" aria-labelledby="pad-menu-cook" style="--r:0.3;--pad-card-w:368px;left:215px"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet"><div class="pt-rule-1"><div><div><p class="kcc-kick" data-row style="--i:0">Recently viewed</p><ul class="pad-lines pad-lines--glyphs"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Legendary Lasagna</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Lemon Ricotta Pancakes</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Weeknight Chicken Tikka</span></a></li></ul></div></div><div class="mt-rule-1"><div><p class="kcc-kick" data-row style="--i:0">Last cooked</p><ul class="pad-lines pad-lines--glyphs"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-fire-burner" aria-hidden="true"></i><span class="pad-line-label">Legendary Lasagna · Grandma's variant</span></a></li></ul></div></div><hr class="kcc-hr" data-row style="--i:7"><div class="pad-foot" data-row style="--i:7"><p class="kcc-kick"><i class="fa-duotone fa-dice" aria-hidden="true"></i> <a class="kcc-link" href="#">Surprise me</a></p></div></div></div></div></section></div></div></div>
+  </section>
+
+</div>
+<script>
+  const root = document.documentElement;
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  document.querySelectorAll('[data-pv-toggle]').forEach((b) => b.addEventListener('click', () => setRamp(root.dataset.theme === 'dark' ? 'light' : 'dark')));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light');
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+</script>
+</body>
+</html>

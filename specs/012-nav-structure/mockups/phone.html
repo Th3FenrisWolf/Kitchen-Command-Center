@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Header nav: phone divider-tabbed menu</title>
+<link rel="stylesheet" href="/kit.css">
+<link rel="stylesheet" href="/assets/main-CRx4GakO.css">
+<style>
+  #app { display: block; min-height: 100vh; padding-bottom: 144px; }
+  :root[data-reduced] *, :root[data-reduced] *::before, :root[data-reduced] *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+  .pv-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center;
+    gap: 8px 20px; padding: 12px 24px; background: var(--color-desk); box-shadow: 0 1px 0 var(--color-hair); }
+  .pv-bar h1 { margin: 0; font-size: 24px; line-height: 24px; }
+  .pv-bar nav { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+  .pv-option { max-width: 1280px; margin: 0 auto; padding: 72px 24px 0; scroll-margin-top: 48px; }
+  .pv-option > header { max-width: 72ch; margin-bottom: 36px; }
+
+  .pv-frames { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; }
+  .pv-fig { margin: 0; }
+  .pv-fig > figcaption { margin-bottom: 12px; }
+  .pv-phone { width: 390px; box-sizing: border-box; border-radius: 28px; box-shadow: 0 0 0 1px var(--color-hair-strong); overflow: hidden; padding: 0 0 28px; }
+  .pv-pad { position: relative; z-index: 0; padding: 16px 12px 0; }
+  .pv-pad .pad-bar--phone { display: flex; }
+  .pv-pad .pad-bar--desk { display: none; }
+  .pv-pad .pad-cards { position: relative; height: auto; left: auto; right: auto; top: auto; overflow: visible; margin: -8px 8px 0; }
+  .pv-pad .pad-card { position: relative; left: auto; width: auto; }
+  .pv-covers .pad-cards { margin-top: -44px; }
+  .pv-sec { display: flex; align-items: center; gap: 10px; margin: 0; }
+  .pv-sec .fa-duotone { color: var(--color-ink-soft); }
+  .pv-line-btn { background: none; border: 0; padding: 0; width: 100%; cursor: pointer; text-align: start; font-family: var(--font-hazelnut); }
+  .pv-line-btn .pad-line-label { text-decoration: none; }
+  .pv-plan { display: grid; grid-template-columns: 1.25em auto auto; gap: 4px 8px; align-items: center; margin: 0; padding: 6px 12px 8px; border: 1.5px dashed var(--color-hair-strong); border-radius: 10px; color: var(--color-ink-soft); }
+  .pv-plan-t { font: 400 var(--text-body)/var(--bl) var(--font-hazelnut); }
+  .pv-plan-d { grid-column: 2 / -1; font-size: var(--text-caps); line-height: 1.3; }
+  .pv-soon { font-size: 11px; line-height: 14px; letter-spacing: .12em; color: var(--color-ink-soft); }
+  .pv-page { padding: 24px 24px 0; color: var(--color-ink-soft); }
+  .pv-strip { position: relative; z-index: 2; margin: -8px 0 0; height: 44px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); }
+  .pv-strip::-webkit-scrollbar { display: none; }
+  .pv-strip-in { display: flex; gap: 6px; width: max-content; padding: 0 40px 8px 6px; }
+  .pv-tab { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 10px 11px 0; box-sizing: border-box; flex: none;
+    background: var(--color-paper); color: var(--color-ink); text-decoration: none; white-space: nowrap;
+    font: 400 12px/1 var(--font-sono); letter-spacing: .1em; text-transform: uppercase; border-radius: 0 0 9px 9px;
+    filter: drop-shadow(0 2px 1px var(--color-fall)); transform-origin: 50% 0; }
+  .pv-tab:nth-child(odd) { transform: rotate(.35deg); }
+  .pv-tab:nth-child(even) { transform: rotate(-.3deg); }
+  .pv-tab-n { color: var(--color-ink-soft); font-size: 11px; }
+  .pv-ctabs { display: flex; gap: 4px; align-items: flex-end; border-bottom: 1px solid var(--color-hair-strong); margin: 0 0 var(--bl); }
+  .pv-ct { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; box-sizing: border-box; text-decoration: none; white-space: nowrap;
+    font: 400 12px/1 var(--font-sono); letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink);
+    background: color-mix(in oklab, var(--color-paper) 55%, var(--color-desk)); border-radius: 9px 9px 0 0; }
+  .pv-ct.is-current { height: 42px; background: var(--color-paper); box-shadow: inset 0 0 0 1px var(--color-hair-strong); margin-bottom: -1px; border-bottom: 1px solid var(--color-paper); }
+  .pv-ct--soon { background: transparent; border: 1.5px dashed var(--color-hair-strong); border-bottom: 0; color: var(--color-ink-soft); padding: 0 8px; gap: 4px; }
+  .pv-ct .fa-duotone { --fa-secondary-opacity: .5; }
+</style>
+</head>
+<body>
+  <svg id="kcc-wax-defs" width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <filter id="kcc-wax-flat" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="17" result="w"></feTurbulence>
+        <feComposite in="SourceGraphic" in2="w" operator="arithmetic" k1="0.48" k2="0.72" k3="0" k4="0"></feComposite>
+      </filter>
+    </defs>
+  </svg>
+<div id="app">
+
+  <div class="pv-bar">
+    <h1>Header nav, round 2, phone</h1>
+    <div class="kcc-seg" role="group" aria-label="Ramp">
+      <button type="button" aria-pressed="true" data-pv-ramp="light">Light</button>
+      <button type="button" aria-pressed="false" data-pv-ramp="dark">Dark</button>
+    </div>
+    <button type="button" class="kcc-btn kcc-btn--ghost" aria-pressed="false" data-pv-reduce>Reduce motion</button>
+    <nav aria-label="Options">
+      <a class="kcc-link kcc-kick" href="#tabbed-menu">3 Tabbed menu</a>
+    </nav>
+  </div>
+
+  <section class="pv-option" id="tabbed-menu">
+    <header>
+      <p class="kcc-kick">Option 3 · hierarchy</p>
+      <h2>Divider-tabbed menu</h2>
+      <p class="kcc-body">The Menu card carries Browse, Cook and Plan divider tabs along its top edge and shows only the chosen section above the account foot. It wins on a short card; it costs a tap to reach another section, and Meals sit one tap deeper than in option 2.</p>
+    </header>
+    <div class="pv-frames"><figure class="pv-fig"><figcaption class="kcc-kick">Guest · Browse chosen</figcaption><div class="pv-phone"><div class="pv-pad pv-has-card"><div class="pad">
+<div class="pad-top kcc-slip kcc-tear-hero" style="--r:-0.12"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:12px"><div class="pad-bar pad-bar--phone"><a class="pad-logo" href="#"><img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="56" height="40"><img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="56" height="40"></a><span class="pad-grow"></span><nav class="pad-menus"><button type="button" class="pad-glyph kcc-control" aria-label="Search 100 recipes"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i></button><button type="button" class="pad-menu kcc-control kcc-pill" aria-expanded="true"><i class="fa-solid fa-bars" aria-hidden="true"></i><span class="pad-menu-label">Menu</span></button></nav></div></div></div></div>
+<div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet"></div></div></div></div>
+<div class="pad-cards pv-cards"><section class="kcc-slip kcc-tear-4 pad-card is-open" role="region" aria-label="Menu" style="--r:-0.3"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:20px"><div class="pt-rule-1"><nav class="pv-ctabs" aria-label="Menu sections"><a class="pv-ct is-current" href="#" aria-current="true"><i class="fa-duotone fa-utensils" aria-hidden="true"></i><span>Browse</span></a><a class="pv-ct" href="#"><i class="fa-duotone fa-fire-burner" aria-hidden="true"></i><span>Cook</span></a></nav><p class="kcc-kick" data-row style="--i:0">Meals</p><ul class="pad-lines pad-lines--glyphs pad-lines--two"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-coffee-pot" aria-hidden="true"></i><span class="pad-line-label">Breakfast</span><span class="kcc-num">14</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-bowl-food" aria-hidden="true"></i><span class="pad-line-label">Lunch</span><span class="kcc-num">19</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-plate-utensils" aria-hidden="true"></i><span class="pad-line-label">Dinner</span><span class="kcc-num">42</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-cookie" aria-hidden="true"></i><span class="pad-line-label">Dessert</span><span class="kcc-num">16</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-bowl-scoop" aria-hidden="true"></i><span class="pad-line-label">Snacks</span><span class="kcc-num">9</span></a></li></ul><p class="kcc-kick mt-rule-1" data-row style="--i:0">Diets</p><ul class="pad-lines pad-lines--glyphs pad-lines--two"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-seedling" aria-hidden="true"></i><span class="pad-line-label">Vegetarian</span><span class="kcc-num">21</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-carrot" aria-hidden="true"></i><span class="pad-line-label">Vegan</span><span class="kcc-num">8</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-wheat-awn-slash" aria-hidden="true"></i><span class="pad-line-label">Gluten-free</span><span class="kcc-num">12</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-cheese" aria-hidden="true"></i><span class="pad-line-label">Dairy-free</span><span class="kcc-num">10</span></a></li></ul><p class="kcc-kick mt-rule-1" data-row style="--i:0">Quick picks</p><ul class="pad-lines pad-lines--glyphs"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock" aria-hidden="true"></i><span class="pad-line-label">Under <span class="kcc-num">30</span> minutes</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-star" aria-hidden="true"></i><span class="pad-line-label">Top rated</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-book-open" aria-hidden="true"></i><span class="pad-line-label">Most variants</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Newest</span></a></li></ul><p class="kcc-kick mt-rule-1" data-row style="--i:2"><a class="kcc-link" href="#">All recipes (<span class="kcc-num">100</span>)</a> <i class="fa-solid fa-arrow-right ml-2" aria-hidden="true"></i></p><hr class="kcc-hr" data-row style="--i:7"><ul class="pad-lines pad-lines--glyphs"><li><button type="button" class="pad-line pv-line-btn" data-pv-toggle><i class="fa-duotone fa-circle-half-stroke" aria-hidden="true"></i><span class="pad-line-label" data-pv-theme>Dark</span></button></li></ul><div class="kcc-row pad-foot mt-rule-1"><a class="kcc-btn kcc-btn--ghost" href="#"><i class="fa-duotone fa-right-to-bracket" aria-hidden="true"></i>Sign in</a><a class="kcc-btn" href="#">Join</a></div></div></div></div></section></div></div></div></figure><figure class="pv-fig"><figcaption class="kcc-kick">Member · Cook chosen</figcaption><div class="pv-phone"><div class="pv-pad pv-has-card"><div class="pad">
+<div class="pad-top kcc-slip kcc-tear-hero" style="--r:-0.12"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:12px"><div class="pad-bar pad-bar--phone"><a class="pad-logo" href="#"><img data-ramp="light" src="/assets/logo-on-light-DTMem6Vf.webp" alt="Kitchen Command Center" width="56" height="40"><img data-ramp="dark" src="/assets/logo-on-dark-BMFp_dhO.webp" alt="Kitchen Command Center" width="56" height="40"></a><span class="pad-grow"></span><nav class="pad-menus"><button type="button" class="pad-glyph kcc-control" aria-label="Search 100 recipes"><i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i></button><button type="button" class="pad-menu kcc-control kcc-pill" aria-expanded="true"><i class="fa-solid fa-bars" aria-hidden="true"></i><span class="pad-menu-label">Menu</span></button></nav></div></div></div></div>
+<div class="pad-page kcc-slip kcc-slip--fill kcc-slip--wide kcc-tear-hero-2" aria-hidden="true"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet"></div></div></div></div>
+<div class="pad-cards pv-cards"><section class="kcc-slip kcc-tear-3 pad-card is-open" role="region" aria-label="Menu" style="--r:0.3"><span class="kcc-fall" aria-hidden="true"><span></span></span><div class="kcc-torn"><div class="kcc-sheet" style="--pad:20px"><div class="pt-rule-1"><nav class="pv-ctabs" aria-label="Menu sections"><a class="pv-ct" href="#"><i class="fa-duotone fa-utensils" aria-hidden="true"></i><span>Browse</span></a><a class="pv-ct is-current" href="#" aria-current="true"><i class="fa-duotone fa-fire-burner" aria-hidden="true"></i><span>Cook</span></a><span class="pv-ct pv-ct--soon" aria-disabled="true"><i class="fa-duotone fa-list-check" aria-hidden="true"></i><span>Plan</span><span class="pv-soon kcc-kick">soon</span></span></nav><p class="kcc-kick" data-row style="--i:0">Recently viewed</p><ul class="pad-lines pad-lines--glyphs"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Legendary Lasagna</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Lemon Ricotta Pancakes</span></a></li><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-clock-rotate-left" aria-hidden="true"></i><span class="pad-line-label">Weeknight Chicken Tikka</span></a></li></ul><p class="kcc-kick mt-rule-1" data-row style="--i:0">Last cooked</p><ul class="pad-lines pad-lines--glyphs"><li data-row style="--i:1"><a class="pad-line" href="#"><i class="fa-duotone fa-fire-burner" aria-hidden="true"></i><span class="pad-line-label">Legendary Lasagna · Grandma's variant</span></a></li></ul><p class="kcc-kick mt-rule-1" data-row style="--i:2"><i class="fa-duotone fa-dice" aria-hidden="true"></i> <a class="kcc-link" href="#">Surprise me</a></p><hr class="kcc-hr" data-row style="--i:7"><p class="kcc-kick" data-row style="--i:0">Kitchen of Sam</p><ul class="pad-lines pad-lines--glyphs"><li><a class="pad-line" href="#"><i class="fa-duotone fa-book-open" aria-hidden="true"></i><span class="pad-line-label">Your recipes and variants</span><span class="kcc-num">6</span></a></li><li><a class="pad-line" href="#"><i class="fa-duotone fa-gear" aria-hidden="true"></i><span class="pad-line-label">Settings</span></a></li><li><button type="button" class="pad-line pv-line-btn" data-pv-toggle><i class="fa-duotone fa-circle-half-stroke" aria-hidden="true"></i><span class="pad-line-label" data-pv-theme>Dark</span></button></li></ul><div class="kcc-row pad-foot mt-rule-1"><a class="kcc-btn" href="#"><i class="fa-duotone fa-plus" aria-hidden="true"></i>New recipe</a><button type="button" class="kcc-btn kcc-btn--text">Sign out</button></div></div></div></div></section></div></div></div></figure></div>
+  </section>
+
+</div>
+<script>
+  const root = document.documentElement;
+  const rampButtons = document.querySelectorAll('[data-pv-ramp]');
+  const setRamp = (ramp) => {
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = ramp;
+    rampButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pvRamp === ramp)));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+  };
+  rampButtons.forEach((button) => button.addEventListener('click', () => setRamp(button.dataset.pvRamp)));
+  const labelTheme = () => document.querySelectorAll('[data-pv-theme]').forEach((l) => (l.textContent = root.dataset.theme === 'dark' ? 'Light' : 'Dark'));
+  document.querySelectorAll('[data-pv-toggle]').forEach((b) => b.addEventListener('click', () => { setRamp(root.dataset.theme === 'dark' ? 'light' : 'dark'); labelTheme(); }));
+  rampButtons.forEach((b) => b.addEventListener('click', labelTheme));
+  setRamp(new URLSearchParams(location.search).get('ramp') ?? 'light'); labelTheme();
+
+  const reduce = document.querySelector('[data-pv-reduce]');
+  reduce.addEventListener('click', () => reduce.setAttribute('aria-pressed', String(root.toggleAttribute('data-reduced'))));
+</script>
+</body>
+</html>
