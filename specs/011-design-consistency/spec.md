@@ -92,6 +92,12 @@ These answers come from the owner's walk through the marked-up screenshots, befo
 - Q: The Recipes page's applied-filter chips and phone Filters button lie on the desk; which sheet do they move
   onto? → A: A slim sheet of their own above the results grid.
 
+### Session 2026-11-20
+
+- Q: Which changes to what the nav holds stay in this phase? → A: None. The phone menu's Diets icon list (FR-014,
+  FR-014a), its All Recipes link (FR-015) and the phone search panel's Try pills and All Recipes link (FR-017) move to
+  012 Navigation Structure, which is built after this phase. This phase keeps the header's design fixes.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Pages read like sheets of notebook paper (Priority: P1)
@@ -160,7 +166,7 @@ bloom, and check where each control sits and what shows through it.
 ### User Story 3 - The header bar and the phone menus are tidy (Priority: P2)
 
 A visitor sees the header bar's logo, Recipes menu, My kitchen menu, search and right-hand button on one vertical
-centre line. On a phone, the menu and the search panel are easy to scan and both lead to all recipes.
+centre line. On a phone, the menu's Sign in and the search panel's icon sit with room around them.
 
 **Why this priority**: The header shows on every page, but each change in it is small and local.
 
@@ -173,14 +179,10 @@ search panel, and check each item below.
    search field and the right-hand button share one vertical centre line in the header bar.
 2. **Given** any page at phone width, **When** it opens, **Then** the logo, the search button and the Menu button
    share one vertical centre line in the header bar.
-3. **Given** the phone menu, **When** it opens, **Then** Diets show as a two-column list with each diet's icon and
-   count, laid out like Meals, and the menu holds an All Recipes link.
-4. **Given** the phone menu signed out, **When** it opens, **Then** Sign in clears the dashed divider and keeps the
+3. **Given** the phone menu signed out, **When** it opens, **Then** Sign in clears the dashed divider and keeps the
    sheet's padding from its edge.
-5. **Given** the phone search panel, **When** it opens, **Then** the search icon sits inside its active circle with
-   room around it, the Try pills read Breakfast, Lunch, Dinner, and the panel holds an All Recipes link.
-6. **Given** a diet whose icon is not set in the backoffice, **When** the phone menu opens, **Then** that diet's row
-   shows its name and count with no icon, still on the list's rhythm.
+4. **Given** the phone search panel, **When** it opens, **Then** the search icon sits inside its active circle with
+   room around it.
 
 ---
 
@@ -261,14 +263,9 @@ on a phone or a desktop.
 
 - **FR-013**: Every item in the header bar MUST share one vertical centre line, at both widths, signed out and signed
   in.
-- **FR-014**: The phone menu's Diets MUST show as a two-column list with each diet's icon and count, laid out like
-  Meals.
-- **FR-014a**: An editor MUST be able to pick an icon for each diet tag in the backoffice, the way a meal category's
-  icon is picked today. A diet with no icon set shows its name and count without one.
-- **FR-015**: The phone menu MUST hold an All Recipes link in its nav.
+- **FR-014, FR-014a, FR-015**: Moved to 012 Navigation Structure (its FR-017 and FR-018).
 - **FR-016**: The phone menu's Sign in MUST clear the dashed divider and keep the sheet's padding from its edge.
-- **FR-017**: The phone search panel's Try pills MUST always be Breakfast, Lunch and Dinner, in that order, whatever
-  their recipe counts, and the panel MUST hold an All Recipes link.
+- **FR-017**: Moved to 012 Navigation Structure (its FR-021).
 - **FR-018**: The phone search button's icon MUST sit inside its active circle with room around it, sized to match the
   header's other icons.
 
@@ -349,5 +346,3 @@ on a phone or a desktop.
   Filters button lie on the desk today and move to their own sheet (FR-010a).
 - Washes, tears, type sizes and the rule spacing stay as they are. This phase arranges sheets and controls, and
   changes no part of the paper itself beyond the header band.
-- The phone search panel's All Recipes link and the phone menu's All Recipes link lead to the Recipes page with no
-  filter.
