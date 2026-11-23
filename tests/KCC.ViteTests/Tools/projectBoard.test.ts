@@ -150,13 +150,63 @@ describe('spec stage', () => {
 
   it('is In review while its pull request is open, and Done once it merges', () => {
     const pr = (state: string) => [{ number: 7, url: 'https://pr/7', head: '010-a', state }]
-    const open = derive({ specs: [specSnapshot('010-a', '010-a')], pulls: pr('OPEN') })
-    const merged = derive({ specs: [specSnapshot('010-a', 'main')], pulls: pr('MERGED') })
-    const closed = derive({ specs: [specSnapshot('010-a', 'main')], pulls: pr('CLOSED') })
+    const built = { plan: true, tasks: '- [X] T001\n- [X] T002' }
+    const open = derive({ specs: [specSnapshot('010-a', '010-a', built)], pulls: pr('OPEN') })
+    const merged = derive({ specs: [specSnapshot('010-a', 'main', built)], pulls: pr('MERGED') })
+    const closed = derive({ specs: [specSnapshot('010-a', 'main', built)], pulls: pr('CLOSED') })
     expect(open.get('010-a')?.fields.Status).toBe('In review')
     expect(open.get('010-a')?.body).toContain('[#7](https://pr/7)')
     expect(merged.get('010-a')?.fields.Status).toBe('Done')
-    expect(closed.get('010-a')?.fields.Status).toBe('Specified')
+    expect(closed.get('010-a')?.fields.Status).toBe('Building')
+  })
+
+  it('stays Specified while a pull request carries only the spec', () => {
+    const pr = (state: string) => [{ number: 7, url: 'https://pr/7', head: '010-a', state }]
+    const unticked = { plan: true, tasks: '- [ ] T001\n- [ ] T002' }
+    const open = derive({ specs: [specSnapshot('010-a', '010-a')], pulls: pr('OPEN') })
+    const merged = derive({
+      specs: [specSnapshot('010-a', 'main'), specSnapshot('010-a', '010-a')],
+      pulls: pr('MERGED'),
+    })
+    const planned = derive({ specs: [specSnapshot('010-a', 'main', unticked)], pulls: pr('MERGED') })
+    expect(open.get('010-a')?.fields.Status).toBe('Specified')
+    expect(open.get('010-a')?.body).toContain('[#7](https://pr/7)')
+    expect(merged.get('010-a')?.fields.Status).toBe('Specified')
+    expect(planned.get('010-a')?.fields.Status).toBe('Specified')
+  })
+
+  it('follows the build on the same branch once the spec pull request has merged', () => {
+    const specPull = { number: 7, url: 'https://pr/7', head: '010-a', state: 'MERGED' }
+    const buildPull = { number: 9, url: 'https://pr/9', head: '010-a', state: 'OPEN' }
+    const specs = [
+      specSnapshot('010-a', 'main'),
+      specSnapshot('010-a', '010-a', { plan: true, tasks: '- [X] T001\n- [ ] T002' }),
+    ]
+    const building = derive({ specs, pulls: [specPull] })
+    const inReview = derive({ specs, pulls: [specPull, buildPull] })
+    const reversed = derive({ specs, pulls: [buildPull, specPull] })
+    expect(building.get('010-a')?.fields.Status).toBe('Building')
+    expect(building.get('010-a')?.body).toContain('Tasks 1/2')
+    expect(inReview.get('010-a')?.fields.Status).toBe('In review')
+    expect(inReview.get('010-a')?.body).toContain('[#9](https://pr/9)')
+    expect(reversed.get('010-a')?.body).toContain('[#9](https://pr/9)')
+  })
+
+  it('is Done once the build merges after its spec, and links the build', () => {
+    const specs = [
+      specSnapshot('010-a', 'main', { plan: true, tasks: '- [X] T001\n- [X] T002' }),
+      specSnapshot('010-a', '010-a', { plan: true, tasks: '- [X] T001\n- [X] T002' }),
+    ]
+    const specPull = { number: 7, url: 'https://pr/7', head: '010-a', state: 'MERGED' }
+    const buildPull = { number: 9, url: 'https://pr/9', head: '010-a', state: 'MERGED' }
+    for (const pulls of [
+      [specPull, buildPull],
+      [buildPull, specPull],
+    ]) {
+      const card = derive({ specs, pulls }).get('010-a')
+      expect(card?.fields.Status).toBe('Done')
+      expect(card?.body).toContain('[#9](https://pr/9)')
+    }
   })
 
   it('stays Done when tasks were left open on a merged spec', () => {

@@ -39,7 +39,9 @@ every session needs.
   from `main` on every push, pull request and morning, on the owner's issue events and on `building` label events, so a
   branch that changes the sync never writes the live board. It reads `specs/` and `.specify/bugs/` on every branch,
   with the pull requests, and sets each card's stage: Idea, Specified, Building (from the first ticked task, or a
-  bug's fix on its branch, or the `building` label), In review, Done. It owns every card with a **Key**, rewriting
+  bug's fix on its branch, or the `building` label), In review, Done. A spec reaches In review only through an open
+  pull request whose branch has a ticked task, and Done only through a merged one once `main` has a ticked task, so a
+  pull request that carries only a spec leaves its card Specified. It owns every card with a **Key**, rewriting
   its title, its fields and the `<!-- sync -->` block of its body, and never touches a draft card without one. It
   refuses to write when its read finds no spec and no bug. When two spec folders on any branches share a number, the
   run fails: it names the folders and their branches, and leaves each folder's card, and every card of a phased
