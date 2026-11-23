@@ -84,12 +84,11 @@ function countTasks(tasks) {
 }
 
 function pullFor(pulls, head) {
-  const mine = pulls.filter((pull) => pull.head === head);
-  return (
-    mine.find((pull) => pull.state === "MERGED") ??
-    mine.find((pull) => pull.state === "OPEN") ??
-    null
-  );
+  const latest = (state) =>
+    pulls
+      .filter((pull) => pull.head === head && pull.state === state)
+      .sort((a, b) => b.number - a.number)[0];
+  return latest("OPEN") ?? latest("MERGED") ?? null;
 }
 
 function blob(ref, path) {
@@ -118,22 +117,32 @@ function specCard(dir, snapshots, pulls) {
   const branch =
     snapshots[0].spec.match(/\*\*Feature Branch\*\*:\s*`([^`]+)`/)?.[1] ?? dir;
   const pull = pullFor(pulls, branch);
-  const merged = pull?.state === "MERGED";
+  const open = pull?.state === "OPEN";
+  // A spec merges from the branch its build later reuses, so only a ticked task tells a build from a spec.
+  const working = countTasks(pick(snapshots, [branch, "main"]).tasks);
+  const landed = countTasks(
+    snapshots.find((candidate) => candidate.ref === "main")?.tasks,
+  );
+  const mergedOnce = pulls.some(
+    (candidate) => candidate.head === branch && candidate.state === "MERGED",
+  );
+
+  let stage = "Specified";
+  if (open && working.done > 0) {
+    stage = "In review";
+  } else if (mergedOnce && landed.done > 0) {
+    stage = "Done";
+  } else if (working.done > 0) {
+    stage = "Building";
+  }
+
+  const settled = stage === "Done" || (stage === "Specified" && mergedOnce);
   const snapshot = pick(
     snapshots,
-    merged ? ["main", branch] : [branch, "main"],
+    settled ? ["main", branch] : [branch, "main"],
   );
   const tasks = countTasks(snapshot.tasks);
   const has = (file) => snapshot.files.includes(file);
-
-  let stage = "Specified";
-  if (merged) {
-    stage = "Done";
-  } else if (pull) {
-    stage = "In review";
-  } else if (tasks.done > 0) {
-    stage = "Building";
-  }
 
   const title = heading(snapshot.spec, "Feature Specification:");
   const links = [
