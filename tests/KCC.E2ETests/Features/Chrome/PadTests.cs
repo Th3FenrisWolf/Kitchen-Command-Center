@@ -166,6 +166,31 @@ public class PadTests : BasePageTests
     }
 
     [Test]
+    public async Task TheTuck_TogglesAClassOnMain_AndLeavesThePadHeightWhereItWas()
+    {
+        await Page.GotoAsync("/recipes/");
+        var main = Page.Locator("main");
+        var filters = Page.Locator("#recipe-filters");
+        var tucked = new Regex(@"\bis-tucked\b");
+        await Expect(main).ToHaveAttributeAsync("style", new Regex(@"--pad-h:\s*\d"));
+        var shownHeight = await PadHeightAsync(main);
+        await Expect(filters).ToHaveCSSAsync("top", "138px");
+
+        await WheelDownAsync(900);
+
+        await Expect(main).ToHaveClassAsync(tucked);
+        await Expect(filters).ToHaveCSSAsync("top", "24px");
+        _ = await Assert.That(await PadHeightAsync(main)).IsEqualTo(shownHeight);
+        _ = await Assert.That(await main.EvaluateAsync<string>("m => m.style.getPropertyValue('--pad-offset')")).IsEqualTo("");
+
+        await Page.Mouse.WheelAsync(0, -120);
+
+        await Expect(main).Not.ToHaveClassAsync(tucked);
+        await Expect(filters).ToHaveCSSAsync("top", "138px");
+        _ = await Assert.That(await PadHeightAsync(main)).IsEqualTo(shownHeight);
+    }
+
+    [Test]
     public async Task Slash_WhileThePadIsTucked_BringsItBackWithoutScrolling()
     {
         await Page.GotoAsync("/recipes/");
@@ -181,6 +206,9 @@ public class PadTests : BasePageTests
         _ = await Assert.That(await Page.EvaluateAsync<double>("() => window.scrollY")).IsEqualTo(scrolled);
         await Expect(header).Not.ToHaveClassAsync(tucked);
     }
+
+    private static Task<string> PadHeightAsync(ILocator main) =>
+        main.EvaluateAsync<string>("m => m.style.getPropertyValue('--pad-h')");
 
     // Playwright's wheel returns while the page is still scrolling smoothly.
     private async Task WheelDownAsync(int pixels)

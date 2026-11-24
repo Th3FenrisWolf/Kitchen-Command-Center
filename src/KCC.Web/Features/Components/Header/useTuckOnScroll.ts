@@ -12,14 +12,14 @@ export function useTuckOnScroll(beforeTuck: () => void) {
 
   let content: HTMLElement | null | undefined
 
-  // Sticky neighbours add this to their own top, so they sit below the pad while it shows. A custom property written
-  // on the root restyles the whole document, so it goes on <main>, which holds every sticky neighbour; the root
-  // takes the plain scroll-padding-top, which restyles only itself.
+  // Sticky neighbours add --pad-h to their top under main:not(.is-tucked). A tuck only toggles that class: a custom
+  // property written on <main> on every tuck restyled each element in it, where a class change restyles only the
+  // elements a selector names. The root takes the plain scroll-padding-top, which restyles only itself.
+  const main = () => (content ??= document.querySelector<HTMLElement>('main'))
+
   const publish = () => {
-    content ??= document.querySelector<HTMLElement>('main')
-    const offset = `${tucked.value ? 0 : height}px`
-    content?.style.setProperty('--pad-offset', offset)
-    document.documentElement.style.scrollPaddingTop = offset
+    main()?.classList.toggle('is-tucked', tucked.value)
+    document.documentElement.style.scrollPaddingTop = `${tucked.value ? 0 : height}px`
   }
 
   function settle(next: boolean) {
@@ -34,6 +34,7 @@ export function useTuckOnScroll(beforeTuck: () => void) {
   }
 
   function measure(next: number) {
+    if (next !== height) main()?.style.setProperty('--pad-h', `${next}px`)
     height = next
     publish()
   }
