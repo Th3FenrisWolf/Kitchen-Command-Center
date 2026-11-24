@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+  import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumbs.Component.vue'
   import Button from '~/Components/Button/Button.vue'
   import RecipeSearchHeader from '~/Components/RecipeSearch/RecipeSearchHeader.vue'
   import RecipeFilters from '~/Components/RecipeSearch/RecipeFilters.vue'
@@ -13,6 +14,7 @@
   import { useRecipeSearch } from './useRecipeSearch'
   import { useLibraryUrl } from './useLibraryUrl'
   import { useInfiniteScroll } from '~/Components/RecipeSearch/useInfiniteScroll'
+  import { useReservedSpace } from '~/Components/RecipeSearch/useReservedSpace'
   import {
     MAX_TIME,
     chipsFor,
@@ -100,7 +102,18 @@
     spotlight.value ? results.value.filter((r) => r.slug !== spotlight.value!.slug) : results.value,
   )
 
-  const { sentinel } = useInfiniteScroll(loadMore, results)
+  const region = ref<HTMLElement | null>(null)
+  const { sentinel } = useInfiniteScroll(
+    () => space.ready() && loadMore(),
+    () => [results.value, space.settled.value],
+  )
+  const space = useReservedSpace(
+    region,
+    sentinel.value,
+    () => Math.min(initial.pageSize, total.value - results.value.length),
+    results,
+    () => state.view,
+  )
 </script>
 
 <template>
@@ -126,7 +139,7 @@
     <aside
       id="recipe-filters"
       :class="[
-        'lg:sticky lg:top-[calc(var(--bl)_+_var(--pad-offset,0px))] lg:block lg:transition-[top]',
+        'lg:sticky lg:top-(--bl) lg:block lg:transition-[top] lg:[main:not(.is-tucked)_&]:top-[calc(var(--bl)_+_var(--pad-h,0px))]',
         { hidden: !sheetOpen },
       ]"
     >
@@ -143,6 +156,7 @@
     </aside>
 
     <section
+      ref="region"
       class="min-w-0"
       :class="{ 'max-lg:[--blank-region:-1]': resultsRegionFlips(sheetOpen) }"
       :aria-busy="loading ? 'true' : 'false'"
@@ -183,7 +197,12 @@
           />
         </div>
 
-        <div v-if="hasMore()" :ref="sentinel" class="kcc-kick flex items-center justify-center py-rule-1">
+        <div
+          v-if="hasMore()"
+          :ref="sentinel"
+          class="kcc-kick flex items-center justify-center py-rule-1"
+          v-bind="space.sentinelAttrs.value"
+        >
           <span v-if="loading" class="flex items-center gap-2.5">
             <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i> <ResourceString for="LoadingMore" />
           </span>

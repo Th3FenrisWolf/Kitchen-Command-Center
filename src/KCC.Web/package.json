@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build:ssr": "vite build --mode ssr",
-    "build:all": "vite build && vite build --mode ssr",
+    "build:fallback": "vite build --mode fallback",
+    "build:all": "vite build && vite build --mode ssr && vite build --mode fallback",
     "dev:static": "vite",
     "dev:ssr": "node Features/Ssr/Server.js",
     "dev:all": "concurrently -k -n \"VITE,SSR\" -c \"cyan,green\" \"pnpm dev:static\" \"pnpm dev:ssr\"",

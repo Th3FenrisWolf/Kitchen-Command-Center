@@ -47,7 +47,8 @@
   }
 
   /* :where() keeps specificity at zero so a sticky/fixed utility on a child still wins. */
-  :where(#app > *) {
+  :where(#app > *),
+  :where(#app > kcc-island > *) {
     position: relative;
   }
 

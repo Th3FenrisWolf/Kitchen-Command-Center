@@ -17,20 +17,24 @@
 }
 
 /* Auto margins stop a grid item stretching, so without the width a thin section shrinks to its content. */
-.content-grid > .thin {
+.content-grid > .thin,
+.content-grid > kcc-island > .thin {
   margin-inline: auto;
   max-width: 60rem;
   width: 100%;
 }
 
-.content-grid > :not(.breakout, .full-width) {
+.content-grid > :not(.breakout, .full-width),
+.content-grid > kcc-island > :not(.breakout, .full-width) {
   grid-column: content;
 }
 
-.content-grid > .breakout {
+.content-grid > .breakout,
+.content-grid > kcc-island > .breakout {
   grid-column: breakout;
 }
 
-.content-grid > .full-width {
+.content-grid > .full-width,
+.content-grid > kcc-island > .full-width {
   grid-column: full-width;
 }

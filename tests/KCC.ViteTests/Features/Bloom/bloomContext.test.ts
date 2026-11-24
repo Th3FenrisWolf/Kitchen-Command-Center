@@ -263,3 +263,59 @@ describe('useBloom', () => {
     expect(bloom.lateStarts(1)).toBeUndefined()
   })
 })
+
+describe('createBloom: islands', () => {
+  function serverIsland(): string[] {
+    const server = createBloom(5, PAGE)
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    server.claimKey('reviews')
+    server.claimKey('@pad')
+    return [server.claimKey('reviews'), server.claimKey('hero'), server.claimKey('@pad')]
+  }
+
+  it("claims an island's server keys in order when it replays them, suffixes included", () => {
+    const keys = serverIsland()
+    vi.restoreAllMocks()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const island = createBloom(5, PAGE).replay(keys)
+
+    expect(keys).toEqual([`${PAGE}|reviews~2`, `${PAGE}|hero`, '@pad~2'])
+    expect([island.claimKey('reviews'), island.claimKey('hero'), island.claimKey('@pad')]).toEqual(keys)
+    expect(warn).not.toHaveBeenCalled()
+  })
+
+  it('holds the replayed keys for the whole page, so a claim past them takes a fresh suffix', () => {
+    const bloom = createBloom(5, PAGE)
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const first = bloom.replay([`${PAGE}|reviews`])
+    const second = bloom.replay([`${PAGE}|reviews~2`])
+
+    expect(second.claimKey('reviews')).toBe(`${PAGE}|reviews~2`)
+    expect(first.claimKey('reviews')).toBe(`${PAGE}|reviews`)
+    expect(first.claimKey('reviews')).toBe(`${PAGE}|reviews~3`)
+  })
+
+  it('shares the page bloom with every island it replays into', () => {
+    const bloom = createBloom(5, PAGE)
+    const island = bloom.replay([])
+    island.markHydrated(2)
+
+    expect(island.seed).toBe(5)
+    expect(island.page).toBe(PAGE)
+    expect(bloom.lag()).toBeGreaterThan(0)
+    const reference = createBloom(5, PAGE)
+    reference.markHydrated(2)
+    expect([...island.lateStarts(1)!, ...bloom.lateStarts(1)!]).toEqual(reference.lateStarts(2))
+  })
+
+  it("takes the server's page-wash count at hydration, so late starts match a bloom that collected them", () => {
+    for (const seed of THOUSAND_SEEDS.slice(0, 50)) {
+      const washes = pageOf(PAGE, 7)
+      const counted = hydrated(seed, PAGE, [...washes, ...sheetOf('@pad', 4, PAD_SLOTS)])
+      const told = createBloom(seed, PAGE)
+      told.markHydrated(washes.length)
+
+      expect(told.lateStarts(3)).toEqual(counted.lateStarts(3))
+    }
+  })
+})

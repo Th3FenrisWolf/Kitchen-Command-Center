@@ -1,0 +1,619 @@
+{
+ "captured": "2026-11-17",
+ "commit": "c1827268",
+ "environment": {
+  "chromium": "156.0.8078.4 (Playwright 1.64.1 driver)",
+  "gpu": "swiftshader unless the label ends in metal",
+  "profile": "phone: 390x844 DPR 3, Fast 4G, 4x CPU, bloomed visit (400 s), seed 0x0badf00d"
+ },
+ "runs": {
+  "home-base": {
+   "page": "/",
+   "hydrated_ms": 1124,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 382,
+    "duration": 232,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 232,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-harness-notrace": {
+   "page": "/",
+   "hydrated_ms": 1140,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 382,
+    "duration": 232,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 232,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-harness-notrace2": {
+   "page": "/",
+   "hydrated_ms": 1131,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 381,
+    "duration": 248,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-harness-trace": {
+   "page": "/",
+   "hydrated_ms": 1153,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 382,
+    "duration": 248,
+    "input_delay": 1,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-harness-trace2": {
+   "page": "/",
+   "hydrated_ms": 1135,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 381,
+    "duration": 248,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-metal": {
+   "page": "/",
+   "hydrated_ms": 1128,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 381,
+    "duration": 40,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 40,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-noblank": {
+   "page": "/",
+   "hydrated_ms": 1130,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 381,
+    "duration": 184,
+    "input_delay": 0,
+    "processing": 1,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 184,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-noclip": {
+   "page": "/",
+   "hydrated_ms": 1132,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 380,
+    "duration": 152,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 152,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-nofall": {
+   "page": "/",
+   "hydrated_ms": 1128,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 382,
+    "duration": 200,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 200,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-notrans": {
+   "page": "/",
+   "hydrated_ms": 1129,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 382,
+    "duration": 232,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 232,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home-nowash": {
+   "page": "/",
+   "hydrated_ms": 1123,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 415,
+    "duration": 48,
+    "input_delay": 0,
+    "processing": 1,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 48,
+   "worst_hover_event": null,
+   "frames": null,
+   "long_frames": null,
+   "worst_frame_ms": null,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-base": {
+   "page": "/",
+   "hydrated_ms": 1124,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 414,
+    "duration": 248,
+    "input_delay": 1,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": null,
+   "frames": 536,
+   "long_frames": 3,
+   "worst_frame_ms": 217,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-metal": {
+   "page": "/",
+   "hydrated_ms": 1127,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 415,
+    "duration": 40,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 40,
+   "worst_hover_event": null,
+   "frames": 549,
+   "long_frames": 0,
+   "worst_frame_ms": 33,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-noblend": {
+   "page": "/",
+   "hydrated_ms": 1126,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 412,
+    "duration": 232,
+    "input_delay": 1,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 232,
+   "worst_hover_event": null,
+   "frames": 537,
+   "long_frames": 3,
+   "worst_frame_ms": 217,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-nofall": {
+   "page": "/",
+   "hydrated_ms": 1124,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 415,
+    "duration": 200,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 200,
+   "worst_hover_event": null,
+   "frames": 535,
+   "long_frames": 2,
+   "worst_frame_ms": 183,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-nomask": {
+   "page": "/",
+   "hydrated_ms": 1126,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 415,
+    "duration": 80,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 80,
+   "worst_hover_event": null,
+   "frames": 540,
+   "long_frames": 2,
+   "worst_frame_ms": 83,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-nowash": {
+   "page": "/",
+   "hydrated_ms": 1124,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 414,
+    "duration": 48,
+    "input_delay": 0,
+    "processing": 1,
+    "target": "H2.kcc-title"
+   },
+   "worst_scroll_event": 48,
+   "worst_hover_event": null,
+   "frames": 535,
+   "long_frames": 2,
+   "worst_frame_ms": 133,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "home2-reduced": {
+   "page": "/",
+   "hydrated_ms": 1124,
+   "first_input_worst_ms": 0,
+   "worst_event": null,
+   "worst_scroll_event": 0,
+   "worst_hover_event": null,
+   "frames": 536,
+   "long_frames": 1,
+   "worst_frame_ms": 50,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "s1-base": {
+   "page": "/recipes/",
+   "hydrated_ms": 1131,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 3530,
+    "duration": 248,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H3.kcc-title"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": 176,
+   "frames": 334,
+   "long_frames": 5,
+   "worst_frame_ms": 233,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "s1-metal-trace": {
+   "page": "/recipes/",
+   "hydrated_ms": 1126,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 2982,
+    "duration": 80,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H3.kcc-title"
+   },
+   "worst_scroll_event": 80,
+   "worst_hover_event": 0,
+   "frames": 343,
+   "long_frames": 0,
+   "worst_frame_ms": 50,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "s1-metal": {
+   "page": "/recipes/",
+   "hydrated_ms": 1123,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 430,
+    "duration": 168,
+    "input_delay": 1,
+    "processing": 0,
+    "target": "SPAN."
+   },
+   "worst_scroll_event": 168,
+   "worst_hover_event": 64,
+   "frames": 340,
+   "long_frames": 1,
+   "worst_frame_ms": 150,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "s1-nomask": {
+   "page": "/recipes/",
+   "hydrated_ms": 1134,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 529,
+    "duration": 168,
+    "input_delay": 2,
+    "processing": 1,
+    "target": "SPAN."
+   },
+   "worst_scroll_event": 168,
+   "worst_hover_event": 104,
+   "frames": 331,
+   "long_frames": 6,
+   "worst_frame_ms": 167,
+   "script_loaf_over_50_after_usable": 1
+  },
+  "s1-nowash": {
+   "page": "/recipes/",
+   "hydrated_ms": 1130,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 446,
+    "duration": 96,
+    "input_delay": 2,
+    "processing": 0,
+    "target": "SPAN."
+   },
+   "worst_scroll_event": 96,
+   "worst_hover_event": 48,
+   "frames": 334,
+   "long_frames": 3,
+   "worst_frame_ms": 167,
+   "script_loaf_over_50_after_usable": 1
+  },
+  "s1-reduced": {
+   "page": "/recipes/",
+   "hydrated_ms": 1127,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 352,
+    "duration": 136,
+    "input_delay": 1,
+    "processing": 0,
+    "target": "FORM.kcc-row mt-rule-1"
+   },
+   "worst_scroll_event": 136,
+   "worst_hover_event": 0,
+   "frames": 336,
+   "long_frames": 3,
+   "worst_frame_ms": 167,
+   "script_loaf_over_50_after_usable": 1
+  },
+  "s1-trace": {
+   "page": "/recipes/",
+   "hydrated_ms": 1131,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 3466,
+    "duration": 248,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "H3.kcc-title"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": 0,
+   "frames": 336,
+   "long_frames": 7,
+   "worst_frame_ms": 200,
+   "script_loaf_over_50_after_usable": 1
+  },
+  "s3-base": {
+   "page": "/recipes/",
+   "hydrated_ms": 1130,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 7009,
+    "duration": 248,
+    "input_delay": 1,
+    "processing": 0,
+    "target": "SPAN.kcc-badge"
+   },
+   "worst_scroll_event": 248,
+   "worst_hover_event": 200,
+   "frames": 797,
+   "long_frames": 5,
+   "worst_frame_ms": 183,
+   "script_loaf_over_50_after_usable": 2,
+   "cards": 36
+  },
+  "s3-nomask": {
+   "page": "/recipes/",
+   "hydrated_ms": 1129,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 13772,
+    "duration": 136,
+    "input_delay": 4,
+    "processing": 0,
+    "target": "FORM.kcc-row mt-rule-1"
+   },
+   "worst_scroll_event": 120,
+   "worst_hover_event": 136,
+   "frames": 805,
+   "long_frames": 3,
+   "worst_frame_ms": 83,
+   "script_loaf_over_50_after_usable": 1,
+   "cards": 36
+  },
+  "s3-nowash": {
+   "page": "/recipes/",
+   "hydrated_ms": 1132,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 440,
+    "duration": 112,
+    "input_delay": 3,
+    "processing": 0,
+    "target": "SPAN."
+   },
+   "worst_scroll_event": 112,
+   "worst_hover_event": 56,
+   "frames": 806,
+   "long_frames": 0,
+   "worst_frame_ms": 50,
+   "script_loaf_over_50_after_usable": 2,
+   "cards": 36
+  },
+  "s3-reduced": {
+   "page": "/recipes/",
+   "hydrated_ms": 1128,
+   "first_input_worst_ms": 0,
+   "worst_event": {
+    "name": "pointerout",
+    "ms_after_first_input": 421,
+    "duration": 48,
+    "input_delay": 0,
+    "processing": 0,
+    "target": "SPAN."
+   },
+   "worst_scroll_event": 48,
+   "worst_hover_event": 0,
+   "frames": 805,
+   "long_frames": 0,
+   "worst_frame_ms": 33,
+   "script_loaf_over_50_after_usable": 0,
+   "cards": 36
+  },
+  "signin-base": {
+   "page": "/account/login",
+   "hydrated_ms": 1125,
+   "first_input_worst_ms": 0,
+   "worst_event": null,
+   "worst_scroll_event": 0,
+   "worst_hover_event": null,
+   "frames": 34,
+   "long_frames": 0,
+   "worst_frame_ms": 17,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "signin-noblend": {
+   "page": "/account/login",
+   "hydrated_ms": 1122,
+   "first_input_worst_ms": 0,
+   "worst_event": null,
+   "worst_scroll_event": 0,
+   "worst_hover_event": null,
+   "frames": 34,
+   "long_frames": 0,
+   "worst_frame_ms": 17,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "signin-nomask": {
+   "page": "/account/login",
+   "hydrated_ms": 1126,
+   "first_input_worst_ms": 0,
+   "worst_event": null,
+   "worst_scroll_event": 0,
+   "worst_hover_event": null,
+   "frames": 34,
+   "long_frames": 0,
+   "worst_frame_ms": 17,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "signin-nowash": {
+   "page": "/account/login",
+   "hydrated_ms": 1123,
+   "first_input_worst_ms": 0,
+   "worst_event": null,
+   "worst_scroll_event": 0,
+   "worst_hover_event": null,
+   "frames": 34,
+   "long_frames": 0,
+   "worst_frame_ms": 17,
+   "script_loaf_over_50_after_usable": 0
+  },
+  "signin-reduced": {
+   "page": "/account/login",
+   "hydrated_ms": 1131,
+   "first_input_worst_ms": 0,
+   "worst_event": null,
+   "worst_scroll_event": 0,
+   "worst_hover_event": null,
+   "frames": 34,
+   "long_frames": 0,
+   "worst_frame_ms": 17,
+   "script_loaf_over_50_after_usable": 0
+  }
+ }
+}

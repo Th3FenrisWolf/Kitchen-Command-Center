@@ -1,6 +1,8 @@
 <script setup lang="ts">
   const { href } = defineProps<{ href: string }>()
   defineSlots<{ default: () => void }>()
+
+  defineOptions({ serverOnly: true })
 </script>
 
 <template>

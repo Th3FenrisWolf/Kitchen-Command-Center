@@ -1,0 +1,47 @@
+{
+  "format": 2,
+  "phase": "implement",
+  "attempt": 0,
+  "pr": null,
+  "cause": null,
+  "checkpoint": null,
+  "phases": {
+    "plan": {
+      "attempt": 0,
+      "result": "done",
+      "answers": {
+        "Q1": "A: look-preserving fixes first; any wash change still needed goes to the owner in a look round (affected pages, before/after, both ramps, phone and desktop, with measured gain per change) and ships only on the owner's relayed approval.",
+        "C1": "A: the 20 KB proof and the ten-of-ten trial run locally against the CI guard classes; SC-007 reworded; no throwaway branch is pushed.",
+        "C2": "A as the fallback: when a wash change still looks necessary, the owner is asked in one question with the look round to approve the wash change or keep the look and carry the phone Chromium gap. On keep: hold FR-004/FR-005 budgets at baseline for phone Chromium, record the gap with measured numbers, amend FR-004, FR-005, SC-001, SC-002 for phone Chromium only, and name the gap in the phase table as going to Phase 3 or a later phase. Amendments are drafted now and applied only on that answer.",
+        "C3": "A: the browser reserves the next page's space after the page is usable, below the screen; first paint and scripts-off unchanged; a test covers the short first page where the footer is on screen."
+      },
+      "note": "C1-C3 answered as drafted; artifacts updated in place"
+    },
+    "tasks": {
+      "attempt": 0,
+      "result": "done",
+      "answers": {
+        "Q1": "A: look-preserving fixes first; any wash change still needed goes to the owner in a look round (affected pages, before/after, both ramps, phone and desktop, with measured gain per change) and ships only on the owner's relayed approval.",
+        "C1": "A: the 20 KB proof and the ten-of-ten trial run locally against the CI guard classes; SC-007 reworded; no throwaway branch is pushed.",
+        "C2": "A as the fallback: when a wash change still looks necessary, the owner is asked in one question with the look round to approve the wash change or keep the look and carry the phone Chromium gap. On keep: hold FR-004/FR-005 budgets at baseline for phone Chromium, record the gap with measured numbers, amend FR-004, FR-005, SC-001, SC-002 for phone Chromium only, and name the gap in the phase table as going to Phase 3 or a later phase. Amendments are drafted now and applied only on that answer.",
+        "C3": "A: the browser reserves the next page's space after the page is usable, below the screen; first paint and scripts-off unchanged; a test covers the short first page where the footer is on screen."
+      },
+      "note": "C1-C3 answered as drafted; artifacts updated in place"
+    },
+    "analyze": {
+      "attempt": 0,
+      "result": "done",
+      "note": "C1-C3 answered as drafted; artifacts updated in place"
+    },
+    "clarify": {
+      "attempt": 0,
+      "result": "done",
+      "answers": {
+        "C1": "A: the 20 KB proof and the ten-of-ten trial run locally against the CI guard classes; SC-007 reworded; no throwaway branch is pushed.",
+        "C2": "A as the fallback: when a wash change still looks necessary, the owner is asked in one question with the look round to approve the wash change or keep the look and carry the phone Chromium gap. On keep: hold FR-004/FR-005 budgets at baseline for phone Chromium, record the gap with measured numbers, amend FR-004, FR-005, SC-001, SC-002 for phone Chromium only, and name the gap in the phase table as going to Phase 3 or a later phase. Amendments are drafted now and applied only on that answer."
+      },
+      "note": "C1-C3 answered as drafted; artifacts updated in place"
+    }
+  },
+  "updated": "2026-11-17T16:09:26.033Z"
+}

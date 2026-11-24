@@ -11,7 +11,8 @@ export interface Bloom {
   lag(): number
   lateStarts(count: number): number[] | undefined
   visitStarts(key: string, count: number, slots?: readonly number[]): number[] | undefined
-  markHydrated(): void
+  markHydrated(pageWashes?: number): void
+  replay(keys: readonly string[]): Bloom
 }
 
 export interface BloomOptions {
@@ -20,17 +21,21 @@ export interface BloomOptions {
 
 export const BLOOM_KEY: InjectionKey<Bloom> = Symbol('kcc-bloom')
 
+const withoutRepeat = (claimed: string) => claimed.replace(/~\d+$/, '')
+
 export function createBloom(seed: number, page: string, { collect = true }: BloomOptions = {}): Bloom {
   const held = new Set<string>()
   const collected: CollectedWash[] = []
   let hydrated = false
   let nextLateStart: (() => number) | undefined
 
-  return {
+  const qualify = (key: string) => (isGlobalKey(key) ? key : `${page}|${key}`)
+
+  const bloom: Bloom = {
     seed,
     page,
     claimKey(key) {
-      const qualified = isGlobalKey(key) ? key : `${page}|${key}`
+      const qualified = qualify(key)
       let claimed = qualified
       for (let repeat = 2; held.has(claimed); repeat++) claimed = `${qualified}~${repeat}`
       held.add(claimed)
@@ -51,14 +56,29 @@ export function createBloom(seed: number, page: string, { collect = true }: Bloo
       return Array.from({ length: count }, nextLateStart)
     },
     visitStarts: (key, count, slots) => (hydrated ? visitStarts(seed, key, count, slots) : undefined),
-    markHydrated() {
+    markHydrated(pageWashes = collected.filter((wash) => !isGlobalKey(wash.key)).length) {
       if (hydrated) return
       hydrated = true
-      const pageWashes = collected.filter((wash) => !isGlobalKey(wash.key)).length
       nextLateStart = arrivals(seed, pageOfKey(`${page}|`), pageWashes)
       for (let i = 0; i < pageWashes; i++) nextLateStart()
     },
+    // Server-only sheets claim keys the client never sees, so an island must take the exact keys, suffixes included,
+    // that the server gave it, or its washes would land on other sheets' hashes.
+    replay(keys) {
+      const pending = [...keys]
+      for (const key of pending) held.add(key)
+      return {
+        ...bloom,
+        claimKey(key) {
+          const qualified = qualify(key)
+          const at = pending.findIndex((claimed) => withoutRepeat(claimed) === qualified)
+          return at < 0 ? bloom.claimKey(key) : pending.splice(at, 1)[0]
+        },
+      }
+    },
   }
+
+  return bloom
 }
 
 export function useBloom(): Bloom {

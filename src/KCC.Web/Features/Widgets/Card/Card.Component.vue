@@ -22,6 +22,8 @@
 
   const resolvedTear = computed(() => tear ?? sheetTearFor(seed))
   const wash = computed(() => washOf(cardColor))
+
+  defineOptions({ serverOnly: true })
 </script>
 
 <template>

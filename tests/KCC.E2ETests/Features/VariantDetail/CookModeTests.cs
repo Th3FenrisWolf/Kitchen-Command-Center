@@ -78,9 +78,8 @@ public class CookModeTests : BasePageTests
     {
         await OpenOverlayAsync();
 
-        // Regression: on open, focus sits on the tabindex="-1" panel root (excluded from
-        // the focusables list). An immediate Shift+Tab — before any forward Tab — must wrap
-        // backward to the last focusable and stay inside the dialog, not escape the overlay.
+        // Regression: an immediate Shift+Tab on open, before any forward Tab, must stay inside
+        // the dialog, not escape the overlay.
         await Page.Keyboard.PressAsync("Shift+Tab");
 
         var focusInsideDialog = await Page.EvaluateAsync<bool>(

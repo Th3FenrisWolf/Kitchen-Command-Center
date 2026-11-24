@@ -21,7 +21,7 @@ public partial class BloomTests : BasePageTests
         () => {
           const washes = [...document.querySelectorAll('.kcc-wash')]
           window.beforeMount = {
-            mounted: !!document.querySelector('#app')?.__vue_app__,
+            mounted: performance.getEntriesByName('kcc:hydrated').length > 0,
             washes,
             animations: washes.map((wash) => wash.getAnimations()[0]),
             startTimes: washes.map((wash) => wash.getAnimations()[0]?.startTime ?? null),
@@ -148,7 +148,7 @@ public partial class BloomTests : BasePageTests
             var tab = await context.NewPageAsync();
             await tab.GotoAsync(page);
 
-            _ = await Assert.That(await tab.EvaluateAsync<bool>("() => !!document.querySelector('#app')?.__vue_app__")).IsFalse();
+            _ = await Assert.That(await tab.EvaluateAsync<bool>(Hydration.Usable)).IsFalse();
             var washes = (await Washes.ReadAsync(tab)).SelectMany(field => field.Washes).ToArray();
             await ExpectEarnedAsync(washes);
         }

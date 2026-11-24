@@ -7,6 +7,7 @@ node_modules/
 **/wwwroot/.vite
 **/wwwroot/assets
 **/wwwroot/ssr
+**/wwwroot/fallback
 src/KCC.Admin/wwwroot/App_Plugins/
 src/KCC.Contributions/wwwroot/App_Plugins/
 /tests/results/

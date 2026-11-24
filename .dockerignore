@@ -18,6 +18,7 @@ src/*/wwwroot/App_Plugins
 src/KCC.Web/wwwroot/.vite
 src/KCC.Web/wwwroot/assets
 src/KCC.Web/wwwroot/ssr
+src/KCC.Web/wwwroot/fallback
 src/KCC.Web/wwwroot/media
 src/KCC.Web/umbraco
 src/KCC.Web/Features/Models/Generated/ood.flag

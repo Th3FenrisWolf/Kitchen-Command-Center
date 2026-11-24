@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, onUnmounted, useAttrs, type StyleValue, type TextareaHTMLAttributes } from 'vue'
+  import { computed, ref, onMounted, onUnmounted, useAttrs, watch, type StyleValue, type TextareaHTMLAttributes } from 'vue'
   import { draggedRules } from './draggedRules'
   import { useRaisedRules } from './useRaisedRules'
 
@@ -65,6 +65,21 @@
     document.removeEventListener('mouseup', stopResize)
   }
 
+  // Hydration patches a bound `value` over the server's field and drops what a reader typed while the chunk loaded, so
+  // the field is written by hand: its first content is a child, which hydration leaves alone, and later values land here.
+  const initial = model.value
+
+  watch(model, (value) => {
+    if (textareaRef.value && textareaRef.value.value !== value) textareaRef.value.value = value
+  })
+
+  onMounted(() => {
+    const field = textareaRef.value
+    if (!field) return
+    if (field.value !== field.defaultValue) model.value = field.value
+    else if (field.value !== model.value) field.value = model.value
+  })
+
   onUnmounted(stopResize)
 </script>
 
@@ -78,12 +93,13 @@
     <textarea
       ref="textareaRef"
       v-bind="textareaAttrs"
-      v-model="model"
       :required
       :readonly
       :placeholder
       :aria-invalid="error || (textareaAttrs['aria-invalid'] as 'true' | 'false' | undefined) || undefined"
       class="h-full resize-none"
+      v-text="initial"
+      @input="model = ($event.target as HTMLTextAreaElement).value"
     ></textarea>
     <span class="absolute right-1 bottom-0">
       <i class="fa-duotone fa-grip-lines rotate-135 cursor-ns-resize text-ink-soft" @mousedown="startResize"></i>

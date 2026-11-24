@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync } from 'node:fs'
 
-import { defineConfig, normalizePath, type Plugin } from 'vite'
+import { defineConfig, normalizePath, type BuildOptions, type Plugin } from 'vite'
 import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -26,6 +26,12 @@ function cleanAssetsPlugin(): Plugin {
 }
 
 const mainCss = normalizePath(resolve(__dirname, 'Features/Styles/Main.css'))
+
+// Over HTTP/1.1 a page's chunk requests queue six at a time, each queue step a round trip, so every module the header
+// imports that stays its own chunk delays the page view's chunk behind it. The header stays a chunk of its own: the
+// manifest keys it by its component path, which IslandHeadLinks reads.
+const headerModules =
+  /Features\/Components\/(Header\/useRecentlyViewed\.ts|Account\/(SignOutForm\.vue|signOut\.ts)|Sheet\/(KccSheet\.vue|KccWashes\.Component\.vue))(\?.*)?$/
 
 // Tailwind inlines Main.css's Font Awesome imports, so the subset runs on its output and before Vite's CSS pipeline.
 function fontAwesomeSubsetPlugin(): Plugin {
@@ -73,7 +79,43 @@ function aspNetCoreDevCertificate() {
 
 export default defineConfig(({ command, mode }) => {
   const isSSR = mode === 'ssr'
+  const isFallback = mode === 'fallback'
   const servesBrowserAssets = command === 'serve' && !process.env.VITEST
+  const isIslandBuild = command === 'build' && !isSSR && !isFallback
+
+  const islandBuild = {
+    outDir: 'wwwroot',
+    emptyOutDir: false,
+    manifest: true,
+    sourcemap: 'hidden',
+    // Base64 PNG barely gzips, so inlined into the stylesheet the wash textures cost more than they do as
+    // cached files, which Layout.cshtml preloads.
+    assetsInlineLimit: inlineUnlessWashTexture,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'Features/Main.ts'),
+        mainCss,
+      },
+      output: {
+        codeSplitting: {
+          groups: [{ name: 'HeaderImports', test: headerModules, minSize: 0, includeDependenciesRecursively: false }],
+        },
+      },
+    },
+  } satisfies BuildOptions
+
+  // Vite.AspNetCore reads only wwwroot/.vite/manifest.json, so this build's own manifest is read by
+  // Features/Islands/FallbackManifest.cs.
+  const fallbackBuild = {
+    outDir: 'wwwroot/fallback',
+    emptyOutDir: true,
+    manifest: true,
+    sourcemap: 'hidden',
+    assetsInlineLimit: inlineUnlessWashTexture,
+    rollupOptions: {
+      input: { fallback: resolve(__dirname, 'Features/Fallback.ts') },
+    },
+  } as const
 
   return {
     test: {
@@ -81,6 +123,16 @@ export default defineConfig(({ command, mode }) => {
       // Tests live in the repo-root /tests/KCC.ViteTests folder, not co-located under Features/.
       dir: resolve(__dirname, '../../tests/KCC.ViteTests'),
     },
+    base: isFallback ? '/fallback/' : '/',
+    publicDir: isFallback ? false : undefined,
+    // The islands hydrate server HTML and compile no template in the browser, and no component uses the Options API.
+    define: isIslandBuild
+      ? {
+          __VUE_OPTIONS_API__: false,
+          __VUE_PROD_DEVTOOLS__: false,
+          __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+        }
+      : undefined,
     ssr: { noExternal: ['vue'] },
     build: isSSR
       ? {
@@ -95,21 +147,9 @@ export default defineConfig(({ command, mode }) => {
             },
           },
         }
-      : {
-          outDir: 'wwwroot',
-          emptyOutDir: false,
-          manifest: true,
-          sourcemap: 'hidden',
-          // Base64 PNG barely gzips, so inlined into the stylesheet the wash textures cost more than they do as
-          // cached files, which Layout.cshtml preloads.
-          assetsInlineLimit: inlineUnlessWashTexture,
-          rollupOptions: {
-            input: {
-              main: resolve(__dirname, 'Features/Main.ts'),
-              mainCss,
-            },
-          },
-        },
+      : isFallback
+        ? fallbackBuild
+        : islandBuild,
     server: {
       https: servesBrowserAssets ? aspNetCoreDevCertificate() : undefined,
       fs: {
@@ -120,7 +160,7 @@ export default defineConfig(({ command, mode }) => {
       vue(),
       tailwindcss(),
       fontAwesomeSubsetPlugin(),
-      ...(!isSSR
+      ...(!isSSR && !isFallback
         ? [
             cleanAssetsPlugin(),
             // Razor emits the HTML, so the plugin's transformIndexHtml injection never
@@ -134,9 +174,10 @@ export default defineConfig(({ command, mode }) => {
       // in its store, out of reach from here. Deduped, the dev SSR runner inlined their CommonJS builds and failed.
       dedupe: ['vue'],
       alias: [
-        // Use runtime compiler build for dynamic template strings
-        // Exact match to avoid catching vue/* subpaths
-        { find: /^vue$/, replacement: 'vue/dist/vue.esm-bundler.js' },
+        // App.vue renders the region templates with the template compiler, which the SSR render, the fallback and
+        // the dev server need. The island build resolves vue to the package default, the runtime-only build.
+        // Exact match to avoid catching vue/* subpaths.
+        ...(isIslandBuild ? [] : [{ find: /^vue$/, replacement: 'vue/dist/vue.esm-bundler.js' }]),
         { find: '~', replacement: fileURLToPath(new URL('./Features', import.meta.url)) },
       ],
     },

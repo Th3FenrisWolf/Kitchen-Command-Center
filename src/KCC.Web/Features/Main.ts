@@ -1,11 +1,10 @@
 // Must stay the first import so dev error listeners exist before hydration runs.
 import '~/DevTools/RuntimeErrorOverlay'
-import { createSSRApp, h } from 'vue'
-import App from '~/App.vue'
-import { BLOOM_KEY, createBloom } from '~/Bloom/bloomContext'
+import { createBloom } from '~/Bloom/bloomContext'
 import { startVisitHeartbeat } from '~/Bloom/visitHeartbeat'
-import { registerGlobalComponents } from '~/GlobalComponents'
-import type { SsrPayload } from '~/Types/ContentRegions'
+import { hydrateIslands } from '~/Islands/hydrate'
+import { scheduleLaterParts } from '~/Islands/laterSchedule'
+import type { IslandPayload } from '~/Types/ContentRegions'
 
 import '~/Utilities/StringExtensions'
 import { configureApi, type ApiStrings } from '~/Utilities/Api'
@@ -13,30 +12,24 @@ import { configureApi, type ApiStrings } from '~/Utilities/Api'
 const serverContentEl = document.getElementById('server-content')
 if (!serverContentEl?.textContent) throw new Error('Server content not found')
 
-const { isPreview, bloom: inputs, ...contentRegions } = JSON.parse(serverContentEl.textContent) as SsrPayload
+const payload = JSON.parse(serverContentEl.textContent) as IslandPayload
 
-// Before mount, so a form handler firing right after hydration already has the token.
+// Before any island mounts, so a form handler firing right after hydration already has the token.
 const apiConfigEl = document.getElementById('api-config')
 if (apiConfigEl?.textContent) {
   configureApi(JSON.parse(apiConfigEl.textContent) as { antiforgeryToken?: string; strings?: ApiStrings })
 }
 
-const app = createSSRApp({
-  setup: () => () => h(App, { ...contentRegions }),
+const bloom = createBloom(payload.bloom.seed, payload.bloom.page)
+
+void hydrateIslands({ ...payload, islands: payload.islands ?? [] }, bloom).then(() => {
+  performance.mark('kcc:hydrated')
+  bloom.markHydrated(payload.bloom.pageWashes)
+  startVisitHeartbeat()
+  scheduleLaterParts()
+
+  // Each island's import injected its component styles into <head>. The server's copy sits in <body>, later in
+  // document order, so leaving it would outrank HMR-updated head styles and make style edits look broken until a
+  // full reload. Removed only after the last island, so an island whose chunk failed is styled until then.
+  document.querySelectorAll('style[data-ssr-styles]').forEach((el) => el.remove())
 })
-
-const bloom = createBloom(inputs.seed, inputs.page)
-
-registerGlobalComponents(app)
-app.provide('isPreview', isPreview ?? false)
-app.provide(BLOOM_KEY, bloom)
-app.mount('#app')
-performance.mark('kcc:hydrated')
-bloom.markHydrated()
-startVisitHeartbeat()
-
-// Vite injected every component style into <head> during module evaluation. The server's copy sits
-// in <body>, later in document order, so leaving it would outrank HMR-updated head styles and make
-// style edits look broken until a full reload. Only reached once hydration succeeds, so a throw
-// above leaves the page styled.
-document.querySelectorAll('style[data-ssr-styles]').forEach((el) => el.remove())

@@ -16,6 +16,7 @@
     // The sheet binds `$attrs` itself, so the widget's margin class rides the slip. Inherited as well, every
     // attribute would land there twice.
     inheritAttrs: false,
+    serverOnly: true,
   })
 
   // `dark` is still accepted so persisted widget configuration keeps deserialising, but it no longer

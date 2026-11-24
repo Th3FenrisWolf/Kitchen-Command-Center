@@ -29,6 +29,8 @@
 
   // Bound through v-bind so a field set up before hydration prints no `style=""`.
   const fieldAttrs = starts ? { style: `--wash-lag:${toFixed3(bloom.lag())}s` } : {}
+
+  defineOptions({ serverOnly: true })
 </script>
 
 <template>

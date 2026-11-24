@@ -30,8 +30,8 @@ const CSS_CLASS = new RegExp(`\\.(${NAME})`, 'g')
 // rather than one row each. The bare `kcc-tear` form is what the interpolated mentions collapse to.
 const TEAR = /^kcc-tear(?:-(?:hero|tile-\d+|\d+))?$/
 // Written in the docs as prose, not as a class that should exist: the `.kcc-sheet > .kcc-x` placeholder in
-// Structure rule 3.
-const NOT_A_CLASS = new Set(['kcc-x'])
+// Structure rule 3, and the `<kcc-island>` element, which the base layer styles by tag.
+const NOT_A_CLASS = new Set(['kcc-x', 'kcc-island'])
 
 const documented = new Set<string>()
 for (const [, name] of doc.matchAll(DOCUMENTED)) documented.add(name!)

@@ -1,3 +1,5 @@
+import type { IslandEntry } from '~/Islands/payload'
+
 export interface ContentRegions {
   headerContent: string
   bodyContent: string
@@ -12,4 +14,10 @@ export interface BloomInputs {
 export interface SsrPayload extends ContentRegions {
   isPreview: boolean
   bloom: BloomInputs
+}
+
+export interface IslandPayload {
+  isPreview: boolean
+  bloom: BloomInputs & { pageWashes: number }
+  islands: IslandEntry[]
 }

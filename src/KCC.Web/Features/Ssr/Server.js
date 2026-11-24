@@ -150,7 +150,11 @@ async function createServer() {
         await loadModule()
       }
 
-      const { app: ssrApp, bloom: ssrBloom } = createApp({
+      const {
+        app: ssrApp,
+        bloom: ssrBloom,
+        output,
+      } = createApp({
         headerContent,
         bodyContent,
         footerContent,
@@ -159,6 +163,7 @@ async function createServer() {
       })
       const html = await renderToString(ssrApp)
       const schedule = scheduleWashes(ssrBloom.seed, ssrBloom.collected())
+      const { islands, components, pageWashes } = output()
 
       // SFC <style> blocks reach the browser as JS style modules, so nothing links them on a
       // server-rendered first paint. Prod solves this with a manifest <link> on the chunk CSS the
@@ -172,7 +177,7 @@ async function createServer() {
       metrics.renderCount++
       metrics.lastRenderTime = duration
 
-      res.json({ html, css, schedule, renderTime: duration })
+      res.json({ html, css, schedule, islands, components, pageWashes, renderTime: duration })
     } catch (err) {
       const duration = Date.now() - startTime
       log.error(`[${req.id}] SSR render failed after ${duration}ms:`, err.message)

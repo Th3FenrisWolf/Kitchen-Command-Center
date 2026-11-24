@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using KCC.Web.Features.Bloom;
+using KCC.Web.Features.Islands;
 using KCC.Web.Features.Models.Common;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Memory;
@@ -59,7 +60,7 @@ public class VueSsrService(
         {
             logger.LogDebug("SSR cache hit for key {CacheKey}", cacheKey[..16]);
 
-            return baseResult with { Html = cached.Html, Css = cached.Css, Schedule = cached.Schedule };
+            return cached.Into(baseResult);
         }
 
         try
@@ -107,13 +108,19 @@ public class VueSsrService(
                 result.RenderTime,
                 requestId);
 
-            var render = new CachedRender(result.Html, result.Css, result.Schedule);
+            var render = new CachedRender(
+                result.Html,
+                result.Css,
+                result.Schedule,
+                result.Islands ?? [],
+                result.Components ?? [],
+                result.PageWashes);
             cache.Entries.Set(
                 cacheKey,
                 render,
                 new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = CacheDuration, Size = render.Size });
 
-            return baseResult with { Html = result.Html, Css = result.Css, Schedule = result.Schedule };
+            return render.Into(baseResult);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -165,9 +172,35 @@ public class VueSsrService(
         return $"ssr:{Convert.ToHexString(hashBytes)}";
     }
 
-    private sealed record CachedRender(string Html, string Css, string Schedule)
+    private sealed record CachedRender(
+        string Html,
+        string Css,
+        string Schedule,
+        IReadOnlyList<IslandEntry> Islands,
+        IReadOnlyList<string> Components,
+        int PageWashes)
     {
-        public long Size => Html.Length + (Css?.Length ?? 0) + (Schedule?.Length ?? 0);
+        public long Size =>
+            Html.Length
+            + (Css?.Length ?? 0)
+            + (Schedule?.Length ?? 0)
+            + Islands.Sum(IslandSize)
+            + Components.Sum(component => component.Length);
+
+        public SsrResult Into(SsrResult result) => result with
+        {
+            Html = Html,
+            Css = Css,
+            Schedule = Schedule,
+            Islands = Islands,
+            Components = Components,
+            PageWashes = PageWashes,
+        };
+
+        private static long IslandSize(IslandEntry island) =>
+            (island.Name?.Length ?? 0)
+            + (island.Props.ValueKind == JsonValueKind.Undefined ? 0 : island.Props.GetRawText().Length)
+            + (island.Keys?.Sum(key => key.Length) ?? 0);
     }
 }
 

@@ -265,7 +265,7 @@ pnpm type-check
 # Linting
 pnpm lint
 
-# Build for production (client + SSR bundles)
+# Build for production (client, SSR and fallback bundles)
 pnpm build:all
 ```
 
@@ -337,6 +337,8 @@ The budgets are in `tests/KCC.E2ETests/Features/Performance/budgets.json`. A bud
 
 - `target` fails when the value is worse than its `limit`. A timing metric enters `target` only with a recorded
   ten-of-ten stability trial.
+  A millisecond target is scaled by the runner's calibration factor, and `alsoBaseline` holds the metric to its
+  baseline as well, so a failure names whichever side failed (`hydrated_ms` carries it).
 - `baseline` compares with the recorded value for the case. A timing margin (`ratio` and `floor`) fails only when the
   value exceeds both `baseline x ratio` and `baseline + floor`. A weight margin (`pct` and `floorBytes`) fails past
   `baseline + max(floorBytes, baseline x pct / 100)`. An `add` margin allows that many above the baseline.

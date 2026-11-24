@@ -638,7 +638,7 @@ The identity says how paper moves ([loose-leaf.md](loose-leaf.md) → Motion). A
 | A pad card fans out as you reach for its menu | 300ms `cubic-bezier(.2, .9, .3, 1.15)`: 19px out of the stack, turned −1.8° about its far top corner, the top right, or +1.8° about its top left for the mirrored desktop search card (on a phone 24px straight down, turned +2.4° about its bottom left) | `PadCard.vue` |
 | A pad card comes out of the stack | 480ms `cubic-bezier(.3, 1.2, .4, 1)` to its own tilt, its rows landing 20ms apart; back in over 280ms; switching from another card, it waits 100ms for that one to go | `PadCard.vue` |
 | The pad tucks away as you read | 300ms `cubic-bezier(.2, .8, .2, 1)`: up by its height plus 28px (142px for the 114px pad) as you scroll down, once the page is past 150px; back on any scroll up or when focus moves into it; never under reduced motion | `AppHeader.Component.vue` |
-| Sticky neighbours follow the pad | `transition-[top]`: their top, which adds `--pad-offset`, eases over 300ms as the pad tucks and comes back, and a stacker card's sentinel eases with it | `RecipeSearchView.Component.vue`, `StackerBlock.cshtml`, `Stacker.Component.vue` |
+| Sticky neighbours follow the pad | `transition-[top]`: their top, which adds `--pad-h` under `main:not(.is-tucked)`, eases over 300ms as the pad tucks and comes back, and a stacker card's sentinel eases with it | `RecipeSearchView.Component.vue`, `StackerBlock.cshtml`, `Stacker.Component.vue` |
 | A pad menu fades to and from its marker pill | `background-color` and `color` over 300ms, keeping the focus ring's 0.2s fade | `AppHeader.Component.vue` |
 | A pad menu's chevron flips | 180° over 300ms while its card is open | `AppHeader.Component.vue` |
 | The desktop search field widens as it takes focus | 300ms `cubic-bezier(.2, .8, .2, 1)`, from 250px to 330px (200px to 240px between 768px and 1023px) | `AppHeader.Component.vue` |
@@ -707,9 +707,18 @@ inline in `Layout.cshtml`, so server-rendered tiles are filtered before hydratio
 `<html>` and the SSR sidecar's schedule as a `<style>` tag, `#kcc-bloom-schedule`, so the first paint carries the washes the
 visit has earned.
 
+Hydration is per island. The sidecar wraps each interactive Vue component Razor places
+in `<kcc-island data-island="N">`, which the kit's base layer sets to `display: contents`, so the wrapper adds no box.
+`islandSelectors.test.ts` audits the child, sibling and structural selectors that meet an island root. `#server-content`
+carries `{ isPreview, bloom, islands }`, each island's `name`, `props` and wash `keys`, and no region HTML; the browser
+hydrates each island from that and replays its keys, so a wash claims the same key it did on the server. A page the
+sidecar could not render has an empty `#app` and the three region templates instead, and the fallback build renders it
+whole in the browser from `wwwroot/fallback/`.
+
 ## Invariants
 
-1. **Build both bundles together**: `pnpm build:all`. Scoped-style hashes must match across client and SSR.
+1. **Build all three bundles together**: `pnpm build:all` makes the client, SSR and fallback bundles. Scoped-style
+   hashes must match across them.
 2. **`@theme static`**: the `static` keeps unreferenced tokens alive for the kit CSS and the dark ramp.
 3. **Razor-rendered → `@layer components`**, never a scoped `<style>`.
 4. **A rule that must beat a utility is unlayered** (the ramp-swap rule at the end of `Kit.css`).

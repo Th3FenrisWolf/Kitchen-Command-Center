@@ -1,4 +1,5 @@
 using KCC.Web.Features.Bloom;
+using KCC.Web.Features.Islands;
 
 namespace KCC.Web.Features.Models.Common;
 
@@ -15,6 +16,9 @@ public record SsrResult
     public bool IsPreview { get; set; }
     public BloomInputs Bloom { get; set; }
     public string Schedule { get; set; }
+    public IReadOnlyList<IslandEntry> Islands { get; set; } = [];
+    public IReadOnlyList<string> Components { get; set; } = [];
+    public int PageWashes { get; set; }
 
     // Populated only in Development when the SSR service reports a render
     // exception; SsrHtmlContent re-emits it for the dev error overlay.
@@ -27,6 +31,9 @@ public class SsrResponse
     public string Html { get; set; }
     public string Css { get; set; }
     public string Schedule { get; set; }
+    public IReadOnlyList<IslandEntry> Islands { get; set; }
+    public IReadOnlyList<string> Components { get; set; }
+    public int PageWashes { get; set; }
     public int RenderTime { get; set; }
 }
 
