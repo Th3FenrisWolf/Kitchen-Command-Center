@@ -75,6 +75,22 @@ describe('hydrateIslands', () => {
     expect(mounted.sort()).toEqual(['Header', 'Search'])
   })
 
+  it('mounts no island until every island has arrived, then mounts them in document order', async () => {
+    const payload = page([entry('Header'), entry('Search')])
+    const pending: Record<string, (component: Component) => void> = {}
+    const load = (name: string) => () => new Promise<Component>((resolve) => (pending[name] = resolve))
+
+    const done = hydrateIslands(payload, createBloom(9, PAGE), load)
+    await Promise.resolve()
+    pending.Search(island('Search'))
+    await new Promise((resolve) => setTimeout(resolve))
+
+    expect(mounted).toEqual([])
+    pending.Header(island('Header'))
+    await done
+    expect(mounted).toEqual(['Header', 'Search'])
+  })
+
   it('provides the one bloom, replaying each island its server keys, and isPreview to every island', async () => {
     const payload = page([entry('Header', [`${PAGE}|sheet~2`]), entry('Search', [`${PAGE}|sheet`])], true)
 

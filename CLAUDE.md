@@ -152,11 +152,13 @@ The browser hydrates each interactive component on its own instead of the whole 
 - **Explicit imports.** Inside a `.vue` file every component is imported: the client has no global registry, and a
   tag resolved at runtime renders nothing. `explicitImports.test.ts` fails on a component tag the file does not import.
 - **The flow.** The sidecar wraps each island in `<kcc-island data-island="N">` (`display: contents`) and
-  `SsrHtmlContent` writes `#server-content` as `{ isPreview, bloom, islands }`, with no region HTML. `Main.ts` hydrates
-  every `<kcc-island>` from its own chunk with `createSSRApp`, in parallel, then marks `kcc:hydrated`, which is the
-  moment the page is usable. The client is runtime-only Vue. The eager glob over every component lives only in
-  `Features/Ssr/ServerComponents.ts`, for the server entry and the fallback; importing it from `Main.ts` would pull every
-  component into the entry chunk. A chunk that fails to load leaves its island's server HTML in place.
+  `SsrHtmlContent` writes `#server-content` as `{ isPreview, bloom, islands }`, with no region HTML. `Main.ts` loads
+  every `<kcc-island>`'s chunk in parallel, mounts them all in one task with `createSSRApp`, then marks `kcc:hydrated`,
+  which is the moment the page is usable. Never mount an island as it arrives: its first changes start a frame, and the
+  next island waits behind that frame, for seconds where the page is drawn in software, as on CI. The client is
+  runtime-only Vue. The eager glob over every component lives only in `Features/Ssr/ServerComponents.ts`, for the server
+  entry and the fallback; importing it from `Main.ts` would pull every component into the entry chunk. A chunk that
+  fails to load leaves its island's server HTML in place.
 - **Later parts.** A part a page does not show on load is made with `laterPart(loader, pending)` in
   `Features/Islands/laterParts.ts` and prefetched in idle time after `kcc:hydrated`. A reader who gets there first sees
   the part's own empty sheet with `aria-busy="true"`, and the part fills in when it arrives. A load that rejects, or

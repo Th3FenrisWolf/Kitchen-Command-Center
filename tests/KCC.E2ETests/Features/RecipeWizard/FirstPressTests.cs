@@ -84,17 +84,20 @@ public class FirstPressTests : BasePageTests
     }
 
     // Cook mode's opener shows only from the large breakpoint up, so the phone cannot reach it; it is pressed on the
-    // matrix's desktop profile, bare and bloomed.
+    // matrix's desktop profile, bare and bloomed. A runner with no GPU rasterises the desktop on SwiftShader too, so
+    // there the press is recorded, as the phone's are.
     [Test]
     [Arguments(0)]
     [Arguments(BloomedSecondsAgo)]
     public async Task CookMode_OpensWithinTheBudget_TheFirstTime(int secondsAgo)
     {
-        await using var desktop = await SessionAsync(Profiles.Desktop, Profiles.DefaultDesktopGpu(), secondsAgo);
+        var gpu = Profiles.DefaultDesktopGpu();
+        await using var desktop = await SessionAsync(Profiles.Desktop, gpu, secondsAgo);
 
         List<Press> presses = [new("cook mode", await OpenCookModeAsync(desktop.Page))];
 
-        await AssertWithinBudgetAsync($"desktop cook mode, {secondsAgo} s into the visit", presses);
+        var run = $"desktop cook mode, {secondsAgo} s into the visit";
+        await (gpu == GpuMode.Hardware ? AssertWithinBudgetAsync(run, presses) : AssertEveryPressMeasuredAsync(run, presses));
     }
 
     private static async Task<double?> OpenCookModeAsync(IPage page)

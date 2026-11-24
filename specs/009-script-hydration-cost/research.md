@@ -1573,3 +1573,43 @@ FR-006 is measured with import configured, and this gap goes to Phase 3.
 **For Phase 3.** The frame share reads a 60 Hz display as half its frames late (F18); the counts of frames over 50 ms
 grow with the distance scrolled, so a taller page reads more of them; the band's column count reads tilted cards as
 fewer columns; and the wizard's first load without photo import is over 60 KB.
+
+## F20. The first CI run on the pull request (2026-11-24)
+
+The pull request's first CI run failed `perf` and `build-and-test` at `00844b0e`. None of the failing guards and tests
+had run on a CI runner before: the 20 KB proof and the stability trial ran locally (Session 2026-11-17).
+
+**The usable mark.** `TimingGuardTests` read `hydrated_ms` over its target on the phone in Chromium, dark and bloomed:
+home 2,640.6 ms and search with three pages 2,763.3 ms against 2,000 ms times the runner's 1.23. The runs were in two
+groups. A fast one, 1,262 to 1,537 ms, was level with `main` on the same runner (1,290 to 1,651 ms). A slow one, 2,107
+to 2,861 ms, took every run of search, three of six on home, two of six on the recipe, and none on the account page.
+
+The cause is the order of the first paint and the mounts on a runner that draws in software. The phone profile
+rasterises on SwiftShader, whose threads share the runner's four cores with the page, so the first paint takes one to
+two seconds there. Each island mounted as its chunk arrived, the header first, and its changes started a second frame;
+that frame's commit waits for the first paint to finish, and the page's own island mounted only after it. `main` mounts
+the whole page in one task, so no frame comes between.
+
+It does not reproduce on this machine at any CPU slowdown, on 18 cores. It does in a Linux container with the profile's
+SwiftShader flags, the phone profile at a 12x slowdown and the container held to two cores (six to twenty loads a
+cell, usable mark in ms, median and worst):
+
+| Build | Home | Search |
+|---|---|---|
+| `main` | 2,233 and 2,392 | 2,192 and 2,577 |
+| Branch at `00844b0e` | 1,445 and 2,875 | 2,348 and 2,791 |
+| Branch, every island mounted in one task | 1,390 and 2,498 | 1,634 and 2,081 |
+
+`hydrateIslands` now waits for every island's chunk and mounts them all in one task. The header answers when the page
+does, no earlier, which is also when `kcc:hydrated` is marked. One home load in twenty still read over 2,262 ms, the
+CI baseline times its margin. On this machine the guard class reads home 804 to 813 ms, search with three pages 1,041
+to 1,047 ms, the recipe 1,049 to 1,054 ms and the account page 842 to 850 ms, and the six suites pass.
+
+**The six end-to-end tests.**
+
+| Test | Read on CI | Cause | Change |
+|---|---|---|---|
+| `PadTests`, slash jumps to search; search remembers a viewed recipe | key press and a viewed recipe lost | the load event no longer waits for the islands | every pad test waits for the usable mark |
+| `AppendShiftTests`, resting reader | next request 1,292 ms after a landing, budget 500 ms | the observer reports in the next frame, and a frame takes about a second in software | the wait is counted in frames, at most 3 (2 locally) |
+| `AppendShiftTests`, short first page | shift 0.01795, pinned 0.01676 | the landing is 724 px tall on Linux and 676 px on macOS; the strip of footer is the same | the pin carries a 1.25 margin |
+| `FirstPressTests`, cook mode, bare and bloomed | 160 ms and 3,448 ms, budget 100 ms | a runner with no GPU rasterises the desktop on SwiftShader | held to the budget on a GPU, recorded without one, as the phone's presses are |

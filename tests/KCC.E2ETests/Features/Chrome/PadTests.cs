@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using KCC.E2ETests.Config;
 using Microsoft.Playwright;
 
 namespace KCC.E2ETests.Features.Chrome;
@@ -7,10 +8,18 @@ public class PadTests : BasePageTests
 {
     private static readonly Regex Open = new(@"\bis-open\b");
 
+    // The pad answers nothing until its island is live, which can come after the load event: a key pressed or a
+    // recipe left before then is lost.
+    private async Task OpenAsync(string path)
+    {
+        await Page.GotoAsync(path);
+        await Hydration.WaitAsync(Page);
+    }
+
     [Test]
     public async Task AMealInTheRecipesCard_OpensTheLibraryFilteredToIt()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Recipes", Exact = true }).ClickAsync();
 
         await Page.Locator("#pad-card-recipes a[href='/recipes/?category=Dinner']").ClickAsync();
@@ -24,7 +33,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Search_FindsRecipesAsYouType_AndEnterOpensTheLibrary()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         var field = Page.Locator("#pad-search-input");
 
         await field.FillAsync("lasagna");
@@ -41,8 +50,8 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Search_RemembersTheRecipesYouViewed()
     {
-        await Page.GotoAsync("/recipes/spicy-ramen-flight/");
-        await Page.GotoAsync("/");
+        await OpenAsync("/recipes/spicy-ramen-flight/");
+        await OpenAsync("/");
 
         await Page.Locator("#pad-search-input").FocusAsync();
 
@@ -55,7 +64,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task ArrowDown_OpensACardIntoItsFirstLink_AndEscapeReturnsToItsMenu()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         var menu = Page.Locator("#pad-menu-recipes");
         var card = Page.Locator("#pad-card-recipes");
         await menu.FocusAsync();
@@ -74,7 +83,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Escape_InsideTheSearchCard_ClosesIt_AndLeavesFocusInTheField()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         var field = Page.Locator("#pad-search-input");
         var card = Page.Locator("#pad-card-search");
         await field.FocusAsync();
@@ -92,7 +101,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Hovering_AMenu_FansItsCardOut_AndLeavingPutsItBack()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         var card = Page.Locator("#pad-card-recipes");
         var peeking = new Regex(@"\bis-peek\b");
 
@@ -106,7 +115,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Slash_JumpsToSearch()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
 
         await Page.Keyboard.PressAsync("/");
 
@@ -117,7 +126,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Tab_MovesIntoAnOpenCard_AndOnAlongThePadPastItsLastLink()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         var menu = Page.Locator("#pad-menu-recipes");
         var card = Page.Locator("#pad-card-recipes");
         await menu.FocusAsync();
@@ -137,7 +146,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task AClickOutsideThePad_PutsTheOpenCardBack()
     {
-        await Page.GotoAsync("/");
+        await OpenAsync("/");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Recipes", Exact = true }).ClickAsync();
         await Expect(Page.Locator("#pad-card-recipes")).ToHaveClassAsync(Open);
 
@@ -149,7 +158,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task ThePad_TucksAwayAsYouRead_AndTheFiltersFollowIt()
     {
-        await Page.GotoAsync("/recipes/");
+        await OpenAsync("/recipes/");
         var header = Page.Locator("header.pad-header");
         var filters = Page.Locator("#recipe-filters");
         var tucked = new Regex(@"\bis-tucked\b");
@@ -168,7 +177,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task TheTuck_TogglesAClassOnMain_AndLeavesThePadHeightWhereItWas()
     {
-        await Page.GotoAsync("/recipes/");
+        await OpenAsync("/recipes/");
         var main = Page.Locator("main");
         var filters = Page.Locator("#recipe-filters");
         var tucked = new Regex(@"\bis-tucked\b");
@@ -193,7 +202,7 @@ public class PadTests : BasePageTests
     [Test]
     public async Task Slash_WhileThePadIsTucked_BringsItBackWithoutScrolling()
     {
-        await Page.GotoAsync("/recipes/");
+        await OpenAsync("/recipes/");
         var header = Page.Locator("header.pad-header");
         var tucked = new Regex(@"\bis-tucked\b");
         await WheelDownAsync(900);
