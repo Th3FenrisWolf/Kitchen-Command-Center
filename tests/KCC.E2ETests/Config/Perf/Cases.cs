@@ -156,9 +156,22 @@ public static class Matrix
         return cases;
     }
 
+    private static readonly string[] WizardPages = [Pages.CreateRecipe, Pages.AddVariant];
+
+    public static readonly IReadOnlyList<string> ScriptBytes = ["js_first_load_gz_bytes", "js_gz_bytes"];
+
     public static IReadOnlyList<Case> KeySubset(MemberKind member = MemberKind.E2e) =>
+        PhoneBloomed([Pages.Home, Pages.Search3, Pages.Recipe, Pages.VariantCook, Pages.Account], member);
+
+    // The wizard pages carry the most first-load script of any page, and the key subset leaves them out.
+    public static IReadOnlyList<Case> DeterministicGuard(MemberKind member = MemberKind.E2e) =>
+        [.. KeySubset(member), .. PhoneBloomed(WizardPages, member)];
+
+    public static bool GuardsScriptBytesOnly(Case subject) => WizardPages.Contains(subject.Page);
+
+    private static IReadOnlyList<Case> PhoneBloomed(IEnumerable<string> pages, MemberKind member) =>
     [
-        .. new[] { Pages.Home, Pages.Search3, Pages.Recipe, Pages.VariantCook, Pages.Account }
+        .. pages
             .SelectMany(page => Enum.GetValues<Engine>()
                 .SelectMany(engine => Enum.GetValues<Ramp>()
                     .Select(ramp => new Case(page, Profiles.Phone.Name, engine, ramp, VisitState.Bloomed).WithDefaultMember(member)))),

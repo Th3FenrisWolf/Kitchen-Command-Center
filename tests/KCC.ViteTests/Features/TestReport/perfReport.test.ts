@@ -10,6 +10,7 @@ import {
   renderComparisonMarkdown,
   renderHtml,
   renderMarkdown,
+  versusBefore,
   resultsPathFor,
   summarize,
 } from '../../../scripts/perf-report.mjs'
@@ -64,6 +65,35 @@ describe('perf report', () => {
       `${identity}: frame_p95_ms 22.4 > baseline 15.1 (x1.25, +4 ms; runner x1.02)`,
     )
     expect(budgetText('frame_p95_ms', record)).toBe('x1.25, +4 ms; runner x1.02')
+  })
+
+  it('names the runner factor a target was scaled by', () => {
+    const record = {
+      value: 2600,
+      kind: 'timing',
+      unit: 'ms',
+      runner: 1.25,
+      budget: { mode: 'target', limit: 2000 },
+      status: 'fail',
+    }
+    expect(failureLine(identity, 'hydrated_ms', record)).toBe(`${identity}: hydrated_ms 2600 > target 2000 (runner x1.25)`)
+    expect(budgetText('hydrated_ms', record)).toBe('≤ 2000; runner x1.25')
+  })
+
+  it('shows a target held with its baseline, and words a failure as the guard did', () => {
+    const detail = '1900 > baseline 1000 (x1.25, +150 ms; runner x1.25)'
+    const record = {
+      value: 1900,
+      kind: 'timing',
+      unit: 'ms',
+      baseline: 1000,
+      runner: 1.25,
+      budget: { mode: 'target', limit: 2000, alsoBaseline: true, margin: { ratio: 1.25, floor: 150 } },
+      status: 'fail',
+      detail,
+    }
+    expect(failureLine(identity, 'hydrated_ms', record)).toBe(`${identity}: hydrated_ms ${detail}`)
+    expect(budgetText('hydrated_ms', record)).toBe('≤ 2000 and x1.25, +150 ms; runner x1.25')
   })
 
   it('states the runner calibration under the header, and nothing without one', () => {
@@ -223,15 +253,15 @@ describe('perf report, before and after', () => {
     const markdown = renderComparisonMarkdown(before, after)
     expect(markdown).toContain('Before: captured 2026-10-20T10:00:00Z at commit aaa1111.')
     expect(markdown).toContain('After: captured 2026-10-27T10:00:00Z at commit bbb2222.')
-    expect(markdown).toContain('| Metric | Before | After | Change | Budget | Status |')
-    expect(markdown).toContain('| frame_p95_ms | 24.7 ms | 9.2 ms | -15.5 (-62.75%) | ≤ 16.7 | pass |')
-    expect(markdown).toContain('| lcp_ms | 1420 ms | 1800 ms | +380 (+26.76%) | ≤ 1500 | FAIL |')
+    expect(markdown).toContain('| Metric | Before | After | Change | Budget | Status | Vs before |')
+    expect(markdown).toContain('| frame_p95_ms | 24.7 ms | 9.2 ms | -15.5 (-62.75%) | ≤ 16.7 | pass | ok |')
+    expect(markdown).toContain('| lcp_ms | 1420 ms | 1800 ms | +380 (+26.76%) | ≤ 1500 | FAIL | worse |')
   })
 
   it('shows a metric on one side only with a dash, and names cases on one side only', () => {
     const markdown = renderComparisonMarkdown(before, after)
-    expect(markdown).toContain('| gone_ms | 5 ms | — | — | — | — |')
-    expect(markdown).toContain('| new_ms | — | 3 ms | — | — | pass |')
+    expect(markdown).toContain('| gone_ms | 5 ms | — | — | — | — | — |')
+    expect(markdown).toContain('| new_ms | — | 3 ms | — | — | pass | — |')
     expect(markdown).toContain('## Only in before')
     expect(markdown).toContain('- home · phone · chromium · dark · bloomed')
     expect(markdown).toContain('## Only in after')
@@ -242,8 +272,63 @@ describe('perf report, before and after', () => {
     expect(renderComparisonMarkdown(before, after)).toContain(`- ${identity}: lcp_ms 1800 > target 1500`)
     const html = renderComparisonHtml(before, after)
     expect(html).toContain('<th>Before</th><th>After</th><th>Change</th>')
-    expect(html).toContain('<summary>search-3 · phone · chromium · dark · bloomed (fails)</summary>')
+    expect(html).toContain('<summary>search-3 · phone · chromium · dark · bloomed (fails, worse than before)</summary>')
     const hostile = { cases: { '<b>': { x: metric(1) } } }
     expect(renderComparisonHtml(hostile, hostile)).not.toContain('<summary><b>')
+  })
+
+  it('marks a metric worse than before only past its budget margin, reading higher as better for frames within budget', () => {
+    const bytes = (value: number) => ({
+      value,
+      unit: 'bytes',
+      budget: { mode: 'report-only', margin: { pct: 2, floorBytes: 1024 } },
+    })
+    expect(versusBefore('js_first_load_gz_bytes', bytes(50_000), bytes(51_000))).toBe('ok')
+    expect(versusBefore('js_first_load_gz_bytes', bytes(50_000), bytes(51_100))).toBe('worse')
+    const ms = (value: number) => ({ value, unit: 'ms', budget: { mode: 'baseline', margin: { ratio: 1.25, floor: 150 } } })
+    expect(versusBefore('hydrated_ms', ms(1000), ms(1240))).toBe('ok')
+    expect(versusBefore('hydrated_ms', ms(1000), ms(1260))).toBe('worse')
+    const pct = (value: number) => ({ value, unit: 'pct', budget: { mode: 'baseline', margin: { add: 5 } } })
+    expect(versusBefore('frames_within_16_7_pct', pct(90), pct(86))).toBe('ok')
+    expect(versusBefore('frames_within_16_7_pct', pct(90), pct(84))).toBe('worse')
+    const count = (value: number) => ({ value, unit: 'count', kind: 'deterministic', budget: { mode: 'report-only' } })
+    expect(versusBefore('restyled_on_tuck', count(1), count(2))).toBe('worse')
+    expect(versusBefore('restyled_on_tuck', count(1), { value: 2, unit: 'count' })).toBeNull()
+    expect(versusBefore('restyled_on_tuck', undefined, count(2))).toBeNull()
+  })
+
+  it('never marks a metric whose budget says a rise is no regression, nor a report-only timing metric with no margin', () => {
+    const moved = (value: number) => ({
+      value,
+      unit: 'count',
+      kind: 'deterministic',
+      budget: { mode: 'report-only', notARegression: true },
+    })
+    expect(versusBefore('islands_hydrated', moved(1), moved(4))).toBeNull()
+    expect(versusBefore('js_later_gz_bytes', moved(0), moved(40_000))).toBeNull()
+    const noisy = (value: number) => ({ value, unit: 'ms', kind: 'timing', budget: { mode: 'report-only' } })
+    expect(versusBefore('trace_paint_ms', noisy(10), noisy(14))).toBeNull()
+    const kept = (value: number) => ({
+      value,
+      unit: 'ms',
+      kind: 'timing',
+      budget: { mode: 'report-only', margin: { ratio: 1.25, floor: 4 } },
+    })
+    expect(versusBefore('bloom_frame_p95_ms', kept(10), kept(20))).toBe('worse')
+
+    const run = (values: Record<string, object>) => ({ captured: 'x', commit: 'c', cases: { [identity]: values } })
+    const markdown = renderComparisonMarkdown(
+      run({ islands_hydrated: moved(1), trace_paint_ms: noisy(10) }),
+      run({ islands_hydrated: moved(4), trace_paint_ms: noisy(14) }),
+    )
+    expect(markdown).not.toContain('## Worse than before')
+  })
+
+  it('lists every case and metric worse than before, and marks the case', () => {
+    const markdown = renderComparisonMarkdown(before, after)
+    expect(markdown).toContain('## Worse than before')
+    expect(markdown).toContain(`- ${identity}: lcp_ms 1800 ms against 1420 ms before (no increase)`)
+    expect(markdown).toContain(`### ${identity} (worse than before)`)
+    expect(renderComparisonHtml(before, after)).toContain('<h2>Worse than before</h2>')
   })
 })

@@ -45,16 +45,20 @@ export function budgetText(metric, record) {
   if (!budget) return "—";
   if (budget.mode === "report-only") return "report only";
   if (budget.mode === "target") {
-    return `${higherIsBetter(metric) ? "≥" : "≤"} ${formatNumber(budget.limit)}`;
+    const target = `${higherIsBetter(metric) ? "≥" : "≤"} ${formatNumber(budget.limit)}`;
+    const held = budget.alsoBaseline ? ` and ${marginLabel(budget.margin, record.unit)}` : "";
+    return target + held + runnerLabel(record);
   }
   return marginLabel(budget.margin, record.unit) + runnerLabel(record);
 }
 
 export function failureLine(identity, metric, record) {
+  if (record.detail) return `${identity}: ${metric} ${record.detail}`;
   const budget = record.budget;
   const worse = higherIsBetter(metric) ? "<" : ">";
   if (budget?.mode === "target") {
-    return `${identity}: ${metric} ${formatNumber(record.value)} ${worse} target ${formatNumber(budget.limit)}`;
+    const runner = record.runner ? ` (runner x${formatNumber(record.runner)})` : "";
+    return `${identity}: ${metric} ${formatNumber(record.value)} ${worse} target ${formatNumber(budget.limit)}${runner}`;
   }
   return `${identity}: ${metric} ${formatNumber(record.value)} ${worse} baseline ${formatNumber(record.baseline)} (${marginLabel(budget?.margin, record.unit)}${runnerLabel(record)})`;
 }
@@ -256,6 +260,32 @@ export function changeText(before, after) {
   return `${sign}${formatNumber(change)}${percent}`;
 }
 
+function allowance(base, margin) {
+  if (!margin) return 0;
+  if (margin.ratio != null) return Math.max(base * margin.ratio - base, margin.floor ?? 0);
+  if (margin.pct != null) return Math.max((base * margin.pct) / 100, margin.floorBytes ?? 0);
+  if (margin.add != null) return margin.add;
+  return 0;
+}
+
+// A report-only timing metric with no margin has no local margin to judge run-to-run noise against.
+function judgedAgainstBefore(record) {
+  const budget = record.budget;
+  if (budget.notARegression) return false;
+  return !(record.kind === "timing" && budget.mode === "report-only" && !budget.margin);
+}
+
+export function versusBefore(metric, was, now) {
+  if (was?.value == null || now?.value == null || !now.budget || !judgedAgainstBefore(now)) return null;
+  const room = allowance(was.value, now.budget.margin);
+  const worse = higherIsBetter(metric) ? now.value < was.value - room : now.value > was.value + room;
+  return worse ? "worse" : "ok";
+}
+
+function worseLine(identity, row) {
+  return `${identity}: ${row.metric} ${row.after}${row.unit} against ${row.before}${row.unit} before (${row.margin})`;
+}
+
 export function parseReportArgs(args) {
   const parsed = { before: undefined, after: undefined };
   for (let i = 0; i < args.length; i++) {
@@ -286,13 +316,16 @@ function compareRows(before, after) {
         change: changeText(was?.value, now?.value),
         budget: now ? budgetText(metric, now) : "—",
         status: now ? now.status : null,
+        versus: versusBefore(metric, was, now),
+        margin: now?.budget ? marginLabel(now.budget.margin, now.unit) : null,
       });
     }
     byCase.set(identity, rows);
   }
+  const worse = [...byCase].flatMap(([identity, rows]) => rows.filter((row) => row.versus === "worse").map((row) => worseLine(identity, row)));
   const onlyBefore = Object.keys(beforeCases).filter((identity) => !(identity in (after.cases ?? {})));
   const onlyAfter = Object.keys(after.cases ?? {}).filter((identity) => !(identity in beforeCases));
-  return { byCase, onlyBefore, onlyAfter, ...afterSummary };
+  return { byCase, onlyBefore, onlyAfter, worse, ...afterSummary };
 }
 
 function withUnit(value, unit) {
@@ -304,7 +337,7 @@ function statusMark(status) {
 }
 
 export function renderComparisonMarkdown(before, after) {
-  const { byCase, onlyBefore, onlyAfter, failures, counts } = compareRows(before, after);
+  const { byCase, onlyBefore, onlyAfter, worse, failures, counts } = compareRows(before, after);
   const was = runHeader(before);
   const now = runHeader(after);
   const lines = [
@@ -318,11 +351,13 @@ export function renderComparisonMarkdown(before, after) {
     "",
   ];
   if (failures.length > 0) lines.push("## Failures", "", ...failures.map((line) => `- ${line}`), "");
+  if (worse.length > 0) lines.push("## Worse than before", "", ...worse.map((line) => `- ${line}`), "");
   lines.push("## Cases", "");
   for (const [identity, rows] of byCase) {
-    lines.push(`### ${identity}`, "", "| Metric | Before | After | Change | Budget | Status |", "| --- | ---: | ---: | ---: | --- | --- |");
+    const heading = rows.some((row) => row.versus === "worse") ? `### ${identity} (worse than before)` : `### ${identity}`;
+    lines.push(heading, "", "| Metric | Before | After | Change | Budget | Status | Vs before |", "| --- | ---: | ---: | ---: | --- | --- | --- |");
     for (const row of rows) {
-      lines.push(`| ${cell(row.metric)} | ${withUnit(row.before, row.unit)} | ${withUnit(row.after, row.unit)} | ${cell(row.change)} | ${cell(row.budget)} | ${statusMark(row.status)} |`);
+      lines.push(`| ${cell(row.metric)} | ${withUnit(row.before, row.unit)} | ${withUnit(row.after, row.unit)} | ${cell(row.change)} | ${cell(row.budget)} | ${statusMark(row.status)} | ${row.versus ?? "—"} |`);
     }
     lines.push("");
   }
@@ -333,17 +368,20 @@ export function renderComparisonMarkdown(before, after) {
 }
 
 export function renderComparisonHtml(before, after) {
-  const { byCase, onlyBefore, onlyAfter, failures, counts } = compareRows(before, after);
+  const { byCase, onlyBefore, onlyAfter, worse, failures, counts } = compareRows(before, after);
   const was = runHeader(before);
   const now = runHeader(after);
   const sections = [...byCase].map(([identity, rows]) => {
     const body = rows.map((row) =>
-      `<tr class="${escapeHtml(row.status ?? "")}"><td>${escapeHtml(row.metric)}</td><td class="n">${escapeHtml(withUnit(row.before, row.unit))}</td><td class="n">${escapeHtml(withUnit(row.after, row.unit))}</td><td class="n">${escapeHtml(row.change)}</td><td>${escapeHtml(row.budget)}</td><td>${escapeHtml(statusMark(row.status))}</td></tr>`).join("");
+      `<tr class="${escapeHtml([row.status ?? "", row.versus === "worse" ? "worse" : ""].filter(Boolean).join(" "))}"><td>${escapeHtml(row.metric)}</td><td class="n">${escapeHtml(withUnit(row.before, row.unit))}</td><td class="n">${escapeHtml(withUnit(row.after, row.unit))}</td><td class="n">${escapeHtml(row.change)}</td><td>${escapeHtml(row.budget)}</td><td>${escapeHtml(statusMark(row.status))}</td><td>${escapeHtml(row.versus ?? "—")}</td></tr>`).join("");
     const failed = rows.some((row) => row.status === "fail");
-    return `<details${failed ? " open" : ""}><summary>${escapeHtml(identity)}${failed ? " (fails)" : ""}</summary><table><thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Change</th><th>Budget</th><th>Status</th></tr></thead><tbody>${body}</tbody></table></details>`;
+    const regressed = rows.some((row) => row.versus === "worse");
+    const notes = [failed && "fails", regressed && "worse than before"].filter(Boolean).join(", ");
+    return `<details${failed || regressed ? " open" : ""}><summary>${escapeHtml(identity)}${notes ? ` (${notes})` : ""}</summary><table><thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Change</th><th>Budget</th><th>Status</th><th>Vs before</th></tr></thead><tbody>${body}</tbody></table></details>`;
   });
   const list = (heading, identities) => identities.length === 0 ? "" : `<h2>${heading}</h2><ul>${identities.map((identity) => `<li>${escapeHtml(identity)}</li>`).join("")}</ul>`;
   const failureList = failures.length === 0 ? "" : `<h2>Failures</h2><ul>${failures.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
+  const worseList = worse.length === 0 ? "" : `<h2>Worse than before</h2><ul>${worse.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Performance report, before and after</title>
 <style>
@@ -353,12 +391,14 @@ th,td{border:1px solid #c9c7d3;padding:.25rem .6rem;text-align:left}
 td.n{text-align:right;font-variant-numeric:tabular-nums}
 tr.fail{background:#fde2e2}
 tr.report-only{color:#5d5b6a}
+tr.worse td:last-child{background:#fde2e2;font-weight:600}
 summary{cursor:pointer;font-weight:600;margin:.4rem 0}
 </style></head><body>
 <h1>Performance report, before and after</h1>
 <p>Before: captured ${escapeHtml(was.captured)} at commit ${escapeHtml(was.commit)}.<br>After: captured ${escapeHtml(now.captured)} at commit ${escapeHtml(now.commit)}.${now.environment ? ` Environment: ${escapeHtml(now.environment)}.` : ""}</p>
 <p>${byCase.size} cases in both runs. After: ${counts.pass} pass, ${counts.fail} fail, ${counts["report-only"]} report only, ${counts.skipped} skipped.</p>
 ${failureList}
+${worseList}
 <h2>Cases</h2>
 ${sections.join("\n")}
 ${list("Only in before", onlyBefore)}${list("Only in after", onlyAfter)}

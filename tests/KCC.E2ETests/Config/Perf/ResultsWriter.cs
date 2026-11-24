@@ -52,6 +52,12 @@ public static class MetricCatalog
         ["filtered_area_px2"] = new(Deterministic, "px2"),
         ["css_gz_bytes"] = new(Deterministic, "bytes"),
         ["js_gz_bytes"] = new(Deterministic, "bytes"),
+        ["js_first_load_gz_bytes"] = new(Deterministic, "bytes"),
+        ["js_later_gz_bytes"] = new(Deterministic, "bytes"),
+        ["islands_hydrated"] = new(Deterministic, "count"),
+        ["restyled_on_tuck"] = new(Deterministic, "count"),
+        ["restyled_on_hover"] = new(Deterministic, "count"),
+        ["wash_raster_on_interaction"] = new(Deterministic, "count"),
         ["font_bytes"] = new(Deterministic, "bytes"),
         ["image_bytes"] = new(Deterministic, "bytes"),
     };
@@ -81,7 +87,9 @@ public sealed record Budget(
     string? Owner = null,
     bool PlatformSensitive = false,
     string? CiMode = null,
-    Margin? CiMargin = null);
+    Margin? CiMargin = null,
+    bool NotARegression = false,
+    bool AlsoBaseline = false);
 
 public sealed record BudgetFile(IReadOnlyList<Budget> Budgets)
 {
@@ -119,7 +127,19 @@ public static class BudgetEvaluator
         }
 
         var info = MetricCatalog.Describe(metric);
-        return budget.Mode == "target" ? Target(value, budget, info) : Baseline(value, baseline, budget, info, ScalesWithRunner(metric) ? runner : 1);
+        var scale = ScalesWithRunner(metric) ? runner : 1;
+        if (budget.Mode != "target")
+        {
+            return Baseline(value, baseline, budget, info, scale);
+        }
+
+        var verdicts = budget.AlsoBaseline
+            ? new[] { Target(value, budget, info, scale), Baseline(value, baseline, budget, info, scale) }
+            : [Target(value, budget, info, scale)];
+        var failed = verdicts.Where(verdict => verdict.Status == Verdict.Fail).ToList();
+        return failed.Count > 0
+            ? new(Verdict.Fail, string.Join("; ", failed.Select(verdict => verdict.Detail)))
+            : verdicts.FirstOrDefault(verdict => verdict.Status == Verdict.Pass) ?? verdicts[0];
     }
 
     public static bool ScalesWithRunner(string metric) => MetricCatalog.Describe(metric).Unit == "ms";
@@ -130,16 +150,18 @@ public static class BudgetEvaluator
         return value.ToString("0." + new string('#', Math.Max(2, 2 - magnitude)), CultureInfo.InvariantCulture);
     }
 
-    private static Verdict Target(double value, Budget budget, MetricInfo info)
+    private static Verdict Target(double value, Budget budget, MetricInfo info, double runner)
     {
         if (budget.Limit is not { } limit)
         {
             return new(Verdict.ReportOnly, null);
         }
 
-        var worse = info.HigherIsBetter ? value < limit : value > limit;
+        var scaled = limit * runner;
+        var worse = info.HigherIsBetter ? value < scaled : value > scaled;
+        var label = runner > 1 ? $" (runner x{Format(runner)})" : string.Empty;
         return worse
-            ? new(Verdict.Fail, $"{Format(value)} {(info.HigherIsBetter ? "<" : ">")} target {Format(limit)}")
+            ? new(Verdict.Fail, $"{Format(value)} {(info.HigherIsBetter ? "<" : ">")} target {Format(limit)}{label}")
             : new(Verdict.Pass, null);
     }
 
@@ -208,7 +230,6 @@ public sealed class MetricRecord
 
     public string Status { get; set; } = Verdict.ReportOnly;
 
-    [JsonIgnore]
     public string? Detail { get; set; }
 }
 

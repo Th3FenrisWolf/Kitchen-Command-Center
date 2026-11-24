@@ -79,6 +79,99 @@ public class PerfHelperTests
     }
 
     [Test]
+    public async Task TargetBudget_ScalesAMillisecondLimitByTheRunnerFactor_AndNamesIt()
+    {
+        var budget = new Budget("hydrated_ms", null, "target", Limit: 2000);
+
+        var slowRunner = BudgetEvaluator.Evaluate("hydrated_ms", 2400, null, budget, runner: 1.25);
+        var tooSlowStill = BudgetEvaluator.Evaluate("hydrated_ms", 2600, null, budget, runner: 1.25);
+        var usualRunner = BudgetEvaluator.Evaluate("hydrated_ms", 2400, null, budget);
+        var count = BudgetEvaluator.Evaluate("islands_hydrated", 3, null, new Budget("islands_hydrated", null, "target", Limit: 2), runner: 1.25);
+
+        _ = await Assert.That(slowRunner.Status).IsEqualTo(Verdict.Pass);
+        _ = await Assert.That(tooSlowStill.Detail).IsEqualTo("2600 > target 2000 (runner x1.25)");
+        _ = await Assert.That(usualRunner.Detail).IsEqualTo("2400 > target 2000");
+        _ = await Assert.That(count.Detail).IsEqualTo("3 > target 2");
+    }
+
+    [Test]
+    public async Task HydratedBudget_HoldsTheRunnerScaledTarget_AndTheBaseline_LocallyAndOnCi()
+    {
+        var budgets = BudgetFile.Load(MatrixRun.BudgetsPath);
+        var phone = new Case(Pages.Home, "phone", Engine.Chromium, Ramp.Light, VisitState.Bloomed);
+        Case[] subjects = [phone, phone with { Page = Pages.Recipe }, phone with { Page = Pages.Search3 }, phone with { Profile = "desktop" }];
+        double[] measured = [2400, 2600, 1900, 1300];
+        double[] references = [2000, 2100, 1000, 1000];
+        var baseline = new BaselineFile { CalibrationMs = 200 };
+        for (var index = 0; index < subjects.Length; index++)
+        {
+            baseline.Cases[subjects[index].Identity] = new() { ["hydrated_ms"] = references[index] };
+        }
+
+        IEnumerable<string> FailuresOn(BudgetFile file)
+        {
+            var report = new RunReport { CalibrationMs = 250 };
+            for (var index = 0; index < subjects.Length; index++)
+            {
+                _ = report.Add(subjects[index], [new Measurement { Values = { ["hydrated_ms"] = measured[index] } }]);
+            }
+
+            report.Evaluate(file, baseline);
+            return report.Failures();
+        }
+
+        _ = await Assert.That(FailuresOn(budgets)).IsEquivalentTo(
+        [
+            "recipe · phone · chromium · light · bloomed: hydrated_ms 2600 > target 2000 (runner x1.25)",
+            "search-3 · phone · chromium · light · bloomed: hydrated_ms 1900 > baseline 1000 (x1.25, +150 ms; runner x1.25)",
+            "home · desktop · chromium · light · bloomed: hydrated_ms 1300 > target 1000 (runner x1.25)",
+        ]);
+        _ = await Assert.That(FailuresOn(budgets.OnCi())).IsEquivalentTo(
+        [
+            "recipe · phone · chromium · light · bloomed: hydrated_ms 2600 > target 2000 (runner x1.25)",
+            "search-3 · phone · chromium · light · bloomed: hydrated_ms 1900 > baseline 1000 (x1.5, +150 ms; runner x1.25)",
+            "home · desktop · chromium · light · bloomed: hydrated_ms 1300 > target 1000 (runner x1.25)",
+        ]);
+    }
+
+    [Test]
+    public async Task ScriptBytes_FailAtTarget_LocallyAndOnCi_NamingPageProfileEngineRampBudgetAndNumber()
+    {
+        var budgets = BudgetFile.Load(MatrixRun.BudgetsPath);
+        var wizard = new Case(Pages.CreateRecipe, "phone", Engine.Webkit, Ramp.Dark, VisitState.Bloomed, Member: MemberKind.E2e);
+        var run = new Measurement { Values = { ["js_first_load_gz_bytes"] = 81_920, ["js_gz_bytes"] = 137_000 } };
+        var baseline = new BaselineFile { Cases = { [wizard.Identity] = new() { ["js_first_load_gz_bytes"] = 81_000, ["js_gz_bytes"] = 136_000 } } };
+
+        foreach (var file in new[] { budgets, budgets.OnCi() })
+        {
+            var report = new RunReport();
+            _ = report.Add(wizard, [run]);
+            report.Evaluate(file, baseline);
+
+            _ = await Assert.That(report.Failures()).IsEquivalentTo(
+            [
+                "create-recipe · phone · webkit · dark · bloomed: js_first_load_gz_bytes 81920 > target 61440",
+                "create-recipe · phone · webkit · dark · bloomed: js_gz_bytes 137000 > target 117266",
+            ]);
+        }
+    }
+
+    [Test]
+    public async Task DeterministicGuard_ReadsTheKeySubset_AndTheWizardPagesForScriptBytesOnly()
+    {
+        var cases = Matrix.DeterministicGuard();
+        var wizard = cases.Except(Matrix.KeySubset()).ToList();
+
+        _ = await Assert.That(cases.Take(Matrix.KeySubset().Count)).IsEquivalentTo(Matrix.KeySubset());
+        _ = await Assert.That(wizard.Count).IsEqualTo(8);
+        _ = await Assert.That(wizard.Select(item => item.Page).Distinct()).IsEquivalentTo([Pages.CreateRecipe, Pages.AddVariant]);
+        _ = await Assert.That(wizard.All(item => item.Profile == "phone" && item.Visit == VisitState.Bloomed && item.Member == MemberKind.E2e)).IsTrue();
+        _ = await Assert.That(wizard.All(Matrix.GuardsScriptBytesOnly)).IsTrue();
+        _ = await Assert.That(Matrix.KeySubset().Any(Matrix.GuardsScriptBytesOnly)).IsFalse();
+        _ = await Assert.That(Matrix.ScriptBytes).IsEquivalentTo(["js_first_load_gz_bytes", "js_gz_bytes"]);
+    }
+
+    [Test]
     public async Task RunnerFactor_LeavesCountsBytesAndPercentagesAlone()
     {
         var count = new Budget("filtered_elements", null, "baseline");
@@ -255,6 +348,159 @@ public class PerfHelperTests
         _ = await Assert.That(totals["js_gz_bytes"]).IsEqualTo(totals["css_gz_bytes"]);
         _ = await Assert.That(totals["font_bytes"]).IsEqualTo(1000);
         _ = await Assert.That(totals["image_bytes"]).IsEqualTo(1000);
+    }
+
+    [Test]
+    public async Task ScriptSplit_CountsSameOriginScriptStartedBeforeTheMarkAsFirstLoad_AndTheRestAsLater_AtLevelNine()
+    {
+        var entry = System.Text.Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("export const a = 1;", 400)));
+        var later = System.Text.Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("export const later = 'x';", 300)));
+        var origin = new Uri("http://127.0.0.1:5000/");
+        (string Type, string Url, byte[] Body)[] resources =
+        [
+            ("script", "http://127.0.0.1:5000/assets/main.js", entry),
+            ("script", "http://127.0.0.1:5000/assets/step.js", later),
+        ];
+        ResourceEntry[] entries =
+        [
+            new("http://127.0.0.1:5000/assets/main.js", 120, "script"),
+            new("http://127.0.0.1:5000/assets/step.js", 2400, "script"),
+        ];
+
+        var split = ScriptWeights.Split(resources, entries, hydratedAt: 900, origin);
+        var totals = ResourceWeights.Totals(ScriptWeights.Classify(resources, entries));
+
+        _ = await Assert.That(split["js_first_load_gz_bytes"]).IsEqualTo(ResourceWeights.GzipBytes(entry));
+        _ = await Assert.That(split["js_later_gz_bytes"]).IsEqualTo(ResourceWeights.GzipBytes(later));
+        _ = await Assert.That(totals["js_gz_bytes"]).IsEqualTo(split["js_first_load_gz_bytes"] + split["js_later_gz_bytes"]);
+    }
+
+    [Test]
+    public async Task ScriptSplit_CountsAScriptFromAnotherOriginToNeitherPart()
+    {
+        var body = System.Text.Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("beacon();", 300)));
+        var origin = new Uri("http://127.0.0.1:5000/");
+        (string Type, string Url, byte[] Body)[] resources =
+        [
+            ("script", "https://static.cloudflareinsights.com/beacon.min.js", body),
+            ("script", "http://localhost:5000/assets/late.js", body),
+        ];
+        ResourceEntry[] entries =
+        [
+            new("https://static.cloudflareinsights.com/beacon.min.js", 50, "script"),
+            new("http://localhost:5000/assets/late.js", 5000, "script"),
+        ];
+
+        var split = ScriptWeights.Split(resources, entries, hydratedAt: 900, origin);
+
+        _ = await Assert.That(split["js_first_load_gz_bytes"]).IsEqualTo(0);
+        _ = await Assert.That(split["js_later_gz_bytes"]).IsEqualTo(0);
+    }
+
+    [Test]
+    [Arguments("script", "link")]
+    [Arguments("other", "link")]
+    [Arguments("script", "other")]
+    [Arguments("other", "other")]
+    public async Task ScriptSplit_CountsAModulePreloadedChunkBeforeTheMarkAsFirstLoadScript(string resourceType, string initiatorType)
+    {
+        var chunk = System.Text.Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("export const island = 2;", 300)));
+        var origin = new Uri("http://127.0.0.1:5000/");
+        (string Type, string Url, byte[] Body)[] resources = [(resourceType, "http://127.0.0.1:5000/assets/island.js", chunk)];
+        ResourceEntry[] entries = [new("http://127.0.0.1:5000/assets/island.js", 80, initiatorType)];
+
+        var split = ScriptWeights.Split(resources, entries, hydratedAt: 900, origin);
+        var totals = ResourceWeights.Totals(ScriptWeights.Classify(resources, entries));
+
+        _ = await Assert.That(split["js_first_load_gz_bytes"]).IsEqualTo(ResourceWeights.GzipBytes(chunk));
+        _ = await Assert.That(split["js_later_gz_bytes"]).IsEqualTo(0);
+        _ = await Assert.That(totals["js_gz_bytes"]).IsEqualTo(ResourceWeights.GzipBytes(chunk));
+    }
+
+    [Test]
+    public async Task ScriptSplit_LeavesAPreloadedStylesheetOrImageOutOfTheScript()
+    {
+        var body = new byte[500];
+        var origin = new Uri("http://127.0.0.1:5000/");
+        (string Type, string Url, byte[] Body)[] resources =
+        [
+            ("stylesheet", "http://127.0.0.1:5000/assets/main.css", body),
+            ("image", "http://127.0.0.1:5000/assets/wash-chalk.png", body),
+        ];
+        ResourceEntry[] entries =
+        [
+            new("http://127.0.0.1:5000/assets/main.css", 10, "link"),
+            new("http://127.0.0.1:5000/assets/wash-chalk.png", 10, "link"),
+        ];
+
+        var split = ScriptWeights.Split(resources, entries, hydratedAt: 900, origin);
+
+        _ = await Assert.That(split["js_first_load_gz_bytes"]).IsEqualTo(0);
+        _ = await Assert.That(ResourceWeights.Totals(ScriptWeights.Classify(resources, entries))["js_gz_bytes"]).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task IslandsHydrated_CountsEveryElementCarryingAVueApp()
+    {
+        using var playwright = await Microsoft.Playwright.Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.SetContentAsync("<div id='app'><header></header><main><section></section></main></div>");
+
+        await page.EvaluateAsync("() => { document.querySelector('#app').__vue_app__ = {}; performance.mark('kcc:hydrated') }");
+        var one = await page.EvaluateAsync<int>(ScriptWeights.IslandsScript);
+        await page.EvaluateAsync("() => { document.querySelector('header').__vue_app__ = {}; document.querySelector('section').__vue_app__ = {} }");
+        var three = await page.EvaluateAsync<int>(ScriptWeights.IslandsScript);
+
+        _ = await Assert.That(one).IsEqualTo(1);
+        _ = await Assert.That(three).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task InteractionTrace_SumsRestyles_SkipsAnimationOnlyRecalcs_AndCountsWashPaints()
+    {
+        using var events = JsonDocument.Parse("""
+            [
+              {"name":"ScheduleStyleInvalidationTracking","ph":"I","pid":1,"tid":1,"ts":1,"args":{"data":{"changedClass":"is-tucked"}}},
+              {"name":"StyleRecalcInvalidationTracking","ph":"I","pid":1,"tid":1,"ts":2,"args":{"data":{"reason":"Inline CSS style declaration was mutated"}}},
+              {"name":"UpdateLayoutTree","ph":"X","dur":900,"pid":1,"tid":1,"ts":5,"args":{"elementCount":296}},
+              {"name":"StyleRecalcInvalidationTracking","ph":"I","pid":1,"tid":1,"ts":1000,"args":{"data":{"reason":"Animation"}}},
+              {"name":"UpdateLayoutTree","ph":"X","dur":10,"pid":1,"tid":1,"ts":1001,"args":{"elementCount":13}},
+              {"name":"StyleRecalcInvalidationTracking","ph":"I","pid":1,"tid":1,"ts":1100,"args":{"data":{"reason":"Related style rule"}}},
+              {"name":"UpdateLayoutTree","ph":"B","pid":1,"tid":1,"ts":1110,"args":{"beginData":{}}},
+              {"name":"UpdateLayoutTree","ph":"E","pid":1,"tid":1,"ts":1120,"args":{"elementCount":4}},
+              {"name":"Paint","ph":"X","dur":5,"pid":1,"tid":1,"ts":1130,"args":{"data":{"nodeName":"SPAN class='kcc-wash'"}}},
+              {"name":"Paint","ph":"X","dur":5,"pid":1,"tid":1,"ts":1131,"args":{"data":{"nodeName":"SPAN class='kcc-wash kcc-wash--b'"}}},
+              {"name":"Paint","ph":"X","dur":5,"pid":1,"tid":1,"ts":1132,"args":{"data":{"nodeName":"DIV class='kcc-washes'"}}},
+              {"name":"Paint","ph":"X","dur":5,"pid":1,"tid":1,"ts":1133,"args":{"data":{"nodeName":"#document"}}}
+            ]
+            """);
+
+        var reading = InteractionTrace.Summarize(events.RootElement.EnumerateArray());
+
+        _ = await Assert.That(reading.Restyled).IsEqualTo(300);
+        _ = await Assert.That(reading.WashInvalidations).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task TraceProbes_RecordAHoverGap_NotAZero_WhenThePageHasNoLiftCard()
+    {
+        var result = TraceProbes.Record(new InteractionReading(12, 3), hover: null, hoverGap: "no .kcc-slip--lift on the page");
+
+        _ = await Assert.That(result.Values.ContainsKey("restyled_on_hover")).IsFalse();
+        _ = await Assert.That(result.Gaps).IsEquivalentTo(new[] { "restyled_on_hover: no .kcc-slip--lift on the page" });
+        _ = await Assert.That(result.Values["restyled_on_tuck"]).IsEqualTo(12);
+        _ = await Assert.That(result.Values["wash_raster_on_interaction"]).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task TraceProbes_RecordTheHoverReading_WhenTheLiftCardWasHovered()
+    {
+        var result = TraceProbes.Record(new InteractionReading(12, 3), new InteractionReading(0, 2), hoverGap: null);
+
+        _ = await Assert.That(result.Values["restyled_on_hover"]).IsEqualTo(0);
+        _ = await Assert.That(result.Values["wash_raster_on_interaction"]).IsEqualTo(5);
+        _ = await Assert.That(result.Gaps).IsEmpty();
     }
 
     [Test]
@@ -477,8 +723,93 @@ public class PerfHelperTests
 
         _ = await Assert.That(EnforcedTiming(budgets.OnCi())).IsEquivalentTo(["hydrated_ms", "server_response_ms"]);
         _ = await Assert.That(EnforcedTiming(budgets)).Contains("frame_p95_ms");
-        _ = await Assert.That(budgets.Budgets.Where(budget => MetricCatalog.Describe(budget.Metric).Kind == MetricCatalog.Timing && budget.Mode == "target")).IsEmpty();
-        _ = await Assert.That(budgets.Budgets.Where(budget => MetricCatalog.Describe(budget.Metric).Kind == MetricCatalog.Deterministic && budget.CiMode is not null)).IsEmpty();
+        _ = await Assert.That(budgets.Budgets
+            .Where(budget => MetricCatalog.Describe(budget.Metric).Kind == MetricCatalog.Timing && budget.Mode == "target")
+            .Select(budget => budget.Metric)
+            .Distinct()).IsEquivalentTo(["hydrated_ms", "cls", "cls_scroll"]);
+        _ = await Assert.That(budgets.Budgets
+            .Where(budget => MetricCatalog.Describe(budget.Metric).Kind == MetricCatalog.Deterministic && budget.CiMode is not null)).IsEmpty();
+    }
+
+    [Test]
+    public async Task Budgets_HoldScriptAndProbeGuardsAtTheirTargets_LocallyAndOnCi()
+    {
+        var local = BudgetFile.Load(MatrixRun.BudgetsPath);
+        var ci = local.OnCi();
+        var chromium = Search with { Ramp = Ramp.Light };
+        var webkit = chromium with { Engine = Engine.Webkit };
+        var bare = chromium with { Visit = VisitState.Bare };
+
+        foreach (var file in new[] { local, ci })
+        {
+            _ = await Assert.That(file.Find("js_first_load_gz_bytes", webkit)).IsSameReferenceAs(file.Find("js_first_load_gz_bytes", chromium));
+            _ = await Assert.That((file.Find("js_first_load_gz_bytes", chromium)!.Mode, file.Find("js_first_load_gz_bytes", chromium)!.Limit)).IsEqualTo(("target", 61_440d));
+            _ = await Assert.That((file.Find("js_gz_bytes", webkit)!.Mode, file.Find("js_gz_bytes", webkit)!.Limit)).IsEqualTo(("target", 117_266d));
+            _ = await Assert.That(file.Find("js_later_gz_bytes", chromium)!.Mode).IsEqualTo(Verdict.ReportOnly);
+            _ = await Assert.That(file.Find("islands_hydrated", webkit)! with { Owner = null }).IsEqualTo(new Budget("islands_hydrated", new Scope(), "baseline", NotARegression: true));
+            _ = await Assert.That(file.Find("restyled_on_hover", chromium)!.Mode).IsEqualTo(Verdict.ReportOnly);
+            _ = await Assert.That((file.Find("restyled_on_tuck", chromium)!.Mode, file.Find("restyled_on_tuck", bare)!.Limit)).IsEqualTo(("target", 16d));
+            _ = await Assert.That(file.Find("restyled_on_tuck", webkit)!.Mode).IsEqualTo(Verdict.ReportOnly);
+            _ = await Assert.That((file.Find("wash_raster_on_interaction", chromium)!.Mode, file.Find("wash_raster_on_interaction", chromium)!.Limit)).IsEqualTo(("target", 0d));
+            _ = await Assert.That(file.Find("wash_raster_on_interaction", bare)!.Mode).IsEqualTo(Verdict.ReportOnly);
+            _ = await Assert.That(file.Find("wash_raster_on_interaction", webkit)!.Mode).IsEqualTo(Verdict.ReportOnly);
+        }
+
+        var home = chromium with { Page = Pages.Home };
+        foreach (var (metric, limit) in new[] { ("cls", 0.0001), ("cls_scroll", 0d) })
+        {
+            _ = await Assert.That((local.Find(metric, home)!.Mode, local.Find(metric, home)!.Limit)).IsEqualTo(("target", limit));
+            _ = await Assert.That(ci.Find(metric, chromium)!.Mode).IsEqualTo(Verdict.ReportOnly);
+        }
+
+        _ = await Assert.That(local.Find("cls", chromium)).IsSameReferenceAs(local.Find("cls", home));
+        _ = await Assert.That(local.Find("cls_scroll", chromium)!.Mode).IsEqualTo("baseline");
+
+        _ = await Assert.That(local.Budgets.Where(budget => budget.NotARegression).Select(budget => budget.Metric)).IsEquivalentTo(new[] { "js_later_gz_bytes", "islands_hydrated" });
+    }
+
+    [Test]
+    public async Task CiBaseline_HoldsOnlyTheScriptBytes_ForEveryWizardGuardCase()
+    {
+        var baseline = BaselineFile.Load(MatrixRun.CiBaselinePath);
+
+        var wrong = Matrix.DeterministicGuard()
+            .Where(Matrix.GuardsScriptBytesOnly)
+            .Where(subject => !baseline.Cases.TryGetValue(subject.Identity, out var metrics) || !metrics.Keys.Order().SequenceEqual(Matrix.ScriptBytes.Order()))
+            .Select(subject => subject.Identity);
+
+        _ = await Assert.That(wrong).IsEmpty();
+    }
+
+    [Test]
+    public async Task CiBaseline_HoldsFirstLoadScript_ForEveryKeySubsetCase()
+    {
+        var baseline = BaselineFile.Load(MatrixRun.CiBaselinePath);
+
+        var missing = Matrix.KeySubset()
+            .Where(subject => baseline.Find(subject.Identity, "js_first_load_gz_bytes") is null)
+            .Select(subject => subject.Identity);
+
+        _ = await Assert.That(missing).IsEmpty();
+    }
+
+    // The phone profile has no hover, so restyled_on_hover reads 0 on every key-subset case and cannot guard it.
+    [Test]
+    public async Task CiBaseline_HoldsTheTuckAndWashProbes_ForEveryChromiumKeySubsetCase_AndNoHoverProbe()
+    {
+        var baseline = BaselineFile.Load(MatrixRun.CiBaselinePath);
+        var chromium = Matrix.KeySubset().Where(subject => subject.Engine == Engine.Chromium).ToList();
+
+        var missing = chromium
+            .SelectMany(subject => new[] { "restyled_on_tuck", "wash_raster_on_interaction" }
+                .Where(metric => baseline.Find(subject.Identity, metric) is null)
+                .Select(metric => $"{subject.Identity}: {metric}"));
+        var hover = Matrix.KeySubset()
+            .Where(subject => baseline.Find(subject.Identity, "restyled_on_hover") is not null)
+            .Select(subject => subject.Identity);
+
+        _ = await Assert.That(missing).IsEmpty();
+        _ = await Assert.That(hover).IsEmpty();
     }
 
     [Test]
@@ -560,6 +891,28 @@ public class PerfHelperTests
     }
 
     [Test]
+    public async Task Budgets_HoldPhoneChromiumInteractionAndFrames_AtTheirBaseline_AfterTheGeneralEntries()
+    {
+        var file = BudgetFile.Load(MatrixRun.BudgetsPath);
+        var budgets = file.Budgets.ToList();
+        var phoneChromium = new Scope(Profile: "phone", Engine: "chromium");
+        string[] carried = ["interaction_ms_max", "frames_within_16_7_pct", "long_frames", "frame_p95_ms"];
+
+        foreach (var metric in carried)
+        {
+            var general = budgets.Single(budget => budget.Metric == metric && (budget.Scope ?? new Scope()) == new Scope());
+            var scoped = budgets.SingleOrDefault(budget => budget.Metric == metric && budget.Scope == phoneChromium);
+
+            _ = await Assert.That(scoped).IsNotNull();
+            _ = await Assert.That(scoped! with { Scope = null }).IsEqualTo(general with { Scope = null });
+            _ = await Assert.That(budgets.IndexOf(scoped)).IsGreaterThan(budgets.IndexOf(general));
+            _ = await Assert.That(file.Find(metric, Search)).IsSameReferenceAs(scoped);
+            _ = await Assert.That(file.Find(metric, Search with { Profile = "desktop" })).IsSameReferenceAs(general);
+            _ = await Assert.That(file.Find(metric, Search with { Engine = Engine.Webkit })).IsSameReferenceAs(general);
+        }
+    }
+
+    [Test]
     public async Task Budgets_CoverEveryMetricOfTheDataModel_WithAnOwnerAndAMode()
     {
         string[] dataModel =
@@ -569,7 +922,7 @@ public class PerfHelperTests
             "server_response_ms", "font_bytes", "image_bytes",
         ];
         var budgets = BudgetFile.Load(MatrixRun.BudgetsPath).Budgets;
-        Budget Of(string metric) => budgets.Single(budget => budget.Metric == metric);
+        Budget Of(string metric) => budgets.Single(budget => budget.Metric == metric && (budget.Scope ?? new Scope()) == new Scope());
 
         _ = await Assert.That(dataModel.Where(metric => budgets.All(budget => budget.Metric != metric))).IsEmpty();
         _ = await Assert.That(budgets.Where(budget => budget.Owner is not ("phase-1" or "phase-2" or "phase-3"))).IsEmpty();
@@ -583,8 +936,8 @@ public class PerfHelperTests
         _ = await Assert.That(Of("frames_within_16_7_pct").Limit).IsEqualTo(95);
         _ = await Assert.That(Of("long_frames").Limit).IsEqualTo(0);
         _ = await Assert.That(Of("interaction_ms_max").Limit).IsEqualTo(100);
-        _ = await Assert.That(Of("cls").Limit).IsEqualTo(0);
-        _ = await Assert.That(Of("cls_scroll").Mode).IsEqualTo("report-only");
+        _ = await Assert.That(Of("cls").Limit).IsEqualTo(0.0001);
+        _ = await Assert.That(Of("cls_scroll").Mode).IsEqualTo("target");
         _ = await Assert.That(new[] { "layers", "layer_area_mpx", "filtered_area_px2" }.All(metric => Of(metric).PlatformSensitive)).IsTrue();
     }
 

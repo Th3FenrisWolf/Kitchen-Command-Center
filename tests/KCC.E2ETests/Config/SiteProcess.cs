@@ -97,7 +97,8 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         site = StartLogged(info);
 
         using var http = new HttpClient { BaseAddress = BaseUrl, Timeout = TimeSpan.FromSeconds(10) };
-        for (var deadline = DateTime.UtcNow.AddMinutes(5); DateTime.UtcNow < deadline; await Task.Delay(1000))
+        var deadline = new BootDeadline(TimeSpan.FromMinutes(5));
+        for (; !deadline.Expired; await Task.Delay(1000))
         {
             if (site.HasExited)
             {
@@ -140,7 +141,7 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
             }
         }
 
-        throw new TimeoutException($"Umbraco did not reach Run within five minutes.{LogTail()}");
+        throw new TimeoutException($"{deadline.Describe("Umbraco did not reach Run within five minutes.")}{LogTail()}");
     }
 
     public async Task StopAsync()
@@ -200,7 +201,9 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         }
 
         var web = RepoPaths.WebProject;
-        if (!File.Exists(Path.Combine(web, "wwwroot", ".vite", "manifest.json")) || !File.Exists(Path.Combine(web, "wwwroot", "ssr", "Server.Entry.js")))
+        if (!File.Exists(Path.Combine(web, "wwwroot", ".vite", "manifest.json"))
+            || !File.Exists(Path.Combine(web, "wwwroot", "fallback", ".vite", "manifest.json"))
+            || !File.Exists(Path.Combine(web, "wwwroot", "ssr", "Server.Entry.js")))
         {
             throw new InvalidOperationException("The front-end bundles are missing. Run `pnpm build:all` at the repository root first.");
         }
@@ -229,7 +232,8 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
         ssr = StartLogged(info);
 
         using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
-        for (var deadline = DateTime.UtcNow.AddSeconds(60); DateTime.UtcNow < deadline; await Task.Delay(500))
+        var deadline = new BootDeadline(TimeSpan.FromSeconds(60));
+        for (; !deadline.Expired; await Task.Delay(500))
         {
             if (ssr.HasExited)
             {
@@ -250,7 +254,7 @@ public sealed class SiteProcess : IAsyncInitializer, IAsyncDisposable
             }
         }
 
-        throw new TimeoutException($"The SSR service did not answer /health within a minute.{LogTail()}");
+        throw new TimeoutException($"{deadline.Describe("The SSR service did not answer /health within a minute.")}{LogTail()}");
     }
 
     private async Task SeedTestRecipesAsync()

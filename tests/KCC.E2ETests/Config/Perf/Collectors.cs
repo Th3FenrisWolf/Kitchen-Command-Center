@@ -37,7 +37,8 @@ public sealed record CollectOptions(
     bool Diagnostics = true,
     bool Freeze = false,
     SitePaths? Paths = null,
-    LiveSite? Live = null);
+    LiveSite? Live = null,
+    Func<IPage, Task>? Prepare = null);
 
 public readonly record struct Box(double X, double Y, double Width, double Height);
 
@@ -154,6 +155,70 @@ public static class ResourceWeights
 
         public override void Write(byte[] buffer, int offset, int count) => length += count;
     }
+}
+
+public sealed record ResourceEntry(string Name, double StartTime, string InitiatorType);
+
+public static class ScriptWeights
+{
+    public const string IslandsScript = "() => [...document.querySelectorAll('*')].filter((element) => element.__vue_app__).length";
+
+    public const string ReadEntries = """
+        () => ({
+          hydratedAt: performance.getEntriesByName('kcc:hydrated')[0]?.startTime ?? null,
+          entries: performance.getEntriesByType('resource').map((entry) => ({ name: entry.name, startTime: entry.startTime, initiatorType: entry.initiatorType })),
+        })
+        """;
+
+    // Playwright types a request by what asked for it, so a chunk a <link rel="modulepreload"> fetched need not read
+    // as a script; the resource entry's initiator and the file name say what it is.
+    public static IEnumerable<(string Type, byte[] Body)> Classify(
+        IEnumerable<(string Type, string Url, byte[] Body)> resources, IEnumerable<ResourceEntry> entries)
+    {
+        var byName = Index(entries);
+        return resources.Select(item => (IsScript(item.Type, item.Url, byName) ? "script" : item.Type, item.Body));
+    }
+
+    public static Dictionary<string, double> Split(
+        IEnumerable<(string Type, string Url, byte[] Body)> resources, IEnumerable<ResourceEntry> entries, double hydratedAt, Uri origin)
+    {
+        var byName = Index(entries);
+        double firstLoad = 0, later = 0;
+        foreach (var (type, url, body) in resources)
+        {
+            if (!IsScript(type, url, byName) || !Uri.TryCreate(url, UriKind.Absolute, out var address) || !SameOrigin(address, origin))
+            {
+                continue;
+            }
+
+            if (byName.TryGetValue(url, out var entry) && entry.StartTime < hydratedAt)
+            {
+                firstLoad += ResourceWeights.GzipBytes(body);
+            }
+            else
+            {
+                later += ResourceWeights.GzipBytes(body);
+            }
+        }
+
+        return new() { ["js_first_load_gz_bytes"] = firstLoad, ["js_later_gz_bytes"] = later };
+    }
+
+    private static Dictionary<string, ResourceEntry> Index(IEnumerable<ResourceEntry> entries) =>
+        entries.GroupBy(entry => entry.Name).ToDictionary(group => group.Key, group => group.MinBy(entry => entry.StartTime)!);
+
+    private static bool IsScript(string type, string url, Dictionary<string, ResourceEntry> entries) =>
+        type == "script"
+        || (entries.TryGetValue(url, out var entry) && entry.InitiatorType is "link" or "other" && IsScriptPath(url));
+
+    private static bool IsScriptPath(string url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var address)
+        && (address.AbsolutePath.EndsWith(".js", StringComparison.OrdinalIgnoreCase) || address.AbsolutePath.EndsWith(".mjs", StringComparison.OrdinalIgnoreCase));
+
+    private static bool SameOrigin(Uri address, Uri origin) =>
+        string.Equals(address.Scheme, origin.Scheme, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(address.Host, origin.Host, StringComparison.OrdinalIgnoreCase)
+        && address.Port == origin.Port;
 }
 
 public static class TraceTotals
@@ -274,6 +339,7 @@ public sealed class CaseSession : IAsyncDisposable
 {
     private const string Observers = """
         (() => {
+          performance.setResourceTimingBufferSize?.(2000)
           const state = { lcp: 0, shifts: [], events: [], loaf: [], supported: PerformanceObserver.supportedEntryTypes ?? [] }
           const watch = (type, take, extra) => {
             try {
@@ -377,6 +443,11 @@ public sealed class CaseSession : IAsyncDisposable
             }
 
             page.Response += (_, response) => session.Track(response);
+            if (options.Prepare is { } prepare)
+            {
+                await prepare(page);
+            }
+
             if (!subject.ImagesOn)
             {
                 await page.RouteAsync("**/*", route => route.Request.ResourceType == "image" ? route.AbortAsync() : route.FallbackAsync());
@@ -437,10 +508,34 @@ public sealed class CaseSession : IAsyncDisposable
         }
 
         var finished = await Task.WhenAll(pending);
-        return ResourceWeights.Totals(finished
+        var resources = finished
             .Where(item => item.Body is not null)
             .DistinctBy(item => item.Url)
-            .Select(item => (item.Type, item.Body!)));
+            .Select(item => (item.Type, item.Url, item.Body!))
+            .ToList();
+        var reading = await Collectors.ReadAsync<EntryReading>(Page, ScriptWeights.ReadEntries);
+        var totals = ResourceWeights.Totals(ScriptWeights.Classify(resources, reading.Entries));
+        if (reading.HydratedAt is { } hydratedAt)
+        {
+            foreach (var (name, value) in ScriptWeights.Split(resources, reading.Entries, hydratedAt, new Uri(Page.Url)))
+            {
+                totals[name] = value;
+            }
+        }
+        else
+        {
+            Measurement.Gap("js_first_load_gz_bytes", "the kcc:hydrated mark never appeared");
+            Measurement.Gap("js_later_gz_bytes", "the kcc:hydrated mark never appeared");
+        }
+
+        return totals;
+    }
+
+    private sealed class EntryReading
+    {
+        public double? HydratedAt { get; set; }
+
+        public List<ResourceEntry> Entries { get; set; } = [];
     }
 
     public async ValueTask DisposeAsync() => await Context.CloseAsync();
@@ -519,16 +614,20 @@ public static class Collectors
         if (options.Timing)
         {
             result.Merge(await TimingAsync(browser, session, options.Diagnostics));
-            if (!options.Diagnostics)
-            {
-                return result;
-            }
+        }
 
-            result.Merge(await GeometryAsync(browser, baseUrl, session, options));
-            if (subject.Engine == Engine.Chromium)
-            {
-                result.Merge(await CssUsageAsync(browser, baseUrl, subject, options));
-            }
+        // The probes scroll, hover and wait for seconds, which would shift the bloom window and add events and shifts
+        // to the timing pass, so they run after it.
+        result.Merge(await TraceProbes.ReadAsync(session));
+        if (!options.Timing || !options.Diagnostics)
+        {
+            return result;
+        }
+
+        result.Merge(await GeometryAsync(browser, baseUrl, session, options));
+        if (subject.Engine == Engine.Chromium)
+        {
+            result.Merge(await CssUsageAsync(browser, baseUrl, subject, options));
         }
 
         return result;
@@ -546,6 +645,8 @@ public static class Collectors
         {
             result.Values[name] = value;
         }
+
+        result.Values["islands_hydrated"] = await session.Page.EvaluateAsync<int>(ScriptWeights.IslandsScript);
 
         if (session.DevTools is null)
         {
