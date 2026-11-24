@@ -20,6 +20,9 @@ its definition of done and is merged into `main`.
 | 2 | 009 (this spec) | Script weight, hydration and interactivity cost |
 | 3 | later | Server rendering on the Pi, caching (app and Cloudflare), the scripts Cloudflare adds to each page, fonts and images |
 
+Phase 2 carries a phone Chromium interaction and frame gap, recorded in `specs/009-script-hydration-cost/research.md`,
+to Phase 3 or a later phase.
+
 ## Where Phase 1 left it
 
 Phase 1's measurement, budgets and guards stay as they are, and this phase moves the areas it owns from their
@@ -62,6 +65,82 @@ recorded baselines to their targets. Phase 1 recorded these numbers for this pha
   change. Every page type is captured and diffed, in both ramps and on both profiles, and every page type runs the
   scripts-off check.
 
+### Session 2026-11-17
+
+- Q: Where do the 20 KB guard proof and the ten-run stability trial run? → A: Locally, against the same guard classes
+  CI runs. No throwaway branch is pushed, because a pushed branch writes live board cards and issues.
+- Q: If the owner keeps the washes' look and the phone in Chromium still misses the interaction or frame budget, how
+  does Phase 2 close? → A: The owner is asked in one question with the look round: approve the wash change that meets
+  the budget, or keep the look and carry the gap. On keeping the look, the phone Chromium interaction and frame budgets
+  hold at their baselines, the gap is recorded with its measured numbers, FR-004, FR-005, SC-001 and SC-002 are
+  amended for phone Chromium only, and the phase table names the gap as going to Phase 3 or a later phase.
+- Q: Where is the space for search's next page of results held? → A: The browser reserves it after the page is usable,
+  below the screen. First paint and the scripts-off page stay as they are today.
+
+### Session 2026-11-18
+
+- Q: The look round showed wash changes that would bring phone Chromium closer to its budgets. Approve one, or keep
+  the look and carry the gap? → A: "Keep look, approve E": no wash change ships, and the failed-part error state is
+  approved as built (`specs/009-script-hydration-cost/mockups/README.md`). The phone profile renders with SwiftShader,
+  a software rasteriser the 4x CPU throttle does not reach. With hardware raster and the same throttle, the branch
+  meets 100 ms with no look change:
+
+  | Measurement (phone, 4x CPU, hardware raster) | Before (`c1827268`) | Branch |
+  |---|---|---|
+  | Wizard worst press | 104 ms | 64 ms |
+  | Wizard Next | 72 ms | 48 ms |
+  | Search-3 tap | 96 ms | 0 ms |
+
+  FR-004, FR-005, FR-013, SC-001 and SC-002 are amended for phone Chromium only, and the gap goes to Phase 3 or a
+  later phase.
+- Q: A reader parked on the footer either waits 1.5 s for the next page, so that its landing shifts nothing, or gets
+  it at once and sees the footer pushed down as before. Which holds? → A: Load at once, as today. Decided by the
+  orchestrator under the 2026-11-16 clarify answer (infinite scroll behaves as it does today). FR-008 is amended for
+  a reader parked on the footer: that landing shifts no more than before, measured by `AppendShiftTests` under the
+  CPU lock (10 runs per viewport, 2026-11-18): 0.0134 at 1920x1080 in every run, and 0 or 0.1478 at 375x812, against
+  0.093 and 0.27 for the same flow before the space was reserved. The space reserved below the screen stays as C3
+  set it.
+
+### Session 2026-11-19
+
+- Q: How many local runs does the stability trial take? → A: Three of each guard class and of `pnpm perf --check`,
+  and three fresh boots: the owner's decision of 2026-11-19, amending the C1 answer. A run that overlaps a machine
+  sleep is discarded and run again. A timing metric flips to its target locally only if it passes three of three.
+
+### Session 2026-11-23
+
+- Q: The reserved search band costs headless WebKit on search with one page at a fully bloomed visit: 2 more frames
+  over 50 ms across the same scroll distance on the phone profile (12 against 10), and a hover of 104-128 ms against
+  72-80 ms on the desktop profile in the dark ramp. Keep the band, or tune its placement first? → A: "Keep the band".
+  FR-004 and FR-009 are amended for those cases, and `specs/009-script-hydration-cost/research.md` F17 holds the
+  measurements. The owner's iPhone pass (FR-011) judges Safari on a phone.
+- Q: The final matrix reads the band's cost in two cases those exceptions do not name: the desktop WebKit hover on
+  search with one page in the light ramp at a fully bloomed visit (96-128 ms against 64-88), and the phone WebKit
+  frames over 50 ms on search with one page at a bare visit in the dark ramp (10-12 against 8-9). Widen the
+  exceptions, or tune the band first? → A: "Widen exceptions". FR-004's exception covers both ramps and FR-009's
+  covers every visit.
+- Q: FR-004 and SC-001 hold WebKit on the desktop profile to 100 ms, but its hover reads over 100 ms on the recipe page
+  (80-128 ms) and on search with three pages (112 ms) before and after this phase, and search with three pages read
+  152 ms in `before.json`. How is WebKit on the desktop profile judged? → A: "No worse than before". FR-004, FR-005,
+  SC-001 and SC-002 hold it to its baseline in `before.json`, as FR-009 holds WebKit on the phone, and the gap goes to
+  Phase 3 or a later phase. Its frames follow the same rule: it reads 7 to 38 frames over 50 ms on search before and
+  after this phase. `specs/009-script-hydration-cost/research.md` F18 holds the measurements.
+- Q: The share of frames within 16.7 ms cannot be read against its 95% target on a 60 Hz display: it reads 50-65% in
+  Chromium on the build before this phase and on the build after it, where Phase 1's baseline read 93-100% at a
+  120 Hz cadence.
+  How are frames judged for this phase? → A: "Paired runs". A frame metric passes when the build after this phase is
+  no worse than the build before it in interleaved runs on the same display, worse meaning worse in two of three
+  paired passes. `specs/009-script-hydration-cost/paired-runs.json` holds the paired runs. Repairing the metric so it
+  reads the same at any refresh rate goes to Phase 3.
+- Q: On a site with no photo-import key the recipe wizard opens on a typing step and fetches it before the page is
+  usable: about 61.6 KB on create recipe and 63.6 KB on add variant, against 60 KB. Does the target cover that
+  setup? → A: "Target the configured site". FR-006 and SC-003 are measured with photo import configured, as the site
+  is deployed. The sizes without it are recorded in research.md F18 and go to Phase 3.
+- Q: Two results rested on calls no spec line recorded: the reserved band raises the layer area of search with one
+  page in Chromium (FR-010), and three scripts-off first paints differ from their scripts-enabled ones on the build
+  before this phase as they do after it (SC-006). Record both as accepted? → A: "Record both". FR-010 excepts the
+  band's layer area, and SC-006 excepts a scripts-off difference the build at `c1827268` shows too.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Every tap answers at once (Priority: P1)
@@ -99,7 +178,8 @@ budget in both engines.
 
 **Independent Test**: on the throttled phone and the desktop profile, scroll recipe search until three pages have
 loaded, then scroll the full page and back, in both ramps, at a bare and a fully bloomed visit, and record frame
-times and layout shift.
+times and layout shift. Layout shift reads 0 except a reader parked on the footer, which is no worse than before:
+0.0134 at 1920x1080 and at most 0.1478 at 375x812, against 0.093 and 0.27 before.
 
 **Acceptance Scenarios**:
 
@@ -168,14 +248,15 @@ adds start-up work. CI fails the pull request and names the page, profile, engin
 **Why this priority**: script weight crept up with the components, one at a time. Without a guard at the target it
 will creep again.
 
-**Independent Test**: on a throwaway branch, add about 20 KB gzipped of script to every page, and confirm CI fails
-with that message; remove it and confirm CI passes.
+**Independent Test**: locally, add about 20 KB gzipped of script to every page, run the guard classes CI runs, and
+confirm they fail with that message; remove it and confirm they pass. No throwaway branch is pushed.
 
 **Acceptance Scenarios**:
 
 1. **Given** a change that takes any measured page over 60 KB gzipped of script before it is usable, **When** CI
    runs, **Then** the build fails and reports the page, profile, engine, ramp, budget and measured number.
-2. **Given** an unchanged codebase, **When** CI runs ten times, **Then** every guard passes every time.
+2. **Given** an unchanged codebase, **When** the guard classes CI runs are run three times locally, **Then** every
+   guard passes every time, and CI passes on the pull request.
 3. **Given** a budget this phase meets, **When** this phase lands, **Then** its guard enforces the target in place of
    the recorded baseline.
 
@@ -219,22 +300,38 @@ with that message; remove it and confirm CI passes.
 **Budgets**
 
 - **FR-004**: Every tap, click, hover and key press MUST show its response within 100 ms on every public page type,
-  in both ramps, at a bare and a fully bloomed visit, with reduced motion on and off: on both profiles in Chromium and
-  on the desktop profile in WebKit. The first input after a page becomes usable and the first use of each control
-  are included.
+  in both ramps, at a bare and a fully bloomed visit, with reduced motion on and off: on the desktop profile in
+  Chromium. On the desktop profile in WebKit and on the phone profile in Chromium, no interaction MAY be slower than
+  its baseline in `specs/009-script-hydration-cost/before.json`; the gap to 100 ms is recorded with its measured
+  numbers in research.md and goes to Phase 3 or a later phase. The first input after a page becomes usable and the
+  first use of each control are included. On the desktop profile in WebKit, the hover on recipe search with one page
+  of results at a fully bloomed visit is recorded and not held to its baseline: it is the cost of the reserved band
+  (Clarifications, 2026-11-23).
 - **FR-005**: Scrolling and blooming MUST hold 95% of frames within 16.7 ms and no frame over 50 ms on every public
-  page type, recipe search with three pages of results included, in the same cases as FR-004.
+  page type, recipe search with three pages of results included, in the same cases as FR-004. On the desktop profile in
+  WebKit and on the phone profile in Chromium, the share of frames within 16.7 ms and the long frames MUST NOT get
+  worse than their baseline in `before.json`; the gap to the target is recorded and goes to Phase 3 or a later phase.
+  On the desktop profile in WebKit, the frames over 50 ms on recipe search with one page of results are excepted as
+  FR-009 excepts them. On a display that refreshes at 60 Hz the share of frames within 16.7 ms cannot be read against
+  95%, so every frame metric is judged there against the build before this phase in paired runs on the same display
+  (Clarifications, 2026-11-23).
 - **FR-006**: A page MUST fetch at most 60 KB gzipped of script before it is usable, on every public page type. Script
   fetched after the page is usable counts toward no first-load budget, but a visit MUST NOT fetch more script in total
-  than Phase 1 recorded for the same page (117,266 B gzipped).
+  than Phase 1 recorded for the same page (117,266 B gzipped). The target is measured with photo import configured,
+  as the site is deployed (Clarifications, 2026-11-23).
 - **FR-007**: Every page MUST become usable within 2.0 s on the phone profile and 1.0 s on the desktop profile, and no
   later than its baseline.
 - **FR-008**: Layout shift MUST stay at zero after first paint, including while recipe search appends a page of
-  results.
+  results, except a reader parked on the footer, which is no worse than before: 0.0134 at 1920x1080 and at most
+  0.1478 at 375x812, against 0.093 and 0.27 before (Clarifications, 2026-11-18).
 - **FR-009**: Headless WebKit on the phone profile MUST NOT get worse than its baseline on any metric, and its numbers
-  MUST appear in the report. The targets in FR-004 and FR-005 do not apply to it.
+  MUST appear in the report. The targets in FR-004 and FR-005 do not apply to it. The frames over 50 ms on recipe
+  search with one page of results are excepted at every visit: they are the cost of the reserved band, 2 more over the
+  same scroll distance at a fully bloomed visit, and the measured scroll is about twice as long (Clarifications,
+  2026-11-23).
 - **FR-010**: No metric Phase 1 holds MAY get worse than its baseline: stylesheet weight, layers and other paint
-  counts, load milestones, server response, and font and image weight.
+  counts, load milestones, server response, and font and image weight. The layer area of recipe search with one page
+  of results in Chromium is excepted: the reserved band raises it (Clarifications, 2026-11-23).
 - **FR-011**: At acceptance the owner MUST run a manual pass in Safari on an iPhone against this phase's build: scroll
   recipe search until three pages have loaded and back, open a recipe and cook mode, and use the header's search and
   pad cards, at a fresh visit and two minutes into one, and record whether it keeps up and whether taps answer at
@@ -245,7 +342,9 @@ with that message; remove it and confirm CI passes.
 - **FR-012**: Every control and feature MUST behave as it does today, including the infinite scroll, the header tuck,
   the pad cards, recently viewed, cook mode, the recipe wizard and the sign-in and account forms.
 - **FR-013**: A part of a page MAY load after the page is usable, provided it answers within the interaction budget
-  the first time it is used and an input made before it arrives is not lost.
+  the first time it is used and an input made before it arrives is not lost. On the phone profile in Chromium, the
+  recipe wizard's first presses are recorded, every one of them measured, and not held to 100 ms; the gap is recorded
+  with its measured numbers in research.md and goes to Phase 3 or a later phase.
 - **FR-014**: Every public page MUST keep server-side rendering, and its first paint with scripts disabled MUST match
   its first paint with scripts enabled: in light for a signed-out visitor, and in the saved ramp for a signed-in
   member. With scripts off, content and links work as they do today.
@@ -269,7 +368,7 @@ with that message; remove it and confirm CI passes.
 - **FR-020**: When this phase lands, CI MUST enforce the 60 KB first-load script target and the time-to-usable
   targets in place of their recorded baselines, on the key subset Phase 1 defined, and a failure MUST name the page,
   profile, engine, ramp, budget and measured number.
-- **FR-021**: The interaction and frame budgets MUST enforce their targets in the local check once a ten-of-ten
+- **FR-021**: The interaction and frame budgets MUST enforce their targets in the local check once a three-of-three
   stability trial passes. In CI they MAY stay report-only where they are not stable, and for each one that does, the
   plan MUST name a deterministic stand-in that CI enforces, such as the script a page runs before it is usable or the
   number of parts made interactive on a page.
@@ -297,21 +396,27 @@ with that message; remove it and confirm CI passes.
 ### Measurable Outcomes
 
 - **SC-001**: On every public page type, both ramps, at a bare and a fully bloomed visit, every measured tap, click,
-  hover and key press shows its response within 100 ms, the first input after load included: on the throttled phone
-  and the desktop profile in Chromium, and on the desktop profile in WebKit.
+  hover and key press shows its response within 100 ms, the first input after load included: on the desktop profile
+  in Chromium; on the desktop profile in WebKit and on the throttled phone in Chromium, no measured interaction is
+  slower than its baseline, and the recorded gap to 100 ms goes to Phase 3 or a later phase.
 - **SC-002**: In the same cases, scrolling recipe search with three pages of results, and every other page type,
-  keeps 95% of frames within 16.7 ms and no frame over 50 ms, with no layout shift as results arrive.
+  keeps 95% of frames within 16.7 ms and no frame over 50 ms, with no layout shift as results arrive. On the desktop
+  profile in WebKit and on the throttled phone in Chromium, frames are no worse than their baseline, and the recorded
+  gap goes to Phase 3 or a later phase; the zero layout shift holds there as everywhere. On a 60 Hz display frames
+  are judged against the build before this phase in paired runs, as FR-005 sets.
 - **SC-003**: Every public page type fetches at most 60 KB gzipped of script before it is usable, down from
-  117 KB, and no visit fetches more in total than 117 KB.
+  117 KB, and no visit fetches more in total than 117 KB, with photo import configured.
 - **SC-004**: Every page is usable within 2.0 s on the phone and 1.0 s on desktop and no later than its baseline, no
   metric Phase 1 holds is worse than its baseline, and headless WebKit on the phone is no worse than its baseline on
-  any metric.
+  any metric, each with the exceptions FR-004, FR-005, FR-009 and FR-010 name.
 - **SC-005**: The owner's iPhone pass in Safari records that recipe search, a recipe, cook mode and the header keep
   up and answer taps at once, at a fresh visit and two minutes into one.
 - **SC-006**: The perceptual diff flags no page, or the owner approves every flagged page; every scripts-off first
-  paint matches its scripts-enabled one; and the end-to-end suites pass with no change to what they check.
-- **SC-007**: About 20 KB gzipped of script added to every page fails CI with a message naming page, profile, engine,
-  ramp, budget and number, and on an unchanged codebase the guards pass ten runs out of ten.
+  paint matches its scripts-enabled one, or differs as it does on the build at `c1827268`; and the end-to-end suites
+  pass with no change to what they check.
+- **SC-007**: About 20 KB gzipped of script added to every page fails the guard classes CI runs, run locally, with a
+  message naming page, profile, engine, ramp, budget and number; on an unchanged codebase those guards pass three local
+  runs out of three, and CI passes on the pull request.
 
 ## Assumptions
 

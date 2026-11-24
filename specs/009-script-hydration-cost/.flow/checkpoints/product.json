@@ -1,0 +1,83 @@
+{
+  "checkpoint": "product",
+  "blocks": "plan",
+  "decisions": [
+    {
+      "class": "scope",
+      "phase": "plan",
+      "affects": [
+        "FR-004",
+        "FR-005",
+        "SC-001",
+        "SC-002"
+      ],
+      "id": "Q1",
+      "audience": "po",
+      "question": "The slow taps and frames on the phone come from redrawing the ink washes, not from script, so if no change that keeps the washes looking exactly the same gets every tap under 100 ms, what should Phase 2 do?",
+      "recommended": "Try look-preserving fixes first, then show any wash change that closes the gap to the owner in a look round, and ship it only if approved.",
+      "alternative": "Ship only look-preserving fixes and carry the rest of the phone interaction and frame gap to Phase 3, with those budgets held at baseline.",
+      "answer": "A: look-preserving fixes first; any wash change still needed goes to the owner in a look round (affected pages, before/after, both ramps, phone and desktop, with measured gain per change) and ships only on the owner's relayed approval.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:40:51.759Z",
+      "channel": "relayed",
+      "relayed_by": "orchestrator"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "SC-007",
+        "FR-022"
+      ],
+      "id": "C1",
+      "audience": "po",
+      "question": "May the 20 KB guard proof and the ten-run stability trial run locally against the same guard classes CI runs, instead of on CI itself?",
+      "recommended": "Yes: run both locally, reword SC-007 to say the CI guard classes fail, and let CI runs on the open pull request show the unchanged code passing.",
+      "alternative": "Push a throwaway draft pull request with the 20 KB import, which writes live board cards and issues.",
+      "answer": "A: the 20 KB proof and the ten-of-ten trial run locally against the CI guard classes; SC-007 reworded; no throwaway branch is pushed.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:59:11.496Z",
+      "channel": "relayed",
+      "relayed_by": "orchestrator"
+    },
+    {
+      "class": "scope",
+      "phase": "clarify",
+      "affects": [
+        "FR-004",
+        "FR-005",
+        "SC-001",
+        "SC-002"
+      ],
+      "id": "C2",
+      "audience": "po",
+      "question": "If the owner declines every wash change and the phone still misses the 100 ms or frame budget, how does Phase 2 close?",
+      "recommended": "Carry the phone Chromium gap to Phase 3, hold those budgets at baseline, record the gap, and amend FR-004, FR-005, SC-001 and SC-002 for phone Chromium.",
+      "alternative": "Phase 2 stays open until a wash change is approved.",
+      "answer": "A as the fallback: when a wash change still looks necessary, the owner is asked in one question with the look round to approve the wash change or keep the look and carry the phone Chromium gap. On keep: hold FR-004/FR-005 budgets at baseline for phone Chromium, record the gap with measured numbers, amend FR-004, FR-005, SC-001, SC-002 for phone Chromium only, and name the gap in the phase table as going to Phase 3 or a later phase. Amendments are drafted now and applied only on that answer.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:59:11.523Z",
+      "channel": "relayed",
+      "relayed_by": "orchestrator"
+    },
+    {
+      "class": "scope",
+      "phase": "plan",
+      "affects": [
+        "FR-008",
+        "FR-014",
+        "FR-018"
+      ],
+      "id": "C3",
+      "audience": "po",
+      "question": "Zero layout shift on search needs space held for the next page of results: should the browser reserve it only after the page is usable, or should the server draw it?",
+      "recommended": "Browser only, below the screen after the page is usable, so first paint and the scripts-off page stay as they are today.",
+      "alternative": "The server draws the reserved band, which leaves a blank band at first paint and a permanent one with scripts off.",
+      "answer": "A: the browser reserves the next page's space after the page is usable, below the screen; first paint and scripts-off unchanged; a test covers the short first page where the footer is on screen.",
+      "by": "34248224+Th3FenrisWolf@users.noreply.github.com",
+      "at": "2026-11-17T15:59:11.550Z",
+      "channel": "relayed",
+      "relayed_by": "orchestrator"
+    }
+  ]
+}
