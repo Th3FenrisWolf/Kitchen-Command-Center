@@ -3,7 +3,7 @@
   import type { SiblingVariant } from '~/Types/Recipe'
   import { ResourceString } from '~/Components/ResourceStrings'
   import RecipeCardView from '~/Components/Recipe/RecipeCard.vue'
-  import { siblingToCard } from '~/Components/Recipe/recipeCardModel'
+  import { siblingToCard } from '~/Components/Recipe/siblingCard'
   import { listTearFor } from '~/Utilities/BrandColor'
 
   export interface VariantSiblingsProps {

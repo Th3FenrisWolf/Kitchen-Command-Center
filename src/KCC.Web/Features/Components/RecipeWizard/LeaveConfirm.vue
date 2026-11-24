@@ -45,20 +45,20 @@
     }
   }
 
-  watch(
-    () => open,
-    async (shown) => {
-      document.removeEventListener('keydown', onKeydown)
-      if (!shown) return
+  async function answer(shown: boolean) {
+    document.removeEventListener('keydown', onKeydown)
+    if (!shown) return
 
-      document.addEventListener('keydown', onKeydown)
-      await nextTick()
-      focusables()[0]?.focus()
-    },
-  )
+    document.addEventListener('keydown', onKeydown)
+    await nextTick()
+    focusables()[0]?.focus()
+  }
+
+  watch(() => open, answer)
 
   onMounted(() => {
     isMounted.value = true
+    if (open) void answer(true)
   })
 
   onBeforeUnmount(() => {

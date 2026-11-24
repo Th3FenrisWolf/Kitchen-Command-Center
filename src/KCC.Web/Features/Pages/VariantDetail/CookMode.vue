@@ -4,6 +4,7 @@
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
+  import { containFocus } from '~/Utilities/containFocus'
   import { useWakeLock } from './useWakeLock'
   import CookModeStep from './CookModeStep.vue'
 
@@ -30,6 +31,8 @@
   const checked = ref<Record<number, boolean>>({})
   const currentServings = ref(props.servings && props.servings > 0 ? props.servings : 1)
   const panel = ref<HTMLElement | null>(null)
+  const closeButton = ref<InstanceType<typeof Button> | null>(null)
+  const focusClose = () => (closeButton.value?.$el as HTMLElement | undefined)?.focus()
   // Teleport renders to <body>, which only exists client-side. Gating the Teleport on this
   // flag keeps SSR output (a comment placeholder) identical to the client's pre-mount output,
   // avoiding a hydration node mismatch that would discard the server-rendered subtree.
@@ -66,26 +69,7 @@
       return
     }
     if (event.key === 'Tab') {
-      trapFocus(event)
-    }
-  }
-
-  const trapFocus = (event: KeyboardEvent) => {
-    const root = panel.value
-    if (!root) return
-    const focusables = root.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), [href], input, [tabindex]:not([tabindex="-1"])',
-    )
-    if (focusables.length === 0) return
-    const first = focusables[0]!
-    const last = focusables[focusables.length - 1]!
-    const active = document.activeElement
-    if (event.shiftKey && (active === first || active === root)) {
-      event.preventDefault()
-      last.focus()
-    } else if (!event.shiftKey && active === last) {
-      event.preventDefault()
-      first.focus()
+      containFocus(event, panel.value)
     }
   }
 
@@ -98,7 +82,7 @@
     }
     void wakeLock.request()
     await nextTick()
-    panel.value?.focus()
+    focusClose()
   }
 
   const deactivate = () => {
@@ -129,7 +113,7 @@
     <div v-if="open" class="fixed inset-0 z-50 bg-desk" role="dialog" aria-modal="true" :aria-label="t('CookMode')">
       <!-- The trap cycles the focusables of this element, so it stays a plain div wrapping the whole sheet:
            a ref on the sheet component would resolve to its instance, not to a node to query. -->
-      <div ref="panel" tabindex="-1" class="h-full outline-none">
+      <div ref="panel" tabindex="-1" class="h-full">
         <!-- The sheet is the viewport: height flows down the slip and the torn wrapper into the paper, and
              the step column scrolls inside the padding rather than past the tear. -->
         <KccSheet
@@ -183,6 +167,7 @@
                   variant="ghost"
                   size="lg"
                   class="kcc-btn--icon shrink-0"
+                  ref="closeButton"
                   data-test="cook-close"
                   :aria-label="t('Close')"
                   @click="close"

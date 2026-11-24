@@ -1,7 +1,10 @@
 <script setup lang="ts">
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import RecipeWizard, { type ImportAvailability } from '~/Components/RecipeWizard/RecipeWizard.vue'
+  import { beforeWizardHydrates } from '~/Components/RecipeWizard/wizardSteps'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+
+  defineOptions({ beforeHydrate: beforeWizardHydrates('recipe') })
 
   export interface CreateRecipeViewProps {
     resourceStrings?: Record<string, string>

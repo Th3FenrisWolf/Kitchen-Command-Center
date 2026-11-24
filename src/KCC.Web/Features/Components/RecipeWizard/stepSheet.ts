@@ -14,3 +14,12 @@ export function focusHeading(heading: HTMLElement | null | undefined): void {
   heading.tabIndex = -1
   heading.focus()
 }
+
+// Removing the focused control would make the browser restyle the whole step before the swap can paint.
+export function letGoOfFocusIn(leaving: HTMLElement | null | undefined): void {
+  const focused = document.activeElement
+  if (focused instanceof HTMLElement && leaving?.contains(focused)) focused.blur()
+}
+
+// A focus() in the frame that swaps the step forces a second restyle before that frame can paint.
+export const afterNextPaint = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)))

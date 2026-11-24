@@ -1,19 +1,12 @@
 <script setup lang="ts">
-  import { computed, nextTick, onBeforeUnmount, reactive, ref, watch, type ComponentPublicInstance } from 'vue'
+  import { computed, nextTick, onBeforeUnmount, provide, reactive, ref, watch, type ComponentPublicInstance } from 'vue'
   import { provideResourceStrings } from '~/Components/ResourceStrings'
   import WizardProgress from '~/Components/Wizard/WizardProgress.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
   import { post } from '~/Utilities/Api'
-  import BasicsStep from './BasicsStep.vue'
-  import IngredientsStep from './IngredientsStep.vue'
-  import InstructionsStep from './InstructionsStep.vue'
-  import LeaveConfirm from './LeaveConfirm.vue'
   import { controlOfInertAncestor, guardedLink } from './leaveGuard'
-  import MatchStep from './MatchStep.vue'
-  import { encodePhoto, type EncodedPhoto } from './photoEncoding'
-  import PhotoStep from './PhotoStep.vue'
-  import PhotoStrip from './PhotoStrip.vue'
-  import ReadingState from './ReadingState.vue'
+  import type { EncodedPhoto } from './photoEncoding'
+  import PhotoStripPending from './PhotoStripPending.vue'
   import type { ReadRequest, ReadResult } from './recipeImportApi'
   import {
     acceptMatch,
@@ -54,13 +47,16 @@
     type WizardMode,
     type WizardRecipe,
   } from './recipeWizardFlow'
-  import ReviewStep from './ReviewStep.vue'
   import StartStep from './StartStep.vue'
-  import { stepFlips } from './stepFlip'
-  import { focusHeading } from './stepSheet'
-  import SubmittedSheet, { type ClosingLink } from './SubmittedSheet.vue'
-  import VariantStep from './VariantStep.vue'
+  import { STEP_SHEET, stepFlips } from './stepFlip'
+  import { afterNextPaint, focusHeading, letGoOfFocusIn } from './stepSheet'
+  import StepPending from './StepPending.vue'
+  import SubmittedPending from './SubmittedPending.vue'
+  import type { ClosingLink } from './SubmittedSheet.vue'
   import { refusedName, submitErrorKey, type SubmitErrorKey } from './wizardErrors'
+  import { laterStep } from './wizardSteps'
+  import { laterPart, prefetchPart, registerLaterPart } from '~/Islands/laterParts'
+  import { whenArrived } from '~/Islands/whenArrived'
 
   export interface ImportAvailability {
     enabled: boolean
@@ -77,6 +73,27 @@
     closingLink?: ClosingLink
     photoImport?: ImportAvailability
   }
+
+  const PhotoStep = laterStep('PhotoStep')
+  const BasicsStep = laterStep('BasicsStep')
+  const VariantStep = laterStep('VariantStep')
+  const MatchStep = laterStep('MatchStep')
+  const IngredientsStep = laterStep('IngredientsStep')
+  const InstructionsStep = laterStep('InstructionsStep')
+  const ReviewStep = laterStep('ReviewStep')
+
+  const ReadingState = laterPart(() => import('./ReadingState.vue').then(({ default: part }) => part), StepPending)
+  const SubmittedSheet = laterPart(() => import('./SubmittedSheet.vue').then(({ default: part }) => part), SubmittedPending)
+  const PhotoStrip = laterPart(() => import('./PhotoStrip.vue').then(({ default: part }) => part), PhotoStripPending)
+  // The dialog draws nothing until a reader leaves, so it has nothing to show while its chunk is on the way.
+  const LeaveConfirm = laterPart(
+    () => import('./LeaveConfirm.vue').then(({ default: part }) => part),
+    () => null,
+  )
+  const photoEncoding = () => import('./photoEncoding')
+  registerLaterPart(() =>
+    Promise.all([...[ReadingState, SubmittedSheet, PhotoStrip, LeaveConfirm].map(prefetchPart), photoEncoding()]),
+  )
 
   const IMPORT_OFF: ImportAvailability = { enabled: false, available: false, maxImageEdge: 0 }
 
@@ -98,7 +115,9 @@
   const stepProgress = computed(() => progress(wizard))
   const currentStep = computed(() => stepProgress.value?.current ?? 1)
   const tear = computed(() => listTearFor(currentStep.value - 1))
-  const flip = computed(() => stepFlips(currentStep.value))
+  const stripFailed = ref(false)
+  provide(STEP_SHEET, { step: currentStep, stripFailed })
+  const flip = computed(() => stepFlips(currentStep.value, stripFailed.value))
 
   const returnsToReview = computed(() => wizard.returnTo === 'review')
 
@@ -108,6 +127,8 @@
   const submitError = ref<SubmitErrorKey | null>(null)
 
   const leaving = ref<HTMLAnchorElement | null>(null)
+  // Rendered once there is work to lose, so hydration never waits on the dialog's chunk.
+  const leaveConfirmWanted = ref(false)
 
   const stepSection = ref<HTMLElement | null>(null)
   const submittedSheet = ref<ComponentPublicInstance | null>(null)
@@ -116,19 +137,33 @@
     () => wizard.step,
     async (step) => {
       submitError.value = null
+      letGoOfFocusIn(stepSection.value)
       await nextTick()
-      if (leaving.value !== null) return
+      // A later part's pending root is replaced when it arrives, so the submitted sheet's wait watches its parent and
+      // the heading is looked up afresh.
+      const holder = (): HTMLElement | null | undefined =>
+        step === 'submitted' ? submittedSheet.value?.$el : stepSection.value
+      await whenArrived(step === 'submitted' ? holder()?.parentElement : holder())
+      await afterNextPaint()
+      if (leaving.value !== null || wizard.step !== step) return
 
-      const holder: HTMLElement | null = step === 'submitted' ? submittedSheet.value?.$el : stepSection.value
-      focusHeading(holder?.querySelector<HTMLElement>('h2'))
+      // A part that failed or never came has no heading, and focus must not be left on the body.
+      focusHeading(holder()?.querySelector<HTMLElement>('h2') ?? holder())
     },
   )
 
-  function onLinkClick(event: MouseEvent) {
+  async function onLinkClick(event: MouseEvent) {
     const link = guardedLink(event, window.location.href)
     if (!link) return
 
     event.preventDefault()
+    try {
+      await prefetchPart(LeaveConfirm)
+    } catch {
+      // Without the dialog, the browser's own prompt from beforeunload still asks before the work is lost.
+      window.location.assign(link.href)
+      return
+    }
     leaving.value = link
   }
 
@@ -150,7 +185,12 @@
 
   watch(
     () => hasUnsavedWork(wizard),
-    (unsaved) => (unsaved ? guardLeaving() : stopGuardingLeaving()),
+    (unsaved) => {
+      if (!unsaved) return stopGuardingLeaving()
+
+      leaveConfirmWanted.value = true
+      guardLeaving()
+    },
   )
 
   onBeforeUnmount(stopGuardingLeaving)
@@ -178,7 +218,9 @@
     const { maxImageEdge } = photoImport.value
     let turn: Promise<unknown> = Promise.resolve()
     return photos.map((photo) => {
-      const encoded = turn.then(() => photo).then((blob) => blob && encodePhoto(blob, maxImageEdge))
+      const encoded = turn
+        .then(() => photo)
+        .then(async (blob) => blob && (await photoEncoding()).encodePhoto(blob, maxImageEdge))
       turn = encoded.catch(() => null)
       return encoded
     })
@@ -363,5 +405,5 @@
     />
   </section>
 
-  <LeaveConfirm :open="leaving !== null" @stay="stay" @leave="leave" />
+  <LeaveConfirm v-if="leaveConfirmWanted" :open="leaving !== null" @stay="stay" @leave="leave" />
 </template>

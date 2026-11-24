@@ -1,5 +1,7 @@
 import { formatRating } from '~/Components/StarRating/starDisplay'
-import type { RecipeSearchHit, SiblingVariant, VariantSummary } from '~/Types/Recipe'
+import type { RecipeSearchHit, VariantSummary } from '~/Types/Recipe'
+
+export { siblingToCard } from './siblingCard'
 
 // Each page resolves strings under its own prefix, so the page localizes card text and the shared cards
 // never read the resource-string context.
@@ -99,24 +101,6 @@ export function variantToCard(variant: VariantSummary, rs: Resolve): RecipeCardM
     tags: variant.tags,
     trailingStat: { value: `${variant.totalTime}${rs('Min')}`, label: rs('Total') },
     dataAttrs: { 'data-variant-name': variant.name },
-  }
-}
-
-/**
- * Sibling variant → grid card. A sibling arrives without a review count, so its rating can only ever be
- * the corner stat: there is no "· N" to print beside it and no empty-rating note to fall back to. The unit
- * is the literal the variant page already prints on its stat tiles; that page carries no `Min` string.
- */
-export function siblingToCard(sibling: SiblingVariant): RecipeCardModel {
-  const time = `${sibling.totalTime} min`
-  return {
-    href: sibling.slug,
-    name: sibling.name,
-    seed: sibling.name,
-    icon: sibling.icon,
-    notch: sibling.rating > 0 ? { stat: 'rating', text: formatRating(sibling.rating) } : { stat: 'time', text: time },
-    meta: [{ key: 'time', icon: 'fa-solid fa-clock', text: time }],
-    tags: [],
   }
 }
 

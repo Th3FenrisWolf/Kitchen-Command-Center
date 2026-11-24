@@ -3,7 +3,10 @@
   import SmallHero from '~/Widgets/Hero/SmallHero.Component.vue'
   import Button from '~/Components/Button/Button.vue'
   import RecipeWizard, { type ImportAvailability } from '~/Components/RecipeWizard/RecipeWizard.vue'
+  import { beforeWizardHydrates } from '~/Components/RecipeWizard/wizardSteps'
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
+
+  defineOptions({ beforeHydrate: beforeWizardHydrates('variant') })
 
   export interface AddVariantViewProps {
     recipeId: string

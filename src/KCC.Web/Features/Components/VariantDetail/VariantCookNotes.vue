@@ -5,7 +5,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
-  import TextAreaField from '~/Components/Forms/TextAreaField.vue'
+  import { TextAreaField, typedText } from './memberTextArea'
 
   export interface VariantCookNotesProps {
     variantGuid: string
@@ -21,6 +21,7 @@
   const pageSize = 10
   const draft = ref('')
   const error = ref('')
+  const form = ref<HTMLElement | null>(null)
 
   const load = async (nextPage = 0) => {
     const result = await get<CookNotesResponse>(`/api/variant/${variantGuid}/notes`, { page: nextPage, pageSize })
@@ -34,9 +35,10 @@
   }
 
   const add = async () => {
-    if (!draft.value.trim()) return
+    const text = typedText(form.value, draft.value)
+    if (!text.trim()) return
     error.value = ''
-    const result = await post<{ id: number }>(`/api/variant/${variantGuid}/note`, draft.value)
+    const result = await post<{ id: number }>(`/api/variant/${variantGuid}/note`, text)
     if (!result.success) {
       error.value = result.errorMessage
       return
@@ -67,7 +69,7 @@
 
     <!-- The heading takes no room, so the rhythm is between the blocks, never above the first of them. -->
     <div class="space-y-rule-1">
-      <div v-if="isAuthenticated" class="space-y-rule-1">
+      <div v-if="isAuthenticated" ref="form" class="space-y-rule-1">
         <TextAreaField v-model="draft" :rules="4" :placeholder="t('CookNotePlaceholder')" data-testid="cook-note-input" />
         <p v-if="error" class="kcc-well kcc-well--danger kcc-kick" role="alert">{{ error }}</p>
         <div class="kcc-row">

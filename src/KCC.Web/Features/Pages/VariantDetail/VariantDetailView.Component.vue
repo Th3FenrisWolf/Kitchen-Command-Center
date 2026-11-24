@@ -4,6 +4,7 @@
   import { ResourceString, provideResourceStrings } from '~/Components/ResourceStrings'
   import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
   import { difficultyTile } from '~/Components/VariantDetail/variantDifficulty'
+  import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumbs.Component.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
@@ -20,7 +21,8 @@
     siblingTearOffset,
   } from '~/Components/VariantDetail/reviewsTrailingSign'
   import { recordRecentlyViewed } from '~/Components/Header/useRecentlyViewed'
-  import CookMode from './CookMode.vue'
+  import { laterPart, prefetchPart, registerLaterPart } from '~/Islands/laterParts'
+  import CookModePending from './CookModePending.vue'
 
   export interface VariantDetailViewProps extends Nutrition {
     variantName: string
@@ -56,10 +58,17 @@
 
   const rs = provideResourceStrings(props.resourceStrings, 'VariantDetail')
 
+  const CookMode = laterPart(() => import('./CookMode.vue').then(({ default: part }) => part), CookModePending)
+  registerLaterPart(() => prefetchPart(CookMode))
+
+  // Rendered from the first open only, so hydration never waits on cook mode's chunk.
+  const cookModeWanted = ref(false)
   const cookModeOpen = ref(false)
   const hasInstructions = computed(() => props.instructions.length > 0)
   const openCookMode = () => {
-    if (hasInstructions.value) cookModeOpen.value = true
+    if (!hasInstructions.value) return
+    cookModeWanted.value = true
+    cookModeOpen.value = true
   }
 
   const serverReviews = { isAuthenticated: props.isAuthenticated ?? false, loaded: 0 }
@@ -168,6 +177,7 @@
 
     <!-- Fixed UI never lives inside a slip: the tilt and the fibre filter would become its containing block. -->
     <CookMode
+      v-if="cookModeWanted"
       :open="cookModeOpen"
       :instructions="instructions"
       :ingredients="ingredients"

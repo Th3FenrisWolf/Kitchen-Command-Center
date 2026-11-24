@@ -5,7 +5,7 @@
   import { ResourceString, useResourceStrings } from '~/Components/ResourceStrings'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import Button from '~/Components/Button/Button.vue'
-  import TextAreaField from '~/Components/Forms/TextAreaField.vue'
+  import { TextAreaField, typedText } from './memberTextArea'
   import StarRating from '~/Components/StarRating/StarRating.vue'
   import RatingSummary from '~/Components/StarRating/RatingSummary.vue'
   import { listTearFor } from '~/Utilities/BrandColor'
@@ -41,6 +41,7 @@
   const myRating = ref(0)
   const myText = ref('')
   const error = ref('')
+  const form = ref<HTMLElement | null>(null)
 
   const load = async (nextPage = 0) => {
     loading.value = true
@@ -68,7 +69,10 @@
   const submit = async () => {
     if (myRating.value < 0.5) return
     error.value = ''
-    const result = await put(`/api/variant/${variantGuid}/review`, { rating: myRating.value, text: myText.value })
+    const result = await put(`/api/variant/${variantGuid}/review`, {
+      rating: myRating.value,
+      text: typedText(form.value, myText.value),
+    })
     if (!result.success) {
       error.value = result.errorMessage
       return
@@ -190,7 +194,7 @@
       >
         <template #label><ResourceString for="YourReview" /></template>
 
-        <div class="space-y-rule-1">
+        <div ref="form" class="space-y-rule-1">
           <div class="flex h-rule-2 items-center">
             <StarRating v-model="myRating" />
           </div>
