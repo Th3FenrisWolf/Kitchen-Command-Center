@@ -134,7 +134,8 @@ describe('RecipeSearchView library', () => {
     expect(section).toContain('aria-busy="false"')
 
     const aside = tagWith(html, 'id="recipe-filters"')
-    expect(aside).toContain('lg:sticky lg:top-[calc(var(--bl)_+_var(--pad-offset,0px))]')
+    expect(aside).toContain('lg:sticky lg:top-(--bl) lg:block lg:transition-[top]')
+    expect(aside).toContain('lg:[main:not(.is-tucked)_&amp;]:top-[calc(var(--bl)_+_var(--pad-h,0px))]')
     expect(aside).not.toContain('rounded')
     expect(aside).not.toContain('bg-paper-2')
   })
