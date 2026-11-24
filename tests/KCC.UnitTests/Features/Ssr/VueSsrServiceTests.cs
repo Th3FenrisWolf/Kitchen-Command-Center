@@ -104,13 +104,87 @@ public class VueSsrServiceTests
         _ = await Assert.That(handler.Calls).IsEqualTo(2);
     }
 
-    private static VueSsrService CreateService(HttpMessageHandler handler, long cacheLimit = 1_000_000)
+    [Test]
+    public async Task RenderAsync_CarriesTheIslandsComponentsAndPageWashesFromTheRender()
+    {
+        var handler = new CountingHandler(Rendered);
+        var service = CreateService(handler);
+
+        var result = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+
+        _ = await Assert.That(result.Islands.Count).IsEqualTo(2);
+        _ = await Assert.That(result.Islands[0].Name).IsEqualTo("AppHeader");
+        _ = await Assert.That(result.Islands[0].Keys).IsEquivalentTo(["header", "header/nav"]);
+        _ = await Assert.That(result.Islands[1].Name).IsEqualTo("RecipeSearchView");
+        _ = await Assert.That(result.Islands[1].Props.GetProperty("query").GetString()).IsEqualTo("soup");
+        _ = await Assert.That(result.Components).IsEquivalentTo(
+            ["Features/Components/Header/AppHeader.Component.vue", "Features/Components/Footer/AppFooter.Component.vue"]);
+        _ = await Assert.That(result.PageWashes).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task RenderAsync_CacheHit_ReturnsTheCachedIslandsWithTheMarkup()
+    {
+        var handler = new CountingHandler(Rendered);
+        var service = CreateService(handler);
+
+        _ = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+        var second = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+
+        _ = await Assert.That(handler.Calls).IsEqualTo(1);
+        _ = await Assert.That(second.Islands.Count).IsEqualTo(2);
+        _ = await Assert.That(second.Components.Count).IsEqualTo(2);
+        _ = await Assert.That(second.PageWashes).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task RenderAsync_ARenderWithoutIslandFields_CarriesEmptyValues()
+    {
+        var handler = new CountingHandler();
+        var service = CreateService(handler);
+
+        var result = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+
+        _ = await Assert.That(result.Html).IsEqualTo("<div></div>");
+        _ = await Assert.That(result.Islands).IsEmpty();
+        _ = await Assert.That(result.Components).IsEmpty();
+        _ = await Assert.That(result.PageWashes).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task RenderAsync_NoHtml_CarriesEmptyIslandValues()
+    {
+        var service = CreateService(new CountingHandler(), enabled: false);
+
+        var result = await service.RenderAsync("<h/>", "<b/>", "<f/>", Home);
+
+        _ = await Assert.That(result.Html).IsNull();
+        _ = await Assert.That(result.Islands).IsEmpty();
+        _ = await Assert.That(result.Components).IsEmpty();
+        _ = await Assert.That(result.PageWashes).IsEqualTo(0);
+    }
+
+    private static readonly object Rendered = new
+    {
+        html = "<div></div>",
+        schedule = "",
+        renderTime = 1,
+        islands = new object[]
+        {
+            new { name = "AppHeader", props = new { }, keys = new[] { "header", "header/nav" } },
+            new { name = "RecipeSearchView", props = new { query = "soup" }, keys = Array.Empty<string>() },
+        },
+        components = new[] { "Features/Components/Header/AppHeader.Component.vue", "Features/Components/Footer/AppFooter.Component.vue" },
+        pageWashes = 3,
+    };
+
+    private static VueSsrService CreateService(HttpMessageHandler handler, long cacheLimit = 1_000_000, bool enabled = true)
     {
         var factory = new Mock<IHttpClientFactory>();
         factory.Setup(f => f.CreateClient("VueSsr")).Returns(() => new HttpClient(handler, disposeHandler: false) { BaseAddress = new Uri("http://ssr.test") });
 
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string> { ["VueSsr:Enabled"] = "true" })
+            .AddInMemoryCollection(new Dictionary<string, string> { ["VueSsr:Enabled"] = enabled ? "true" : "false" })
             .Build();
 
         var environment = new Mock<IHostEnvironment>();
@@ -124,7 +198,7 @@ public class VueSsrServiceTests
             NullLogger<VueSsrService>.Instance);
     }
 
-    private sealed class CountingHandler : HttpMessageHandler
+    private sealed class CountingHandler(object body = null) : HttpMessageHandler
     {
         public const string Schedule = ".kcc-wash[data-wash=\"0a1b2c3d\"]{--wash-at:12.500s}";
 
@@ -136,7 +210,7 @@ public class VueSsrServiceTests
         {
             Calls++;
             LastBody = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
-            var response = JsonSerializer.Serialize(new { html = "<div></div>", schedule = Schedule, renderTime = 1 });
+            var response = JsonSerializer.Serialize(body ?? new { html = "<div></div>", schedule = Schedule, renderTime = 1 });
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(response, Encoding.UTF8, "application/json"),

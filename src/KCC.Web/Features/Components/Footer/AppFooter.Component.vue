@@ -1,3 +1,7 @@
+<script setup lang="ts">
+  defineOptions({ serverOnly: true })
+</script>
+
 <template>
   <footer class="content-grid mt-rule-2 px-4 pb-rule-1">
     <hr class="kcc-hr breakout" />

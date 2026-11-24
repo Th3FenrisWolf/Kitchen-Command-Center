@@ -39,13 +39,16 @@
       v-for="(card, index) in props.cards"
       :key="card.key"
       data-card
-      :class="['sticky transition-[top]', index === props.cards.length - 1 && 'last']"
-      :style="`top: calc(${32 * (index + 1)}px + var(--pad-offset, 0px))`"
+      :class="[
+        'sticky top-(--stick-top) transition-[top] [main:not(.is-tucked)_&]:top-[calc(var(--stick-top)_+_var(--pad-h,0px))]',
+        index === props.cards.length - 1 && 'last',
+      ]"
+      :style="`--stick-top: ${32 * (index + 1)}px`"
     >
       <div
         data-sentinel
-        class="absolute size-0 transition-[top]"
-        :style="`top: calc(-${32 * (index + 1) + 1}px - var(--pad-offset, 0px))`"
+        class="absolute top-(--stick-top) size-0 transition-[top] [main:not(.is-tucked)_&]:top-[calc(var(--stick-top)_-_var(--pad-h,0px))]"
+        :style="`--stick-top: -${32 * (index + 1) + 1}px`"
       ></div>
       <KccSheet
         :tear="card.tear ?? listTearFor(index)"

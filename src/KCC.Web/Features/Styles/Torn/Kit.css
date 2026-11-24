@@ -1,5 +1,13 @@
 /* Loose Leaf — the paper. Everything Razor also renders lives here, not in a component style block.
    The tear presets (.kcc-tear-*, --tear-tile-*) come from the generated Tears.css. */
+/* An island's server HTML sits in this wrapper so the browser can hydrate it alone. It must not add a box: its
+   content lays out as the parent's own children. */
+@layer base {
+  kcc-island {
+    display: contents;
+  }
+}
+
 @layer components {
   .kcc-slip {
     --blank-flip: 1;

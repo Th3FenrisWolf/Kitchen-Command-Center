@@ -27,8 +27,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- Publish skips folders whose names start with a dot, and Vite.AspNetCore reads the manifest from there. -->
+        <!-- Publish skips folders whose names start with a dot, and Vite.AspNetCore and FallbackLinks read the manifests from there. -->
         <Content Include="wwwroot/.vite/**" />
+        <Content Include="wwwroot/fallback/.vite/**" />
     </ItemGroup>
 
     <ItemGroup>

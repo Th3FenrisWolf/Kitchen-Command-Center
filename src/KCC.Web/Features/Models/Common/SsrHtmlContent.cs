@@ -11,6 +11,8 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
 
     public string Schedule => result.Schedule;
 
+    public SsrResult Result => result;
+
     public void WriteTo(TextWriter writer, HtmlEncoder encoder)
     {
         // Razor has already flushed <head> by the time this runs in the body, and browsers apply
@@ -36,14 +38,7 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
         // Server content goes in a script tag as JSON to prevent XSS
         writer.Write(ServerContentScriptOpen);
 
-        writer.Write(JsonSerializer.Serialize(new
-        {
-            headerContent = result.HeaderContent,
-            bodyContent = result.BodyContent,
-            footerContent = result.FooterContent,
-            isPreview = result.IsPreview,
-            bloom = result.Bloom is null ? null : new { seed = result.Bloom.Seed, page = result.Bloom.Page },
-        }));
+        writer.Write(JsonSerializer.Serialize(ServerContent()));
 
         writer.Write("</script>");
 
@@ -54,4 +49,23 @@ public class SsrHtmlContent(SsrResult result) : IHtmlContent
             writer.Write("</script>");
         }
     }
+
+    // With rendered HTML the islands hydrate from it, so the region templates would only be dead weight.
+    private object ServerContent() => result.Html is null
+        ? new
+        {
+            headerContent = result.HeaderContent,
+            bodyContent = result.BodyContent,
+            footerContent = result.FooterContent,
+            isPreview = result.IsPreview,
+            bloom = result.Bloom is null ? null : new { seed = result.Bloom.Seed, page = result.Bloom.Page },
+        }
+        : new
+        {
+            isPreview = result.IsPreview,
+            bloom = result.Bloom is null
+                ? null
+                : new { seed = result.Bloom.Seed, page = result.Bloom.Page, pageWashes = result.PageWashes },
+            islands = result.Islands.Select(island => new { name = island.Name, props = island.Props, keys = island.Keys }),
+        };
 }

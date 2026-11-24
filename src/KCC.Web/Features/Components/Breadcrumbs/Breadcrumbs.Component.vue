@@ -9,6 +9,8 @@
   const { items } = defineProps<BreadcrumbProps>()
   const home = computed(() => items[0]!)
   const ancestors = computed(() => items.slice(1))
+
+  defineOptions({ serverOnly: true })
 </script>
 
 <template>

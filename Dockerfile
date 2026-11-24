@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# The client and SSR bundles come out of one `pnpm build:all` in the frontend stage, and both site images copy from
-# it: scope IDs hash each component's path and content, so bundles built apart would strip every scoped style.
+# The client, SSR and fallback bundles come out of one `pnpm build:all` in the frontend stage, and both site images
+# copy from it: scope IDs hash each component's path and content, so bundles built apart would strip every scoped style.
 
 # CI replaces this empty stage with its pnpm store, which already holds the Font Awesome package, so the install never
 # meets that registry's bandwidth quota. Elsewhere the install fetches the package.

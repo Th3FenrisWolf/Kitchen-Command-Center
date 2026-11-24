@@ -14,6 +14,8 @@
   const resolvedPrefix = computed(() => (props.shared ? 'Shared' : ctx.prefix))
   const resolvedKey = computed(() => (resolvedPrefix.value ? `${resolvedPrefix.value}.${props.for}` : props.for))
   const resolvedValue = computed(() => ctx.strings[resolvedKey.value] ?? resolvedKey.value)
+
+  defineOptions({ serverOnly: true })
 </script>
 
 <template>

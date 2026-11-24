@@ -5,6 +5,7 @@
   import { type SortKey, type ViewMode, filterVariants, tagOptions } from '~/Components/RecipeDetail/variantFilters.ts'
   import { averageMinutes, contributorCount, featuredVariant } from '~/Components/RecipeDetail/variantStats'
   import StatTiles, { type StatTileSpec } from '~/Components/Recipe/StatTiles.vue'
+  import Breadcrumbs from '~/Components/Breadcrumbs/Breadcrumbs.Component.vue'
   import Button from '~/Components/Button/Button.vue'
   import KccSheet from '~/Components/Sheet/KccSheet.vue'
   import DetailHero from '~/Components/Recipe/DetailHero.vue'
