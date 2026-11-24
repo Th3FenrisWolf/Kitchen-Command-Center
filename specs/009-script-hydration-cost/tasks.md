@@ -648,7 +648,7 @@ and D8 are N/A unless T083 or T085 finds otherwise.
   fresh visit and two minutes into one. The builder sends the steps and the build's address to the orchestrator and
   records the owner's relayed answer, whether it keeps up and whether taps answer at once, in
   `specs/009-script-hydration-cost/research.md`.
-- [ ] T087 Remove the "before" worktree: `git worktree remove "$BEFORE"`, after T069's diff and T084 are done.
+- [x] T087 Remove the "before" worktree: `git worktree remove "$BEFORE"`, after T069's diff and T084 are done.
 
 ---
 
