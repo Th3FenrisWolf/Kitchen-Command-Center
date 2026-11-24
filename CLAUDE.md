@@ -115,20 +115,80 @@ adding one to work around missing styles is a symptom of a broken build, not a f
 Style-block CSS never reaches the page as part of the SSR-rendered HTML, so each environment delivers it
 separately:
 
-- **Production** — the client build extracts it into chunk CSS assets (`GlobalComponents-*.css`). A
-  `<link rel="stylesheet" vite-href="/Features/Main.ts">` in `Layout.cshtml` makes Vite.AspNetCore emit a
-  `<link>` for every CSS file in the entry's import graph. It finds them in `wwwroot/.vite/manifest.json`, which
-  `dotnet publish` skips like every dot-folder unless `KCC.Web.csproj` includes it, as it does: without it the
-  published site links no CSS at all.
+- **Production** — the client build extracts it into one CSS asset per component chunk. `IslandHeadLinks` reads
+  `wwwroot/.vite/manifest.json` and `Layout.cshtml` writes in `<head>` a stylesheet link for the CSS closure of every
+  component the render used, islands and server-only components alike, deduplicated after `Main.css`, and a
+  `modulepreload` for every island's chunk closure. A `<link rel="stylesheet" vite-href="/Features/Main.ts">` adds the
+  entry's own import graph. The manifest is a dot-folder file that `dotnet publish` skips unless `KCC.Web.csproj`
+  includes it, as it does: without it the published site links no CSS at all.
+- **Fallback** — when the sidecar returns no HTML (SSR off, a failure, a timeout or an open circuit), `#app` is empty,
+  `#server-content` carries the three region templates, and `Layout.cshtml` links the fallback build in
+  `wwwroot/fallback/` instead of `Main.ts`. That build keeps the template compiler and renders the whole page in the
+  browser. Vite.AspNetCore reads only `wwwroot/.vite/manifest.json`, so `FallbackManifest` reads
+  `wwwroot/fallback/.vite/manifest.json` and `FallbackLinks` writes the script and the stylesheet links from it. A
+  missing or unreadable manifest is logged and not cached, and the page then loads without a script. In development
+  the page links `Features/Fallback.ts` from the dev server.
 - **Development** — no such asset exists, so the SSR sidecar walks the Vite SSR module graph after
   rendering, compiles each style module through the client pipeline, and returns the CSS alongside the
   HTML. `SsrHtmlContent` inlines it as `<style data-ssr-styles>`, and `Main.ts` removes that tag once
-  hydration has run so HMR-updated head styles win.
+  every island has hydrated so HMR-updated head styles win.
 
-**Always build both bundles together — `pnpm build:all`, never one side alone.** Production scope IDs hash
-each component's path *and* its content, so a client bundle built against different component source than
-the SSR bundle emits `data-v-` attributes the CSS has no selectors for, and every scoped component
+**Always build all three bundles together — `pnpm build:all` (client, SSR and fallback), never one side alone.**
+Production scope IDs hash each component's path *and* its content, so a bundle built against different component
+source than another emits `data-v-` attributes the CSS has no selectors for, and every scoped component
 silently loses its styles.
+
+## Islands
+
+The browser hydrates each interactive component on its own instead of the whole page.
+
+- **Which components.** Every `*.Component.vue` under `src/KCC.Web/Features/` is a global component that Razor names by
+  its file name, and an island unless it declares `defineOptions({ serverOnly: true })`. A server-only component is
+  rendered by the sidecar and its script is never fetched: `AppFooter`, `Card`, `UnderlineLink`, `KccWashes`,
+  `Breadcrumbs`, `ResourceString` and `SmallHero`. It takes no `<style>` block, because in development its CSS reaches
+  the page only through `<style data-ssr-styles>`, which `Main.ts` removes; `registry.test.ts` fails on one.
+- **Props only.** An island Razor places takes attributes and `:prop="@Vue.Prop(...)"` bindings; the sidecar fails the
+  render, naming the component, on slot content or a function. A server-only component may take slot content.
+- **Explicit imports.** Inside a `.vue` file every component is imported: the client has no global registry, and a
+  tag resolved at runtime renders nothing. `explicitImports.test.ts` fails on a component tag the file does not import.
+- **The flow.** The sidecar wraps each island in `<kcc-island data-island="N">` (`display: contents`) and
+  `SsrHtmlContent` writes `#server-content` as `{ isPreview, bloom, islands }`, with no region HTML. `Main.ts` hydrates
+  every `<kcc-island>` from its own chunk with `createSSRApp`, in parallel, then marks `kcc:hydrated`, which is the
+  moment the page is usable. The client is runtime-only Vue. The eager glob over every component lives only in
+  `Features/Ssr/ServerComponents.ts`, for the server entry and the fallback; importing it from `Main.ts` would pull every
+  component into the entry chunk. A chunk that fails to load leaves its island's server HTML in place.
+- **Later parts.** A part a page does not show on load is made with `laterPart(loader, pending)` in
+  `Features/Islands/laterParts.ts` and prefetched in idle time after `kcc:hydrated`. A reader who gets there first sees
+  the part's own empty sheet with `aria-busy="true"`, and the part fills in when it arrives. A load that rejects, or
+  has not settled after 15 s, is retried after 1 s and then 2 s; after the third attempt the part's error state
+  shows a danger well and a Retry button in the same sheet. Cook mode is a later part with its own pending dialog.
+- **The wizard.** Every `Components/RecipeWizard/*Step.vue` except `StartStep` is a later part, found by one
+  `import.meta.glob` in `wizardSteps.ts`. A new step is `<Name>Step.vue` plus
+  `const <Name>Step = laterStep('<Name>Step')` in `RecipeWizard.vue`, never a static import; `wizardSteps.test.ts`
+  fails on one. The step a wizard opens on is resolved before hydration through the island's
+  `defineOptions({ beforeHydrate })`, so the server's step is never hydrated as its pending sheet.
+- **Search.** After the island mounts, the browser holds the space the next page of results needs below the screen
+  (`useReservedSpace`), so a page appended to the list moves nothing a reader can see. The server renders none of it,
+  and the next page loads at once.
+- **The tuck.** `useTuckOnScroll` toggles `.is-tucked` on `<main>` and writes `--pad-h` there only when it measures;
+  a sticky neighbour adds `var(--pad-h)` to its top under `main:not(.is-tucked)`.
+
+### Script and interaction budgets
+
+`tests/KCC.E2ETests/Features/Performance/budgets.json` holds them; `README.md` explains the modes.
+
+- **Script weight, a target.** `js_first_load_gz_bytes` is 61,440 B: the gzip of the same-origin scripts whose resource
+  entry starts before `kcc:hydrated`, a `modulepreload`ed chunk included. `js_gz_bytes`, the visit total, is
+  117,266 B, and `js_later_gz_bytes` is the remainder, report-only. `DeterministicGuardTests` reads both over the key
+  subset plus create-recipe and add-variant, in both engines.
+- **Usable time, a target and a baseline.** `hydrated_ms` is 2,000 ms on the phone and 1,000 ms on the desktop, scaled
+  by the runner's calibration factor, and `alsoBaseline` holds it to its baseline as well.
+- **Probes, Chromium only.** `islands_hydrated` may not rise above its baseline. `restyled_on_tuck` is at most 16 and
+  `wash_raster_on_interaction` is 0 on bloomed visits; `restyled_on_hover` is report-only. WebKit has no trace and
+  reports a gap.
+- **The carried gap.** The phone Chromium profile's `interaction_ms_max`, `frames_within_16_7_pct`, `long_frames` and
+  `frame_p95_ms` stay at baseline mode: SwiftShader rasterises in software past the CPU throttle, and the branch
+  meets 100 ms on hardware raster. The evidence is in `specs/009-script-hydration-cost/mockups/README.md`.
 
 ## SQLite writes
 
